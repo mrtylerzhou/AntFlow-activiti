@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper">
+
+    <!-- common resultMap -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmTaskconfig">
+        <id column="id" property="id"/>
+        <result column="proc_def_id_" property="procDefId"/>
+        <result column="task_def_key_" property="taskDefKey"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+
+    <!--query config by processKey and taskKey-->
+    <select id="findByProcessIdBpmTaskconfig" resultType="java.lang.Integer">
+        select user_id as userId from bpm_taskconfig w where
+        w.proc_def_id_ =#{procDefId} and w.task_def_key_=#{taskDefKey}
+        <if test="number!='' and number!=null">
+            and w.number=#{number}
+        </if>
+    </select>
+
+    <!--query taskconfig by processKey and userId-->
+    <select id="findBpmTaskconfig" resultType="org.openoa.engine.bpmnconf.confentity.BpmTaskconfig">
+        select status as status, original_type as originalType
+        from bpm_taskconfig w
+        where w.proc_def_id_ = #{procDefId}
+          and w.user_id = #{userId}
+          and w.`status` = 1
+    </select>
+    <!--delete taskconfig by processKey-->
+    <delete id="deleteTaskconfig">
+        delete
+        from bpm_taskconfig
+        where proc_def_id_ = #{procDefId}
+    </delete>
+    <delete id="deleteByTask">
+        delete
+        from bpm_taskconfig
+        where proc_def_id_ = #{procDefId}
+          and task_def_key_ = #{taskKey}
+    </delete>
+
+    <!--delete taskconfig by processKey,taskDefId and userId-->
+    <delete id="deleteUnundertake">
+        DELETE
+        FROM bpm_taskconfig
+        WHERE proc_def_id_ = #{procDefId}
+          AND user_id != #{userId}
+          AND task_def_key_ = #{taskDefId}
+    </delete>
+
+    <!--query resource code by processKey and taskKey-->
+    <select id="findTaskCode" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select s.resource_num as code,s.task_def_key_ as processKey from bpm_task_resource s where
+        s.proc_def_key=#{procDefId}
+        <if test="taskDefKey!=null and taskDefKey!=''">
+            and s.task_def_key_ =#{taskDefKey}
+        </if>
+    </select>
+
+    <!--query resource code by taskKey and nodeType-->
+    <select id="findTaskNodeType" resultType="java.util.Map">
+        select s.resource_num as nodeType
+        from bpm_task_resource s
+        where s.task_def_key_ = #{taskDefKey}
+          AND s.node_type = 'TASK_CODE'
+    </select>
+
+
+    <!--get task rollback by processKey and taskKey-->
+    <select id="findTaskRollBack" resultType="java.lang.String">
+        select t.ROLL_BACK_TASK_KEY
+        from bpm_taskrollback t
+        where t.PROCESS_DEF_KEY = #{processDefId}
+          and t.TASK_KEY = #{taskKey}
+    </select>
+    <!--get appRoute by processKey and taskKey-->
+    <select id="findByAppRoute" resultType="java.util.Map">
+        select s.address_url as routeUrl from bpm_app_route s where 1=1
+        <if test="processKey!='' and processKey!=null">
+            and s.process_key=#{processKey}
+        </if>
+        <if test="taskKey!='' and taskKey!=null">
+            and s.task_key=#{taskKey}
+        </if>
+        <if test="routeType!='' and routeType!=null">
+            and s.route_type='DETAILS_TYPE'
+        </if>
+    </select>
+
+    <!--get a a task's assignee by processKey and taskKey-->
+    <select id="findHiTaskHandle" resultType="java.util.Map">
+        select h.ASSIGNEE_ assignee
+        from act_hi_taskinst h
+        where h.PROC_INST_ID_ = #{procInstId}
+          and h.TASK_DEF_KEY_ = #{taskDefKey}
+          and h.END_TIME_  <![CDATA[<> ]]> ''
+    </select>
+
+
+    <!--get current entrust by processKey and apply User id-->
+    <select id="findEntrust" resultType="java.util.Map">
+        SELECT w.actual as actual, w.runinfoid
+        from bpm_flowrun_entrust w
+        where w.runinfoid = #{procInstId}
+          and w.original = #{applyUser}
+        GROUP BY w.runinfoid
+        LIMIT 1
+    </select>
+    <select id="disagreeType" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select w.back_type
+        from bpm_process_node_back w
+        where w.node_key = #{nodeKey}
+          and w.process_key = #{processKey}
+    </select>
+    <select id="getProcessKey" resultType="java.lang.String">
+        select s.KEY_
+        from act_re_procdef s
+        where s.DEPLOYMENT_ID_ = #{deploymentId}
+    </select>
+</mapper>

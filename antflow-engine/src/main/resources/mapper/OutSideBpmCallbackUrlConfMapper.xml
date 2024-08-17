@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf">
+        <id column="id" property="id"/>
+        <result column="business_party_id" property="businessPartyId"/>
+        <result column="bpmn_conf_id" property="bpmnConfId"/>
+        <result column="bpm_conf_callback_url" property="bpmConfCallbackUrl"/>
+        <result column="bpm_flow_callback_url" property="bpmFlowCallbackUrl"/>
+        <result column="status" property="status"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_user_name" property="createUserName"/>
+        <result column="create_user_uuid" property="createUserUuid"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, business_party_id AS businessPartyId, bpmn_conf_id AS bpmnConfId, bpm_conf_callback_url AS bpmConfCallbackUrl, bpm_flow_callback_url AS bpmFlowCallbackUrl, status, create_user_id AS createUserId, create_user_name AS createUserName, create_user_uuid AS createUserUuid, remark, is_del AS isDel, create_user AS createUser, create_time AS createTime, update_user AS updateUser, update_time AS updateTime
+    </sql>
+
+    <select id="selectPageList" parameterType="org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo"
+            resultType="org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo">
+        SELECT
+        a.id AS id,
+        a.business_party_id AS businessPartyId,
+        a.bpmn_conf_id AS bpmnConfId,
+        a.bpm_conf_callback_url AS bpmConfCallbackUrl,
+        a.bpm_flow_callback_url AS bpmFlowCallbackUrl,
+        a.create_user_name AS createUserName,
+        a.create_user_uuid AS createUserUuid,
+        a.status AS status,
+        a.remark AS remark
+        FROM t_out_side_bpm_callback_url_conf a
+        WHERE a.is_del = 0
+        <if test="businessPartyIds != null and businessPartyIds.size > 0">
+            AND a.business_party_id IN
+            <foreach collection="businessPartyIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessPartyId != null">
+            AND a.business_party_id = #{businessPartyId}
+        </if>
+        <if test="bpmnConfId != null">
+            AND a.bpmn_conf_id = #{bpmnConfId}
+        </if>
+    </select>
+
+</mapper>

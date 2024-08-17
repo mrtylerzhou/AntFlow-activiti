@@ -1,0 +1,76 @@
+package org.openoa.engine.bpmnconf.constant.enus;
+
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import org.openoa.base.constant.enums.ProcessOperationEnum;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.openoa.base.constant.enums.InformEnum.*;
+
+public enum EventTypeEnum {
+
+    PROCESS_INITIATOR(1, "流程发起", true, ProcessOperationEnum.BUTTON_TYPE_SUBMIT.getCode(), 1, Lists.newArrayList()),
+    PROCESS_CANCELLATION(2, "作废操作", false, ProcessOperationEnum.BUTTON_TYPE_ABANDON.getCode(), 0, Collections.singletonList(APPLICANT.getCode())),
+    PROCESS_FLOW(3, "流程流转至当前节点", true, 0, 4, Collections.singletonList(AT_APPROVER.getCode())),
+    PROCESS_CONSENT(4, "同意操作", true, ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode(), 4, Lists.newArrayList()),
+    PROCESS_DISAGREE(5, "不同意操作", true, ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE.getCode(), 4, Collections.singletonList(APPLICANT.getCode())),
+    PROCESS_ADDAPPROVE(6, "加批操作", true, ProcessOperationEnum.BUTTON_TYPE_JP.getCode(), 4, Lists.newArrayList()),
+    PROCESS_REPULSE(7, "打回修改操作", true, ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY.getCode(), 4, Lists.newArrayList()),
+    PROCESS_TRANSPOND(8, "转发操作", false, ProcessOperationEnum.BUTTON_TYPE_FORWARD.getCode(), 0, Collections.singletonList(BY_TRANSPOND.getCode())),
+    PROCESS_END(9, "流程结束", false, 0, 0, Collections.singletonList(APPLICANT.getCode())),
+    ;
+
+    @Getter
+    private Integer code;
+
+    @Getter
+    private String desc;
+
+    @Getter
+    private Boolean isInNode;
+
+    @Getter
+    private Integer processOperationType;
+
+    /**
+     * 节点类型（1发起节点 4审批节点 0节点外）
+     */
+    @Getter
+    private Integer nodeType;
+
+    /**
+     * 默认的通知对象
+     */
+    @Getter
+    private List<Integer> informIdList;
+
+    EventTypeEnum(Integer code, String desc, Boolean isInNode, Integer processOperationType, Integer nodeType, List<Integer> informIdList) {
+        this.code = code;
+        this.desc = desc;
+        this.isInNode = isInNode;
+        this.processOperationType = processOperationType;
+        this.nodeType = nodeType;
+        this.informIdList = informIdList;
+    }
+
+    public static String getDescByByCode(Integer code) {
+        for (EventTypeEnum eventTypeEnum : EventTypeEnum.values()) {
+            if (eventTypeEnum.getCode().equals(code)) {
+                return eventTypeEnum.getDesc();
+            }
+        }
+        return null;
+    }
+
+    public static EventTypeEnum getEnumByOperationType(Integer operationType) {
+        for (EventTypeEnum eventTypeEnum : EventTypeEnum.values()) {
+            if (eventTypeEnum.getProcessOperationType().equals(operationType)) {
+                return eventTypeEnum;
+            }
+        }
+        return null;
+    }
+
+}

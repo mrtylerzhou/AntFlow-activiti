@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessNameMapper">
+
+    <!-- common resultMap -->
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmProcessName">
+        <id column="id" property="id"/>
+        <result column="process_name" property="processName"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- common column -->
+    <sql id="Base_Column_List">
+        id, process_name AS processName, is_del AS isDel, create_time AS createTime
+    </sql>
+
+    <select id="allProcess" resultType="org.openoa.base.vo.BpmProcessVo">
+        SELECT b.process_name as processName, s.process_key as processKey
+        from bpm_process_name b
+                 left join bpm_process_name_relevancy s on s.process_name_id = b.id
+    </select>
+    <select id="getBpmProcessVo" resultType="org.openoa.base.vo.BpmProcessVo">
+        SELECT b.process_name as processName, s.process_key as processKey
+        from bpm_process_name b
+                 left join bpm_process_name_relevancy s on s.process_name_id = b.id
+        WHERE s.process_key = #{processKey}
+    </select>
+</mapper>

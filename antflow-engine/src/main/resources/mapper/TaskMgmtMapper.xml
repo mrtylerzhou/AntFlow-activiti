@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper">
+    <!--my to do list-->
+    <select id="findAgencyList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select * from (
+        SELECT
+        r.ASSIGNEE_ AS assignee,
+        r.PROC_INST_ID_ AS processInstanceId,
+        b.PROCESSINESS_KEY AS processKey,
+        r.PROC_DEF_ID_ AS processId,
+        h.START_USER_ID_ AS userId,
+        h.START_TIME_ AS createTime,
+        b.BUSINESS_ID AS businessId,
+        b.description AS description,
+        b.process_state AS taskStype,
+        b.BUSINESS_NUMBER AS processNumber,
+        r.ID_ AS taskId,
+        r.CREATE_TIME_ AS runTime
+        FROM
+        act_ru_task r
+        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = r.PROC_INST_ID_
+        LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+        ) t
+        where 1=1
+        <if test="applyUser!=null and applyUser!=''">
+            <if test="type==5">
+                and t.assignee=#{applyUser}
+            </if>
+
+            <!--start user query condition-->
+            <if test="type==6">
+                and t.userId in (
+                select e.id from t_employee e where e.name LIKE CONCAT('%',#{applyUser},'%' )
+                )
+            </if>
+        </if>
+        <!--query process name-->
+        <if test="processName!=null and processName!=''">
+            and t.processId =#{processName}
+        </if>
+
+        <if test="startTime!='' and startTime!=null">
+            <if test="endTime!='' and endTime!=null">
+                and date_format(t.createTime,'%Y-%m-%d') between #{startTime} and #{endTime}
+            </if>
+        </if>
+        <!--process number-->
+        <if test="processNumber!=null and processNumber!=''">
+            AND t.processNumber LIKE CONCAT('%',#{processNumber},'%' )
+        </if>
+        <if test="type==6">
+            <if test="roleIds != null and roleIds.size() > 0">
+                and t.processKey in (
+                select ps.proc_def_key from bpm_process_type ps where ps.proc_type in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </if>
+        <!--actual assignee todo-->
+        <if test="actualName!=null and actualName!=''">
+            and t.assignee in (
+            select e.id from t_employee e where e.name LIKE CONCAT('%',#{actualName},'%' )
+            )
+        </if>
+
+        <!--fuzzy match on start user id,digest-->
+        <if test="search !=null and search!=''">
+            AND (
+            t.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{search},'%'))
+            or t.description LIKE CONCAT('%', #{search},'%')
+            )
+        </if>
+        ORDER BY t.taskStype,t.createTime desc
+    </select>
+    <!--process started by specified user-->
+    <select id="findActHiProcinst" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select * from (
+        SELECT
+        h.PROC_INST_ID_ AS processInstanceId,
+        h.PROC_DEF_ID_ AS processId,
+        h.START_USER_ID_ AS userId,
+        h.START_TIME_ AS createTime,
+        b.BUSINESS_ID AS businessId,
+        b.BUSINESS_NUMBER AS processNumber,
+        b.description AS description,
+        b.process_state AS taskStype,
+        b.PROCESSINESS_KEY AS processKey
+        FROM
+        act_hi_procinst h
+        LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+        where h.START_USER_ID_=#{applyUser}
+        ) h where h.userId=#{applyUser}
+
+        <if test="processName!=null and processName!=''">
+            and h.processId =#{processName}
+        </if>
+
+        <if test="startTime!='' and startTime!=null">
+            <if test="endTime!='' and endTime!=null">
+                and date_format(h.createTime,'%Y-%m-%d') between #{startTime} and #{endTime}
+            </if>
+        </if>
+        <!--search condition on user name,digest-->
+        <if test="search !=null and search!=''">
+            AND (
+            h.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{search},'%'))
+            or h.description LIKE CONCAT('%', #{search},'%')
+            or h.processInstanceId in (
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
+            select e.id from t_employee e where e.name like concat('%', #{search},'%')
+            )
+            )
+            )
+        </if>
+        order by h.taskStype , h.createTime desc
+    </select>
+    <!-- query the process that a specified user involve in-->
+    <select id="findAllHiTaskinst" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select * from (
+        SELECT
+        b.BUSINESS_NUMBER AS processNumber,
+        b.BUSINESS_ID AS businessId,
+        b.process_state AS taskStype,
+        b.ENTRY_ID AS entryId,
+        w.PROC_INST_ID_ AS processInstanceId,
+        b.description AS description,
+        w.TASK_ID_ AS taskId,
+        b.PROCESSINESS_KEY AS processKey,
+        w.PROC_DEF_ID_ AS processId,
+        h.START_USER_ID_ AS userId,
+        b.CREATE_TIME AS createTime,
+        w.ASSIGNEE_ AS assignee,
+        (select count(1) from bpm_user_concern c where c.process_id=w.PROC_INST_ID_ and c.user_id=w.ASSIGNEE_) as
+        concernState
+        FROM
+        act_hi_actinst w
+        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
+        LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+        WHERE
+        w.END_TIME_  <![CDATA[ <> ]]>''
+        and w.ASSIGNEE_=#{taskMgmtVO.applyUser}
+        ) s where 1=1
+        <!--process name-->
+        <if test="taskMgmtVO.processName!=null and taskMgmtVO.processName!=''">
+            and s.processId =#{taskMgmtVO.processName}
+        </if>
+        <!--process state-->
+        <if test="taskMgmtVO.taskStype!=null and taskMgmtVO.taskStype!=''">
+            and s.taskStype =#{taskMgmtVO.taskStype}
+        </if>
+        <!--fuzzy matching-->
+        <if test="taskMgmtVO.search !=null and taskMgmtVO.search!=''">
+            AND (
+            s.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{taskMgmtVO.search},'%'))
+            or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
+            or s.processInstanceId in (
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
+            select e.id from t_employee e where e.name like concat('%', #{taskMgmtVO.search},'%')
+            )
+            )
+            )
+        </if>
+        group by s.processInstanceId
+        order by s.concernState desc, s.taskStype,s.createTime desc
+    </select>
+    <!--query the process that a specified user entrust to others or others forwarded to him-->
+    <select id="findAllEntrustTask" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select * from (
+        SELECT
+        b.BUSINESS_NUMBER AS processNumber,
+        b.BUSINESS_ID AS businessId,
+        b.process_state AS taskStype,
+        b.ENTRY_ID AS entryId,
+        w.PROC_INST_ID_ AS processInstanceId,
+        b.description AS description,
+        w.TASK_ID_ AS taskId,
+        b.PROCESSINESS_KEY AS processKey,
+        w.PROC_DEF_ID_ AS processId,
+        h.START_USER_ID_ AS userId,
+        b.CREATE_TIME AS createTime,
+        w.ASSIGNEE_ AS assignee
+        FROM
+        act_hi_actinst w
+        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
+        LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+        WHERE
+        w.END_TIME_   <![CDATA[<>]]> ''
+        ) s
+        where s.processInstanceId in (
+        select fl.runinfoid from bpm_flowrun_entrust fl where fl.original=#{taskMgmtVO.applyUser}
+        and fl.type=#{taskMgmtVO.type}
+        )
+        <!--process name-->
+        <if test="taskMgmtVO.processName!=null and taskMgmtVO.processName!=''">
+            and s.processId =#{taskMgmtVO.processName}
+        </if>
+        <!--fuzzy matching-->
+        <if test="taskMgmtVO.search !=null and taskMgmtVO.search!=''">
+            AND (
+            s.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{taskMgmtVO.search},'%'))
+            or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
+            or s.processInstanceId in (
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
+            select e.id from t_employee e where e.name like concat('%', #{taskMgmtVO.search},'%')
+            )
+            )
+            )
+        </if>
+        group by s.processInstanceId
+        order by s.taskStype,s.createTime desc
+    </select>
+
+    <!--query current task assignee by task id-->
+    <select id="findTask" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select w.ASSIGNEE_ as applyUser, t.id AS userId, t.`name` as actualName
+        from act_ru_task w
+                 left join t_employee t on w.ASSIGNEE_ = t.id
+        where w.ID_ = #{taskId}
+    </select>
+    <!--modify current assignee-->
+    <update id="updateTask">
+        update act_ru_task
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
+        where ID_ = #{taskMgmtVO.taskId};
+    </update>
+
+    <!--modify current node's history assignee-->
+    <update id="updateaActinst">
+        update act_hi_actinst
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
+        where TASK_ID_ = #{taskMgmtVO.taskId}
+    </update>
+    <!--modify current node's history assignee-->
+    <update id="updateaTaskinst">
+        update act_hi_taskinst
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
+        where id_ = #{taskMgmtVO.taskId}
+    </update>
+
+    <!--get login user task count-->
+    <select id="findTaskCount" resultType="java.lang.Integer">
+        select count(*)
+        from act_ru_task w
+        where w.ASSIGNEE_ = #{loginUserId}
+    </select>
+
+    <!--get forward to current user's process  count-->
+    <select id="findCirculateCount" resultType="java.lang.Integer">
+        select count(*)
+        from ACT_HI_PROCINST p
+        where p.PROC_INST_ID_ in (
+            select w.runinfoid
+            from bpm_flowrun_entrust w
+            where w.type = 2
+              and w.is_read = 2
+              and w.original = #{loginUserId}
+            group by w.runinfoid)
+    </select>
+
+    <!--get to do task by taskId and process instance id-->
+    <select id="getAgencyList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select w.ID_ as taskId from act_ru_task w where w.TASK_DEF_KEY_ in(
+        select t.TASK_DEF_KEY_ from act_ru_task t where t.ID_=#{taskId}
+        ) and w.PROC_INST_ID_=#{processInstanceId}
+        <if test="type!=null and type!=''">
+            and w.ID_ !=#{taskId}
+        </if>
+    </select>
+    <!--delete current task-->
+    <delete id="deletTask">
+        delete
+        from act_ru_task
+        where ID_ = #{taskId}
+    </delete>
+
+    <!--query whether current task is finished by business id-->
+    <select id="findHiProcinst" resultType="org.openoa.base.vo.TaskMgmtVO">
+        SELECT w.START_USER_ID_                              as applyUser,
+               case when w.END_TIME_ != '' then 2 else 1 end as taskStype,
+               w.PROC_INST_ID_                               as processInstanceId
+        from ACT_HI_PROCINST w
+        where w.BUSINESS_KEY_ = #{businessId}
+    </select>
+    <!--query all process's name-->
+    <select id="findAllProcess" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select s.id_            as id,
+               s.KEY_           as processKey,
+               s.NAME_          as name,
+               s.RESOURCE_NAME_ as processName,
+               s.DEPLOYMENT_ID_ as processInstanceId,
+               s.VERSION_       as version
+        from act_re_procdef s
+        where not exists(
+                select 1 from act_re_procdef r where r.KEY_ = s.KEY_ and r.VERSION_ > s.VERSION_
+            )
+    </select>
+
+    <select id="findByTask" resultType="org.openoa.base.vo.TaskMgmtVO">
+        SELECT
+        (SELECT resource_num FROM bpm_task_resource re WHERE re.task_def_key_ = w.TASK_DEF_KEY_ AND re.node_type =
+        'TASK_CODE') AS nodeType,
+        w.ID_ AS taskId,
+        w.PROC_INST_ID_ AS processInstanceId,
+        w.ASSIGNEE_,
+        w.TASK_DEF_KEY_ as taskName,
+        substring_index(w.PROC_DEF_ID_, ':', 1) as processKey
+        FROM
+        act_ru_task w
+        WHERE
+        EXISTS (
+        SELECT
+        PROC_INST_ID_
+        FROM
+        ACT_HI_PROCINST h
+        WHERE
+        w.PROC_INST_ID_ = h.PROC_INST_ID_
+        AND H.BUSINESS_KEY_=#{taskMgmtVO.entryId}
+        )
+        <if test="taskMgmtVO.applyUser!=null and taskMgmtVO.applyUser!=''">
+            and w.ASSIGNEE_=#{taskMgmtVO.applyUser}
+        </if>
+        LIMIT 1
+    </select>
+
+    <!--query business key by process instance id-->
+    <select id="findByProcinstIdTask" resultType="java.lang.String">
+        SELECT w.BUSINESS_KEY_
+        from ACT_HI_PROCINST w
+        where w.PROC_INST_ID_ = #{procinstId}
+    </select>
+
+    <!--query whether show revoke button by  business key and start user id-->
+    <select id="showRevoke" resultType="java.lang.Integer">
+        select count(1)
+        from act_ru_task t
+        where t.PROC_INST_ID_ in (
+            select PROC_INST_ID_
+            from ACT_HI_PROCINST h
+            where h.START_USER_ID_ = #{taskMgmtVO.applyUser}
+              and h.BUSINESS_KEY_ = #{taskMgmtVO.entryId}
+        )
+    </select>
+
+    <!--query process instance id by business key-->
+    <select id="findByBusinessId" resultType="java.lang.String">
+        select w.PROC_INST_ID_
+        from ACT_HI_PROCINST w
+        where w.BUSINESS_KEY_ = #{businessId}
+    </select>
+
+    <!--query whether a process is finished-->
+    <select id="findByHiProcinst" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select h.END_TIME_      as endTime,
+               h.BUSINESS_KEY_  as processNumber,
+               h.END_ACT_ID_    as processType,
+               h.START_USER_ID_ as userId
+        from ACT_HI_PROCINST h
+        where h.BUSINESS_KEY_ = (
+            SELECT w.ENTRY_ID
+            FROM bpm_business_process w
+            WHERE w.BUSINESS_ID = #{taskMgmtVO.businessId}
+              AND w.BUSINESS_NUMBER LIKE CONCAT('%', #{taskMgmtVO.code}, '%')
+        )
+    </select>
+
+    <!--get revoke node data-->
+    <select id="findByTaskinst" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select h.ASSIGNEE_ as applyUser, h.TASK_DEF_KEY_ as processKey, h.PROC_INST_ID_ as processInstanceId
+        from act_hi_taskinst h
+        where h.PROC_INST_ID_ in (
+            select p.PROC_INST_ID_ from ACT_HI_PROCINST p where p.BUSINESS_KEY_ = #{entryId}
+        )
+          and h.END_TIME_  <![CDATA[<> ]]> ''
+        ORDER BY h.START_TIME_ desc
+        LIMIT 1
+    </select>
+
+    <!--get process info by entryId-->
+    <select id="findByEntryId" resultType="org.openoa.base.vo.TaskMgmtVO">
+        SELECT a.START_USER_ID_                                                               as applyUser,
+               (SELECT BUSINESS_NUMBER FROM bpm_business_process WHERE ENTRY_ID = #{entryId}) as processNumber,
+               a.proc_def_id_                                                                 as processName,
+               a.PROC_INST_ID_                                                                as processInstanceId
+        FROM ACT_HI_PROCINST a
+        WHERE BUSINESS_KEY_ = #{entryId}
+    </select>
+
+    <!--get all approvers by entryId-->
+    <select id="getAssigneesByEntryId" resultType="java.lang.String">
+        SELECT DISTINCT t.ASSIGNEE_
+        FROM act_hi_taskinst t
+        WHERE t.PROC_INST_ID_ = (
+            SELECT p.PROC_INST_ID_
+            FROM ACT_HI_PROCINST p
+            WHERE p.business_key_ = #{entryId}
+        )
+          and t.ASSIGNEE_  <![CDATA[<> ]]> ''
+          and t.ASSIGNEE_ != 'back'
+    </select>
+    <!--delete process instance by entryId that started by a specified user-->
+    <delete id="deleteProcess">
+        delete
+        from ACT_HI_PROCINST
+        WHERE BUSINESS_KEY_ = #{entryId}
+    </delete>
+    <!--delete a process historic task instance by process instance id-->
+    <delete id="deleteTaskinst">
+        delete
+        from act_hi_taskinst
+        WHERE PROC_INST_ID_ = #{processInstanceId}
+    </delete>
+    <!--delete a process historic instance id-->
+    <delete id="deleteActinst">
+        delete
+        from act_hi_actinst
+        WHERE PROC_INST_ID_ = #{processInstanceId}
+    </delete>
+
+    <!--query whether current process resource is exist-->
+    <select id="findProcessModel" resultType="java.lang.Integer">
+        select count(*)
+        from act_re_procdef r
+        where r.RESOURCE_NAME_ = #{fileName}
+    </select>
+
+    <!--get process name-->
+    <select id="getProcessName" resultType="java.lang.String">
+        SELECT NAME_
+        FROM act_re_procdef f
+        where KEY_ = #{id}
+          and f.VERSION_ = (
+            SELECT max(t.VERSION_)
+            from act_re_procdef t
+            where t.KEY_ = #{id}
+        )
+    </select>
+    <!-- query current assignee by provided task_id -->
+    <select id="getAssigneeByTaskId" resultType="java.lang.String">
+        SELECT ASSIGNEE_
+        FROM act_ru_task
+        WHERE id = #{taskId}
+    </select>
+    <!-- 根据BUSINESS_NUMBER获取entryId -->
+    <select id="getEntryId" resultType="java.lang.String">
+        SELECT ENTRY_ID
+        FROM bpm_business_process
+        WHERE BUSINESS_NUMBER LIKE CONCAT('%', #{code}, '%')
+          AND BUSINESS_ID = #{businessId};
+    </select>
+    <!--query current task's id by process instance id-->
+    <select id="getTaskId" resultType="java.lang.String">
+        select t.ID_
+        from act_ru_task t
+        where t.PROC_INST_ID_ = #{processInstanceId}
+        LIMIT 1
+    </select>
+    <!-- get to do task notify info -->
+    <select id="findNotifyInfo" resultType="org.openoa.base.vo.TaskMgmtVO">
+        SELECT resource_num                                                                                  AS nodeType,
+               (SELECT ID_ FROM act_ru_task WHERE PROC_INST_ID_ = #{procInstId} and ASSIGNEE_ = #{assignee}) as taskId
+        FROM bpm_task_resource t
+        WHERE t.node_type = 'TASK_CODE'
+          AND task_def_key_ = #{taskDefId};
+    </select>
+    <!-- query current assignee by entryId -->
+    <select id="getCurrentAssignee" resultType="org.openoa.base.vo.TaskMgmtVO">
+        SELECT a.ASSIGNEE_     AS originalName,
+               a.TASK_DEF_KEY_ AS taskName
+        FROM act_ru_task a
+        WHERE a.PROC_INST_ID_ = (
+            SELECT p.PROC_INST_ID_
+            FROM ACT_HI_PROCINST p
+            WHERE p.BUSINESS_KEY_ = #{entryId}
+        )
+    </select>
+
+    <!-- get start user id by entryId -->
+    <select id="getStartuserByEntryId" resultType="java.lang.String">
+        SELECT START_USER_ID_
+        FROM act_hi_procinst
+        WHERE BUSINESS_KEY_ = #{entryId}
+    </select>
+
+    <!-- query current process type by process key -->
+    <select id="getProcType" resultType="java.lang.Integer">
+        SELECT proc_type
+        FROM bpm_process_type
+        WHERE proc_def_key = #{procDefKey}
+    </select>
+
+    <!--query whether current process has parallel gateway-->
+    <select id="findTaskCout" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select t.PROC_INST_ID_ as processInstanceId, t.TASK_DEF_KEY_ as taskName, t.PROC_DEF_ID_ as processKey
+        from act_ru_task t
+        where EXISTS(
+                      select h.PROC_INST_ID_
+                      from ACT_HI_PROCINST h
+                      where h.PROC_INST_ID_ = t.PROC_INST_ID_
+                        AND h.BUSINESS_KEY_ = #{entryId}
+                  )
+        GROUP BY t.TASK_DEF_KEY_
+    </select>
+    <!--query task by task id-->
+    <select id="findTaskById" resultType="java.util.Map">
+        select t.ASSIGNEE_ assignee, t.TASK_DEF_KEY_ taskKey
+        from act_ru_task t
+        where t.id_ = #{taskId}
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper">
+
+    <!-- common columns -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust">
+        <id column="id" property="id"/>
+        <result column="runinfoid" property="runinfoid"/>
+        <result column="runtaskid" property="runtaskid"/>
+        <result column="original" property="original"/>
+        <result column="actual" property="actual"/>
+        <result column="type" property="type"/>
+        <result column="proc_def_id" property="procDefId"/>
+        <result column="is_view" property="isView"/>
+    </resultMap>
+
+    <select id="getBpmEntrust" resultType="org.openoa.engine.bpmnconf.confentity.UserEntrust">
+        SELECT w.receiver_id   as receiverId,
+               w.receiver_name as receiverName,
+               w.sender        as sender,
+               w.end_time      as endTime,
+               w.begin_time    as beginTime
+        FROM t_user_entrust w
+        WHERE w.sender = #{actual}
+          AND w.power_id like concat(#{procDefId}, '%')
+        ORDER BY w.create_time desc
+        LIMIT 1
+    </select>
+    <!-- get forwarded records -->
+    <select id="getCirculated" resultType="java.lang.Integer">
+        SELECT DISTINCT original
+        FROM bpm_flowrun_entrust
+        WHERE runinfoid = #{runinfoid}
+          AND `type` = 2;
+    </select>
+    <delete id="deleteBpmFlowruninfo">
+        delete
+        from bpm_flowruninfo
+        where entitykey = #{businessKey}
+    </delete>
+    <update id="updateBpmFlowrunEntrust">
+        update bpm_flowrun_entrust
+        set is_read=1
+        where runinfoid = #{processInstanceId}
+          and original = #{userId}
+    </update>
+</mapper>

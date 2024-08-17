@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper">
+
+    <!-- common resultMap -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessDept">
+        <id column="id" property="id"/>
+        <result column="process_code" property="processCode"/>
+        <result column="proce_type" property="processType"/>
+        <result column="process_name" property="processName"/>
+        <result column="dep_id" property="deptId"/>
+        <result column="remarks" property="remarks"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="process_key" property="processKey"/>
+    </resultMap>
+
+    <sql id="base_column_sql">
+        select *
+        from (
+                 SELECT p.id                                                           as id,
+                        p.process_code                                                 as processCode,
+                        p.process_key                                                  as processKey,
+                        p.process_name                                                 as processName,
+                        p.process_type                                                 as processType,
+                        (SELECT w.`name`
+                         from t_dic_data w
+                         where w.type_code = 'DIC_LCLB' and w.`code` = p.process_type) as processTypeName,
+                        (
+                            SELECT d.`name`
+                            FROM t_department d
+                            WHERE d.id = p.dep_id
+                        )                                                              AS deptName,
+                        p.dep_id                                                       as deptId,
+                        p.remarks                                                      as remarks
+                 FROM bpm_process_dept p
+                 where p.is_del = 0
+             ) p
+        where 1 = 1
+    </sql>
+    <!--query conditions-->
+    <sql id="base_param_sql">
+        <if test="processCode!=null and processCode!=''">
+            and p.processCode=#{processCode}
+        </if>
+        <if test="deptId!=null and deptId!=''">
+            and p.deptId =#{deptId}
+        </if>
+        <if test="processType!=null and processType!=''">
+            and p.processType=#{processType}
+        </if>
+        <if test="search!=null and search!=''">
+            and (
+            p.processName LIKE CONCAT('%', #{search},'%') or
+            p.processCode LIKE CONCAT('%', #{search},'%')
+            )
+        </if>
+    </sql>
+    <!--paging list-->
+    <select id="listConfigure" resultType="org.openoa.base.vo.BpmProcessDeptVo"
+            parameterType="org.openoa.base.vo.BpmProcessDeptVo">
+        <include refid="base_column_sql"/>
+        <include refid="base_param_sql"/>
+        <!-- introduc the common paging filter-->
+        <include refid="org.openoa.engine.bpmnconf.mapper.BsMapper.pageFilterSql"/>
+    </select>
+    <!--get all processes's data-->
+    <select id="allConfigure" resultType="org.openoa.base.vo.BpmProcessDeptVo"
+            parameterType="org.openoa.base.vo.BpmProcessDeptVo">
+        <include refid="base_column_sql"/>
+        <include refid="base_param_sql"/>
+        <!-- common paging filter-->
+        <include refid="org.openoa.engine.bpmnconf.mapper.BsMapper.pageFilterSql"/>
+    </select>
+    <!---get max process code,for medium to large enterprise,you can optimize it,eg use redis-->
+    <select id="maxProcessCode" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT MAX(process_code)
+        from bpm_process_dept
+    </select>
+    <select id="selectMaxProcessId" resultType="java.lang.String">
+        select r.ID_
+        from act_re_procdef r
+        where r.KEY_ = #{processKey}
+        order by r.VERSION_ desc
+        LIMIT 1
+    </select>
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper">
+    <select id="viewPcpNewlyBuildList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        <include refid="viewNewlyBuild"/>
+        order by s.createTime desc
+    </select>
+    <select id="viewPcAlreadyDoneList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        <include refid="viewAlreadyDone"/>
+        <include refid="base_param_sql"/>
+        ORDER BY s.runTime DESC
+    </select>
+    <select id="viewPcToDoList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        <include refid="viewPcToDo"/>
+        <include refid="base_param_sql"/>
+    </select>
+    <select id="allProcessList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        <include refid="allProcess"/>
+        <include refid="base_param_sql"/>
+    </select>
+    <select id="isOperational" resultType="java.lang.Integer">
+        select  count(*) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
+    </select>
+    <select id="doneTodayProcess" resultType="java.lang.Integer">
+        SELECT count(distinct h.PROC_INST_ID_)
+        from act_hi_taskinst h
+        where h.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
+          and h.ASSIGNEE_ = #{createUserId}
+          and DATE_FORMAT(h.END_TIME_, '%Y-%m-%d') = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')
+    </select>
+    <select id="doneCreateProcess" resultType="java.lang.Integer">
+        SELECT count(*)
+        from act_hi_procinst p
+        where p.START_USER_ID_ = #{createUserId}
+          and DATE_FORMAT(p.START_TIME_, '%Y-%m-%d') = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')
+    </select>
+    <sql id="viewNewlyBuild">
+        select *
+        from (
+                 SELECT h.PROC_INST_ID_    AS processInstanceId,
+                        h.PROC_DEF_ID_     AS processId,
+                        h.START_USER_ID_   AS userId,
+                        h.START_TIME_      AS createTime,
+                        h.START_TIME_      AS runTime,
+                        b.BUSINESS_ID      AS businessId,
+                        b.BUSINESS_NUMBER  AS processNumber,
+                        b.description      AS description,
+                        b.process_state    AS processState,
+                        b.PROCESSINESS_KEY AS processKey,
+                        b.process_state    AS taskStype,
+                        b.process_digest   as processDigest
+                 FROM act_hi_procinst h
+                          LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
+                 where h.START_USER_ID_ = #{taskMgmtVO.applyUser}
+                   and b.is_del = 0
+             ) s
+        where 1 = 1
+    </sql>
+    <!--query conditions-->
+    <sql id="base_param_sql">
+        <if test="taskMgmtVO.search!=null and taskMgmtVO.search!=''">
+            AND (
+            s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
+            OR s.processNumber LIKE CONCAT('%', #{taskMgmtVO.search},'%')
+            )
+        </if>
+        <if test="taskMgmtVO.applyUserId!=null">
+            and s.userId = #{taskMgmtVO.applyUserId}
+        </if>
+        <if test="taskMgmtVO.processName!=null and  taskMgmtVO.processName!=''">
+            and s.processKey like CONCAT('%', #{taskMgmtVO.processName},'%')
+        </if>
+        <if test="taskMgmtVO.description!=null and  taskMgmtVO.description!=''">
+            and s.description like CONCAT('%', #{taskMgmtVO.description},'%')
+        </if>
+        <if test="taskMgmtVO.processNumber!=null and  taskMgmtVO.processNumber!=''">
+            and s.processNumber like CONCAT('%', #{taskMgmtVO.processNumber},'%')
+        </if>
+        <if test="taskMgmtVO.processState!=null and  taskMgmtVO.processState!=''">
+            and s.taskStype =#{taskMgmtVO.processState}
+        </if>
+
+        <!--start and end time-->
+        <if test="taskMgmtVO.startTime!='' and taskMgmtVO.startTime!=null">
+            <if test="taskMgmtVO.endTime!='' and taskMgmtVO.endTime!=null">
+                and date_format(s.runTime,'%Y-%m-%d') between #{taskMgmtVO.startTime} and #{taskMgmtVO.endTime}
+            </if>
+        </if>
+        <if test="taskMgmtVO.processKeyList != null and taskMgmtVO.processKeyList.size() > 0">
+            and s.processKey in
+            <foreach collection="taskMgmtVO.processKeyList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="taskMgmtVO.processNumbers != null and taskMgmtVO.processNumbers.size() > 0">
+            and s.processNumber not in
+            <foreach collection="taskMgmtVO.processNumbers" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="taskMgmtVO.versionProcessKeys != null and taskMgmtVO.versionProcessKeys.size > 0">
+            AND s.processKey IN
+            <foreach collection="taskMgmtVO.versionProcessKeys" item="versionProcessKey" open="(" separator="," close=")">
+                #{versionProcessKey}
+            </foreach>
+        </if>
+        <if test="taskMgmtVO.processDigest != null and taskMgmtVO.processDigest != ''">
+            AND s.processDigest LIKE CONCAT('%', #{taskMgmtVO.processDigest},'%')
+        </if>
+    </sql>
+    <!--already done prcoess-->
+    <sql id="viewAlreadyDone">
+        select *
+        from (
+                 SELECT t.PROC_INST_ID_    AS processInstanceId,
+                        b.PROCESSINESS_KEY AS processKey,
+                        h.START_USER_ID_   AS userId,
+                        h.START_TIME_      AS createTime,
+                        b.BUSINESS_ID      AS businessId,
+                        b.description      AS description,
+                        b.process_state    AS taskStype,
+                        b.BUSINESS_NUMBER  AS processNumber,
+                        t.END_TIME_        AS runTime,
+                        b.process_state    AS processState,
+                        b.process_digest   as processDigest
+                 FROM act_hi_taskinst t
+                          LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
+                          LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
+                 where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
+                   and t.END_TIME_ <![CDATA[ <> ]]> ''
+                   and t.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
+                   and b.is_del = 0
+             ) s
+        where 1 = 1
+    </sql>
+    <!--query to do list for the pc-->
+    <sql id="viewPcToDo">
+        SELECT *
+        FROM (
+                 SELECT t.PROC_INST_ID_    AS processInstanceId,
+                        b.PROCESSINESS_KEY AS processKey,
+                        b.create_user      AS userId,
+                        b.CREATE_TIME      AS createTime,
+                        b.BUSINESS_ID      AS businessId,
+                        b.description      AS description,
+                        b.process_state    AS taskStype,
+                        t.NAME_            AS nodeName,
+                        b.BUSINESS_NUMBER  AS processNumber,
+                        t.ID_              AS taskId,
+                        t.CREATE_TIME_     AS runTime,
+                        t.TASK_DEF_KEY_       taskName,
+                        b.process_state    AS processState,
+                        b.process_digest   as processDigest
+                 FROM act_ru_task t
+                          LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = t.PROC_INST_ID_
+                 where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
+                   and b.is_del = 0
+             ) s
+        where 1 = 1
+    </sql>
+    <sql id="allProcess">
+        select *
+        from (
+                 SELECT b.PROCESSINESS_KEY AS processKey,
+                        h.START_USER_ID_   AS userId,
+                        b.BUSINESS_ID      AS businessId,
+                        b.description      AS description,
+                        b.process_state    AS taskStype,
+                        b.BUSINESS_NUMBER  AS processNumber,
+                        t.ID_              AS taskId,
+                        h.START_TIME_      AS runTime,
+                        b.process_state    AS processState,
+                        t.ASSIGNEE_        as taskOwner,
+                        t.TASK_DEF_KEY_       taskName
+                 FROM act_ru_task t
+                          LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
+                          LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+                 where b.is_del = 0
+             ) s
+        where 1 = 1
+    </sql>
+
+    <!--get forwarded process-->
+    <sql id="viewForward">
+        SELECT * FROM (
+        SELECT
+        h.PROC_INST_ID_ AS processInstanceId,
+        b.PROCESSINESS_KEY AS processKey,
+        h.START_USER_ID_ AS userId,
+        h.START_TIME_ AS createTime,
+        b.BUSINESS_ID AS businessId,
+        b.description AS description,
+        b.process_state AS taskStype,
+        b.BUSINESS_NUMBER AS processNumber,
+        f.create_time  AS runTime,
+        b.process_state AS processState,
+        f.is_read AS isRead,
+        b.process_digest as processDigest
+        FROM
+        act_hi_procinst h
+        LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
+        LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
+        where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0
+        ) s WHERE  1=1
+    </sql>
+    <select id="viewPcForwardList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        <include refid="viewForward"/>
+        <include refid="base_param_sql"/>
+
+    </select>
+</mapper>

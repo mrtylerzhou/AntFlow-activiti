@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.SysVersionMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.SysVersion">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_del" property="isDel"/>
+        <result column="version" property="version"/>
+        <result column="description" property="description"/>
+        <result column="index" property="index"/>
+        <result column="is_force" property="isForce"/>
+        <result column="android_url" property="androidUrl"/>
+        <result column="ios_url" property="iosUrl"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="is_hide" property="isHide"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, create_time AS createTime, update_time AS updateTime, is_del AS isDel, version, description, index, is_force AS isForce, android_url AS androidUrl, ios_url AS iosUrl, create_user AS createUser, update_user AS updateUser, is_hide AS isHide
+    </sql>
+
+    <select id="maxIndex" resultType="java.lang.Integer">
+        SELECT
+            MAX(tsv.index)
+        FROM
+            t_sys_version AS tsv
+        WHERE
+            is_del = 0 AND is_hide = 0
+    </select>
+
+    <select id="selectPageList" resultType="org.openoa.engine.vo.SysVersionVo">
+        SELECT id,description,version AS version,is_hide AS isHide,is_force AS isForce,android_url AS androidUrl,ios_url AS iosUrl,download_code AS downloadCode,DATE_FORMAT(effective_time,'%Y-%m-%d %H:%i:%s') AS effectiveTime,create_time AS createTime
+        FROM t_sys_version
+        WHERE is_del = 0
+        ORDER BY id DESC
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <select id="selectPageListCount" parameterType="map" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM t_sys_version
+        WHERE is_del = 0
+    </select>
+
+</mapper>

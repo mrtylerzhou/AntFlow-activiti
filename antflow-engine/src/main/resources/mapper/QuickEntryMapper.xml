@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.QuickEntryMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.QuickEntry">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="effective_source" property="effectiveSource"/>
+        <result column="is_del" property="isDel"/>
+        <result column="route" property="route"/>
+        <result column="sort" property="sort"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="listQuickEntry" resultType="org.openoa.engine.vo.QuickEntryVo">
+        <include refid="base_sql"/>
+        <include refid="Base_Column_List"/>
+    </select>
+    <select id="allQuickEntry" resultType="org.openoa.engine.vo.QuickEntryVo">
+        <include refid="base_sql"/>
+        <include refid="Base_Column_List"/>
+    </select>
+    <sql id="base_sql">
+        SELECT
+            s.id,
+            s.title,
+            s.effective_source AS effectiveSource,
+            s.route,
+            s.sort,
+            s.is_del as isDel,
+            s.status as status,
+            s.create_time AS createTime ,
+            (SELECT GROUP_CONCAT(type) from t_quick_entry_type t where t.quick_entry_id =s.id) as typeIds,
+            (SELECT GROUP_CONCAT(type_name) from t_quick_entry_type t where t.quick_entry_id =s.id) as typeName,
+            variable_url_flag as variableUrlFlag
+        FROM
+            t_quick_entry s
+        WHERE
+            1=1 and s.is_del=0
+    </sql>
+    <sql id="Base_Column_List">
+        <if test="title!=null and title!=null">
+            and s.title like CONCAT('%', #{title},'%')
+        </if>
+    </sql>
+
+    <select id="searchQuickEntry" resultType="org.openoa.engine.vo.QuickEntryVo">
+        SELECT w.id,w.title as name from t_quick_entry w where
+        w.id in (
+        SELECT s.quick_entry_id from t_quick_entry_type s where type=2
+        )  and  w.is_del=0 and w.status=0
+        <if test="search!=null and search!=''">
+            and title = #{search}
+        </if>
+        <if test="limitSize!=null and limitSize!=''">
+            LIMIT #{limitSize}
+        </if>
+    </select>
+</mapper>

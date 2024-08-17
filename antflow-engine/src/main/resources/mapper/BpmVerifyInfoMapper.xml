@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo">
+        <id column="id" property="id"/>
+        <result column="run_info_id" property="runInfoId"/>
+        <result column="verify_user_id" property="verifyUserId"/>
+        <result column="verify_user_name" property="verifyUserName"/>
+        <result column="verify_status" property="verifyStatus"/>
+        <result column="verify_desc" property="verifyDesc"/>
+        <result column="verify_date" property="verifyDate"/>
+        <result column="task_name" property="taskName"/>
+        <result column="business_type" property="businessType"/>
+        <result column="business_id" property="businessId"/>
+        <result column="original_id" property="originalId"/>
+        <result column="process_code" property="processCode"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, run_info_id AS runInfoId, verify_user_id AS verifyUserId, verify_user_name AS verifyUserName, verify_status AS verifyStatus, verify_desc AS verifyDesc, verify_date AS verifyDate, task_name AS taskName, business_type AS businessType, business_id AS businessId
+    </sql>
+    <select id="findVerifyInfo" resultType="org.openoa.base.vo.BpmVerifyInfoVo">
+        select w.verify_user_name as verifyUserName,
+               w.task_name        as taskName,
+               w.verify_status    as verifyStatus,
+               w.verify_date      as verifyDate,
+               w.verify_desc      as verifyDesc
+        from bpm_verify_info w
+        where w.business_id = #{business_id}
+    </select>
+    <select id="getVerifyInfo" resultType="org.openoa.base.vo.BpmVerifyInfoVo">
+        select w.id as id, w.verify_user_name as verifyUserName,w.task_name as taskName,w.verify_status as verifyStatus,
+        case
+        when w.verify_status =1 then '提交'
+        when w.verify_status =2 then '同意'
+        when w.verify_status =3 then '不同意'
+        when w.verify_status =4 then '撤回'
+        when w.verify_status =5 then '作废'
+        when w.verify_status =6 then '终止'
+        when w.verify_status =8 then '打回修改'
+        when w.verify_status =9 then '加批'
+        else '' end as verifyStatusName,
+        w.verify_date as verifyDate,
+        w.verify_desc as verifyDesc,
+        w.original_id originalId
+        from bpm_verify_info w where 1=1
+        <if test="processCode!=null and processCode!=''">
+            and w.process_code=#{processCode}
+        </if>
+        <if test="processCodeList != null and processCodeList.size() > 0">
+            and w.process_code in
+            <foreach collection="processCodeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessId!=null and businessId!=''">
+            and w.business_id=#{businessId}
+        </if>
+        <if test="businessType!=null and businessType!=''">
+            and w.business_type=#{businessType}
+        </if>
+        order by w.verify_date desc
+    </select>
+    <!--get task to do list-->
+    <select id="findTaskInfor" resultType="org.openoa.base.vo.BpmVerifyInfoVo">
+        select t.ID_           as id,
+               t.NAME_         AS taskName,
+               t.ASSIGNEE_     AS verifyUserId,
+               '处理中'           AS verifyStatusName,
+               null            AS verifyDate,
+               ''              AS verifyDesc,
+               t.TASK_DEF_KEY_ AS elementId
+        from act_ru_task t
+        where  t.PROC_INST_ID_ in (
+            select h.PROC_INST_ID_ from act_hi_procinst h where h.BUSINESS_KEY_ = #{entryId}
+        )
+
+    </select>
+
+    <select id="verifyInfoList" resultType="org.openoa.base.vo.BpmVerifyInfoVo">
+        select w.id as id,
+        w.verify_user_name as verifyUserName,
+        w.task_name as taskName,
+        w.process_code as processCode
+        from bpm_verify_info w where 1=1
+        <if test="processCodeList != null and processCodeList.size() > 0">
+            and w.process_code in
+            <foreach collection="processCodeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by w.verify_date asc
+    </select>
+</mapper>
