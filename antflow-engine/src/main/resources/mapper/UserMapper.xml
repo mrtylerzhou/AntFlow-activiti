@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.base.mapper.UserMapper">
+
+<select id="queryCompanyByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+
+    select id,org_name as name from t_company
+    <where>
+        <if test="companyName != null and companyName != ''">
+            <bind name="comName" value="'%' + companyName + '%'" />
+          and  org_name like #{comName}
+        </if>
+    </where>
+    </select>
+    <select id="queryByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+       <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByNameFuzzy">
+
+       </include>
+    </select>
+    <select id="queryByIds" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+       <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByIds">
+
+       </include>
+    </select>
+    <select id="getEmployeeDetailById" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoById">
+            <property name="employeeId" value="#{id}"/>
+        </include>
+    </select>
+    <select id="getEmployeeDetailByIds" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoByIds">
+            <property name="employeeIds" value="#{ids}"/>
+        </include>
+    </select>
+    <select id="checkEmployeeEffective" resultType="java.lang.Long">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryEffectiveEmployeeCount">
+            <property name="employeeId" value="#{id}"/>
+        </include>
+    </select>
+    <select id="getLevelLeadersByEmployeeIdAndTier" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getLevelLeadersByEmployeeIdAndTier">
+
+        </include>
+    </select>
+    <select id="getHrpbByEmployeeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getHrpbByEmployeeId">
+
+        </include>
+    </select>
+    <select id="getDirectLeaderByEmployeeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getDirectLeaderByEmployeeId">
+
+        </include>
+    </select>
+</mapper>

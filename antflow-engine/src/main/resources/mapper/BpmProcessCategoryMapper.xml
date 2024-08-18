@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessCategory">
+        <id column="id" property="id"/>
+        <result column="process_type_name" property="processTypeName"/>
+        <result column="is_del" property="isDel"/>
+        <result column="sort" property="sort"/>
+        <result column="is_app" property="isApp"/>
+        <result column="state" property="state"/>
+        <result column="entrance" property="entrance"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, process_type_name AS processTypeName, is_del AS isDel, sort, is_app AS isApp
+    </sql>
+    <select id="findProcessCategory" resultType="org.openoa.engine.vo.BpmProcessCategoryVo">
+        SELECT
+            id as id,
+            process_type_name as processTypeName,
+            state as state,
+            entrance as entrance
+        from
+            bpm_process_category where is_del=0 and id not in (1,2)
+        ORDER BY sort asc
+    </select>
+</mapper>

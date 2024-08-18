@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnConfMapper">
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmnConf">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="bpmnCode" column="bpmn_code" jdbcType="VARCHAR"/>
+        <result property="bpmnName" column="bpmn_name" jdbcType="VARCHAR"/>
+        <result property="bpmnType" column="bpmn_type" jdbcType="INTEGER"/>
+        <result property="formCode" column="form_code" jdbcType="VARCHAR"/>
+        <result property="appId" column="app_id" jdbcType="INTEGER"/>
+        <result property="deduplicationType" column="deduplication_type" jdbcType="INTEGER"/>
+        <result property="effectiveStatus" column="effective_status" jdbcType="INTEGER"/>
+        <result property="isAll" column="is_all" jdbcType="INTEGER"/>
+        <result property="isOutSideProcess" column="is_out_side_process" jdbcType="INTEGER"/>
+        <result property="businessPartyId" column="business_party_id" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="BOOLEAN"/>
+        <result property="createUser" column="create_user" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateUser" column="update_user" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,bpmn_code,bpmn_name,
+        bpmn_type,form_code,app_id,
+        deduplication_type,effective_status,is_all,
+        is_out_side_process,business_party_id,remark,
+        is_del,create_user,create_time,
+        update_user,update_time
+    </sql>
+    <select id="getMaxBpmnCode" resultType="java.lang.String">
+        select MAX(bpmn_code)
+        FROM t_bpmn_conf
+        WHERE bpmn_code LIKE CONCAT(#{bpmnCodeParts}, '%')
+    </select>
+    <select id="getIds" resultType="java.lang.Integer">
+        select id
+        from t_bpmn_conf;
+    </select>
+    <select id="selectPageList" resultType="org.openoa.base.vo.BpmnConfVo">
+        SELECT
+        a.id AS id,
+        a.bpmn_code AS bpmnCode,
+        a.form_code AS formCode,
+        a.bpmn_name AS bpmnName,
+        a.deduplication_type AS deduplicationType,
+        a.effective_status AS effectiveStatus,
+        a.business_party_id AS businessPartyId,
+        a.update_time AS updateTime,
+        a.remark AS remark
+        FROM t_bpmn_conf a
+        WHERE a.is_del = 0
+        AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
+        <if test="bpmnConfVo.search != null and bpmnConfVo.search != ''">
+            AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')
+            OR a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.search},'%'))
+        </if>
+
+        ORDER BY a.create_time DESC
+    </select>
+</mapper>

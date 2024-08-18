@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmConditionsTemplateMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate">
+        <id column="id" property="id"/>
+        <result column="business_party_id" property="businessPartyId"/>
+        <result column="template_mark" property="templateMark"/>
+        <result column="template_name" property="templateName"/>
+        <result column="application_id" property="applicationId"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, business_party_id AS businessPartyId, template_mark AS templateMark, template_name AS templateName, remark, is_del AS isDel, create_user AS createUser, create_time AS createTime, update_user AS updateUser, update_time AS updateTime
+    </sql>
+
+    <select id="selectPageList" parameterType="org.openoa.engine.vo.OutSideBpmConditionsTemplateVo"
+            resultType="org.openoa.engine.vo.OutSideBpmConditionsTemplateVo">
+        SELECT
+        a.id AS id,
+        a.business_party_id AS businessPartyId,
+        a.template_mark AS templateMark,
+        a.template_name AS templateName,
+        a.create_user_id AS createUserId,
+        a.application_id AS applicationId
+        FROM t_out_side_bpm_conditions_template a
+        WHERE a.is_del = 0
+        <if test="businessPartyIds != null and businessPartyIds.size > 0">
+            AND a.business_party_id IN
+            <foreach collection="businessPartyIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="templateMark != null and templateMark != ''">
+            AND a.template_mark LIKE CONCAT('%',#{templateMark},'%')
+        </if>
+        <if test="templateName != null and templateName != ''">
+            AND a.template_name LIKE CONCAT('%',#{templateName},'%')
+        </if>
+
+    </select>
+
+</mapper>

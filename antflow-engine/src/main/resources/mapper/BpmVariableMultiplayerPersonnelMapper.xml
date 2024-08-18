@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="org.openoa.common.mapper.BpmVariableMultiplayerPersonnelMapper">
+
+
+    <resultMap id="BaseResultMap"
+               type="org.openoa.common.entity.BpmVariableMultiplayerPersonnel">
+        <id column="id" property="id"/>
+        <result column="variable_multiplayer_id" property="variableMultiplayerId"/>
+        <result column="assignee" property="assignee"/>
+        <result column="undertake_status" property="undertakeStatus"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, variable_multiplayer_id AS variableMultiplayerId, assignee,
+		undertake_status AS undertakeStatus, remark, is_del AS isDel,
+		create_user AS createUser, create_time AS createTime, update_user AS
+		updateUser, update_time AS updateTime
+    </sql>
+
+    <update id="undertake" parameterType="org.openoa.common.entity.BpmVariableMultiplayerPersonnel">
+        UPDATE `t_bpm_variable_multiplayer_personnel`
+        SET undertake_status = 1
+        WHERE variable_multiplayer_id = #{vo.variableMultiplayerId}
+    </update>
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="org.openoa.engine.bpmnconf.mapper.BpmVariableViewPageButtonMapper">
+
+
+    <resultMap id="BaseResultMap"
+               type="org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton">
+        <id column="id" property="id"/>
+        <result column="variable_id" property="variableId"/>
+        <result column="view_type" property="viewType"/>
+        <result column="button_type" property="buttonType"/>
+        <result column="button_name" property="buttonName"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, variable_id AS variableId, view_type AS viewType,
+		button_type AS
+		buttonType, button_name AS buttonName, remark, is_del AS
+		isDel,
+		create_user AS createUser, create_time AS createTime,
+		update_user AS
+		updateUser, update_time AS updateTime
+    </sql>
+
+    <select id="getButtonsByProcessNumber"
+            resultType="org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton">
+        SELECT btn.id,
+               btn.variable_id AS variableId,
+               btn.view_type
+                               AS viewType,
+               btn.button_type AS
+                                  buttonType,
+               btn.button_name AS
+                                  buttonName,
+               btn.remark,
+               btn.is_del      AS isDel,
+               btn.create_user AS
+                                  createUser,
+               btn.create_time AS createTime,
+               btn.update_user AS
+                                  updateUser,
+               btn.update_time AS updateTime
+        FROM `t_bpm_variable_view_page_button` btn
+                 LEFT JOIN `t_bpm_variable` bpm ON btn.`variable_id` = bpm.`id`
+        WHERE bpm.`process_num` = #{processNum}
+    </select>
+
+</mapper>

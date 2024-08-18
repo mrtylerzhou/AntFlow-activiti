@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.UserMessageMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.UserMessage">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="url" property="url"/>
+        <result column="is_read" property="isRead"/>
+        <result column="is_del" property="del"/>
+        <result column="app_url" property="appUrl"/>
+        <result column="new_data" property="newDate"/>
+        <result column="source" property="source"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, user_id AS userId, title, content, url, app_url as appUrl, is_read as isRead, is_del as del,new_data AS newDate,source AS source,create_time AS createTime, update_time AS updateTime, create_user AS createUser, update_user AS updateUser
+    </sql>
+    <!-- Customer SQL Area -->
+
+    <select id="pageList" parameterType="map" resultType="org.openoa.base.entity.UserMessage">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_message
+        where is_del = 0 and user_id = #{userId} order by id DESC
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <update id="deleteByIds">
+        update t_user_message set is_del = 1
+        where user_id = #{userId} and id in (
+        <foreach collection="ids" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </update>
+
+    <update id="clean">
+        update t_user_message
+        set is_del = 1
+        where user_id = #{userId}
+          and `is_read` = 1
+    </update>
+
+
+    <delete id="cleanUserMessage">
+        DELETE
+        FROM t_user_message
+        WHERE 1 = 1
+        <![CDATA[AND create_time <= #{beforeDate}
+        ]]>
+    </delete>
+
+
+    <!-- Custom SQL Area -->
+
+
+</mapper>

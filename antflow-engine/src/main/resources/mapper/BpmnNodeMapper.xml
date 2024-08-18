@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper">
+
+    <!-- common resultMap -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmnNode">
+        <id column="id" property="id"/>
+        <result column="conf_id" property="confId"/>
+        <result column="node_id" property="nodeId"/>
+        <result column="node_type" property="nodeType"/>
+        <result column="node_property" property="nodeProperty"/>
+        <result column="node_from" property="nodeFrom"/>
+        <result column="batch_status" property="batchStatus"/>
+        <result column="approval_standard" property="approvalStandard"/>
+        <result column="node_name" property="nodeName"/>
+        <result column="annotation" property="annotation"/>
+        <result column="is_deduplication" property="isDeduplication"/>
+        <result column="is_sign_up" property="isSignUp"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- common query field list -->
+    <sql id="Base_Column_List">
+        id, conf_id AS confId, node_id AS nodeId, node_type AS nodeType, node_property AS nodeProperty, node_from AS nodeFrom, batch_status AS batchStatus, approval_standard AS approvalStandard, node_name AS nodeName, annotation, is_deduplication AS isDeduplication, is_sign_up AS isSignUp, remark, is_del AS isDel, create_user AS createUser, create_time AS createTime, update_user AS updateUser, update_time AS updateTime
+    </sql>
+
+    <!-- get self chosen nodes -->
+    <select id="customNode" resultType="org.openoa.engine.bpmnconf.confentity.BpmnNode"
+            parameterType="java.lang.String">
+        SELECT a.id,
+               a.conf_id           AS confId,
+               a.node_id           AS
+                                      nodeId,
+               a.node_type         AS nodeType,
+               a.node_property     AS nodeProperty,
+               a.node_from         AS nodeFrom,
+               a.batch_status      AS batchStatus,
+               a.approval_standard AS approvalStandard,
+               a.node_name         AS nodeName,
+               a.annotation,
+               is_deduplication    AS isDeduplication,
+               a.remark,
+               a.is_del            AS isDel
+        FROM `t_bpmn_node` a
+                 LEFT JOIN t_bpmn_conf b ON
+            a.conf_id = b.id
+        WHERE b.bpmn_code = #{processKey}
+          AND a.node_property = 7
+          AND b.effective_status = 1
+    </select>
+
+</mapper>

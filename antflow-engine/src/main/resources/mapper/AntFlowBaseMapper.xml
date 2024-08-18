@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper">
+    <!--employeeMap can be implement or not,if not,you can write just like fieldxx as userName in the sql-->
+    <resultMap id="employeeMap" type="org.openoa.base.entity.Employee">
+        <id column="id" property="id"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="username" property="username"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="head_img" property="headImg"/>
+        <result column="mobile_is_show" property="mobileIsShow"/>
+        <result column="leader_id" property="leaderId"/>
+        <result column="is_del" property="isDel"/>
+        <result column="hrbp_id" property="hrbpId"/>
+        <result column="path" property="path"/>
+    </resultMap>
+    <!--change the table name and field name if needed-->
+    <sql id="queryUserByNameFuzzy">
+        select id,user_name as name from t_user
+        <where>
+            <if test="userName != null and userName != ''">
+                <bind name="userName" value="'%' + userName + '%'" />
+                and  user_name like #{userName}
+            </if>
+        </where>
+    </sql>
+    <sql id="queryUserByIds">
+        select id,user_name as name from t_user
+        <where>
+            <if test="userIds != null and userIds.size() > 0">
+                id in
+                <foreach collection="userIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <sql id="findEmployeeInfoById">
+        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
+        <where>
+            <if test="${employeeId} != null ">
+                id = ${employeeId}
+            </if>
+        </where>
+    </sql>
+    <sql id="findEmployeeInfoByIds">
+        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
+        <where>
+            <if test="${employeeIds} != null and employeeIds.size() > 0">
+                id in
+                <foreach collection="${employeeIds}" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <sql id="queryEffectiveEmployeeCount">
+        select count(1) from t_employee
+        <where>
+            <if test="$employeeId} != null">
+                id = ${employeeId}
+            </if>
+            <if test="${employeeId} == null">
+                1=2
+            </if>
+        </where>
+    </sql>
+    <sql id="queryRoleByIds">
+        select id,role_name as roleName from t_role
+        <where>
+            <if test="roleIds != null and roleIds.size() > 0">
+                id in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <sql id="queryUserByRoleIds">
+        select id,user_name as name from t_user
+        <where>
+            <if test="roleIds != null and roleIds.size() > 0">
+                id in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <!--dummy sql for test-->
+    <sql id="getLevelLeadersByEmployeeIdAndTier">
+        select id,username as name from t_employee
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+            <if test="tier != null">
+                and tier = #{tier}
+            </if>
+        </where>
+    </sql>
+    <sql id="getHrpbByEmployeeId">
+        select id,username as name from t_employee
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
+    </sql>
+    <sql id="getDirectLeaderByEmployeeId">
+        select id,username as name from t_employee
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
+    </sql>
+    <!--only id and name is needed,you only need change the table name and field name if needed-->
+    <sql id="getSubDepartmentsByEmpId">
+        select id,name from t_department
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
+    </sql>
+    <sql id="getDepartmentByEmployeeId">
+        select id,name from t_department
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
+    </sql>
+</mapper>

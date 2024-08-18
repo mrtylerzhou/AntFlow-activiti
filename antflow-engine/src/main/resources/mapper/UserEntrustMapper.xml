@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.UserEntrustMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.UserEntrust">
+        <id column="id" property="id"/>
+        <result column="sender" property="sender"/>
+        <result column="receiver_id" property="receiverId"/>
+        <result column="power_id" property="powerId"/>
+        <result column="begin_time" property="beginTime" jdbcType="NULL"/>
+        <result column="end_time" property="endTime" jdbcType="NULL"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, sender, receiver_id as receiverId, receiver_name AS receiverName, power_id AS powerId, begin_time AS beginTime, end_time AS endTime, create_time AS createTime, update_time AS updateTime, create_user AS createUser, update_user AS updateUser
+    </sql>
+
+
+    <select id="getEntrustList" parameterType="map" resultType="org.openoa.base.vo.Entrust">
+        select t.id            as id,
+               s.`NAME_`       as `name`,
+               receiver_id     as receiverId,
+               s.processKey    as powerId,
+               begin_time      as beginTime,
+               end_time        as endTime,
+               t.receiver_name as receiverName
+        from (select substring_index(f.ID_, ":", 1) as processKey,
+                     f.NAME_
+              from act_re_procdef f,
+                   (SELECT max(VERSION_) AS max_version, key_ AS key_
+                    FROM act_re_procdef
+                    WHERE key_ IN (SELECT key_ FROM act_re_procdef)
+                    GROUP BY key_) a
+              where VERSION_ = a.max_version
+                AND f.key_ = a.key_
+                AND f.KEY_ NOT IN ('process201804161617')
+             ) s
+                 left join t_user_entrust t
+                           on s.processKey = substring_index(t.power_id, ":", 1) and t.sender = #{userId}
+        group by s.processKey
+    </select>
+
+    <select id="getEntrustListNew" parameterType="map" resultType="org.openoa.base.vo.Entrust">
+        select t.id            as id,
+               s.`name`        as `name`,
+               t.receiver_id   as receiverId,
+               s.code          as powerId,
+               t.begin_time    as beginTime,
+               t.end_time      as endTime,
+               t.receiver_name as receiverName
+        from t_process_entrust as s
+                 left join t_user_entrust t
+                           on s.code = substring_index(t.power_id, ":", 1) and t.sender = #{userId}
+        where s.is_del = 0
+        group by s.code
+    </select>
+
+
+</mapper>

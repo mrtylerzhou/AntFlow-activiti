@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessNodeOvertimeMapper">
+
+    <!-- common resultMap -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessNodeOvertime">
+        <id column="id" property="id"/>
+        <result column="notice_type" property="noticeType"/>
+        <result column="node_name" property="nodeName"/>
+        <result column="node_key" property="nodeKey"/>
+        <result column="process_key" property="processKey"/>
+        <result column="notice_time" property="noticeTime"/>
+    </resultMap>
+
+    <!-- common column -->
+    <sql id="Base_Column_List">
+        id, notice_type AS noticeType, node_name AS nodeName, node_key AS nodeKey, process_dep_id AS processDepId, notice_time AS noticeTime
+    </sql>
+    <select id="selectNoticeType" resultType="java.lang.Integer">
+        SELECT DISTINCT notice_type
+        from bpm_process_node_overtime w
+        where w.process_key = #{processKey}
+    </select>
+    <select id="selectNoticeNodeName" resultType="org.openoa.base.vo.BpmProcessNodeOvertimeVo">
+        SELECT DISTINCT notice_type as noticeType, node_name as nodeName, node_key as nodeKey, notice_time as noticeTime
+        from bpm_process_node_overtime w
+        where w.process_key = #{processKey}
+    </select>
+</mapper>

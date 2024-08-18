@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper">
+
+    <!-- common result map -->
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmBusinessProcess">
+        <id column="id" property="id"/>
+        <result column="PROCESSINESS_KEY" property="processinessKey"/>
+        <result column="BUSINESS_ID" property="businessId"/>
+        <result column="BUSINESS_NUMBER" property="businessNumber"/>
+        <result column="ENTRY_ID" property="entryId"/>
+        <result column="VERSION" property="version"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="description" property="description"/>
+        <result column="create_user" property="createUser"/>
+        <result column="process_digest" property="processDigest"/>
+        <result column="data_source_id" property="dataSourceId"/>
+        <result column="is_del" property="isDel"/>
+        <result column="PROC_INST_ID_" property="procInstId"/>
+    </resultMap>
+
+    <!-- common query columns -->
+    <sql id="Base_Column_List">
+        id, PROCESSINESS_KEY AS processinessKey, BUSINESS_ID AS businessId, BUSINESS_NUMBER AS businessNumber, ENTRY_ID AS entryId, VERSION AS version, CREATE_TIME AS createTime, UPDATE_TIME AS updateTime,description as description, PROC_INST_ID_ AS procInstId
+    </sql>
+
+    <select id="findBpmBusinessProcess" resultType="org.openoa.base.entity.BpmBusinessProcess">
+        select
+        s.PROCESSINESS_KEY as processinessKey,
+        s.BUSINESS_ID as businessId,
+        s.BUSINESS_NUMBER as businessNumber,
+        s.ENTRY_ID as entryId,
+        s.process_state as processState,
+        s.description as description,
+        s.create_user as createUser,
+        s.UPDATE_TIME as updateTime
+        from bpm_business_process s
+        where 1=1
+        <if test="entryId!=null and entryId!=''">
+            and s.ENTRY_ID=#{entryId}
+        </if>
+        <if test="businessNumber!=null and businessNumber!=''">
+            and s.BUSINESS_NUMBER LIKE CONCAT('%',#{businessNumber},'%' )
+        </if>
+        <if test="businessId!=null and businessId!=''">
+            and s.BUSINESS_ID =#{businessId}
+        </if>
+
+    </select>
+    <update id="updateBpmBusinessProcess">
+        update bpm_business_process set
+        <if test="description!='' and description!=null">
+            description=#{description}
+        </if>
+        <if test="processState!='' and processState!=null">
+            process_state=#{processState}
+        </if>
+        where ENTRY_ID=#{entryId}
+    </update>
+    <delete id="delteBusinessProcess">
+        delete
+        from bpm_business_process
+        where ENTRY_ID = #{businessKey}
+    </delete>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.InformationTemplate">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="num" property="num"/>
+        <result column="system_title" property="systemTitle"/>
+        <result column="system_content" property="systemContent"/>
+        <result column="mail_title" property="mailTitle"/>
+        <result column="mail_content" property="mailContent"/>
+        <result column="note_content" property="noteContent"/>
+        <result column="jump_url" property="jumpUrl"/>
+        <result column="remark" property="remark"/>
+        <result column="status" property="status"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, name, num, system_title AS systemTitle, system_content AS systemContent, mail_title AS mailTitle, mail_content AS mailContent, note_content AS noteContent, jump_url AS jumpUrl, remark, status, is_del AS isDel, create_time AS createTime, create_user AS createUser, update_time AS updateTime, update_user AS updateUser
+    </sql>
+
+    <select id="pageList" parameterType="org.openoa.base.vo.InformationTemplateVo"
+            resultType="org.openoa.base.vo.InformationTemplateVo">
+        SELECT *
+        FROM
+        t_information_template a
+        WHERE
+        a.is_del = 0
+        <if test="name != null and name != ''">
+            AND a.name LIKE CONCAT('%',#{name},'%' );
+
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper">
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication">
+        <id column="id" property="id"/>
+        <result column="business_code" property="businessCode"/>
+        <result column="process_name" property="title"/>
+        <result column="apply_type" property="applyType"/>
+        <result column="pc_icon" property="pcIcon"/>
+        <result column="effective_source" property="effectiveSource"/>
+        <result column="is_son" property="isSon"/>
+        <result column="look_url" property="lookUrl"/>
+        <result column="submit_url" property="submitUrl"/>
+        <result column="condition_url" property="conditionUrl"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="application_url" property="applicationUrl"/>
+        <result column="route" property="route"/>
+        <result column="process_key" property="processKey"/>
+        <result column="permissions_code" property="permissionsCode"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_all" property="isAll"/>
+        <result column="state" property="state"/>
+        <result column="sort" property="sort"/>
+        <result column="source" property="source"/>
+    </resultMap>
+
+    <!-- auto generated column fields list -->
+    <sql id="Base_Column_List">
+        id, business_code AS businessCode, process_name AS title, apply_type AS applyType, pc_icon AS pcIcon, effective_source AS effectiveSource, is_son AS isSon, look_url AS lookUrl, submit_url AS submitUrl, condition_url AS conditionUrl, parent_id AS parentId, application_url AS applicationUrl, route, process_key AS processKey, permissions_code AS permissionsCode, is_del AS isDel, create_user_id AS createUserId, create_time AS createTime, update_user AS updateUser, update_time AS updateTime, is_all AS isAll, state, sort, source
+    </sql>
+
+    <select id="listPage" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        select
+        s.id as id,
+        s.process_name as title,
+        s.route as route,
+        s.process_key as processKey,
+        s.effective_source as effectiveSource,
+        s.pc_icon as pcIcon,
+        s.apply_type as applyType,
+        s.permissions_code as permissionsCode,
+        (SELECT process_type_name from bpm_process_category where id = (SELECT category_id from
+        bpm_process_application_type where application_id=s.id and is_del=0 order by create_time desc LIMIT 1 )) as
+        processTypeName,
+        (SELECT GROUP_CONCAT(entrance) from bpm_process_category where id in (SELECT category_id from
+        bpm_process_application_type where application_id=s.id and is_del=0 )) as entrance,
+        (SELECT GROUP_CONCAT(id) from bpm_process_category where id in (SELECT category_id from
+        bpm_process_application_type where application_id=s.id and is_del=0 )) as typeIds
+        from bpm_process_app_application s
+        where s.is_del=0 and s.business_code is null
+        <if test="title!=null and title!=''">
+            and s.process_name like CONCAT('%', #{title},'%')
+        </if>
+    </select>
+    <select id="newListPage" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        select
+        s.id as id,
+        s.process_name as title,
+        s.business_code as businessCode,
+        s.apply_type as applyType,
+        s.pc_icon as pcIcon,
+        s.effective_source as effectiveSource,
+        s.is_son as isSon,
+        s.look_url as lookUrl,
+        s.submit_url as submitUrl,
+        s.condition_url as conditionUrl,
+        s.parent_id as parentId,
+        s.application_url as applicationUrl,
+        s.route as route,
+        s.process_key as processKey,
+        s.permissions_code as permissionsCode,
+        s.create_user_id as createUserId
+        from bpm_process_app_application s
+        where s.is_del=0
+        <if test="title!=null and title!=''">
+            and s.process_name like CONCAT('%', #{title},'%')
+        </if>
+        <if test="businessCodeList != null and businessCodeList.size() > 0">
+            and s.business_code in
+            <foreach collection="businessCodeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--list processICon by category-->
+    <select id="listIcon" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        SELECT
+        a.id as applicationId,
+        a.process_name as title,
+        a.business_code as businessCode,
+        a.apply_type as applyType,
+        a.pc_icon as pcIcon,
+        a.effective_source as effectiveSource,
+        a.effective_source as source,
+        a.is_son as isSon,
+        a.look_url as lookUrl,
+        a.submit_url as submitUrl,
+        a.condition_url as conditionUrl,
+        a.parent_id as parentId,
+        a.application_url as applicationUrl,
+        a.route as route,
+        a.process_key as processKey,
+        a.permissions_code as permissionsCode,
+        a.create_user_id as createUserId,
+        t.id as id,
+        t.state as state,
+        t.visble_state as visbleState,
+        t.sort as sort
+        FROM
+        bpm_process_app_application a
+        left join bpm_process_application_type t on t.application_id=a.id
+        WHERE
+        a.is_del = 0 and t.is_del=0
+        <if test="id!=null">
+            and t.category_id =#{id}
+        </if>
+        <if test="processKeyList != null and processKeyList.size() > 0">
+            and
+            case when a.business_code is null then a.process_key
+            else concat(a.business_code,"_",a.process_key)
+            end
+            in
+            <foreach collection="processKeyList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="visbleState!='' and visbleState!=null">
+            and t.visble_state =#{visbleState}
+        </if>
+        <if test="isSon!=null">
+            and a.is_son =#{isSon}
+        </if>
+        <if test="parentId!=null">
+            and a.parent_id =#{parentId}
+        </if>
+        <if test="ids != null and ids.size() > 0">
+            and
+            a.id
+            in
+            <foreach collection="ids" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by t.sort asc
+    </select>
+    <select id="findProcessAppApplication" resultType="org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication">
+        select id,
+               process_key AS processKey,
+               process_name AS processName,
+               route,effective_source AS effectiveSource
+        from bpm_process_app_application
+        where is_del = 0 AND process_key =''
+    </select>
+    <!--search process application-->
+    <select id="searchIcon" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo"
+            parameterType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        select id,
+        process_key AS processKey,
+        process_name AS processName
+        from bpm_process_app_application
+        where is_del = 0
+        <if test="search!=null and search!=''">
+            and process_name like CONCAT("%",#{search},"%")
+        </if>
+        LIMIT #{limitSize}
+    </select>
+    <!--list process icon by type and category-->
+    <select id="listProcessIcon" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        SELECT
+            t.id as id,
+            a.process_key as processKey,
+            a.process_name as title
+        FROM
+            bpm_process_app_application a
+                left join bpm_process_application_type t on t.application_id=a.id
+        WHERE
+            a.is_del = 0 and t.is_del=0 and a.apply_type = 1 and t.category_id = #{id} and t.visble_state = 1
+        order by t.sort asc
+    </select>
+
+</mapper>

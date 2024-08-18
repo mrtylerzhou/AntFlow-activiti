@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper">
+
+    <!-- common field map -->
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty">
+        <id column="id" property="id"/>
+        <result column="business_party_mark" property="businessPartyMark"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- common tool generated field list -->
+    <sql id="Base_Column_List">
+        id, business_party_mark AS businessPartyMark, name, remark, is_del AS isDel, create_user AS createUser, create_time AS createTime, update_user AS updateUser, update_time AS updateTime
+    </sql>
+
+    <select id="selectPageList" parameterType="org.openoa.engine.vo.OutSideBpmBusinessPartyVo"
+            resultType="org.openoa.engine.vo.OutSideBpmBusinessPartyVo">
+        SELECT
+        a.id AS id,
+        a.business_party_mark AS businessPartyMark,
+        a.name AS `name`,
+        a.type AS type,
+        a.remark AS remark
+        FROM t_out_side_bpm_business_party a
+        WHERE a.is_del = 0
+        <if test="search != null and search != ''">
+            AND a.name LIKE CONCAT('%',#{search},'%')
+        </if>
+    </select>
+
+    <select id="getBusinessPartyMarkById" resultType="java.lang.String">
+        SELECT a.business_party_mark
+        FROM t_out_side_bpm_business_party a
+        WHERE a.is_del = 0
+          AND id = #{id}
+    </select>
+
+    <select id="checkData" parameterType="org.openoa.engine.vo.OutSideBpmBusinessPartyVo"
+            resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM t_out_side_bpm_business_party a
+        WHERE (a.business_party_mark = #{businessPartyMark} OR a.name = #{name})
+        AND a.is_del = 0
+        <if test="id != null">
+            AND a.id <![CDATA[ <> ]]> #{id}
+        </if>
+    </select>
+
+</mapper>
