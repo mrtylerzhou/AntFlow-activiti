@@ -1,5 +1,7 @@
 
-![logo](./doc/images/logo.png)
+<p align="center" style="margin-bottom: 0 !important">
+	<img alt="logo" src="./doc/images/logo.png"  width = "80px"; height= "80px";>
+</p>
 ### 简介
 AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
 

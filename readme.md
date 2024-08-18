@@ -1,5 +1,7 @@
 ### English | [简体中文](./README.zh_CN.md) |
-![logo](./doc/images/logo.png)
+<p align="center" style="margin-bottom: 0 !important">
+	<img alt="logo" src="./doc/images/logo.png"  width = "80px"; height= "80px";>
+</p>
 ### Basic Introduction:
 
 AntFlow is an open-source OA (Office Automation) approval workflow system inspired by Dingtalk's workflow design. Its interface is very simple,you only need some clicks to configure a workflow. It aims to solve the high usage threshold and complexity of traditional BPMN.js process designers, making it easy for non-technical users to get started and quickly configure daily approval processes.
