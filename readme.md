@@ -27,12 +27,21 @@ AntFlow is an open-source OA (Office Automation) approval workflow system inspir
 ![1.png](./doc/images/1.png)
 
 add approver or conditions node
+
 ![](./doc/images/4.png)
+
 conditions attr panel
+
 ![](./doc/images/2.png)
+
 approver node attr panel
+
 ![](./doc/images/搜狗截图20240818082058.png)
+
 validation
+
 ![](./doc/images/3.png)
+
 admin pages
+
 ![](./doc/images/QQ20240818-082212.png)
