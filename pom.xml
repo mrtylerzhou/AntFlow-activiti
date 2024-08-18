@@ -6,7 +6,6 @@
     <modules>
         <module>web</module>
         <module>antflow-base</module>
-        <module>../antflow-common</module>
         <module>antflow-engine</module>
     </modules>
     <parent>
