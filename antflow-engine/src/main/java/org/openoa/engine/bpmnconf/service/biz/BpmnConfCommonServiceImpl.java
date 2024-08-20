@@ -198,6 +198,10 @@ public class BpmnConfCommonServiceImpl {
         return getPreviewNode(params, true);
     }
 
+    public PreviewNode taskPagePreviewNode(String params) {
+        return getPreviewNode(params, false);
+    }
+
     /**
      * start pages's preview on smart devices(todo not implemented yet)
      *

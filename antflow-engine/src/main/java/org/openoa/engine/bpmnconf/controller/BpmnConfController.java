@@ -78,6 +78,11 @@ public class BpmnConfController {
         return Result.newSuccessResult(bpmnConfCommonService.startPagePreviewNode(params));
     }
 
+    @PostMapping("/taskPagePreviewNode")
+    public Result taskPagePreviewNode(@RequestBody String params) {
+        return Result.newSuccessResult(bpmnConfCommonService.taskPagePreviewNode(params));
+    }
+
     @GetMapping("getBpmVerifyInfoVos")
     public Result getBpmVerifyInfoVos(@RequestParam("processNumber") String processNumber) {
         return Result.newSuccessResult(bpmVerifyInfoBizService.getBpmVerifyInfoVos(processNumber, false));
