@@ -56,3 +56,12 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 8.流程引擎和用户角色系统解耦,AntFlow摒弃了activiti自带的用户角色系统,完全使用企业自己的用户角色和组织系统,这使得AntFlow可以快速到企业自己的各种系统中,如OA,CRM,ERP,CMS等系统.结合自己系统的用户组织系统特点扩展适合于自己企业的审批流程.
 > Activiti7版本也摒弃了使用多年的用户角色系统,设计上不谋而合.Activiti自身的用户角色系统为了通用设计的比较简单,无法满足企业的个性化需求,另一方面将企业的用户组织系统导入到Activiti里面是一件非常麻烦的事,尤其是对不熟悉Activiti的用户,还会导致数据不一致等问题.
 
+### 快速开始
+
+1. git clone 本项目
+2. 打开 **web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
+3. 打开里面**web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
+4. 启动项目,如果一切顺利,这时候后端就启动起来了
+5. [前端设计器地址](https://gitee.com/ldhnet/AntFlow-Vue3)
+6. 前端ruoyi演示项目尚在开发中...
+
