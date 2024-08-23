@@ -62,7 +62,7 @@ public class NotifyServiceImpl {
     private BpmTaskconfigServiceImpl bpmTaskconfigService;
     //remind manually
     private static final long ALLOWED = 2 * 60 * 60;
-    //代办详情页路由
+    //todo list detail page
     private static final String PROC_TO_DO = "/main/tab?tabKey=examine&menuCode=approval&subMenuCode=pending";
 
     /**
@@ -184,7 +184,6 @@ public class NotifyServiceImpl {
 
             // time is overdue
             this.manualNotifyHelper(entryId);
-            //更新通知表时间
             //update notice last time
             existedNotify.setLastTime(new Date());
             bpmManualNotifyMapper.updateById(existedNotify);
@@ -211,7 +210,7 @@ public class NotifyServiceImpl {
             //{发起人}提醒您尽快处理{流程名称}{流程编号}
             String title = startUser + "提醒您尽快处理" + processName + processNumber + "。";
             //String content=startUser+"提醒您尽快处理"+processName+processNumber+bpmBusinessProcess.getDescription()+"。";
-            //当前处理人列表
+            //current approvers list
             List<TaskMgmtVO> currentAssignees = taskMgmtMapper.getCurrentAssignee(entryId);
             if (ObjectUtils.isEmpty(currentAssignees)) {
                 throw new JiMuBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
@@ -237,6 +236,7 @@ public class NotifyServiceImpl {
 
     /**
      * 待处理添加代办URl地址
+     * add url to do list
      *
      * @param bpmBusinessProcess
      * @return
@@ -258,8 +258,8 @@ public class NotifyServiceImpl {
     }
 
     /**
-     * 工作流待办+通知
-     * 流程流转，通知处理人
+     * to do list notification
+     * notify current approver
      *
      * @param entryId
      */
@@ -268,25 +268,25 @@ public class NotifyServiceImpl {
         try {
             BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().entryId(entryId).build());
             String procDefId = bpmBusinessProcess.getProcessinessKey();
-            //流程编号
+            //process number
             String processNumber = bpmBusinessProcess.getBusinessNumber();
-            //流程名称
+            //process name
             String processName = taskMgmtMapper.getProcessName(procDefId);
             //Thread.sleep(1000*30);
             SendParam sendParam = new SendParam();
             UrlParams urlParams = new UrlParams();
             if (Strings.isNullOrEmpty(assignee) || assignee.equals(ProcessEnum.PROC_MAN.getDesc())) {
-                //设置处理人
-                Map<Integer, List<Integer>> map = null;//todo获得管理员
+                //set process admin
+                Map<Integer, List<Integer>> map = null;// todo get process admin
                 Integer procType = Optional.ofNullable(taskMgmtMapper.getProcType(procDefId)).orElse(-1);
                 List<Integer> assignees = map.get(procType);
                 if (ObjectUtils.isEmpty(assignees)) {
-                    log.error("此流程无管理人员！");
+                    log.error("current has no admin！");
                 } else {
                     List<SendParam> sendParamList = new ArrayList<>();
                     assignees.forEach(o -> {
                         SendParam send = new SendParam();
-                        //当前节点无处理人
+                        //current node has no approver
                         String title = processName + processNumber + "无人处理，请至流程管理中进行干预。";
                         send.setTitle("您有1个" + processName + processNumber + "无人处理，请至流程管理中进行干预。");
                         send.setContent(title);
@@ -301,17 +301,17 @@ public class NotifyServiceImpl {
                 }
             } else {
                 String url = this.getUrl(bpmBusinessProcess, task);
-                //当前节点有处理人
+                //has approver's condition
                 sendParam.setUserId(Long.parseLong(assignee));
                 sendParam.setTitle("您有1个" + bpmBusinessProcess.getDescription() + "需要处理。");
                 sendParam.setContent("您有1个" + processName + processNumber + bpmBusinessProcess.getDescription() + "需要处理。");
                 sendParam.setUrl(url);
-                //当前任务id
+                //current task id
                 if (!ObjectUtils.isEmpty(task)) {
                     sendParam.setNode(task.getId());
                 }
 
-                //代办列表
+                //to do list
                 sendParam.setAppUrl(PROC_TO_DO);
                 sendParam.setParams("myTask");
                 sendParam.setUrlParams(urlParams);
@@ -319,19 +319,19 @@ public class NotifyServiceImpl {
 
             }
         } catch (Exception e) {
-            log.error("消息发送异常", e);
+            log.error("sent notification error", e);
         }
 
     }
 
     /**
-     * 工作流流转通知
+     * process flow notification
      *
      * @param procInstId
      */
     public void passNotify(String procInstId, String entryId) {
         try {
-            //获取通知人列表
+            //get forwarded user list
             List<Integer> bpmFlowrunEntrusts = bpmFlowrunEntrustMapper.getCirculated(procInstId);
 
             if (ObjectUtils.isEmpty(bpmFlowrunEntrusts)) {
@@ -341,9 +341,9 @@ public class NotifyServiceImpl {
             BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().entryId(entryId).build());
 
             String procDefId = bpmBusinessProcess.getProcessinessKey();
-            //流程编号
+            //process number
             String processNumber = bpmBusinessProcess.getBusinessNumber();
-            //流程名称
+            //process name
             String processName = taskMgmtMapper.getProcessName(procDefId);
             String code = processNumber.split("_")[0];
             String title = "您关注的" + processName + processNumber + "已有新的进展。";

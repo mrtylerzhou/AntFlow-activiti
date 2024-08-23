@@ -272,7 +272,7 @@ public class BpmnConfCommonServiceImpl {
         String verifyUserName = StringUtils.EMPTY;
         String taskName = bpmnNodeVo.getNodePropertyName();
         if (bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_SINGLE.getCode())) {
-            //单人
+            //single approver
             verifyUserName = bpmnNodeVo.getParams().getAssignee().getAssigneeName();
             taskName = Optional.ofNullable(taskName)
                     .orElse(bpmnNodeVo.getParams().getAssignee().getElementName());
@@ -317,7 +317,7 @@ public class BpmnConfCommonServiceImpl {
         object.put("formCode", detail.getFormCode());
 
         BusinessDataVo vo = formFactory.dataFormConversion(JSON.toJSONString(object),null);
-        //set a flag to indicate whether is is a start page preview
+        //set a flag to indicate whether is a start page preview
         vo.setIsStartPagePreview(isStartPagePreview);
 
         BpmnStartConditionsExtendVo bpmnStartConditionsExtendVo = new BpmnStartConditionsExtendVo();
