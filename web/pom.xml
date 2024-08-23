@@ -5,7 +5,7 @@
     <parent>
         <artifactId>antflow</artifactId>
        <groupId>io.github.mrtylerzhou</groupId>
-       <version>0.7.3</version>
+       <version>0.8.0</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -15,6 +15,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 <dependencies>
     <dependency>
@@ -24,19 +25,25 @@
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-base</artifactId>
-       <version>0.7.3</version>
+       <version>0.8.0</version>
     </dependency>
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-common</artifactId>
-       <version>0.7.3</version>
+       <version>0.8.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-engine</artifactId>
-       <version>0.7.3</version>
+       <version>0.8.0</version>
         <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.30</version>
+        <scope>provided</scope>
     </dependency>
 </dependencies>
     <build>
