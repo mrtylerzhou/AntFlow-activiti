@@ -1,5 +1,6 @@
 package org.openoa.common.service;
 
+import org.activiti.engine.impl.identity.Authentication;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.interf.ActivitiServiceAnno;
@@ -35,8 +36,9 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
 
     @Override
     public BpmnStartConditionsVo launchParameters(ThirdPartyAccountApplyVo vo) {
+        String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
-                .startUserId("1")
+                .startUserId(userId)
                 .accountType(vo.getAccountType())
                 .jobLevelVo(vo.getJobLevelVo())
                 .build();
