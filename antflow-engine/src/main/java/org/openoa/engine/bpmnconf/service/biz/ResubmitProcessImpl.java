@@ -28,7 +28,7 @@ import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 
 /**
  *@Author JimuOffice
- * @Description 流程的重新提交/同意操作
+ * @Description submit/approve
  * @Date 2022-04-28 15:55
  * @Param
  * @return
@@ -70,8 +70,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
         vo.setTaskId(task.getId());
         BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
-        //todo 获取当前登陆用户信息
-        //保存流程审批记录
+
+        //save verify info
         BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
                 .builder()
                 .verifyDate(new Date())

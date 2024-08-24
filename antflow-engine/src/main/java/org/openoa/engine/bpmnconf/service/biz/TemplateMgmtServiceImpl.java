@@ -262,8 +262,8 @@ public class TemplateMgmtServiceImpl extends ProcessServiceFactory {
     /**
      * clear specified activiti's outgoing transition
      *
-     * @param activityImpl 活动节点
-     * @return 节点流向集合
+     * @param activityImpl
+     * @return node flow list
      */
     private List<PvmTransition> clearTransition(ActivityImpl activityImpl) {
 
