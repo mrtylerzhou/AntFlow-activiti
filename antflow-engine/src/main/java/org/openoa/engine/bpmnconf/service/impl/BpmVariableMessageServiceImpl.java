@@ -333,7 +333,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 if (ObjectUtils.isEmpty(vo.getType())) {
                     vo.setType(1);
                 }
-                //获得下一个节点的信息
+
                 //get process's next node info via activiti's pvm
                 PvmActivity nextNodePvmActivity = processContans.getNextNodePvmActivity(processInstance.getId());
 
@@ -577,7 +577,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @return
      */
     private List<Serializable> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
-
+        //todo
         return Lists.newArrayList();
     }
 
