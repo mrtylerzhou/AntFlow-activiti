@@ -15,7 +15,7 @@ public interface UserMapper {
     //must be implemented
     List<BaseIdTranStruVo> queryByNameFuzzy(@Param("userName") String userName);
     //must be implemented
-    List<BaseIdTranStruVo> queryByIds(Collection<Long> userIds);
+    List<BaseIdTranStruVo> queryByIds(@Param("userIds") Collection<Long> userIds);
     //must be implemented
     Employee getEmployeeDetailById(@Param("id") Long id);
     //must be implemented
