@@ -5,7 +5,7 @@
 
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-engine</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -17,13 +17,13 @@
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-base</artifactId>
-           <version>0.8.0</version>
+           <version>0.8.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-common</artifactId>
-           <version>0.8.0</version>
+           <version>0.8.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -192,12 +192,11 @@
         </developer>
     </developers>
     <scm>
-        <connection>https://gitee.com/tylerzhou/thcun4go1j.git</connection>
-        <developerConnection>scm:git:ssh://git@gitee.com:tylerzhou/thcun4go1j.git
-        </developerConnection>
-        <url>https://gitee.com/tylerzhou/thcun4go1j</url>
+        <connection>https://github.com/mrtylerzhou/AntFlow.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:mrtylerzhou/AntFlow.git</developerConnection>
+        <url>https://github.com/mrtylerzhou/AntFlow</url>
     </scm>
-    <url>https://gitee.com/tylerzhou/thcun4go1j</url>
+    <url>https://github.com/mrtylerzhou/AntFlow</url>
     <build>
         <plugins>
 
@@ -262,7 +261,7 @@
                         <additionalparam>-quiet</additionalparam>
                     </additionalJOptions>
                     <reportOutputDirectory>${project.build.directory}/empty-javadoc</reportOutputDirectory>
-                <skip>true</skip>
+               <!-- <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>

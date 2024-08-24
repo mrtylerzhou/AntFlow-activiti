@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-base</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -24,7 +24,7 @@
     <developers>
         <developer>
             <id>zypqqgc</id>
-            <name>zypqqgc</name>
+            <name>tylerZhou</name>
             <email>zypqqgc@qq.com</email>
             <roles>
                 <role>Project Manager</role>
@@ -33,12 +33,11 @@
         </developer>
     </developers>
     <scm>
-        <connection>https://gitee.com/tylerzhou/thcun4go1j.git</connection>
-        <developerConnection>scm:git:ssh://git@gitee.com:tylerzhou/thcun4go1j.git
-        </developerConnection>
-        <url>https://gitee.com/tylerzhou/thcun4go1j</url>
+        <connection>https://github.com/mrtylerzhou/AntFlow.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:mrtylerzhou/AntFlow.git</developerConnection>
+        <url>https://github.com/mrtylerzhou/AntFlow</url>
     </scm>
-    <url>https://gitee.com/tylerzhou/thcun4go1j</url>
+    <url>https://github.com/mrtylerzhou/AntFlow</url>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -266,7 +265,7 @@
                         <additionalparam>-quiet</additionalparam>
                     </additionalJOptions>
                     <reportOutputDirectory>${project.build.directory}/empty-javadoc</reportOutputDirectory>
-                    <skip>true</skip>
+                   <!-- <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>
