@@ -167,7 +167,9 @@ public class BpmnSendMessageAspect {
      */
     private BpmVariableMessageVo getBpmVariableMessageVo(BusinessDataVo businessDataVo) {
 
-        if (!ObjectUtils.isEmpty(businessDataVo)) {
+        if (ObjectUtils.isEmpty(businessDataVo)) {
+            return  null;
+        }
 
             //get event type by operation type
             EventTypeEnum eventTypeEnum = EventTypeEnum.getEnumByOperationType(businessDataVo.getOperationType());
@@ -207,9 +209,7 @@ public class BpmnSendMessageAspect {
                     .eventTypeEnum(eventTypeEnum)
                     .type(type)
                     .build());
-        }
 
-        return null;
     }
 
     /**
