@@ -18,10 +18,10 @@ public class InformationTemplateUtils {
     private InformationTemplateServiceImpl informationTemplateService;
 
     /**
-     * 翻译消息模板方法
+     * translate message template
      *
-     * @param informationTemplateVo id和通配符map
-     * @return 翻译后的消息以及跳转类型
+     * @param informationTemplateVo i
+     * @return newly build information template with jump url type
      */
     public InformationTemplateVo translateInformationTemplate(InformationTemplateVo informationTemplateVo) {
         InformationTemplate informationTemplate = Optional

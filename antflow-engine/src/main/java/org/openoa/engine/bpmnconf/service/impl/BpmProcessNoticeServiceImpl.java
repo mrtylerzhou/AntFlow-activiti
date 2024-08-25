@@ -14,8 +14,7 @@ import java.util.List;
 public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMapper, BpmProcessNotice> {
 
 
-    @Autowired
-    private BpmProcessNoticeMapper mapper;
+
 
     /**
      * save process notice
@@ -26,10 +25,10 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
     public void saveProcessNotice(String processKey, List<Integer> notifyTypeIds) {
         QueryWrapper<BpmProcessNotice> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
-        mapper.delete(wrapper);
+        this.getBaseMapper().delete(wrapper);
         if (!ObjectUtils.isEmpty(notifyTypeIds)) {
             notifyTypeIds.stream().forEach(o -> {
-                mapper.insert(BpmProcessNotice.builder()
+                this.getBaseMapper().insert(BpmProcessNotice.builder()
                         .processKey(processKey)
                         .type(o)
                         .build());
@@ -40,6 +39,6 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
     public List<BpmProcessNotice> processNoticeList(String processKey) {
         QueryWrapper<BpmProcessNotice> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
-        return mapper.selectList(wrapper);
+        return this.getBaseMapper().selectList(wrapper);
     }
 }

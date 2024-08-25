@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static org.openoa.base.constant.enums.MessageSendTypeEnum.*;
 
 public class UserMsgUtils {
-    //=================================================发送信息(单个) Start===========================================
+    //=================================================send message(single) Start===========================================
 
     /**
      * 发送信息(单个)
@@ -34,15 +34,15 @@ public class UserMsgUtils {
 
         MessageServiceImpl messageService = getMessageService();
 
-        //执行发送信息
+        //do execute send message method
         doSendMessages(userMsgVo, messageService, messageSendTypeEnums);
 
-        //写站内信记录
+        //write user messages to db
         insertUserMessage(userMsgVo, messageService);
     }
 
     /**
-     * 发送信息(单个-无站内信)
+     * send message(single without in site notice)
      *
      * @param userMsgVo
      * @param messageSendTypeEnums
@@ -50,25 +50,25 @@ public class UserMsgUtils {
     public static void sendMessagesNoUserMessage(UserMsgVo userMsgVo, MessageSendTypeEnum... messageSendTypeEnums) {
         MessageServiceImpl messageService = getMessageService();
 
-        //执行发送信息
+        //do execute send message method
         doSendMessages(userMsgVo, messageService, messageSendTypeEnums);
 
     }
 
     /**
-     * 记录站内信
+     * insert user messages
      *
      * @param userMsgVo
      */
     public static void insertUserMessage(UserMsgVo userMsgVo) {
         MessageServiceImpl messageService = getMessageService();
 
-        //写站内信记录
+        //insert to db
         insertUserMessage(userMsgVo, messageService);
     }
 
     /**
-     * 执行发送信息
+     * do send messages
      *
      * @param userMsgVo
      * @param messageService
@@ -82,15 +82,15 @@ public class UserMsgUtils {
             }
 
             List<MessageSendTypeEnum> messageSendTypeEnumList = Lists.newArrayList(messageSendTypeEnums);
-            //发送类型邮件
+            //send email
             if (messageSendTypeEnumList.contains(MAIL)) {
                 sendMail(userMsgVo, messageService);
             }
-            //发送类型短信
+            //send text message
             if (messageSendTypeEnumList.contains(MESSAGE)) {
                 sendSms(userMsgVo, messageService);
             }
-            //发送类型App-PUSH
+            //app push
             if (messageSendTypeEnumList.contains(PUSH)) {
                 sendAppPush(userMsgVo, messageService);
             }
@@ -98,22 +98,22 @@ public class UserMsgUtils {
     }
 
     /**
-     * 发送所有消息(邮件、短信、App-PUSH)
+     * set messages all(email、text message and App-PUSH so for)
      *
      * @param userMsgVo
      * @param messageService
      */
     private static void sendAllMsg(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
-        //发送邮件
+        //send email
         sendMail(userMsgVo, messageService);
-        //发送短信
+        //send text message
         sendSms(userMsgVo, messageService);
-        //发送App推送
+        //send app push
         sendAppPush(userMsgVo, messageService);
     }
 
     /**
-     * 获得消息发送服务类
+     * get send message service
      *
      * @return
      */
@@ -122,7 +122,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 写站内信记录
+     * insert in site messages
      *
      * @param userMsgVo
      * @param messageService
@@ -138,7 +138,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 发送App推送
+     * send app push
      *
      * @param userMsgVo
      * @param messageService
@@ -149,7 +149,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 发送短信
+     * send text message
      *
      * @param userMsgVo
      * @param messageService
@@ -160,7 +160,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 发送邮件
+     * send email
      *
      * @param userMsgVo
      * @param messageService
@@ -172,7 +172,7 @@ public class UserMsgUtils {
 
 
     /**
-     * 发送信息(批量)
+     * send messages in batch
      *
      * @param userMsgBathVos
      */
@@ -180,16 +180,16 @@ public class UserMsgUtils {
 
         MessageServiceImpl messageService = getMessageService();
 
-        //执行发送信息(批量)
+        //send messages in batch
         doSendMessageBath(userMsgBathVos, messageService);
 
-        //批量写站内信记录
+        //insert in site messages in batch
         insertUserMessageBath(userMsgBathVos, messageService);
 
     }
 
     /**
-     * 发送信息(批量-无站内信)
+     * send messages in batch,but without in site message
      *
      * @param userMsgBathVos
      */
@@ -203,7 +203,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 批量记录站内信
+     * insert user messages in batch
      *
      * @param userMsgBathVos
      */
@@ -211,12 +211,12 @@ public class UserMsgUtils {
 
         MessageServiceImpl messageService = getMessageService();
 
-        //批量写站内信记录
+
         insertUserMessageBath(userMsgBathVos, messageService);
     }
 
     /**
-     * 发送信息(批量)-没有批量写站内信记录
+     * send messages in batch,without in site messages
      *
      * @param userMsgBathVos
      */
@@ -224,13 +224,13 @@ public class UserMsgUtils {
 
         MessageServiceImpl messageService = getMessageService();
 
-        //执行发送信息(批量)
+
         doSendMessageBath(userMsgBathVos, messageService);
 
     }
 
     /**
-     * 执行发送信息(批量)
+     * send messages in batch
      *
      * @param userMsgBathVos
      * @param messageService
@@ -238,27 +238,28 @@ public class UserMsgUtils {
     private static void doSendMessageBath(List<UserMsgBathVo> userMsgBathVos, MessageServiceImpl messageService) {
 
 
-        //转换批量发送消息入参格式
+
+        //formatting messages
         Multimap<MessageSendTypeEnum, UserMsgVo> almMap = formatUserMsgBathVos(userMsgBathVos);
 
-        //批量发送邮件
+        //send emails
         if (almMap.containsKey(MAIL)) {
             sendMailBath(messageService, almMap);
         }
 
-        //批量发送短消息
+        //send text messages
         if (almMap.containsKey(MESSAGE)) {
             sendSmsBath(messageService, almMap);
         }
 
-        //批量发送App-PUSH
+        //send app push
         if (almMap.containsKey(PUSH)) {
             sendAppPushBath(messageService, almMap);
         }
     }
 
     /**
-     * 批量写站内信记录
+     *  write user messages in batch
      *
      * @param userMsgBathVos
      * @param messageService
@@ -272,7 +273,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 批量发送App-PUSH
+     * send app push in batch
      *
      * @param messageService
      * @param almMap
@@ -286,7 +287,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 批量发送短消息
+     * send text message in batch
      *
      * @param messageService
      * @param almMap
@@ -300,7 +301,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 批量发送邮件
+     * send emails in batch
      *
      * @param messageService
      * @param almMap
@@ -314,7 +315,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 获得用户消息Vo列表
+     * get user messages
      *
      * @param almMap
      * @param messageSendTypeEnum
@@ -326,7 +327,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 转换批量发送消息入参格式
+     * convert messages
      *
      * @param userMsgBathVos
      * @return
@@ -349,7 +350,7 @@ public class UserMsgUtils {
 
 
     /**
-     * 构建用户站内信Vo
+     * build in site user messages
      *
      * @param userMsgVo
      * @return
@@ -369,7 +370,7 @@ public class UserMsgUtils {
                 .source(userMsgVo.getSource() == null ? 0 : userMsgVo.getSource())
                 .build();
 
-        //如果站内信来源不是OA系统，则title设置为对象传入title
+
         if (userMessage.getSource() != 0) {
             userMessage.setTitle(userMsgVo.getTitle());
         }
@@ -378,7 +379,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 构建App-PUSH对象
+     * build app push message
      *
      * @param userMsgVo
      * @return
@@ -393,7 +394,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 构建发送短信对象
+     * build text message
      *
      * @param userMsgVo
      * @return
@@ -407,7 +408,7 @@ public class UserMsgUtils {
     }
 
     /**
-     * 构建发送邮件对象
+     * build email info
      *
      * @param userMsgVo
      * @return

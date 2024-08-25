@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import jodd.bean.BeanUtil;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -12,10 +13,13 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.enums.MessageSendTypeEnum;
+import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.User;
+import org.openoa.base.service.RoleServiceImpl;
+import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -27,13 +31,13 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessContans;
-import org.openoa.engine.bpmnconf.confentity.BpmVariable;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableMessage;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUpPersonnel;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
+import org.openoa.engine.bpmnconf.util.UserMsgUtils;
 import org.openoa.engine.vo.BpmVariableMessageVo;
+import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -66,6 +70,8 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
     @Autowired
     private EmployeeServiceImpl employeeService;
+    @Autowired
+    private RoleServiceImpl roleService;
 
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
@@ -100,6 +106,8 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
     @Autowired
     private BpmProcessForwardServiceImpl bpmProcessForwardService;
+    @Autowired
+    private InformationTemplateUtils informationTemplateUtils;
 
 
 
@@ -483,7 +491,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //query sender's info
-        List<Serializable> sendUsers = getSendUsers(vo, bpmnTemplateVo);
+        List<Long> sendUsers = getSendUsers(vo, bpmnTemplateVo);
 
 
         //if senders is empty then return
@@ -491,10 +499,13 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
             return;
         }
 
-        //todo
+        List<Employee> employeeDetailByIds = employeeService.getEmployeeDetailByIds(sendUsers.stream().distinct().collect(Collectors.toList()));
+        if(ObjectUtils.isEmpty(employeeDetailByIds)){
+            return;
+        }
 
         //send messages
-        sendMessage(vo, bpmnTemplateVo, null);
+        sendMessage(vo, bpmnTemplateVo, employeeDetailByIds);
 
     }
 
@@ -506,7 +517,56 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @param employees
      */
     private void sendMessage(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo, List<Employee> employees) {
+        //query all types of the messages
+        List<MessageSendTypeEnum> messageSendTypeEnums = bpmProcessNoticeService.processNoticeList(vo.getFormCode())
+                .stream()
+                .map(o -> {
+                    return MessageSendTypeEnum.getEnumByCode(o.getType());
+                })
+                .collect(Collectors.toList());
 
+
+        Map<Integer, String> wildcardCharacterMap = getWildcardCharacterMap(vo);
+        InformationTemplateVo informationTemplateVo = informationTemplateUtils.translateInformationTemplate(InformationTemplateVo
+                .builder()
+                .id(bpmnTemplateVo.getTemplateId())
+                .wildcardCharacterMap(wildcardCharacterMap)
+                .build());
+
+        //get message urls
+        Map<String, String> urlMap = getUrlMap(vo, informationTemplateVo);
+        String emailUrl = urlMap.get("emailUrl");
+        String appUrl = urlMap.get("appUrl");
+
+        for (MessageSendTypeEnum messageSendTypeEnum : messageSendTypeEnums) {
+            if (Objects.isNull(messageSendTypeEnum)) {
+                continue;
+            }
+            switch (messageSendTypeEnum) {
+                case MAIL:
+
+                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                            .stream()
+                            .map(o -> getUserMsgBathVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
+                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MAIL))
+                            .collect(Collectors.toList()));
+                    break;
+                case MESSAGE:
+                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                            .stream()
+                            .map(o -> getUserMsgBathVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
+                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MESSAGE))
+                            .collect(Collectors.toList()));
+                    break;
+                case PUSH:
+                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                            .stream()
+                            .map(o -> getUserMsgBathVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
+                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.PUSH))
+                            .collect(Collectors.toList()));
+                    break;
+            }
+        }
     }
 
 
@@ -518,9 +578,44 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @return
      */
     public Map<String, String> getUrlMap(BpmVariableMessageVo vo, InformationTemplateVo informationTemplateVo) {
-
         Map<String, String> urlMap = Maps.newHashMap();
 
+        String emailUrl = StringUtils.EMPTY;
+        String appUrl = StringUtils.EMPTY;
+
+        if (informationTemplateVo.getJumpUrl()!=null &&
+                (informationTemplateVo.getJumpUrl().equals(JumpUrlEnum.PROCESS_APPROVE.getCode())
+                        || informationTemplateVo.getJumpUrl().equals(JumpUrlEnum.PROCESS_VIEW.getCode()))) {
+
+            Integer type = informationTemplateVo.getJumpUrl() == 1 ? 2 : 1;
+
+            //email and in site notice
+            emailUrl = processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
+                    ProcessInforVo
+                            .builder()
+                            .processinessKey(vo.getBpmnCode())
+                            .businessNumber(vo.getProcessNumber())
+                            .formCode(vo.getFormCode())
+                            .type(type)
+                            .build(), Optional.ofNullable(vo.getIsOutside()).orElse(false));
+
+            //app route
+            appUrl = processBusinessContans.getRoute(ProcessNoticeEnum.APP_TYPE.getCode(),
+                    ProcessInforVo
+                            .builder()
+                            .processinessKey(vo.getBpmnCode())
+                            .businessNumber(vo.getProcessNumber())
+                            .formCode(vo.getFormCode())
+                            .type(type)
+                            .build(), Optional.ofNullable(vo.getIsOutside()).orElse(false));
+
+        } else if (informationTemplateVo.getJumpUrl()!=null && informationTemplateVo.getJumpUrl().equals(JumpUrlEnum.PROCESS_BACKLOG.getCode())) {
+            emailUrl = "/user/workflow/upcoming?page=1&pageSize=10";
+            appUrl = "";
+        }
+
+        urlMap.put("emailUrl", emailUrl);
+        urlMap.put("appUrl", appUrl);
 
         return urlMap;
     }
@@ -565,7 +660,35 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      */
     private Map<Integer, String> getWildcardCharacterMap(BpmVariableMessageVo vo) {
         Map<Integer, String> wildcardCharacterMap = Maps.newHashMap();
-
+        for (WildcardCharacterEnum wildcardCharacterEnum : WildcardCharacterEnum.values()) {
+            if (StringUtils.isEmpty(wildcardCharacterEnum.getFilName())) {
+                continue;
+            }
+            Object property = BeanUtil.pojo.getProperty(vo, wildcardCharacterEnum.getFilName());
+            if (property!=null) {
+                if (wildcardCharacterEnum.getIsSearchEmpl()) {
+                    if (property instanceof List) {
+                        List<String> propertys = (List<String>) property;
+                        if (ObjectUtils.isEmpty(propertys)) {
+                            continue;
+                        }
+                        List<String> emplNames = employeeService.qryLiteEmployeeInfoByIds(AntCollectionUtil.StringToLongList(propertys))
+                                .stream()
+                                .map(Employee::getUsername).collect(Collectors.toList());
+                        if (!ObjectUtils.isEmpty(emplNames)) {
+                            wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), StringUtils.join(emplNames, ","));
+                        }
+                    } else {
+                        Employee employee = employeeService.qryLiteEmployeeInfoById(Long.parseLong((String) property));
+                        if (employee!=null) {
+                            wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
+                        }
+                    }
+                } else {
+                    wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), property.toString());
+                }
+            }
+        }
         return wildcardCharacterMap;
     }
 
@@ -576,9 +699,61 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @param bpmnTemplateVo
      * @return
      */
-    private List<Serializable> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
-        //todo
-        return Lists.newArrayList();
+    private List<Long> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
+        List<Long> sendUsers = Lists.newArrayList();
+        //specified assignees
+        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())) {
+            sendUsers.addAll(new ArrayList<>(bpmnTemplateVo.getEmpIdList()));
+        }
+
+        //specified roles
+        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
+            List<User> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            if (!ObjectUtils.isEmpty(users)) {
+                sendUsers.addAll(users.stream().map(User::getId).collect(Collectors.toList()));
+            }
+        }
+
+        //todo functions
+        //node sign up users
+        if (!ObjectUtils.isEmpty(vo.getSignUpUsers())) {
+            sendUsers.addAll(AntCollectionUtil.StringToLongList(vo.getSignUpUsers()));
+        }
+
+        //forwarded
+        List<String> forwardUsers = null;
+        List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(new QueryWrapper<BpmProcessForward>()
+                .eq("processInstance_Id", vo.getProcessInsId()));
+        if (!ObjectUtils.isEmpty(vo.getForwardUsers()) && !ObjectUtils.isEmpty(bpmProcessForwards)) {
+            forwardUsers = Lists.newArrayList();
+            forwardUsers.addAll(vo.getForwardUsers());
+            forwardUsers.addAll(bpmProcessForwards.stream().map(o -> String.valueOf(o.getForwardUserId())).distinct().collect(Collectors.toList()));
+            forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
+        } else if (ObjectUtils.isEmpty(vo.getForwardUsers()) && !ObjectUtils.isEmpty(bpmProcessForwards)) {
+            forwardUsers = Lists.newArrayList();
+            forwardUsers.addAll(bpmProcessForwards.stream().map(o -> String.valueOf(o.getForwardUserId())).distinct().collect(Collectors.toList()));
+            forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
+        } else if (!ObjectUtils.isEmpty(vo.getForwardUsers()) && ObjectUtils.isEmpty(bpmProcessForwards)) {
+            forwardUsers = Lists.newArrayList();
+            forwardUsers.addAll(vo.getForwardUsers());
+            forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
+        }
+        vo.setForwardUsers(forwardUsers);
+
+        //inform users
+        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
+            for (Long informId : bpmnTemplateVo.getInformIdList()) {
+                InformEnum informEnum = InformEnum.getEnumByByCode(informId.intValue());
+                //todo check whether the result is valid
+                Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
+                if (filObject instanceof List) {
+                    sendUsers.addAll(AntCollectionUtil.StringToLongList((List) filObject));
+                } else if (filObject!=null) {
+                    sendUsers.add((Long) filObject);
+                }
+            }
+        }
+        return sendUsers;
     }
 
 }

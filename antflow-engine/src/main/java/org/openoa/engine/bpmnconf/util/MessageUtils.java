@@ -16,7 +16,7 @@ public class MessageUtils {
     }
 
     /**
-     * 根据指定枚举值单个发送消息
+     * send message by enum
      *
      * @param sendParam
      * @param messageSendTypeEnum
@@ -35,7 +35,7 @@ public class MessageUtils {
     }
 
     /**
-     * 根据指定枚举值批量发送消息
+     * send messages by enum in batch
      *
      * @param sendParams
      * @param messageSendTypeEnum
