@@ -420,7 +420,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     .findFirst()
                     .orElse(null);
 
-            //如果流程参数记录不为空并且流程为新流程参数则继续进行参数赋值操作
+
             if (!ObjectUtils.isEmpty(bpmVariable)) {
                 BpmnTimeoutReminderVariableVo bpmnTimeoutReminderVariableVo = new BpmnTimeoutReminderVariableVo();
                 BeanCopy.from(bpmVariable).to(bpmnTimeoutReminderVariableVo).copy();
@@ -436,13 +436,14 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                 bpmnTimeoutReminderVariableVo.setBpmnName(bpmVariable.getProcessName());
                 bpmnTimeoutReminderVariableVo.setProcessNumber(bpmVariable.getProcessNum());
 
-                //比对获得流程实例信息
+
                 Optional<HistoricProcessInstance> historicProcessInstanceOptional = historicProcessInstances
                         .stream()
                         .filter(o -> o.getId().equals(key))
                         .findFirst();
 
-                //设置流程申请人、申请日期、申请时间
+
+                //set applicant,applydate,apply time
                 historicProcessInstanceOptional.ifPresent(historicProcessInstance -> {
                     Employee employee = employeeService.getEmployeeDetailById(Long.parseLong(historicProcessInstance.getStartUserId()));
                     bpmnTimeoutReminderVariableVo.setStartUser(employee.getUsername());
@@ -450,7 +451,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(historicProcessInstance.getStartTime()));
                 });
 
-                //转换流程启动参数Json字符串设置被审批人
+
                 if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
                     BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
                     if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmplId())) {
@@ -459,7 +460,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     }
                 }
 
-                //赋值操作完成设置流程参数记录Map
+
                 bpmnTimeoutReminderVariableVoMap.put(key, bpmnTimeoutReminderVariableVo);
             }
         }
