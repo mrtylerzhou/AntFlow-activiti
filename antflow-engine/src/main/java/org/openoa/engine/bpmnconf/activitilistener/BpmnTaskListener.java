@@ -136,7 +136,6 @@ public class BpmnTaskListener implements TaskListener {
 
 
         if (bpmnConf.getIsOutSideProcess() == 1) {
-            //如果是外部流程则设置布尔值为true
             isOutside = true;
         }
         if (bpmVariableMessageListenerService.listenerCheckIsSendByTemplate(bpmVariableMessageVo)) {
@@ -146,7 +145,7 @@ public class BpmnTaskListener implements TaskListener {
             //set template message
             bpmVariableMessageListenerService.listenerSendTemplateMessages(bpmVariableMessageVo);
         } else {
-            //构建发消息对象 并发送消息
+
             ActivitiTemplateMsgUtils.sendBpmApprovalMsg(
                     ActivitiBpmMsgVo
                             .builder()
