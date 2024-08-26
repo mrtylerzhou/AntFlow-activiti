@@ -23,8 +23,9 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     private ThirdPartyAccountApplyMapper thirdPartyAccountApplyMapper;
     @Override
     public BpmnStartConditionsVo previewSetCondition(ThirdPartyAccountApplyVo vo) {
+        String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
-                .startUserId("99")
+                .startUserId(userId)
                 .jobLevelVo(vo.getJobLevelVo())
                 .accountType(vo.getAccountType()).build();
     }
