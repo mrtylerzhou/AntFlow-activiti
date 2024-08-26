@@ -34,7 +34,7 @@ public enum ConditionTypeEnum {
             BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
 
     CONDITION_BIZ_LEAVE_TIME(37, "请假时长", "leaveHour", 2, Double.class,
-            BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "leaveTime", BpmnTemplateMarkJudge.class),
+            BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
     ;
 
     @Getter
