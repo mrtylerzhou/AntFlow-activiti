@@ -54,7 +54,7 @@
                  where h.START_USER_ID_ = #{taskMgmtVO.applyUser}
                    and b.is_del = 0
              ) s
-        where 1 = 1
+        where 1 = 1 order by s.runTime desc
     </sql>
     <!--query conditions-->
     <sql id="base_param_sql">
@@ -131,7 +131,7 @@
                    and t.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
                    and b.is_del = 0
              ) s
-        where 1 = 1
+        where 1 = 1 order by s.runTime desc
     </sql>
     <!--query to do list for the pc-->
     <sql id="viewPcToDo">
@@ -156,7 +156,7 @@
                  where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
                    and b.is_del = 0
              ) s
-        where 1 = 1
+        where 1 = 1 order by s.runTime desc
     </sql>
     <sql id="allProcess">
         select *
@@ -177,7 +177,7 @@
                           LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
                  where b.is_del = 0
              ) s
-        where 1 = 1
+        where 1 = 1 order by s.runTime desc
     </sql>
 
     <!--get forwarded process-->
@@ -201,7 +201,7 @@
         LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
         LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
         where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0
-        ) s WHERE  1=1
+        ) s WHERE  1=1 order by s.createTime desc
     </sql>
     <select id="viewPcForwardList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="viewForward"/>
