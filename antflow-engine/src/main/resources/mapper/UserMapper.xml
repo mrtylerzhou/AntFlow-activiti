@@ -24,17 +24,14 @@
     </select>
     <select id="getEmployeeDetailById" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
         <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoById">
-            <property name="employeeId" value="#{id}"/>
         </include>
     </select>
     <select id="getEmployeeDetailByIds" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
         <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoByIds">
-            <property name="employeeIds" value="#{ids}"/>
         </include>
     </select>
     <select id="checkEmployeeEffective" resultType="java.lang.Long">
         <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryEffectiveEmployeeCount">
-            <property name="employeeId" value="#{id}"/>
         </include>
     </select>
     <select id="getLevelLeadersByEmployeeIdAndTier" resultType="org.openoa.base.vo.BaseIdTranStruVo">

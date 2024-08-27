@@ -366,7 +366,6 @@ public class UserMsgUtils {
                 .url(userMsgVo.getUrl())
                 .appUrl(userMsgVo.getAppPushUrl())
                 .node(userMsgVo.getTaskId())
-                .newDate(1)
                 .source(userMsgVo.getSource() == null ? 0 : userMsgVo.getSource())
                 .build();
 

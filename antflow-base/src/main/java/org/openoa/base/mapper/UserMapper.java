@@ -17,10 +17,10 @@ public interface UserMapper {
     //must be implemented
     List<BaseIdTranStruVo> queryByIds(@Param("userIds") Collection<Long> userIds);
     //must be implemented
-    Employee getEmployeeDetailById(@Param("id") Long id);
+    Employee getEmployeeDetailById(@Param("employeeId") Long id);
     //must be implemented
-    List<Employee> getEmployeeDetailByIds(@Param("ids")Collection<Long> ids);
-    long checkEmployeeEffective(@Param("id") Long id);
+    List<Employee> getEmployeeDetailByIds(@Param("employeeIds")Collection<Long> ids);
+    long checkEmployeeEffective(@Param("employeeId") Long id);
 
     //if you want to use level leader sign functions,you must implement it
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") Long employeeId,@Param("tier") Integer tier);

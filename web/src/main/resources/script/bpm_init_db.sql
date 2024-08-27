@@ -854,21 +854,22 @@ CREATE TABLE if not exists `bpm_process_name`
 
 CREATE TABLE if not exists `t_user_message`
 (
-    `id`          bigint(20) NOT NULL AUTO_INCREMENT,
-    `user_id`     int(11)      DEFAULT NULL COMMENT 'user id',
-    `title`       varchar(50)  DEFAULT NULL COMMENT 'title',
-    `content`     varchar(1000) DEFAULT NULL COMMENT 'content',
-    `url`         varchar(1000) DEFAULT NULL COMMENT 'send url',
-    `node`        varchar(50)  DEFAULT NULL COMMENT 'start node',
-    `params`      varchar(500) DEFAULT NULL COMMENT 'params',
-    `read`        tinyint(255) DEFAULT NULL COMMENT '0:unread 1:already read',
-    `del`         tinyint(255) DEFAULT NULL COMMENT '0:no 1:yes',
-    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
-    `createUser`  varchar(50)  DEFAULT NULL,
-    `updateUser`  varchar(50)  DEFAULT NULL,
-    `appUrl`      varchar(500) DEFAULT NULL COMMENT 'appurl',
-    PRIMARY KEY (`id`) USING BTREE
+      id          bigint auto_increment
+          primary key,
+      user_id     int          null comment '用户id',
+      title       varchar(50)  null comment '标题',
+      content     varchar(255) null comment '消息内容',
+      url         varchar(255) null comment '发送url',
+      node        varchar(50)  null comment '发送节点id',
+      params      varchar(255) null comment '发送类型',
+      is_read     tinyint(255) null comment '0为未读 1为已读',
+      is_del         tinyint(255) null comment '0为未删除 1为已删除',
+      create_time datetime     null,
+      update_time datetime     null,
+      create_user varchar(50)  null,
+      update_user varchar(50)  null,
+      app_url     varchar(255) null comment 'appurl',
+       source      int          null
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

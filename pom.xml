@@ -92,12 +92,17 @@
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-servlet</artifactId>
-            <version>5.3.0</version>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jodd</groupId>
+            <artifactId>jodd-mail</artifactId>
+            <version>5.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-bean</artifactId>
-            <version>5.1.6</version>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.vlsi.mxgraph</groupId>

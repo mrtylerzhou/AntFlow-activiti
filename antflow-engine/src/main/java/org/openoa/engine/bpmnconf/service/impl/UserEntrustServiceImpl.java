@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
@@ -12,8 +13,10 @@ import org.openoa.base.exception.JiMuBizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -70,11 +73,8 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
             return employeeId;
         }
 
-        Integer result =  SecurityUtils.getLogInEmpIdSafe().intValue();
-        if (result.intValue() != employeeId.intValue()) {
+        Integer
 
-            return result;
-        }
         result = this.getEntrustEmployeeOnly(employeeId, powerId);
         return result;
     }
@@ -93,7 +93,19 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
         QueryWrapper<UserEntrust> wrapper = new QueryWrapper<>();
         wrapper.eq("power_id", powerId).eq("sender", employeeId);
         List<UserEntrust> list = this.mapper.selectList(wrapper);
-        //todo
+        if(!CollectionUtils.isEmpty(list)){
+            for (UserEntrust u : list) {
+                if (u.getBeginTime()!=null && u.getEndTime()!=null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime()) && (new Date().getTime() <= DateUtil.getDayEnd(u.getEndTime()).getTime())) {
+                    return u.getReceiverId();
+                } else if (u.getBeginTime()!=null && u.getEndTime()==null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime())) {
+                    return u.getReceiverId();
+                } else if (u.getBeginTime()==null && u.getEndTime()==null) {
+                    return u.getReceiverId();
+                } else if (u.getBeginTime()==null && u.getEndTime()!=null && (new Date().getTime() <= DateUtil.getDayStart(u.getEndTime()).getTime())) {
+                    return u.getReceiverId();
+                }
+            }
+        }
         return employeeId;
     }
 

@@ -54,7 +54,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     private String systemDomain;
 
 
-    private static final String baseTitle = "【盟管家】工作流通知";
+    private static final String baseTitle = "工作流通知";
 
     private static final String baseSpace = "。   ";
 
@@ -538,7 +538,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     public String getContent(ActivitiBpmMsgVo activitiBpmMsgVo, Integer msgNoticeType) {
         log.info("content数据转换,activitiBpmMsgVo:{},msgNoticeType:{}", JSON.toJSONString(activitiBpmMsgVo), msgNoticeType);
         BpmnConfNoticeTemplateDetail bpmnConfNoticeTemplateDetail = null;
-        if (StringUtil.isNotBlank(activitiBpmMsgVo.getBpmnCode())) {
+        if (!StringUtils.isBlank(activitiBpmMsgVo.getBpmnCode())) {
             bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(),
                     msgNoticeType);
         }

@@ -25,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -211,7 +212,10 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
 
             if (!StringUtils.isEmpty(processNumber)) {
                 BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
-                appUrl = appUrl.concat("_").concat(bpmBusinessProcess.getVersion().toString());
+                appUrl = appUrl.concat("_");
+                if(bpmBusinessProcess.getVersion()!=null){
+                    appUrl=appUrl.concat(bpmBusinessProcess.getVersion().toString());
+                }
             }
         }
 
