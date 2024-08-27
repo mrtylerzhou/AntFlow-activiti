@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.*;
@@ -75,12 +76,15 @@ public class BpmnConfController {
      */
     @PostMapping("/startPagePreviewNode")
     public Result startPagePreviewNode(@RequestBody String params) {
-        return Result.newSuccessResult(bpmnConfCommonService.startPagePreviewNode(params));
-    }
+        JSONObject jsonObject = JSONObject.parseObject(params);
+        Boolean isStartPreview = jsonObject.getBoolean("isStartPreview");
 
-    @PostMapping("/taskPagePreviewNode")
-    public Result taskPagePreviewNode(@RequestBody String params) {
-        return Result.newSuccessResult(bpmnConfCommonService.taskPagePreviewNode(params));
+        if (isStartPreview == null || isStartPreview) {
+            return Result.newSuccessResult(bpmnConfCommonService.startPagePreviewNode(params));
+        }else  {
+            return Result.newSuccessResult(bpmnConfCommonService.taskPagePreviewNode(params));
+        }
+
     }
 
     @GetMapping("getBpmVerifyInfoVos")

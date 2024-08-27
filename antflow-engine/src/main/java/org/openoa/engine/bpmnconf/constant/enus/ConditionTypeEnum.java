@@ -2,13 +2,10 @@ package org.openoa.engine.bpmnconf.constant.enus;
 
 import lombok.Getter;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge.*;
-import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
+import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
-import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsEmptyAdp;
-import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsTotalMoneyAdp;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnTemplateMarkAdp;
 
 /**
  * 条件类型枚举
@@ -22,7 +19,7 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
 
     CONDITION_THIRD_ACCOUNT_TYPE(4, "三方账户", "accountType", 1, Integer.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
+            BpmnNodeConditionsAccountTypeAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
     CONDITION_JOB_LEVEL_TYPE(5, "职级列表", "jobLevelVo", 2, BaseIdTranStruVo.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "jobLevelVo", JobLevelJudge.class),
     CONDITION_TYPE_TOTAL_MONEY(6, "总金额", "totalMoney", 2, String.class,
@@ -34,7 +31,7 @@ public enum ConditionTypeEnum {
             BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
 
     CONDITION_BIZ_LEAVE_TIME(37, "请假时长", "leaveHour", 2, Double.class,
-            BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
     ;
 
     @Getter
