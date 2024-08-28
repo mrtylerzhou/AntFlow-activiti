@@ -50,6 +50,11 @@ public class BpmnConfController {
     @Autowired
     private BpmnNodeServiceImpl testService;
 
+    @GetMapping("/todoList")
+    public Result todoList() {
+        TaskMgmtVO taskMgmtVO = processApprovalService.processStatistics();
+        return Result.newSuccessResult(taskMgmtVO);
+    }
     @PostMapping("/edit")
     public Result edit(@RequestBody BpmnConfVo bpmnConfVo) {
         bpmnConfService.edit(bpmnConfVo);
