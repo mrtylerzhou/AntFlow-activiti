@@ -33,7 +33,6 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .jobLevelVo(vo.getJobLevelVo())
                 .leaveHour(vo.getLeaveHour()).build();
     }
 
@@ -48,7 +47,6 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .jobLevelVo(vo.getJobLevelVo())
                 .leaveHour(vo.getLeaveHour()).build();
     }
 

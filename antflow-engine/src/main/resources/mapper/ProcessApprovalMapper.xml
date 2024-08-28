@@ -3,6 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper">
     <select id="viewPcpNewlyBuildList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="viewNewlyBuild"/>
+        <include refid="base_param_sql"/>
         order by s.createTime desc
     </select>
     <select id="viewPcAlreadyDoneList" resultType="org.openoa.base.vo.TaskMgmtVO">
