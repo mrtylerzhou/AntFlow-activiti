@@ -205,13 +205,15 @@ public class BpmnConfCommonServiceImpl {
     public PreviewNode taskPagePreviewNode(String params) {
         JSONObject jsonObject = JSONObject.parseObject(params);
         String processNumber = jsonObject.getString("processNumber");
-
+         
         QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
         wrapper.eq("process_num", processNumber);
         BpmVariable bpmnVariable = bpmnVariableService.getOne(wrapper);
-        JSONObject object = JSON.parseObject(params);
-        object.put("BpmnCode", bpmnVariable.getBpmnCode());
-        return getPreviewNode(object.toString(), false);
+
+        String processStartConditions = bpmnVariable.getProcessStartConditions();
+        JSONObject objectStart = JSON.parseObject(processStartConditions);
+        objectStart.put("BpmnCode", bpmnVariable.getBpmnCode());
+        return getPreviewNode(objectStart.toString(), false);
     }
 
     /**
