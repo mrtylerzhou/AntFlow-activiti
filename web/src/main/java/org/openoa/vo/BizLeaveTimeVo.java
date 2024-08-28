@@ -9,6 +9,7 @@ import java.util.Date;
 public class BizLeaveTimeVo extends BusinessDataVo {
     private Integer leaveUserId;
     private String leaveUserName;
+    private Integer leaveType;
     private Date beginDate;
     private Date endDate;
     private Double leaveHour;
