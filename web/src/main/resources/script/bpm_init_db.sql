@@ -688,8 +688,8 @@ CREATE TABLE if not exists `t_user_entrust`
     `receiver_id`   int(11)      NOT NULL,
     `receiver_name` varchar(255)          DEFAULT NULL,
     `power_id`      varchar(100) NOT NULL,
-    `begin_time`    timestamp              DEFAULT NULL,
-    `end_time`      timestamp              DEFAULT NULL,
+    `begin_time`    timestamp    NULL  DEFAULT NULL,
+    `end_time`      timestamp    NULL  DEFAULT NULL,
     `create_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `create_user`   varchar(50)  NOT NULL,
@@ -709,7 +709,7 @@ CREATE TABLE if not exists `t_user_message_status`
     `message_status`         tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'sms status',
     `mail_status`            tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'email status',
     `not_trouble_time_end`   time             DEFAULT NULL COMMENT 'do not disturb end time',
-    `not_trouble_time_begin` timestamp             DEFAULT NULL COMMENT 'do not disturb begin time',
+    `not_trouble_time_begin` timestamp   NULL  DEFAULT NULL COMMENT 'do not disturb begin time',
     `not_trouble`            tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'is do not disturb enabled',
     `shock`                  tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'should shock',
     `sound`                  tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'is in silent mode',
@@ -1209,3 +1209,58 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
+
+DROP TABLE IF EXISTS `t_user`;
+CREATE TABLE `t_user`  (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1002 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of t_user
+-- ----------------------------
+INSERT INTO `t_user` VALUES (1, '张三');
+INSERT INTO `t_user` VALUES (2, '李四');
+INSERT INTO `t_user` VALUES (3, '王五');
+INSERT INTO `t_user` VALUES (4, '菜六');
+INSERT INTO `t_user` VALUES (5, '牛七');
+INSERT INTO `t_user` VALUES (6, '马八');
+INSERT INTO `t_user` VALUES (7, '李九');
+INSERT INTO `t_user` VALUES (8, '周十');
+INSERT INTO `t_user` VALUES (9, '肖十一');
+INSERT INTO `t_user` VALUES (10, '令狐冲');
+INSERT INTO `t_user` VALUES (11, '风清扬');
+INSERT INTO `t_user` VALUES (12, '刘正风');
+INSERT INTO `t_user` VALUES (13, '岳不群');
+INSERT INTO `t_user` VALUES (14, '宁中则');
+INSERT INTO `t_user` VALUES (15, '桃谷六仙');
+INSERT INTO `t_user` VALUES (16, '不介和尚');
+INSERT INTO `t_user` VALUES (17, '丁一师太');
+INSERT INTO `t_user` VALUES (18, '依林师妹');
+INSERT INTO `t_user` VALUES (19, '邱灵珊');
+INSERT INTO `t_user` VALUES (20, '任盈盈');
+INSERT INTO `t_user` VALUES (1001, 'test');
+
+DROP TABLE IF EXISTS `t_role`;
+CREATE TABLE `t_role`  (
+     `id` int(11) NOT NULL AUTO_INCREMENT,
+     `role_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+     PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of t_role
+-- ----------------------------
+INSERT INTO `t_role` VALUES (1, '审核管理员');
+INSERT INTO `t_role` VALUES (2, '招商事业部');
+INSERT INTO `t_role` VALUES (3, '互联网部门');
+INSERT INTO `t_role` VALUES (4, '销售部');
+INSERT INTO `t_role` VALUES (5, '战区一');
+INSERT INTO `t_role` VALUES (6, '战区二');
+INSERT INTO `t_role` VALUES (7, 'JAVA开发');
+INSERT INTO `t_role` VALUES (8, '测试审批角色');
+
+
+
+
