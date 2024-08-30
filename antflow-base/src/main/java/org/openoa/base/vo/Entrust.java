@@ -23,7 +23,7 @@ public class Entrust implements Serializable {
      * end time
      */
     private Date endTime;
-
+    private Integer sender;
     /**
      * entrust name
      */
@@ -40,6 +40,8 @@ public class Entrust implements Serializable {
      * receiver name
      */
     private String receiverName;
-
+    /**
+     */
+    private Date createTime;
 
 }

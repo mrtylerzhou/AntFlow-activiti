@@ -1,13 +1,16 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.dto.PageDto;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.*;
+import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
-import org.openoa.base.vo.DataVo;
-import org.openoa.base.vo.Entrust;
-import org.openoa.base.vo.IdsVo;
 import org.openoa.base.exception.JiMuBizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +30,25 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
     public List<Entrust> getEntrustList() {
         return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe().intValue());
     }
-
+    public UserEntrust getEntrustDetail(Integer id) {
+        return this.getBaseMapper().selectById(id);
+    }
+    public ResultAndPage<Entrust> getEntrustPageList(PageDto pageDto, Entrust vo, Integer type) {
+        if (type == 1){
+            vo.setReceiverId(SecurityUtils.getLogInEmpIdSafe().intValue());
+        }
+        Page<Entrust> page = PageUtils.getPageByPageDto(pageDto);
+        List<Entrust> resultData = this.getBaseMapper().getEntrustPageList(page, vo.getReceiverId());
+        if (resultData==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        page.setRecords(resultData);
+        return PageUtils.getResultAndPage(page);
+    }
 
     //batch save or update entrust list
     @Transactional
-    public Boolean updateEntrustList(DataVo dataVo) {
+    public void updateEntrustList(DataVo dataVo) {
         for (IdsVo idsVo : dataVo.getIds()) {
             UserEntrust userEntrust = new UserEntrust();
             userEntrust.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
@@ -39,8 +56,9 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
             userEntrust.setEndTime(dataVo.getEndTime());
             userEntrust.setReceiverId(dataVo.getReceiverId());
             userEntrust.setReceiverName(dataVo.getReceiverName());
-            userEntrust.setSender( SecurityUtils.getLogInEmpIdSafe().intValue());
-            if (idsVo.getId() != null) {
+            //userEntrust.setSender( SecurityUtils.getLogInEmpIdSafe().intValue());
+            userEntrust.setSender(dataVo.getSender());
+            if (idsVo.getId() != null && idsVo.getId() > 0) {
                 //插入
                 UserEntrust userEntrustCheck = mapper.selectById(idsVo.getId());
                 if (userEntrustCheck == null) {
@@ -49,10 +67,9 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 userEntrust.setId(idsVo.getId());
                 userEntrust.setPowerId(userEntrustCheck.getPowerId());
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-                //todo update
+                //mapper.update(userEntrust);
             } else if (idsVo.getPowerId() != null) {
-                if (userEntrust.getReceiverId() == null
-                        || userEntrust.getReceiverName() == null) {
+                if (userEntrust.getReceiverId() == null) {
                     throw new JiMuBizException("300002", "请选择委托对象");
                 }
                 //更新
@@ -61,7 +78,6 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 mapper.insert(userEntrust);
             }
         }
-        return true;
     }
 
 
