@@ -628,7 +628,7 @@ CREATE TABLE if not exists `t_bpm_variable_view_page_button`
 CREATE TABLE if not exists `bpm_verify_info`
 (
     `id`               bigint(11) NOT NULL AUTO_INCREMENT,
-    `run_info_id`      bigint(32)          DEFAULT NULL COMMENT 'process instance id',
+    `run_info_id`      varchar(64)          DEFAULT NULL COMMENT 'process instance id',
     `verify_user_id`   varchar(50)         DEFAULT NULL COMMENT 'approver',
     `verify_user_name` varchar(100)        DEFAULT NULL COMMENT 'approver name',
     `verify_status`    int(1)              DEFAULT NULL COMMENT 'verify status',

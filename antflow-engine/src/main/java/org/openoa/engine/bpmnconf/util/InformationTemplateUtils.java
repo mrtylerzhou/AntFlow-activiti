@@ -39,16 +39,15 @@ public class InformationTemplateUtils {
     }
 
     private String translate(String info, Map<Integer, String> map) {
-        if (!ObjectUtils.isEmpty(info)) {
-            for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
-                info = info.replaceAll("@\\[" + o.getTransfDesc() + "\\]\\(" + o.getCode() + "\\)",
-                        !ObjectUtils.isEmpty(map.get(o.getCode()))
-                                ? map.get(o.getCode())
-                                : "");
-            }
-            return info;
+        if (ObjectUtils.isEmpty(info)) {
+            return "";
         }
-        return "";
+        for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
+            String pattern= o.getTransfDesc() + "\\(" + o.getCode() + "\\)";
+            String replacement=!ObjectUtils.isEmpty(map.get(o.getCode())) ? map.get(o.getCode()) : "";
+            info = info.replaceAll(pattern, replacement);
+        }
+        return info;
     }
 
 }

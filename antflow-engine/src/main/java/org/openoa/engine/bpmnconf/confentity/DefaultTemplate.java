@@ -30,7 +30,7 @@ public class DefaultTemplate {
     @TableField("template_id")
     private Long templateId;
     /**
-     *is delete 0 for no and 1 for yes
+     *is deleted 0 for no and 1 for yes
      */
     @TableField("is_del")
     private Integer isDel;

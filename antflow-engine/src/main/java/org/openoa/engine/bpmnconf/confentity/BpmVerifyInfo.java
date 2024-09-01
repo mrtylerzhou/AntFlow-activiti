@@ -29,7 +29,7 @@ public class BpmVerifyInfo {
      * process instance id
      */
     @TableField("run_info_id")
-    private Long runInfoId;
+    private String runInfoId;
     /**
      * verify user
      */
@@ -85,7 +85,5 @@ public class BpmVerifyInfo {
      */
     @TableField("process_code")
     private String processCode;
-    @TableField(exist = false)
-    private String procInstId;
 
 }

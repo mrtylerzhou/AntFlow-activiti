@@ -679,10 +679,12 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                             wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), StringUtils.join(emplNames, ","));
                         }
                     } else {
-                        Employee employee = employeeService.qryLiteEmployeeInfoById(Long.parseLong((String) property));
-                        if (employee!=null) {
-                            wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
-                        }
+                       if(!property.toString().equals("0")){
+                           Employee employee = employeeService.qryLiteEmployeeInfoById(Long.parseLong(property.toString()));
+                           if (employee!=null) {
+                               wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
+                           }
+                       }
                     }
                 } else {
                     wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), property.toString());
@@ -749,7 +751,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 if (filObject instanceof List) {
                     sendUsers.addAll(AntCollectionUtil.StringToLongList((List) filObject));
                 } else if (filObject!=null) {
-                    sendUsers.add((Long) filObject);
+                    sendUsers.add(Long.parseLong(filObject.toString()));
                 }
             }
         }
