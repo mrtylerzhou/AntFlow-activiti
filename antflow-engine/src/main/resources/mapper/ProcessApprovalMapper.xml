@@ -3,6 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper">
     <select id="viewPcpNewlyBuildList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="viewNewlyBuild"/>
+        <include refid="base_param_sql"/>
         order by s.createTime desc
     </select>
     <select id="viewPcAlreadyDoneList" resultType="org.openoa.base.vo.TaskMgmtVO">
@@ -13,10 +14,12 @@
     <select id="viewPcToDoList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="viewPcToDo"/>
         <include refid="base_param_sql"/>
+        ORDER BY s.runTime DESC
     </select>
     <select id="allProcessList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="allProcess"/>
         <include refid="base_param_sql"/>
+        ORDER BY s.runTime DESC
     </select>
     <select id="isOperational" resultType="java.lang.Integer">
         select  count(*) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}

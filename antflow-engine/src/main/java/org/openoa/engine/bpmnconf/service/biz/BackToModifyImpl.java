@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 流程打回修改操作
+ * back to modify
  */
 @Component
 public class BackToModifyImpl implements ProcessOperationAdaptor {
@@ -69,7 +69,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 .verifyUserId(SecurityUtils.getLogInEmpIdStr())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_UPDATE_TYPE.getCode())
                 .processCode(bpmBusinessProcess.getBusinessNumber())
-                .procInstId(bpmBusinessProcess.getProcInstId())
+                .runInfoId(bpmBusinessProcess.getProcInstId())
                 .verifyDesc(vo.getApprovalComment())
                 .taskName(taskData.getName())
                 .taskId(taskData.getId())

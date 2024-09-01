@@ -32,7 +32,7 @@ public class BpmProcessForward {
     @TableField("forward_user_id")
     private String forwardUserId;
     /**
-     * forward user name
+     * forward user's name
      */
     @TableField("Forward_user_name")
     private String ForwardUserName;

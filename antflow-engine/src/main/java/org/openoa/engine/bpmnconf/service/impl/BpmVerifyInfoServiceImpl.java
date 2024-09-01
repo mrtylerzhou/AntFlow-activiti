@@ -14,6 +14,7 @@ import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessContans;
+import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
@@ -40,6 +41,8 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     private ProcessContans processContans;
     @Autowired
     private EmployeeMapper employeeMapper;
+    @Autowired
+    private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
 
     @Autowired
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
@@ -61,6 +64,10 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     }
 
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(Integer.parseInt(SecurityUtils.getLogInEmpIdStr()), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        if(entrustByTaskId!=null){
+            verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
+        }
         this.getBaseMapper().insert(verifyInfo);
     }
 
@@ -157,7 +164,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
                     if (!ObjectUtils.isEmpty(o.getOriginalId())) {
                         Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(o.getOriginalId().toString()));
                         o.setOriginalName(stringStringMap.get(o.getOriginalId().toString()));
-                        o.setVerifyUserName(o.getOriginalName() + " 代 " + o.getVerifyUserName() + " 审批");
+                        o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
                     }
                     return o;
                 }).collect(Collectors.toList()));

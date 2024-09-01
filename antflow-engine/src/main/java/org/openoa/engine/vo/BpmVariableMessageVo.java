@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.activiti.engine.delegate.DelegateTask;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 
@@ -167,4 +168,5 @@ public class BpmVariableMessageVo implements Serializable {
      */
     private Boolean isOutside = false;
 
+    private DelegateTask delegateTask;
 }

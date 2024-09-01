@@ -18,10 +18,10 @@ public class InformationTemplateUtils {
     private InformationTemplateServiceImpl informationTemplateService;
 
     /**
-     * 翻译消息模板方法
+     * translate message template
      *
-     * @param informationTemplateVo id和通配符map
-     * @return 翻译后的消息以及跳转类型
+     * @param informationTemplateVo i
+     * @return newly build information template with jump url type
      */
     public InformationTemplateVo translateInformationTemplate(InformationTemplateVo informationTemplateVo) {
         InformationTemplate informationTemplate = Optional
@@ -39,16 +39,15 @@ public class InformationTemplateUtils {
     }
 
     private String translate(String info, Map<Integer, String> map) {
-        if (!ObjectUtils.isEmpty(info)) {
-            for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
-                info = info.replaceAll("@\\[" + o.getTransfDesc() + "\\]\\(" + o.getCode() + "\\)",
-                        !ObjectUtils.isEmpty(map.get(o.getCode()))
-                                ? map.get(o.getCode())
-                                : "");
-            }
-            return info;
+        if (ObjectUtils.isEmpty(info)) {
+            return "";
         }
-        return "";
+        for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
+            String pattern= o.getTransfDesc() + "\\(" + o.getCode() + "\\)";
+            String replacement=!ObjectUtils.isEmpty(map.get(o.getCode())) ? map.get(o.getCode()) : "";
+            info = info.replaceAll(pattern, replacement);
+        }
+        return info;
     }
 
 }

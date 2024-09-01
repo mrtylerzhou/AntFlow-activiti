@@ -5,6 +5,7 @@ import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,9 @@ public class UserServiceImpl{
     }
     public BaseIdTranStruVo getById(Long id){
         List<BaseIdTranStruVo> users = userMapper.queryByIds(Lists.newArrayList(id));
+        if(CollectionUtils.isEmpty(users)){
+            return new BaseIdTranStruVo();
+        }
         return users.get(0);
     }
     public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndTier(Long employeeId,Integer tier){

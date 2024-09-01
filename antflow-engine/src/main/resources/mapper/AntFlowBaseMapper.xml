@@ -40,29 +40,29 @@
     <sql id="findEmployeeInfoById">
         select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
         <where>
-            <if test="${employeeId} != null ">
-                id = ${employeeId}
+            <if test="employeeId != null ">
+                id = #{employeeId}
             </if>
         </where>
     </sql>
     <sql id="findEmployeeInfoByIds">
         select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
         <where>
-            <if test="${employeeIds} != null and employeeIds.size() > 0">
+            <if test="employeeIds != null and employeeIds.size() > 0">
                 id in
-                <foreach collection="${employeeIds}" item="item" open="(" separator="," close=")">
-                    #{item}
+                <foreach collection="employeeIds" item="employeeId" open="(" separator="," close=")">
+                    #{employeeId}
                 </foreach>
             </if>
         </where>
     </sql>
     <sql id="queryEffectiveEmployeeCount">
-        select count(1) from t_employee
+        select count(1) from t_user
         <where>
-            <if test="$employeeId} != null">
+            <if test="employeeId != null">
                 id = ${employeeId}
             </if>
-            <if test="${employeeId} == null">
+            <if test="employeeId == null">
                 1=2
             </if>
         </where>

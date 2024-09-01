@@ -74,7 +74,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     private TaskService taskService;
 
     /**
-     * 流程按钮操作
+     * button operation
      *
      * @param params
      * @param formCode
@@ -140,7 +140,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 break;
             // my draft
             case 6:
-                //todo tobe implemented
+                page.setRecords(this.getBaseMapper().allProcessList(page, vo));
                 break;
             // delegated tasks
             case 7:

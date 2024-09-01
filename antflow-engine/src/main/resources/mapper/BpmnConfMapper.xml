@@ -59,7 +59,12 @@
             AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')
             OR a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.search},'%'))
         </if>
-
+        <if test="bpmnConfVo.bpmnCode != null and bpmnConfVo.bpmnCode != ''">
+            AND a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.bpmnCode},'%')
+        </if>
+        <if test="bpmnConfVo.bpmnName != null and bpmnConfVo.bpmnName != ''">
+            AND a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.bpmnName},'%')
+        </if>
         ORDER BY a.create_time DESC
     </select>
 </mapper>

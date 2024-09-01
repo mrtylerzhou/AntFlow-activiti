@@ -50,6 +50,8 @@ public class BpmnNodeConditionsConfBaseVo {
      */
     private String totalMoney;
 
+    private Double leaveHour;
+
     /**
      * total money operator
      */

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import org.openoa.base.constant.enums.JumpUrlEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
@@ -36,6 +37,8 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
     private BpmnApproveRemindServiceImpl bpmnApproveRemindService;
     @Autowired
     private BpmnTemplateServiceImpl bpmnTemplateService;
+    @Autowired
+    private InformationTemplateMapper informationTemplateMapper;
 
     /**
      * modify
@@ -100,9 +103,14 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
      */
     public ResultAndPage<InformationTemplateVo> list(PageDto pageDto, InformationTemplateVo informationTemplateVo) {
         Page<InformationTemplateVo> page = PageUtils.getPageByPageDto(pageDto);
-        //todo 分页暂传入null
-        //分页查询
-
+        //query by page
+        page.setRecords(informationTemplateMapper.pageList(page, informationTemplateVo)
+                .stream()
+                .peek(o -> {
+                    o.setJumpUrlValue(JumpUrlEnum.getDescByByCode(o.getJumpUrl()));
+                    o.setStatusValue(o.getStatus().equals(0) ? "启用" : "禁用");
+                })
+                .collect(Collectors.toList()));
         return PageUtils.getResultAndPage(page);
     }
 
@@ -173,7 +181,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
             }
         });
         if (!ObjectUtils.isEmpty(list)) {
-            //todo insert or update
+            defaultTemplateService.insertOrUpdateAllColumnBatch(list);
         }
     }
 

@@ -205,7 +205,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
         //set isOutside default to false
         boolean isOutside = false;
 
-        //如果审批流编号不为空则根据审批流编号查询审批流信息并且判断是否为外部流程，如果是外部流程则修改isOutside布尔值为true
+
         //if bpmnCode is not null or empty then query config info and judge whether it is outside process,
         // if it is outside process then set isOutside boolean value to true
         if (!Strings.isNullOrEmpty(bpmnTimeoutReminderVariableVo.getBpmnCode())) {
@@ -420,7 +420,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     .findFirst()
                     .orElse(null);
 
-            //如果流程参数记录不为空并且流程为新流程参数则继续进行参数赋值操作
+
             if (!ObjectUtils.isEmpty(bpmVariable)) {
                 BpmnTimeoutReminderVariableVo bpmnTimeoutReminderVariableVo = new BpmnTimeoutReminderVariableVo();
                 BeanCopy.from(bpmVariable).to(bpmnTimeoutReminderVariableVo).copy();
@@ -436,13 +436,14 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                 bpmnTimeoutReminderVariableVo.setBpmnName(bpmVariable.getProcessName());
                 bpmnTimeoutReminderVariableVo.setProcessNumber(bpmVariable.getProcessNum());
 
-                //比对获得流程实例信息
+
                 Optional<HistoricProcessInstance> historicProcessInstanceOptional = historicProcessInstances
                         .stream()
                         .filter(o -> o.getId().equals(key))
                         .findFirst();
 
-                //设置流程申请人、申请日期、申请时间
+
+                //set applicant,applydate,apply time
                 historicProcessInstanceOptional.ifPresent(historicProcessInstance -> {
                     Employee employee = employeeService.getEmployeeDetailById(Long.parseLong(historicProcessInstance.getStartUserId()));
                     bpmnTimeoutReminderVariableVo.setStartUser(employee.getUsername());
@@ -450,7 +451,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(historicProcessInstance.getStartTime()));
                 });
 
-                //转换流程启动参数Json字符串设置被审批人
+
                 if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
                     BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
                     if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmplId())) {
@@ -459,7 +460,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                     }
                 }
 
-                //赋值操作完成设置流程参数记录Map
+
                 bpmnTimeoutReminderVariableVoMap.put(key, bpmnTimeoutReminderVariableVo);
             }
         }
@@ -467,35 +468,36 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
     }
 
     /**
-     * 获得未处理待办列表Multimap
+     * not processed yet tasks Multimap
      *
      * @return
      */
     private Multimap<String, BpmnTimeoutReminderTaskVo> getBpmnTimeoutReminderTaskVoMultimap() {
-        //声明未处理代办列表Map(Key：流程实例Id;Value：代办对象列表)
+
+        //declare a multimap to store not processed yet tasks.procinstid as key and remindvo as value
         Multimap<String, BpmnTimeoutReminderTaskVo> bpmnTimeoutReminderTaskVoMultimap = ArrayListMultimap.create();
 
-        //查询流程引擎所有代办
+        //query process engine to get a list of not processed yet tasks
         List<Task> tasks = taskService.createTaskQuery().list();
 
-        //遍历代办列表组装数据
+
         for (Task task : tasks) {
 
-            //如果任务处理人为空则不计入比对列表
+            //if a assignee is empty then skip
             if (ObjectUtils.isEmpty(task.getAssignee())) {
                 continue;
             }
 
-            //计算任务待命天数
+            //calculate days
             Integer standbyDay = Optional.ofNullable(DateUtil.dateDiff(task.getCreateTime(), new Date(), 1))
                     .orElse(0L).intValue();
 
-            //如果待命天数小于等于0则不计入比对列表
+
             if (standbyDay <= 0) {
                 continue;
             }
 
-            //设置对象
+            //put values to map
             bpmnTimeoutReminderTaskVoMultimap.put(task.getProcessInstanceId(), BpmnTimeoutReminderTaskVo
                     .builder()
                     .procInstId(task.getProcessInstanceId())

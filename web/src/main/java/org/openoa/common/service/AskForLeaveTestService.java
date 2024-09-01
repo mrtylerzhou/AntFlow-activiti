@@ -3,50 +3,86 @@ package org.openoa.common.service;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.ThirdPartyAccountApplyVo;
+import org.openoa.entity.BizLeaveTime;
+import org.openoa.entity.ThirdPartyAccountApply;
+import org.openoa.vo.BizLeaveTimeBpmnConditionsVo;
+import org.openoa.vo.BizLeaveTimeVo;
+import org.openoa.mapper.BizLeaveTimeMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * @Classname AskForLeaveTestService
- * @Date 2022-02-20 11:14
+ * @Date 2024-08-26 11:14
  * @Created by AntOffice
  */
 @ActivitiServiceAnno(svcName = "LEAVE_WMA",desc = "请假申请")
 //formAdaptor
-public class AskForLeaveTestService implements FormOperationAdaptor, ActivitiService {
+public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTimeVo>, ActivitiService {
+
+    @Autowired
+    private BizLeaveTimeMapper bizLeaveTimeMapper;
 
     @Override
-    public BpmnStartConditionsVo previewSetCondition(BusinessDataVo vo) {
-        return BpmnStartConditionsVo.builder().build();
+    public BpmnStartConditionsVo previewSetCondition(BizLeaveTimeVo vo) {
+        String userId =  vo.getStartUserId();
+        return BpmnStartConditionsVo.builder()
+                .startUserId(userId)
+                .leaveHour(vo.getLeaveHour()).build();
     }
 
     @Override
-    public BusinessDataVo initData(BusinessDataVo vo) {
+    public BizLeaveTimeVo initData(BizLeaveTimeVo vo) {
+        return null;
+    }
+
+
+    @Override
+    public BpmnStartConditionsVo launchParameters(BizLeaveTimeVo vo) {
+        String userId =  vo.getStartUserId();
+        return BpmnStartConditionsVo.builder()
+                .startUserId(userId)
+                .leaveHour(vo.getLeaveHour()).build();
+    }
+
+    @Override
+    public BizLeaveTimeVo queryData(Long businessId) {
+        BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(businessId);
+        BizLeaveTimeVo vo=new BizLeaveTimeVo();
+        BeanUtils.copyProperties(leaveTime,vo);
+        return vo;
+    }
+
+    @Override
+    public BizLeaveTimeVo submitData(BizLeaveTimeVo vo) {
+        BizLeaveTime leaveTime=new BizLeaveTime();
+        BeanUtils.copyProperties(vo,leaveTime);
+
+        leaveTime.setCreateTime(new Date());
+        leaveTime.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+        leaveTime.setLeaveUserId(Integer.parseInt(vo.getStartUserId()));
+        leaveTime.setLeaveUserName(SecurityUtils.getLogInEmpNameSafe());
+
+        bizLeaveTimeMapper.insert(leaveTime);
+        vo.setBusinessId(leaveTime.getId().longValue());
+        vo.setProcessTitle("请假申请");
+        vo.setProcessDigest(vo.getRemark());
+        vo.setEntityName(BizLeaveTime.class.getSimpleName());
+        return vo;
+    }
+
+    @Override
+    public BizLeaveTimeVo consentData(BizLeaveTimeVo vo) {
         return null;
     }
 
     @Override
-    public BpmnStartConditionsVo launchParameters(BusinessDataVo vo) {
-        return BpmnStartConditionsVo.builder().build();
-    }
-
-    @Override
-    public BusinessDataVo queryData(Long businessId) {
-        return new BusinessDataVo();
-    }
-
-    @Override
-    public BusinessDataVo submitData(BusinessDataVo vo) {
-        return new BusinessDataVo();
-    }
-
-    @Override
-    public BusinessDataVo consentData(BusinessDataVo vo) {
-        return new BusinessDataVo();
-    }
-
-    @Override
-    public void backToModifyData(BusinessDataVo vo) {
+    public void backToModifyData(BizLeaveTimeVo vo) {
 
     }
 

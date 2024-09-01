@@ -93,6 +93,8 @@ public class BpmnStartConditionsVo {
     private Integer accountType;
     private BaseIdTranStruVo jobLevelVo;
 
+    private Double leaveHour;
+
     /**
      * forwarded emp list
      */

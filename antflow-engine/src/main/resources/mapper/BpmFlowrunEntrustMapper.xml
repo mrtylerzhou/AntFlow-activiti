@@ -33,6 +33,15 @@
         WHERE runinfoid = #{runinfoid}
           AND `type` = 2;
     </select>
+    <select id="getEntrustByTaskId" resultType="org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust">
+        SELECT w.original,
+        w.actual
+        FROM bpm_flowrun_entrust w
+        WHERE w.actual = #{actual}
+        AND w.runinfoid= #{procDefId}
+        AND w.runtaskid= #{taskId}
+        LIMIT 1
+    </select>
     <delete id="deleteBpmFlowruninfo">
         delete
         from bpm_flowruninfo

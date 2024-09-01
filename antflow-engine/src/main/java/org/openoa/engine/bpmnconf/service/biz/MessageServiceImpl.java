@@ -1,25 +1,36 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.util.MailUtils;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseMsgInfo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.base.vo.MessageInfo;
+import org.openoa.base.vo.ResultAndPage;
+import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageStatusServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,7 +44,8 @@ public class MessageServiceImpl {
 
     @Autowired
     private UserMessageStatusServiceImpl userMessageStatusService;
-
+    @Autowired
+    private MailUtils mailUtils;
 
     /**
      * send single email
@@ -45,7 +57,17 @@ public class MessageServiceImpl {
     public void sendMail(MailInfo mailInfo, Long userId) {
 
         UserMessageStatus userMessageStatus = getUserMessageStatus(userId);
-        //todo
+
+        //如果员工没有消息配置数据则默认发送邮件
+        //if user has no message config,the default to send email
+        if (userMessageStatus==null) {
+            mailUtils.doSendMail(mailInfo);
+            return;
+        }
+
+        if (Boolean.TRUE.equals(userMessageStatus.getMailStatus())) {
+            mailUtils.doSendMail(mailInfo);
+        }
     }
 
     /**
@@ -61,7 +83,18 @@ public class MessageServiceImpl {
 
             UserMessageStatus userMessageStatus = getUserMessageStatus(entry.getKey());
 
-            //todo
+
+            if (userMessageStatus==null) {
+                mailInfos.add(entry.getValue());
+                continue;
+            }
+
+            if (Boolean.TRUE.equals(userMessageStatus.getMailStatus())) {
+                mailInfos.add(entry.getValue());
+            }
+        }
+        if (!CollectionUtils.isEmpty(mailInfos)) {
+            mailUtils.doSendMailBath(mailInfos);
         }
     }
 
@@ -75,7 +108,7 @@ public class MessageServiceImpl {
     public void sendSms(MessageInfo messageInfo, Long userId) {
 
         UserMessageStatus userMessageStatus = getUserMessageStatus(userId);
-//todo
+      //todo
     }
 
     /**

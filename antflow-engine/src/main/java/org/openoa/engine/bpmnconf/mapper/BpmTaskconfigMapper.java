@@ -79,7 +79,7 @@ public interface BpmTaskconfigMapper extends BaseMapper<BpmTaskconfig> {
     public Map<String, Object> findByAppRoute(@Param("processKey") String processKey, @Param("taskKey") String taskKey, @Param("routeType") String routeType);
 
     /**
-     * get a a task's assignee by processKey and taskKey
+     * get a task's assignee by processKey and taskKey
      *
      * @param procInstId 流程实例id
      * @param taskDefKey 节点key

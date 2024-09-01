@@ -79,12 +79,6 @@ public class UserMessage {
     private String appUrl;
 
     /**
-     * is new data 0-old data 1-new data
-     */
-    @TableField("new_data")
-    private Integer newDate;
-
-    /**
      * message source
      */
     @TableField("source")
