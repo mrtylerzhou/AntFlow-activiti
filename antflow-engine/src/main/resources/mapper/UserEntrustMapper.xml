@@ -61,5 +61,22 @@
         group by s.code
     </select>
 
+    <select id="getEntrustPageList" parameterType="map" resultType="org.openoa.base.vo.Entrust">
+        select t.id     as id,
+        u.user_name     as `name`,
+        t.sender        as sender,
+        t.receiver_id   as receiverId,
+        t.power_id      as powerId,
+        t.begin_time    as beginTime,
+        t.end_time      as endTime,
+        t.receiver_name as receiverName,
+        t.create_time   as createTime
+        from t_user_entrust as t
+        left join t_user u on t.sender  = u.id
+        where 1 = 1
+        <if test="userId != null and  userId !=''">
+            and (t.sender = #{userId} or t.receiver_id = #{userId})
+        </if>
+    </select>
 
 </mapper>

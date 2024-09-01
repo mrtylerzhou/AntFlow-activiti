@@ -1,23 +1,17 @@
 package org.openoa.base.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-
 /**
  * @author AntFlow
  * @since  0.0.1
  */
 @Data
-public class DataVo implements Serializable {
+public class DataVo  {
 
     private List<IdsVo> ids;
-
+    private Integer sender;
     private Integer receiverId;
     /**
      * entrust user name
@@ -27,12 +21,10 @@ public class DataVo implements Serializable {
     /**
      * start time
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date beginTime;
 
     /**
      * end time
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endTime;
 }

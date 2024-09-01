@@ -12,6 +12,7 @@ import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
+import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -24,7 +25,9 @@ import org.openoa.common.formatter.BpmnPersonnelFormat;
 import org.openoa.common.formatter.BpmnPersonnelFormatImpl;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
+import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnDeduplicationFormat;
 import org.openoa.engine.bpmnconf.service.impl.BpmnDeduplicationFormatImpl;
@@ -55,7 +58,8 @@ public class BpmnConfCommonServiceImpl {
     private BpmnStartFormatFactory bpmnStartFormatFactory;
     @Autowired
     private BpmnPersonnelFormat bpmnPersonnelFormat;
-
+    @Autowired
+    private BpmVariableServiceImpl bpmnVariableService;
 
     /**
      * query conf by formCode
@@ -199,7 +203,17 @@ public class BpmnConfCommonServiceImpl {
     }
 
     public PreviewNode taskPagePreviewNode(String params) {
-        return getPreviewNode(params, false);
+        JSONObject jsonObject = JSONObject.parseObject(params);
+        String processNumber = jsonObject.getString("processNumber");
+         
+        QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
+        wrapper.eq("process_num", processNumber);
+        BpmVariable bpmnVariable = bpmnVariableService.getOne(wrapper);
+
+        String processStartConditions = bpmnVariable.getProcessStartConditions();
+        JSONObject objectStart = JSON.parseObject(processStartConditions);
+        objectStart.put("BpmnCode", bpmnVariable.getBpmnCode());
+        return getPreviewNode(objectStart.toString(), false);
     }
 
     /**
@@ -336,6 +350,9 @@ public class BpmnConfCommonServiceImpl {
             vo.setStartUserId(startUserId);
         } else {
             startUserId = vo.getStartUserId();
+            if (ObjectUtils.isEmpty(startUserId)){
+                vo.setStartUserId(SecurityUtils.getLogInEmpNameSafe());
+            }
         }
         if (!ObjectUtils.isEmpty(startUserId)) {
             bpmnStartConditionsExtendVo.setStartUserId(startUserId.toString());

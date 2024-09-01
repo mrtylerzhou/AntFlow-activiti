@@ -622,8 +622,12 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         NodeTypeEnum nodeTypeEnumByCode = NodeTypeEnum.getNodeTypeEnumByCode(bpmnNodeVo.getNodeType());
 
         if (!ObjectUtils.isEmpty(nodeTypeEnumByCode)) {
-
-            bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodeTypeEnumByCode);
+            if (NODE_TYPE_APPROVER.equals(nodeTypeEnumByCode)) {
+                NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getNodePropertyEnumByCode(bpmnNodeVo.getNodeProperty());
+                bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodePropertyEnum);
+            } else {
+                bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodeTypeEnumByCode);
+            }
         } else {
 
             NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getNodePropertyEnumByCode(bpmnNodeVo.getNodeProperty());

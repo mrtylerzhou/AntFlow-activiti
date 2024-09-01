@@ -140,7 +140,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 break;
             // my draft
             case 6:
-                //todo tobe implemented
+                page.setRecords(this.getBaseMapper().allProcessList(page, vo));
                 break;
             // delegated tasks
             case 7:

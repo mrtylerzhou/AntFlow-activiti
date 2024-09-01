@@ -2,17 +2,18 @@ package org.openoa.engine.bpmnconf.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.base.vo.BaseKeyValueStruVo;
-import org.openoa.base.vo.PersonnelRuleVO;
+import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,9 @@ public class BpmnBusinessController {
 
     @Autowired
     Map<String, FormOperationAdaptor> formOperationAdaptorMap;
+
+    @Autowired
+    private UserEntrustServiceImpl userEntrustService;
 
     @RequestMapping("/listFormCodes")
     public Result listFormCodes(String desc){
@@ -60,6 +64,43 @@ public class BpmnBusinessController {
         }
         return Result.newSuccessResult(personnelRuleVOS);
     }
+
+    /**
+     * 获取委托列表
+     * @param requestDto
+     * @param type
+     * @return
+     */
+    @PostMapping("/entrustlist/{type}")
+    public ResultAndPage<Entrust> entrustlist(@RequestBody DetailRequestDto requestDto, @PathVariable("type") Integer type){
+
+        PageDto pageDto = requestDto.getPageDto();
+        Entrust vo = new Entrust();
+        return userEntrustService.getEntrustPageList(pageDto,vo,type);
+    }
+
+    /**
+     * 获取委托详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/entrustDetail/{id}")
+    public Result entrustDetail(@PathVariable("id") Integer id){
+        UserEntrust detail = userEntrustService.getEntrustDetail(id);
+        return Result.newSuccessResult(detail);
+    }
+
+    /**
+     * 编辑委托
+     * @param dataVo
+     * @return
+     */
+    @PostMapping("/editEntrust")
+    public Result editEntrust(@RequestBody DataVo dataVo){
+        userEntrustService.updateEntrustList(dataVo);
+        return Result.newSuccessResult("ok");
+    }
+
     private List<BaseKeyValueStruVo> baseFormInfo(String desc){
         List<BaseKeyValueStruVo> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {

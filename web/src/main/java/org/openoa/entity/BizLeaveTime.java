@@ -25,6 +25,8 @@ public class BizLeaveTime {
     private Integer leaveUserId;
     @TableField("leave_user_name")
     private String leaveUserName;
+    @TableField("leave_type")
+    private Integer leaveType;
     @TableField("begin_time")
     private Date beginDate;
     @TableField("end_time")
