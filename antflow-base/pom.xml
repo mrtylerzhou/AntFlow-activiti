@@ -271,7 +271,7 @@
                         <additionalparam>-quiet</additionalparam>
                     </additionalJOptions>
                     <reportOutputDirectory>${project.build.directory}/empty-javadoc</reportOutputDirectory>
-                   <!-- <skip>true</skip>-->
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
