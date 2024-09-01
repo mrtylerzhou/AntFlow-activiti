@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.entity.Employee;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProcessRecordInfoVo {
      *
      */
     //todo
+    Employee employee;
     /***
      * process title
      */

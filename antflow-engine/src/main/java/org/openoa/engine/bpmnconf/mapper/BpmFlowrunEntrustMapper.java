@@ -14,12 +14,13 @@ public interface BpmFlowrunEntrustMapper extends BaseMapper<BpmFlowrunEntrust> {
 
      * check whether there is an entrust data by specified user id
      *
-     * @param userId    当前处理人id
+     * @param userId    actual processing user
      * @param procDefId process def key
      * @return
      */
     public UserEntrust getBpmEntrust(@Param("actual") Integer userId, @Param("procDefId") String procDefId);
 
+    public BpmFlowrunEntrust getEntrustByTaskId (@Param("actual") Integer userId, @Param("procDefId") String procDefId,@Param("taskId")String taskId);
     /**
      * delete run info
      */

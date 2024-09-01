@@ -7,5 +7,9 @@
             <property name="roleIds" value="#{roleIds}"/>
         </include>
     </select>
-    <select id="queryUserByRoleIds" resultType="org.openoa.base.entity.User"></select>
+    <select id="queryUserByRoleIds" resultType="org.openoa.base.entity.User">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByRoleIds">
+            <property name="roleIds" value="#{roleIds}"/>
+        </include>
+    </select>
 </mapper>

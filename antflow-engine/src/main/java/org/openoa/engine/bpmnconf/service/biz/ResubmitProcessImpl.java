@@ -5,7 +5,10 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
+import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
+import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
@@ -50,6 +53,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
 
+
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
@@ -71,19 +75,20 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         vo.setTaskId(task.getId());
         BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
 
-        //save verify info
+        //save process verify info
         BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
                 .builder()
                 .verifyDate(new Date())
                 .taskName(task.getName())
                 .taskId(task.getId())
-                .procInstId(bpmBusinessProcess.getProcInstId())
+                .runInfoId(bpmBusinessProcess.getProcInstId())
                 .verifyUserId(SecurityUtils.getLogInEmpIdStr())
                 .verifyUserName(SecurityUtils.getLogInEmpName())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
                 .verifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "同意" : vo.getApprovalComment())
                 .processCode(vo.getProcessNumber())
                 .build();
+
 
 
         //if process digest is not empty then update process digest

@@ -16,7 +16,7 @@
     </parent>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
-    <version>0.7.3</version>
+    <version>0.8.1</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>
@@ -25,6 +25,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
 
@@ -91,12 +92,17 @@
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-servlet</artifactId>
-            <version>5.3.0</version>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jodd</groupId>
+            <artifactId>jodd-mail</artifactId>
+            <version>5.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-bean</artifactId>
-            <version>5.1.6</version>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.vlsi.mxgraph</groupId>

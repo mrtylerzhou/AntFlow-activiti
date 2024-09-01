@@ -87,7 +87,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 .verifyDesc(vo.getApprovalComment())
                 .taskName(taskData.getName())
                 .taskId(taskData.getId())
-                .procInstId(bpmBusinessProcess.getProcInstId())
+                .runInfoId(bpmBusinessProcess.getProcInstId())
                 .build());
 
         //stop a process

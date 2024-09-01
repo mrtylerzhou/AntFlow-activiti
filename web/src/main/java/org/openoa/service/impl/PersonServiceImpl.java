@@ -66,7 +66,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
     @Transactional
     public void userOpTransactional(){
         User user=new User();
-        user.setId(1);
+        user.setId(1L);
         user.setUserName("东西");
 
         if(3==3){

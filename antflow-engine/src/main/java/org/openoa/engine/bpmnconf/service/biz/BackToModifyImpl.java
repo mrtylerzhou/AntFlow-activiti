@@ -69,7 +69,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 .verifyUserId(SecurityUtils.getLogInEmpIdStr())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_UPDATE_TYPE.getCode())
                 .processCode(bpmBusinessProcess.getBusinessNumber())
-                .procInstId(bpmBusinessProcess.getProcInstId())
+                .runInfoId(bpmBusinessProcess.getProcInstId())
                 .verifyDesc(vo.getApprovalComment())
                 .taskName(taskData.getName())
                 .taskId(taskData.getId())

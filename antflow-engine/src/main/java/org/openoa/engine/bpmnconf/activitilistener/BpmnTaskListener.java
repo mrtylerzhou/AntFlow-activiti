@@ -6,15 +6,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.ProcessNoticeEnum;
+import org.openoa.base.vo.ActivitiBpmMsgVo;
+import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
+import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.engine.bpmnconf.confentity.BpmnNode;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
+import org.openoa.engine.vo.BpmVariableMessageVo;
+import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -37,6 +48,10 @@ public class BpmnTaskListener implements TaskListener {
 
     @Resource
     private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    @Resource
+    private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
+    @Resource
+    private NodeAdditionalInfoServiceImpl nodeAdditionalInfoService;
 
 
     @Override
@@ -70,13 +85,102 @@ public class BpmnTaskListener implements TaskListener {
         //bpmn conf
         BpmnConf bpmnConf = bpmnConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", bpmnCode));
-        delegateTask.setDescription("hello description");
+
         //set process entrust info
         Integer oldUserId = Integer.parseInt(delegateTask.getAssignee());
         Integer userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
 
-        /*if(!ObjectUtils.isEmpty(userId)&&userId!=0){
+
+        //if userId is not null and valid then set user task delegate
+        if (userId!=null && userId != 0) {
             delegateTask.setAssignee(userId.toString());
-        }*/
+        }
+
+
+        //如果委托生效 则在我的委托列表中加一条数据
+        if (!oldUserId.equals(userId)) {
+            BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
+            entrust.setType(1);
+            entrust.setRuntaskid(delegateTask.getId());
+            entrust.setActual(userId);
+            entrust.setOriginal(oldUserId);
+            entrust.setIsRead(2);
+            entrust.setProcDefId(formCode);
+            entrust.setRuninfoid(delegateTask.getProcessInstanceId());
+            bpmFlowrunEntrustService.addFlowrunEntrust(entrust);
+            log.info("委托生效，委托前：{}，委托后；{}", oldUserId, userId);
+        }
+
+        BpmVariableMessageVo bpmVariableMessageVo = BpmVariableMessageVo
+                .builder()
+                .processNumber(processNumber)
+                .formCode(formCode)
+                .eventType(EventTypeEnum.PROCESS_FLOW.getCode())
+                .messageType(Boolean.TRUE.equals(EventTypeEnum.PROCESS_FLOW.getIsInNode()) ? 2 : 1)
+                .elementId(delegateTask.getTaskDefinitionKey())
+                .assignee(delegateTask.getAssignee())
+                .taskId(delegateTask.getId())
+                .eventTypeEnum(EventTypeEnum.PROCESS_FLOW)
+                .type(2)
+                .delegateTask(delegateTask)
+                .build();
+
+
+        if (bpmnConf==null) {
+            log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
+            return;
+        }
+
+
+        boolean isOutside = false;
+
+
+        if (bpmnConf.getIsOutSideProcess() == 1) {
+            isOutside = true;
+        }
+        if (bpmVariableMessageListenerService.listenerCheckIsSendByTemplate(bpmVariableMessageVo)) {
+            //set is outside
+            bpmVariableMessageVo.setIsOutside(isOutside);
+
+            //set template message
+            bpmVariableMessageListenerService.listenerSendTemplateMessages(bpmVariableMessageVo);
+        } else {
+
+            ActivitiTemplateMsgUtils.sendBpmApprovalMsg(
+                    ActivitiBpmMsgVo
+                            .builder()
+                            .userId(Long.parseLong(delegateTask.getAssignee()))
+                            .processId(processNumber)
+                            .bpmnCode(bpmnCode)
+                            .formCode(formCode)
+                            .processType("")//todo set process type
+                            .processName(bpmnConf.getBpmnName())
+                            .emailUrl(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
+                                    ProcessInforVo
+                                            .builder()
+                                            .processinessKey(bpmnCode)
+                                            .businessNumber(processNumber)
+                                            .formCode(formCode)
+                                            .type(2)
+                                            .build(), isOutside))
+                            .url(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
+                                    ProcessInforVo
+                                            .builder()
+                                            .processinessKey(bpmnCode)
+                                            .businessNumber(processNumber)
+                                            .formCode(formCode)
+                                            .type(2)
+                                            .build(), isOutside))
+                            .appPushUrl(processBusinessContans.getRoute(ProcessNoticeEnum.APP_TYPE.getCode(),
+                                    ProcessInforVo
+                                            .builder()
+                                            .processinessKey(bpmnCode)
+                                            .businessNumber(processNumber)
+                                            .formCode(formCode)
+                                            .type(2)
+                                            .build(), isOutside))
+                            .taskId(delegateTask.getProcessInstanceId())
+                            .build());
         }
     }
+}

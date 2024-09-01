@@ -105,20 +105,23 @@ public class BpmnSendMessageAspect {
         //set bpmn conf
         businessDataVo.setBpmnCode(bpmnConf.getBpmnCode());
 
-        //设置审批流名称
+        //set bpmn name
         businessDataVo.setBpmnName(bpmnConf.getBpmnName());
 
 
-        //申明流程消息发送vo对象
+        //declare variable message vo
         BpmVariableMessageVo vo;
 
-        //判断如果是"提交"操作则先执行切面方法再获取流组装后的流程发送vo对象
+
+        //to check if it is a submit operation then execute aspect method first then assemble variable message vo
         if (businessDataVo.getOperationType().equals(ProcessOperationEnum.BUTTON_TYPE_SUBMIT.getCode())) {
 
-            //执行切面方法逻辑
+
+            //do execute aspect method
             doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty,ProcessOperationEnum.BUTTON_TYPE_SUBMIT, joinPoint);
 
-            //获取流组装后的流程发送vo对象
+
+            //get bpmn variable message vo
             vo = getBpmVariableMessageVo(businessDataVo);
 
             /**
@@ -129,22 +132,25 @@ public class BpmnSendMessageAspect {
 
         } else {
 
-            //获取流组装后的流程发送vo对象
+            //get bpmn variable message vo
             vo = getBpmVariableMessageVo(businessDataVo);
 
-            //根据操作类型匹配枚举值
+
+            //get process operation enum by operation type
             ProcessOperationEnum processOperationEunm = ProcessOperationEnum.getEnumByCode(businessDataVo.getOperationType());
 
-            //执行切面方法逻辑
+            //do execute aspect method
             doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty, processOperationEunm, joinPoint);
 
         }
 
-        //发送流程消息
+        //send message
         if (!ObjectUtils.isEmpty(vo)) {
-            //判断如果是外部流程则回调通知业务方流程已完成
+
+            //if it is a third party process then execute the finish call back method
             if (bpmnConf.getIsOutSideProcess() == 1) {
-                //如果是外部流程则设置是否外部流程为true
+
+                //if it is a third party process then set flat to true
                 vo.setIsOutside(true);
                 businessDataVo.setIsOutSideAccessProc(true);
             }
@@ -161,7 +167,9 @@ public class BpmnSendMessageAspect {
      */
     private BpmVariableMessageVo getBpmVariableMessageVo(BusinessDataVo businessDataVo) {
 
-        if (!ObjectUtils.isEmpty(businessDataVo)) {
+        if (ObjectUtils.isEmpty(businessDataVo)) {
+            return  null;
+        }
 
             //get event type by operation type
             EventTypeEnum eventTypeEnum = EventTypeEnum.getEnumByOperationType(businessDataVo.getOperationType());
@@ -201,9 +209,7 @@ public class BpmnSendMessageAspect {
                     .eventTypeEnum(eventTypeEnum)
                     .type(type)
                     .build());
-        }
 
-        return null;
     }
 
     /**

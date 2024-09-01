@@ -92,7 +92,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         this.getBaseMapper().insert(bpmnConf);
         //effectiveBpmnConf(bpmnConf.getId().intValue());
-        //可配置流程绑定消息模板
+        //notice template
         bpmnConfNoticeTemplateService.insert(bpmnCode);
         Long confId = Optional.ofNullable(bpmnConf.getId()).orElse(0L);
 
@@ -361,6 +361,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                             .build())
                     .collect(Collectors.toList()));
         }
+        //todo functions to be implemented
         vo.setTemplateName(Optional
                 .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
                 .orElse(new InformationTemplate())

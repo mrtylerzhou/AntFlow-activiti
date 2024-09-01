@@ -3,8 +3,12 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 
 public enum MessageSendTypeEnum {
-
-    MAIL(1, "邮件"), MESSAGE(2, "短信"), PUSH(3, "APP-PUSH"), ALL(4, "所有类型");
+    ALL(50, "所有类型"),
+    MAIL(1, "邮件")
+    , MESSAGE(2, "短信"),
+    PUSH(3, "APP-PUSH"),
+    WECHAT_PUSH(4,"企微消息"),
+    ;
 
     @Getter
     private Integer code;

@@ -69,7 +69,7 @@ public class InformationTemplateVo implements Serializable {
      */
     private Integer isDel;
     /**
-     * creatime time
+     * create time
      */
     private Date createTime;
     /**
@@ -77,7 +77,7 @@ public class InformationTemplateVo implements Serializable {
      */
     private String createUser;
     /**
-     * updatetime
+     * update time
      */
     private Date updateTime;
     /**
