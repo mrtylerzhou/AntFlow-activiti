@@ -16,11 +16,9 @@ import java.util.List;
 @Service
 public class BpmVariableButtonServiceImpl extends ServiceImpl<BpmVariableButtonMapper, BpmVariableButton> {
 
-    @Autowired
-    private BpmVariableButtonMapper mapper;
 
     public List<BpmVariableButton> getButtonsByProcessNumber(String processNum, String elementId) {
 
-        return mapper.getButtonsByProcessNumber(processNum, elementId);
+        return this.getBaseMapper().getButtonsByProcessNumber(processNum, elementId);
     }
 }
