@@ -89,9 +89,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
             return employeeId;
         }
 
-        Integer
-
-        result = this.getEntrustEmployeeOnly(employeeId, powerId);
+        Integer result = this.getEntrustEmployeeOnly(employeeId, powerId);
         return result;
     }
 
