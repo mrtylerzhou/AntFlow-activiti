@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -15,6 +16,7 @@ import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.Employee;
+import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate;
@@ -60,6 +62,8 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
     @Autowired
     private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    @Autowired
+    private BpmnConfServiceImpl bpmnConfService;
 
     @Autowired
     private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;
@@ -86,8 +90,21 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
                     .eq("business_party_mark", vo.getBusinessPartyMark()));
 
+            if(outSideBpmBusinessParty==null){
+                throw new JiMuBizException("业务方信息不存在!");
+            }
+            String formCode = vo.getFormCode();
+            Wrapper<BpmnConf> qryWrapper=new QueryWrapper<BpmnConf>()
+                    .eq("form_code",formCode)
+                    .eq("effective_status",1)
+                    .eq("is_del",0);
+            BpmnConf effectiveConfByFormCode = bpmnConfService.getOne(qryWrapper);
+            if(effectiveConfByFormCode==null){
+                throw new JiMuBizException(String.format("未能根据流程编号%s找到有效的流程配置,请检查同业入参",formCode));
+            }
+            vo.setBpmnConfId(effectiveConfByFormCode.getId());
             outSideBpmAccessBusiness = new OutSideBpmAccessBusiness();
-           BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
+            BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             //set business party's id
             outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpName());
@@ -99,7 +116,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
 
 
-        //set form code,business it ,etc
+        //set form code,business,etc
         BusinessDataVo businessDataVo = new BusinessDataVo();
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());

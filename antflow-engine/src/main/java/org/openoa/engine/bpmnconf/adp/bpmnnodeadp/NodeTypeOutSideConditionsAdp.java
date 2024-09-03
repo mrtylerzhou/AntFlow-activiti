@@ -38,11 +38,11 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
         OutSideBpmnNodeConditionsConf outSideBpmnNodeConditionsConf = outSideBpmnNodeConditionsConfService.getOne(new QueryWrapper<OutSideBpmnNodeConditionsConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
-        //join conditions url and out side conditions id to shape the final outSideConditionsUrl
+        //join conditions url and outside conditions id to shape the final outSideConditionsUrl
         String outSideConditionsUrl = StringUtils.join(bpmnNodeVo.getConditionsUrl(), outSideBpmnNodeConditionsConf.getOutSideId());
 
 
-        //set out side conditions url to node property
+        //set outside conditions url to node property
         nodeVo.getProperty().getConditionsConf().setOutSideConditionsUrl(outSideConditionsUrl);
 
 
@@ -60,7 +60,10 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
         //edit out side conditions conf
         OutSideBpmnNodeConditionsConf outSideBpmnNodeConditionsConf = new OutSideBpmnNodeConditionsConf();
         outSideBpmnNodeConditionsConf.setBpmnNodeId(bpmnNodeVo.getId());
-        outSideBpmnNodeConditionsConf.setOutSideId(bpmnNodeVo.getProperty().getConditionsConf().getOutSideConditionsId());
+        if (bpmnNodeVo.getProperty().getConditionsConf()!=null) {//todo
+            outSideBpmnNodeConditionsConf.setOutSideId(bpmnNodeVo.getProperty().getConditionsConf().getOutSideConditionsId());
+        }
+
 
         //save config
         outSideBpmnNodeConditionsConfService.save(outSideBpmnNodeConditionsConf);

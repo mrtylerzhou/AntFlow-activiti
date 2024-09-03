@@ -37,7 +37,7 @@ public class BpmnNodeConditionsConfBaseVo {
     /**
      * condition template mark
      */
-    private List<BaseIdTranStruVo> templateMarkList;
+    private List<BaseIdTranStruVo> templateMarksList;
 
     private BaseIdTranStruVo jobLevelVo;
     private List<Integer> accountType;
