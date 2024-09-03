@@ -1264,4 +1264,26 @@ INSERT INTO `t_role` VALUES (8, '测试审批角色');
 
 
 
+-- ----------------------------
+-- Table structure for t_biz_leavetime
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_leavetime`;
+CREATE TABLE `t_biz_leavetime`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `leave_user_id` int(11) NOT NULL,
+  `leave_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `leave_type` int(11) NOT NULL,
+  `begin_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `end_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `leavehour` double NOT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 
