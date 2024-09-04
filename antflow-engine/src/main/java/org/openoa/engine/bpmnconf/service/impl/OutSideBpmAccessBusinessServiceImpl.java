@@ -256,17 +256,20 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         if (employee==null) {
             throw new JiMuBizException("发起人不合法，无法预览流程");
         }
-
         //query condition template
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
-                .eq("is_del", 0)
-                .eq("business_party_id", outSideBpmBusinessParty.getId())
-                .eq("template_mark", vo.getTemplateMark()));
+        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate=null;
+        if(!StringUtils.isEmpty(vo.getTemplateMark())){
+            outSideBpmConditionsTemplate= outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+                    .eq("is_del", 0)
+                    .eq("business_party_id", outSideBpmBusinessParty.getId())
+                    .eq("template_mark", vo.getTemplateMark()));
 
 
-        if (outSideBpmConditionsTemplate==null) {
-            throw new JiMuBizException("模板信息不合法，无法预览流程");
+            if (outSideBpmConditionsTemplate==null) {
+                throw new JiMuBizException("模板信息不合法，无法预览流程");
+            }
         }
+
 
         BusinessDataVo dataVo = BusinessDataVo
                 .builder()
@@ -274,9 +277,11 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .formCode(vo.getFormCode())
                 .startUserId(employee.getId().toString())
                 .templateMark(vo.getTemplateMark())
-                .templateMarkId(outSideBpmConditionsTemplate.getId().intValue())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
+        if(outSideBpmConditionsTemplate!=null&&outSideBpmConditionsTemplate.getId()!=null){
+            dataVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+        }
 
         PreviewNode previewNode = bpmnConfCommonService.startPagePreviewNode(JSON.toJSONString(dataVo));
 
