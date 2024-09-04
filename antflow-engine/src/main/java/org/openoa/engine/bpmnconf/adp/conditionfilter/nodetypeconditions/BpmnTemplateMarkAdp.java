@@ -29,14 +29,8 @@ public class BpmnTemplateMarkAdp extends BpmnNodeConditionsAdaptor {
         if (!CollectionUtils.isEmpty(bpmnNodeConditionsConfBaseVo.getTemplateMarks())) {
             List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates = outSideBpmConditionsTemplateService.getBaseMapper().selectBatchIds(bpmnNodeConditionsConfBaseVo.getTemplateMarks());
             if (!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)) {
-                bpmnNodeConditionsConfBaseVo.setTemplateMarkList(outSideBpmConditionsTemplates
-                        .stream()
-                        .map(o -> BaseIdTranStruVo
-                                .builder()
-                                .id(o.getId())
-                                .name(o.getTemplateName())
-                                .build())
-                        .collect(Collectors.toList()));
+                List<Integer> collect = outSideBpmConditionsTemplates.stream().map(o -> o.getId().intValue()).collect(Collectors.toList());
+                bpmnNodeConditionsConfBaseVo.setTemplateMarks(collect);
             }
         }
     }
