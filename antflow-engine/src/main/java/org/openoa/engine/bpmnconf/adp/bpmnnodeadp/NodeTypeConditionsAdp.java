@@ -20,6 +20,7 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.util.BpmnConfNodePropertyConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -111,12 +112,15 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
         for (BpmnNodeConditionsConfVueVo extField : extFields) {
             String columnDbname = extField.getColumnDbname();
-            BpmnNodeConditionsConfVueVo vueVo = voMap.get(columnDbname);
-            if(vueVo==null){
-                throw new JiMuBizException("logic error!");
+            if(!CollectionUtils.isEmpty(voMap)){
+                BpmnNodeConditionsConfVueVo vueVo = voMap.get(columnDbname);
+                if(vueVo==null){
+                    throw new JiMuBizException("logic error!");
+                }
+                String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
+                extField.setFixedDownBoxValue(fixedDownBoxValue);
             }
-            String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
-            extField.setFixedDownBoxValue(fixedDownBoxValue);
+
         }
         bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
         bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());

@@ -23,6 +23,7 @@ import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceIm
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -66,24 +67,21 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
         //query outside access business info
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(businessDataVo.getBusinessId());
-
-
-        //query template mark
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
-                .eq("is_del", 0)
-                .eq("business_party_id", outSideBpmAccessBusiness.getBusinessPartyId())
-                .eq("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
-
-        if (outSideBpmConditionsTemplate==null) {
-            throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
-        }
-
         //new start conditions vo
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+        String templateMark=outSideBpmAccessBusiness.getTemplateMark();
+        if(!StringUtils.isEmpty(templateMark)){
+            //query template mark
+            OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+                    .eq("is_del", 0)
+                    .eq("business_party_id", outSideBpmAccessBusiness.getBusinessPartyId())
+                    .eq("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
 
-
-        bpmnStartConditionsVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
-
+            if (outSideBpmConditionsTemplate==null) {
+                throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
+            }
+            bpmnStartConditionsVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+        }
 
         bpmnStartConditionsVo.setOutSideType(businessDataVo.getOutSideType());
 
