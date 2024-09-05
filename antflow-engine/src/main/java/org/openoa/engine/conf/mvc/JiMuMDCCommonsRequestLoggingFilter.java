@@ -37,17 +37,20 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
             if (StringUtils.isEmpty(userId)) {
                 userId = request.getHeader("Userid");
             }
-            BaseIdTranStruVo userById = userService.getById(Long.parseLong(userId));
-            String userName = StringUtils.EMPTY;
-            if (userById != null) {
-                userName = userById.getName();
-                BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(Long.parseLong(userId)).name(userName).build();
-                ThreadLocalContainer.set("currentuser", userInfo);
+            if (!StringUtils.isEmpty(userId)) {
+                BaseIdTranStruVo userById = userService.getById(Long.parseLong(userId));
+                String userName = StringUtils.EMPTY;
+                if (userById != null) {
+                    userName = userById.getName();
+                    BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(Long.parseLong(userId)).name(userName).build();
+                    ThreadLocalContainer.set("currentuser", userInfo);
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.info("开始输出详细日志");
+                    super.beforeRequest(request, message);
+                }
             }
-            if (logger.isDebugEnabled()) {
-                logger.info("开始输出详细日志");
-                super.beforeRequest(request, message);
-            }
+
         }
     }
 
