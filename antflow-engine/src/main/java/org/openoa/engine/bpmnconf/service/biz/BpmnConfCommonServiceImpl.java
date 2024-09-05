@@ -343,11 +343,13 @@ public class BpmnConfCommonServiceImpl {
         //set start user information
         String startUserId;
         if (isStartPagePreview) {
+            if (dataVo.getIsOutSideAccessProc()) {
+                startUserId = dataVo.getStartUserId();
+            } else {
+                startUserId = SecurityUtils.getLogInEmpIdStr();
+                vo.setStartUserId(startUserId);
+            }
 
-
-            //todo z
-            startUserId = SecurityUtils.getLogInEmpIdStr();
-            vo.setStartUserId(startUserId);
         } else {
             startUserId = vo.getStartUserId();
             if (ObjectUtils.isEmpty(startUserId)){
@@ -360,8 +362,19 @@ public class BpmnConfCommonServiceImpl {
         }
 
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
-        //call business logic to set start up preview conditions
-        bpmnStartConditionsVo = formFactory.getFormAdaptor(vo).previewSetCondition(vo);
+        if(dataVo.getIsOutSideAccessProc()){
+            //set conditions before preview
+            bpmnStartConditionsVo.setTemplateMarkId(dataVo.getTemplateMarkId());
+            bpmnStartConditionsVo.setOutSideType(dataVo.getOutSideType());
+            //set embedded nodes
+            bpmnStartConditionsVo.setEmbedNodes(dataVo.getEmbedNodes());
+            //set flag to indicate it is a outside process
+            bpmnStartConditionsVo.setIsOutSideAccessProc(true);
+        }else{
+            //call business logic to set start up preview conditions
+            bpmnStartConditionsVo = formFactory.getFormAdaptor(vo).previewSetCondition(vo);
+        }
+
 
         BeanUtils.copyProperties(bpmnStartConditionsExtendVo, bpmnStartConditionsVo, StrUtils.getNullPropertyNames(bpmnStartConditionsExtendVo));
         bpmnStartConditionsVo.setApproversList(dataVo.getApproversList());

@@ -53,6 +53,9 @@ public class FormFactory implements ApplicationContextAware {
         if(formCode==null){
             BusinessDataVo vo = JSON.parseObject(params, BusinessDataVo.class);
             formCode=vo.getFormCode();
+            if(vo.getIsOutSideAccessProc()){
+                return vo;
+            }
         }
 
         Object bean = applicationContext.getBean(formCode);
