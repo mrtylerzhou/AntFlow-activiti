@@ -11,6 +11,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessContans;
@@ -201,11 +202,13 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
             }
             String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).findFirst().orElse(StringUtils.EMPTY);
             taskInfors.add(BpmVerifyInfoVo.builder()
+                            .verifyUserIds(new ArrayList<>(AntCollectionUtil.StringToLongList(verifyUserIds)))
                     .verifyUserName(verifyUserName)
                     .taskName(taskName)
                     .elementId(elementId)
                     .build());
         } else {
+            tasks.get(0).setVerifyUserIds(new ArrayList<>(AntCollectionUtil.StringToLongList(verifyUserIds)));
             taskInfors.add(tasks.get(0));
         }
 
