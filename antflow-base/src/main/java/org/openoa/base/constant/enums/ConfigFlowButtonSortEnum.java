@@ -25,8 +25,9 @@ public enum ConfigFlowButtonSortEnum {
     ADD_APPROVAL_PEOPLE(13, "添加审批人", 6),// 13 添加审批人
     FORWARDING(15, "转发", 12), // 9转发
     BACK_EDIT(18, "打回修改", 8), // 5打回修改
+    BUTTON_TYPE_JP(19, "加批", 19), // 5打回修改
     SCAN_HELP(20, "扫码帮助", 20),
-
+    ZB(21, "转办", 21),
             ;
     @Getter
     private final Integer code;
