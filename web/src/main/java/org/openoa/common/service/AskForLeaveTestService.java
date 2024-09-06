@@ -1,5 +1,6 @@
 package org.openoa.common.service;
 
+import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -78,7 +79,14 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
 
     @Override
     public BizLeaveTimeVo consentData(BizLeaveTimeVo vo) {
-        return null;
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            BizLeaveTime leaveTime = new BizLeaveTime();
+            BeanUtils.copyProperties(vo,leaveTime);
+            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            leaveTime.setId(id);
+            bizLeaveTimeMapper.updateById(leaveTime);
+        }
+        return vo;
     }
 
     @Override
