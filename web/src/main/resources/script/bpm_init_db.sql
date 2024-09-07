@@ -808,6 +808,7 @@ CREATE TABLE if not exists `t_bpmn_node_personnel_empl_conf`
     `id`                    int(11)    NOT NULL AUTO_INCREMENT COMMENT 'id',
     `bpmn_node_personne_id` int(11)    NOT NULL COMMENT 'personnel id',
     `empl_id`               varchar(50) NOT NULL COMMENT 'approver id',
+    `empl_name`             varchar(50) null comment 'approver name',
     `remark`                varchar(100) DEFAULT NULL COMMENT 'remark',
     `is_del`                tinyint(255) DEFAULT NULL COMMENT '0:no,1:yes',
     `create_user`           varchar(30)  DEFAULT NULL COMMENT 'as its name says',
