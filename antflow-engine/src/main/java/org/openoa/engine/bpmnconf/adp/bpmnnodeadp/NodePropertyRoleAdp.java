@@ -10,8 +10,10 @@ import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleConf;
+import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleOutsideEmpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +34,8 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
     @Autowired
     private BpmnRoleInfoProvider roleInfoProvider;
 
+    @Autowired
+    private BpmnNodeRoleOutsideEmpConfServiceImpl bpmnNodeRoleOutsideEmpConfService;
 
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
@@ -51,7 +55,16 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                     .roleList(getRoleList(roleIds))
                     .build());
         }
-
+        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
+            List<BpmnNodeRoleOutsideEmpConf> bpmnNodeRoleOutsideEmpConfs = bpmnNodeRoleOutsideEmpConfService.list(new QueryWrapper<BpmnNodeRoleOutsideEmpConf>()
+                    .eq("node_id", bpmnNodeVo.getId()));
+            if(!CollectionUtils.isEmpty(bpmnNodeRoleOutsideEmpConfs)){
+                List<BaseIdTranStruVo> emplList = bpmnNodeRoleOutsideEmpConfs
+                        .stream()
+                        .map(a -> BaseIdTranStruVo.builder().id(a.getEmplId()).name(a.getEmplName()).build()).collect(Collectors.toList());
+                bpmnNodeVo.getProperty().setEmplList(emplList);
+            }
+        }
         return bpmnNodeVo;
     }
 
@@ -119,6 +132,24 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                                     .updateUser(SecurityUtils.getLogInEmpName())
                                     .build())
                     .collect(Collectors.toList()));
+            //if it is an outside process,then
+            if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
+                //if it is an outside process,then emplList should be assigned values
+                List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
+                if(!CollectionUtils.isEmpty(emplList)){
+                    List<BpmnNodeRoleOutsideEmpConf> bpmnNodeRoleOutsideEmpConfs=new ArrayList<>();
+                    for (BaseIdTranStruVo baseIdTranStruVo : emplList) {
+                        BpmnNodeRoleOutsideEmpConf bpmnNodeRoleOutsideEmpConf=new BpmnNodeRoleOutsideEmpConf();
+                        bpmnNodeRoleOutsideEmpConf.setNodeId(bpmnNodeVo.getId());
+                        bpmnNodeRoleOutsideEmpConf.setEmplId(baseIdTranStruVo.getId());
+                        bpmnNodeRoleOutsideEmpConf.setEmplName(baseIdTranStruVo.getName());
+                        bpmnNodeRoleOutsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpName());
+                        bpmnNodeRoleOutsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+                        bpmnNodeRoleOutsideEmpConfs.add(bpmnNodeRoleOutsideEmpConf);
+                    }
+                    bpmnNodeRoleOutsideEmpConfService.saveBatch(bpmnNodeRoleOutsideEmpConfs);
+                }
+            }
         }
 
     }

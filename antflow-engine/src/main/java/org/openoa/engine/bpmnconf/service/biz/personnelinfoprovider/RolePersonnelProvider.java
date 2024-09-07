@@ -3,10 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
-import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
-import org.openoa.base.vo.BpmnNodePropertysVo;
-import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +27,13 @@ public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
         if (propertysVo==null || CollectionUtils.isEmpty(propertysVo.getRoleIds())) {
             throw new JiMuBizException("指定角色找人条件不全，无法找人！");
+        }
+        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
+            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
+            if(CollectionUtils.isEmpty(emplList)){
+                throw new JiMuBizException("thirdy party process role node has no employee info");
+            }
+            return  super.provideAssigneeList(bpmnNodeVo,null);
         }
         List<Long> roleIds = propertysVo.getRoleIds();
         Map<String, String> roleEmployeeInfo = roleInfoProvider.provideRoleEmployeeInfo(roleIds);

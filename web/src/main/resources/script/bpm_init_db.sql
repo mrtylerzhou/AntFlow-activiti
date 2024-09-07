@@ -1181,6 +1181,23 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified role approver configs';
 
+create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
+(
+    id          int auto_increment comment 'auto incr id'
+        primary key,
+    node_id     bigint                             null comment 'foreign key for connect with t_bpmn_node_role_conf',
+    empl_id     bigint                             null comment 'assignee id',
+    empl_name   varchar(50)                        null comment 'assignee''s name',
+    create_user varchar(50) charset utf8           null,
+   `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    update_user varchar(255) charset utf8          null,
+    column_8    int                                null,
+   `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+   `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
+)
+    comment 'approver info for a specified outsie business party''s specified role';
+
+
 CREATE TABLE IF NOT EXISTS  `t_bpmn_node_loop_conf` (
    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
    `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',

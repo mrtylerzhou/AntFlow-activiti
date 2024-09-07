@@ -1,0 +1,45 @@
+package org.openoa.engine.bpmnconf.confentity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class BpmnNodeRoleOutsideEmpConf {
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+    @TableField("node_id")
+    private Long nodeId;
+    @TableField("empl_id")
+    private Long emplId;
+    @TableField("empl_name")
+    private String emplName;
+    /**
+     * 0 for normal 1 for delete
+     */
+    @TableField("is_del")
+    private Integer isDel;
+    /**
+     * as its name says
+     */
+    @TableField("create_user")
+    private String createUser;
+    /**
+     * as its name says
+     */
+    @TableField("create_time")
+    private Date createTime;
+    /**
+     * as its name says
+     */
+    @TableField("update_user")
+    private String updateUser;
+    /**
+     * as its name says
+     */
+    @TableField("update_time")
+    private Date updateTime;
+}

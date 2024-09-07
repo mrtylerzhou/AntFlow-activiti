@@ -100,13 +100,17 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
 
+        Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
+
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
                 throw new JiMuBizException("apporver node has no property,can not be saved！");
             }
-
+            if(isOutSideProcess!=null&&isOutSideProcess.equals(1)){
+                bpmnNodeVo.setIsOutSideProcess(1);
+            }
 
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())
@@ -295,6 +299,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
                 .eq("conf_id", bpmnConf.getId())
                 .eq("is_del", 0));
+        if(bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess().equals(1)){
+            bpmnNodes.forEach(a->a.setIsOutSideProcess(1));
+        }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
             bpmnConfVo.getNodes().forEach(node -> node.setFormCode(bpmnConfVo.getFormCode()));
