@@ -1,7 +1,10 @@
 package org.openoa.common.service;
 
 import org.activiti.engine.impl.identity.Authentication;
+import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.constant.enums.ProcessTypeEnum;
 import org.openoa.base.interf.ActivitiService;
+import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.entity.ThirdPartyAccountApply;
@@ -67,6 +70,13 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
 
     @Override
     public ThirdPartyAccountApplyVo consentData(ThirdPartyAccountApplyVo vo) {
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
+            BeanUtils.copyProperties(vo,thirdPartyAccountApply);
+            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            thirdPartyAccountApply.setId(id);
+            thirdPartyAccountApplyMapper.updateById(thirdPartyAccountApply);
+        }
         return vo;
     }
 
