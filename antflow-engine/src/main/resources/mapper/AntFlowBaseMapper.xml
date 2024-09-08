@@ -38,7 +38,7 @@
         </where>
     </sql>
     <sql id="findEmployeeInfoById">
-        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
+        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
         <where>
             <if test="employeeId != null ">
                 id = #{employeeId}
@@ -46,7 +46,7 @@
         </where>
     </sql>
     <sql id="findEmployeeInfoByIds">
-        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_employee
+        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
         <where>
             <if test="employeeIds != null and employeeIds.size() > 0">
                 id in
@@ -91,7 +91,7 @@
     </sql>
     <!--dummy sql for test-->
     <sql id="getLevelLeadersByEmployeeIdAndTier">
-        select id,username as name from t_employee
+        select id,username as name from t_user
         <where>
             <if test="employeeId != null">
                 id = #{employeeId}
@@ -102,18 +102,18 @@
         </where>
     </sql>
     <sql id="getHrpbByEmployeeId">
-        select id,username as name from t_employee
+        select id,username as name from t_user
         <where>
             <if test="employeeId != null">
-                id = #{employeeId}
+                hrbp_id = #{employeeId}
             </if>
         </where>
     </sql>
     <sql id="getDirectLeaderByEmployeeId">
-        select id,username as name from t_employee
+        select id,username as name from t_user
         <where>
             <if test="employeeId != null">
-                id = #{employeeId}
+                leader_id = #{employeeId}
             </if>
         </where>
     </sql>
