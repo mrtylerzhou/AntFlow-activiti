@@ -57,7 +57,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 .processNum(bpmnConfCommonVo.getProcessNum())
                 .processName(bpmnConfCommonVo.getProcessName())
                 .processDesc(bpmnConfCommonVo.getProcessDesc())
-                .processStartConditions(JSON.toJSONString(bpmnStartConditions))//流程启动参数
+                .processStartConditions(JSON.toJSONString(bpmnStartConditions))//process start condition
                 .createUser( SecurityUtils.getLogInEmpIdSafe().toString())
                 .createTime(new Date())
                 .build();

@@ -7,7 +7,9 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
@@ -128,7 +130,7 @@ public class BpmnTaskListener implements TaskListener {
 
         if (bpmnConf==null) {
             log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            return;
+            throw new JiMuBizException("Task监听-查询流程配置数据为空");
         }
 
 
