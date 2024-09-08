@@ -14,6 +14,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -136,6 +137,7 @@ public class ActivitiTest {
     }
     @RequestMapping("getStudent")
     public Result getStudentPageList(@RequestBody PageDto pageDto){
+        List<BaseIdTranStruVo> baseIdTranStruVos = studentMapper.selectAllStudent();
         Page<Student> page= PageUtils.getPageByPageDto(pageDto);
         List<Student> studentList = studentMapper.getStudentList(page);
 

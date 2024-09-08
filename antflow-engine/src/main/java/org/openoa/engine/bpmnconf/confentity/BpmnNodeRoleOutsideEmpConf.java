@@ -3,10 +3,11 @@ package org.openoa.engine.bpmnconf.confentity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
-
+@TableName("t_bpmn_node_role_outside_emp_conf")
 @Data
 public class BpmnNodeRoleOutsideEmpConf {
     @TableId(value = "id", type = IdType.AUTO)

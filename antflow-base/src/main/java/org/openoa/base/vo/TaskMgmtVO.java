@@ -100,7 +100,6 @@ public class TaskMgmtVO implements Serializable {
     private String taskState;
     /***
      * task's state,1:finished,2 in approval state
-     * 流程状态(1：审批完成 2：审批中)
      */
     private Integer taskStype;
     /**
