@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper">
-    <!--employeeMap can be implement or not,if not,you can write just like fieldxx as userName in the sql-->
+    <!--employeeMap can be implement or not,if not,you can write just like fieldxx as user_name in the sql-->
     <resultMap id="employeeMap" type="org.openoa.base.entity.Employee">
         <id column="id" property="id"/>
         <result column="department_id" property="departmentId"/>
-        <result column="username" property="username"/>
+        <result column="user_name" property="username"/>
         <result column="mobile" property="mobile"/>
         <result column="email" property="email"/>
         <result column="head_img" property="headImg"/>
@@ -20,9 +20,9 @@
     <sql id="queryUserByNameFuzzy">
         select id,user_name as name from t_user
         <where>
-            <if test="userName != null and userName != ''">
-                <bind name="userName" value="'%' + userName + '%'" />
-                and  user_name like #{userName}
+            <if test="user_name != null and user_name != ''">
+                <bind name="user_name" value="'%' + user_name + '%'" />
+                and  user_name like #{user_name}
             </if>
         </where>
     </sql>
@@ -38,7 +38,7 @@
         </where>
     </sql>
     <sql id="findEmployeeInfoById">
-        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
+        select id,user_name,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
         <where>
             <if test="employeeId != null ">
                 id = #{employeeId}
@@ -46,7 +46,7 @@
         </where>
     </sql>
     <sql id="findEmployeeInfoByIds">
-        select id,username,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
+        select id,user_name,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
         <where>
             <if test="employeeIds != null and employeeIds.size() > 0">
                 id in
@@ -91,7 +91,7 @@
     </sql>
     <!--dummy sql for test-->
     <sql id="getLevelLeadersByEmployeeIdAndTier">
-        select id,username as name from t_user
+        select id,user_name as name from t_user
         <where>
             <if test="employeeId != null">
                 id = #{employeeId}
@@ -102,7 +102,7 @@
         </where>
     </sql>
     <sql id="getHrpbByEmployeeId">
-        select id,username as name from t_user
+        select id,user_name as name from t_user
         <where>
             <if test="employeeId != null">
                 hrbp_id = #{employeeId}
@@ -110,7 +110,7 @@
         </where>
     </sql>
     <sql id="getDirectLeaderByEmployeeId">
-        select id,username as name from t_user
+        select id,user_name as name from t_user
         <where>
             <if test="employeeId != null">
                 leader_id = #{employeeId}

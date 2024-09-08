@@ -1230,11 +1230,22 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
 
 DROP TABLE IF EXISTS `t_user`;
-CREATE TABLE `t_user`  (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1002 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+create table if not exists t_user
+(
+    id             int auto_increment
+        primary key,
+    user_name      varchar(255)      null,
+    mobile         varchar(50)       null comment 'user''s mobile phone number',
+    email          varchar(50)       null comment 'user''s email address',
+    leader_id      bigint            null comment 'emp direct leader id',
+    hrbp_id        bigint            null comment '用户的hrb的id,这里仅仅是用作选择hrbp审批时展示使用,实际上有的的公司组织架构里每个员工都有一个hrbp,有的则是hrbp挂在部门下面.具体根据公司业务而定',
+    mobile_is_show tinyint default 0 null comment '是否展示用户手机号,如果用户手机号不展示时发送流程短信通知时也不应当通知给他.当然有的公司设置必须发送短信.这个根据公司业务而定,这里只是展示可以做很多人性化的定制设置',
+    path           varchar(1000)     null comment '员工组织线path,用于层层审批流程展示,有些公司的表员工的组织链并非这样的,这里只是展示用,具体根据公司业务而定只要能根据员工的id找到他的上级,上级的上线,上级的上级的上线的上线即可.当然如果没有这样的组织架构关系,不用这种审批规则即可',
+    is_del         tinyint default 0 null comment '0,正常1,删除',
+    head_img       varchar(3000)     null
+);
+
+
 
 -- ----------------------------
 -- Records of t_user
