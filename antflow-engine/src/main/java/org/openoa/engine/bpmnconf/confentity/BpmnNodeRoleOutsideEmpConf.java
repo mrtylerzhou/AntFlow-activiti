@@ -20,7 +20,7 @@ public class BpmnNodeRoleOutsideEmpConf {
     @TableField("node_id")
     private Long nodeId;
     @TableField("empl_id")
-    private Long emplId;
+    private String emplId;
     @TableField("empl_name")
     private String emplName;
     /**

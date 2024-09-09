@@ -77,7 +77,7 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
 
     public ResultAndPage<UserMessage> page(PageDto pageDto) {
 
-        Integer userId =  SecurityUtils.getLogInEmpIdSafe().intValue();
+        String userId =  SecurityUtils.getLogInEmpIdSafe();
 
         QueryWrapper<UserMessage> wrapper = new QueryWrapper<>();
         Page page = PageUtils.getPageByPageDto(pageDto);
@@ -88,32 +88,32 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
         page.setTotal(totalCount);
         //todo
         /* pageDto.setStartIndex(page.);*/
-        List<UserMessage> dtoList = totalCount > 0 ? this.getBaseMapper().pageList(pageDto, userId.longValue()) : Collections.EMPTY_LIST;
+        List<UserMessage> dtoList = totalCount > 0 ? this.getBaseMapper().pageList(pageDto, userId) : Collections.EMPTY_LIST;
 
         return new ResultAndPage<>(dtoList, PageUtils.getPageDto(page));
     }
 
     //delete messages by id
     public Boolean deleteByIds(String id) {
-        Integer userId =  SecurityUtils.getLogInEmpIdSafe().intValue();
+        String userId =  SecurityUtils.getLogInEmpIdSafe();
         //split id string into array
         String[] arr = id.trim().split(",");
-        return this.getBaseMapper().deleteByIds(arr, (long) userId);
+        return this.getBaseMapper().deleteByIds(arr, userId);
     }
 
     //clear readed
     public Boolean clean() {
-        Integer userId =  SecurityUtils.getLogInEmpIdSafe().intValue();
+        String userId =  SecurityUtils.getLogInEmpIdSafe();
         return this.getBaseMapper().clean(userId);
     }
 
     //mark as read
     public Integer isRead(Long id) {
-        Integer userId =  SecurityUtils.getLogInEmpIdSafe().intValue();
+        String userId =  SecurityUtils.getLogInEmpIdSafe();
         UserMessage userMessage = new UserMessage();
         userMessage.setId(id);
         userMessage.setIsRead(true);
-        userMessage.setUserId((long) userId);
+        userMessage.setUserId(userId);
         return this.getBaseMapper().updateById(userMessage);
     }
 
@@ -146,7 +146,7 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
         String senderName = "system";
         //todo check login employee
         senderName = SecurityUtils.getLogInEmpNameSafe();
-        userMessageStatus.setUserId(sendInfo.getUserMessage().getUserId().intValue());
+        userMessageStatus.setUserId(sendInfo.getUserMessage().getUserId());
         UserMessageStatus userMessageStatusInfo = null;//todo
         if (userMessageStatusInfo != null) {
             //current day end

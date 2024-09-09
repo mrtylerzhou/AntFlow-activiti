@@ -67,7 +67,7 @@ public class BpmProcessNameServiceImpl extends ServiceImpl<BpmProcessNameMapper,
         wrapper.eq("is_del", 0);
         List<BpmProcessName> bpmProcessNames = Optional.ofNullable(this.getBaseMapper().selectList(wrapper)).orElse(Collections.emptyList());
         List<BaseIdTranStruVo> list = bpmProcessNames.stream().map(o -> BaseIdTranStruVo.builder()
-                .id(o.getId())
+                .id(o.getId().toString())
                 .name(o.getProcessName())
                 .build()
         ).collect(Collectors.toList());

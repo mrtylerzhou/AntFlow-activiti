@@ -28,7 +28,7 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
     public void createFlowRunInfo(String entryId, String processInstance) throws Exception {
         BpmFlowruninfo flowruninfo = new BpmFlowruninfo();
         flowruninfo.setEntitykey(entryId);
-        flowruninfo.setCreateUserId( SecurityUtils.getLogInEmpIdSafe().longValue());
+        flowruninfo.setCreateUserId( SecurityUtils.getLogInEmpIdSafe());
         flowruninfo.setRuninfoid(Long.parseLong(processInstance));
         flowruninfo.setEntityclass(SecurityUtils.getLogInEmpNameSafe());
         flowruninfo.setCreateactor(SecurityUtils.getLogInEmpNameSafe());

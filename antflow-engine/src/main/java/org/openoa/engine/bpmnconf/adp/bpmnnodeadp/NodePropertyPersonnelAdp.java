@@ -92,7 +92,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
                 BaseIdTranStruVo vo = new BaseIdTranStruVo();
                 String emplId = emplIds.get(i);
                 String emplName = emplNames.get(i);
-                vo.setId(Long.parseLong(emplId));
+                vo.setId(emplId);
                 vo.setName(emplName);
                 result.add(vo);
             }
@@ -101,7 +101,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
         Map<String, String> employeeInfos = bpmnEmployeeInfoProviderService.provideEmployeeInfo(emplIds);
         for (String emplId : emplIds) {
             BaseIdTranStruVo vo = new BaseIdTranStruVo();
-            vo.setId(Long.parseLong(emplId));
+            vo.setId(emplId);
             String empName = employeeInfos.get(emplId);
             vo.setName(empName);
             result.add(vo);

@@ -140,9 +140,9 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
             Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
             if(approvalEmployee!=null){
-                Long id = approvalEmployee.getId();
-                if(id!=null){
-                    businessDataVo.setEmplId(id.toString());
+                String id = approvalEmployee.getId();
+                if(!StringUtils.isEmpty(id)){
+                    businessDataVo.setEmplId(id);
                 }
             }
 
@@ -180,7 +180,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             return null;
         }
         Employee employee=new Employee();
-        employee.setId(Long.valueOf(userName));
+        employee.setId(userName);
         employee.setUsername(stringStringMap.get(userName));
         return employee;
     }

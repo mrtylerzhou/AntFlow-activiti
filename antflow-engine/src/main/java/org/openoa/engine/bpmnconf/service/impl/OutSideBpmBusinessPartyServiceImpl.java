@@ -136,7 +136,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         }
 
         //get emp list
-        Map<Long, Employee> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
+        Map<String, Employee> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
                 .stream()
                 .map(OutSideBpmAdminPersonnel::getEmployeeId)
                 .distinct()
@@ -168,7 +168,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
                 //admin list
                 List<BaseIdTranStruVo> personnelsList = bpmAdminPersonnels.stream().map(o -> BaseIdTranStruVo
                         .builder()
-                        .id(o.getEmployeeId().longValue())
+                        .id(o.getEmployeeId())
                         .name(Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
                                 .orElse(new Employee()).getUsername())
                         .build())
@@ -176,7 +176,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
                 BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getListField(), personnelsList);
 
                 //admin's id list
-                List<Long> idsList = bpmAdminPersonnels
+                List<String> idsList = bpmAdminPersonnels
                         .stream()
                         .map(OutSideBpmAdminPersonnel::getEmployeeId)
                         .distinct()
@@ -250,7 +250,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
             for (AdminPersonnelTypeEnum typeEnum : AdminPersonnelTypeEnum.values()) {
                 Object property = BeanUtil.pojo.getProperty(vo, typeEnum.getIdsField());
                 if (property!=null && property instanceof List) {
-                    List<Long> ids = (List<Long>) property;
+                    List<String> ids = (List<String>) property;
                     outSideBpmAdminPersonnelService.saveBatch(ids
                             .stream()
                             .map(o -> OutSideBpmAdminPersonnel

@@ -15,6 +15,6 @@ import java.util.List;
  */
 @Repository
 public interface RoleMapper {
-    List<Role> queryRoleByIds(@Param("roleIds") Collection<Long> roleIds);
-    List<User> queryUserByRoleIds(@Param("roleIds") Collection<Long> roleIds);
+    List<Role> queryRoleByIds(@Param("roleIds") Collection<String> roleIds);
+    List<User> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);
 }

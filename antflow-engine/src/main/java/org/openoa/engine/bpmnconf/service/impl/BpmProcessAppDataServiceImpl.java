@@ -80,7 +80,7 @@ public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataM
             voList.addAll(
                     processAppData.stream().map(o ->
                             BaseIdTranStruVo.builder()
-                                    .id(o.getApplicationId())
+                                    .id(o.getApplicationId().toString())
                                     .name(o.getProcessName())
                                     .build()
                     ).collect(Collectors.toList()));
@@ -89,7 +89,7 @@ public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataM
             list.addAll(
                     appDataList.stream().map(o ->
                             BaseIdTranStruVo.builder()
-                                    .id(o.getApplicationId())
+                                    .id(o.getApplicationId().toString())
                                     .name(o.getProcessName())
                                     .build()
                     ).collect(Collectors.toList()));
@@ -114,7 +114,7 @@ public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataM
             voList.addAll(
                     processAppData.stream().map(o ->
                             BaseIdTranStruVo.builder()
-                                    .id(o.getApplicationId())
+                                    .id(o.getApplicationId().toString())
                                     .name(o.getProcessName())
                                     .build()
                     ).collect(Collectors.toList()));

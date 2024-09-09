@@ -30,7 +30,7 @@ public class BpmProcessPermissions {
      * user id
      */
     @TableField("user_id")
-    private Long userId;
+    private String userId;
     /**
      * dept id
      */
@@ -45,7 +45,7 @@ public class BpmProcessPermissions {
      * create user
      */
     @TableField("create_user")
-    private Long createUser;
+    private String createUser;
     /**
      *create time
      */

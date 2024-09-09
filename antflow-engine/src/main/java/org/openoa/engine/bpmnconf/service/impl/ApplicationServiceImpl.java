@@ -65,7 +65,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
             application.setRoute(StringEscapeUtils.unescapeHtml3(application.getRoute()));
         }
         if (vo.getId()!=null) {
-            application.setCreateUserId(SecurityUtils.getLogInEmpIdSafe().intValue());
+            application.setCreateUserId(SecurityUtils.getLogInEmpIdSafe());
         }
 
         List<BpmProcessAppApplication> list = this.list(new QueryWrapper<BpmProcessAppApplication>()
@@ -204,12 +204,12 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                         BpmProcessCategory::getId,
                         v -> v.getProcessTypeName() + v.getEntrance(),
                         (v1, v2) -> v1));
-        List<Integer> userIds = list.stream()
+        List<String> userIds = list.stream()
                 .filter(o -> o.getCreateUserId()!=null)
                 .map(BpmProcessAppApplicationVo::getCreateUserId)
                 .collect(Collectors.toList());
-        Map<Long, Employee> employeeMap =!CollectionUtils.isEmpty(userIds)
-                ? employeeService.getEmployeeDetailByIds(AntCollectionUtil.IntToLongList(userIds))
+        Map<String, Employee> employeeMap =!CollectionUtils.isEmpty(userIds)
+                ? employeeService.getEmployeeDetailByIds(userIds)
                 .stream()
                 .collect(Collectors.toMap(
                         Employee::getId,
@@ -279,7 +279,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
 
             //set create user
             Employee employee = Optional
-                    .ofNullable(employeeMap.get(o.getCreateUserId().longValue()))
+                    .ofNullable(employeeMap.get(o.getCreateUserId()))
                     .orElse(new Employee());
             o.setCreateUserName(employee.getUsername());
 

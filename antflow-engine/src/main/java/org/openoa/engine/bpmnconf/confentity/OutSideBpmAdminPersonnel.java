@@ -41,7 +41,7 @@ public class OutSideBpmAdminPersonnel {
      * administrator id
      */
     @TableField("employee_id")
-    private Long employeeId;
+    private String employeeId;
     /**
      * remark
      */

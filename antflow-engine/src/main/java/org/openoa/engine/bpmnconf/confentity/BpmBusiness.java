@@ -49,7 +49,7 @@ public class BpmBusiness {
      * create user id
      */
     @TableField("create_user")
-    private Long createUser;
+    private String createUser;
     /**
      * process key
      */

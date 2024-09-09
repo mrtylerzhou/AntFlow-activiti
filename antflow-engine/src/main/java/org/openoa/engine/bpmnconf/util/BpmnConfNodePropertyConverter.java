@@ -129,10 +129,10 @@ public class BpmnConfNodePropertyConverter {
                     continue;
                 }
                 for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
-                    Long id = baseIdTranStruVo.getId();
+                    String id = baseIdTranStruVo.getId();
                     String name = baseIdTranStruVo.getName();
                     BaseKeyValueStruVo keyValueStruVo=new BaseKeyValueStruVo();
-                    String key=id.toString();
+                    String key= id;
                     keyValueStruVo.setKey(key);
                     keyValueStruVo.setValue(name);
                     map.put(key,keyValueStruVo);

@@ -35,7 +35,7 @@ public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
             }
             return  super.provideAssigneeList(bpmnNodeVo,null);
         }
-        List<Long> roleIds = propertysVo.getRoleIds();
+        List<String> roleIds = propertysVo.getRoleIds();
         Map<String, String> roleEmployeeInfo = roleInfoProvider.provideRoleEmployeeInfo(roleIds);
         if(CollectionUtils.isEmpty(roleEmployeeInfo)){
             log.warn("can not find specified roles info via roleIds:{}",roleIds);

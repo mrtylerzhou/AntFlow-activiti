@@ -83,6 +83,6 @@ public class OutSideBpmConditionsTemplate{
      * as its name says
      */
     @TableField("create_user_id")
-    private Integer createUserId;
+    private String createUserId;
 
 }

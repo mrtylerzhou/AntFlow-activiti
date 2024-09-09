@@ -23,7 +23,7 @@ public class UserMessageStatus {
 
     private Integer id;
     @TableField("user_id")
-    private Integer userId;
+    private String userId;
     /**
      * message status
      */

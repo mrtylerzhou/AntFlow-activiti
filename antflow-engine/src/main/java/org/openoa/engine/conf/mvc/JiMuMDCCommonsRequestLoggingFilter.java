@@ -38,11 +38,11 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
                 userId = request.getHeader("Userid");
             }
             if (!StringUtils.isEmpty(userId)) {
-                BaseIdTranStruVo userById = userService.getById(Long.parseLong(userId));
+                BaseIdTranStruVo userById = userService.getById(userId);
                 String userName = StringUtils.EMPTY;
                 if (userById != null) {
                     userName = userById.getName();
-                    BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(Long.parseLong(userId)).name(userName).build();
+                    BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(userId).name(userName).build();
                     ThreadLocalContainer.set("currentuser", userInfo);
                 }
                 if (logger.isDebugEnabled()) {

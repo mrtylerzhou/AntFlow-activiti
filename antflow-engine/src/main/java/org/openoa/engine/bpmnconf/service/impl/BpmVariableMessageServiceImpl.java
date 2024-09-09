@@ -491,7 +491,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //query sender's info
-        List<Long> sendUsers = getSendUsers(vo, bpmnTemplateVo);
+        List<String> sendUsers = getSendUsers(vo, bpmnTemplateVo);
 
 
         //if senders is empty then return
@@ -672,7 +672,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         if (ObjectUtils.isEmpty(propertys)) {
                             continue;
                         }
-                        List<String> emplNames = employeeService.qryLiteEmployeeInfoByIds(AntCollectionUtil.StringToLongList(propertys))
+                        List<String> emplNames = employeeService.qryLiteEmployeeInfoByIds(propertys)
                                 .stream()
                                 .map(Employee::getUsername).collect(Collectors.toList());
                         if (!ObjectUtils.isEmpty(emplNames)) {
@@ -680,7 +680,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         }
                     } else {
                        if(!property.toString().equals("0")){
-                           Employee employee = employeeService.qryLiteEmployeeInfoById(Long.parseLong(property.toString()));
+                           Employee employee = employeeService.qryLiteEmployeeInfoById(property.toString());
                            if (employee!=null) {
                                wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
                            }
@@ -701,8 +701,8 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @param bpmnTemplateVo
      * @return
      */
-    private List<Long> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
-        List<Long> sendUsers = Lists.newArrayList();
+    private List<String> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
+        List<String> sendUsers = Lists.newArrayList();
         //specified assignees
         if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())) {
             sendUsers.addAll(new ArrayList<>(bpmnTemplateVo.getEmpIdList()));
@@ -712,14 +712,14 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (!ObjectUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
             List<User> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
             if (!ObjectUtils.isEmpty(users)) {
-                sendUsers.addAll(users.stream().map(User::getId).collect(Collectors.toList()));
+                sendUsers.addAll(users.stream().map(u->u.getId().toString()).collect(Collectors.toList()));
             }
         }
 
         //todo functions
         //node sign up users
         if (!ObjectUtils.isEmpty(vo.getSignUpUsers())) {
-            sendUsers.addAll(AntCollectionUtil.StringToLongList(vo.getSignUpUsers()));
+            sendUsers.addAll(vo.getSignUpUsers());
         }
 
         //forwarded
@@ -744,14 +744,14 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
         //inform users
         if (!ObjectUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
-            for (Long informId : bpmnTemplateVo.getInformIdList()) {
-                InformEnum informEnum = InformEnum.getEnumByByCode(informId.intValue());
+            for (String informId : bpmnTemplateVo.getInformIdList()) {
+                InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
                 //todo check whether the result is valid
                 Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
                 if (filObject instanceof List) {
                     sendUsers.addAll(AntCollectionUtil.StringToLongList((List) filObject));
                 } else if (filObject!=null) {
-                    sendUsers.add(Long.parseLong(filObject.toString()));
+                    sendUsers.add(filObject.toString());
                 }
             }
         }

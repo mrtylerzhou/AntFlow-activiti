@@ -19,10 +19,10 @@ import java.util.List;
 public class RoleServiceImpl {
     @Autowired
     private RoleMapper rolesMapper;
-    public List<Role> queryRoleByIds(Collection<Long> roleIds) {
+    public List<Role> queryRoleByIds(Collection<String> roleIds) {
         return rolesMapper.queryRoleByIds(roleIds);
     }
-    public List<User> queryUserByRoleIds(Collection<Long> roleIds) {
+    public List<User> queryUserByRoleIds(Collection<String> roleIds) {
         return rolesMapper.queryUserByRoleIds(roleIds);
     }
 }

@@ -139,7 +139,7 @@ public class BpmnExecutionListener implements ExecutionListener {
             ActivitiTemplateMsgUtils.sendBpmFinishMsg(
                     ActivitiBpmMsgVo
                             .builder()
-                            .userId(Long.parseLong(startUser))
+                            .userId(startUser)
                             .processId(processNumber)
                             .bpmnCode(bpmnCode)
                             .formCode(formCode)

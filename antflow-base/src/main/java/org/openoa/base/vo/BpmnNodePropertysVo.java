@@ -60,7 +60,7 @@ public class BpmnNodePropertysVo implements Serializable{
     /**
      * role id
      */
-    private List<Long> roleIds;
+    private List<String> roleIds;
 
     /**
      * role list

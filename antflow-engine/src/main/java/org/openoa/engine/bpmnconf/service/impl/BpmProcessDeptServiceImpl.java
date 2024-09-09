@@ -106,7 +106,7 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
         bpmProcessNameService.editProcessName(bpmnConf);
     }
     public List<String> findProcessKey() {
-        List<String> processKeyList = Optional.ofNullable(permissionsService.getProcessKey(SecurityUtils.getLogInEmpIdSafe().intValue(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList());
+        List<String> processKeyList = Optional.ofNullable(permissionsService.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList());
         List<BpmnConf> confList = Optional.ofNullable(confCommonService.getIsAllConfs()).orElse(Arrays.asList());
         List<String> collect = confList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList());
         List<String> processList = Optional.ofNullable(this.getAllProcess()).orElse(Arrays.asList());

@@ -28,7 +28,7 @@ public class BpmnRoleInfoProvider implements BpmnRoleInfoProviderService{
         if(CollectionUtils.isEmpty(roleIds)){
             return Maps.newHashMap();
         }
-        List<Role> roles = roleService.queryRoleByIds(AntCollectionUtil.StringToLongList(roleIds));
+        List<Role> roles = roleService.queryRoleByIds(roleIds);
         if(CollectionUtils.isEmpty(roles)){
             return Maps.newHashMap();
         }
@@ -36,7 +36,7 @@ public class BpmnRoleInfoProvider implements BpmnRoleInfoProviderService{
     }
 
     @Override
-    public Map<String, String> provideRoleEmployeeInfo(Collection<Long> roleIds) {
+    public Map<String, String> provideRoleEmployeeInfo(Collection<String> roleIds) {
         List<User> users = roleService.queryUserByRoleIds(roleIds);
         if(CollectionUtils.isEmpty(users)){
             return Maps.newHashMap();

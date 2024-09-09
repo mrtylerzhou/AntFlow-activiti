@@ -43,7 +43,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
         List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
-        List<Long> roleIds = list.stream()
+        List<String> roleIds = list.stream()
                 .map(BpmnNodeRoleConf::getRoleId)
                 .collect(Collectors.toList());
 
@@ -74,12 +74,12 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
      * @param roleIds
      * @return
      */
-    private List<BaseIdTranStruVo> getRoleList(List<Long> roleIds) {
+    private List<BaseIdTranStruVo> getRoleList(List<String> roleIds) {
         if (CollectionUtils.isEmpty(roleIds)) {
             log.info("roIds is empty");
             return Collections.EMPTY_LIST;
         }
-        Map<String, String> roleInfos = roleInfoProvider.provideRoleInfo(AntCollectionUtil.numberToStringList(roleIds));
+        Map<String, String> roleInfos = roleInfoProvider.provideRoleInfo(roleIds);
         if(CollectionUtils.isEmpty(roleInfos)){
             log.warn("role info is empty,please check you config");
             return Collections.EMPTY_LIST;
@@ -89,7 +89,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                 .stream()
                 .map(e -> BaseIdTranStruVo
                         .builder()
-                        .id(Long.parseLong(e.getKey()))
+                        .id(e.getKey())
                         .name(e.getValue())
                         .build()).
                         collect(Collectors.toList());

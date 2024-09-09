@@ -57,7 +57,7 @@ public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardM
     /**
      * query process forward by user id
      */
-    public List<BpmProcessForward> allBpmProcessForward(Integer userId) {
+    public List<BpmProcessForward> allBpmProcessForward(String userId) {
         return Optional.ofNullable(this.getBaseMapper().selectList(new QueryWrapper<BpmProcessForward>()
                 .eq("is_del", 0)
                 .eq("forward_user_id", userId)
@@ -68,7 +68,7 @@ public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardM
     /**
      * put data in cache and load if necessary
      */
-    public void loadProcessForward(Integer userId) {
+    public void loadProcessForward(String userId) {
         Map<String, BpmProcessForward> map = new HashMap<>();
         List<BpmProcessForward> list = this.allBpmProcessForward(userId);
         if (list == null) {
@@ -90,12 +90,12 @@ public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardM
     /**
      * query task by user id
      */
-    public List<Task> findTaskByEmpId(Integer userId) {
-        return Optional.ofNullable(taskService.createTaskQuery().taskAssignee(userId.toString()).list()).orElse(Arrays.asList());
+    public List<Task> findTaskByEmpId(String userId) {
+        return Optional.ofNullable(taskService.createTaskQuery().taskAssignee(userId).list()).orElse(Arrays.asList());
     }
 
 
-    public void loadTask(Integer userId) {
+    public void loadTask(String userId) {
         Map<String, Task> map = new HashMap<>();
         List<Task> list = this.findTaskByEmpId(userId);
         if (list == null) {

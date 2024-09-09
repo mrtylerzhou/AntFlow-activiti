@@ -94,7 +94,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //bpmnStartConditionsVo.setApprovalEmplId(Long.parseLong(businessDataVo.getEmplId()));
 
         //set start user dept id
-        Department department = departmentService.getDepartmentByEmployeeId(Long.parseLong(businessDataVo.getStartUserId()));
+        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
         if (department!=null && department.getId()!=null) {
             bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
         }
@@ -125,7 +125,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         } else {
             //start user
             processTitlePrefix = Optional
-                    .ofNullable(employeeService.getEmployeeDetailById(Long.parseLong(businessDataVo.getStartUserId())))
+                    .ofNullable(employeeService.getEmployeeDetailById(businessDataVo.getStartUserId()))
                     .orElse(new Employee()).getUsername();
         }
 

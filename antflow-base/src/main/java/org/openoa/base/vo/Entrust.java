@@ -34,7 +34,7 @@ public class Entrust implements Serializable {
     /**
      * receiver id
      */
-    private Integer receiverId;
+    private String receiverId;
 
     /**
      * receiver name

@@ -341,30 +341,28 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         if (!ObjectUtils.isEmpty(vo.getInforms())) {
             vo.setInformIdList(
                     Arrays.stream(vo.getInforms().split(","))
-                            .map(Long::parseLong)
                             .collect(Collectors.toList()));
             vo.setInformList(vo.getInformIdList()
                     .stream()
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(EventTypeEnum.getDescByByCode(o.intValue()))
+                            .name(EventTypeEnum.getDescByByCode(Integer.parseInt(o)))
                             .build())
                     .collect(Collectors.toList()));
         }
         if (!ObjectUtils.isEmpty(vo.getEmps())) {
             vo.setEmpIdList(
                     Arrays.stream(vo.getEmps().split(","))
-                            .map(Long::parseLong)
                             .collect(Collectors.toList()));
 
-            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(AntCollectionUtil.numberToStringList(vo.getEmpIdList()));
+            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
             vo.setEmpList(vo.getEmpIdList()
                     .stream()
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(employeeInfo.get(o.toString()))
+                            .name(employeeInfo.get(o))
                             .build())
                     .collect(Collectors.toList()));
         }

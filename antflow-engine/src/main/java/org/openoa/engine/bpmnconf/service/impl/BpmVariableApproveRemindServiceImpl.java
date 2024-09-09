@@ -227,10 +227,10 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
 
 
         //employs to receive notice message
-        Integer emplId = Integer.parseInt(bpmnTimeoutReminderTaskVo.getAssignee());
+        String emplId = bpmnTimeoutReminderTaskVo.getAssignee();
 
         //todo this module should be redesigned
-        Employee employee = employeeService.getEmployeeDetailById(emplId.longValue());
+        Employee employee = employeeService.getEmployeeDetailById(emplId);
 
 
         //format message content
@@ -256,7 +256,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
      * @param employee
      * @param informationTemplateVo
      */
-    private void insertUserMessage(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, Integer emplId,
+    private void insertUserMessage(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
                                    Employee employee, InformationTemplateVo informationTemplateVo) {
         UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
                 informationTemplateVo.getSystemTitle(), informationTemplateVo.getSystemContent());
@@ -273,7 +273,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
      * @param employee
      * @param informationTemplateVo
      */
-    private void sendMessageAndPush(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, Integer emplId,
+    private void sendMessageAndPush(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
                                     Employee employee, InformationTemplateVo informationTemplateVo) {
         UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
                 StringUtils.EMPTY, informationTemplateVo.getNoteContent());
@@ -290,7 +290,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
      * @param employee
      * @param informationTemplateVo
      */
-    private void sendMail(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, Integer emplId,
+    private void sendMail(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
                           Employee employee, InformationTemplateVo informationTemplateVo) {
         UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
                 informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent());
@@ -309,11 +309,11 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
      * @param content
      * @return
      */
-    private UserMsgVo getUserMsgVo(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, Integer emplId,
+    private UserMsgVo getUserMsgVo(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
                                    Employee employee, String title, String content) {
         return UserMsgVo
                 .builder()
-                .userId(emplId.longValue())
+                .userId(emplId)
                 .email(employee.getEmail())
                 .mobile(employee.getMobile())
                 .title(title)
@@ -445,7 +445,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
 
                 //set applicant,applydate,apply time
                 historicProcessInstanceOptional.ifPresent(historicProcessInstance -> {
-                    Employee employee = employeeService.getEmployeeDetailById(Long.parseLong(historicProcessInstance.getStartUserId()));
+                    Employee employee = employeeService.getEmployeeDetailById(historicProcessInstance.getStartUserId());
                     bpmnTimeoutReminderVariableVo.setStartUser(employee.getUsername());
                     bpmnTimeoutReminderVariableVo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(historicProcessInstance.getStartTime()));
                     bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(historicProcessInstance.getStartTime()));

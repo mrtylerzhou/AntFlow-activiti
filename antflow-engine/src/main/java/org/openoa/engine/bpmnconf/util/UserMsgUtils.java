@@ -279,7 +279,7 @@ public class UserMsgUtils {
      * @param almMap
      */
     private static void sendAppPushBath(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
-        Map<Long, BaseMsgInfo> map = Maps.newHashMap();
+        Map<String, BaseMsgInfo> map = Maps.newHashMap();
         getUserMsgVos(almMap, PUSH).forEach(o -> {
             map.put(o.getUserId(), buildBaseMsgInfo(o));
         });
@@ -293,7 +293,7 @@ public class UserMsgUtils {
      * @param almMap
      */
     private static void sendSmsBath(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
-        Map<Long, MessageInfo> map = Maps.newHashMap();
+        Map<String, MessageInfo> map = Maps.newHashMap();
         getUserMsgVos(almMap, MESSAGE).forEach(o -> {
             map.put(o.getUserId(), buildMessageInfo(o));
         });
@@ -307,7 +307,7 @@ public class UserMsgUtils {
      * @param almMap
      */
     private static void sendMailBath(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
-        Map<Long, MailInfo> map = Maps.newHashMap();
+        Map<String, MailInfo> map = Maps.newHashMap();
         getUserMsgVos(almMap, MAIL).forEach(o -> {
             map.put(o.getUserId(), buildMailInfo(o));
         });
@@ -359,7 +359,7 @@ public class UserMsgUtils {
 
         UserMessage userMessage = UserMessage
                 .builder()
-                .userId(Optional.ofNullable(userMsgVo.getUserId()).orElse(0L))
+                .userId(Optional.ofNullable(userMsgVo.getUserId()).orElse("-999"))
                 .title(Optional.ofNullable(userMsgVo.getTitle()).orElse(userMsgVo.getContent()))
                 .content(userMsgVo.getContent())
                 .isRead(false)
@@ -443,7 +443,7 @@ public class UserMsgUtils {
      * @param userId
      * @return
      */
-    private static Boolean checkEmployeeStatus(Long userId) {
+    private static Boolean checkEmployeeStatus(String userId) {
 
         if (ObjectUtils.isEmpty(userId)) {
             return false;

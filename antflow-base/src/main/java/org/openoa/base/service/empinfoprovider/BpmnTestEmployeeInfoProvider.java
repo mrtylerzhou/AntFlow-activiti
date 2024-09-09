@@ -27,12 +27,12 @@ public class BpmnTestEmployeeInfoProvider implements BpmnEmployeeInfoProviderSer
 
     @Override
     public Map<String, String> provideEmployeeInfo(Collection<String> empIds) {
-        List<Long> empRealIdList = empIds.stream().map(Long::parseLong).collect(Collectors.toList());
-        List<BaseIdTranStruVo> users = userService.queryUserByIds(empRealIdList);
+
+        List<BaseIdTranStruVo> users = userService.queryUserByIds(empIds);
         if(CollectionUtils.isEmpty(users)){
             return Maps.newHashMap();
         }
-        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(a->a.getId().toString(),BaseIdTranStruVo::getName,(k1,k2)->k1));
+        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(a-> a.getId(),BaseIdTranStruVo::getName,(k1, k2)->k1));
 
         return empIdAndNameMap;
     }

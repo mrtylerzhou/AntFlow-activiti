@@ -23,7 +23,7 @@ public class BpmnNodeConditionsAccountTypeAdp extends BpmnNodeConditionsAdaptor 
 
         for (int i = 0; i < 3; i++) {
             BaseIdTranStruVo vo=new BaseIdTranStruVo();
-            vo.setId(Integer.valueOf(i).longValue());
+            vo.setId(String.valueOf(i));
             String name= "";
             switch (i){
                 case 0:name="百度云";

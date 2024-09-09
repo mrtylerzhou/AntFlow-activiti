@@ -180,7 +180,7 @@ CREATE TABLE if not exists `bpm_flowruninfo`
 (
     `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `runinfoid`     bigint(20) NOT NULL COMMENT 'process instance id',
-    `create_UserId` bigint(20)   DEFAULT NULL COMMENT 'userid',
+    `create_UserId` varchar(64)   DEFAULT NULL COMMENT 'userid',
     `entitykey`     varchar(100) DEFAULT NULL COMMENT 'business key',
     `entityclass`   varchar(100) DEFAULT NULL COMMENT 'entity class',
     `entitykeytype` varchar(10)  DEFAULT NULL COMMENT 'business type',
@@ -684,8 +684,8 @@ CREATE TABLE if not exists `t_user_email_send`
 CREATE TABLE if not exists `t_user_entrust`
 (
     `id`            int(11)      NOT NULL AUTO_INCREMENT,
-    `sender`        int(11)      NOT NULL COMMENT 'sender id',
-    `receiver_id`   int(11)      NOT NULL,
+    `sender`        varchar(64)      NOT NULL COMMENT 'sender id',
+    `receiver_id`   varchar(64)      NOT NULL,
     `receiver_name` varchar(255)          DEFAULT NULL,
     `power_id`      varchar(100) NOT NULL,
     `begin_time`    timestamp    NULL  DEFAULT NULL,
@@ -705,7 +705,7 @@ CREATE TABLE if not exists `t_user_entrust`
 CREATE TABLE if not exists `t_user_message_status`
 (
     `id`                     int(11)     NOT NULL AUTO_INCREMENT,
-    `user_id`                int(11)     NOT NULL,
+    `user_id`                varchar(64)     NOT NULL,
     `message_status`         tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'sms status',
     `mail_status`            tinyint(1)  NOT NULL DEFAULT '0' COMMENT 'email status',
     `not_trouble_time_end`   time             DEFAULT NULL COMMENT 'do not disturb end time',
@@ -857,7 +857,7 @@ CREATE TABLE if not exists `t_user_message`
 (
       id          bigint auto_increment
           primary key,
-      user_id     int          null comment '用户id',
+      user_id     varchar(64)          null comment '用户id',
       title       varchar(50)  null comment '标题',
       content     varchar(255) null comment '消息内容',
       url         varchar(255) null comment '发送url',
@@ -945,7 +945,7 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     create_time      timestamp  not null default CURRENT_TIMESTAMP  comment 'Creation timestamp',
     update_time      timestamp not null default CURRENT_TIMESTAMP  on update CURRENT_TIMESTAMP comment 'Last update timestamp',
     is_del           tinyint      default 0                not null,
-    create_user_id   int                                null,
+    create_user_id   varchar(64)                                null,
     update_user      varchar(255)                       null,
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
@@ -997,10 +997,10 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
 
 CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
-      `user_id` BIGINT COMMENT 'User ID',
+      `user_id` varchar(64) COMMENT 'User ID',
       `dep_id` BIGINT COMMENT 'Department ID',
       `permissions_type` INT COMMENT 'Permission type (1 for view, 2 for create, 3 for monitor)',
-      `create_user` BIGINT COMMENT 'Create user ID',
+      `create_user` varchar(64) COMMENT 'Create user ID',
       `create_time` timestamp not null default current_timestamp COMMENT 'Create time',
       `process_key` VARCHAR(50) COMMENT 'Process key',
       `office_id` BIGINT COMMENT 'Office ID',
@@ -1033,7 +1033,7 @@ CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'Auto increment ID',
     `business_party_id` bigint(20) DEFAULT NULL COMMENT 'Business party main table ID',
     `type` int(11) DEFAULT NULL COMMENT 'Administrator type: 1-Process administrator, 2-Application administrator, 3-Interface administrator',
-    `employee_id` int(11) DEFAULT NULL COMMENT 'Administrator ID (Employee ID)',
+    `employee_id` varchar(64) DEFAULT NULL COMMENT 'Administrator ID (Employee ID)',
     `remark` varchar(255) DEFAULT NULL COMMENT 'Remark',
     `is_del` int(11) DEFAULT NULL COMMENT 'Deletion flag: 0 for normal, 1 for deleted',
     `create_user` varchar(50) DEFAULT NULL COMMENT 'Creator user',
@@ -1090,7 +1090,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_conditions_template` (
      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
      `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-     `create_user_id` INT NULL COMMENT 'as its name says',
+     `create_user_id` varchar(64) NULL COMMENT 'as its name says',
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='outside access process,condition template config';
 
@@ -1170,7 +1170,7 @@ CREATE TABLE IF NOT EXISTS  `t_sys_version` (
 CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
      `bpmn_node_id` BIGINT(20) NOT NULL COMMENT 'node id',
-     `role_id` BIGINT(20) NOT NULL COMMENT 'role id',
+     `role_id` varchar(64) NOT NULL COMMENT 'role id',
      `sign_type` INT(11) NOT NULL COMMENT 'sign type 1 all sign,2 or sign',
      `remark` VARCHAR(255) DEFAULT NULL COMMENT 'remark',
      `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
@@ -1186,7 +1186,7 @@ create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
     id          int auto_increment comment 'auto incr id'
         primary key,
     node_id     bigint                             null comment 'foreign key for connect with t_bpmn_node_role_conf',
-    empl_id     bigint                             null comment 'assignee id',
+    empl_id     varchar(64)                             null comment 'assignee id',
     empl_name   varchar(50)                        null comment 'assignee''s name',
     create_user varchar(50) charset utf8           null,
    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',

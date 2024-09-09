@@ -19,7 +19,7 @@ import java.util.Set;
 public class GenericEmployee implements Serializable {
 
     // userId
-    private Long userId;
+    private String userId;
 
 
     // username

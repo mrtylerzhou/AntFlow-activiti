@@ -150,7 +150,7 @@ public class BpmnTaskListener implements TaskListener {
             ActivitiTemplateMsgUtils.sendBpmApprovalMsg(
                     ActivitiBpmMsgVo
                             .builder()
-                            .userId(Long.parseLong(delegateTask.getAssignee()))
+                            .userId(delegateTask.getAssignee())
                             .processId(processNumber)
                             .bpmnCode(bpmnCode)
                             .formCode(formCode)

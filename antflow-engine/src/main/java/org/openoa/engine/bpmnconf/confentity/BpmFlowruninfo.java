@@ -36,7 +36,7 @@ public class BpmFlowruninfo {
      * create user id
      */
     @TableField("create_UserId")
-    private Long createUserId;
+    private String createUserId;
     /**
      * entity key
      */

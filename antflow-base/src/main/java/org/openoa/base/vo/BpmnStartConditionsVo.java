@@ -56,7 +56,7 @@ public class BpmnStartConditionsVo {
     /**
      * approvalEmp Id
      */
-    private Long approvalEmplId;
+    private String approvalEmplId;
     /**
      * approval emp ids
      */

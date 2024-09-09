@@ -38,7 +38,7 @@ public class BpmnNodeRoleConf {
      * role id
      */
     @TableField("role_id")
-    private Long roleId;
+    private String roleId;
     /**
      * sign type 1 for all sign 2 for or sign
      */

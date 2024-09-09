@@ -31,14 +31,14 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
 
     //获get current login employee's entrust list
     public List<Entrust> getEntrustList() {
-        return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe().intValue());
+        return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe());
     }
     public UserEntrust getEntrustDetail(Integer id) {
         return this.getBaseMapper().selectById(id);
     }
     public ResultAndPage<Entrust> getEntrustPageList(PageDto pageDto, Entrust vo, Integer type) {
         if (type == 1){
-            vo.setReceiverId(SecurityUtils.getLogInEmpIdSafe().intValue());
+            vo.setReceiverId(SecurityUtils.getLogInEmpIdSafe());
         }
         Page<Entrust> page = PageUtils.getPageByPageDto(pageDto);
         List<Entrust> resultData = this.getBaseMapper().getEntrustPageList(page, vo.getReceiverId());

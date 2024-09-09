@@ -21,10 +21,10 @@ public class DepartmentServiceImpl {
     @Autowired
     private DepartmentMapper departmentMapper;;
 
-    public List<Department> ListSubDepartmentByEmployeeId(Long userId) {
+    public List<Department> ListSubDepartmentByEmployeeId(String userId) {
         return departmentMapper.ListSubDepartmentByEmployeeId(userId);
     }
-    public Department getDepartmentByEmployeeId(Long userId){
+    public Department getDepartmentByEmployeeId(String userId){
         return departmentMapper.getDepartmentByEmployeeId(userId);
     }
 }
