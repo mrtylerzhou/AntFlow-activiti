@@ -40,7 +40,7 @@ public class BpmBusinessProcess {
      * business Id
      */
     @TableField("BUSINESS_ID")
-    private Long businessId;
+    private String businessId;
     /**
      * business Number
      */

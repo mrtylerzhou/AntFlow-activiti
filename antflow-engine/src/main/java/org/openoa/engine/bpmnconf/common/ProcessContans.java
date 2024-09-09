@@ -95,7 +95,7 @@ public class ProcessContans extends ProcessServiceFactory {
     /**
      * query task by business id and process number
      */
-    public String getTaskId(Long businessId, String processCode) {
+    public String getTaskId(String businessId, String processCode) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().businessId(businessId).businessNumber(processCode).build());
         if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
             TaskMgmtVO taskMgmtVO = taskMgmtService.findByTask(TaskMgmtVO.builder().businessId(businessId).code(processCode).build());

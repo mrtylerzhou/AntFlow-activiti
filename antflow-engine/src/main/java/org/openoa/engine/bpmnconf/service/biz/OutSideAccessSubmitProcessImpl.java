@@ -151,7 +151,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //fill info
         outSideBpmAccessBusinessService.updateById(OutSideBpmAccessBusiness
                 .builder()
-                .id(businessDataVo.getBusinessId())
+                .id(Long.parseLong(businessDataVo.getBusinessId()))
                 .processNumber(processNum)
                 .bpmnConfId(Optional.ofNullable(businessDataVo.getBpmnConfVo()).orElse(new BpmnConfVo()).getId())
                 .build());

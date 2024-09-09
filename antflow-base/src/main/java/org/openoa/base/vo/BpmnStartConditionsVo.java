@@ -33,7 +33,7 @@ public class BpmnStartConditionsVo {
     /**
      * process's business id
      */
-    private Long businessId;
+    private String businessId;
 
     //condition
     /**

@@ -52,7 +52,7 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public BizLeaveTimeVo queryData(Long businessId) {
+    public BizLeaveTimeVo queryData(String businessId) {
         BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(businessId);
         BizLeaveTimeVo vo=new BizLeaveTimeVo();
         BeanUtils.copyProperties(leaveTime,vo);
@@ -70,7 +70,7 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
         leaveTime.setLeaveUserName(SecurityUtils.getLogInEmpNameSafe());
 
         bizLeaveTimeMapper.insert(leaveTime);
-        vo.setBusinessId(leaveTime.getId().longValue());
+        vo.setBusinessId(leaveTime.getId().toString());
         vo.setProcessTitle("请假申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizLeaveTime.class.getSimpleName());
@@ -95,12 +95,12 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public void cancellationData(Long businessId) {
+    public void cancellationData(String businessId) {
 
     }
 
     @Override
-    public void finishData(Long businessId) {
+    public void finishData(String businessId) {
 
     }
 }

@@ -52,7 +52,7 @@ public class BpmnTimeoutReminderVariableVo implements Serializable {
     /**
      * business id
      */
-    private Long businessId;
+    private String businessId;
 
     /**
      * entry id

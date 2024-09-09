@@ -31,7 +31,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * business id
      */
-    private Long businessId;
+    private String businessId;
     /**
      * params
      */

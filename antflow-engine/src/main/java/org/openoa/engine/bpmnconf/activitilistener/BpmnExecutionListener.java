@@ -110,7 +110,7 @@ public class BpmnExecutionListener implements ExecutionListener {
             //todo third party call back
 
         } else {
-            formFactory.getFormAdaptor(formCode).finishData(Long.parseLong(businessId));
+            formFactory.getFormAdaptor(formCode).finishData(businessId);
         }
 
         //execute the process finish method and update status

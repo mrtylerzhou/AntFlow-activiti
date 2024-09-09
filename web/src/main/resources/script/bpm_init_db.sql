@@ -148,7 +148,7 @@ CREATE TABLE if not exists `t_information_template`
 CREATE TABLE if not exists `bpm_business`
 (
     `id`               bigint(20) NOT NULL AUTO_INCREMENT,
-    `business_id`      bigint(20)   DEFAULT NULL COMMENT 'business id',
+    `business_id`      varchar(64)   DEFAULT NULL COMMENT 'business id',
     `create_time`      timestamp    not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `process_code`     varchar(50)  DEFAULT NULL COMMENT 'process Number',
     `create_user_name` varchar(50)  DEFAULT NULL COMMENT 'as its name says',
@@ -745,7 +745,7 @@ CREATE TABLE if not exists `bpm_business_process`
 (
     `id`               bigint(11)  NOT NULL AUTO_INCREMENT,
     `PROCESSINESS_KEY` varchar(64)  DEFAULT NULL,
-    `BUSINESS_ID`      bigint(100) NOT NULL COMMENT 'business id',
+    `BUSINESS_ID`      varchar(64) NOT NULL COMMENT 'business id',
     `BUSINESS_NUMBER`  varchar(64)  DEFAULT NULL COMMENT 'process number',
     `ENTRY_ID`         varchar(64)  DEFAULT NULL,
     `VERSION`          bigint(11)   DEFAULT NULL COMMENT 'version',
@@ -753,12 +753,12 @@ CREATE TABLE if not exists `bpm_business_process`
     `UPDATE_TIME`      timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     `description`      varchar(100) DEFAULT NULL COMMENT 'title',
     `process_state`    int(1)       DEFAULT NULL COMMENT 'process state 1:approving 2:approved 3:invalid 6:rejected',
-    `create_user`      varchar(50)  DEFAULT NULL,
+    `create_user`      varchar(64)  DEFAULT NULL,
     `process_digest`   text COMMENT 'process digest',
     `is_del`           tinyint(1)   DEFAULT '0' COMMENT '0: no 1: yes）',
     `data_source_id`   bigint(10)   DEFAULT NULL COMMENT 'data source id',
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
-    `back_user_id`     int(11)      DEFAULT NULL COMMENT 'back to user id',
+    `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
     KEY `process_entry_id` (`ENTRY_ID`) USING BTREE,

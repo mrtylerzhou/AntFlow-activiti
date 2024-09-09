@@ -28,7 +28,7 @@ public class BpmBusiness {
      * business id
      */
     @TableField("business_id")
-    private Long businessId;
+    private String businessId;
     /**
      * create time
      */

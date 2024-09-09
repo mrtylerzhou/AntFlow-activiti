@@ -110,7 +110,7 @@ public class TaskMgmtVO implements Serializable {
     /**
      * 业务id
      */
-    private Long businessId;
+    private String businessId;
     /**
      */
     private String handleUserName;

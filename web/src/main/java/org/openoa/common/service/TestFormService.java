@@ -49,7 +49,7 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(Long businessId) {
+    public ThirdPartyAccountApplyVo queryData(String businessId) {
         ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(businessId);
         ThirdPartyAccountApplyVo vo=new ThirdPartyAccountApplyVo();
         BeanUtils.copyProperties(accountApply,vo);
@@ -61,7 +61,7 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
         BeanUtils.copyProperties(vo,thirdPartyAccountApply);
         thirdPartyAccountApplyMapper.insert(thirdPartyAccountApply);
-        vo.setBusinessId(thirdPartyAccountApply.getId().longValue());
+        vo.setBusinessId(thirdPartyAccountApply.getId().toString());
         vo.setProcessTitle("第三方账号申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(ThirdPartyAccountApply.class.getSimpleName());
@@ -86,12 +86,12 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public void cancellationData(Long businessId) {
+    public void cancellationData(String businessId) {
 
     }
 
     @Override
-    public void finishData(Long businessId) {
+    public void finishData(String businessId) {
 
     }
 }
