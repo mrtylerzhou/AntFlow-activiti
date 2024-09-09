@@ -56,5 +56,6 @@ public class UndertakeProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_UNDERTAKE);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),ProcessOperationEnum.BUTTON_TYPE_UNDERTAKE);
     }
 }

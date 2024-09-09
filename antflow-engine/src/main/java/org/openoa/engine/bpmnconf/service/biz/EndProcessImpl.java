@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_AGREE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.CRMCEL_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 
@@ -78,7 +79,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 .build());
         //save verify info
         verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
-                .businessId(bpmBusinessProcess.getBusinessId().toString())
+                .businessId(bpmBusinessProcess.getBusinessId())
                 .verifyUserName(SecurityUtils.getLogInEmpName())
                 .verifyUserId(SecurityUtils.getLogInEmpIdStr())
                 .verifyStatus(processState.equals(END_STATE.getCode()) ? ProcessSubmitStateEnum.END_AGRESS_TYPE.getCode() : processState)
@@ -94,7 +95,9 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         businessContans.deleteProcessInstance(processInstanceId);
         //call business adaptor method
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        formFactory.getFormAdaptor(vo).cancellationData(vo.getBusinessId());
+        if(!vo.getIsOutSideAccessProc()){
+            formFactory.getFormAdaptor(vo).cancellationData(vo.getBusinessId());
+        }
 
     }
 
@@ -102,6 +105,8 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_STOP,
                 ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
+                ProcessOperationEnum.BUTTON_TYPE_ABANDON);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
                 ProcessOperationEnum.BUTTON_TYPE_ABANDON);
     }
 }

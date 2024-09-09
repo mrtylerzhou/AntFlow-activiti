@@ -126,6 +126,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP
         );
-        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), BUTTON_TYPE_AGREE);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  BUTTON_TYPE_RESUBMIT,
+                BUTTON_TYPE_AGREE,
+                BUTTON_TYPE_JP);
     }
 }
