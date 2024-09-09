@@ -1193,7 +1193,7 @@ create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
     update_user varchar(255) charset utf8          null,
     column_8    int                                null,
    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-   `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
+   `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted'
 )
     comment 'approver info for a specified outsie business party''s specified role';
 
@@ -1316,3 +1316,4 @@ CREATE TABLE `t_biz_leavetime`  (
 SET FOREIGN_KEY_CHECKS = 1;
 
 
+ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
