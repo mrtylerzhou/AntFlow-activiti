@@ -10,4 +10,7 @@
     <select id="getStudentList" resultType="org.openoa.entity.Student">
         select * from t_student
     </select>
+    <select id="selectAllStudent" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select t.${empTblIdFieldName} as id,user_name as name from ${empTblName} t
+    </select>
 </mapper>
