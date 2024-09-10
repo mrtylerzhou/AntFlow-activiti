@@ -361,8 +361,7 @@
         where h.BUSINESS_KEY_ = (
             SELECT w.ENTRY_ID
             FROM bpm_business_process w
-            WHERE w.BUSINESS_ID = #{taskMgmtVO.businessId}
-              AND w.BUSINESS_NUMBER LIKE CONCAT('%', #{taskMgmtVO.code}, '%')
+            WHERE  w.BUSINESS_NUMBER =#{processNumber}
         )
     </select>
 
