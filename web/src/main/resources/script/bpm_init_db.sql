@@ -1314,6 +1314,8 @@ CREATE TABLE `t_biz_leavetime`  (
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
+ALTER TABLE t_bpmn_node_role_conf ADD COLUMN `role_name` varchar(255) NULL COMMENT 'role name s' AFTER `role_id`;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 

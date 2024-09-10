@@ -215,6 +215,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                         .approvalStatus(o.getVerifyStatus())
                         .approvalStatusName(o.getVerifyStatusName())
                         .approvalUserName(o.getVerifyUserName())
+                        .approvalUserId(o.getVerifyUserId())
                         .build())
                 .collect(Collectors.toList());
     }
