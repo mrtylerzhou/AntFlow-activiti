@@ -77,7 +77,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
 
     /**
      * get emp list
-     *
+     * if emplNames is not empty,it is stored in db and then loaded
      * @param emplIds
      * @return
      */
