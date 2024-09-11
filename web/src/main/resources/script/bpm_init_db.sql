@@ -1316,6 +1316,12 @@ ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInst
 
 ALTER TABLE t_bpmn_node_role_conf ADD COLUMN `role_name` varchar(255) NULL COMMENT 'role name s' AFTER `role_id`;
 
+ALTER TABLE bpm_flowrun_entrust MODIFY  original VARCHAR(64) default null;
+
+ALTER TABLE bpm_flowrun_entrust MODIFY  actual VARCHAR(64) default null;
+
+
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 
