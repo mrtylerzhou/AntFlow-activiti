@@ -79,7 +79,7 @@ public class BpmVerifyInfo {
      * original assignee id
      */
     @TableField("original_id")
-    private Integer originalId;
+    private String originalId;
     /**
      * process code
      */

@@ -84,12 +84,12 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
     }
 
 
-    public Integer getEntrustEmployee(Integer employeeId, String powerId) {
+    public String getEntrustEmployee(String employeeId, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return employeeId;
         }
 
-        Integer result = this.getEntrustEmployeeOnly(employeeId, powerId);
+        String result = this.getEntrustEmployeeOnly(employeeId, powerId);
         return result;
     }
 
@@ -100,7 +100,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
      * @param powerId    formid
      * @return
      */
-    public Integer getEntrustEmployeeOnly(Integer employeeId, String powerId) {
+    public String getEntrustEmployeeOnly(String employeeId, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return employeeId;
         }

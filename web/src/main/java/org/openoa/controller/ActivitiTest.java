@@ -17,6 +17,7 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.MailInfo;
+import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -79,6 +80,8 @@ public class ActivitiTest {
     private IAdaptorFactory iAdaptorFactory;
     @Autowired
     private MailUtils mailUtils;
+    @Autowired
+    private TaskMgmtServiceImpl taskMgmtService;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -206,6 +209,10 @@ public class ActivitiTest {
                 .content("keep refrain from sending test email to us")
                 .build();
         mailUtils.sendMail(mailInfo);
+        return Result.success();
+    }
+    @PostMapping("/changefutureAssignees")
+    public Result changeFutureAssignee(String executionId,String variableName,String assignees){
         return Result.success();
     }
 }
