@@ -50,6 +50,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -213,6 +214,8 @@ public class ActivitiTest {
     }
     @PostMapping("/changefutureAssignees")
     public Result changeFutureAssignee(String executionId,String variableName,String assignees){
+        List<String> assigneeList = Arrays.asList(assignees.split(","));
+        taskMgmtService.changeFutureAssignees(executionId,variableName,assigneeList);
         return Result.success();
     }
 }
