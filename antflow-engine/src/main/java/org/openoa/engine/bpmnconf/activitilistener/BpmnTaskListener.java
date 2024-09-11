@@ -88,13 +88,13 @@ public class BpmnTaskListener implements TaskListener {
                 .eq("bpmn_code", bpmnCode));
 
         //set process entrust info
-        Integer oldUserId = Integer.parseInt(delegateTask.getAssignee());
-        Integer userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
+        String oldUserId = delegateTask.getAssignee();
+        String userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
 
 
         //if userId is not null and valid then set user task delegate
-        if (userId!=null && userId != 0) {
-            delegateTask.setAssignee(userId.toString());
+        if (!StringUtils.isEmpty(userId)) {
+            delegateTask.setAssignee(userId);
         }
 
 

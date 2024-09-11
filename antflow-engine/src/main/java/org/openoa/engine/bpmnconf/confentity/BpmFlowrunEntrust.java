@@ -33,11 +33,11 @@ public class BpmFlowrunEntrust {
     /**
      * the original assignee
      */
-    private Integer original;
+    private String original;
     /**
      * actual assignee
      */
-    private Integer actual;
+    private String actual;
     /**
      * type 1 for entrust task, 2 for circulate task
      */

@@ -37,7 +37,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param runtaskid task id
      * @param type      0 entrust 1:circulate
      */
-    public void addFlowrunEntrust(Integer actual, Integer original, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
+    public void addFlowrunEntrust(String actual, String original, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
         BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
         entrust.setType(type);
         entrust.setRuntaskid(runtaskid);
@@ -62,7 +62,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @return
      * @throws Exception
      */
-    public UserEntrust getBpmEntrust(Integer receiverId, String processKey) {
+    public UserEntrust getBpmEntrust(String receiverId, String processKey) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
@@ -102,7 +102,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param taskId     task id
      * @return
      */
-    public Integer getUserId(Integer receiverId, String processKey, String taskId, String ProcessInstanceId) {
+    public String getUserId(String receiverId, String processKey, String taskId, String ProcessInstanceId) {
 
         //query to check whether current process has been entrusted
         UserEntrust entrust = this.getBpmEntrust(receiverId, processKey);

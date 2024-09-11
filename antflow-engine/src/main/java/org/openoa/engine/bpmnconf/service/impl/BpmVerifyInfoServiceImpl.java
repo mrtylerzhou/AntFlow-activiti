@@ -64,7 +64,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     }
 
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
-        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(Integer.parseInt(SecurityUtils.getLogInEmpIdStr()), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(SecurityUtils.getLogInEmpIdStr(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
         if(entrustByTaskId!=null){
             verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
         }
