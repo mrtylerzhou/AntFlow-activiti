@@ -43,7 +43,7 @@ public class UserPointedPersonnelProvider implements BpmnPersonnelProviderServic
             if(CollectionUtils.isEmpty(emplList)){
                 throw new JiMuBizException("thirdy party process role node has no employee info");
             }
-            assigneeVoBuildUtils.buildVOs(emplList,elementName,false);
+          return assigneeVoBuildUtils.buildVOs(emplList,elementName,false);
         }
         List<String> emplIds = propertysVo.getEmplIds();
 
