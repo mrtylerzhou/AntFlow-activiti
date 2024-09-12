@@ -26,12 +26,12 @@ public class BpmVerifyInfoVo implements Serializable {
     /**
      * process instance id
      */
-    private Long runInfoId;
+    private String runInfoId;
     /**
      * verify user id
      */
     private String verifyUserId;
-    private List<Long>verifyUserIds;
+    private List<String>verifyUserIds;
     /**
      * verify user name
      */
@@ -66,7 +66,7 @@ public class BpmVerifyInfoVo implements Serializable {
     /**
      * originalId approver
      */
-    private Integer originalId;
+    private String originalId;
     /**
      * original approver name
      */

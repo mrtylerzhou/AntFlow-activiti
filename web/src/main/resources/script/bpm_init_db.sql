@@ -638,7 +638,7 @@ CREATE TABLE if not exists `bpm_verify_info`
     `task_id`          varchar(64)         DEFAULT NULL COMMENT 'task id',
     `business_type`    int(1)              DEFAULT NULL COMMENT 'business type',
     `business_id`      varchar(128)        DEFAULT NULL COMMENT 'business id',
-    `original_id`      bigint(20)          DEFAULT NULL COMMENT 'orig approver name',
+    `original_id`      varchar(64)          DEFAULT NULL COMMENT 'orig approver name',
     `process_code`     varchar(64)         DEFAULT NULL COMMENT 'process number',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `BPM_IDX__INFOR` (`business_type`, `business_id`) USING BTREE,
