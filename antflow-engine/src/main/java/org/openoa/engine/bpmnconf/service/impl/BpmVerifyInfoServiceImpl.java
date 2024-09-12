@@ -233,13 +233,13 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
             }
             String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).findFirst().orElse(StringUtils.EMPTY);
             taskInfors.add(BpmVerifyInfoVo.builder()
-                            .verifyUserIds(new ArrayList<>(AntCollectionUtil.StringToLongList(verifyUserIds)))
+                            .verifyUserIds(verifyUserIds)
                     .verifyUserName(verifyUserName)
                     .taskName(taskName)
                     .elementId(elementId)
                     .build());
         } else {
-            tasks.get(0).setVerifyUserIds(new ArrayList<>(AntCollectionUtil.StringToLongList(verifyUserIds)));
+            tasks.get(0).setVerifyUserIds(verifyUserIds);
             taskInfors.add(tasks.get(0));
         }
 
