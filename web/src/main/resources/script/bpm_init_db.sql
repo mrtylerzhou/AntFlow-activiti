@@ -1329,5 +1329,9 @@ alter table bpm_flowrun_entrust
 
 alter table bpm_flowrun_entrust
 	add actual_name varchar(100) null comment 'actual assignee name';
+alter table bpm_business_process modify VERSION varchar(30) null comment '版本';
+
+alter table bpm_business_process
+	add is_out_side_process tinyint default 0 null comment '是否是三方接入工作流,0不是,1是';
 
 

@@ -55,7 +55,7 @@ public class BpmBusinessProcess {
      * process version
      */
     @TableField("VERSION")
-    private Integer version;
+    private String version;
     /**
      * as its name says
      */
@@ -115,5 +115,10 @@ public class BpmBusinessProcess {
      */
     @TableField("back_user_id")
     private String backUserId;
+    /**
+     * 0 no ,1 yes
+     */
+    @TableField("is_out_side_process")
+    private Integer isOutSideProcess;
 
 }

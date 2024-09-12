@@ -128,9 +128,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
             processTitlePrefix = businessDataVo.getSubmitUser();
         }
 
-
-        //save business process info
-        bpmBusinessProcessService.addBusinessProcess(BpmBusinessProcess.builder()
+        BpmBusinessProcess bpmBusinessProcess = BpmBusinessProcess.builder()
                 .businessId(businessDataVo.getBusinessId())
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(processNum)
@@ -140,8 +138,12 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .processState(ProcessStateEnum.COMLETE_STATE.getCode())
                 .entryId(processNum)
                 .description(processTitlePrefix + "-" + businessDataVo.getBpmnName())
+                .version(businessDataVo.getBpmnCode())
+                .isOutSideProcess(1)
                 //.approvalUserId(businessDataVo.getEmplId())
-                .build());
+                .build();
+        //save business process info
+        bpmBusinessProcessService.addBusinessProcess(bpmBusinessProcess);
         businessDataVo.setProcessNumber(processNum);
 
 

@@ -73,6 +73,10 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         if (ObjectUtils.isEmpty(task)) {
             throw new JiMuBizException("当前流程代办已审批！");
         }
+        if(vo.getIsOutSideAccessProc()){
+            task.setDescription(SecurityUtils.getLogInEmpName());
+            taskService.saveTask(task);
+        }
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         BusinessDataVo businessDataVo = vo;

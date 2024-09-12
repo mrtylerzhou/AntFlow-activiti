@@ -39,8 +39,8 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
             }
             if (!StringUtils.isEmpty(userId)) {
                 BaseIdTranStruVo userById = userService.getById(userId);
-                String userName = StringUtils.EMPTY;
-                if (userById != null) {
+                String userName = request.getHeader("userName");
+                if (userById != null&&StringUtils.isEmpty(userName)) {
                     userName = userById.getName();
                     BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(userId).name(userName).build();
                     ThreadLocalContainer.set("currentuser", userInfo);

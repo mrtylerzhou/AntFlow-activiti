@@ -51,11 +51,11 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
         mapper.insert(businessProcess);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void addBusinessProcess(String businessId, String key, String entryId, String processNum, String description) {
+
+    public void addBusinessProcess(String businessId, String key, String entryId, String processNum,String bpmnCode, String description) {
         BpmBusinessProcess bpmBusinessProcess = new BpmBusinessProcess();
-        Integer version = 0;
-        bpmBusinessProcess.setVersion(version);
+
+        bpmBusinessProcess.setVersion(bpmnCode);
         Date nowDate = new Date();
         bpmBusinessProcess.setCreateTime(nowDate);
         bpmBusinessProcess.setUpdateTime(nowDate);
