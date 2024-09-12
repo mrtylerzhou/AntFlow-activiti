@@ -82,6 +82,10 @@ public class BpmBusinessProcess {
      */
     @TableField("create_user")
     private String createUser;
+
+    @TableField("user_name")
+    private String userName;
+
     /**
      * process digest
      */

@@ -199,6 +199,8 @@ public class BusinessDataVo extends PageDto {
      */
     private String submitUrl;
 
+    private String submitUser;
+
     /**
      * conditions url
      */

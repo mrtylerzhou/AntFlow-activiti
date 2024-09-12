@@ -297,6 +297,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
             outSideBpmBusinessParty = new OutSideBpmBusinessParty();
             outSideBpmBusinessParty.setBusinessPartyMark(vo.getThirdCode());
+            outSideBpmBusinessParty.setType(2);
             outSideBpmBusinessParty.setName(vo.getThirdName());
             outSideBpmBusinessParty.setCreateTime(new Date());
             outSideBpmBusinessParty.setCreateUser(SecurityUtils.getLogInEmpIdSafe());

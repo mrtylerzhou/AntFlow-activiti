@@ -121,6 +121,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
         businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
+        businessDataVo.setOutSideType(vo.getOutSideType());
 
 
         //to check whether start user id empty
@@ -147,6 +148,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 //            }
 
             businessDataVo.setEmpId(vo.getUserId());
+            businessDataVo.setSubmitUser(vo.getApprovalUsername());
 
         }
 

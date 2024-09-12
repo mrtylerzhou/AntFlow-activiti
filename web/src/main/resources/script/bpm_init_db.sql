@@ -1320,6 +1320,7 @@ ALTER TABLE bpm_flowrun_entrust MODIFY  original VARCHAR(64) default null;
 
 ALTER TABLE bpm_flowrun_entrust MODIFY  actual VARCHAR(64) default null;
 
+ALTER TABLE  bpm_business_process  ADD COLUMN user_name VARCHAR(100) DEFAULT NULL;
 
 
 SET FOREIGN_KEY_CHECKS = 1;

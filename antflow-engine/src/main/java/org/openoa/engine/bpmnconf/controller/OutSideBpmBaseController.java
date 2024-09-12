@@ -1,7 +1,10 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
+import org.openoa.base.vo.OutSideBpmProcesses;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBaseServiceImpl;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@Tag(name = "第三方工作流配置", description = "")
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSideBpm")
@@ -26,8 +31,8 @@ public class OutSideBpmBaseController {
      * @return
      */
     @GetMapping("/base/getEmplBusinessPartys")
-    public Result getEmplBusinessPartys(@RequestParam(name = "name", required = false) String name,
-                                        @RequestParam(name = "permCode", required = false) String permCode) {
+    public Result<List<OutSideBpmBusinessPartyVo>> getEmplBusinessPartys(@RequestParam(name = "name", required = false) String name,
+                                                                         @RequestParam(name = "permCode", required = false) String permCode) {
 
         List<OutSideBpmBusinessPartyVo> outSideBpmBusinessPartyVos = outSideBpmBaseService.getEmplBusinessPartys(name, new String[]{permCode})
                 .stream().filter(o -> o.getId() > 0L)
@@ -37,15 +42,14 @@ public class OutSideBpmBaseController {
     }
 
     /**
-
      * get a list of process by business party id
      *
      * @param businessPartyId
      * @return
      */
     @GetMapping("/base/getEmplBusinessPartys/{businessPartyId}")
-    public Result getProcessesByBusinessParty(@PathVariable("businessPartyId") Integer businessPartyId,
-                                            @RequestParam(name = "name", required = false) String name) {
+    public Result<List<OutSideBpmProcesses>> getProcessesByBusinessParty(@PathVariable("businessPartyId") Integer businessPartyId,
+                                                                         @RequestParam(name = "name", required = false) String name) {
         return Result.newSuccessResult(outSideBpmBaseService.getProcessesByBusinessParty(businessPartyId, name));
     }
 

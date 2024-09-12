@@ -125,9 +125,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                     .orElse(new Employee()).getUsername();
         } else {
             //start user
-            processTitlePrefix = Optional
-                    .ofNullable(employeeService.getEmployeeDetailById(businessDataVo.getStartUserId()))
-                    .orElse(new Employee()).getUsername();
+            processTitlePrefix = businessDataVo.getSubmitUser();
         }
 
 
@@ -137,6 +135,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(processNum)
                 .createUser(businessDataVo.getStartUserId())
+                .userName(businessDataVo.getSubmitUser())
                 .createTime(new Date())
                 .processState(ProcessStateEnum.COMLETE_STATE.getCode())
                 .entryId(processNum)
