@@ -139,7 +139,7 @@ public class TaskMgmtVO implements Serializable {
     /**
      * user id
      */
-    private Integer userId;
+    private String userId;
 
     /**
      * role ids

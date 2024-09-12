@@ -50,7 +50,9 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
                     super.beforeRequest(request, message);
                 }
             }
-
+            if (!StringUtils.isEmpty(userId)) {
+                ThreadLocalContainer.set("userId", userId);
+            }
         }
     }
 

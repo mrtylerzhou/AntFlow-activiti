@@ -127,24 +127,26 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         if (StringUtil.isEmpty(vo.getUserId())) {
             throw new JiMuBizException("发起人用户名为空，无法发起流程！");
         }
-        Employee employee = getEmployeeByUserId(vo.getUserId());
-
-        if (employee==null) {
-            throw new JiMuBizException("发起人不合法，无法发起流程");
-        }
+//        Employee employee = getEmployeeByUserId(vo.getUserId());
+//
+//        if (employee==null) {
+//            throw new JiMuBizException("发起人不合法，无法发起流程");
+//        }
 
         //set start user id
-        businessDataVo.setStartUserId(employee.getId().toString());
+        businessDataVo.setStartUserId(vo.getUserId());
 
         //set approval
         if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-            if(approvalEmployee!=null){
-                String id = approvalEmployee.getId();
-                if(!StringUtils.isEmpty(id)){
-                    businessDataVo.setEmplId(id);
-                }
-            }
+//            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
+//            if(approvalEmployee!=null){
+//                String id = approvalEmployee.getId();
+//                if(!StringUtils.isEmpty(id)){
+//                    businessDataVo.setEmplId(id);
+//                }
+//            }
+
+            businessDataVo.setEmpId(vo.getUserId());
 
         }
 

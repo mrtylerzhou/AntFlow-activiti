@@ -55,6 +55,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
 
+
         //generate process number by rule
         String processNum = StringUtils.join(businessDataVo.getFormCode(), "_", businessDataVo.getBusinessId());
 
@@ -94,10 +95,10 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //bpmnStartConditionsVo.setApprovalEmplId(Long.parseLong(businessDataVo.getEmplId()));
 
         //set start user dept id
-        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
-        if (department!=null && department.getId()!=null) {
-            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
-        }
+//        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
+//        if (department!=null && department.getId()!=null) {
+//            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
+//        }
 
         //set approvers list
         bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Lists.newArrayList()));
