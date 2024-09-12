@@ -1,6 +1,6 @@
 
 <p align="center" style="margin-bottom: 0 !important">
-	<img alt="logo" src="./doc/images/logo.png"  width = "80px"; height= "80px";>
+	<img alt="logo" src="./doc/images/logo.png"  width = 25%; height=25%;>
 </p>
 
 ### 简介
