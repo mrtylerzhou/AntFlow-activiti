@@ -120,31 +120,35 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         BusinessDataVo businessDataVo = new BusinessDataVo();
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
-        businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId());
+        businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
+        businessDataVo.setOutSideType(vo.getOutSideType());
 
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
             throw new JiMuBizException("发起人用户名为空，无法发起流程！");
         }
-        Employee employee = getEmployeeByUserId(vo.getUserId());
-
-        if (employee==null) {
-            throw new JiMuBizException("发起人不合法，无法发起流程");
-        }
+//        Employee employee = getEmployeeByUserId(vo.getUserId());
+//
+//        if (employee==null) {
+//            throw new JiMuBizException("发起人不合法，无法发起流程");
+//        }
 
         //set start user id
-        businessDataVo.setStartUserId(employee.getId().toString());
+        businessDataVo.setStartUserId(vo.getUserId());
 
         //set approval
         if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-            if(approvalEmployee!=null){
-                Long id = approvalEmployee.getId();
-                if(id!=null){
-                    businessDataVo.setEmplId(id.toString());
-                }
-            }
+//            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
+//            if(approvalEmployee!=null){
+//                String id = approvalEmployee.getId();
+//                if(!StringUtils.isEmpty(id)){
+//                    businessDataVo.setEmplId(id);
+//                }
+//            }
+
+            businessDataVo.setEmpId(vo.getUserId());
+            businessDataVo.setSubmitUser(vo.getApprovalUsername());
 
         }
 
@@ -180,7 +184,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             return null;
         }
         Employee employee=new Employee();
-        employee.setId(Long.valueOf(userName));
+        employee.setId(userName);
         employee.setUsername(stringStringMap.get(userName));
         return employee;
     }
@@ -215,6 +219,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                         .approvalStatus(o.getVerifyStatus())
                         .approvalStatusName(o.getVerifyStatusName())
                         .approvalUserName(o.getVerifyUserName())
+                        .approvalUserId(o.getVerifyUserId())
                         .build())
                 .collect(Collectors.toList());
     }

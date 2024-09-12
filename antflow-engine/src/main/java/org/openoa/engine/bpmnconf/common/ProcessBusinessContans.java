@@ -66,7 +66,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
             //set process desc
             processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
 
-            Employee employee = employeeService.qryLiteEmployeeInfoById(Long.parseLong(bpmBusinessProcess.getCreateUser()));
+            Employee employee = employeeService.qryLiteEmployeeInfoById(bpmBusinessProcess.getCreateUser());
             processInfoVo.setEmployee(employee);
             processInfoVo.setCreateTime(bpmBusinessProcess.getCreateTime());
             //set start userId

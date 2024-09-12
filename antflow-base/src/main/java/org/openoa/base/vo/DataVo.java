@@ -15,8 +15,8 @@ import java.util.List;
 public class DataVo implements Serializable {
 
     private List<IdsVo> ids;
-    private Integer sender;
-    private Integer receiverId;
+    private String sender;
+    private String receiverId;
     /**
      * entrust user name
      */

@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
@@ -73,7 +74,11 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             throw new JiMuBizException("当前流程代办已审批！");
         }
         vo.setTaskId(task.getId());
-        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
+//        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
+        BusinessDataVo businessDataVo = vo;
+        if(!vo.getIsOutSideAccessProc()){
+            businessDataVo= formFactory.getFormAdaptor(vo).consentData(vo);
+        }
 
         //save process verify info
         BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
@@ -121,5 +126,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP
         );
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  BUTTON_TYPE_RESUBMIT,
+                BUTTON_TYPE_AGREE,
+                BUTTON_TYPE_JP);
     }
 }

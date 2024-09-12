@@ -24,7 +24,7 @@ public class DirectLeaderPersonnelProvider extends AbstractNodeAssigneeVoProvide
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
-        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeDirectLeaderById(Long.parseLong(startUserId));
+        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeDirectLeaderById(startUserId);
         ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId().toString());
         return  super.provideAssigneeList(bpmnNodeVo,userIds);
     }

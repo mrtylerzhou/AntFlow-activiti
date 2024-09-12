@@ -7,6 +7,7 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
@@ -87,13 +88,13 @@ public class BpmnTaskListener implements TaskListener {
                 .eq("bpmn_code", bpmnCode));
 
         //set process entrust info
-        Integer oldUserId = Integer.parseInt(delegateTask.getAssignee());
-        Integer userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
+        String oldUserId = delegateTask.getAssignee();
+        String userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
 
 
         //if userId is not null and valid then set user task delegate
-        if (userId!=null && userId != 0) {
-            delegateTask.setAssignee(userId.toString());
+        if (!StringUtils.isEmpty(userId)) {
+            delegateTask.setAssignee(userId);
         }
 
 
@@ -128,7 +129,7 @@ public class BpmnTaskListener implements TaskListener {
 
         if (bpmnConf==null) {
             log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            return;
+            throw new JiMuBizException("Task监听-查询流程配置数据为空");
         }
 
 
@@ -149,7 +150,7 @@ public class BpmnTaskListener implements TaskListener {
             ActivitiTemplateMsgUtils.sendBpmApprovalMsg(
                     ActivitiBpmMsgVo
                             .builder()
-                            .userId(Long.parseLong(delegateTask.getAssignee()))
+                            .userId(delegateTask.getAssignee())
                             .processId(processNumber)
                             .bpmnCode(bpmnCode)
                             .formCode(formCode)

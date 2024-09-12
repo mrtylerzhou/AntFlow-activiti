@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Repository
 public interface DepartmentMapper  {
-    List<Department> ListSubDepartmentByEmployeeId(@Param("employeeId") Long employeeId);
+    List<Department> ListSubDepartmentByEmployeeId(@Param("employeeId") String employeeId);
 
-    Department getDepartmentByEmployeeId(@Param("employeeId") Long employeeId);
+    Department getDepartmentByEmployeeId(@Param("employeeId") String employeeId);
 }

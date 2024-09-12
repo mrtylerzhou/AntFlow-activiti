@@ -19,24 +19,24 @@ public class EmployeeServiceImpl {
     private UserMapper userMapper;
     @Autowired
     private UserServiceImpl userService;
-   public List<Employee> qryLiteEmployeeInfoByIds(Collection<Long> ids){
+   public List<Employee> qryLiteEmployeeInfoByIds(Collection<String> ids){
         List<BaseIdTranStruVo> baseIdTranStruVos = userService.queryUserByIds(ids);
         return  EmployeeUtil.basicEmployeeInfos(baseIdTranStruVos);
     }
-   public Employee qryLiteEmployeeInfoById(Long id){
+   public Employee qryLiteEmployeeInfoById(String id){
         BaseIdTranStruVo baseIdTranStruVo = userService.getById(id);
         return  EmployeeUtil.basicEmployeeInfo(baseIdTranStruVo);
     }
-    public Employee getEmployeeDetailById(Long id){
+    public Employee getEmployeeDetailById(String id){
         return userMapper.getEmployeeDetailById(id);
     }
-    public List<Employee> getEmployeeDetailByIds(Collection<Long> ids){
+    public List<Employee> getEmployeeDetailByIds(Collection<String> ids){
         return userMapper.getEmployeeDetailByIds(ids);
     }
-    public long checkEmployeeEffective(Long id){
+    public long checkEmployeeEffective(String id){
         return userMapper.checkEmployeeEffective(id);
     }
-    public List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(Long employeeId,Integer tier){
+    public List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(String employeeId,Integer tier){
         return userMapper.getLevelLeadersByEmployeeIdAndTier(employeeId,tier);
     }
 }

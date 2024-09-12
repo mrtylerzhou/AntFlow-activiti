@@ -38,6 +38,11 @@ public class BpmnNodePersonnelEmplConf  {
     @TableField("empl_id")
     private String emplId;
     /**
+     * emp name
+     */
+    @TableField(" empl_name")
+    private String  emplName;
+    /**
      * remark
      */
     private String remark;

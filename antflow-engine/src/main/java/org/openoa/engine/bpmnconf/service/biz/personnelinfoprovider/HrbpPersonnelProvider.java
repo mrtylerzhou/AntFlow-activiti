@@ -22,7 +22,7 @@ public class HrbpPersonnelProvider extends AbstractNodeAssigneeVoProvider{
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
-        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeHrpbByEmployeeId(Long.parseLong(startUserId));
+        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeHrpbByEmployeeId(startUserId);
         if(baseIdTranStruVo==null){
             throw new JiMuBizException("发起人HRBP不存在");
         }

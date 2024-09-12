@@ -28,7 +28,7 @@ public class BpmBusiness {
      * business id
      */
     @TableField("business_id")
-    private Long businessId;
+    private String businessId;
     /**
      * create time
      */
@@ -49,7 +49,7 @@ public class BpmBusiness {
      * create user id
      */
     @TableField("create_user")
-    private Long createUser;
+    private String createUser;
     /**
      * process key
      */

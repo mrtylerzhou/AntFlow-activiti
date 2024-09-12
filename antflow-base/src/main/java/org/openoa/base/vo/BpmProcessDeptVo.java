@@ -87,7 +87,7 @@ public class BpmProcessDeptVo extends BaseVo {
     /**
      * monitoring user id list
      */
-    public List<Long> controlUserIds;
+    public List<String> controlUserIds;
     /**
      * department list for create permission
      */
@@ -105,7 +105,7 @@ public class BpmProcessDeptVo extends BaseVo {
     /**
      * user id list for create permission
      */
-    public List<Long> createUserIds;
+    public List<String> createUserIds;
     /**
      * notify type list
      */
@@ -125,7 +125,7 @@ public class BpmProcessDeptVo extends BaseVo {
     /**
      * user id list for view permission
      */
-    public List<Long> viewUserIds;
+    public List<String> viewUserIds;
     /**
      * user list for view permission
      */

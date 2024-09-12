@@ -1,7 +1,9 @@
 package org.openoa.engine.bpmnconf.common;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -14,6 +16,10 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author AntFlow
@@ -30,6 +36,8 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     private BpmBusinessProcessServiceImpl processService;
     @Autowired
     protected BpmBusinessProcessMapper bpmBusinessProcessMapper;
+    @Autowired
+    private RuntimeService runtimeService;
 
 
     /**
@@ -113,5 +121,9 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         }
     }
 
-
+    public void  changeFutureAssignees(String executionId, String variableName, List<String> assignees){
+        Map<String,Object> assigneeMap=new HashMap<>();
+        assigneeMap.put(variableName,assignees);
+        runtimeService.setVariables(executionId,assigneeMap);
+    }
 }

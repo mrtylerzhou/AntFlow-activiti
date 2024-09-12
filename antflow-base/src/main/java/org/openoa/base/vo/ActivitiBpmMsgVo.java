@@ -14,7 +14,7 @@ public class ActivitiBpmMsgVo {
     /**
      *message receiver Id
      */
-    private Long userId;
+    private String userId;
 
     /**
      * process id

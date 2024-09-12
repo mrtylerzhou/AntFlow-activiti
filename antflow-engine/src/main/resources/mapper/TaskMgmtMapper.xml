@@ -31,7 +31,7 @@
             <!--start user query condition-->
             <if test="type==6">
                 and t.userId in (
-                select e.id from t_employee e where e.name LIKE CONCAT('%',#{applyUser},'%' )
+                select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} LIKE CONCAT('%',#{applyUser},'%' )
                 )
             </if>
         </if>
@@ -59,17 +59,17 @@
                 )
             </if>
         </if>
-        <!--actual assignee todo-->
+
         <if test="actualName!=null and actualName!=''">
             and t.assignee in (
-            select e.id from t_employee e where e.name LIKE CONCAT('%',#{actualName},'%' )
+            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} LIKE CONCAT('%',#{actualName},'%' )
             )
         </if>
 
         <!--fuzzy match on start user id,digest-->
         <if test="search !=null and search!=''">
             AND (
-            t.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{search},'%'))
+            t.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblNameFieldName} like CONCAT ('%', #{search},'%'))
             or t.description LIKE CONCAT('%', #{search},'%')
             )
         </if>
@@ -106,11 +106,11 @@
         <!--search condition on user name,digest-->
         <if test="search !=null and search!=''">
             AND (
-            h.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{search},'%'))
+            h.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblName} like CONCAT ('%', #{search},'%'))
             or h.description LIKE CONCAT('%', #{search},'%')
             or h.processInstanceId in (
             select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
-            select e.id from t_employee e where e.name like concat('%', #{search},'%')
+            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblName} like concat('%', #{search},'%')
             )
             )
             )
@@ -154,11 +154,11 @@
         <!--fuzzy matching-->
         <if test="taskMgmtVO.search !=null and taskMgmtVO.search!=''">
             AND (
-            s.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{taskMgmtVO.search},'%'))
+            s.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblNameFieldName} like CONCAT ('%', #{taskMgmtVO.search},'%'))
             or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
             or s.processInstanceId in (
             select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
-            select e.id from t_employee e where e.name like concat('%', #{taskMgmtVO.search},'%')
+            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} like concat('%', #{taskMgmtVO.search},'%')
             )
             )
             )
@@ -217,7 +217,7 @@
     <select id="findTask" resultType="org.openoa.base.vo.TaskMgmtVO">
         select w.ASSIGNEE_ as applyUser, t.id AS userId, t.`name` as actualName
         from act_ru_task w
-                 left join t_employee t on w.ASSIGNEE_ = t.id
+        left join ${empTblName} t on w.ASSIGNEE_ = t.${empTblIdFieldName}
         where w.ID_ = #{taskId}
     </select>
     <!--modify current assignee-->
@@ -361,8 +361,7 @@
         where h.BUSINESS_KEY_ = (
             SELECT w.ENTRY_ID
             FROM bpm_business_process w
-            WHERE w.BUSINESS_ID = #{taskMgmtVO.businessId}
-              AND w.BUSINESS_NUMBER LIKE CONCAT('%', #{taskMgmtVO.code}, '%')
+            WHERE  w.BUSINESS_NUMBER =#{processNumber}
         )
     </select>
 

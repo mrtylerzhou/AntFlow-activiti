@@ -90,7 +90,7 @@ public class OutSideBpmBusinessPartyVo implements Serializable {
     /**
      * process admin id list
      */
-    private List<Long> processAdminIds;
+    private List<String> processAdminIds;
 
     /**
      * application admin

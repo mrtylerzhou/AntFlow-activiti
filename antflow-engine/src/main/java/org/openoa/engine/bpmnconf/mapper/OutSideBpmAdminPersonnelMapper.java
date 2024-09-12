@@ -16,6 +16,6 @@ public interface OutSideBpmAdminPersonnelMapper extends BaseMapper<OutSideBpmAdm
      * @param employeeId
      * @return
      */
-    List<Integer> getBusinessPartyIdByEmployeeId(@Param("employeeId") Integer employeeId, @Param("types") List<Integer> types);
+    List<Integer> getBusinessPartyIdByEmployeeId(@Param("employeeId") String employeeId, @Param("types") List<Integer> types);
 
 }

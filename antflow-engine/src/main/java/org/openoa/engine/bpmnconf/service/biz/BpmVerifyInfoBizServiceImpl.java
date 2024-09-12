@@ -96,12 +96,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
                 .builder()
                 .taskName("发起")
                 .verifyStatus(1)
+                        .verifyUserIds(Lists.newArrayList(bpmBusinessProcess.getCreateUser()))
+                        .verifyUserName(bpmBusinessProcess.getUserName())
                 .verifyStatusName("提交")
                 .build());
 
 
         //query and then append process record
-        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = service.verifyInfoList(processNumber);
+        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = service.verifyInfoList(processNumber,bpmBusinessProcess.getProcInstId());
 
         //sort verify info by verify date in ascending order
         searchBpmVerifyInfoVos = searchBpmVerifyInfoVos.stream().sorted(Comparator.comparing(BpmVerifyInfoVo::getVerifyDate)).collect(Collectors.toList());
@@ -133,22 +135,29 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
             if (bpmVerifyInfoVo.getVerifyStatus() == 5) {
                 //todo 待实现
-                String startUserId=historicProcessInstance.getStartUserId();
+
                 String lastAssignee = lastHistoricTaskInstance.getAssignee();
-                Map<String, String> provideEmployeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(startUserId,lastAssignee));
-                if (!ObjectUtils.isEmpty(provideEmployeeInfo)) {
+                String lastAssigneeName=lastHistoricTaskInstance.getDescription();
+
                     BpmVerifyInfoVo vo = new BpmVerifyInfoVo();
                     BeanUtils.copyProperties(bpmVerifyInfoVo, vo);
                     vo.setTaskName("发起人");
-                    vo.setVerifyUserName(provideEmployeeInfo.get(startUserId));
+                    vo.setVerifyUserIds(Lists.newArrayList(bpmBusinessProcess.getCreateUser()));
+                    vo.setVerifyUserName(bpmBusinessProcess.getUserName());
                     vo.setSort(sort);
                     sort++;
                     bpmVerifyInfoSortVos.add(vo);
-                }
+
 
                 bpmVerifyInfoVo.setTaskName(lastHistoricTaskInstance.getName());
                 bpmVerifyInfoVo.setVerifyUserId(lastAssignee);
-                bpmVerifyInfoVo.setVerifyUserName(provideEmployeeInfo.get(lastAssignee));
+                if(!StringUtils.isEmpty(lastAssigneeName)){
+                    bpmVerifyInfoVo.setVerifyUserName(lastAssigneeName);
+                }else{
+                    Map<String, String> provideEmployeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(lastAssignee));
+                    bpmVerifyInfoVo.setVerifyUserName(provideEmployeeInfo.get(lastAssignee));
+                }
+
                 bpmVerifyInfoVo.setVerifyDate(null);
                 bpmVerifyInfoVo.setVerifyDesc(StringUtils.EMPTY);
                 bpmVerifyInfoVo.setVerifyStatus(0);
@@ -309,14 +318,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         //get next node's approvers
         List<String> emplIdsStr = nodeApproveds.get(nextElement.getId());
-        List<Long> empIds = new ArrayList<>();
+        List<String> empIds = new ArrayList<>();
 
         List<String> emplNames = Lists.newArrayList();
         if (!ObjectUtils.isEmpty(emplIdsStr)) {
             for (String emplIdStr : emplIdsStr) {
                 if (StringUtils.isNumeric(emplIdStr)) {
                     Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(emplIdStr));
-                    empIds.add(Long.parseLong(emplIdStr));
+                    empIds.add(emplIdStr);
                     emplNames.add(employeeInfo.get(emplIdStr));
                 } else {
                     emplNames.add(emplIdStr);

@@ -3,6 +3,7 @@ package org.openoa.engine.vo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseVo;
 
@@ -16,6 +17,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
  * @since 0.5
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 @JsonSerialize(include=NON_NULL)
 public class SysVersionVo extends BaseVo implements Serializable {
 

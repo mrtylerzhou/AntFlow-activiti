@@ -31,7 +31,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * business id
      */
-    private Long businessId;
+    private String businessId;
     /**
      * params
      */
@@ -198,6 +198,8 @@ public class BusinessDataVo extends PageDto {
      * submit url
      */
     private String submitUrl;
+
+    private String submitUser;
 
     /**
      * conditions url

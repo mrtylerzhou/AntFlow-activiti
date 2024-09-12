@@ -158,8 +158,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         if (!ObjectUtils.isEmpty(page.getRecords())) {
             if (vo.getType().equals(ProcessTypeEnum.ENTRUST_TYPE.getCode()) || vo.getType().equals(ProcessTypeEnum.ADMIN_TYPE.getCode())) {
-                processForwardService.loadProcessForward(SecurityUtils.getLogInEmpId().intValue());
-                processForwardService.loadTask(SecurityUtils.getLogInEmpId().intValue());
+                processForwardService.loadProcessForward(SecurityUtils.getLogInEmpId());
+                processForwardService.loadTask(SecurityUtils.getLogInEmpId());
             }
             this.getPcProcessData(page, vo.getType());
         }

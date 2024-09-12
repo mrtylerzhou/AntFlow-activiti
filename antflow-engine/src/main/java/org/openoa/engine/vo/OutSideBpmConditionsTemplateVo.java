@@ -73,7 +73,7 @@ public class OutSideBpmConditionsTemplateVo implements Serializable {
     /**
      * create user id
      */
-    private Integer createUserId;
+    private String createUserId;
 
     //===============>>ext fields<<===================
 

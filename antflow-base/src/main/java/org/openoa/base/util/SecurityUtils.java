@@ -17,7 +17,7 @@ public class SecurityUtils {
     public static BaseIdTranStruVo getLogInEmpInfo(){
         return (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
     }
-    public static Long getLogInEmpId(){
+    public static String getLogInEmpId(){
         BaseIdTranStruVo currentuser = (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
         if(currentuser==null){
             throw new JiMuBizException("当前用户未登陆!");
@@ -29,7 +29,7 @@ public class SecurityUtils {
         if(currentuser==null){
             throw new JiMuBizException("当前用户未登陆!");
         }
-        return currentuser.getId().toString();
+        return currentuser.getId();
     }
 
     public static String getLogInEmpName(){
@@ -46,10 +46,10 @@ public class SecurityUtils {
         }
         return currentuser.getName();
     }
-    public static Long getLogInEmpIdSafe(){
+    public static String getLogInEmpIdSafe(){
         BaseIdTranStruVo currentuser = (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
         if(currentuser==null){
-            return -999L;
+            return "-999";
         }
         return currentuser.getId();
     }

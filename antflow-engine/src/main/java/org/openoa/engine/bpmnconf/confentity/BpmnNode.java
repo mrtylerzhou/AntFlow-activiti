@@ -121,5 +121,7 @@ public class BpmnNode {
 
     @TableField("node_froms")
     private String nodeFroms;
+    @TableField(exist = false)
+    private Integer isOutSideProcess;
 
 }

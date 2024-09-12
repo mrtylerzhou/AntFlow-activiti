@@ -55,6 +55,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
 
+
         //generate process number by rule
         String processNum = StringUtils.join(businessDataVo.getFormCode(), "_", businessDataVo.getBusinessId());
 
@@ -94,10 +95,10 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //bpmnStartConditionsVo.setApprovalEmplId(Long.parseLong(businessDataVo.getEmplId()));
 
         //set start user dept id
-        Department department = departmentService.getDepartmentByEmployeeId(Long.parseLong(businessDataVo.getStartUserId()));
-        if (department!=null && department.getId()!=null) {
-            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
-        }
+//        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
+//        if (department!=null && department.getId()!=null) {
+//            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
+//        }
 
         //set approvers list
         bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Lists.newArrayList()));
@@ -124,9 +125,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                     .orElse(new Employee()).getUsername();
         } else {
             //start user
-            processTitlePrefix = Optional
-                    .ofNullable(employeeService.getEmployeeDetailById(Long.parseLong(businessDataVo.getStartUserId())))
-                    .orElse(new Employee()).getUsername();
+            processTitlePrefix = businessDataVo.getSubmitUser();
         }
 
 
@@ -136,6 +135,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(processNum)
                 .createUser(businessDataVo.getStartUserId())
+                .userName(businessDataVo.getSubmitUser())
                 .createTime(new Date())
                 .processState(ProcessStateEnum.COMLETE_STATE.getCode())
                 .entryId(processNum)
@@ -151,7 +151,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //fill info
         outSideBpmAccessBusinessService.updateById(OutSideBpmAccessBusiness
                 .builder()
-                .id(businessDataVo.getBusinessId())
+                .id(Long.parseLong(businessDataVo.getBusinessId()))
                 .processNumber(processNum)
                 .bpmnConfId(Optional.ofNullable(businessDataVo.getBpmnConfVo()).orElse(new BpmnConfVo()).getId())
                 .build());

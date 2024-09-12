@@ -1,5 +1,8 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
  * @Version 1.0
  */
 @Slf4j
+@Tag(name="工作流业务管理",description = "")
 @RestController
 @RequestMapping(value = "/bpmnBusiness")
 public class BpmnBusinessController {
@@ -37,6 +41,8 @@ public class BpmnBusinessController {
     @Autowired
     private UserEntrustServiceImpl userEntrustService;
 
+
+    @Operation(summary ="" )
     @RequestMapping("/listFormCodes")
     public Result listFormCodes(String desc){
         List<String> formCodes = baseFormInfo(desc).stream().map(a -> a.getKey()).collect(Collectors.toList());
@@ -84,6 +90,8 @@ public class BpmnBusinessController {
      * @param id
      * @return
      */
+
+    @Operation(summary ="获取委托详情")
     @GetMapping("/entrustDetail/{id}")
     public Result entrustDetail(@PathVariable("id") Integer id){
         UserEntrust detail = userEntrustService.getEntrustDetail(id);

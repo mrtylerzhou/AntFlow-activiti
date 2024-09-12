@@ -165,12 +165,12 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
     public String findByBusinessId(@Param("businessId") String businessId);
 
     /**
-     * query whether a process is finished
+     * query process history instance,if endtime is null ,then we can judge that the process is finished
      *
-     * @param taskMgmtVO
+     * @param processNumber
      * @return
      */
-    public TaskMgmtVO findByHiProcinst(@Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
+    public TaskMgmtVO findByHiProcinst(@Param("processNumber") String processNumber);
 
     /**
      * get process info by entryId

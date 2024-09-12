@@ -29,7 +29,7 @@ public class UserController {
 
     @RequestMapping("/queryUserByNameFuzzy")
     public Result queryUserByNameFuzzy(String userName){
-        Employee employeeDetailById = userMapper.getEmployeeDetailById(1L);
+        Employee employeeDetailById = userMapper.getEmployeeDetailById("1");
         if(StringUtils.isEmpty(userName)){
             return Result.newSuccessResult(Lists.newArrayList());
         }

@@ -1,5 +1,6 @@
 package org.openoa.common.service;
 
+import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -51,7 +52,7 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public BizLeaveTimeVo queryData(Long businessId) {
+    public BizLeaveTimeVo queryData(String businessId) {
         BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(businessId);
         BizLeaveTimeVo vo=new BizLeaveTimeVo();
         BeanUtils.copyProperties(leaveTime,vo);
@@ -69,7 +70,7 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
         leaveTime.setLeaveUserName(SecurityUtils.getLogInEmpNameSafe());
 
         bizLeaveTimeMapper.insert(leaveTime);
-        vo.setBusinessId(leaveTime.getId().longValue());
+        vo.setBusinessId(leaveTime.getId().toString());
         vo.setProcessTitle("请假申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizLeaveTime.class.getSimpleName());
@@ -78,7 +79,14 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
 
     @Override
     public BizLeaveTimeVo consentData(BizLeaveTimeVo vo) {
-        return null;
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            BizLeaveTime leaveTime = new BizLeaveTime();
+            BeanUtils.copyProperties(vo,leaveTime);
+            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            leaveTime.setId(id);
+            bizLeaveTimeMapper.updateById(leaveTime);
+        }
+        return vo;
     }
 
     @Override
@@ -87,12 +95,12 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public void cancellationData(Long businessId) {
+    public void cancellationData(String businessId) {
 
     }
 
     @Override
-    public void finishData(Long businessId) {
+    public void finishData(String businessId) {
 
     }
 }

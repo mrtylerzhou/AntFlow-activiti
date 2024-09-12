@@ -100,13 +100,17 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
 
+        Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
+
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
                 throw new JiMuBizException("apporver node has no property,can not be saved！");
             }
-
+            if(isOutSideProcess!=null&&isOutSideProcess.equals(1)){
+                bpmnNodeVo.setIsOutSideProcess(1);
+            }
 
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())
@@ -295,6 +299,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
                 .eq("conf_id", bpmnConf.getId())
                 .eq("is_del", 0));
+        if(bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess().equals(1)){
+            bpmnNodes.forEach(a->a.setIsOutSideProcess(1));
+        }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
             bpmnConfVo.getNodes().forEach(node -> node.setFormCode(bpmnConfVo.getFormCode()));
@@ -334,30 +341,28 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         if (!ObjectUtils.isEmpty(vo.getInforms())) {
             vo.setInformIdList(
                     Arrays.stream(vo.getInforms().split(","))
-                            .map(Long::parseLong)
                             .collect(Collectors.toList()));
             vo.setInformList(vo.getInformIdList()
                     .stream()
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(EventTypeEnum.getDescByByCode(o.intValue()))
+                            .name(EventTypeEnum.getDescByByCode(Integer.parseInt(o)))
                             .build())
                     .collect(Collectors.toList()));
         }
         if (!ObjectUtils.isEmpty(vo.getEmps())) {
             vo.setEmpIdList(
                     Arrays.stream(vo.getEmps().split(","))
-                            .map(Long::parseLong)
                             .collect(Collectors.toList()));
 
-            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(AntCollectionUtil.numberToStringList(vo.getEmpIdList()));
+            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
             vo.setEmpList(vo.getEmpIdList()
                     .stream()
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(employeeInfo.get(o.toString()))
+                            .name(employeeInfo.get(o))
                             .build())
                     .collect(Collectors.toList()));
         }

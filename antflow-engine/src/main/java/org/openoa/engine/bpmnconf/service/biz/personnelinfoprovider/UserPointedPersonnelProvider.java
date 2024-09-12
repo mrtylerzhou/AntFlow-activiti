@@ -7,6 +7,7 @@ import org.openoa.base.vo.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -33,12 +34,19 @@ public class UserPointedPersonnelProvider implements BpmnPersonnelProviderServic
         if (ObjectUtils.isEmpty(propertysVo) || ObjectUtils.isEmpty(propertysVo.getEmplIds())) {
             throw new JiMuBizException("appointed assignee doest not meet basic condition,can not go on");
         }
-
-        List<String> emplIds = propertysVo.getEmplIds();
         String elementName=bpmnNodeVo.getNodeName();
         if(Strings.isNullOrEmpty(elementName)){
             elementName="指定人员";
         }
+        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
+            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
+            if(CollectionUtils.isEmpty(emplList)){
+                throw new JiMuBizException("thirdy party process role node has no employee info");
+            }
+          return assigneeVoBuildUtils.buildVOs(emplList,elementName,false);
+        }
+        List<String> emplIds = propertysVo.getEmplIds();
+
         List<BpmnNodeParamsAssigneeVo> bpmnNodeParamsAssigneeVos = assigneeVoBuildUtils.buildVos(emplIds, elementName,false);
         return bpmnNodeParamsAssigneeVos;
     }

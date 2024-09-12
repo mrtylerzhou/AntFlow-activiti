@@ -61,7 +61,7 @@ public class NodePropertyLoopAdp extends BpmnNodeAdaptor {
                     .stream()
                     .map(a -> BaseIdTranStruVo
                             .builder()
-                            .id(Long.parseLong(a.getKey()))
+                            .id(a.getKey())
                             .name(a.getValue()).build())
                     .collect(Collectors.toList());
 
@@ -70,7 +70,7 @@ public class NodePropertyLoopAdp extends BpmnNodeAdaptor {
                     .stream()
                     .map(a -> BaseIdTranStruVo
                             .builder()
-                            .id(Long.parseLong(a.getKey()))
+                            .id(a.getKey())
                             .name(a.getValue()).build())
                     .collect(Collectors.toList());
             bpmnNodeVo.setProperty(BpmnNodePropertysVo

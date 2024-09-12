@@ -60,9 +60,9 @@ public class NodePropertyHrbpAdp extends BpmnNodeAdaptor {
             vo.setFieldLabel("hrbp类型");
             vo.setFieldType(FieldValueTypeEnum.NUMBERCHOICE.getDesc());
             List<BaseIdTranStruVo> values= Lists.newArrayList(
-                    new BaseIdTranStruVo(0L,"请选择"),
-                    new BaseIdTranStruVo(1L,"hrbp"),
-                    new BaseIdTranStruVo(2L,"hrbp leader")
+                    new BaseIdTranStruVo("0","请选择"),
+                    new BaseIdTranStruVo("1","hrbp"),
+                    new BaseIdTranStruVo("2","hrbp leader")
             );
             vo.setValue(values);
             rule.setFieldInfos(Lists.newArrayList(vo));

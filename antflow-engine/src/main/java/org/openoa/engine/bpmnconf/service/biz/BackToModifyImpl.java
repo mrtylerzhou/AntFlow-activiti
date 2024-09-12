@@ -93,7 +93,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             processNodeJump.commitProcess(task.getId(), null, taskNode);
         }
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        formFactory.getFormAdaptor(vo).backToModifyData(vo);
+        if(!vo.getIsOutSideAccessProc()){
+            formFactory.getFormAdaptor(vo).backToModifyData(vo);
+        }
+
 
 
         // back to specified person
@@ -103,7 +106,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             bpmBusinessProcessService.updateById(bpmBusinessProcess);
 
             Task task = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).singleResult();
-            TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().taskIds(Collections.singletonList(task.getId())).applyUser(vo.getBackToEmployeeId().toString()).build();
+            TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().taskIds(Collections.singletonList(task.getId())).applyUser(vo.getBackToEmployeeId()).build();
             taskMgmtService.updateTask(taskMgmtVO);
         }
     }
@@ -111,5 +114,6 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
     }
 }

@@ -114,6 +114,8 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
     private Integer applicationId;
 
 
+    private Integer outSideType;
+
 
     /**
      * embedded mode

@@ -37,7 +37,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
      * @param businessId businessId the business id for a specified process,it will passed by antflow engine,and you should use it to query business data
      * @return business data
      */
-    T queryData(Long businessId);
+    T queryData(String businessId);
 
     /**
      * a method to submit data for a process,most of the times,it is a must method,it is used to submit business data for a process
@@ -67,13 +67,13 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
      *
      * @param businessId businessId
      */
-    void cancellationData(Long businessId);
+    void cancellationData(String businessId);
 
     /**
      * this method is called when a process is finished,it is a must method usually
      *
      * @param businessId businessId
      */
-    void finishData(Long businessId);
+    void finishData(String businessId);
 
 }

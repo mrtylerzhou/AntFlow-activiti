@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -22,6 +23,7 @@ import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -65,7 +67,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     }
 
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
-        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(Integer.parseInt(SecurityUtils.getLogInEmpIdStr()), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(SecurityUtils.getLogInEmpIdStr(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
         if(entrustByTaskId!=null){
             verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
         }
@@ -119,6 +121,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         return list;
     }
 
+
     /**
      * get process verify info list(not include entrust flows)
      *
@@ -126,11 +129,20 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * @return
      */
     public List<BpmVerifyInfoVo> verifyInfoList(String processNumber) {
+       return verifyInfoList(processNumber,null);
+    }
+    /**
+     * get process verify info list(not include entrust flows)
+     *
+     * @param processNumber
+     * @return
+     */
+    public List<BpmVerifyInfoVo> verifyInfoList(String processNumber,String procInstId) {
         return getBpmVerifyInfoVoList(Optional.ofNullable(this.getBaseMapper().getVerifyInfo(
                 BpmVerifyInfoVo.builder()
                         .processCode(processNumber)
                         .build()
-        )).orElse(Arrays.asList()));
+        )).orElse(Arrays.asList()),procInstId);
     }
 
     /**
@@ -159,19 +171,38 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * map verify info
      */
     public List<BpmVerifyInfoVo> getBpmVerifyInfoVoList(List<BpmVerifyInfoVo> list) {
+      return getBpmVerifyInfoVoList(list,null);
+    }
+    /**
+     * map verify info
+     */
+    public List<BpmVerifyInfoVo> getBpmVerifyInfoVoList(List<BpmVerifyInfoVo> list,String procInstId) {
         List<BpmVerifyInfoVo> infoVoList = new ArrayList<>();
         infoVoList.addAll(list.stream()
                 .map(o -> {
                     if (!ObjectUtils.isEmpty(o.getOriginalId())) {
-                        Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(o.getOriginalId().toString()));
-                        o.setOriginalName(stringStringMap.get(o.getOriginalId().toString()));
-                        o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
+                        if(!StringUtils.isEmpty(procInstId)){
+                            List<BpmFlowrunEntrust> bpmFlowrunEntrusts = bpmFlowrunEntrustService.list(
+                                    new QueryWrapper<BpmFlowrunEntrust>()
+                                            .eq("original", o.getOriginalId())
+                                            .eq("runinfoid", procInstId)
+
+                            );
+                            if(!CollectionUtils.isEmpty(bpmFlowrunEntrusts)){
+                                //todo should be its name
+                                o.setOriginalName(bpmFlowrunEntrusts.get(0).getOriginal());
+                                o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
+                            }
+                        }else{
+                            Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(o.getOriginalId()));
+                            o.setOriginalName(stringStringMap.get(o.getOriginalId()));
+                            o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
+                        }
                     }
                     return o;
                 }).collect(Collectors.toList()));
         return infoVoList;
     }
-
     /**
      * get to do task info
      *

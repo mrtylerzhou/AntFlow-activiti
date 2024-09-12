@@ -102,7 +102,7 @@ public class BpmProcessAppApplication{
      * create user's id
      */
     @TableField("create_user_id")
-    private Integer createUserId;
+    private String createUserId;
     /**
      * create time
      */
