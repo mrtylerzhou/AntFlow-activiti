@@ -1322,7 +1322,12 @@ ALTER TABLE bpm_flowrun_entrust MODIFY  actual VARCHAR(64) default null;
 
 ALTER TABLE  bpm_business_process  ADD COLUMN user_name VARCHAR(100) DEFAULT NULL;
 
-
 SET FOREIGN_KEY_CHECKS = 1;
+
+alter table bpm_flowrun_entrust
+	add original_name varchar(100) null comment 'original assignee name' after original;
+
+alter table bpm_flowrun_entrust
+	add actual_name varchar(100) null comment 'actual assignee name';
 
 

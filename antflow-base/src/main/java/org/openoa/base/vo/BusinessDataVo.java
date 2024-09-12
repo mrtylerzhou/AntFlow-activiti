@@ -86,6 +86,7 @@ public class BusinessDataVo extends PageDto {
      * forward user ids
      */
     public List<String> userIds;
+    public List<BaseIdTranStruVo> userInfos;
     /**
      * approvers list
      */
