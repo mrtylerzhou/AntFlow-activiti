@@ -211,6 +211,22 @@
             </properties>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>huaweicloud</id>
+            <name>huaweicloud</name>
+            <url>https://repo.huaweicloud.com/repository/maven/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <build>
         <resources>
             <resource>
