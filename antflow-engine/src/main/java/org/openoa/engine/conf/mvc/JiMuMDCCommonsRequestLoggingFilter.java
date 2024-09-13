@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
- *@Author JimuOffice
+ * @Author JimuOffice
  * @Description //TODO $
  * @Date 2022-05-18 11:24
  * @Param
@@ -34,13 +37,13 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
         MDCLogUtil.resetLogId();
         if (!request.getMethod().equals("OPTIONS")) {
             String userId = request.getHeader("userId");
+            String userName = request.getHeader("userName");
             if (StringUtils.isEmpty(userId)) {
                 userId = request.getHeader("Userid");
             }
             if (!StringUtils.isEmpty(userId)) {
                 BaseIdTranStruVo userById = userService.getById(userId);
-                String userName = request.getHeader("userName");
-                if (userById != null&&StringUtils.isEmpty(userName)) {
+                if (userById != null && StringUtils.isEmpty(userName)) {
                     userName = userById.getName();
                     BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(userId).name(userName).build();
                     ThreadLocalContainer.set("currentuser", userInfo);
@@ -50,6 +53,15 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
                     super.beforeRequest(request, message);
                 }
             }
+            if (!StringUtils.isEmpty(userName)) {
+                try {
+                    userName = URLDecoder.decode(userName, StandardCharsets.UTF_8.name());
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                ThreadLocalContainer.set("userName", userName);
+            }
+
             if (!StringUtils.isEmpty(userId)) {
                 ThreadLocalContainer.set("userId", userId);
             }
