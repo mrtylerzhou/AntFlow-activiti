@@ -173,6 +173,7 @@
       DESCRIPTION_ = #{description, jdbcType=VARCHAR},
       OWNER_ = #{owner, jdbcType=VARCHAR},
       ASSIGNEE_ = #{assignee, jdbcType=VARCHAR},
+      ASSIGNEE_NAME=#{assigneeName,jdbcType=VARCHAR},
       CLAIM_TIME_ = #{claimTime, jdbcType=TIMESTAMP},
       END_TIME_ = #{endTime, jdbcType=TIMESTAMP},
       DURATION_ = #{durationInMillis ,jdbcType=BIGINT},

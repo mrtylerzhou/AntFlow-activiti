@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author AntFlow
@@ -60,6 +61,7 @@ public class BpmnConfCommonElementVo {
      * multiplayer assignees collection value
      */
     private List<String> collectionValue;
+    private Map<String,String> assigneeMap;
 
     /**
      * flow from

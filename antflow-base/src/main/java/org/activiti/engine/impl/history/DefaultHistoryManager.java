@@ -519,10 +519,11 @@ public void recordTaskClaim(String taskId) {
   * @see org.activiti.engine.impl.history.HistoryManagerInterface#recordTaskEnd(java.lang.String, java.lang.String)
   */
   @Override
-  public void recordTaskEnd(String taskId, String deleteReason) {
+  public void recordTaskEnd(String taskId, String deleteReason,String taskAssigneeName) {
     if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
       HistoricTaskInstanceEntity historicTaskInstance = getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, taskId);
       if (historicTaskInstance!=null) {
+        historicTaskInstance.setAssigneeName(taskAssigneeName);
         historicTaskInstance.markEnded(deleteReason);
       }
     }

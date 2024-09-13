@@ -92,7 +92,7 @@ public class TaskEntityManager extends AbstractManager {
       } else {
         commandContext
           .getHistoryManager()
-          .recordTaskEnd(taskId, deleteReason);
+          .recordTaskEnd(taskId, deleteReason,task.getAssigneeName());
       }
         
       getDbSqlSession().delete(task);

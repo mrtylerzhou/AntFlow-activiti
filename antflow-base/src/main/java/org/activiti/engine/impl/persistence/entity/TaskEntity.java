@@ -63,6 +63,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 
   protected String owner;
   protected String assignee;
+  protected String assigneeName;
   protected String initialAssignee;
   protected DelegationState delegationState;
   
@@ -527,7 +528,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public void setAssignee(String assignee) {
     setAssignee(assignee, false, false);
   }
-  
+  public void setAssigneeName(String assigneeName){this.assigneeName=assigneeName;}
   public void setAssignee(String assignee, boolean dispatchAssignmentEvent, boolean dispatchUpdateEvent) {
   	CommandContext commandContext = Context.getCommandContext();
   	
@@ -862,7 +863,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public String getAssignee() {
     return assignee;
   }
-  
+  public String getAssigneeName(){return assigneeName;}
   public String getTaskDefinitionKey() {
     return taskDefinitionKey;
   }

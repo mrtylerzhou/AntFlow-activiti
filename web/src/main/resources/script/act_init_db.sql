@@ -196,6 +196,7 @@ CREATE TABLE `ACT_HI_TASKINST`
     `DESCRIPTION_`    varchar(4000)  DEFAULT NULL,
     `OWNER_`          varchar(255)   DEFAULT NULL,
     `ASSIGNEE_`       varchar(255)   DEFAULT NULL,
+     `ASSIGNEE_NAME`  varchar(255)   DEFAULT NULL,
     `START_TIME_`     datetime(3)    NOT NULL,
     `CLAIM_TIME_`     datetime(3)    DEFAULT NULL,
     `END_TIME_`       datetime(3)    DEFAULT NULL,
