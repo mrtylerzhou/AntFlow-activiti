@@ -30,7 +30,7 @@ public interface BpmVerifyInfoMapper extends BaseMapper<BpmVerifyInfo> {
      *
      * @return
      */
-    public List<BpmVerifyInfoVo> findTaskInfor(@Param("entryId") String entryId);
+    public List<BpmVerifyInfoVo> findTaskInfor(@Param("procInstId") String procInstId);
 
     public List<BpmVerifyInfoVo> findVerifyInfo(@Param("business_id") String business_id);
 }

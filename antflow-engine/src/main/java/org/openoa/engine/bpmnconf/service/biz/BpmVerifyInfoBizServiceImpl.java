@@ -124,7 +124,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
                 //todo 待实现
 
                 String lastAssignee = lastHistoricTaskInstance.getAssignee();
-                String lastAssigneeName = lastHistoricTaskInstance.getDescription();
+                String lastAssigneeName = lastHistoricTaskInstance.getAssigneeName();
 
                 BpmVerifyInfoVo vo = new BpmVerifyInfoVo();
                 BeanUtils.copyProperties(bpmVerifyInfoVo, vo);
@@ -162,7 +162,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //query to do task info
-        List<BpmVerifyInfoVo> taskInfo = service.findTaskInfo(bpmBusinessProcess.getEntryId());
+        List<BpmVerifyInfoVo> taskInfo = service.findTaskInfo(bpmBusinessProcess);
 
         BpmVerifyInfoVo taskVo;
 

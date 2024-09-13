@@ -16,6 +16,7 @@ import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessContans;
+import org.openoa.engine.bpmnconf.confentity.BpmBusiness;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
@@ -108,7 +109,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * @return
      */
     public List<BpmVerifyInfoVo> verifyInfoList(BpmBusinessProcess bpmBusinessProcess) {
-        List<BpmVerifyInfoVo> bpmVerifyInfoVo = Optional.ofNullable(this.findTaskInfo(bpmBusinessProcess.getEntryId())).orElse(Arrays.asList());
+        List<BpmVerifyInfoVo> bpmVerifyInfoVo = Optional.ofNullable(this.findTaskInfo(bpmBusinessProcess)).orElse(Arrays.asList());
         List<BpmVerifyInfoVo> list = getBpmVerifyInfoVoList(Optional.ofNullable(getBaseMapper().getVerifyInfo(
                 BpmVerifyInfoVo.builder()
                         .processCode(bpmBusinessProcess.getBusinessNumber())
@@ -152,7 +153,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      */
     public List<BpmVerifyInfoVo> findVerifyInfo(BpmBusinessProcess bpmBusinessProcess) {
         Integer business_type = ProcesTypeEnum.getCodeByDesc(bpmBusinessProcess.getBusinessNumber().split("\\_")[0].toString());
-        List<BpmVerifyInfoVo> bpmVerifyInfoVo = this.findTaskInfo(bpmBusinessProcess.getEntryId());
+        List<BpmVerifyInfoVo> bpmVerifyInfoVo = this.findTaskInfo(bpmBusinessProcess);
         List<BpmVerifyInfoVo> list = getBpmVerifyInfoVoList(this.getBaseMapper().getVerifyInfo(
                 BpmVerifyInfoVo.builder()
                         .businessId(bpmBusinessProcess.getBusinessId().toString())
@@ -189,8 +190,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
 
                             );
                             if(!CollectionUtils.isEmpty(bpmFlowrunEntrusts)){
-                                //todo should be its name
-                                o.setOriginalName(bpmFlowrunEntrusts.get(0).getOriginal());
+                                o.setOriginalName(bpmFlowrunEntrusts.get(0).getOriginalName());
                                 o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
                             }
                         }else{
@@ -206,11 +206,12 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     /**
      * get to do task info
      *
-     * @param entryId
+     * @param bpmBusinessProcess
      * @return
      */
-    public List<BpmVerifyInfoVo> findTaskInfo(String entryId) {
-        List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getBaseMapper().findTaskInfor(entryId)).orElse(Collections.emptyList());
+    public List<BpmVerifyInfoVo> findTaskInfo(BpmBusinessProcess bpmBusinessProcess) {
+        String procInstId = bpmBusinessProcess.getProcInstId();
+        List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getBaseMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());
         if (ObjectUtils.isEmpty(tasks)) {
             return Lists.newArrayList();
         }

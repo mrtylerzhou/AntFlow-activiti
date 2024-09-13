@@ -211,6 +211,7 @@
     <result property="description" column="DESCRIPTION_" jdbcType="VARCHAR" />
     <result property="owner" column="OWNER_" jdbcType="VARCHAR" />
     <result property="assignee" column="ASSIGNEE_" jdbcType="VARCHAR" />
+    <result property="assigneeName" column="ASSIGNEE_NAME" jdbcType="VARCHAR" />
     <result property="startTime" column="START_TIME_" jdbcType="TIMESTAMP" />
     <result property="claimTime" column="CLAIM_TIME_" jdbcType="TIMESTAMP" />
     <result property="endTime" column="END_TIME_" jdbcType="TIMESTAMP" />
@@ -234,6 +235,7 @@
     <result property="description" column="DESCRIPTION_" jdbcType="VARCHAR" />
     <result property="owner" column="OWNER_" jdbcType="VARCHAR" />
     <result property="assignee" column="ASSIGNEE_" jdbcType="VARCHAR" />
+    <result property="assigneeName" column="ASSIGNEE_NAME" jdbcType="VARCHAR" />
     <result property="startTime" column="START_TIME_" jdbcType="TIMESTAMP" />
     <result property="claimTime" column="CLAIM_TIME_" jdbcType="TIMESTAMP" />
     <result property="endTime" column="END_TIME_" jdbcType="TIMESTAMP" />

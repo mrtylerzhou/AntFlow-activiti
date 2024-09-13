@@ -9,6 +9,7 @@ import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -86,7 +87,7 @@ public class ActivitiTest {
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
-        personService.userOpTransactional();
+       /* personService.userOpTransactional();
         log.info("you request me");
         ThreadLocalContainer.set("hello","hehe");
         personService.asyncDemo();
@@ -100,9 +101,11 @@ public class ActivitiTest {
         //personService.opTranstionally();
        if(3==3){
            return Result.newSuccessResult(null);
-       }
+       }*/
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
-        HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list().get(0);
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
+        List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
+        HistoricActivityInstance historicActivityInstance = historicActivityInstances.get(0);
         String processDefinitionId = historicActivityInstance.getProcessDefinitionId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
