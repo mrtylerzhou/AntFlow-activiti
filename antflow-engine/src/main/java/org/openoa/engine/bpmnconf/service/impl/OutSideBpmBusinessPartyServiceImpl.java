@@ -293,17 +293,22 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         OutSideBpmBusinessParty outSideBpmBusinessParty = null;
 
         // step 1
-        if (vo.getThirdId() == null) {
-
-            outSideBpmBusinessParty = new OutSideBpmBusinessParty();
-            outSideBpmBusinessParty.setBusinessPartyMark(vo.getThirdCode());
-            outSideBpmBusinessParty.setType(2);
-            outSideBpmBusinessParty.setName(vo.getThirdName());
-            outSideBpmBusinessParty.setCreateTime(new Date());
-            outSideBpmBusinessParty.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
-            outSideBpmBusinessParty.setUpdateTime(new Date());
-            outSideBpmBusinessParty.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
-            this.save(outSideBpmBusinessParty);
+        if (vo.getThirdCode() == null) {
+            throw new JiMuBizException("第三方业务方标识不能为空");
+        } else {
+            outSideBpmBusinessParty = this.getOne(Wrappers.<OutSideBpmBusinessParty>lambdaQuery().eq(OutSideBpmBusinessParty::getBusinessPartyMark, vo.getThirdCode())
+                    .eq(OutSideBpmBusinessParty::getIsDel, 0), false);
+            if (outSideBpmBusinessParty == null) {
+                outSideBpmBusinessParty = new OutSideBpmBusinessParty();
+                outSideBpmBusinessParty.setBusinessPartyMark(vo.getThirdCode());
+                outSideBpmBusinessParty.setType(2);
+                outSideBpmBusinessParty.setName(vo.getThirdName());
+                outSideBpmBusinessParty.setCreateTime(new Date());
+                outSideBpmBusinessParty.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
+                outSideBpmBusinessParty.setUpdateTime(new Date());
+                outSideBpmBusinessParty.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
+                this.save(outSideBpmBusinessParty);
+            }
         }
 
         Long id = vo.getThirdId() == null ? outSideBpmBusinessParty.getId() : vo.getThirdId();
