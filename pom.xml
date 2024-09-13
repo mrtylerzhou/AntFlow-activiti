@@ -216,7 +216,7 @@
         <repository>
             <id>huaweicloud</id>
             <name>huaweicloud</name>
-            <url>https://repo.huaweicloud.com/repository/maven/</url>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>
@@ -226,6 +226,14 @@
             </releases>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>huaweicloud</id>
+            <name>huaweicloud</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <resources>

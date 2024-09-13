@@ -204,6 +204,15 @@
         <url>https://github.com/mrtylerzhou/AntFlow</url>
     </scm>
     <url>https://github.com/mrtylerzhou/AntFlow</url>
+
+    <repositories>
+        <repository>
+            <id>huaweicloud</id>
+            <name>huaweicloud</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
 
