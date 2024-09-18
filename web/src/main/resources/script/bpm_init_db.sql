@@ -1333,3 +1333,11 @@ alter table bpm_business_process
 	add is_out_side_process tinyint default 0 null comment '是否是三方接入工作流,0不是,1是';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+alter table t_bpm_variable_single
+	add assignee_name varchar(64) null;
+
+alter table t_bpm_variable_sign_up_personnel
+	add assignee_name varchar(64) null after assignee;
+alter table t_bpm_variable_multiplayer_personnel
+	add assignee_name varchar(64) null;

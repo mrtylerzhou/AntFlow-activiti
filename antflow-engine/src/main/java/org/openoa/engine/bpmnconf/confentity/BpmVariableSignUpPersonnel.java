@@ -38,6 +38,8 @@ public class BpmVariableSignUpPersonnel {
      * assignee
      */
     private String assignee;
+    @TableField("assignee_name")
+    private String assigneeName;
     /**
      * remark
      */
