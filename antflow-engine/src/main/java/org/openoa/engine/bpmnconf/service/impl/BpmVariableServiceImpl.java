@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -18,6 +20,7 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -28,8 +31,8 @@ import java.util.stream.Collectors;
  * bpm variable serivce
  *
  */
-@Service
-public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> {
+@Service("bpmVariableService")
+public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> implements BpmVariableService {
 
     @Autowired
     private BpmVariableMapper mapper;
@@ -123,5 +126,15 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         return false;
     }
 
+    public String getAssigneeNameByProcessNumAndElementId(String processNumber,String elementId){
+        List<String> assignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
+        if(!CollectionUtils.isEmpty(assignees)){
+            if(assignees.size()>1){
+                throw new JiMuBizException("查找出的审批人名称数量大于1,请检查逻辑!");
+            }
+            return assignees.get(0);
+        }
+        return "";
+    }
 
 }

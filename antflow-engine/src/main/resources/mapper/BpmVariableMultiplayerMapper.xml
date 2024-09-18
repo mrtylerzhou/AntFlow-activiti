@@ -44,5 +44,14 @@
           AND b.`process_num` = #{processNum}
           AND c.undertake_status = 0
     </select>
+    <select id="getAssigneeByElementId" resultType="java.lang.String">
+        select tbvs.assignee_name as assigneeName from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
+        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId}
+        union all
+        select tbvmp.assignee_name from t_bpm_variable tbv
+        left join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
+        left join t_bpm_variable_multiplayer_personnel tbvmp on tbvmp.variable_multiplayer_id=tbvm.id
+        where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId}
+    </select>
 
 </mapper>

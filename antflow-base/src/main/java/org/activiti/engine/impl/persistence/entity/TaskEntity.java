@@ -45,6 +45,8 @@ import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.util.SpringBeanUtils;
 
 /**
  * @author Tom Baeyens
@@ -114,6 +116,11 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   /** creates and initializes a new persistent task. */
   public static TaskEntity createAndInsert(ActivityExecution execution) {
     TaskEntity task = create(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
+    String processDefinitionKey = ((ExecutionEntity) execution).getProcessDefinitionKey();
+    String activityId = ((ExecutionEntity) execution).getActivityId();
+    BpmVariableService variableService = SpringBeanUtils.getBean(BpmVariableService.class);
+    String assigneeName = variableService.getAssigneeNameByProcessNumAndElementId(processDefinitionKey, activityId);
+    task.setAssigneeName(assigneeName);
     task.insert((ExecutionEntity) execution);
     return task;
   }
