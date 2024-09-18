@@ -69,5 +69,6 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_ZB);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),ProcessOperationEnum.BUTTON_TYPE_ZB);
     }
 }
