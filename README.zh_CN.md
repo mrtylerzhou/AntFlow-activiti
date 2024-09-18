@@ -66,3 +66,12 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 5. [前端设计器地址](https://gitee.com/ldhnet/AntFlow-Vue3)
 6. 前端ruoyi演示项目 [http://117.72.70.166/admin/](http://117.72.70.166/admin/)
 
+
+##  捐赠支持
+😀 你可以请作者喝杯咖啡表示鼓励
+<table>
+    <tr>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/wxpay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/alipay.jpg"/></td>
+    </tr>  
+</table>
