@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -24,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -126,15 +128,10 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         return false;
     }
 
-    public String getAssigneeNameByProcessNumAndElementId(String processNumber,String elementId){
-        List<String> assignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
-        if(!CollectionUtils.isEmpty(assignees)){
-            if(assignees.size()>1){
-                throw new JiMuBizException("查找出的审批人名称数量大于1,请检查逻辑!");
-            }
-            return assignees.get(0);
-        }
-        return "";
+    public Map<String,String> getAssigneeNameByProcessNumAndElementId(String processNumber, String elementId){
+        List<BaseIdTranStruVo> assignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
+        Map<String, String> assigneeMap = assignees.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId, BaseIdTranStruVo::getName, (k1, k2) -> k1));
+        return assigneeMap;
     }
 
 }
