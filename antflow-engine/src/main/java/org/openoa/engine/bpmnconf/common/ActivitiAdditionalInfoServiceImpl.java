@@ -13,9 +13,11 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collection;
@@ -97,7 +99,11 @@ public class ActivitiAdditionalInfoServiceImpl {
     public String getVerifyUserNameFromHis(String elementId, Map<String, String> signUpNodeCollectionNameMap, Multimap<String, HistoricVariableInstance> variableInstanceMap,Long variableId) {
 
         String verifyUserName = StringUtils.EMPTY;
-
+        List<BaseIdTranStruVo> signUpUsersByVariableAndElementId = bpmVariableSignUpPersonnelService.getSignUpInfoByVariableAndElementId(variableId, elementId);
+        if(!CollectionUtils.isEmpty(signUpUsersByVariableAndElementId)){
+            verifyUserName=StringUtils.join(signUpUsersByVariableAndElementId,",");
+            return verifyUserName;
+        }
         String collectionName = signUpNodeCollectionNameMap.get(elementId);
         if (!ObjectUtils.isEmpty(collectionName)) {
 

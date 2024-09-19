@@ -59,6 +59,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     @Autowired
     private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
     @Autowired
+    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    @Autowired
     private BpmVariableSingleServiceImpl bpmVariableSingleService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -315,7 +317,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
         //then assemble them
-        String verifyUserName;
+        String verifyUserName="";
         if (!ObjectUtils.isEmpty(emplNames)) {
             verifyUserName = StringUtils.join(emplNames, ",");
         } else {
