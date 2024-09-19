@@ -13,6 +13,7 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.*;
@@ -56,6 +57,9 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
     @Autowired
     private BpmProcessAppDataServiceImpl bpmProcessAppDataServiceImpl;
+
+    @Autowired
+    private BpmnConfServiceImpl bpmnConfService;
 
     /**
      * querying business's info by page
@@ -319,6 +323,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
             outSideBpmCallbackUrlConfService.getBaseMapper().insert(OutSideBpmCallbackUrlConf
                     .builder()
                     .businessPartyId(id)
+                    .status(1)
                     .build());
         }
 
@@ -338,7 +343,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
         // step 3
         BpmProcessAppData appData = bpmProcessAppDataServiceImpl.getOne(Wrappers.<BpmProcessAppData>lambdaQuery().eq(BpmProcessAppData::getApplicationId, app.getId())
-                .eq(BpmProcessAppData::getProcessKey, vo.getProcessKey()).eq(BpmProcessAppData::getType, 1), false);
+                .eq(BpmProcessAppData::getProcessKey, vo.getProcessKey()), false);
         if (appData == null) {
             appData = BpmProcessAppData.builder()
                     .applicationId(app.getId().longValue())
@@ -351,5 +356,17 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
 
         return id;
+    }
+
+    /**
+     * get bpm conf by active of list
+     *
+     * @param businessPartyMark
+     * @return
+     */
+    public List<BpmnConfVo> getBpmConf(String businessPartyMark) {
+        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectThirdBpmnConfList(BpmnConfVo.builder()
+                .businessPartyMark(businessPartyMark).build());
+        return bpmnConfVos;
     }
 }

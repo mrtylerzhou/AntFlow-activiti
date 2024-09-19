@@ -21,4 +21,6 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
 
     String getMaxBpmnCode(@Param("bpmnCodeParts") String bpmnCodeParts);
     List<BpmnConfVo> selectPageList(Page page,@Param("bpmnConfVo") BpmnConfVo vo);
+
+    List<BpmnConfVo> selectThirdBpmnConfList(@Param("bpmnConfVo") BpmnConfVo vo);
 }
