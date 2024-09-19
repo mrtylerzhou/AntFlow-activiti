@@ -13,6 +13,7 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -38,6 +39,8 @@ public class ActivitiAdditionalInfoServiceImpl {
     private HistoryService historyService;
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
+    @Autowired
+    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
     /**
      * get a list of activiti by a historic process instance
      *
@@ -57,11 +60,11 @@ public class ActivitiAdditionalInfoServiceImpl {
     /**
      * get historic variable instance map
      *
-     * @param historicProcessInstance
+     * @param procInstId
      * @return
      */
-    public Multimap<String, HistoricVariableInstance> getVariableInstanceMap(HistoricProcessInstance historicProcessInstance) {
-        List<HistoricVariableInstance> variableInstances = historyService.createHistoricVariableInstanceQuery().processInstanceId(historicProcessInstance.getId()).list();
+    public Multimap<String, HistoricVariableInstance> getVariableInstanceMap(String procInstId) {
+        List<HistoricVariableInstance> variableInstances = historyService.createHistoricVariableInstanceQuery().processInstanceId(procInstId).list();
 
         Multimap<String, HistoricVariableInstance> listMultimap = ArrayListMultimap.create();
         for (HistoricVariableInstance variableInstance : variableInstances) {
@@ -91,7 +94,7 @@ public class ActivitiAdditionalInfoServiceImpl {
      * @param variableInstanceMap
      * @return
      */
-    public String getVerifyUserNameFromHis(String elementId, Map<String, String> signUpNodeCollectionNameMap, Multimap<String, HistoricVariableInstance> variableInstanceMap) {
+    public String getVerifyUserNameFromHis(String elementId, Map<String, String> signUpNodeCollectionNameMap, Multimap<String, HistoricVariableInstance> variableInstanceMap,Long variableId) {
 
         String verifyUserName = StringUtils.EMPTY;
 

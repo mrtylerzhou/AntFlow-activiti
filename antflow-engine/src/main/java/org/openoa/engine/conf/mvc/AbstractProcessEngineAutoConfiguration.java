@@ -77,7 +77,7 @@ public abstract class AbstractProcessEngineAutoConfiguration
 
     conf.setJobExecutorActivate(activitiProperties.isJobExecutorActivate());
     conf.setAsyncExecutorEnabled(activitiProperties.isAsyncExecutorEnabled());
-    conf.setAsyncExecutorActivate(activitiProperties.isAsyncExecutorActivate());
+    conf.setAsyncExecutorActivate(false);
     
     conf.setMailServerHost(activitiProperties.getMailServerHost());
     conf.setMailServerPort(activitiProperties.getMailServerPort());

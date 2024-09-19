@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.activiti.engine.TaskService;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUpPersonnel;
@@ -40,7 +41,7 @@ public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariab
      * @param assignee
      * @param signUpUsers
      */
-    public void insertSignUpPersonnel(TaskService taskService, String taskId, String processNumber, String nodeId, String assignee, List<String> signUpUsers) {
+    public void insertSignUpPersonnel(TaskService taskService, String taskId, String processNumber, String nodeId, String assignee, List<BaseIdTranStruVo> signUpUsers) {
 
         if (ObjectUtils.isEmpty(signUpUsers)) {
             return;
@@ -108,9 +109,14 @@ public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariab
                 .map(o -> BpmVariableSignUpPersonnel
                         .builder()
                         .variableId(bpmVariable.getId())
-                        .assignee(o)
+                        .assignee(o.getId())
+                        .assigneeName(o.getName())
                         .elementId(signUpElement.getElementId())
                         .build())
                 .collect(Collectors.toList()));
+    }
+    public List<BaseIdTranStruVo> getSignUpInfoByVariableAndElementId(Long variableId,String elementId){
+        List<BaseIdTranStruVo> byVariableIdAndElementId = this.getBaseMapper().getByVariableIdAndElementId(variableId, elementId);
+        return byVariableIdAndElementId;
     }
 }

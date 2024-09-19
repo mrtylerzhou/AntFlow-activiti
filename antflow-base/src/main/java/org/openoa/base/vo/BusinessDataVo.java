@@ -149,7 +149,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * sign up users
      */
-    private List<String> signUpUsers;
+    private List<BaseIdTranStruVo> signUpUsers;
 
     /**
      * is start page preview

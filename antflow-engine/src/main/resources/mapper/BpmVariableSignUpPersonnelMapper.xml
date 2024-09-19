@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpPersonnelMapper">
+
+    <select id="getByVariableIdAndElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select assignee as id,assignee_name as name from t_bpm_variable_sign_up_personnel where variable_id=#{variableId} and element_id=#{elementId}
+    </select>
+</mapper>

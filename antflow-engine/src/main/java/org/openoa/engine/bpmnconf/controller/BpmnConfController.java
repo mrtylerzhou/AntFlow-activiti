@@ -97,7 +97,7 @@ public class BpmnConfController {
 
     }
 
-    @GetMapping("getBpmVerifyInfoVos")
+    @GetMapping("/getBpmVerifyInfoVos")
     public Result<List<BpmVerifyInfoVo>> getBpmVerifyInfoVos(@Parameter @RequestParam("processNumber") String processNumber) {
         return Result.newSuccessResult(bpmVerifyInfoBizService.getBpmVerifyInfoVos(processNumber, false));
     }

@@ -10,6 +10,7 @@ import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -203,7 +205,7 @@ public class BpmnSendMessageAspect {
                     .signUpUsers(Optional.ofNullable(businessDataVo.getSignUpUsers())
                             .orElse(Lists.newArrayList())
                             .stream()
-                            .map(String::valueOf)
+                            .map(BaseIdTranStruVo::getId)
                             .collect(Collectors.toList()))
                     .messageType(eventTypeEnum.getIsInNode() ? 2 : 1)
                     .eventTypeEnum(eventTypeEnum)
