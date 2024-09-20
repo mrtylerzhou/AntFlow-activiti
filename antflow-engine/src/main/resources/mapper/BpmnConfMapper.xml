@@ -54,7 +54,9 @@
         a.remark AS remark
         FROM t_bpmn_conf a
         WHERE a.is_del = 0
-        AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
+        <if test="bpmnConfVo.isOutSideProcess!=null">
+            AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
+        </if>
         <if test="bpmnConfVo.search != null and bpmnConfVo.search != ''">
             AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')
             OR a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.search},'%'))
