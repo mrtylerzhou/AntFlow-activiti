@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessNodeEnum.START_TASK_KEY;
-import static org.openoa.base.constant.enums.ProcessStateEnum.COMLETE_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.*;
 
 /**
  * @Author JimuOffice
@@ -200,15 +200,17 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setElementId(lastHistoricTaskInstance.getTaskDefinitionKey());
         }
 
-        if (!finishFlag) {
-            //追加流程记录
-            addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
-        }
-
+        Integer processState = bpmBusinessProcess.getProcessState();
 
         Integer endVerifyStatus = 100;
-        if (bpmBusinessProcess.getProcessState() == COMLETE_STATE.getCode()) {
-            endVerifyStatus = 0;
+        if (processState != CRMCEL_STATE.getCode() || processState != END_STATE.getCode()) {
+            if (!finishFlag) {
+                //追加流程记录
+                addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
+            }
+            if (processState == COMLETE_STATE.getCode()) {
+                endVerifyStatus = 0;
+            }
         }
 
         bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("流程结束").verifyStatus(endVerifyStatus).build());
