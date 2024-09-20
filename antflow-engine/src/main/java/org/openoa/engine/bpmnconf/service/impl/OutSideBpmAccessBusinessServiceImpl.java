@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -15,6 +16,7 @@ import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.Employee;
+import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate;
@@ -60,6 +62,8 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
     @Autowired
     private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    @Autowired
+    private BpmnConfServiceImpl bpmnConfService;
 
     @Autowired
     private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;
@@ -86,8 +90,21 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
                     .eq("business_party_mark", vo.getBusinessPartyMark()));
 
+            if(outSideBpmBusinessParty==null){
+                throw new JiMuBizException("业务方信息不存在!");
+            }
+            String formCode = vo.getFormCode();
+            Wrapper<BpmnConf> qryWrapper=new QueryWrapper<BpmnConf>()
+                    .eq("form_code",formCode)
+                    .eq("effective_status",1)
+                    .eq("is_del",0);
+            BpmnConf effectiveConfByFormCode = bpmnConfService.getOne(qryWrapper);
+            if(effectiveConfByFormCode==null){
+                throw new JiMuBizException(String.format("未能根据流程编号%s找到有效的流程配置,请检查同业入参",formCode));
+            }
+            vo.setBpmnConfId(effectiveConfByFormCode.getId());
             outSideBpmAccessBusiness = new OutSideBpmAccessBusiness();
-           BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
+            BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             //set business party's id
             outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpName());
@@ -99,35 +116,39 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
 
 
-        //set form code,business it ,etc
+        //set form code,business,etc
         BusinessDataVo businessDataVo = new BusinessDataVo();
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
-        businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId());
+        businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
+        businessDataVo.setOutSideType(vo.getOutSideType());
 
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
             throw new JiMuBizException("发起人用户名为空，无法发起流程！");
         }
-        Employee employee = getEmployeeByUserId(vo.getUserId());
-
-        if (employee==null) {
-            throw new JiMuBizException("发起人不合法，无法发起流程");
-        }
+//        Employee employee = getEmployeeByUserId(vo.getUserId());
+//
+//        if (employee==null) {
+//            throw new JiMuBizException("发起人不合法，无法发起流程");
+//        }
 
         //set start user id
-        businessDataVo.setStartUserId(employee.getId().toString());
+        businessDataVo.setStartUserId(vo.getUserId());
 
         //set approval
         if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-            if(approvalEmployee!=null){
-                Long id = approvalEmployee.getId();
-                if(id!=null){
-                    businessDataVo.setEmplId(id.toString());
-                }
-            }
+//            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
+//            if(approvalEmployee!=null){
+//                String id = approvalEmployee.getId();
+//                if(!StringUtils.isEmpty(id)){
+//                    businessDataVo.setEmplId(id);
+//                }
+//            }
+
+            businessDataVo.setEmpId(vo.getUserId());
+            businessDataVo.setSubmitUser(vo.getApprovalUsername());
 
         }
 
@@ -163,7 +184,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             return null;
         }
         Employee employee=new Employee();
-        employee.setId(Long.valueOf(userName));
+        employee.setId(userName);
         employee.setUsername(stringStringMap.get(userName));
         return employee;
     }
@@ -198,6 +219,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                         .approvalStatus(o.getVerifyStatus())
                         .approvalStatusName(o.getVerifyStatusName())
                         .approvalUserName(o.getVerifyUserName())
+                        .approvalUserId(o.getVerifyUserId()==null?StringUtils.join(o.getVerifyUserIds(),","):o.getVerifyUserId())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -233,33 +255,39 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         }
 
 
-        Employee employee = getEmployeeByUserId(vo.getUserId());
+        Employee employee = !StringUtils.isEmpty(vo.getUserName())?Employee.builder().id(vo.getUserId()).username(vo.getUserName()).build():getEmployeeByUserId(vo.getUserId());
 
 
         if (employee==null) {
             throw new JiMuBizException("发起人不合法，无法预览流程");
         }
-
         //query condition template
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
-                .eq("is_del", 0)
-                .eq("business_party_id", outSideBpmBusinessParty.getId())
-                .eq("template_mark", vo.getTemplateMark()));
+        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate=null;
+        if(!StringUtils.isEmpty(vo.getTemplateMark())){
+            outSideBpmConditionsTemplate= outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+                    .eq("is_del", 0)
+                    .eq("business_party_id", outSideBpmBusinessParty.getId())
+                    .eq("template_mark", vo.getTemplateMark()));
 
 
-        if (outSideBpmConditionsTemplate==null) {
-            throw new JiMuBizException("模板信息不合法，无法预览流程");
+            if (outSideBpmConditionsTemplate==null) {
+                throw new JiMuBizException("模板信息不合法，无法预览流程");
+            }
         }
+
 
         BusinessDataVo dataVo = BusinessDataVo
                 .builder()
                 .isOutSideAccessProc(true)
                 .formCode(vo.getFormCode())
-                .startUserId(employee.getId().toString())
+                .startUserId(employee.getId())
+                .startUserName(employee.getUsername())
                 .templateMark(vo.getTemplateMark())
-                .templateMarkId(outSideBpmConditionsTemplate.getId().intValue())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
+        if(outSideBpmConditionsTemplate!=null&&outSideBpmConditionsTemplate.getId()!=null){
+            dataVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+        }
 
         PreviewNode previewNode = bpmnConfCommonService.startPagePreviewNode(JSON.toJSONString(dataVo));
 

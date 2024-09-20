@@ -45,6 +45,8 @@ import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.util.SpringBeanUtils;
 
 /**
  * @author Tom Baeyens
@@ -63,6 +65,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
 
   protected String owner;
   protected String assignee;
+  protected String assigneeName;
   protected String initialAssignee;
   protected DelegationState delegationState;
   
@@ -113,6 +116,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   /** creates and initializes a new persistent task. */
   public static TaskEntity createAndInsert(ActivityExecution execution) {
     TaskEntity task = create(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
+
     task.insert((ExecutionEntity) execution);
     return task;
   }
@@ -527,7 +531,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public void setAssignee(String assignee) {
     setAssignee(assignee, false, false);
   }
-  
+  public void setAssigneeName(String assigneeName){this.assigneeName=assigneeName;}
   public void setAssignee(String assignee, boolean dispatchAssignmentEvent, boolean dispatchUpdateEvent) {
   	CommandContext commandContext = Context.getCommandContext();
   	
@@ -862,7 +866,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public String getAssignee() {
     return assignee;
   }
-  
+  public String getAssigneeName(){return assigneeName;}
   public String getTaskDefinitionKey() {
     return taskDefinitionKey;
   }

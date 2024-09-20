@@ -92,7 +92,7 @@ public class BpmProcessAppApplicationVo implements Serializable {
     /**
      * create user
      */
-    private Integer createUserId;
+    private String createUserId;
     /**
      * create time
      */

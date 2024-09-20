@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
- *@Author JimuOffice
+ * @Author JimuOffice
  * @Description //TODO $
  * @Date 2022-05-18 11:24
  * @Param
@@ -34,19 +37,41 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
         MDCLogUtil.resetLogId();
         if (!request.getMethod().equals("OPTIONS")) {
             String userId = request.getHeader("userId");
+            String userName = request.getHeader("userName");
+            if(!StringUtils.isEmpty(userName)){
+                try {
+                    userName = URLDecoder.decode(userName, StandardCharsets.UTF_8.name());
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if (StringUtils.isEmpty(userId)) {
                 userId = request.getHeader("Userid");
             }
-            BaseIdTranStruVo userById = userService.getById(Long.parseLong(userId));
-            String userName = StringUtils.EMPTY;
-            if (userById != null) {
-                userName = userById.getName();
-                BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(Long.parseLong(userId)).name(userName).build();
-                ThreadLocalContainer.set("currentuser", userInfo);
+            if (!StringUtils.isEmpty(userId)) {
+                if(!StringUtils.isEmpty(userName)){
+                    BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(userId).name(userName).build();
+                    ThreadLocalContainer.set("currentuser", userInfo);
+                }else{
+                    BaseIdTranStruVo userById = userService.getById(userId);
+                    if (userById != null && StringUtils.isEmpty(userName)) {
+                        userName = userById.getName();
+                        BaseIdTranStruVo userInfo = BaseIdTranStruVo.builder().id(userId).name(userName).build();
+                        ThreadLocalContainer.set("currentuser", userInfo);
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.info("开始输出详细日志");
+                        super.beforeRequest(request, message);
+                    }
+                }
+
             }
-            if (logger.isDebugEnabled()) {
-                logger.info("开始输出详细日志");
-                super.beforeRequest(request, message);
+            if (!StringUtils.isEmpty(userName)) {
+                ThreadLocalContainer.set("userName", userName);
+            }
+
+            if (!StringUtils.isEmpty(userId)) {
+                ThreadLocalContainer.set("userId", userId);
             }
         }
     }

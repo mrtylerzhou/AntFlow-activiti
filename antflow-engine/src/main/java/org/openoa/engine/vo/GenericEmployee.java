@@ -19,13 +19,15 @@ import java.util.Set;
 public class GenericEmployee implements Serializable {
 
     // userId
-    private Long userId;
+    private String userId;
 
 
     // username
+    @Builder.Default
     private String username="";
 
     // real name
+    @Builder.Default
     private String givenName="";
 
     //job num
@@ -62,6 +64,7 @@ public class GenericEmployee implements Serializable {
     private GenericEmployee directLeader;
 
     // his or her permissions
+    @Builder.Default
     private Set<String> permissions= Sets.newHashSet("3060101");
 
     //reporting path

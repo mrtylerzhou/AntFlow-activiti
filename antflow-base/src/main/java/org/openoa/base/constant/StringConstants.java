@@ -22,4 +22,6 @@ public class StringConstants {
     public static final String DB_TRANSACTION_MANAGERNAME_SUFFIX="transactionmanager";
 
     public static final String ADAPTOR_FACTORY_BEANNAME="jimuAdaptorFactory";
+
+    public static final String TASK_ASSIGNEE_NAME="assigneeName";
 }

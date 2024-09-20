@@ -35,7 +35,7 @@ public class ProcessNodeJump {
     public void commitProcess(String taskId, Map<String, Object> variables,
                               String activityId) {
         if (variables == null) {
-            variables = new HashMap<String, Object>();
+            variables = new HashMap<>();
         }
 
         if (StringUtils.isEmpty(activityId)) {

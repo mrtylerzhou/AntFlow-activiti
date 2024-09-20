@@ -102,11 +102,11 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
                 .collect(Collectors.toMap(OutSideBpmBusinessParty::getId, o -> o));
 
         //qeury employee info,for mapping purpose
-        Map<Long, Employee> employeeMap = employeeService.getEmployeeDetailByIds(AntCollectionUtil.IntToLongList(outSideBpmConditionsTemplateVos
+        Map<String, Employee> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmConditionsTemplateVos
                 .stream()
                 .map(OutSideBpmConditionsTemplateVo::getCreateUserId)
                 .distinct()
-                .collect(Collectors.toList())))
+                .collect(Collectors.toList()))
                 .stream()
                 .collect(Collectors.toMap(Employee::getId, o -> o));
 
@@ -346,7 +346,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
             outSideBpmConditionsTemplate = new OutSideBpmConditionsTemplate();
             BeanUtils.copyProperties(vo, outSideBpmConditionsTemplate);
             outSideBpmConditionsTemplate.setApplicationId(application.getId());
-            outSideBpmConditionsTemplate.setCreateUserId(SecurityUtils.getLogInEmpIdSafe().intValue());
+            outSideBpmConditionsTemplate.setCreateUserId(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmConditionsTemplate.setCreateUser(SecurityUtils.getLogInEmpName());
             outSideBpmConditionsTemplate.setCreateTime(new Date());
             outSideBpmConditionsTemplate.setUpdateUser(SecurityUtils.getLogInEmpName());

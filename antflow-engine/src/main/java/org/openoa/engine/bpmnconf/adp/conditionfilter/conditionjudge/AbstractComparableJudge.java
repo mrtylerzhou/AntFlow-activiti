@@ -28,7 +28,7 @@ public abstract class AbstractComparableJudge extends ConditionJudge {
                 }
                 break;
             case 2:
-                if (actual.compareTo(confTotal) == 1) {
+                if (actual.compareTo(confTotal) > 0) {
                     falg = true;
                 }
                 break;
@@ -38,7 +38,7 @@ public abstract class AbstractComparableJudge extends ConditionJudge {
                 }
                 break;
             case 4:
-                if (actual.compareTo(confTotal) == -1) {
+                if (actual.compareTo(confTotal) < 0) {
                     falg = true;
                 }
                 break;

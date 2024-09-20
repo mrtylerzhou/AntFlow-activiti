@@ -166,6 +166,7 @@ public class BpmVariableMessageVo implements Serializable {
     /**
      * is it an outside(third party system started process,not implemented yet at the moment) process
      */
+    @Builder.Default
     private Boolean isOutside = false;
 
     private DelegateTask delegateTask;

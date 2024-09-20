@@ -48,7 +48,7 @@ public class OutSideBpmBaseServiceImpl {
             outSideBpmBusinessPartys = outSideBpmBusinessPartyService.getBaseMapper().selectList(new QueryWrapper<>());
         } else {
             // if he/she is a normal business party administrator, then query the configuration of the employee's managed business party list
-            List<Integer> businessPartyIds = outSideBpmAdminPersonnelService.getBusinessPartyIdByEmployeeId(loginedEmployee.getUserId().intValue(), permCodes);
+            List<Integer> businessPartyIds = outSideBpmAdminPersonnelService.getBusinessPartyIdByEmployeeId(loginedEmployee.getUserId(), permCodes);
             if (!CollectionUtils.isEmpty(businessPartyIds)) {
                 outSideBpmBusinessPartys = outSideBpmBusinessPartyService.getBaseMapper().selectBatchIds(businessPartyIds);
             } else {

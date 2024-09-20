@@ -70,13 +70,12 @@
                t.NAME_         AS taskName,
                t.ASSIGNEE_     AS verifyUserId,
                '处理中'           AS verifyStatusName,
+               t.TASK_DEF_KEY_ as elementId,
                null            AS verifyDate,
                ''              AS verifyDesc,
                t.TASK_DEF_KEY_ AS elementId
         from act_ru_task t
-        where  t.PROC_INST_ID_ in (
-            select h.PROC_INST_ID_ from act_hi_procinst h where h.BUSINESS_KEY_ = #{entryId}
-        )
+        where t.PROC_INST_ID_=#{procInstId}
 
     </select>
 

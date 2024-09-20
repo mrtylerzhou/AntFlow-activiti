@@ -18,7 +18,7 @@ public class UserMsgVo {
     /**
      * receiver id
      */
-    private Long userId;
+    private String userId;
 
     /**
      * receiver email

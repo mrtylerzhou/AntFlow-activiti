@@ -49,7 +49,7 @@ public interface Task extends TaskInfo {
   
 	/** The {@link User.getId() userId} of the person to which this task is delegated. */
 	void setAssignee(String assignee);
-	
+    void setAssigneeName(String assigneeName);
 	/** The current {@link DelegationState} for this task. */ 
   DelegationState getDelegationState();
   

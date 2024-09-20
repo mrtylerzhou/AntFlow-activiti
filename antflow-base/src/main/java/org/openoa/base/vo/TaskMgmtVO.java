@@ -69,6 +69,7 @@ public class TaskMgmtVO implements Serializable {
      * process's applier
      */
     private String applyUser;
+    private String applyUserName;
     /**
      * apply date
      */
@@ -100,7 +101,6 @@ public class TaskMgmtVO implements Serializable {
     private String taskState;
     /***
      * task's state,1:finished,2 in approval state
-     * 流程状态(1：审批完成 2：审批中)
      */
     private Integer taskStype;
     /**
@@ -110,7 +110,7 @@ public class TaskMgmtVO implements Serializable {
     /**
      * 业务id
      */
-    private Long businessId;
+    private String businessId;
     /**
      */
     private String handleUserName;
@@ -139,7 +139,8 @@ public class TaskMgmtVO implements Serializable {
     /**
      * user id
      */
-    private Integer userId;
+    private String userId;
+    private String userName;
 
     /**
      * role ids

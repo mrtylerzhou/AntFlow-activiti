@@ -54,7 +54,7 @@ public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
                 ConfigurationTableEnum
                         .values())
                 .map(a -> BaseIdTranStruVo.builder()
-                        .id(a.getCode().longValue()).name(a.getDesc()).build())
+                        .id(a.getCode().toString()).name(a.getDesc()).build())
                 .collect(Collectors.toList());
         tableChoices.setValue(collect);
 
@@ -70,7 +70,7 @@ public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
             List<BaseIdTranStruVo> baseIdTranStruVoList =
                     tableFields
                             .stream()
-                            .map(a -> BaseIdTranStruVo.builder().id(a.getCode().longValue()).name(a.getDesc()).build())
+                            .map(a -> BaseIdTranStruVo.builder().id(a.getCode().toString()).name(a.getDesc()).build())
                             .collect(Collectors.toList());
            choices.put(value.getCode().toString(), baseIdTranStruVoList);
         }

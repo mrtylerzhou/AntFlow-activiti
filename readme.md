@@ -48,3 +48,12 @@ validation
 admin pages
 
 ![](./doc/images/QQ20240818-082212.png)
+
+##  Donation support
+😀 You can treat the author to a cup of coffee as an encouragement
+<table>
+    <tr>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/wxpay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/alipay.jpg"/></td>
+    </tr>  
+</table>

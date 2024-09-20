@@ -8,6 +8,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -18,9 +21,11 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -28,8 +33,8 @@ import java.util.stream.Collectors;
  * bpm variable serivce
  *
  */
-@Service
-public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> {
+@Service("bpmVariableService")
+public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> implements BpmVariableService {
 
     @Autowired
     private BpmVariableMapper mapper;
@@ -123,5 +128,10 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         return false;
     }
 
+    public Map<String,String> getAssigneeNameByProcessNumAndElementId(String processNumber, String elementId){
+        List<BaseIdTranStruVo> assignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
+        Map<String, String> assigneeMap = assignees.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId, BaseIdTranStruVo::getName, (k1, k2) -> k1));
+        return assigneeMap;
+    }
 
 }

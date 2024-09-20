@@ -62,6 +62,7 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      * start user id
      */
     private String userId;
+    private String userName;
     /**
      * approval username
      */
@@ -113,6 +114,8 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      */
     private Integer applicationId;
 
+
+    private Integer outSideType;
 
 
     /**

@@ -13,7 +13,7 @@ import java.util.List;
 public interface UserEntrustMapper extends BaseMapper<UserEntrust> {
     List<Entrust> getEntrustList(@Param("userId") Integer userId);
 
-    List<Entrust> getEntrustListNew(@Param("userId") Integer userId);
+    List<Entrust> getEntrustListNew(@Param("userId") String userId);
 
-    List<Entrust> getEntrustPageList(Page page,@Param("userId") Integer userId);
+    List<Entrust> getEntrustPageList(Page page,@Param("userId") String userId);
 }

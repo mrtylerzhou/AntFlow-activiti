@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.vo.*;
 import org.openoa.base.exception.JiMuBizException;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -124,11 +125,14 @@ public class BpmnConfNodePropertyConverter {
                 Field extField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
                 List<BaseIdTranStruVo> extFields = (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
                 Map<String,BaseKeyValueStruVo> map=new HashMap<>();
+                if(CollectionUtils.isEmpty(extFields)){
+                    continue;
+                }
                 for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
-                    Long id = baseIdTranStruVo.getId();
+                    String id = baseIdTranStruVo.getId();
                     String name = baseIdTranStruVo.getName();
                     BaseKeyValueStruVo keyValueStruVo=new BaseKeyValueStruVo();
-                    String key=id.toString();
+                    String key= id;
                     keyValueStruVo.setKey(key);
                     keyValueStruVo.setValue(name);
                     map.put(key,keyValueStruVo);

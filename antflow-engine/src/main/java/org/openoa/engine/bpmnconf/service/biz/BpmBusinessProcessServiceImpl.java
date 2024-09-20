@@ -35,7 +35,7 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @param businessId business id
      * @return
      */
-    public BpmBusinessProcess findBpmBusinessProcess(Long businessId, String businessNumber) {
+    public BpmBusinessProcess findBpmBusinessProcess(String businessId, String businessNumber) {
         return mapper.findBpmBusinessProcess(BpmBusinessProcess.builder().businessNumber(businessNumber).businessId(businessId).build());
     }
 
@@ -51,11 +51,11 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
         mapper.insert(businessProcess);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void addBusinessProcess(Long businessId, String key, String entryId, String processNum, String description) {
+
+    public void addBusinessProcess(String businessId, String key, String entryId, String processNum,String bpmnCode, String description) {
         BpmBusinessProcess bpmBusinessProcess = new BpmBusinessProcess();
-        Integer version = 0;
-        bpmBusinessProcess.setVersion(version);
+
+        bpmBusinessProcess.setVersion(bpmnCode);
         Date nowDate = new Date();
         bpmBusinessProcess.setCreateTime(nowDate);
         bpmBusinessProcess.setUpdateTime(nowDate);

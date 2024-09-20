@@ -37,12 +37,14 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param runtaskid task id
      * @param type      0 entrust 1:circulate
      */
-    public void addFlowrunEntrust(Integer actual, Integer original, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
+    public void addFlowrunEntrust(String actual,String actualName, String original,String originalName, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
         BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
         entrust.setType(type);
         entrust.setRuntaskid(runtaskid);
         entrust.setActual(actual);
+        entrust.setActualName(actualName);
         entrust.setOriginal(original);
+        entrust.setOriginalName(originalName);
         entrust.setIsRead(2);
         entrust.setProcDefId(processKey);
         entrust.setRuninfoid(ProcessInstanceId);
@@ -62,7 +64,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @return
      * @throws Exception
      */
-    public UserEntrust getBpmEntrust(Integer receiverId, String processKey) {
+    public UserEntrust getBpmEntrust(String receiverId, String processKey) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
@@ -96,24 +98,6 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         return userEntrust;
     }
 
-    /**
-     * @param receiverId entrusted user id
-     * @param processKey process key
-     * @param taskId     task id
-     * @return
-     */
-    public Integer getUserId(Integer receiverId, String processKey, String taskId, String ProcessInstanceId) {
-
-        //query to check whether current process has been entrusted
-        UserEntrust entrust = this.getBpmEntrust(receiverId, processKey);
-        if (!ObjectUtils.isEmpty(entrust)) {
-            //add entrust record
-            this.addFlowrunEntrust(entrust.getReceiverId(), receiverId, taskId, 1, ProcessInstanceId, processKey);
-            return entrust.getReceiverId();
-        } else {
-            return null;
-        }
-    }
 
     public Boolean updateBpmFlowrunEntrust(String processInstanceId, Integer loginUserId) {
         mapper.updateBpmFlowrunEntrust(processInstanceId, loginUserId);

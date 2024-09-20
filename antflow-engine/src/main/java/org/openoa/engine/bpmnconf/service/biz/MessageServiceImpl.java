@@ -54,7 +54,7 @@ public class MessageServiceImpl {
      * @param userId
      */
     @Async
-    public void sendMail(MailInfo mailInfo, Long userId) {
+    public void sendMail(MailInfo mailInfo, String userId) {
 
         UserMessageStatus userMessageStatus = getUserMessageStatus(userId);
 
@@ -76,10 +76,10 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendMailBath(Map<Long, MailInfo> map) {
+    public void sendMailBath(Map<String, MailInfo> map) {
         List<MailInfo> mailInfos = Lists.newArrayList();
 
-        for (Map.Entry<Long, MailInfo> entry : map.entrySet()) {
+        for (Map.Entry<String, MailInfo> entry : map.entrySet()) {
 
             UserMessageStatus userMessageStatus = getUserMessageStatus(entry.getKey());
 
@@ -105,7 +105,7 @@ public class MessageServiceImpl {
      * @param userId
      */
     @Async
-    public void sendSms(MessageInfo messageInfo, Long userId) {
+    public void sendSms(MessageInfo messageInfo, String userId) {
 
         UserMessageStatus userMessageStatus = getUserMessageStatus(userId);
       //todo
@@ -117,10 +117,10 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendSmsBath(Map<Long, MessageInfo> map) {
+    public void sendSmsBath(Map<String, MessageInfo> map) {
         List<MessageInfo> messageInfos = Lists.newArrayList();
 
-        for (Map.Entry<Long, MessageInfo> entry : map.entrySet()) {
+        for (Map.Entry<String, MessageInfo> entry : map.entrySet()) {
 
             UserMessageStatus userMessageStatus = getUserMessageStatus(entry.getKey());
 
@@ -135,7 +135,7 @@ public class MessageServiceImpl {
      * @param userId
      */
     @Async
-    public void sendAppPush(BaseMsgInfo baseMsgInfo, Long userId) {
+    public void sendAppPush(BaseMsgInfo baseMsgInfo, String userId) {
         doSendAppPush(baseMsgInfo, userId);
     }
 
@@ -145,8 +145,8 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendAppPushBath(Map<Long, BaseMsgInfo> map) {
-        for (Map.Entry<Long, BaseMsgInfo> entry : map.entrySet()) {
+    public void sendAppPushBath(Map<String, BaseMsgInfo> map) {
+        for (Map.Entry<String, BaseMsgInfo> entry : map.entrySet()) {
             doSendAppPush(entry.getValue(), entry.getKey());
         }
     }
@@ -198,7 +198,7 @@ public class MessageServiceImpl {
      * @param baseMsgInfo
      * @param userId
      */
-    private void doSendAppPush(BaseMsgInfo baseMsgInfo, Long userId) {
+    private void doSendAppPush(BaseMsgInfo baseMsgInfo, String userId) {
 
         baseMsgInfo.setUsername(getUsernameByUserId(userId));
         UserMessageStatus userMessageStatus = getUserMessageStatus(userId);
@@ -212,7 +212,7 @@ public class MessageServiceImpl {
      * @param userId
      * @return
      */
-    private UserMessageStatus getUserMessageStatus(Long userId) {
+    private UserMessageStatus getUserMessageStatus(String userId) {
         return userMessageStatusService.getBaseMapper().selectOne(new QueryWrapper<UserMessageStatus>().eq("user_id", userId));
     }
 
@@ -222,7 +222,7 @@ public class MessageServiceImpl {
      * @param userId
      * @return
      */
-    private String getUsernameByUserId(Long userId) {
+    private String getUsernameByUserId(String userId) {
         Map<String, String> employeeInfo = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(String.valueOf(userId)));
         return employeeInfo.get(String.valueOf(userId));
     }

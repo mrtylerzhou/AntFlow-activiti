@@ -13,6 +13,7 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
@@ -35,10 +36,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessNodeEnum.START_TASK_KEY;
-import static org.openoa.base.constant.enums.ProcessStateEnum.COMLETE_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.*;
 
 /**
- *@Author JimuOffice
+ * @Author JimuOffice
  * @Description verify info biz service
  * @Param
  * @return
@@ -58,6 +59,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     @Autowired
     private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
     @Autowired
+    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    @Autowired
     private BpmVariableSingleServiceImpl bpmVariableSingleService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -75,15 +78,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * get verify path for a process
      *
      * @param processNumber process Number
-     * @param finishFlag to indicate whether a process is finished true for finished and false for not finished yet
+     * @param finishFlag    to indicate whether a process is finished true for finished and false for not finished yet
      * @return verify path include finished and unfinished nodes
      */
     public List<BpmVerifyInfoVo> getBpmVerifyInfoVos(String processNumber, boolean finishFlag) {
         List<BpmVerifyInfoVo> bpmVerifyInfoVos = Lists.newArrayList();
 
         //query business process info
-        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>()
-                .eq("BUSINESS_NUMBER", processNumber));
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
 
 
         if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
@@ -92,16 +94,11 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //add start node for process
-        bpmVerifyInfoVos.add(BpmVerifyInfoVo
-                .builder()
-                .taskName("发起")
-                .verifyStatus(1)
-                .verifyStatusName("提交")
-                .build());
+        bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("发起").verifyStatus(1).verifyUserIds(Lists.newArrayList(bpmBusinessProcess.getCreateUser())).verifyUserName(bpmBusinessProcess.getUserName()).verifyDate(bpmBusinessProcess.getCreateTime()).verifyStatusName("提交").build());
 
 
         //query and then append process record
-        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = service.verifyInfoList(processNumber);
+        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = service.verifyInfoList(processNumber, bpmBusinessProcess.getProcInstId());
 
         //sort verify info by verify date in ascending order
         searchBpmVerifyInfoVos = searchBpmVerifyInfoVos.stream().sorted(Comparator.comparing(BpmVerifyInfoVo::getVerifyDate)).collect(Collectors.toList());
@@ -112,11 +109,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).singleResult();
 
         //query from the process engine to get the last approval record
-        HistoricTaskInstance lastHistoricTaskInstance = historyService
-                .createHistoricTaskInstanceQuery()
-                .processInstanceId(historicProcessInstance.getId())
-                .orderByHistoricTaskInstanceEndTime().desc().list()
-                .get(0);
+        HistoricTaskInstance lastHistoricTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(historicProcessInstance.getId()).orderByHistoricTaskInstanceEndTime().desc().list().get(0);
 
         //begin to sort the verify info
         int sort = 0;
@@ -124,8 +117,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //iterate through the verify info
         List<BpmVerifyInfoVo> bpmVerifyInfoSortVos = Lists.newArrayList();
         for (BpmVerifyInfoVo bpmVerifyInfoVo : bpmVerifyInfoVos) {
-            if (bpmVerifyInfoVo.getVerifyStatus() == 3 ||
-                    bpmVerifyInfoVo.getVerifyStatus() == 6) {
+            if (bpmVerifyInfoVo.getVerifyStatus() == 3 || bpmVerifyInfoVo.getVerifyStatus() == 6) {
                 bpmVerifyInfoVo.setTaskName(lastHistoricTaskInstance.getName());
 
                 bpmVerifyInfoVo.setVerifyStatusName("审批拒绝");
@@ -133,22 +125,30 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
             if (bpmVerifyInfoVo.getVerifyStatus() == 5) {
                 //todo 待实现
-                String startUserId=historicProcessInstance.getStartUserId();
+
                 String lastAssignee = lastHistoricTaskInstance.getAssignee();
-                Map<String, String> provideEmployeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(startUserId,lastAssignee));
-                if (!ObjectUtils.isEmpty(provideEmployeeInfo)) {
-                    BpmVerifyInfoVo vo = new BpmVerifyInfoVo();
-                    BeanUtils.copyProperties(bpmVerifyInfoVo, vo);
-                    vo.setTaskName("发起人");
-                    vo.setVerifyUserName(provideEmployeeInfo.get(startUserId));
-                    vo.setSort(sort);
-                    sort++;
-                    bpmVerifyInfoSortVos.add(vo);
-                }
+                String lastAssigneeName = lastHistoricTaskInstance.getAssigneeName();
+
+                BpmVerifyInfoVo vo = new BpmVerifyInfoVo();
+                BeanUtils.copyProperties(bpmVerifyInfoVo, vo);
+                vo.setTaskName("发起人");
+                vo.setVerifyUserIds(Lists.newArrayList(bpmBusinessProcess.getCreateUser()));
+                vo.setVerifyUserName(bpmBusinessProcess.getUserName());
+                vo.setVerifyDate(vo.getVerifyDate());
+                vo.setSort(sort);
+                sort++;
+                bpmVerifyInfoSortVos.add(vo);
+
 
                 bpmVerifyInfoVo.setTaskName(lastHistoricTaskInstance.getName());
                 bpmVerifyInfoVo.setVerifyUserId(lastAssignee);
-                bpmVerifyInfoVo.setVerifyUserName(provideEmployeeInfo.get(lastAssignee));
+                if (!StringUtils.isEmpty(lastAssigneeName)) {
+                    bpmVerifyInfoVo.setVerifyUserName(lastAssigneeName);
+                } else {
+                    Map<String, String> provideEmployeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(lastAssignee));
+                    bpmVerifyInfoVo.setVerifyUserName(provideEmployeeInfo.get(lastAssignee));
+                }
+
                 bpmVerifyInfoVo.setVerifyDate(null);
                 bpmVerifyInfoVo.setVerifyDesc(StringUtils.EMPTY);
                 bpmVerifyInfoVo.setVerifyStatus(0);
@@ -164,9 +164,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         bpmVerifyInfoVos.addAll(bpmVerifyInfoSortVos);
 
 
-
         //query to do task info
-        List<BpmVerifyInfoVo> taskInfo = service.findTaskInfo(bpmBusinessProcess.getEntryId());
+        List<BpmVerifyInfoVo> taskInfo = service.findTaskInfo(bpmBusinessProcess);
 
         BpmVerifyInfoVo taskVo;
 
@@ -201,22 +200,20 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setElementId(lastHistoricTaskInstance.getTaskDefinitionKey());
         }
 
-        if (!finishFlag) {
-            //追加流程记录
-            addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
-        }
-
+        Integer processState = bpmBusinessProcess.getProcessState();
 
         Integer endVerifyStatus = 100;
-        if (bpmBusinessProcess.getProcessState() == COMLETE_STATE.getCode()) {
-            endVerifyStatus = 0;
+        if (processState != CRMCEL_STATE.getCode() || processState != END_STATE.getCode()) {
+            if (!finishFlag) {
+                //追加流程记录
+                addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
+            }
+            if (processState == COMLETE_STATE.getCode()) {
+                endVerifyStatus = 0;
+            }
         }
 
-        bpmVerifyInfoVos.add(BpmVerifyInfoVo
-                .builder()
-                .taskName("流程结束")
-                .verifyStatus(endVerifyStatus)
-                .build());
+        bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("流程结束").verifyStatus(endVerifyStatus).build());
 
         return bpmVerifyInfoVos;
     }
@@ -236,14 +233,13 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         List<ActivityImpl> activitiList = activitiAdditionalInfoService.getActivitiList(historicProcessInstance);
 
         //query process variable info
-        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
-                .eq("process_num", processNumber));
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>().eq("process_num", processNumber));
 
         if (ObjectUtils.isEmpty(bpmVariable)) {
             return;
         }
         //get approvers
-        Map<String, List<String>> nodeApproveds = getNodeApproveds(bpmVariable.getId());
+        Map<String, List<BaseIdTranStruVo>> nodeApproveds = getNodeApproveds(bpmVariable.getId());
 
 
         //get signup node's element id and collection name
@@ -253,10 +249,10 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //get employee id map
 
         //variable name 2 HistoricVariableInstance
-        Multimap<String, HistoricVariableInstance> variableInstanceMap = activitiAdditionalInfoService.getVariableInstanceMap(historicProcessInstance);
+        Multimap<String, HistoricVariableInstance> variableInstanceMap = activitiAdditionalInfoService.getVariableInstanceMap(historicProcessInstance.getId());
 
         //do append record
-        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap);
+        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,bpmVariable.getId());
     }
 
     /**
@@ -294,11 +290,12 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @param nodeApproveds
      * @param bpmVerifyInfoVos
      */
-    private void doAddBpmVerifyInfoVo(Integer sort, String elementId,
-                                      List<ActivityImpl> activitiList,
-                                      Map<String, List<String>> nodeApproveds, Map<String, String> signUpNodeCollectionNameMap,
-                                      List<BpmVerifyInfoVo> bpmVerifyInfoVos,
-                                      Multimap<String, HistoricVariableInstance> variableInstanceMap) {
+    private void doAddBpmVerifyInfoVo(Integer sort, String elementId, List<ActivityImpl> activitiList,
+                                      Map<String, List<BaseIdTranStruVo>> nodeApproveds,
+                                      Map<String, String> signUpNodeCollectionNameMap,
+                                      List<BpmVerifyInfoVo> bpmVerifyInfoVos, Multimap<String,
+            HistoricVariableInstance> variableInstanceMap,
+            Long variableId) {
 
         //get the netxt pvm activity element
         PvmActivity nextElement = activitiAdditionalInfoService.getNextElement(elementId, activitiList);
@@ -308,44 +305,32 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
         //get next node's approvers
-        List<String> emplIdsStr = nodeApproveds.get(nextElement.getId());
-        List<Long> empIds = new ArrayList<>();
+        List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(nextElement.getId());
+        List<String> empIds = new ArrayList<>();
 
         List<String> emplNames = Lists.newArrayList();
-        if (!ObjectUtils.isEmpty(emplIdsStr)) {
-            for (String emplIdStr : emplIdsStr) {
-                if (StringUtils.isNumeric(emplIdStr)) {
-                    Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(Lists.newArrayList(emplIdStr));
-                    empIds.add(Long.parseLong(emplIdStr));
-                    emplNames.add(employeeInfo.get(emplIdStr));
-                } else {
-                    emplNames.add(emplIdStr);
-                }
+        if (!ObjectUtils.isEmpty(baseIdTranStruVos)) {
+            for (BaseIdTranStruVo empBaseInfo : baseIdTranStruVos) {
+                String emplIdStr=empBaseInfo.getId();
+                String name = empBaseInfo.getName();
+                empIds.add(emplIdStr);
+                emplNames.add(name);
             }
         }
 
         //then assemble them
-        String verifyUserName;
+        String verifyUserName="";
         if (!ObjectUtils.isEmpty(emplNames)) {
             verifyUserName = StringUtils.join(emplNames, ",");
         } else {
 
             //If can not get the approvers info,then get it from activity engine
-            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElement.getId(), signUpNodeCollectionNameMap, variableInstanceMap);
+            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElement.getId(), signUpNodeCollectionNameMap, variableInstanceMap,variableId);
         }
 
         String taskName = Optional.ofNullable(nextElement.getProperty("name")).map(String::valueOf).orElse(StringUtils.EMPTY);
 
-        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo
-                .builder()
-                .elementId(nextElement.getId())
-                .taskName(taskName)
-                .verifyDesc(StringUtils.EMPTY)
-                .verifyStatus(0)
-                .verifyUserIds(empIds)
-                .verifyUserName(verifyUserName)
-                .sort(sort)
-                .build();
+        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(nextElement.getId()).taskName(taskName).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
 
 
         //add to verify infos
@@ -358,42 +343,32 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //get next node's next node,if it still exist,then treat it recursively
         PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
         if (!ObjectUtils.isEmpty(nextNextElement)) {
-            doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap);
+            doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
         }
     }
 
     /**
-     *
      * @param variableId
      * @return
      */
-    private Map<String, List<String>> getNodeApproveds(Long variableId) {
+    private Map<String, List<BaseIdTranStruVo>> getNodeApproveds(Long variableId) {
 
-        Map<String, List<String>> nodeApprovedsMap = Maps.newHashMap();
+        Map<String, List<BaseIdTranStruVo>> nodeApprovedsMap = Maps.newHashMap();
 
 
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>()
-                .eq("variable_id", variableId)) > 0) {
-            for (BpmVariableSingle bpmVariableSingle : bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>()
-                    .eq("variable_id", variableId))) {
-                nodeApprovedsMap.put(bpmVariableSingle.getElementId(), Lists.newArrayList(bpmVariableSingle.getAssignee()));
+        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId)) > 0) {
+            for (BpmVariableSingle bpmVariableSingle : bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId))) {
+                nodeApprovedsMap.put(bpmVariableSingle.getElementId(), Lists.newArrayList(BaseIdTranStruVo.builder().id(bpmVariableSingle.getAssignee()).name(bpmVariableSingle.getAssigneeName()).build()));
             }
         }
 
 
-        if (bpmVariableMultiplayerService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMultiplayer>()
-                .eq("variable_id", variableId)) > 0) {
-            List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>()
-                    .eq("variable_id", variableId));
+        if (bpmVariableMultiplayerService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId)) > 0) {
+            List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId));
             for (BpmVariableMultiplayer bpmVariableMultiplayer : bpmVariableMultiplayers) {
-                List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels = bpmVariableMultiplayerPersonnelService
-                        .getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayerPersonnel>()
-                                .eq("variable_multiplayer_id", bpmVariableMultiplayer.getId()));
+                List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels = bpmVariableMultiplayerPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayerPersonnel>().eq("variable_multiplayer_id", bpmVariableMultiplayer.getId()));
                 if (!ObjectUtils.isEmpty(bpmVariableMultiplayerPersonnels)) {
-                    nodeApprovedsMap.put(bpmVariableMultiplayer.getElementId(), bpmVariableMultiplayerPersonnels
-                            .stream()
-                            .map(BpmVariableMultiplayerPersonnel::getAssignee)
-                            .collect(Collectors.toList()));
+                    nodeApprovedsMap.put(bpmVariableMultiplayer.getElementId(), bpmVariableMultiplayerPersonnels.stream().map(a->BaseIdTranStruVo.builder().id(a.getAssignee()).name(a.getAssigneeName()).build()).collect(Collectors.toList()));
                 }
             }
         }

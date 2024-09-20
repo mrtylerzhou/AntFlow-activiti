@@ -113,7 +113,7 @@ public interface HistoryManager extends Session {
 	/**
 	 * Record task as ended, if audit history is enabled.
 	 */
-	public abstract void recordTaskEnd(String taskId, String deleteReason);
+	public abstract void recordTaskEnd(String taskId, String deleteReason,String taskAssigneeName);
 
 	/**
 	 * Record task assignee change, if audit history is enabled.

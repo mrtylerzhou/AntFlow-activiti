@@ -12,7 +12,9 @@ import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +119,9 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
         if (!ObjectUtils.isEmpty(tasks)) {
             Task task = tasks.get(0);
-            taskService.complete(task.getId());
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, SecurityUtils.getLogInEmpName());
+            taskService.complete(task.getId(),varMap);
         }
 
     }

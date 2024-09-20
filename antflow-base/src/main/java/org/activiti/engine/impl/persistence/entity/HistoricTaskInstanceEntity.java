@@ -41,6 +41,7 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   protected String localizedDescription;
   protected String owner;
   protected String assignee;
+  protected String assigneeName;
   protected String taskDefinitionKey;
   protected String formKey;
   protected int priority;
@@ -144,9 +145,13 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   public String getAssignee() {
     return assignee;
   }
+  public String getAssigneeName() {
+    return assigneeName;
+  }
   public void setAssignee(String assignee) {
     this.assignee = assignee;
   }
+  public void setAssigneeName(String assigneeName){this.assigneeName=assigneeName;}
   public String getTaskDefinitionKey() {
     return taskDefinitionKey;
   }

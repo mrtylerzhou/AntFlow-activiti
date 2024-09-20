@@ -40,7 +40,7 @@ public class BpmBusinessProcess {
      * business Id
      */
     @TableField("BUSINESS_ID")
-    private Long businessId;
+    private String businessId;
     /**
      * business Number
      */
@@ -55,7 +55,7 @@ public class BpmBusinessProcess {
      * process version
      */
     @TableField("VERSION")
-    private Integer version;
+    private String version;
     /**
      * as its name says
      */
@@ -82,6 +82,10 @@ public class BpmBusinessProcess {
      */
     @TableField("create_user")
     private String createUser;
+
+    @TableField("user_name")
+    private String userName;
+
     /**
      * process digest
      */
@@ -111,5 +115,10 @@ public class BpmBusinessProcess {
      */
     @TableField("back_user_id")
     private String backUserId;
+    /**
+     * 0 no ,1 yes
+     */
+    @TableField("is_out_side_process")
+    private Integer isOutSideProcess;
 
 }

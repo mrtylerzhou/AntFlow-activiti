@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "第三方回调地址管理", description = "")
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSideBpm")

@@ -27,19 +27,19 @@ public class UserServiceImpl{
         return baseIdTranStruVos;
     }
 
-    public List<BaseIdTranStruVo> queryUserByIds(Collection<Long> userIds){
+    public List<BaseIdTranStruVo> queryUserByIds(Collection<String> userIds){
 
         List<BaseIdTranStruVo> users = userMapper.queryByIds(userIds);
         return users;
     }
-    public BaseIdTranStruVo getById(Long id){
+    public BaseIdTranStruVo getById(String id){
         List<BaseIdTranStruVo> users = userMapper.queryByIds(Lists.newArrayList(id));
         if(CollectionUtils.isEmpty(users)){
             return new BaseIdTranStruVo();
         }
         return users.get(0);
     }
-    public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndTier(Long employeeId,Integer tier){
+    public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndTier(String employeeId,Integer tier){
         List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndTier(employeeId,tier);
         return users;
     }
@@ -50,7 +50,7 @@ public class UserServiceImpl{
      * @param grade
      * @return
      */
-    public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndGrade(Long employeeId,Integer grade){
+    public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndGrade(String employeeId,Integer grade){
         List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndTier(employeeId,grade);
         return users;
     }
@@ -60,15 +60,15 @@ public class UserServiceImpl{
      * @param level setting
      * @return
      */
-    public BaseIdTranStruVo queryLeaderByEmployeeIdAndLevel(Long employeeId,Integer level){
+    public BaseIdTranStruVo queryLeaderByEmployeeIdAndLevel(String employeeId,Integer level){
 
         return null;
     }
-    public BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(Long employeeId){
+    public BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId){
         BaseIdTranStruVo baseIdTranStruVo = userMapper.getHrpbByEmployeeId(employeeId);
         return baseIdTranStruVo;
     }
-    public BaseIdTranStruVo queryEmployeeDirectLeaderById(Long employeeId){
+    public BaseIdTranStruVo queryEmployeeDirectLeaderById(String employeeId){
         BaseIdTranStruVo baseIdTranStruVo = userMapper.getDirectLeaderByEmployeeId(employeeId);
         return baseIdTranStruVo;
     }

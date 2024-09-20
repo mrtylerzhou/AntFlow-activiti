@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface UserMessageMapper extends BaseMapper<UserMessage> {
-    List<UserMessage> pageList(@Param("page") PageDto page, @Param("userId") Long userId);
+    List<UserMessage> pageList(@Param("page") PageDto page, @Param("userId") String userId);
 
     /**
      * delete by ids
@@ -19,12 +19,12 @@ public interface UserMessageMapper extends BaseMapper<UserMessage> {
      * @param userId
      * @return
      */
-    Boolean deleteByIds(@Param("ids") String[] ids, @Param("userId") Long userId);
+    Boolean deleteByIds(@Param("ids") String[] ids, @Param("userId") String userId);
 
     /**
      * clear all
      */
-    Boolean clean(@Param("userId") Integer userId);
+    Boolean clean(@Param("userId") String userId);
 
     /**
      * clear latest 3 month's message

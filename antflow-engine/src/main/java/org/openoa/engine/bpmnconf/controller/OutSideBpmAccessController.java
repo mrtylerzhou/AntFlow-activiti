@@ -1,14 +1,19 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
+import org.openoa.engine.vo.OutSideBpmAccessRespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "第三方工作流管理")
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSide")
@@ -28,7 +33,7 @@ public class OutSideBpmAccessController {
      * @return
      */
     @PostMapping("/processSubmit")
-    public Result  accessBusinessStart(@RequestBody OutSideBpmAccessBusinessVo vo) {
+    public Result<OutSideBpmAccessRespVo>  accessBusinessStart(@RequestBody OutSideBpmAccessBusinessVo vo) {
         return Result.newSuccessResult(outSideBpmAccessBusinessService.accessBusinessStart(vo));
     }
 

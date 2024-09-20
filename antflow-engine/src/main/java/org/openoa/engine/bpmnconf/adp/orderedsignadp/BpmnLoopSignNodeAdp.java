@@ -56,13 +56,13 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
         }
         List<BaseIdTranStruVo> baseIdTranStruVos=null;
         if(loopNumberPlies!=null){
-            baseIdTranStruVos= userService.queryLeadersByEmployeeIdAndTier(Long.parseLong(startUserId), loopNumberPlies);
+            baseIdTranStruVos= userService.queryLeadersByEmployeeIdAndTier(startUserId, loopNumberPlies);
             if(CollectionUtils.isEmpty(baseIdTranStruVos)){
                 throw new JiMuBizException("未能根据发起人找到层层审批人信息");
             }
         }
         if(loopEndGrade!=null){
-            baseIdTranStruVos=userService.queryLeadersByEmployeeIdAndGrade(Long.parseLong(startUserId), loopEndGrade);
+            baseIdTranStruVos=userService.queryLeadersByEmployeeIdAndGrade(startUserId, loopEndGrade);
             if(CollectionUtils.isEmpty(baseIdTranStruVos)){
                 throw new JiMuBizException("未能根据发起人找到汇报线审批人信息");
             }

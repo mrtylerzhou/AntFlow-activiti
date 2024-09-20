@@ -37,6 +37,8 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.util.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,6 +241,12 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
         assigneeValue = assigneeExpressionValue.toString();
       }
       task.setAssignee(assigneeValue, true, false);
+      BpmVariableService variableService = SpringBeanUtils.getBean(BpmVariableService.class);
+      String processDefinitionKey = ((ExecutionEntity) execution).getProcessDefinitionKey();
+      String activityId = ((ExecutionEntity) execution).getActivityId();
+      Map<String, String> assigneeMap = variableService.getAssigneeNameByProcessNumAndElementId(processDefinitionKey, activityId);
+      String userName = assigneeMap.get(task.getAssignee());
+      task.setAssigneeName(userName);
     }
     
     if (ownerExpression != null) {

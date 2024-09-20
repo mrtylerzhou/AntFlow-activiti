@@ -38,7 +38,7 @@ public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBu
                     .businessId(vo.getBusinessId())
                     .processKey(vo.getProcessKey())
                     .createTime(new Date())
-                    .createUser( SecurityUtils.getLogInEmpIdSafe().longValue())
+                    .createUser( SecurityUtils.getLogInEmpIdSafe())
                     .createUserName(SecurityUtils.getLogInEmpNameSafe())
                     .processCode(processCode + "_" + vo.getBusinessId())
                     .build());

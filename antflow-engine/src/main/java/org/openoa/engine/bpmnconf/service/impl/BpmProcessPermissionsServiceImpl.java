@@ -176,7 +176,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
      * check whether the user has permission
      */
     public boolean getJurisdiction(String processKey) {
-        List<String> processKeyList = this.getProcessKey(SecurityUtils.getLogInEmpIdSafe().intValue(), ProcessJurisdictionEnum.CONTROL_TYPE.getCode());
+        List<String> processKeyList = this.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CONTROL_TYPE.getCode());
         if (processKeyList.contains(processKey)) {
             return true;
         } else {
@@ -187,13 +187,13 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
     /**
      * get a list of specified user's permissions
      */
-    public List<String> getProcessKey(Integer userId, Integer type) {
+    public List<String> getProcessKey(String userId, Integer type) {
         QueryWrapper<BpmProcessPermissions> permissionsWrapper = new QueryWrapper<>();
         permissionsWrapper.eq("permissions_type", type);
         permissionsWrapper.eq("user_id", userId);
         List<BpmProcessPermissions> list = bpmProcessPermissionsMapper.selectList(permissionsWrapper);
         //根据员工获取下级部门
-        List<Department> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId.longValue());
+        List<Department> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId);
         List<Integer> depList = departmentVos.stream().map(Department::getId).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(depList)) {
             QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();

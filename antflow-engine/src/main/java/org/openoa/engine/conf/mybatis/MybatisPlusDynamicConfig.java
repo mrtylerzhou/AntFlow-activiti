@@ -35,6 +35,10 @@ import java.util.Properties;
 public class MybatisPlusDynamicConfig {
     @Value("${antflow.common.empTable.empTblName}")
     private String empTblName;
+    @Value("${antflow.common.empTable.idField}")
+    private String empTbleIdFieldName;
+    @Value("${antflow.common.empTable.nameField}")
+    private String empTblNameFieldName;
 
     //@Bean
     public MapperScannerConfigurer mapperScannerConfigurer(){
@@ -68,6 +72,8 @@ public class MybatisPlusDynamicConfig {
 
         Properties variables = new Properties();
         variables.setProperty("empTblName", empTblName);
+        variables.setProperty("empTblIdFieldName",empTbleIdFieldName);
+        variables.setProperty("empTblNameFieldName",empTblNameFieldName);
         sqlSessionFactoryBean.setConfigurationProperties(variables);
         return sqlSessionFactoryBean.getObject();
     }

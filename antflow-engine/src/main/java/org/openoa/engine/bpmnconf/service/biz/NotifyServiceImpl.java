@@ -87,7 +87,7 @@ public class NotifyServiceImpl {
             String appUrl = StringUtils.join(processContans.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
             SendParam sendParam = SendParam.builder()
                     .appUrl(appUrl)
-                    .userId(Long.parseLong(taskMgmtVO.getApplyUser()))
+                    .userId(taskMgmtVO.getApplyUser())
                     .urlParams(urlParams)
                     .params("check")
                     .title(title)
@@ -110,7 +110,7 @@ public class NotifyServiceImpl {
         try {
             TaskMgmtVO taskMgmtVO = taskMgmtMapper.findByEntryId(entryId);
 
-            Employee startUser = employeeService.qryLiteEmployeeInfoById(Long.parseLong(taskMgmtVO.getApplyUser()));
+            Employee startUser = employeeService.qryLiteEmployeeInfoById(taskMgmtVO.getApplyUser());
             //get process def id
             String procDefId = taskMgmtVO.getProcessName().split(":")[0];
             //process's name
@@ -134,7 +134,7 @@ public class NotifyServiceImpl {
                                 .params("check")
                                 .appUrl(appUrl)
                                 .urlParams(urlParams)
-                                .userId(Long.parseLong(o))
+                                .userId(o)
                                 .title(title)
                                 .content(title)
                                 .build();
@@ -220,7 +220,7 @@ public class NotifyServiceImpl {
                     throw new JiMuBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
                 }
                 SendParam sendParam = SendParam.builder()
-                        .userId(Long.parseLong(o.getOriginalName()))
+                        .userId(o.getOriginalName())
                         .title(title)
                         .appUrl(PROC_TO_DO)
                         .content(title)
@@ -293,7 +293,7 @@ public class NotifyServiceImpl {
                         send.setParams("workflowList");
                         send.setUrlParams(urlParams);
                         send.setUrl("/manage/setting/work-process/process-manage");
-                        send.setUserId(o.longValue());
+                        send.setUserId(o.toString());
                         send.setNode(task.getId());
                         sendParamList.add(send);
                     });
@@ -302,7 +302,7 @@ public class NotifyServiceImpl {
             } else {
                 String url = this.getUrl(bpmBusinessProcess, task);
                 //has approver's condition
-                sendParam.setUserId(Long.parseLong(assignee));
+                sendParam.setUserId(assignee);
                 sendParam.setTitle("您有1个" + bpmBusinessProcess.getDescription() + "需要处理。");
                 sendParam.setContent("您有1个" + processName + processNumber + bpmBusinessProcess.getDescription() + "需要处理。");
                 sendParam.setUrl(url);
@@ -357,7 +357,7 @@ public class NotifyServiceImpl {
 
             bpmFlowrunEntrusts.forEach(o -> {
                 SendParam sendParam = SendParam.builder()
-                        .userId(o.longValue())
+                        .userId(o.toString())
                         .params("check")
                         .appUrl(appUrl)
                         .urlParams(urlParams)

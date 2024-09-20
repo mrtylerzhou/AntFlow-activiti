@@ -49,7 +49,7 @@ public interface TaskInfo {
 	 * delegated.
 	 */
 	String getAssignee();
-
+	String getAssigneeName();
 	/**
 	 * Reference to the process instance or null if it is not related to a process
 	 * instance.

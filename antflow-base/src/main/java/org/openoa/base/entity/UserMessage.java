@@ -26,7 +26,7 @@ public class UserMessage {
      * user id
      */
     @TableField("user_id")
-    private Long userId;
+    private String userId;
     /**
      * title
      */

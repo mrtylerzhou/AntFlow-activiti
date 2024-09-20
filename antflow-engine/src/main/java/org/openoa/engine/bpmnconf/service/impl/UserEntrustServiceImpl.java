@@ -31,14 +31,14 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
 
     //获get current login employee's entrust list
     public List<Entrust> getEntrustList() {
-        return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe().intValue());
+        return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe());
     }
     public UserEntrust getEntrustDetail(Integer id) {
         return this.getBaseMapper().selectById(id);
     }
     public ResultAndPage<Entrust> getEntrustPageList(PageDto pageDto, Entrust vo, Integer type) {
         if (type == 1){
-            vo.setReceiverId(SecurityUtils.getLogInEmpIdSafe().intValue());
+            vo.setReceiverId(SecurityUtils.getLogInEmpIdSafe());
         }
         Page<Entrust> page = PageUtils.getPageByPageDto(pageDto);
         List<Entrust> resultData = this.getBaseMapper().getEntrustPageList(page, vo.getReceiverId());
@@ -84,14 +84,12 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
     }
 
 
-    public Integer getEntrustEmployee(Integer employeeId, String powerId) {
+    public String getEntrustEmployee(String employeeId, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return employeeId;
         }
 
-        Integer
-
-        result = this.getEntrustEmployeeOnly(employeeId, powerId);
+        String result = this.getEntrustEmployeeOnly(employeeId, powerId);
         return result;
     }
 
@@ -102,7 +100,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
      * @param powerId    formid
      * @return
      */
-    public Integer getEntrustEmployeeOnly(Integer employeeId, String powerId) {
+    public String getEntrustEmployeeOnly(String employeeId, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return employeeId;
         }

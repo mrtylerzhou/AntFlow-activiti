@@ -38,4 +38,9 @@ public class OutSideBpmAccessProcessRecordVo implements Serializable {
      */
     private String approvalUserName;
 
+    /**
+     * 审批人id
+     */
+    private String approvalUserId;
+
 }

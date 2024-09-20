@@ -5,7 +5,7 @@
 
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-engine</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.9</version>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -15,15 +15,22 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+
+
+        <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-base</artifactId>
-           <version>0.8.1</version>
+           <version>0.8.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-common</artifactId>
-           <version>0.8.1</version>
+           <version>0.8.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -197,6 +204,15 @@
         <url>https://github.com/mrtylerzhou/AntFlow</url>
     </scm>
     <url>https://github.com/mrtylerzhou/AntFlow</url>
+
+    <repositories>
+        <repository>
+            <id>huaweicloud</id>
+            <name>huaweicloud</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
 

@@ -150,6 +150,8 @@ public class BpmnNodeVo  implements Serializable {
 
     private String formCode;
 
+    private Integer isOutSideProcess;
+
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

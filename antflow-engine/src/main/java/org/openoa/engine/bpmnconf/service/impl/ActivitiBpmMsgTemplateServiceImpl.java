@@ -504,7 +504,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         UserMsgUtils.sendMessages(userMsgVo, messageSendTypeEnums);
     }
 
-    private Employee getEmployee(Long employeeId, ActivitiBpmMsgVo activitiBpmMsgVo) {
+    private Employee getEmployee(String employeeId, ActivitiBpmMsgVo activitiBpmMsgVo) {
         Employee employee = employeeService.getEmployeeDetailById(employeeId);
         if (employee==null) {
             employee = new Employee();
@@ -570,7 +570,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         if (!CollectionUtils.isEmpty(noticeReplaceEnums)) {
             Employee employee = null;
             if (noticeReplaceEnums.stream().filter(o -> o.getIsSelectEmpl()).findAny().isPresent()) {
-                employee = employeeService.getEmployeeDetailById(Long.parseLong(activitiBpmMsgVo.getOtherUserId()));
+                employee = employeeService.getEmployeeDetailById(activitiBpmMsgVo.getOtherUserId());
             }
             for (NoticeReplaceEnum noticeReplaceEnum : noticeReplaceEnums) {
                 if (noticeReplaceEnum.getIsSelectEmpl()) {

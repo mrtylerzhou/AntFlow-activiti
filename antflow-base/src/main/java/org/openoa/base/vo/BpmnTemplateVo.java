@@ -38,19 +38,19 @@ public class BpmnTemplateVo implements Serializable {
      * who to inform
      */
     private String informs;
-    private List<Long> informIdList;
+    private List<String> informIdList;
     private List<BaseIdTranStruVo> informList;
     /**
      * specified employee
      */
     private String emps;
-    private List<Long> empIdList;
+    private List<String> empIdList;
     private List<BaseIdTranStruVo> empList;
     /**
      * specified roles
      */
     private String roles;
-    private List<Long> roleIdList;
+    private List<String> roleIdList;
     private List<BaseIdTranStruVo> roleList;
     /**
      * specified functions

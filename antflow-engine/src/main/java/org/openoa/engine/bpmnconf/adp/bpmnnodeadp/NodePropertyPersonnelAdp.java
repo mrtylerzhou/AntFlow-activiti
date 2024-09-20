@@ -3,8 +3,10 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodePersonnelConf;
@@ -16,9 +18,11 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceI
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -42,18 +46,30 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
         BpmnNodePersonnelConf bpmnNodePersonnelConf = bpmnNodePersonnelConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnNodePersonnelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
-           List<String> emplIds = bpmnNodePersonnelEmplConfService.getBaseMapper().selectList(new QueryWrapper<BpmnNodePersonnelEmplConf>()
-                   .eq("bpmn_node_personne_id", bpmnNodePersonnelConf.getId()))
-                   .stream()
-                   .map(BpmnNodePersonnelEmplConf::getEmplId)
-                   .distinct()
-                   .collect(Collectors.toList());
+           List<String> emplIds = new ArrayList<>();
+           List<String> emplNames=new ArrayList<>();
+        List<BpmnNodePersonnelEmplConf> bpmnNodePersons = bpmnNodePersonnelEmplConfService.getBaseMapper().selectList(new QueryWrapper<BpmnNodePersonnelEmplConf>()
+                        .eq("bpmn_node_personne_id", bpmnNodePersonnelConf.getId()))
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(bpmnNodePersons)){
+            throw  new JiMuBizException("配置错误或者数据被删除,指定员人审批未获取到人员");
+        }
 
-           bpmnNodeVo.setProperty(BpmnNodePropertysVo
+        for (BpmnNodePersonnelEmplConf bpmnNodePerson : bpmnNodePersons) {
+            String emplId = bpmnNodePerson.getEmplId();
+            String emplName = bpmnNodePerson.getEmplName();
+            emplIds.add(emplId);
+            if(!StringUtils.isEmpty(emplName)){
+                emplNames.add(emplName);
+            }
+        }
+        bpmnNodeVo.setProperty(BpmnNodePropertysVo
                    .builder()
                    .signType(bpmnNodePersonnelConf.getSignType())
                    .emplIds(emplIds)
-                   .emplList(getEmplList(emplIds))
+                   .emplList(getEmplList(emplIds,emplNames))
                    .build());
 
         return bpmnNodeVo;
@@ -61,16 +77,31 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
 
     /**
      * get emp list
-     *
+     * if emplNames is not empty,it is stored in db and then loaded
      * @param emplIds
      * @return
      */
-    private List<BaseIdTranStruVo> getEmplList(List<String> emplIds) {
-        Map<String, String> employeeInfos = bpmnEmployeeInfoProviderService.provideEmployeeInfo(emplIds);
+    private List<BaseIdTranStruVo> getEmplList(List<String> emplIds,List<String> emplNames) {
         List<BaseIdTranStruVo> result = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(emplNames)){
+            if(emplIds.size()!=emplNames.size()){
+                throw new JiMuBizException("指定人员审批存在姓名不存在的人员!");
+            }
+            for (int i = 0; i < emplIds.size(); i++) {
+                BaseIdTranStruVo vo = new BaseIdTranStruVo();
+                String emplId = emplIds.get(i);
+                String emplName = emplNames.get(i);
+                vo.setId(emplId);
+                vo.setName(emplName);
+                result.add(vo);
+            }
+            return result;
+        }
+        Map<String, String> employeeInfos = bpmnEmployeeInfoProviderService.provideEmployeeInfo(emplIds);
         for (String emplId : emplIds) {
             BaseIdTranStruVo vo = new BaseIdTranStruVo();
-            vo.setId(Long.parseLong(emplId));
+            vo.setId(emplId);
             String empName = employeeInfos.get(emplId);
             vo.setName(empName);
             result.add(vo);
@@ -98,6 +129,11 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
             return;
         }
         List<BpmnNodePersonnelEmplConf>personnelEmplConfs=new ArrayList<>();
+        List<BaseIdTranStruVo> emplList = bpmnNodePropertysVo.getEmplList();
+        Map<String, String> id2nameMap=null;
+        if(!CollectionUtils.isEmpty(emplList)){
+            id2nameMap= emplList.stream().collect(Collectors.toMap(a->a.getId().toString(), BaseIdTranStruVo::getName, (k1, k2) -> k1));
+        }
         for (String emplId : bpmnNodePropertysVo.getEmplIds()) {
              BpmnNodePersonnelEmplConf personnelEmplConf=new BpmnNodePersonnelEmplConf();
                 personnelEmplConf.setBpmnNodePersonneId(nodePersonnelId);
@@ -106,6 +142,9 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
                 personnelEmplConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 personnelEmplConf.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
                 personnelEmplConf.setUpdateTime(new Date());
+                if(id2nameMap!=null&&!StringUtils.isEmpty(id2nameMap.get(emplId))){
+                    personnelEmplConf.setEmplName(id2nameMap.get(emplId));
+                }
                 personnelEmplConfs.add(personnelEmplConf);
         }
 

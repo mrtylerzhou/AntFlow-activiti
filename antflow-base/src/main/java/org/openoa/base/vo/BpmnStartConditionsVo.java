@@ -33,13 +33,14 @@ public class BpmnStartConditionsVo {
     /**
      * process's business id
      */
-    private Long businessId;
+    private String businessId;
 
     //condition
     /**
      * start user id
      */
     private String startUserId;
+    private String startUserName;
     /**
      * start user's job level
      */
@@ -56,7 +57,7 @@ public class BpmnStartConditionsVo {
     /**
      * approvalEmp Id
      */
-    private Long approvalEmplId;
+    private String approvalEmplId;
     /**
      * approval emp ids
      */

@@ -66,12 +66,14 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId())
                 .createUser(businessDataVo.getStartUserId())
+                .userName(businessDataVo.getStartUserName())
                 .createTime(new Date())
                 .processDigest(vo.getProcessDigest())
                 .processState(ProcessStateEnum.COMLETE_STATE.getCode())
                 .entryId(vo.getEntityName() + ":" + vo.getBusinessId())
                 .description(applyName + "-" + processName)
                 .dataSourceId(vo.getDataSourceId())
+                .version(businessDataVo.getBpmnCode())
                 .build());
         //the process number is predictable
         businessDataVo.setProcessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId());

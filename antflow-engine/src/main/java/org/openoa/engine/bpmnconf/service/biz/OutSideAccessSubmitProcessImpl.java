@@ -23,6 +23,7 @@ import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceIm
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -54,6 +55,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
 
+
         //generate process number by rule
         String processNum = StringUtils.join(businessDataVo.getFormCode(), "_", businessDataVo.getBusinessId());
 
@@ -66,24 +68,21 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
         //query outside access business info
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(businessDataVo.getBusinessId());
-
-
-        //query template mark
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
-                .eq("is_del", 0)
-                .eq("business_party_id", outSideBpmAccessBusiness.getBusinessPartyId())
-                .eq("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
-
-        if (outSideBpmConditionsTemplate==null) {
-            throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
-        }
-
         //new start conditions vo
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+        String templateMark=outSideBpmAccessBusiness.getTemplateMark();
+        if(!StringUtils.isEmpty(templateMark)){
+            //query template mark
+            OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+                    .eq("is_del", 0)
+                    .eq("business_party_id", outSideBpmAccessBusiness.getBusinessPartyId())
+                    .eq("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
 
-
-        bpmnStartConditionsVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
-
+            if (outSideBpmConditionsTemplate==null) {
+                throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
+            }
+            bpmnStartConditionsVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+        }
 
         bpmnStartConditionsVo.setOutSideType(businessDataVo.getOutSideType());
 
@@ -96,10 +95,10 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //bpmnStartConditionsVo.setApprovalEmplId(Long.parseLong(businessDataVo.getEmplId()));
 
         //set start user dept id
-        Department department = departmentService.getDepartmentByEmployeeId(Long.parseLong(businessDataVo.getStartUserId()));
-        if (department!=null && department.getId()!=null) {
-            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
-        }
+//        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
+//        if (department!=null && department.getId()!=null) {
+//            bpmnStartConditionsVo.setStartUserDeptId(department.getId().longValue());
+//        }
 
         //set approvers list
         bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Lists.newArrayList()));
@@ -126,24 +125,25 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                     .orElse(new Employee()).getUsername();
         } else {
             //start user
-            processTitlePrefix = Optional
-                    .ofNullable(employeeService.getEmployeeDetailById(Long.parseLong(businessDataVo.getStartUserId())))
-                    .orElse(new Employee()).getUsername();
+            processTitlePrefix = businessDataVo.getSubmitUser();
         }
 
-
-        //save business process info
-        bpmBusinessProcessService.addBusinessProcess(BpmBusinessProcess.builder()
+        BpmBusinessProcess bpmBusinessProcess = BpmBusinessProcess.builder()
                 .businessId(businessDataVo.getBusinessId())
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(processNum)
                 .createUser(businessDataVo.getStartUserId())
+                .userName(businessDataVo.getSubmitUser())
                 .createTime(new Date())
                 .processState(ProcessStateEnum.COMLETE_STATE.getCode())
                 .entryId(processNum)
                 .description(processTitlePrefix + "-" + businessDataVo.getBpmnName())
+                .version(businessDataVo.getBpmnCode())
+                .isOutSideProcess(1)
                 //.approvalUserId(businessDataVo.getEmplId())
-                .build());
+                .build();
+        //save business process info
+        bpmBusinessProcessService.addBusinessProcess(bpmBusinessProcess);
         businessDataVo.setProcessNumber(processNum);
 
 
@@ -153,7 +153,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //fill info
         outSideBpmAccessBusinessService.updateById(OutSideBpmAccessBusiness
                 .builder()
-                .id(businessDataVo.getBusinessId())
+                .id(Long.parseLong(businessDataVo.getBusinessId()))
                 .processNumber(processNum)
                 .bpmnConfId(Optional.ofNullable(businessDataVo.getBpmnConfVo()).orElse(new BpmnConfVo()).getId())
                 .build());

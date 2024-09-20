@@ -9,11 +9,16 @@ import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.util.MailUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.MailInfo;
+import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -37,6 +42,7 @@ import org.openoa.service.impl.PersonServiceImpl;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,7 +51,9 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -72,10 +80,14 @@ public class ActivitiTest {
     private PersonMapper personMapper;
     @Autowired
     private IAdaptorFactory iAdaptorFactory;
+    @Autowired
+    private MailUtils mailUtils;
+    @Autowired
+    private TaskMgmtServiceImpl taskMgmtService;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
-        personService.userOpTransactional();
+       /* personService.userOpTransactional();
         log.info("you request me");
         ThreadLocalContainer.set("hello","hehe");
         personService.asyncDemo();
@@ -89,9 +101,11 @@ public class ActivitiTest {
         //personService.opTranstionally();
        if(3==3){
            return Result.newSuccessResult(null);
-       }
+       }*/
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
-        HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list().get(0);
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
+        List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
+        HistoricActivityInstance historicActivityInstance = historicActivityInstances.get(0);
         String processDefinitionId = historicActivityInstance.getProcessDefinitionId();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
         Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
@@ -136,6 +150,7 @@ public class ActivitiTest {
     }
     @RequestMapping("getStudent")
     public Result getStudentPageList(@RequestBody PageDto pageDto){
+        List<BaseIdTranStruVo> baseIdTranStruVos = studentMapper.selectAllStudent();
         Page<Student> page= PageUtils.getPageByPageDto(pageDto);
         List<Student> studentList = studentMapper.getStudentList(page);
 
@@ -188,5 +203,22 @@ public class ActivitiTest {
         ProcessOperationAdaptor processOperation = iAdaptorFactory.getProcessOperation(vo);
         AbstractOrderedSignNodeAdp orderedSignNodeAdp = iAdaptorFactory.getOrderedSignNodeAdp(OrderNodeTypeEnum.TEST_ORDERED_SIGN);
         return Result.newSuccessResult("ok");
+    }
+    @PostMapping("/testSendEmail")
+    public Result testSendEmail(){
+        MailInfo mailInfo = MailInfo
+                .builder()
+                .receiver("zypqqgc@qq.com")
+                .title("邮件测试" + new Date())
+                .content("keep refrain from sending test email to us")
+                .build();
+        mailUtils.sendMail(mailInfo);
+        return Result.success();
+    }
+    @PostMapping("/changefutureAssignees")
+    public Result changeFutureAssignee(String executionId,String variableName,String assignees){
+        List<String> assigneeList = Arrays.asList(assignees.split(","));
+        taskMgmtService.changeFutureAssignees(executionId,variableName,assigneeList);
+        return Result.success();
     }
 }

@@ -31,7 +31,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * business id
      */
-    private Long businessId;
+    private String businessId;
     /**
      * params
      */
@@ -86,6 +86,7 @@ public class BusinessDataVo extends PageDto {
      * forward user ids
      */
     public List<String> userIds;
+    public List<BaseIdTranStruVo> userInfos;
     /**
      * approvers list
      */
@@ -104,6 +105,7 @@ public class BusinessDataVo extends PageDto {
      * start user
      */
     private String startUserId="";
+    private String startUserName;
 
     /**
      * bpmm code
@@ -148,7 +150,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * sign up users
      */
-    private List<String> signUpUsers;
+    private List<BaseIdTranStruVo> signUpUsers;
 
     /**
      * is start page preview
@@ -198,6 +200,8 @@ public class BusinessDataVo extends PageDto {
      * submit url
      */
     private String submitUrl;
+
+    private String submitUser;
 
     /**
      * conditions url

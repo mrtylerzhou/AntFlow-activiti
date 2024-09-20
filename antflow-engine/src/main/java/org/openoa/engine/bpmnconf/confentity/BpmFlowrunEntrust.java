@@ -33,11 +33,16 @@ public class BpmFlowrunEntrust {
     /**
      * the original assignee
      */
-    private Integer original;
+    private String original;
+    @TableField("original_name")
+    private String originalName;
     /**
      * actual assignee
      */
-    private Integer actual;
+    private String actual;
+
+    @TableField("actual_name")
+    private String actualName;
     /**
      * type 1 for entrust task, 2 for circulate task
      */

@@ -24,10 +24,10 @@ public class UserEntrust {
     /**
      * sender
      */
-    private Integer sender;
+    private String sender;
 
     @TableField("receiver_id")
-    private Integer receiverId;
+    private String receiverId;
     /**
      * receiver name
      */

@@ -1,5 +1,6 @@
 package org.openoa.base.vo;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class SendParam implements Serializable {
     /**
      * receiver id
      */
-    private Long userId;
+    private String userId;
 
     /**
      * title

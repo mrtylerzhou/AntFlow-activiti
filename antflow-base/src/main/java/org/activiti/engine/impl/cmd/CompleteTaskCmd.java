@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.openoa.base.constant.StringConstants;
 
 
 /**
@@ -47,6 +48,10 @@ public class CompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     	} else {
     		task.setVariables(variables);
     	}
+        Object assigneeName = variables.get(StringConstants.TASK_ASSIGNEE_NAME);
+        if(assigneeName!=null){
+            task.setAssigneeName(assigneeName.toString());
+        }
     }
     
     task.complete(variables, localScope);

@@ -149,7 +149,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         // allProcess.addAll(ProcessTypeQuery.getprocessKeyList(VPN_TYPE.getCode()));
 
         //get all process that a specified user has permission to create
-        List<String> processKeyList = processPermissionsService.getProcessKey(genericEmployee.getUserId().intValue(), ProcessJurisdictionEnum.CREATE_TYPE.getCode());
+        List<String> processKeyList = processPermissionsService.getProcessKey(genericEmployee.getUserId(), ProcessJurisdictionEnum.CREATE_TYPE.getCode());
         if (!CollectionUtils.isEmpty(processKeyList)) {
             allProcess.addAll(processKeyList);
         }
@@ -673,7 +673,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         List<BaseIdTranStruVo> list = new ArrayList<>();
         list.addAll(vos.stream().map(o ->
                 BaseIdTranStruVo.builder()
-                        .id(o.getId().longValue())
+                        .id(o.getId().toString())
                         .name(o.getProcessName())
                         .build()
         ).collect(Collectors.toList()));
