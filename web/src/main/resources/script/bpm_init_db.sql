@@ -510,6 +510,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer_personnel`
     `id`                      bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `variable_multiplayer_id` bigint(20)          NOT NULL COMMENT 'variable id',
     `assignee`                varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee,that is the approver',
+     `assignee_name`                varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee name',
     `undertake_status`        int(11)             NOT NULL COMMENT 'is undertaked(0:no,1:yes)',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -570,6 +571,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
     `variable_id` bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`  varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
     `assignee`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee',
+     `assignee_name`    varchar(60)   NOT NULL DEFAULT '' COMMENT 'assigneeName',
     `remark`      varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`      tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -592,6 +594,7 @@ CREATE TABLE if not exists `t_bpm_variable_single`
     `element_name`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
     `assignee_param_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'variable name',
     `assignee`            varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee',
+    `assignee_name`       varchar(60)         NOT NULL DEFAULT '' COMMENT 'assigneeName',
     `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`              tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`         varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -1334,10 +1337,4 @@ alter table bpm_business_process
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-alter table t_bpm_variable_single
-	add assignee_name varchar(64) null;
 
-alter table t_bpm_variable_sign_up_personnel
-	add assignee_name varchar(64) null after assignee;
-alter table t_bpm_variable_multiplayer_personnel
-	add assignee_name varchar(64) null;

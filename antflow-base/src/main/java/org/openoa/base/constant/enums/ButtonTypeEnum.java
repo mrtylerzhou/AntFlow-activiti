@@ -22,6 +22,8 @@ public enum ButtonTypeEnum {
     BUTTON_TYPE_ADD_ASSIGNEE(13, "添加审批人"),
     BUTTON_TYPE_FORWARD(15, "转发"),
     BUTTON_TYPE_BACK_TO_MODIFY(18, "打回修改"),
+    BUTTON_TYPE_JP(19,"加批"),
+    BUTTON_TYPE_ZB(21,"转办"),
     ;
 
     @Getter

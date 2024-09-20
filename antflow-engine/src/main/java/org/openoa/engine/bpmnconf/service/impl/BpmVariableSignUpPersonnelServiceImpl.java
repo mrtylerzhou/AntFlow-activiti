@@ -79,9 +79,9 @@ public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariab
         //get sign up node
         BpmnConfCommonElementVo signUpElement = subElementVos.stream().filter(o -> o.getIsBackSignUp() == 0).findFirst().orElse(new BpmnConfCommonElementVo());
 
-
+        List<String> signeeUpAssignees = signUpUsers.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         //set sign up node parameter
-        taskService.setVariable(taskId, signUpElement.getCollectionName(), signUpUsers);
+        taskService.setVariable(taskId, signUpElement.getCollectionName(), signeeUpAssignees);
 
 
         //if it is serial sign up,we also need to set loop size param
