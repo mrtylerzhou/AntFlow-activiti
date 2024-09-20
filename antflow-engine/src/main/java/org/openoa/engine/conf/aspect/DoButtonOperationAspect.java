@@ -56,6 +56,7 @@ public class DoButtonOperationAspect {
         //set start user Info
         if (ObjectUtils.isEmpty(vo.getStartUserId())) {
             vo.setStartUserId(SecurityUtils.getLogInEmpIdStr());
+            vo.setStartUserName(SecurityUtils.getLogInEmpName());
         }
        
         return buttonOperationService.buttonsOperationTransactional(vo);

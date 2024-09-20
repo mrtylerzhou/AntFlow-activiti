@@ -69,6 +69,7 @@ public class TaskMgmtVO implements Serializable {
      * process's applier
      */
     private String applyUser;
+    private String applyUserName;
     /**
      * apply date
      */
@@ -139,6 +140,7 @@ public class TaskMgmtVO implements Serializable {
      * user id
      */
     private String userId;
+    private String userName;
 
     /**
      * role ids

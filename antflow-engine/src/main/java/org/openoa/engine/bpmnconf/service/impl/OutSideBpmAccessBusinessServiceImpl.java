@@ -255,7 +255,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         }
 
 
-        Employee employee = getEmployeeByUserId(vo.getUserId());
+        Employee employee = !StringUtils.isEmpty(vo.getUserName())?Employee.builder().id(vo.getUserId()).username(vo.getUserName()).build():getEmployeeByUserId(vo.getUserId());
 
 
         if (employee==null) {
@@ -280,7 +280,8 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .builder()
                 .isOutSideAccessProc(true)
                 .formCode(vo.getFormCode())
-                .startUserId(employee.getId().toString())
+                .startUserId(employee.getId())
+                .startUserName(employee.getUsername())
                 .templateMark(vo.getTemplateMark())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
