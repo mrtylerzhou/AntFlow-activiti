@@ -82,14 +82,17 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
             taskMgmtVO.getTaskIds().forEach(o -> {
                 taskMgmtMapper.updateaActinst(TaskMgmtVO.builder()
                         .applyUser(taskMgmtVO.getApplyUser())
+                        .applyUserName(taskMgmtVO.getApplyUserName())
                         .taskId(o)
                         .build());
                 taskMgmtMapper.updateaTaskinst(TaskMgmtVO.builder()
                         .applyUser(taskMgmtVO.getApplyUser())
+                        .applyUserName(taskMgmtVO.getApplyUserName())
                         .taskId(o)
                         .build());
                 taskMgmtMapper.updateTask(TaskMgmtVO.builder()
                         .applyUser(taskMgmtVO.getApplyUser())
+                        .applyUserName(taskMgmtVO.getApplyUserName())
                         .taskId(o)
                         .build());
             });

@@ -40,6 +40,7 @@ public class BpmnStartConditionsVo {
      * start user id
      */
     private String startUserId;
+    private String startUserName;
     /**
      * start user's job level
      */

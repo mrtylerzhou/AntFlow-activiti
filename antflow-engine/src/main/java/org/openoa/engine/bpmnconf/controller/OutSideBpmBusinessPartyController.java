@@ -5,12 +5,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Tag(name = "第三方业务方管理")
@@ -73,5 +76,10 @@ public class OutSideBpmBusinessPartyController {
         return Result.newSuccessResult(applicationId);
     }
 
+
+    @GetMapping("/businessParty/getPartyMarkByIdBpmConf/{businessPartyMark}")
+    public Result<List<BpmnConfVo>> getPartyMarkByIdBpmConf(@PathVariable String businessPartyMark) {
+        return Result.newSuccessResult(outSideBpmBusinessPartyService.getBpmConf(businessPartyMark));
+    }
 
 }

@@ -6,10 +6,12 @@
         select * from (
         SELECT
         r.ASSIGNEE_ AS assignee,
+        r.ASSIGNEE_NAME as assigneeName,
         r.PROC_INST_ID_ AS processInstanceId,
         b.PROCESSINESS_KEY AS processKey,
         r.PROC_DEF_ID_ AS processId,
         h.START_USER_ID_ AS userId,
+        b.user_name as userName,
         h.START_TIME_ AS createTime,
         b.BUSINESS_ID AS businessId,
         b.description AS description,
@@ -30,9 +32,7 @@
 
             <!--start user query condition-->
             <if test="type==6">
-                and t.userId in (
-                select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} LIKE CONCAT('%',#{applyUser},'%' )
-                )
+                and t.userName LIKE CONCAT('%',#{applyUser},'%' )
             </if>
         </if>
         <!--query process name-->
@@ -61,15 +61,13 @@
         </if>
 
         <if test="actualName!=null and actualName!=''">
-            and t.assignee in (
-            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} LIKE CONCAT('%',#{actualName},'%' )
-            )
+            and t.assigneeName LIKE CONCAT('%',#{actualName},'%' )
         </if>
 
         <!--fuzzy match on start user id,digest-->
         <if test="search !=null and search!=''">
             AND (
-            t.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblNameFieldName} like CONCAT ('%', #{search},'%'))
+            and t.userName  like CONCAT ('%', #{search},'%')
             or t.description LIKE CONCAT('%', #{search},'%')
             )
         </if>
@@ -82,6 +80,7 @@
         h.PROC_INST_ID_ AS processInstanceId,
         h.PROC_DEF_ID_ AS processId,
         h.START_USER_ID_ AS userId,
+        b.user_name as userName,
         h.START_TIME_ AS createTime,
         b.BUSINESS_ID AS businessId,
         b.BUSINESS_NUMBER AS processNumber,
@@ -106,12 +105,10 @@
         <!--search condition on user name,digest-->
         <if test="search !=null and search!=''">
             AND (
-            h.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblName} like CONCAT ('%', #{search},'%'))
+            h.userName  like CONCAT ('%', #{search},'%')
             or h.description LIKE CONCAT('%', #{search},'%')
             or h.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
-            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblName} like concat('%', #{search},'%')
-            )
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME  like concat('%', #{search},'%')
             )
             )
         </if>
@@ -131,6 +128,7 @@
         b.PROCESSINESS_KEY AS processKey,
         w.PROC_DEF_ID_ AS processId,
         h.START_USER_ID_ AS userId,
+        b.user_name as userName,
         b.CREATE_TIME AS createTime,
         w.ASSIGNEE_ AS assignee,
         (select count(1) from bpm_user_concern c where c.process_id=w.PROC_INST_ID_ and c.user_id=w.ASSIGNEE_) as
@@ -154,12 +152,10 @@
         <!--fuzzy matching-->
         <if test="taskMgmtVO.search !=null and taskMgmtVO.search!=''">
             AND (
-            s.userId in (SELECT t.${empTblIdFieldName} from ${empTblName} t where t.${empTblNameFieldName} like CONCAT ('%', #{taskMgmtVO.search},'%'))
+            s.userName  like CONCAT ('%', #{taskMgmtVO.search},'%')
             or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
             or s.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
-            select e.${empTblIdFieldName} from ${empTblName} e where e.${empTblNameFieldName} like concat('%', #{taskMgmtVO.search},'%')
-            )
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME like concat('%', #{taskMgmtVO.search},'%')
             )
             )
         </if>
@@ -180,6 +176,7 @@
         b.PROCESSINESS_KEY AS processKey,
         w.PROC_DEF_ID_ AS processId,
         h.START_USER_ID_ AS userId,
+        b.user_name as userName,
         b.CREATE_TIME AS createTime,
         w.ASSIGNEE_ AS assignee
         FROM
@@ -200,12 +197,11 @@
         <!--fuzzy matching-->
         <if test="taskMgmtVO.search !=null and taskMgmtVO.search!=''">
             AND (
-            s.userId in (SELECT t.id from t_employee t where t.name like CONCAT ('%', #{taskMgmtVO.search},'%'))
+            s.userName in  like CONCAT ('%', #{taskMgmtVO.search},'%')
             or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
             or s.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_ in (
-            select e.id from t_employee e where e.name like concat('%', #{taskMgmtVO.search},'%')
-            )
+            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME
+             like concat('%', #{taskMgmtVO.search},'%')
             )
             )
         </if>
@@ -215,28 +211,27 @@
 
     <!--query current task assignee by task id-->
     <select id="findTask" resultType="org.openoa.base.vo.TaskMgmtVO">
-        select w.ASSIGNEE_ as applyUser, t.id AS userId, t.`name` as actualName
+        select w.ASSIGNEE_ as applyUser, w.ASSIGNEE_ AS userId, w.ASSIGNEE_NAME as actualName
         from act_ru_task w
-        left join ${empTblName} t on w.ASSIGNEE_ = t.${empTblIdFieldName}
         where w.ID_ = #{taskId}
     </select>
     <!--modify current assignee-->
     <update id="updateTask">
         update act_ru_task
-        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
-        where ID_ = #{taskMgmtVO.taskId};
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
+        where ID_ = #{taskMgmtVO.taskId}
     </update>
 
     <!--modify current node's history assignee-->
     <update id="updateaActinst">
         update act_hi_actinst
-        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
         where TASK_ID_ = #{taskMgmtVO.taskId}
     </update>
     <!--modify current node's history assignee-->
     <update id="updateaTaskinst">
         update act_hi_taskinst
-        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
         where id_ = #{taskMgmtVO.taskId}
     </update>
 

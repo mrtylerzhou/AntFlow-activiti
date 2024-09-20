@@ -81,6 +81,7 @@ public class BpmnConfCommonElementVo {
     /**
      * is last sequence flow 0 for no and 1 for yes
      */
+    @Builder.Default
     private int isLastSequenceFlow = 0;
 
     /**

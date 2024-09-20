@@ -105,6 +105,7 @@ public class BusinessDataVo extends PageDto {
      * start user
      */
     private String startUserId="";
+    private String startUserName;
 
     /**
      * bpmm code
@@ -149,7 +150,7 @@ public class BusinessDataVo extends PageDto {
     /**
      * sign up users
      */
-    private List<String> signUpUsers;
+    private List<BaseIdTranStruVo> signUpUsers;
 
     /**
      * is start page preview

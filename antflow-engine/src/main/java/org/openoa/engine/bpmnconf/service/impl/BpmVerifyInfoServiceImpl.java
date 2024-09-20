@@ -176,6 +176,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     }
     /**
      * map verify info
+     * 如果procInstId为null,则查询员工信息,否则自省
      */
     public List<BpmVerifyInfoVo> getBpmVerifyInfoVoList(List<BpmVerifyInfoVo> list,String procInstId) {
         List<BpmVerifyInfoVo> infoVoList = new ArrayList<>();
