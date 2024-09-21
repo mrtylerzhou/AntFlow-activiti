@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/bpmnBusiness")
 public class BpmnBusinessController {
 
-    @Autowired
+    @Autowired(required = false)
     Map<String, FormOperationAdaptor> formOperationAdaptorMap;
 
     @Autowired

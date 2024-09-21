@@ -1,5 +1,5 @@
 
-package org.openoa.common.config;
+package org.openoa.engine.conf.config;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;

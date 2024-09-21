@@ -2,7 +2,7 @@
  * Sto Express Tracking api 2019
  */
 
-package org.openoa.common.config;
+package org.openoa.engine.conf.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ActivitiServiceAnno;

@@ -225,7 +225,7 @@
     <!--modify current node's history assignee-->
     <update id="updateaActinst">
         update act_hi_actinst
-        set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
+        set ASSIGNEE_ =#{taskMgmtVO.applyUser}
         where TASK_ID_ = #{taskMgmtVO.taskId}
     </update>
     <!--modify current node's history assignee-->
