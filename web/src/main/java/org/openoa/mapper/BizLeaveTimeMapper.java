@@ -1,6 +1,7 @@
 package org.openoa.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.openoa.entity.BizLeaveTime;
 
 /**
@@ -11,5 +12,6 @@ import org.openoa.entity.BizLeaveTime;
  * @return
  * @Version 1.0
  */
+@Mapper
 public interface BizLeaveTimeMapper extends BaseMapper<BizLeaveTime> {
 }

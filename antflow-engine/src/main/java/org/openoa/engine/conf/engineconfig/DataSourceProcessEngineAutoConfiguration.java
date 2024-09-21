@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openoa.engine.conf.mvc;
+package org.openoa.engine.conf.engineconfig;
 
 import java.io.IOException;
 

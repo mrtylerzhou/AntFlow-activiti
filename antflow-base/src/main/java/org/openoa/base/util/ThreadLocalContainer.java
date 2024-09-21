@@ -1,13 +1,12 @@
 package org.openoa.base.util;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ThreadLocalContainer {
 
-    private static ThreadLocal<Map<String, Object>> CACHE = TransmittableThreadLocal.withInitial(ConcurrentHashMap::new);
+    private static ThreadLocal<Map<String, Object>> CACHE = ThreadLocal.withInitial(ConcurrentHashMap::new);
 
     public static Object get(String key) {
         return CACHE.get().get(key);

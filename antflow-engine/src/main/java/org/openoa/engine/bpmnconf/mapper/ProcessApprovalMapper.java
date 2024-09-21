@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @return
  * @Version 0.5
  */
+@Mapper
 public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
     /**
      * view my newly create process
