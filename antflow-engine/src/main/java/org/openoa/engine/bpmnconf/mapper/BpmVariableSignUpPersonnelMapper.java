@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface BpmVariableSignUpPersonnelMapper extends BaseMapper<BpmVariableSignUpPersonnel> {
     List<BaseIdTranStruVo> getByVariableIdAndElementId(@Param("variableId") Long variableId, @Param("elementId") String elementId);
+    List<BaseIdTranStruVo> getByProcessNumAndElementId(@Param("processNumber") String processNumber, @Param("elementId") String elementId);
 }
