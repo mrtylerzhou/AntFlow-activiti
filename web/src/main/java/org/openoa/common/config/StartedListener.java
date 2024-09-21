@@ -1,4 +1,4 @@
-package org.openoa.engine.conf.mvc;
+package org.openoa.common.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ansi.AnsiColor;
