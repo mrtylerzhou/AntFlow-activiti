@@ -23,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * a helper class to get additional information from activiti engine
@@ -99,9 +100,9 @@ public class ActivitiAdditionalInfoServiceImpl {
     public String getVerifyUserNameFromHis(String elementId, Map<String, String> signUpNodeCollectionNameMap, Multimap<String, HistoricVariableInstance> variableInstanceMap,Long variableId) {
 
         String verifyUserName = StringUtils.EMPTY;
-        List<BaseIdTranStruVo> signUpUsersByVariableAndElementId = bpmVariableSignUpPersonnelService.getSignUpInfoByVariableAndElementId(variableId, elementId);
-        if(!CollectionUtils.isEmpty(signUpUsersByVariableAndElementId)){
-            verifyUserName=StringUtils.join(signUpUsersByVariableAndElementId,",");
+        List<BaseIdTranStruVo> assigneeMap = bpmVariableSignUpPersonnelService.getSignUpInfoByVariableAndElementId(variableId, elementId);
+        if(!CollectionUtils.isEmpty(assigneeMap)){
+            verifyUserName= StringUtils.join(assigneeMap.stream().map(BaseIdTranStruVo::getName).collect(Collectors.toList()), ',');
             return verifyUserName;
         }
         String collectionName = signUpNodeCollectionNameMap.get(elementId);

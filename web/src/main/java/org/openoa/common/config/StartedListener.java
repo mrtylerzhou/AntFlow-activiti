@@ -22,7 +22,7 @@ public class StartedListener implements ApplicationListener<ApplicationReadyEven
         String serverPort = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty("server.port");
         String serverUrl = String.format("http://%s:%s", "127.0.0.1", serverPort);
         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, "your project server started at: ", serverUrl));
-        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, "your project server's doc started at:", serverUrl + "/doc.html"));
-        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, "your project server  started successfully!"));
+        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, "swagger doc url:", serverUrl + "/doc.html"));
+        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, "your project server was started successfully!"));
     }
 }
