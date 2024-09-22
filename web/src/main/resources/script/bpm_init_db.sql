@@ -1037,6 +1037,7 @@ CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
     `business_party_id` bigint(20) DEFAULT NULL COMMENT 'Business party main table ID',
     `type` int(11) DEFAULT NULL COMMENT 'Administrator type: 1-Process administrator, 2-Application administrator, 3-Interface administrator',
     `employee_id` varchar(64) DEFAULT NULL COMMENT 'Administrator ID (Employee ID)',
+    `employee_name` varchar(64) DEFAULT NULL COMMENT 'Administrator name (Employee name)',
     `remark` varchar(255) DEFAULT NULL COMMENT 'Remark',
     `is_del` int(11) DEFAULT NULL COMMENT 'Deletion flag: 0 for normal, 1 for deleted',
     `create_user` varchar(50) DEFAULT NULL COMMENT 'Creator user',
