@@ -13,7 +13,7 @@
     <!--中间件日志统一打印到 ${LOG_ROOT_PATH}/logs下面 -->
     <property name="MW_LOG_PATH" value="${LOG_ROOT_PATH}/logs"/>
     <property name="no_file_pattern"
-              value="%boldGreen(%d{MM-dd HH:mm:ss.SSS}) %level %highlight([%X{ruid}]) [%thread] %c [%file:%line] %msg%n"/>
+              value="%boldGreen(%d{MM-dd HH:mm:ss.SSS}) %level %highlight([%X{ruid}]) [%thread] %cyan(%c) %blue([%file:%line]) %msg%n"/>
     <property name="file_pattern"
               value="%boldGreen(%d{MM-dd HH:mm:ss.SSS}) %level %highlight([%X{ruid}]) [%thread] %c [%file:%line] %msg%n"/>
 
