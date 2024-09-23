@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 云路信息科技有限公司 版权所有 © Copyright 2024
  *
  * @className: BpmVariableSignUpPersonnelService
  * @author: Tyler Zhou
