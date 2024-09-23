@@ -323,7 +323,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
             outSideBpmCallbackUrlConfService.getBaseMapper().insert(OutSideBpmCallbackUrlConf
                     .builder()
                     .businessPartyId(id)
-                    .status(1)
+                    .status(0)
                     .build());
         }
 

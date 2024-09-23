@@ -40,6 +40,8 @@ public class OutSideBpmCallbackUrlConf {
      */
     @TableField("bpmn_conf_id")
     private Long bpmnConfId;
+    @TableField("form_code")
+    private String formCode;
     /**
      * conf callback url
      */
@@ -64,7 +66,7 @@ public class OutSideBpmCallbackUrlConf {
     private String apiClientSecrent;
 
     /**
-     * 1 for enable,2 for disable
+     * 0 for enable,1 for disable
      */
     @TableField("status")
     private Integer status;
