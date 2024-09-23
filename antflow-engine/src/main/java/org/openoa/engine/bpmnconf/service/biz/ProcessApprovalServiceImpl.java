@@ -279,7 +279,9 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         //set add approver button on the pc
         Map<String, List<ProcessActionButtonVo>> pcButtons = businessDataVo.getProcessRecordInfo().getPcButtons();
         List<ProcessActionButtonVo> pcProcButtons = pcButtons.get(ButtonPageTypeEnum.AUDIT.getName());
-        pcProcButtons.add(addApproverButton);
+        if (!pcProcButtons.stream().anyMatch(a->BUTTON_TYPE_JP.getCode().equals(a.getButtonType()))) {
+            pcProcButtons.add(addApproverButton);
+        }
         businessDataVo.getProcessRecordInfo().setPcButtons(pcButtons);
     }
     /**

@@ -1,4 +1,4 @@
-package org.openoa.common.config;
+package org.openoa.engine.conf.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

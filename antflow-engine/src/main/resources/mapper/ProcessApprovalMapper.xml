@@ -172,6 +172,7 @@
                         b.BUSINESS_NUMBER  AS processNumber,
                         t.ID_              AS taskId,
                         h.START_TIME_      AS runTime,
+                        h.START_TIME_      AS createTime,
                         b.process_state    AS processState,
                         t.ASSIGNEE_        as taskOwner,
                         t.TASK_DEF_KEY_       taskName

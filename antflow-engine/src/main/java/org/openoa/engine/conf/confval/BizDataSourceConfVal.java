@@ -1,3 +1,4 @@
+/*
 package org.openoa.engine.conf.confval;
 
 import lombok.Data;
@@ -19,3 +20,4 @@ public class BizDataSourceConfVal extends DataSourceConfVal {
     private String password;
 
 }
+*/

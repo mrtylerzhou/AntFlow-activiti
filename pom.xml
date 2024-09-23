@@ -16,7 +16,7 @@
     </parent>
    <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
-    <version>0.8.9</version>
+    <version>0.9.0</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>
@@ -44,11 +44,6 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>3.5.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

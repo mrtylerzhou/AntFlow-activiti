@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @Date 2021-11-08 22:48
  * @Created by AntOffice
  */
-@Repository
+@Mapper
 public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
 
     /**

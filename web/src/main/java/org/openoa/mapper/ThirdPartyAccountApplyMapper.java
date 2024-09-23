@@ -1,6 +1,7 @@
 package org.openoa.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.openoa.entity.ThirdPartyAccountApply;
 
 /**
@@ -11,5 +12,6 @@ import org.openoa.entity.ThirdPartyAccountApply;
  * @return
  * @Version 1.0
  */
+@Mapper
 public interface ThirdPartyAccountApplyMapper extends BaseMapper<ThirdPartyAccountApply> {
 }

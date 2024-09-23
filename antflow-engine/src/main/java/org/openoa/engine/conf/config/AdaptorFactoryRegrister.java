@@ -1,4 +1,4 @@
-package org.openoa.common.config;
+package org.openoa.engine.conf.config;
 
 import org.openoa.engine.factory.AdaptorFactoryProxy;
 import org.openoa.base.constant.StringConstants;

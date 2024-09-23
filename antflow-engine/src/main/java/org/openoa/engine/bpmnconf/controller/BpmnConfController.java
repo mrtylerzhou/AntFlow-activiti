@@ -47,7 +47,7 @@ public class BpmnConfController {
     private BpmnConfCommonServiceImpl bpmnConfCommonService;
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
-    @Autowired
+    @Autowired(required = false)
     private Map<String, ActivitiService> activitiServices;
 
     @Autowired

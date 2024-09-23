@@ -1,5 +1,6 @@
 package org.openoa.base.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Role;
 import org.openoa.base.entity.User;
@@ -13,7 +14,7 @@ import java.util.List;
  * @Date 2024/7/17 22:34
  * @Version 1.0
  */
-@Repository
+@Mapper
 public interface RoleMapper {
     List<Role> queryRoleByIds(@Param("roleIds") Collection<String> roleIds);
     List<User> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);

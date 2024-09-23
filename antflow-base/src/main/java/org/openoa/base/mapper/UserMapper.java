@@ -1,5 +1,6 @@
 package org.openoa.base.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -8,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 
-@Repository
+
+@Mapper
 public interface UserMapper {
     // a nonce method
     List<BaseIdTranStruVo> queryCompanyByNameFuzzy(@Param("companyName") String companyName);
