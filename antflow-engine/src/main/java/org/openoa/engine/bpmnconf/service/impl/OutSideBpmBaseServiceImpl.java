@@ -4,6 +4,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import jodd.util.StringUtil;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.OutSideBpmProcesses;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
@@ -39,10 +40,10 @@ public class OutSideBpmBaseServiceImpl {
      */
     public List<OutSideBpmBusinessPartyVo> getEmplBusinessPartys(String name, String... permCodes) {
 
-        GenericEmployee loginedEmployee =new GenericEmployee();
+        GenericEmployee loginedEmployee =GenericEmployee.builder().userId(SecurityUtils.getLogInEmpId()).username(SecurityUtils.getLogInEmpName()).build();
 
         List<OutSideBpmBusinessParty> outSideBpmBusinessPartys = Lists.newArrayList();
-        //todo
+        //todo to be redesigned
         if (loginedEmployee.getPermissions().contains("3060101")) {
             //if he/she has all business party permission,then list all
             outSideBpmBusinessPartys = outSideBpmBusinessPartyService.getBaseMapper().selectList(new QueryWrapper<>());

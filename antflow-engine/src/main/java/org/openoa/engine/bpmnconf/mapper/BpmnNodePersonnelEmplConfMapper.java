@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodePersonnelEmplConf;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,6 @@ import org.springframework.stereotype.Repository;
  * @return
  * @Version 0.5
  */
-@Repository
+@Mapper
 public interface BpmnNodePersonnelEmplConfMapper extends BaseMapper<BpmnNodePersonnelEmplConf> {
 }

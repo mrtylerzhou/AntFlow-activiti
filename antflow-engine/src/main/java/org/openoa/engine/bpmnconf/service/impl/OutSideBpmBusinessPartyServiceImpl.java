@@ -181,7 +181,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
                 List<BaseIdTranStruVo> personnelsList = bpmAdminPersonnels.stream().map(o -> BaseIdTranStruVo
                                 .builder()
                                 .id(o.getEmployeeId())
-                                .name(Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
+                                .name(!StringUtils.isEmpty(o.getEmployeeName())?o.getEmployeeName():Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
                                         .orElse(new Employee()).getUsername())
                                 .build())
                         .collect(Collectors.toList());

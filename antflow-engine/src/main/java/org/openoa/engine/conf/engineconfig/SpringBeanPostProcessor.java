@@ -1,4 +1,4 @@
-package org.openoa.engine.conf;
+package org.openoa.engine.conf.engineconfig;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;

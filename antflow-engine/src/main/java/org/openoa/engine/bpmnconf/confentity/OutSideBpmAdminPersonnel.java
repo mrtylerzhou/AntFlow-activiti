@@ -43,6 +43,11 @@ public class OutSideBpmAdminPersonnel {
     @TableField("employee_id")
     private String employeeId;
     /**
+     * administrator's name
+     */
+    @TableField("employee_name")
+    private String employeeName;
+    /**
      * remark
      */
     private String remark;

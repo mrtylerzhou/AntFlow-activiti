@@ -35,7 +35,7 @@ public class HttpLogAspect {
 
 
 
-    @Pointcut("@within(org.springframework.stereotype.Controller) ||@within(org.springframework.web.bind.annotation.RestController)&&!@annotation(org.openoa.base.interf.anno.IgnoreLog)&&!@within(org.openoa.base.interf.anno.IgnoreLog)")
+    @Pointcut("@within(org.springframework.stereotype.Controller) ||@within(org.springframework.web.bind.annotation.RestController)&&!@annotation(org.openoa.base.interf.anno.IgnoreLog)&&!@within(org.openoa.base.interf.anno.IgnoreLog)&&within(org.openoa..*)")
     public void httpAspect() {
     }
 

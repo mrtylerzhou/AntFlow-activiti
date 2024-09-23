@@ -37,7 +37,9 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,6 +248,11 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       String activityId = ((ExecutionEntity) execution).getActivityId();
       Map<String, String> assigneeMap = variableService.getAssigneeNameByProcessNumAndElementId(processDefinitionKey, activityId);
       String userName = assigneeMap.get(task.getAssignee());
+      if(StringUtils.isEmpty(userName)){
+        BpmVariableSignUpPersonnelService signUpPersonnelService = SpringBeanUtils.getBean(BpmVariableSignUpPersonnelService.class);
+        assigneeMap = signUpPersonnelService.getByProcessNumAndElementId(processDefinitionKey, activityId);
+        userName=assigneeMap.get(task.getAssignee());
+      }
       task.setAssigneeName(userName);
     }
     

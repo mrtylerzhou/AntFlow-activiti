@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Mapper;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,7 @@ import java.util.List;
  * process application mapper
  * @since 0.5
  */
-@Repository
+@Mapper
 public interface BpmProcessAppApplicationMapper extends BaseMapper<BpmProcessAppApplication> {
     /**
      * query application list

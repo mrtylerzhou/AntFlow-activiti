@@ -6,4 +6,10 @@
     <select id="getByVariableIdAndElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
         select assignee as id,assignee_name as name from t_bpm_variable_sign_up_personnel where variable_id=#{variableId} and element_id=#{elementId}
     </select>
+    <select id="getByProcessNumAndElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select tbvsup.assignee as id,tbvsup.assignee_name as name from t_bpm_variable tbv
+        left join t_bpm_variable_sign_up_personnel tbvsup on tbvsup.variable_id = tbv.id
+        where tbv.process_num = #{processNumber}
+        and tbvsup.element_id = #{elementId}
+    </select>
 </mapper>

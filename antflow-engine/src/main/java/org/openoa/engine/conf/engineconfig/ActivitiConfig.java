@@ -1,7 +1,6 @@
-package org.openoa.engine.conf;
+package org.openoa.engine.conf.engineconfig;
 
 import org.activiti.spring.SpringProcessEngineConfiguration;
-import org.openoa.engine.conf.mvc.ProcessEngineConfigurationConfigurer;
 import org.springframework.context.annotation.Configuration;
 
 

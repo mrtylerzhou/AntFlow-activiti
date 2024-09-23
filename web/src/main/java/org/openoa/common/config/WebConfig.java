@@ -28,6 +28,15 @@ public class WebConfig {
 
 
     }
+    @Bean
+    public FilterRegistrationBean<HttpLogFilter> httpLogFilter() {
+        FilterRegistrationBean<HttpLogFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new HttpLogFilter());
+        registration.addUrlPatterns("/*");
+        registration.setName("httpLogFilter");
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registration;
+    }
 
 
 }

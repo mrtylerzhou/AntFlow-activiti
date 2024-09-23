@@ -26,6 +26,7 @@
             </if>
         </where>
     </sql>
+    <!--this sql must be rewritten-->
     <sql id="queryUserByIds">
         select id,user_name as name from t_user
         <where>

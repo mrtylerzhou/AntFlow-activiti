@@ -1,6 +1,5 @@
 package org.openoa.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.service.UserServiceImpl;
@@ -48,7 +47,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
     private UserServiceImpl userService;
 
 
-    @DS(DB_NAME_2)
+    //@DS(DB_NAME_2)
     @Transactional
     public void  opTranstionally(){
         Person person=new Person();

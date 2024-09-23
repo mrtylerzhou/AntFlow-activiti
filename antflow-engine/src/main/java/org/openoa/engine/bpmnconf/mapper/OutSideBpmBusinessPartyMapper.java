@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
@@ -13,7 +14,7 @@ import java.util.List;
  * third party process service,business party mapper
  * @since 0.5
  */
-@Repository
+@Mapper
 public interface OutSideBpmBusinessPartyMapper extends BaseMapper<OutSideBpmBusinessParty> {
 
     /**
