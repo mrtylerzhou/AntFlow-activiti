@@ -16,7 +16,7 @@
     </parent>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>
