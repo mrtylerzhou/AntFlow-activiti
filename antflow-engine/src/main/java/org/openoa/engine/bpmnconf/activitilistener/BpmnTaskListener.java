@@ -133,12 +133,9 @@ public class BpmnTaskListener implements TaskListener {
         }
 
 
-        boolean isOutside = false;
+        boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);
 
 
-        if (bpmnConf.getIsOutSideProcess() == 1) {
-            isOutside = true;
-        }
         if (bpmVariableMessageListenerService.listenerCheckIsSendByTemplate(bpmVariableMessageVo)) {
             //set is outside
             bpmVariableMessageVo.setIsOutside(isOutside);

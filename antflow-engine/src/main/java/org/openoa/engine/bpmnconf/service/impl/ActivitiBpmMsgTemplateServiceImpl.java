@@ -539,8 +539,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         log.info("content数据转换,activitiBpmMsgVo:{},msgNoticeType:{}", JSON.toJSONString(activitiBpmMsgVo), msgNoticeType);
         BpmnConfNoticeTemplateDetail bpmnConfNoticeTemplateDetail = null;
         if (!StringUtils.isBlank(activitiBpmMsgVo.getBpmnCode())) {
-            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(),
-                    msgNoticeType);
+            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(), msgNoticeType);
         }
         String content = null;
         if (bpmnConfNoticeTemplateDetail == null) {

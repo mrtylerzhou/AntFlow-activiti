@@ -41,9 +41,9 @@ import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,8 +56,6 @@ import java.util.stream.Collectors;
 @Service
 public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessageMapper, BpmVariableMessage> {
 
-    @Autowired
-    private BpmVariableMessageMapper mapper;
 
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
@@ -203,13 +201,13 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
             return false;
         }
 
-        if (Objects.equals(vo.getMessageType(), 1)) {//out of node messages
-            return this.mapper.selectCount(new QueryWrapper<BpmVariableMessage>()
+        if (vo.getMessageType()!=null&& vo.getMessageType()== 1) {//out of node messages
+            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", bpmVariable.getId())
                     .eq("message_type", 1)
                     .eq("event_type", vo.getEventType())) > 0;
-        } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
-            return this.mapper.selectCount(new QueryWrapper<BpmVariableMessage>()
+        } else if (vo.getMessageType()!=null&&vo.getMessageType()==2) {//in node messages
+            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", bpmVariable.getId())
                     .eq("element_id", vo.getElementId())
                     .eq("message_type", 2)
@@ -264,7 +262,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //vo.setProcessType(SysDicUtils.getDicNameByCode("DIC_LCLB", bpmnConf.getBpmnType()));
 
         //set process start variables
-        if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
+        if (!StringUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
             BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
             vo.setBpmnStartConditions(bpmnStartConditionsVo);
             //set approval employee id
@@ -307,7 +305,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .filter(o -> !ObjectUtils.isEmpty(o.getAssignee()))
+                .filter(o -> !StringUtils.isEmpty(o.getAssignee()))
                 .map(HistoricTaskInstance::getAssignee)
                 .collect(Collectors.toList()));
 
@@ -315,7 +313,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //if the current node approver is empty, then get it from login user info
         if (StringUtils.isEmpty(vo.getAssignee())) {
 
-            vo.setAssignee( SecurityUtils.getLogInEmpIdSafe().toString());
+            vo.setAssignee(SecurityUtils.getLogInEmpIdSafe());
         }
 
 
@@ -327,8 +325,8 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
                 //if node is empty then get from task's definition
                 if (ObjectUtils.isEmpty(vo.getElementId())) {
-                    String nodeId = tasks.stream().map(Task::getTaskDefinitionKey).distinct().findFirst().orElse(StringUtils.EMPTY);
-                    vo.setElementId(nodeId);
+                    String elementId = tasks.stream().map(Task::getTaskDefinitionKey).distinct().findFirst().orElse(StringUtils.EMPTY);
+                    vo.setElementId(elementId);
                 }
 
                 //if task id is empty then get it from current tasks
@@ -338,7 +336,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 }
 
                 //if link type is empty then set it default to 1
-                if (ObjectUtils.isEmpty(vo.getType())) {
+                if (vo.getType()==null) {
                     vo.setType(1);
                 }
 
@@ -446,7 +444,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //if next node's approvers is empty then query current tasks instead
-        if (ObjectUtils.isEmpty(vo.getNextNodeApproveds())) {
+        if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
             if (!ObjectUtils.isEmpty(tasks)) {
                 vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).collect(Collectors.toList()));
@@ -454,22 +452,22 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         }
 
         if (Objects.equals(vo.getMessageType(), 1)) {//out of node messages
-            List<BpmVariableMessage> bpmVariableMessages = this.mapper.selectList(new QueryWrapper<BpmVariableMessage>()
+            List<BpmVariableMessage> bpmVariableMessages = this.getBaseMapper().selectList(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", vo.getVariableId())
                     .eq("message_type", 1)
                     .eq("event_type", vo.getEventType()));
-            if (!ObjectUtils.isEmpty(bpmVariableMessages)) {
+            if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
                 for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
                     doSendTemplateMessages(bpmVariableMessage, vo);
                 }
             }
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
-            List<BpmVariableMessage> bpmVariableMessages = this.mapper.selectList(new QueryWrapper<BpmVariableMessage>()
+            List<BpmVariableMessage> bpmVariableMessages = this.getBaseMapper().selectList(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", vo.getVariableId())
                     .eq("element_id", vo.getElementId())
                     .eq("message_type", 2)
                     .eq("event_type", vo.getEventType()));
-            if (!ObjectUtils.isEmpty(bpmVariableMessages)) {
+            if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
                 for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
                     doSendTemplateMessages(bpmVariableMessage, vo);
                 }
@@ -491,15 +489,15 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //query sender's info
-        List<String> sendUsers = getSendUsers(vo, bpmnTemplateVo);
+        List<String> sendToUsers = getSendToUsers(vo, bpmnTemplateVo);
 
 
         //if senders is empty then return
-        if (ObjectUtils.isEmpty(sendUsers)) {
+        if (ObjectUtils.isEmpty(sendToUsers)) {
             return;
         }
 
-        List<Employee> employeeDetailByIds = employeeService.getEmployeeDetailByIds(sendUsers.stream().distinct().collect(Collectors.toList()));
+        List<Employee> employeeDetailByIds = employeeService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
         if(ObjectUtils.isEmpty(employeeDetailByIds)){
             return;
         }
@@ -701,7 +699,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @param bpmnTemplateVo
      * @return
      */
-    private List<String> getSendUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
+    private List<String> getSendToUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
         List<String> sendUsers = Lists.newArrayList();
         //specified assignees
         if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())) {
@@ -709,16 +707,16 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         }
 
         //specified roles
-        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
+        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
             List<User> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
-            if (!ObjectUtils.isEmpty(users)) {
+            if (!CollectionUtils.isEmpty(users)) {
                 sendUsers.addAll(users.stream().map(u->u.getId().toString()).collect(Collectors.toList()));
             }
         }
 
         //todo functions
         //node sign up users
-        if (!ObjectUtils.isEmpty(vo.getSignUpUsers())) {
+        if (!CollectionUtils.isEmpty(vo.getSignUpUsers())) {
             sendUsers.addAll(vo.getSignUpUsers());
         }
 
@@ -726,16 +724,16 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         List<String> forwardUsers = null;
         List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(new QueryWrapper<BpmProcessForward>()
                 .eq("processInstance_Id", vo.getProcessInsId()));
-        if (!ObjectUtils.isEmpty(vo.getForwardUsers()) && !ObjectUtils.isEmpty(bpmProcessForwards)) {
+        if (!CollectionUtils.isEmpty(vo.getForwardUsers()) && !CollectionUtils.isEmpty(bpmProcessForwards)) {
             forwardUsers = Lists.newArrayList();
             forwardUsers.addAll(vo.getForwardUsers());
             forwardUsers.addAll(bpmProcessForwards.stream().map(o -> String.valueOf(o.getForwardUserId())).distinct().collect(Collectors.toList()));
             forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
-        } else if (ObjectUtils.isEmpty(vo.getForwardUsers()) && !ObjectUtils.isEmpty(bpmProcessForwards)) {
+        } else if (CollectionUtils.isEmpty(vo.getForwardUsers()) && !CollectionUtils.isEmpty(bpmProcessForwards)) {
             forwardUsers = Lists.newArrayList();
             forwardUsers.addAll(bpmProcessForwards.stream().map(o -> String.valueOf(o.getForwardUserId())).distinct().collect(Collectors.toList()));
             forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
-        } else if (!ObjectUtils.isEmpty(vo.getForwardUsers()) && ObjectUtils.isEmpty(bpmProcessForwards)) {
+        } else if (!CollectionUtils.isEmpty(vo.getForwardUsers()) && CollectionUtils.isEmpty(bpmProcessForwards)) {
             forwardUsers = Lists.newArrayList();
             forwardUsers.addAll(vo.getForwardUsers());
             forwardUsers = forwardUsers.stream().distinct().collect(Collectors.toList());
@@ -743,13 +741,13 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         vo.setForwardUsers(forwardUsers);
 
         //inform users
-        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
+        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
             for (String informId : bpmnTemplateVo.getInformIdList()) {
                 InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
                 //todo check whether the result is valid
                 Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
                 if (filObject instanceof List) {
-                    sendUsers.addAll(AntCollectionUtil.StringToLongList((List) filObject));
+                    sendUsers.addAll((List) filObject);
                 } else if (filObject!=null) {
                     sendUsers.add(filObject.toString());
                 }
