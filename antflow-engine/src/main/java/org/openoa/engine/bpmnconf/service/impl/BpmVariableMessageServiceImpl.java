@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jodd.bean.BeanUtil;
@@ -18,6 +19,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.User;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.RoleServiceImpl;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.DateUtil;
@@ -247,7 +249,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //get bpmn conf
         BpmnConf bpmnConf = bpmnConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", bpmVariable.getBpmnCode()));
-
+        if(bpmnConf==null){
+            throw new JiMuBizException(Strings.lenientFormat("can not get bpmnConf by bpmncode:%s",bpmVariable.getBpmnCode()));
+        }
         //set bpmn code
         vo.setBpmnCode(bpmnConf.getBpmnCode());
 
@@ -274,7 +278,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         BpmBusinessProcess businessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", vo.getProcessNumber()));
 
         if (ObjectUtils.isEmpty(businessProcess)) {
-            return null;
+            throw new JiMuBizException(Strings.lenientFormat("can not get BpmBusinessProcess by process Numbeer:%s",vo.getProcessNumber()));
         }
 
 
