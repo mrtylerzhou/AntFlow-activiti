@@ -56,7 +56,7 @@ public class BpmnTemplateVo implements Serializable {
      * specified functions
      */
     private String funcs;
-    private List<Long> funcIdList;
+    private List<String> funcIdList;
     private List<BaseIdTranStruVo> funcList;
     /**
      * template id

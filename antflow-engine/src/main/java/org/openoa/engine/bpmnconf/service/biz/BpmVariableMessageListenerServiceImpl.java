@@ -19,8 +19,7 @@ public class BpmVariableMessageListenerServiceImpl {
      * @return
      */
     public Boolean listenerCheckIsSendByTemplate(BpmVariableMessageVo bpmVariableMessageVo) {
-        Boolean checkResult = bpmVariableMessageService.checkIsSendByTemplate(bpmVariableMessageVo);
-        return checkResult;
+        return bpmVariableMessageService.checkIsSendByTemplate(bpmVariableMessageVo);
     }
 
     /**
