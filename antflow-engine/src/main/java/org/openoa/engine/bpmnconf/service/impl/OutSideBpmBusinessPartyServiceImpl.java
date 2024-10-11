@@ -248,6 +248,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         } else {
             outSideBpmBusinessParty = new OutSideBpmBusinessParty();
             BeanUtils.copyProperties(vo, outSideBpmBusinessParty);
+            outSideBpmBusinessParty.setIsDel(0);
             outSideBpmBusinessParty.setCreateTime(new Date());
             outSideBpmBusinessParty.setCreateUser(SecurityUtils.getLogInEmpName());
             outSideBpmBusinessParty.setUpdateTime(new Date());
