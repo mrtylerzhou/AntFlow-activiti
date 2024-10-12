@@ -53,6 +53,7 @@
         a.update_time AS updateTime,
         a.remark AS remark
         FROM t_bpmn_conf a
+        left join t_out_side_bpm_business_party b on a.business_party_id = b.id
         WHERE a.is_del = 0
         <if test="bpmnConfVo.isOutSideProcess!=null">
             AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
@@ -66,6 +67,9 @@
         </if>
         <if test="bpmnConfVo.bpmnName != null and bpmnConfVo.bpmnName != ''">
             AND a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.bpmnName},'%')
+        </if>
+        <if test="bpmnConfVo.businessPartyMark != null and bpmnConfVo.businessPartyMark!=''">
+            AND b.business_party_mark=#{bpmnConfVo.businessPartyMark}
         </if>
         ORDER BY a.create_time DESC
     </select>
