@@ -762,6 +762,8 @@ CREATE TABLE if not exists `bpm_business_process`
     `data_source_id`   bigint(10)   DEFAULT NULL COMMENT 'data source id',
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
+     user_name           varchar(100)           null,
+     is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes'
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
     KEY `process_entry_id` (`ENTRY_ID`) USING BTREE,
