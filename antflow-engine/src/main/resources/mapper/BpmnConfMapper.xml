@@ -88,6 +88,7 @@
         left join t_out_side_bpm_business_party b on a.business_party_id = b.id
         WHERE a.is_del = 0
         and a.effective_status = 1
+        and a.is_out_side_process = 1
         and b.business_party_mark=#{bpmnConfVo.businessPartyMark}
         ORDER BY a.create_time DESC
     </select>
