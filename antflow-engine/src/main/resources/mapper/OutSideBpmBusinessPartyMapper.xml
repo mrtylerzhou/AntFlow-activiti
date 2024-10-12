@@ -27,12 +27,12 @@
         a.business_party_mark AS businessPartyMark,
         a.name AS `name`,
         a.type AS type,
-        a.remark AS remark
+        case a.type when 1 THEN '嵌入式' else '调入式' end AS typeName,
+        a.is_del AS isDel,
+        a.remark AS remark,
+        a.create_time AS createTime
         FROM t_out_side_bpm_business_party a
         WHERE a.is_del = 0
-        <if test="search != null and search != ''">
-            AND a.name LIKE CONCAT('%',#{search},'%')
-        </if>
     </select>
 
     <select id="getBusinessPartyMarkById" resultType="java.lang.String">

@@ -8,6 +8,7 @@ import jodd.bean.BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
+import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
@@ -18,6 +19,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
+import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.BeanUtils;
@@ -25,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -61,6 +60,14 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
 
+    @Autowired
+    private BpmnNodeServiceImpl bpmnNodeService;
+
+    @Autowired
+    private BpmnNodeRoleConfServiceImpl bpmnNodeRoleConfServiceImpl;
+
+    @Autowired
+    private BpmnNodeRoleOutsideEmpConfServiceImpl bpmnNodeRoleOutsideEmpConfService;
     /**
      * querying business's info by page
      *
@@ -241,6 +248,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         } else {
             outSideBpmBusinessParty = new OutSideBpmBusinessParty();
             BeanUtils.copyProperties(vo, outSideBpmBusinessParty);
+            outSideBpmBusinessParty.setIsDel(0);
             outSideBpmBusinessParty.setCreateTime(new Date());
             outSideBpmBusinessParty.setCreateUser(SecurityUtils.getLogInEmpName());
             outSideBpmBusinessParty.setUpdateTime(new Date());
@@ -368,5 +376,65 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectThirdBpmnConfList(BpmnConfVo.builder()
                 .businessPartyMark(businessPartyMark).build());
         return bpmnConfVos;
+    }
+
+
+    public void syncRolePersonnel(String businessPartyMark, NodeRolePersonVo userList) {
+        List<BpmnConfVo> bpmConf = getBpmConf(businessPartyMark);
+        if (StringUtils.isBlank(userList.getRoleId())) {
+            throw new JiMuBizException("500", "角色id不能为空");
+        }
+
+        List<BaseIdTranStruVo> users = userList.getUserList();
+        if (CollectionUtils.isEmpty(users)) {
+            throw new JiMuBizException("500", "角色人员列表不能为空");
+        }
+
+        for (BpmnConfVo bpmnConfVo : bpmConf) {
+
+            //step 1 get  node by role type
+            List<BpmnNode> bpmnNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery().eq(BpmnNode::getConfId, bpmnConfVo.getId())
+                    .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_ROLE.getCode()));
+            for (BpmnNode bpmnNode : bpmnNodes) {
+
+                //step 2 get role list
+                List<BpmnNodeRoleConf> nodeRoleList = bpmnNodeRoleConfServiceImpl.list(Wrappers.<BpmnNodeRoleConf>lambdaQuery()
+                        .eq(BpmnNodeRoleConf::getBpmnNodeId, bpmnNode.getId()).eq(BpmnNodeRoleConf::getIsDel, 0));
+                for (BpmnNodeRoleConf bpmnNodeRoleConf : nodeRoleList) {
+
+                    //step 3 update role user list
+                    String roleId = bpmnNodeRoleConf.getRoleId();
+                    if (roleId.equals(userList.getRoleId())) {
+                        bpmnNodeRoleOutsideEmpConfService.update(Wrappers.<BpmnNodeRoleOutsideEmpConf>lambdaUpdate().set(BpmnNodeRoleOutsideEmpConf::getIsDel, 1)
+                                .set(BpmnNodeRoleOutsideEmpConf::getUpdateTime, new Date())
+                                .set(BpmnNodeRoleOutsideEmpConf::getUpdateUser, SecurityUtils.getLogInEmpIdSafe())
+                                .eq(BpmnNodeRoleOutsideEmpConf::getNodeId, bpmnNode.getId()));
+
+                        // step 4 add  role user list
+                        List<BpmnNodeRoleOutsideEmpConf> newPersonnelList = new ArrayList<>();
+                        for (BaseIdTranStruVo user : users) {
+                            BpmnNodeRoleOutsideEmpConf outsideEmpConf = getRoleOutsideEmpConf(bpmnNode, user);
+                            newPersonnelList.add(outsideEmpConf);
+                        }
+                        bpmnNodeRoleOutsideEmpConfService.saveBatch(newPersonnelList);
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    private  BpmnNodeRoleOutsideEmpConf getRoleOutsideEmpConf(BpmnNode bpmnNode, BaseIdTranStruVo user) {
+        BpmnNodeRoleOutsideEmpConf outsideEmpConf = new BpmnNodeRoleOutsideEmpConf();
+        outsideEmpConf.setNodeId(bpmnNode.getId());
+        outsideEmpConf.setEmplId(user.getId());
+        outsideEmpConf.setEmplName(user.getName());
+        outsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
+        outsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
+        outsideEmpConf.setCreateTime(new Date());
+        outsideEmpConf.setUpdateTime(new Date());
+        outsideEmpConf.setIsDel(0);
+        return outsideEmpConf;
     }
 }
