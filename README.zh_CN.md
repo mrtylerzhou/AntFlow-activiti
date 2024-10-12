@@ -66,13 +66,6 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 5. [前端设计器地址](https://gitee.com/ldhnet/AntFlow-Vue3)
 6. 前端ruoyi演示项目 [http://117.72.70.166/admin/](http://117.72.70.166/admin/)
 
-## 好书推荐
-大家在使用本项目时，推荐结合贺波老师的书
-[《深入Flowable流程引擎：核心原理与高阶实战》](https://item.jd.com/14804836.html)学习。这本书得到了Flowable创始人Tijs Rademakers亲笔作序推荐，对系统学习和深入掌握Flowable的用法非常有帮助。
-
-> flowable源于activiti,很多核心表,核心api和设计模式都是一样的.读flowable的书同样也可以用在activiti上
-
-![图书image](./doc/images/flowablebook.jpg)
 ##  捐赠支持
 😀 你可以请作者喝杯咖啡表示鼓励
 <table>
@@ -81,3 +74,10 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
         <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/alipay.jpg"/></td>
     </tr>  
 </table>
+## 好书推荐
+大家在使用本项目时，推荐结合贺波老师的书
+[《深入Flowable流程引擎：核心原理与高阶实战》](https://item.jd.com/14804836.html)学习。这本书得到了Flowable创始人Tijs Rademakers亲笔作序推荐，对系统学习和深入掌握Flowable的用法非常有帮助。
+
+> flowable源于activiti,很多核心表,核心api和设计模式都是一样的.读flowable的书同样也可以用在activiti上
+
+![图书image](./doc/images/flowablebook.jpg)
