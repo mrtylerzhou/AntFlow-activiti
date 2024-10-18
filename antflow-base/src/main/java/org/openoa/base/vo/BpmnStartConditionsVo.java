@@ -76,6 +76,10 @@ public class BpmnStartConditionsVo {
      */
     private String totalMoney;
     /**
+     * out total money
+     */
+    private String outTotalMoney;
+    /**
      * total Money Operator
      */
     private Integer totalMoneyOperator;
@@ -94,7 +98,15 @@ public class BpmnStartConditionsVo {
     private Integer accountType;
     private BaseIdTranStruVo jobLevelVo;
 
+    /**
+     * 请假表单 业务判断 需要的字段
+     */
     private Double leaveHour;
+    /**
+     * 采购业务表单 相关判断 需要的字段
+     * */
+    private Integer purchaseType;
+    private Double planProcurementTotalMoney;
 
     /**
      * forwarded emp list
