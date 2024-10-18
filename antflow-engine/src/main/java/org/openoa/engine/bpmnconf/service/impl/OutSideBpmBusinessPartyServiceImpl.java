@@ -19,6 +19,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
+import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
@@ -366,6 +367,24 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         return id;
     }
 
+    /**
+     * get business Party applications Page List
+     * @param page
+     * @param vo
+     * @return
+     */
+    public ResultAndPage<BpmProcessAppApplicationVo> applicationsPageList(PageDto page, BpmProcessAppApplicationVo vo) {
+       return   bpmProcessAppApplicationService.applicationsNewList(page,vo);
+    }
+
+    /**
+     * get business Party applications detail
+     * @param id
+     * @return
+     */
+    public BpmProcessAppApplication getApplicationDetailById(Integer id) {
+        return bpmProcessAppApplicationService.getById(id);
+    }
     /**
      * get bpm conf by active of list
      *

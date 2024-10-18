@@ -292,6 +292,18 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         }*/
         return true;
     }
+    /**
+     *  all list on the pc
+     */
+    public ResultAndPage<BpmProcessAppApplicationVo> applicationsNewList(PageDto pageDto, BpmProcessAppApplicationVo vo) {
+        //排序字段链表
+        LinkedHashMap<String, SortTypeEnum> orderFieldMap = new LinkedHashMap<>();
+        orderFieldMap.put("id", SortTypeEnum.DESC);
+        Page<BpmProcessAppApplicationVo> page = PageUtils.getPageByPageDto(pageDto, orderFieldMap);
+        page.setRecords(bpmProcessAppApplicationMapper.newListPage(page, vo));
+        this.getPcProcessData(page);
+        return PageUtils.getResultAndPage(page);
+    }
 
     /**
      *  all list on the pc

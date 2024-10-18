@@ -40,16 +40,35 @@ public class BpmnNodeConditionsConfBaseVo {
     private List<BaseIdTranStruVo> templateMarksList;
 
     private BaseIdTranStruVo jobLevelVo;
+
+    private Double parkArea;
+
+    /**
+     * 三方账号申请 业务流程 判断需要字段
+     */
     private List<Integer> accountType;
     private List<BaseIdTranStruVo> accountTypeList;
-    private String planProcurementTotalMoney;
-    private String procurementType;
-    private Double parkArea;
+
+    /**
+     * 采购申请 业务流程 判断需要字段
+     */
+    private Double planProcurementTotalMoney;
+    private Integer purchaseType;
+
     /**
      * total money
      */
     private String totalMoney;
 
+    /**
+     * out total money
+     */
+    private String outTotalMoney;
+
+
+    /**
+     * 请假表单 业务流程 判断需要字段
+     */
     private Double leaveHour;
 
     /**
