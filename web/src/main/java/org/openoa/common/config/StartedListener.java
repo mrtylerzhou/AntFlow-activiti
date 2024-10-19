@@ -19,10 +19,11 @@ public class StartedListener implements ApplicationListener<ApplicationReadyEven
      */
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+        String contextPath = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty("server.servlet.context-path", "/");
         String serverPort = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty("server.port");
         String serverUrl = String.format("http://%s:%s", "127.0.0.1", serverPort);
         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, "your project server started at: ", serverUrl));
         log.info(AnsiOutput.toString(AnsiColor.BRIGHT_BLUE, "swagger doc url:", serverUrl + "/doc.html"));
-        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, "your project server was started successfully!"));
+        log.info(AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, "your project server was started successfully on port:"+serverPort+" with context path:"+contextPath));
     }
 }
