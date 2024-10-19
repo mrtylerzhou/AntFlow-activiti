@@ -165,7 +165,9 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
     `runinfoid`   varchar(11)      DEFAULT NULL COMMENT 'process instance id',
     `runtaskid`   varchar(64)      DEFAULT NULL COMMENT 'task id',
     `original`    varchar(64)          DEFAULT NULL COMMENT 'original assignee',
+     `original_name`    varchar(255)          DEFAULT NULL COMMENT 'original assignee name',
     `actual`      varchar(64)          DEFAULT NULL COMMENT 'actual assignee',
+     `actual_name`   varchar(100)  null comment 'actual assignee name',
     `type`        int(20)          DEFAULT NULL COMMENT 'type 1: entrust 2:view',
     `is_read`     int(11)          DEFAULT '2' COMMENT 'is read 1:yes,2:no',
     `proc_def_id` varchar(100)     DEFAULT NULL COMMENT 'proces deployment id',
@@ -751,7 +753,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `BUSINESS_ID`      varchar(64) NOT NULL COMMENT 'business id',
     `BUSINESS_NUMBER`  varchar(64)  DEFAULT NULL COMMENT 'process number',
     `ENTRY_ID`         varchar(64)  DEFAULT NULL,
-    `VERSION`          bigint(11)   DEFAULT NULL COMMENT 'version',
+    `VERSION`          varchar(30)   DEFAULT NULL COMMENT 'version',
     `CREATE_TIME`      timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `UPDATE_TIME`      timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     `description`      varchar(100) DEFAULT NULL COMMENT 'title',
@@ -762,7 +764,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `data_source_id`   bigint(10)   DEFAULT NULL COMMENT 'data source id',
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
-     user_name           varchar(100)           null,
+     user_name           varchar(255)           null,
      is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes'
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
@@ -1178,6 +1180,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
      `bpmn_node_id` BIGINT(20) NOT NULL COMMENT 'node id',
      `role_id` varchar(64) NOT NULL COMMENT 'role id',
+     `role_name` varchar(64) NOT NULL COMMENT 'role name'
      `sign_type` INT(11) NOT NULL COMMENT 'sign type 1 all sign,2 or sign',
      `remark` VARCHAR(255) DEFAULT NULL COMMENT 'remark',
      `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
@@ -1320,24 +1323,6 @@ CREATE TABLE `t_biz_leavetime`  (
 
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
-
-ALTER TABLE t_bpmn_node_role_conf ADD COLUMN `role_name` varchar(255) NULL COMMENT 'role name s' AFTER `role_id`;
-
-ALTER TABLE bpm_flowrun_entrust MODIFY  original VARCHAR(64) default null;
-
-ALTER TABLE bpm_flowrun_entrust MODIFY  actual VARCHAR(64) default null;
-
-ALTER TABLE  bpm_business_process  ADD COLUMN user_name VARCHAR(100) DEFAULT NULL;
-
-alter table bpm_flowrun_entrust
-	add original_name varchar(100) null comment 'original assignee name' after original;
-
-alter table bpm_flowrun_entrust
-	add actual_name varchar(100) null comment 'actual assignee name';
-alter table bpm_business_process modify VERSION varchar(30) null comment '版本';
-
-alter table bpm_business_process
-	add is_out_side_process tinyint default 0 null comment '是否是三方接入工作流,0不是,1是';
 
 SET FOREIGN_KEY_CHECKS = 1;
 
