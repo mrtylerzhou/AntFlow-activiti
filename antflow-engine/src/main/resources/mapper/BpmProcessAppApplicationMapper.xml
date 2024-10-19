@@ -74,18 +74,19 @@
         s.route as route,
         s.process_key as processKey,
         s.permissions_code as permissionsCode,
-        s.create_user_id as createUserId
+        s.create_user_id as createUserId,
+        s.create_time as createTime
         from bpm_process_app_application s
         where s.is_del=0
-        <if test="title!=null and title!=''">
-            and s.process_name like CONCAT('%', #{title},'%')
-        </if>
-        <if test="businessCodeList != null and businessCodeList.size() > 0">
-            and s.business_code in
-            <foreach collection="businessCodeList" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
+<!--        <if test="title!=null and title!=''">-->
+<!--            and s.process_name like CONCAT('%', #{title},'%')-->
+<!--        </if>-->
+<!--        <if test="businessCodeList != null and businessCodeList.size() > 0">-->
+<!--            and s.business_code in-->
+<!--            <foreach collection="businessCodeList" item="item" open="(" separator="," close=")">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
     </select>
 
     <!--list processICon by category-->

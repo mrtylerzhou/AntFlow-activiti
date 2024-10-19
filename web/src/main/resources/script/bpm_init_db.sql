@@ -1321,6 +1321,41 @@ CREATE TABLE `t_biz_leavetime`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for t_biz_purchase
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_purchase`;
+CREATE TABLE `t_biz_purchase`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `purchase_user_id` int(11) NOT NULL,
+  `purchase_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `purchase_type` int(11) NOT NULL,
+  `purchase_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `plan_procurement_total_money` double NOT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_biz_ucar_refuel
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_ucar_refuel`;
+CREATE TABLE `t_biz_ucar_refuel` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+`license_plate_number` varchar(32) DEFAULT NULL COMMENT '车牌号',
+`refuel_time` datetime DEFAULT NULL COMMENT '加油日期',
+`remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+`create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
+`create_time` datetime DEFAULT NULL COMMENT '创建日期',
+`update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
+`update_time` datetime DEFAULT NULL COMMENT '更新日期',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
+
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
