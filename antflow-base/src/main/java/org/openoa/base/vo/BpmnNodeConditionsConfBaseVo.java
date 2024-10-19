@@ -53,7 +53,8 @@ public class BpmnNodeConditionsConfBaseVo {
      * 采购申请 业务流程 判断需要字段
      */
     private Double planProcurementTotalMoney;
-    private Integer purchaseType;
+    private List<Integer> purchaseType;
+    private List<BaseIdTranStruVo> purchaseTypeList;
 
     /**
      * total money
