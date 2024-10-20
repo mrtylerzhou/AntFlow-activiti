@@ -11,6 +11,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessForwardMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -136,7 +137,7 @@ public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardM
      * @param forwardUserIds
      */
     public void addProcessForwardBatch(String procInstId,String processNumber,List<String> forwardUserIds){
-        if(ObjectUtils.isEmpty(forwardUserIds)){
+        if(CollectionUtils.isEmpty(forwardUserIds)){
             return;
         }
         if(Strings.isNullOrEmpty(procInstId)||Strings.isNullOrEmpty(processNumber)){
