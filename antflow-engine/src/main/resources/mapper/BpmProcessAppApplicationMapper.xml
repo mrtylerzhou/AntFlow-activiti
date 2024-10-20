@@ -61,6 +61,7 @@
         select
         s.id as id,
         p.name as businessName,
+        p.id as businessPartyId,
         s.process_name as title,
         s.business_code as businessCode,
         s.apply_type as applyType,
