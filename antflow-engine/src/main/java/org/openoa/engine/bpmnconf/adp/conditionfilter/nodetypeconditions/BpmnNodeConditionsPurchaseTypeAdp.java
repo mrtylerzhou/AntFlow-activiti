@@ -26,11 +26,11 @@ public class BpmnNodeConditionsPurchaseTypeAdp extends BpmnNodeConditionsAdaptor
             vo.setId(String.valueOf(i));
             String name= "";
             switch (i){
-                case 0:name="台式机";
+                case 1:name="台式机";
                 break;
-                case 1:name="笔记本";
+                case 2:name="笔记本";
                 break;
-                case 2:name="一体机";
+                case 3:name="一体机";
             }
             vo.setName(name);
             vos.add(vo);

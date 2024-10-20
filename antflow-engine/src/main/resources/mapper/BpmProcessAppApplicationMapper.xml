@@ -60,6 +60,7 @@
     <select id="newListPage" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
         select
         s.id as id,
+        p.name as businessName,
         s.process_name as title,
         s.business_code as businessCode,
         s.apply_type as applyType,
@@ -77,6 +78,7 @@
         s.create_user_id as createUserId,
         s.create_time as createTime
         from bpm_process_app_application s
+        left join t_out_side_bpm_business_party p on s.business_code = p.business_party_mark
         where s.is_del=0
 <!--        <if test="title!=null and title!=''">-->
 <!--            and s.process_name like CONCAT('%', #{title},'%')-->
@@ -87,6 +89,7 @@
 <!--                #{item}-->
 <!--            </foreach>-->
 <!--        </if>-->
+        order by s.create_time desc
     </select>
 
     <!--list processICon by category-->
