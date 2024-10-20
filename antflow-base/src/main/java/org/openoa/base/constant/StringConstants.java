@@ -1,5 +1,7 @@
 package org.openoa.base.constant;
 
+import org.activiti.engine.impl.pvm.runtime.StartingExecution;
+
 /**
  * @Classname StringConstant
  * @Description TODO
@@ -24,4 +26,5 @@ public class StringConstants {
     public static final String ADAPTOR_FACTORY_BEANNAME="jimuAdaptorFactory";
 
     public static final String TASK_ASSIGNEE_NAME="assigneeName";
+    public static final String PROJECT_NAME="antFlow";
 }

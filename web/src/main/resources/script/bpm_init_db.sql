@@ -686,6 +686,26 @@ CREATE TABLE if not exists `t_user_email_send`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='user email send';
 
+create table if not exists t_method_replay
+(
+    id                   int auto_increment
+        primary key,
+    PROJECT_NAME         varchar(100) null comment 'project name',
+    CLASS_NAME           varchar(255) null,
+    METHOD_NAME          varchar(255) null,
+    PARAM_TYPE           varchar(255) null,
+    ARGS                 text         null,
+    NOW_TIME             timestamp    null,
+    ERROR_MSG            text         null,
+    ALREADY_REPLAY_TIMES int          null,
+    MAX_REPLAY_TIMES     int          null
+)ENGINE = InnoDB
+   DEFAULT CHARSET = utf8mb4 comment 'method replay records';
+
+create index t_method_replay_NOW_TIME_index
+    on t_method_replay (NOW_TIME);
+
+
 CREATE TABLE if not exists `t_user_entrust`
 (
     `id`            int(11)      NOT NULL AUTO_INCREMENT,
