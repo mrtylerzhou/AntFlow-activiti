@@ -178,7 +178,10 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
 
             for (TaskMgmtVO record : page.getRecords()) {
-
+                BpmnConf bpmnConf = bpmnConfMap.get(record.getProcessKey());
+                if(bpmnConf!=null){
+                    record.setIsOutSideProcess(Objects.equals(1,bpmnConf.getIsOutSideProcess()));
+                }
                 Integer applyUserId = record.getApplyUserId();
                 //todo get the actual user info from db
                 record.setActualName(SecurityUtils.getLogInEmpName());

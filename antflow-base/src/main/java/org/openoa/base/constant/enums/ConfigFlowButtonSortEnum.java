@@ -12,20 +12,20 @@ import lombok.Getter;
  * @Version 1.0
  */
 public enum ConfigFlowButtonSortEnum {
-    SUBMIT(1, "提交", 1), // 1提交
+    SUBMIT(1, "提交", 1),
     AGAIN_SUBMIT(2, "重新提交", 2), // 2重新提交
-    AGREED(3, "同意", 10), // 3同意
-    NO_AGREED(4, "不同意", 9), // 4不同意
-    BACK_NODE_EDIT(6, "打回上节点修改", 7), // 6打回上节点修改
-    ABANDONED(7, "作废", 11), // 7作废
-    PRINT(8, "打印", 13), // 8打印
-    UNDERTAKE(10, "承办", 3), // 10 承办
-    CHANGE_TYPE(11, "变更处理人", 4), // 11 变更处理人
-    END_TYPE(12, "终止", 5), // 12 终止
-    ADD_APPROVAL_PEOPLE(13, "添加审批人", 6),// 13 添加审批人
-    FORWARDING(15, "转发", 12), // 9转发
-    BACK_EDIT(18, "打回修改", 8), // 5打回修改
-    BUTTON_TYPE_JP(19, "加批", 19), // 5打回修改
+    AGREED(3, "同意", 10),
+    NO_AGREED(4, "不同意", 9),
+    BACK_NODE_EDIT(6, "打回上节点修改", 7),
+    ABANDONED(7, "作废", 11),
+    PRINT(8, "打印", 13),
+    UNDERTAKE(10, "承办", 3),
+    CHANGE_TYPE(11, "变更处理人", 4),
+    END_TYPE(12, "终止", 5),
+    ADD_APPROVAL_PEOPLE(13, "添加审批人", 6),
+    FORWARDING(15, "转发", 12),
+    BACK_EDIT(18, "打回修改", 8),
+    BUTTON_TYPE_JP(19, "加批", 19),
     SCAN_HELP(20, "扫码帮助", 20),
     ZB(21, "转办", 21),
             ;
