@@ -96,14 +96,13 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
                 new QueryWrapper<BpmBusinessProcess>()
                         .eq("ENTRY_ID", bpmnStartConditions.getEntryId()));
-        if (!ObjectUtils.isEmpty(bpmBusinessProcess) && !ObjectUtils.isEmpty(bpmBusinessProcess.getId())) {
+        if (!ObjectUtils.isEmpty(bpmBusinessProcess) && bpmBusinessProcess.getId()!=null) {
             bpmBusinessProcessService.updateById(BpmBusinessProcess
                     .builder()
                     .id(bpmBusinessProcess.getId())
                     .procInstId(processInstance.getId())
                     .build());
-        }
-        if (!org.springframework.util.ObjectUtils.isEmpty(bpmBusinessProcess) && !org.springframework.util.ObjectUtils.isEmpty(bpmBusinessProcess.getId())) {
+
             String procInstId=processInstance.getId();
             String processNumber=bpmBusinessProcess.getBusinessNumber();
             List<String> empToForwardList = bpmnStartConditions.getEmpToForwardList();
@@ -114,6 +113,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
                     .build());
             processForwardService.addProcessForwardBatch(procInstId,processNumber,empToForwardList);
         }
+
 
         //get the first task and complete it
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
