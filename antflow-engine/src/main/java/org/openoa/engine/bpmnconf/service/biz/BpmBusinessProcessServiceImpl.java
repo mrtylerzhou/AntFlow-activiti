@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProcessMapper, BpmBusinessProcess> {
+public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProcessMapper, BpmBusinessProcess> implements BpmBusinessProcessService {
 
 
     @Autowired
