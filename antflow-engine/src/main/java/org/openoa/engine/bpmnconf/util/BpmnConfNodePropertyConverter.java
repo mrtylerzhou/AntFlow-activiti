@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.base.Joiner;
+import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.engine.bpmnconf.constant.JimContants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
@@ -51,7 +52,7 @@ public class BpmnConfNodePropertyConverter {
             conditionTypes.add(Integer.parseInt(columnId));
             String fieldName = enumByCode.getFieldName();
             String columnDbname = newModel.getColumnDbname();
-            if(!fieldName.equals(columnDbname)){
+            if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
                 throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
             }
             Integer fieldType = enumByCode.getFieldType();
