@@ -10,12 +10,15 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.MethodReplayEntity;
 import org.openoa.base.interf.MethodReplay;
 import org.openoa.base.mapper.MethodReplayMapper;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 
@@ -41,7 +44,12 @@ public class ExceptionLoggingAspect {
 
                // 获取类全路径
                String className = joinPoint.getTarget().getClass().getName();
-               if(ClassUtils.isCglibProxy(joinPoint.getTarget())){
+               if(Proxy.isProxyClass(joinPoint.getTarget().getClass())){
+                   Class<?>[] classes = AopProxyUtils.proxiedUserInterfaces(joinPoint.getTarget());
+                   if(classes.length>0){
+                       className=classes[0].getName();
+                   }
+               }else if(AopUtils.isCglibProxy(joinPoint.getTarget())){
                    className=ClassUtils.getUserClass(joinPoint.getTarget()).getName();
                }
                // 获取方法名
