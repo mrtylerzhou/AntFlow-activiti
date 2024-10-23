@@ -49,15 +49,13 @@ public class FormFactory implements ApplicationContextAware {
      * @return
      */
     public BusinessDataVo dataFormConversion(String params,String formCode) {
-
+        BusinessDataVo vo = JSON.parseObject(params, BusinessDataVo.class);
         if(formCode==null){
-            BusinessDataVo vo = JSON.parseObject(params, BusinessDataVo.class);
             formCode=vo.getFormCode();
-            if(vo.getIsOutSideAccessProc()){
-                return vo;
-            }
         }
-
+        if(vo.getIsOutSideAccessProc()){
+            return vo;
+        }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
             throw new JiMuBizException("can not get the processing bean by form code:{}!"+formCode);

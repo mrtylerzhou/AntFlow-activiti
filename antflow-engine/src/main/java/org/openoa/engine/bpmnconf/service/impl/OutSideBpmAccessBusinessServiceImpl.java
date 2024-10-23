@@ -80,7 +80,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
         if (outSideBpmAccessBusiness!=null) {
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
-            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.updateById(outSideBpmAccessBusiness);
         } else {
@@ -107,9 +107,9 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             //set business party's id
             outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
-            outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setCreateTime(new Date());
-            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.save(outSideBpmAccessBusiness);
         }

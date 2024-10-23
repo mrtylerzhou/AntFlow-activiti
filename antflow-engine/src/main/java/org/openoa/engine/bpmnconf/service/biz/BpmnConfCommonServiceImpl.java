@@ -370,6 +370,7 @@ public class BpmnConfCommonServiceImpl {
             bpmnStartConditionsVo.setEmbedNodes(dataVo.getEmbedNodes());
             //set flag to indicate it is a outside process
             bpmnStartConditionsVo.setIsOutSideAccessProc(true);
+            bpmnStartConditionsVo.setStartUserId(dataVo.getStartUserId());
         }else{
             //call business logic to set start up preview conditions
             bpmnStartConditionsVo = formFactory.getFormAdaptor(vo).previewSetCondition(vo);
