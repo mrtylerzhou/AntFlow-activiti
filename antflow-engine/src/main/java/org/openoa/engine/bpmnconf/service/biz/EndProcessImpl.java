@@ -1,14 +1,17 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.engine.bpmnconf.service.biz.callback.BusinessCallBackFactory;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
 
@@ -18,15 +21,15 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
+import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_END_CALL_BACK;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_AGREE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.CRMCEL_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
@@ -34,6 +37,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 /**
  * end/abort/disagree a process
  */
+@Slf4j
 @Component
 public class EndProcessImpl implements ProcessOperationAdaptor {
     @Autowired
@@ -50,11 +54,27 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
     private ProcessBusinessContans businessContans;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
 
+        String verifyUserName = StringUtils.EMPTY;
+
+        String verifyUserId = StringUtils.EMPTY;
+
+        if (vo.getIsOutSideAccessProc()) {
+            Map<String, Object> objectMap = vo.getObjectMap();
+            if (!CollectionUtils.isEmpty(objectMap)) {
+                verifyUserName = Optional.ofNullable(objectMap.get("employeeName")).map(String::valueOf).orElse(StringUtils.EMPTY);
+                verifyUserId = Optional.ofNullable(objectMap.get("employeeId")).map(Object::toString).orElse("");
+            }
+        } else {
+                verifyUserName =SecurityUtils.getLogInEmpName();
+                verifyUserId = SecurityUtils.getLogInEmpIdStr();
+        }
         //get the permission right
         List<HistoricProcessInstance> hisList = Optional.of(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(bpmBusinessProcess.getEntryId()).list()).orElse(Arrays.asList());
         if (ObjectUtils.isEmpty(hisList)) {
@@ -80,8 +100,8 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         //save verify info
         verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
                 .businessId(bpmBusinessProcess.getBusinessId())
-                .verifyUserName(SecurityUtils.getLogInEmpName())
-                .verifyUserId(SecurityUtils.getLogInEmpIdStr())
+                .verifyUserId(verifyUserId)
+                .verifyUserName(verifyUserName)
                 .verifyStatus(processState.equals(END_STATE.getCode()) ? ProcessSubmitStateEnum.END_AGRESS_TYPE.getCode() : processState)
                 .verifyDate(new Date())
                 .processCode(vo.getProcessNumber())

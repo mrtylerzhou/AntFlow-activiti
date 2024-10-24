@@ -16,7 +16,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.openoa.base.constant.enums.CallbackTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.ConfigUtil;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -31,6 +30,7 @@ import org.openoa.engine.bpmnconf.util.JsonUtils;
 import org.openoa.engine.vo.CallbackReqVo;
 import org.openoa.engine.vo.CallbackRespVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -44,8 +44,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static org.openoa.base.constant.enums.OpLogFlagEnum.BusinessException;
 
 @Slf4j
 @Data
@@ -88,7 +86,13 @@ public class ThirdPartyCallbackFactory {
     public <T> T doCallback(String url, CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
                             String processNum, String businessId) {
 
-        boolean callBackSwitch = ConfigUtil.getOutsideCallbackOn();
+        boolean callBackSwitch = false;
+        Environment environment = SpringBeanUtils.getBean(Environment.class);
+        String callbackSwitchStr = environment.getProperty("outside.callback.switch");
+        if(!StringUtils.isEmpty(callbackSwitchStr)){
+            callBackSwitch = Boolean.parseBoolean(callbackSwitchStr);
+        }
+
 
         CallbackReqVo callbackReqVo = null;
 
