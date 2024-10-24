@@ -218,7 +218,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
     }
 
     /**
-     * query condition template list by business party mark and application id
+     * query condition template list by business party mark id and application id
      *
      * @param businessPartyMarkId
      * @param applicationId
@@ -247,7 +247,22 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
         return Collections.EMPTY_LIST;
     }
 
+    /**
+     * query condition template list by business party mark Id and formCode
+     * @param businessPartyId
+     * @param formCode
+     * @return
+     */
+    public List<OutSideBpmConditionsTemplateVo> selectListByPartMarkAndFormCode(Long businessPartyId, String formCode) {
 
+        BpmProcessAppApplication application = Optional.ofNullable(bpmProcessAppApplicationService.getBaseMapper().selectOne(new QueryWrapper<BpmProcessAppApplication>()
+                .eq("process_key", formCode))).orElse(new BpmProcessAppApplication());
+
+        if (application.getId()==null) {
+            throw new JiMuBizException("formCode 无效");
+        }
+       return selectListByPartMark(businessPartyId,application.getId());
+    }
     /**
      * query details by id
      *

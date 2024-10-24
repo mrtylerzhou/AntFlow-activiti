@@ -25,7 +25,7 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsPurchaseTypeAdp.class, BpmnStartConditionsVo.class, "purchaseType", PurchaseTypeJudge.class),
     CONDITION_TYPE_MONEY_OPERATOR(7, "总金额运算符枚举", "numberOperator", 2, Integer.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoneyOperator", MoneyOperatorJudge.class),
-    CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, Integer.class,
+    CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, String.class,
             BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
     CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
