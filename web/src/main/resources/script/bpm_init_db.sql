@@ -1095,7 +1095,7 @@ CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
     bpm_conf_callback_url varchar(500) null comment 'conf callback url',
     bpm_flow_callback_url varchar(500) null comment 'process flow call back url',
     api_client_id         varchar(100) null comment 'appId',
-    api_client_secrent    varchar(100) null comment 'appSecret',
+    api_client_secret    varchar(100) null comment 'appSecret',
     status                tinyint default 0 comment '0 for enable,1 for disable',
     create_user           varchar(50) null comment 'as its name says',
     update_user           varchar(50) null,
