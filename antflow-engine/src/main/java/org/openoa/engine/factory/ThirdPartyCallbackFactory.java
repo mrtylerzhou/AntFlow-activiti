@@ -6,6 +6,8 @@ import com.google.common.collect.Maps;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -39,6 +41,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -172,10 +175,15 @@ public class ThirdPartyCallbackFactory {
             OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService = SpringBeanUtils.getBean(OutSideBpmCallbackUrlConfServiceImpl.class);
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConfVo.getId(), bpmnConfVo.getBusinessPartyId());
 
-            heads.put("sso-service", getCurrentSysDomain());//域名
+            heads.put("central-service", getCurrentSysDomain());//域名
             if (outSideBpmCallbackUrlConf!=null) {
-                heads.put("api-client-id", outSideBpmCallbackUrlConf.getApiClientId());//用户标识
-                heads.put("api-client-secret", outSideBpmCallbackUrlConf.getApiClientSecrent());//api-key
+                String apiClientId = outSideBpmCallbackUrlConf.getApiClientId();
+                String apiClientSecret = outSideBpmCallbackUrlConf.getApiClientSecret();
+                heads.put("api-client-id", apiClientId);//用户应用标识
+                String jsonString = JSON.toJSONString(callbackReqVo);
+                String md5Hex = DigestUtils.md5Hex(jsonString + apiClientSecret);
+                String sign = Base64.encodeBase64String(md5Hex.getBytes(StandardCharsets.UTF_8));
+                heads.put("api-workflow-sign",sign);
             }
             heads.put("sso-uid", loginedEmployee.getId());//当前登录人username
             heads.put("sso-name", URLEncoder.encode(loginedEmployee.getName(), "UTF-8"));//当前登录人真实姓名
@@ -318,7 +326,7 @@ public class ThirdPartyCallbackFactory {
 
             httpPost.addHeader(HTTP.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
 
-            String input = JSON.toJSONString(object);
+            String input = object instanceof String? (String) object :JSON.toJSONString(object);
 
             StringEntity stringEntity = new StringEntity(input, "UTF-8");
             stringEntity.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);

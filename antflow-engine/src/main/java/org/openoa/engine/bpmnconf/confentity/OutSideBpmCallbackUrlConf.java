@@ -62,8 +62,8 @@ public class OutSideBpmCallbackUrlConf {
     /**
      *appSecret
      */
-    @TableField("api_client_secrent")
-    private String apiClientSecrent;
+    @TableField("api_client_secret")
+    private String apiClientSecret;
 
     /**
      * 0 for enable,1 for disable
