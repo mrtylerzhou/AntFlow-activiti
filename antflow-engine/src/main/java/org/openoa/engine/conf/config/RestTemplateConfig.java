@@ -1,9 +1,10 @@
 package org.openoa.engine.conf.config;
 
-import com.alibaba.fastjson.parser.Feature;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.support.config.FastJsonConfig;
+import com.alibaba.fastjson2.support.spring.http.converter.FastJsonHttpMessageConverter;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.client.HttpClient;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
 @Configuration
 public class RestTemplateConfig {
 
@@ -51,7 +53,6 @@ public class RestTemplateConfig {
             }
         }
         restTemplate.getInterceptors().add(restInterceptor);
-        restTemplate.getMessageConverters().add(0,this.getFastJsonConverter());
         return restTemplate;
 
     }
@@ -108,23 +109,6 @@ public class RestTemplateConfig {
         factory.setConnectionRequestTimeout(httpClientProperties.getConnectionRequestTimeout());
         return factory;
     }
-    //自定义报文转换器
-    FastJsonHttpMessageConverter getFastJsonConverter(){
 
-        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        // 设置feature
-        fastJsonConfig.setFeatures(Feature.AllowISO8601DateFormat);
-        // 设置日期格式、关闭循环引用检测
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.WriteDateUseDateFormat,
-                SerializerFeature.DisableCircularReferenceDetect);
-        //指定全局日期格式
-        fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
-        fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
-
-        //设定MediaType
-        fastJsonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON,MediaType.APPLICATION_JSON_UTF8));
-        return fastJsonHttpMessageConverter;
-    }
 
 }

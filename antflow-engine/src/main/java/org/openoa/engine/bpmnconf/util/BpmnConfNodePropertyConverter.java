@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
