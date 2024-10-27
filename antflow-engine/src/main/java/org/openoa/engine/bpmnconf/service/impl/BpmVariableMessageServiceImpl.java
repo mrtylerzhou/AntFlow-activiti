@@ -21,7 +21,6 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.User;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.RoleServiceImpl;
-import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -32,7 +31,7 @@ import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
-import org.openoa.engine.bpmnconf.common.ProcessContans;
+import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
@@ -90,7 +89,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     private TaskService taskService;
 
     @Autowired
-    private ProcessContans processContans;
+    private ProcessConstants processConstants;
 
     @Autowired
     private BpmVariableSingleServiceImpl bpmVariableSingleService;
@@ -345,7 +344,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 }
 
                 //get process's next node info via activiti's pvm
-                PvmActivity nextNodePvmActivity = processContans.getNextNodePvmActivity(processInstance.getId());
+                PvmActivity nextNodePvmActivity = processConstants.getNextNodePvmActivity(processInstance.getId());
 
                 //if next node is not empty and next node is not end event,then process it
                 if (!ObjectUtils.isEmpty(nextNodePvmActivity)) {

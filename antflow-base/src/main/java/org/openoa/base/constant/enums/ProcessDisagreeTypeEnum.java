@@ -12,11 +12,11 @@ public enum ProcessDisagreeTypeEnum {
     // 3:Return to the initiator to submit the retreat node
     // 4:Return to the historical node to submit the next node
     // 5:Return to the historical node to submit the retreat node)
-    ONE_DISAGREE(1, "不同意1"),
-    TWO_DISAGREE(2, "不同意2"),
-    THREE_DISAGREE(3, "不同意3"),
-    FOUR_DISAGREE(4, "不同意4"),
-    FIVE_DISAGREE(5, "不同意5"),
+    ONE_DISAGREE(1, "退回上一个节点提交下一个节点"),
+    TWO_DISAGREE(2, "退回发起人提交下一个节点"),
+    THREE_DISAGREE(3, "退回发起人提交回退节点"),//default behavior
+    FOUR_DISAGREE(4, "退回历史节点提交下一个节点"),
+    FIVE_DISAGREE(5, "退回历史节点提交回退节点"),
     ;
     @Getter
     private Integer code;
@@ -46,12 +46,15 @@ public enum ProcessDisagreeTypeEnum {
         return null;
     }
 
-    public static Integer getCodeByDesc(String desc) {
-        for (ProcessDisagreeTypeEnum statusType : ProcessDisagreeTypeEnum.values()) {
-            if (statusType.desc.equals(desc)) {
-                return statusType.code;
-            }
+   public static ProcessDisagreeTypeEnum getByCode(Integer code){
+        if(code==null){
+            return null;
         }
-        return null;
-    }
+       for (ProcessDisagreeTypeEnum value : ProcessDisagreeTypeEnum.values()) {
+           if(code.equals(value.getCode())){
+               return value;
+           }
+       }
+       return null;
+   }
 }

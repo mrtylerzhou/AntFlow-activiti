@@ -163,7 +163,10 @@ public class BusinessDataVo extends PageDto {
      */
     private String backToEmployeeId;
 
-
+    /**
+     * {@link org.openoa.base.constant.enums.ProcessDisagreeTypeEnum}
+     */
+    private Integer backToModifyType;
     //===============>>third party process<<===================
 
     /**

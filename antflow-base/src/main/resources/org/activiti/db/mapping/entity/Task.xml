@@ -186,6 +186,7 @@
     <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
     <result property="ownerWithoutCascade" column="OWNER_" jdbcType="VARCHAR"/>
     <result property="assigneeWithoutCascade" column="ASSIGNEE_" jdbcType="VARCHAR"/>
+    <result property="assigneeName" column="ASSIGNEE_NAME" jdbcType="VARCHAR"/>
     <result property="delegationStateString" column="DELEGATION_" jdbcType="VARCHAR"/>
     <result property="executionId" column="EXECUTION_ID_" jdbcType="VARCHAR" />
     <result property="processInstanceId" column="PROC_INST_ID_" jdbcType="VARCHAR" />
@@ -208,6 +209,7 @@
     <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP" />
     <result property="ownerWithoutCascade" column="OWNER_" jdbcType="VARCHAR"/>
     <result property="assigneeWithoutCascade" column="ASSIGNEE_" jdbcType="VARCHAR"/>
+    <result property="assigneeName" column="ASSIGNEE_NAME" jdbcType="VARCHAR"/>
     <result property="delegationStateString" column="DELEGATION_" jdbcType="VARCHAR"/>
     <result property="executionId" column="EXECUTION_ID_" jdbcType="VARCHAR" />
     <result property="processInstanceId" column="PROC_INST_ID_" jdbcType="VARCHAR" />

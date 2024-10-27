@@ -92,6 +92,8 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                 // node disagree type（1：back to previous node submit next node 2：back to initiator submit next node
                 // 3. back to initiator submit next node 4. back to history node submit next node 5. back to history node submit back node
                 switch (processNodeSubmit.getBackType()) {
+                    case 1:
+                    case 2:
                     case 3:
                         processJump.commitProcess(task.getId(), varMap, processNodeSubmit.getNodeKey());
                         break;
