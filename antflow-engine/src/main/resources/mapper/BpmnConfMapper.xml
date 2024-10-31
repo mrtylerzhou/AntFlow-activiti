@@ -71,6 +71,9 @@
         <if test="bpmnConfVo.businessPartyMark != null and bpmnConfVo.businessPartyMark!=''">
             AND b.business_party_mark=#{bpmnConfVo.businessPartyMark}
         </if>
+        <if test="bpmnConfVo.effectiveStatus != null">
+            AND a.effective_status = #{bpmnConfVo.effectiveStatus}
+        </if>
         ORDER BY a.create_time DESC
     </select>
 
