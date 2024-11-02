@@ -426,6 +426,7 @@ CREATE TABLE `ACT_RU_TASK`
     `TASK_DEF_KEY_`     varchar(255)      DEFAULT NULL,
     `OWNER_`            varchar(255)      DEFAULT NULL,
     `ASSIGNEE_`         varchar(255)      DEFAULT NULL,
+     `ASSIGNEE_NAME`  varchar(255)   DEFAULT NULL,
     `DELEGATION_`       varchar(64)       DEFAULT NULL,
     `PRIORITY_`         int               DEFAULT NULL,
     `CREATE_TIME_`      timestamp(3)      NULL DEFAULT NULL,
