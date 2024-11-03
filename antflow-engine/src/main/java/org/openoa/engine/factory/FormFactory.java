@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -73,6 +74,9 @@ public class FormFactory implements ApplicationContextAware {
         }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
+            if(Boolean.TRUE.equals(vo.getIsLowCodeFlow())){
+                bean= applicationContext.getBean(StringConstants.LOWFLOW_FORM_CODE);
+            }
             throw new JiMuBizException("can not get the processing bean by form code:{}!"+formCode);
         }
         return JSON.parseObject(params, (Type) getFormTClass(formCode));
