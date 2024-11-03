@@ -220,7 +220,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
 
-        BusinessDataVo businessDataVo =  formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+        BusinessDataVo businessDataVo = null;
+        if(!vo.getIsOutSideAccessProc()){
+            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+        }else{
+            businessDataVo=vo;
+        }
 
         //set the businessId
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
