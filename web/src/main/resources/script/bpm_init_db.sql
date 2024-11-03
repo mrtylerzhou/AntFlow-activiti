@@ -1390,6 +1390,22 @@ create table t_bpmn_conf_lf_formdata
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+create table t_bpmn_conf_lf_formdata_field
+(
+	id bigint auto_increment,
+	bpmn_conf_id bigint null,
+	field_name varchar(255) null,
+	field_type tinyint null,
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_conf_lf_formdata_field_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码配置字段明细表';
+
+
 create table t_bpmn_node_lf_formdata_field_control
 (
 	id bigint auto_increment,
@@ -1406,7 +1422,9 @@ create table t_bpmn_node_lf_formdata_field_control
 	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_bpmn_node_lf_formdata_field_control_pk
 		primary key (id)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);

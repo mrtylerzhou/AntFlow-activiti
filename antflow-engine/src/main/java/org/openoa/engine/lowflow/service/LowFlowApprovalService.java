@@ -4,10 +4,9 @@ import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.vo.ThirdPartyAccountApplyVo;
-import org.openoa.base.vo.UDLFApplyVo;
+import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 
-@ActivitiServiceAnno(svcName = "UDLF",desc = "拖拽表单低代码审批流")
+@ActivitiServiceAnno(svcName = "LF",desc = "拖拽表单低代码审批流")
 public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>, ActivitiService {
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
