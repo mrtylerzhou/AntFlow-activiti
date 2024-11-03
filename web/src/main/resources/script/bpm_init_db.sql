@@ -1041,8 +1041,8 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      `bpmn_conf_id` BIGINT NOT NULL,
      `form_code` VARCHAR(50) DEFAULT NULL,
      `process_number` VARCHAR(50) DEFAULT NULL,
-     `form_data_pc` TEXT,
-     `form_data_app` TEXT,
+     `form_data_pc` LONGTEXT,
+     `form_data_app` LONGTEXT,
      `template_mark` VARCHAR(50) DEFAULT NULL,
      `start_username` VARCHAR(50) DEFAULT NULL,
      `remark` TEXT,
@@ -1375,6 +1375,38 @@ CREATE TABLE `t_biz_ucar_refuel` (
 `update_time` datetime DEFAULT NULL COMMENT '更新日期',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
+
+create table t_bpmn_conf_lf_formdata
+(
+	id bigint auto_increment,
+	bpmn_conf_id bigint not null,
+	formdata longtext null,
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_conf_lf_formdata_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+create table t_bpmn_node_lf_formdata_field_control
+(
+	id bigint auto_increment,
+	node_id bigint not null,
+	formdata_id bigint not null,
+	field_name varchar(255) null comment '字段名',
+	field_type tinyint null comment '字段类型',
+	can_write tinyint null comment '是否可写,0不限制,1限制',
+	can_read tinyint null comment '是否可读(即是否限制),0不限制,1限制',
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_node_lf_formdata_field_control_pk
+		primary key (id)
+);
 
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
