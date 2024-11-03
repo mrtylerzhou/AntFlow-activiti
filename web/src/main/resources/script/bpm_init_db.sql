@@ -10,6 +10,7 @@ CREATE TABLE if not exists `t_bpmn_conf`
     `effective_status`    int(11)             NOT NULL DEFAULT '0' COMMENT 'is effect 0:no 1:yes',
     `is_all`              int(11)             NOT NULL DEFAULT '0' COMMENT 'is to all,0 no 1yes',
     `is_out_side_process` int(11)                      DEFAULT '0' COMMENT 'is it a third party process',
+    `is_lowcode_flow` tinyint default 0 null comment '是否是低代码审批流0,否,1是',
     `business_party_id`   int(11)                      DEFAULT NULL COMMENT 'its belong to business party',
     `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`              tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:in use,1:delete',
