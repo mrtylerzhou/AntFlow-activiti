@@ -1397,6 +1397,7 @@ create table t_bpmn_conf_lf_formdata_field
 	bpmn_conf_id bigint null,
 	field_name varchar(255) null,
 	field_type tinyint null,
+	is_condition tinyint default 0 null comment '是否是流程条件,0否,1是',
 	is_del tinyint default 0 not null,
 	create_user varchar(255) null,
 	create_time timestamp default current_timestamp,

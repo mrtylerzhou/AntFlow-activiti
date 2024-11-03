@@ -39,8 +39,13 @@ public class BpmnConfLfFormdataField implements Serializable {
      * 字段类型  
      */  
     @TableField("field_type")  
-    private Integer fieldType;  
-  
+    private Integer fieldType;
+
+    /**
+     * 是否是条件字段,0,否,1是
+     */
+    @TableField("is_condition")
+    private Integer isConditionField;
     /**  
      * 逻辑删除标记（0：未删除，1：已删除）  
      */  
