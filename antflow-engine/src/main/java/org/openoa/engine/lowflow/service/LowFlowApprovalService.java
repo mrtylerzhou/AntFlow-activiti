@@ -1,12 +1,13 @@
 package org.openoa.engine.lowflow.service;
 
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 
-@ActivitiServiceAnno(svcName = "LF",desc = "拖拽表单低代码审批流")
+@ActivitiServiceAnno(svcName = StringConstants.LOWFLOW_FORM_CODE,desc = "拖拽表单低代码审批流")
 public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>, ActivitiService {
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
