@@ -72,11 +72,11 @@ public class FormFactory implements ApplicationContextAware {
             }
             return vo;
         }
+        if(Boolean.TRUE.equals(vo.getIsLowCodeFlow())){
+            formCode=StringConstants.LOWFLOW_FORM_CODE;
+        }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
-            if(Boolean.TRUE.equals(vo.getIsLowCodeFlow())){
-                bean= applicationContext.getBean(StringConstants.LOWFLOW_FORM_CODE);
-            }
             throw new JiMuBizException("can not get the processing bean by form code:{}!"+formCode);
         }
         return JSON.parseObject(params, (Type) getFormTClass(formCode));
