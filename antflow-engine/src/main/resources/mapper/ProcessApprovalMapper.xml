@@ -164,7 +164,8 @@
     <sql id="allProcess">
         select *
         from (
-                 SELECT b.PROCESSINESS_KEY AS processKey,
+                 SELECT t.PROC_INST_ID_    AS processInstanceId,
+                        b.PROCESSINESS_KEY AS processKey,
                         h.START_USER_ID_   AS userId,
                         b.BUSINESS_ID      AS businessId,
                         b.description      AS description,
@@ -174,6 +175,7 @@
                         h.START_TIME_      AS runTime,
                         h.START_TIME_      AS createTime,
                         b.process_state    AS processState,
+                        b.process_digest   as processDigest,
                         t.ASSIGNEE_        as taskOwner,
                         t.TASK_DEF_KEY_       taskName
                  FROM act_ru_task t
