@@ -9,8 +9,9 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;  
   
 import java.io.Serializable;  
-import java.sql.Timestamp;  
-  
+import java.sql.Timestamp;
+import java.util.Date;
+
 @Data  
 @TableName("t_bpmn_conf_lf_formdata_field")  
 public class BpmnConfLfFormdataField implements Serializable {
@@ -36,7 +37,8 @@ public class BpmnConfLfFormdataField implements Serializable {
     private String fieldName;  
   
     /**  
-     * 字段类型  
+     * 字段类型
+     * {@link org.openoa.base.constant.enums.LFFieldTypeEnum}
      */  
     @TableField("field_type")  
     private Integer fieldType;
@@ -63,7 +65,7 @@ public class BpmnConfLfFormdataField implements Serializable {
      * 创建时间  
      */  
     @TableField(value = "create_time", fill = FieldFill.INSERT)  
-    private Timestamp createTime;  
+    private Date createTime;
   
     /**  
      * 更新人  
@@ -75,7 +77,7 @@ public class BpmnConfLfFormdataField implements Serializable {
      * 更新时间  
      */  
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)  
-    private Timestamp updateTime;  
+    private Date updateTime;
   
     // 如果需要其他自定义方法，可以在此类中添加  
 }

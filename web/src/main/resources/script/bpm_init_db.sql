@@ -1426,6 +1426,38 @@ create table t_bpmn_node_lf_formdata_field_control
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+create table t_lf_main
+(
+	id bigint auto_increment,
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_lf_main_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单主表';
+
+create table t_lf_main_field
+(
+	id bigint auto_increment,
+	main_id bigint not null,
+	field_id varchar(255) null,
+	field_name varchar(255) null,
+	parent_field_id varchar(255) null,
+    parent_field_name varchar(255) null,
+	field_value varchar(2000) null,
+	field_value_number double(14,2) null,
+	field_value_dt timestamp null,
+	sort int default 0 not null,
+	is_del tinyint default 0 not null,
+    create_user varchar(255) null,
+    create_time timestamp default current_timestamp,
+    update_user varchar(255) null,
+    update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_lf_main_field_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单字段值表';
 
 
 
