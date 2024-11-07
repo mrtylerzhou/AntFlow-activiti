@@ -1395,6 +1395,7 @@ create table t_bpmn_conf_lf_formdata_field
 (
 	id bigint auto_increment,
 	bpmn_conf_id bigint null,
+	field_id varchar(255) null,
 	field_name varchar(255) null,
 	field_type tinyint null,
 	is_condition tinyint default 0 null comment '是否是流程条件,0否,1是',
@@ -1449,6 +1450,7 @@ create table t_lf_main_field
 	field_value varchar(2000) null,
 	field_value_number double(14,2) null,
 	field_value_dt timestamp null,
+	field_value_text longtext null,
 	sort int default 0 not null,
 	is_del tinyint default 0 not null,
     create_user varchar(255) null,
