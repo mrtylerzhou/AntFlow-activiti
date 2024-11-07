@@ -29,7 +29,9 @@ public class BpmnConfLfFormdataField implements Serializable {
      */  
     @TableField("bpmn_conf_id")  
     private Long bpmnConfId;  
-  
+
+    @TableField("field_id")
+    private String fieldId;
     /**  
      * 字段名  
      */  
