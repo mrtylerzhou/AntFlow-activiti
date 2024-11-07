@@ -786,7 +786,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
      user_name           varchar(255)           null,
-     is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes'
+     is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
     KEY `process_entry_id` (`ENTRY_ID`) USING BTREE,
@@ -1201,7 +1201,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
      `bpmn_node_id` BIGINT(20) NOT NULL COMMENT 'node id',
      `role_id` varchar(64) NOT NULL COMMENT 'role id',
-     `role_name` varchar(64) NOT NULL COMMENT 'role name'
+     `role_name` varchar(64) NOT NULL COMMENT 'role name',
      `sign_type` INT(11) NOT NULL COMMENT 'sign type 1 all sign,2 or sign',
      `remark` VARCHAR(255) DEFAULT NULL COMMENT 'remark',
      `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
@@ -1279,27 +1279,28 @@ create table if not exists t_user
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES (1, '张三');
-INSERT INTO `t_user` VALUES (2, '李四');
-INSERT INTO `t_user` VALUES (3, '王五');
-INSERT INTO `t_user` VALUES (4, '菜六');
-INSERT INTO `t_user` VALUES (5, '牛七');
-INSERT INTO `t_user` VALUES (6, '马八');
-INSERT INTO `t_user` VALUES (7, '李九');
-INSERT INTO `t_user` VALUES (8, '周十');
-INSERT INTO `t_user` VALUES (9, '肖十一');
-INSERT INTO `t_user` VALUES (10, '令狐冲');
-INSERT INTO `t_user` VALUES (11, '风清扬');
-INSERT INTO `t_user` VALUES (12, '刘正风');
-INSERT INTO `t_user` VALUES (13, '岳不群');
-INSERT INTO `t_user` VALUES (14, '宁中则');
-INSERT INTO `t_user` VALUES (15, '桃谷六仙');
-INSERT INTO `t_user` VALUES (16, '不介和尚');
-INSERT INTO `t_user` VALUES (17, '丁一师太');
-INSERT INTO `t_user` VALUES (18, '依林师妹');
-INSERT INTO `t_user` VALUES (19, '邱灵珊');
-INSERT INTO `t_user` VALUES (20, '任盈盈');
-INSERT INTO `t_user` VALUES (1001, 'test');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (1, '张三');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (2, '李四');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (3, '王五');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (4, '菜六');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (5, '牛七');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (6, '马八');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (7, '李九');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (8, '周十');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (9, '肖十一');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (10, '令狐冲');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (11, '风清扬');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (12, '刘正风');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (13, '岳不群');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (14, '宁中则');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (15, '桃谷六仙');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (16, '不介和尚');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (17, '丁一师太');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (18, '依林师妹');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (19, '邱灵珊');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (20, '任盈盈');
+INSERT INTO `t_user`(`id`, `user_name`) VALUES (1001, 'test');
+
 
 DROP TABLE IF EXISTS `t_role`;
 CREATE TABLE `t_role`  (
