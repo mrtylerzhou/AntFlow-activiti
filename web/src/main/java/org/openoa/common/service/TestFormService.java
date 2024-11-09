@@ -73,7 +73,7 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
             ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
             BeanUtils.copyProperties(vo,thirdPartyAccountApply);
-            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            Integer id=  Integer.valueOf((vo.getBusinessId()));
             thirdPartyAccountApply.setId(id);
             thirdPartyAccountApplyMapper.updateById(thirdPartyAccountApply);
         }

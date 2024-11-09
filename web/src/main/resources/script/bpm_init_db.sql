@@ -1431,6 +1431,8 @@ create table t_bpmn_node_lf_formdata_field_control
 create table t_lf_main
 (
 	id bigint auto_increment,
+	conf_id bigint null,
+	form_code varchar(255) null,
 	is_del tinyint default 0 not null,
 	create_user varchar(255) null,
 	create_time timestamp default current_timestamp,
