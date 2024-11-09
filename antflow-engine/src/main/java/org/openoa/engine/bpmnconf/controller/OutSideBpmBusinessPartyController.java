@@ -7,11 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.interf.ActivitiServiceAnno;
-import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
@@ -34,6 +33,8 @@ public class OutSideBpmBusinessPartyController {
 
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    @Autowired
+    private BpmProcessAppApplicationServiceImpl outProcessAppApplicationService;
 
     /**
      * get business party list by page
@@ -96,6 +97,17 @@ public class OutSideBpmBusinessPartyController {
         Long applicationId = outSideBpmBusinessPartyService.editApplication(vo);
 
         return Result.newSuccessResult(applicationId);
+    }
+    /**
+     * add application  business party
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/businessParty/addBpmProcessAppApplication")
+    public Result<Boolean> addBpmProcessAppApplication(@RequestBody BpmProcessAppApplicationVo vo) {
+        boolean ret = outProcessAppApplicationService.addBpmProcessAppApplication(vo);
+        return Result.newSuccessResult(ret);
     }
 
     /**
