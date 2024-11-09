@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class BpmnRemoveFormatImpl extends AbstractBpmnRemoveFormat {
 
     @Override
-    public Integer order() {
+    public int order() {
         return 1;
     }
 

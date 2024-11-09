@@ -190,7 +190,7 @@ public class BusinessDataVo extends PageDto {
     private Boolean isOutSideAccessProc = false;
 
     private Boolean isOutSideChecked = false;
-    private Boolean isLowCodeFlow=false;
+    private Integer isLowCodeFlow=0;
     /**
      * flow call back url
      */

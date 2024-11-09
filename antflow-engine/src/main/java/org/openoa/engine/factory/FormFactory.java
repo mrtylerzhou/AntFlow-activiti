@@ -72,7 +72,7 @@ public class FormFactory implements ApplicationContextAware {
             }
             return vo;
         }
-        if(Boolean.TRUE.equals(vo.getIsLowCodeFlow())){
+        if(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1){
             formCode=StringConstants.LOWFLOW_FORM_CODE;
         }
         Object bean = applicationContext.getBean(formCode);

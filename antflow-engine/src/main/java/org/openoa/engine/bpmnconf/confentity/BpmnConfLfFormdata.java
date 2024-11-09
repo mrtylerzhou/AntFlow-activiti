@@ -25,7 +25,8 @@ public class BpmnConfLfFormdata implements Serializable {
   
     /**  
      * 流程配置ID  
-     */  
+     */
+    @TableField("bpmn_conf_id")
     private Long bpmnConfId;  
   
     /**  
@@ -64,8 +65,5 @@ public class BpmnConfLfFormdata implements Serializable {
      */  
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)  
     private Date updateTime;
-  
-    // 注意：这里没有添加@Version注解的字段，因为您的表结构中并未包含乐观锁的版本号字段  
-  
-    // 如果需要其他自定义方法，可以在此类中添加  
+
 }

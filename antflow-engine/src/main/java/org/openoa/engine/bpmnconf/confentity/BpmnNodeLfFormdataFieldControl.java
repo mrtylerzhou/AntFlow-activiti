@@ -38,24 +38,19 @@ public class BpmnNodeLfFormdataFieldControl implements Serializable {
      */  
     @TableField("field_name")  
     private String fieldName;  
-  
-    /**  
-     * 字段类型  
-     */  
-    @TableField("field_type")  
-    private Integer fieldType;  
+
   
     /**  
      * 是否可写（0不限制，1限制）  
      */  
-    @TableField("can_write")  
-    private Integer canWrite;  
+    @TableField("is_visible")
+    private Integer isVisible;
   
     /**  
      * 是否可读（即是否限制，0不限制，1限制）  
      */  
-    @TableField("can_read")  
-    private Integer canRead;  
+    @TableField("is_readonly")
+    private Integer isReadonly;
   
     /**  
      * 逻辑删除标记（0：未删除，1：已删除）  

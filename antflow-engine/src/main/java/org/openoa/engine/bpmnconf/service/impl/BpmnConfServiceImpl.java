@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AntFlowOrderPostProcessor;
+import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
 import org.openoa.base.vo.*;
@@ -75,6 +77,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private ApplicationServiceImpl applicationService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
+    @Autowired
+    private BpmnConfLfFormdataServiceImpl lfFormdataService;
 
     @Transactional
     public void edit(BpmnConfVo bpmnConfVo) {
@@ -94,23 +98,34 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         //effectiveBpmnConf(bpmnConf.getId().intValue());
         //notice template
         bpmnConfNoticeTemplateService.insert(bpmnCode);
-        Long confId = Optional.ofNullable(bpmnConf.getId()).orElse(0L);
+        Long confId = bpmnConf.getId();
+        if(confId==null){
+            throw new JiMuBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
+        }
 
         bpmnViewPageButtonBizService.editBpmnViewPageButton(bpmnConfVo, confId);
 
         bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
 
         Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
+        Integer isLowCodeFlow = bpmnConfVo.getIsLowCodeFlow();
 
+        if(isLowCodeFlow!=null&&isLowCodeFlow==1){
+            BpmnConfLfFormdata lfFormdata=new BpmnConfLfFormdata();
+            lfFormdata.setBpmnConfId(confId);
+            lfFormdata.setFormdata(bpmnConfVo.getLfForm());
+            lfFormdata.setCreateUser(SecurityUtils.getLogInEmpName());
+            lfFormdataService.save(lfFormdata);
+            bpmnConfVo.setLfFormDataId(lfFormdata.getId());
+        }
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
                 throw new JiMuBizException("apporver node has no property,can not be saved！");
             }
-            if(isOutSideProcess!=null&&isOutSideProcess.equals(1)){
-                bpmnNodeVo.setIsOutSideProcess(1);
-            }
+
+            bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
 
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())
@@ -123,7 +138,10 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnNode.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             bpmnNodeService.getBaseMapper().insert(bpmnNode);
 
-            Long bpmnNodeId = Optional.ofNullable(bpmnNode.getId()).orElse(0L);
+            Long bpmnNodeId = bpmnNode.getId();
+            if(bpmnNodeId==null){
+                throw new JiMuBizException("can not get bpmn node id!");
+            }
 
             //edit node to
             bpmnNodeToService.editNodeTo(bpmnNodeVo, bpmnNodeId);
@@ -139,7 +157,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnNodeVo.setConfId(confId);
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
-            //if can not get the node's adapter,continue
+            //if it can not get the node's adapter,continue
             if (ObjectUtils.isEmpty(bpmnNodeAdpConfEnum)) {
                 continue;
             }
@@ -157,6 +175,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
         }
+
+        ProcessorFactory.executePostProcessors(AntFlowOrderPostProcessor.class,bpmnConfVo);
+
     }
 
 
@@ -255,7 +276,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
         String conditionsUrl = "";
-        if (bpmnConfVo.getIsOutSideProcess() == 1) {
+        if (bpmnConfVo.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1) {
             //query and set business party's call url
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService
                     .getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
@@ -592,7 +613,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         bpmnNodeAdaptor.formatToBpmnNodeVo(bpmnNodeVo);
 
 
-        if (bpmnNodeVo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode())) {
+        if (NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode().equals(bpmnNode.getNodeType())) {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode());
         }
 

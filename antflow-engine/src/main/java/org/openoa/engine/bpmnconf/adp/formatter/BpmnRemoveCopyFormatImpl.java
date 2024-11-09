@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 @Service
 public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
     @Override
-    public Integer order() {
+    public int order() {
         return 2;
     }
 

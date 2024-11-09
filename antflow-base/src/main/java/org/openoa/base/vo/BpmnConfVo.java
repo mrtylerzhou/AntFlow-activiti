@@ -57,7 +57,7 @@ public class BpmnConfVo {
     /**
      */
     private Integer isOutSideProcess;
-
+    private Integer isLowCodeFlow;
     /**
      * process's business party
      */
@@ -164,4 +164,6 @@ public class BpmnConfVo {
      * business type 1 for embedded 2 for api access
      */
     private Integer type;
+    private String lfForm;
+    private Long lfFormDataId;
 }
