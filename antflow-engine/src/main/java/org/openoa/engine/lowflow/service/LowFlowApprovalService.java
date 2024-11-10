@@ -73,19 +73,10 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long mainId = lfMain.getId();
         Long confId = lfMain.getConfId();
         String formCode = lfMain.getFormCode();
-        //todo check allFieldConfMap in existence
+
         Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(mainId);
         if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
-            List<BpmnConfLfFormdataField> allFields = lfFormdataFieldService.list(Wrappers.<BpmnConfLfFormdataField>lambdaQuery()
-                    .eq(BpmnConfLfFormdataField::getBpmnConfId, confId));
-            if(CollectionUtils.isEmpty(allFields)){
-                throw new JiMuBizException("lowcode form data has no fields");
-            }
-            Map<String,BpmnConfLfFormdataField> name2SelfMap=new HashMap<>();
-            for (BpmnConfLfFormdataField field : allFields) {
-                String fieldName = field.getFieldName();
-                name2SelfMap.put(fieldName,field);
-            }
+            Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
             allFieldConfMap.put(confId,name2SelfMap);
         }
         lfFormdataFieldMap=allFieldConfMap.get(mainId);
@@ -204,7 +195,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 String fieldName = field.getFieldName();
                 name2SelfMap.put(fieldName,field);
                 Integer const1=1;
-                if(const1.equals(field.getIsConditionField())){
+                if(field.getIsConditionField()!=null&&field.getIsConditionField()==1){
                     condFieldNames.add(fieldName);
                 }
             }
@@ -231,4 +222,5 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         return conditionFieldMap;
     }
+
 }

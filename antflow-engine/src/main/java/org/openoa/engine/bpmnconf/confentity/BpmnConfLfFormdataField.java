@@ -28,7 +28,9 @@ public class BpmnConfLfFormdataField implements Serializable {
      * BPMN配置ID  
      */  
     @TableField("bpmn_conf_id")  
-    private Long bpmnConfId;  
+    private Long bpmnConfId;
+    @TableField("formdata_id")
+    private Long formDataId;
 
     @TableField("field_id")
     private String fieldId;
@@ -80,6 +82,5 @@ public class BpmnConfLfFormdataField implements Serializable {
      */  
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)  
     private Date updateTime;
-  
-    // 如果需要其他自定义方法，可以在此类中添加  
+
 }

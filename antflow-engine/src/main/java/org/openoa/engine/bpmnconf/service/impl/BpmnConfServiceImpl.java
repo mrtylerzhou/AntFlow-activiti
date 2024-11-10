@@ -9,6 +9,7 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AntFlowOrderPostProcessor;
+import org.openoa.base.service.AntFlowOrderPreProcessor;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -77,8 +78,6 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private ApplicationServiceImpl applicationService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
-    @Autowired
-    private BpmnConfLfFormdataServiceImpl lfFormdataService;
 
     @Transactional
     public void edit(BpmnConfVo bpmnConfVo) {
@@ -110,14 +109,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
         Integer isLowCodeFlow = bpmnConfVo.getIsLowCodeFlow();
 
-        if(isLowCodeFlow!=null&&isLowCodeFlow==1){
-            BpmnConfLfFormdata lfFormdata=new BpmnConfLfFormdata();
-            lfFormdata.setBpmnConfId(confId);
-            lfFormdata.setFormdata(bpmnConfVo.getLfForm());
-            lfFormdata.setCreateUser(SecurityUtils.getLogInEmpName());
-            lfFormdataService.save(lfFormdata);
-            bpmnConfVo.setLfFormDataId(lfFormdata.getId());
-        }
+        ProcessorFactory.executePreProcessors(bpmnConfVo);
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
@@ -176,7 +168,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
         }
 
-        ProcessorFactory.executePostProcessors(AntFlowOrderPostProcessor.class,bpmnConfVo);
+        ProcessorFactory.executePostProcessors(bpmnConfVo);
 
     }
 

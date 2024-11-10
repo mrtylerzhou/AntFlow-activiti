@@ -28,11 +28,17 @@ public class LFFieldControlPostProcessor implements AntFlowOrderPostProcessor<Bp
         if(confVo==null){
             return;
         }
+        Integer isLowCodeFlow = confVo.getIsLowCodeFlow();
+        boolean lowCodeFlowFlag=isLowCodeFlow!=null&&isLowCodeFlow==1;
+        if(!lowCodeFlowFlag){
+            return;
+        }
         List<BpmnNodeVo> bpmnNodeVos = confVo.getNodes();
         Long lfFormDataId = confVo.getLfFormDataId();
         List<BpmnNodeLfFormdataFieldControl> fieldControls=new ArrayList<>();
         for (BpmnNodeVo bpmnNodeVo : bpmnNodeVos) {
             LFFieldControlVO lfFieldControlVO = bpmnNodeVo.getLfFieldControlVO();
+            //todo lf if not specified,set it as default
             if(lfFieldControlVO==null){
                 continue;
             }

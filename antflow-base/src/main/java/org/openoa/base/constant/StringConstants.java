@@ -28,4 +28,5 @@ public class StringConstants {
     public static final String TASK_ASSIGNEE_NAME="assigneeName";
     public static final String PROJECT_NAME="antFlow";
     public static final String LOWFLOW_FORM_CODE="LF";
+    public static final String LOWFLOW_FORM_CONTAINER_TYPE="container";
 }

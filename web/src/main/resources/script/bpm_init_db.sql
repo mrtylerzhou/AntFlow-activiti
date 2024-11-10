@@ -1399,6 +1399,7 @@ create table t_bpmn_conf_lf_formdata_field
 (
 	id bigint auto_increment,
 	bpmn_conf_id bigint null,
+	formdata_id bigint null,
 	field_id varchar(255) null,
 	field_name varchar(255) null,
 	field_type tinyint null,

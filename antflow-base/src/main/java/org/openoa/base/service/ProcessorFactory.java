@@ -10,11 +10,17 @@ import java.util.List;
 
 
 public class ProcessorFactory {
+    public static <TEntity> void executePostProcessors(TEntity entity){
+        executePostProcessors(AntFlowOrderPostProcessor.class,entity);
+    }
     public static  <TProcessor extends AntFlowOrderPostProcessor<TEntity>,TEntity> void executePostProcessors(Class<TProcessor> processorClass,TEntity entity){
         List<TProcessor> orderedPostProcessors = getOrderedPostProcessors(processorClass, entity.getClass());
         for (TProcessor orderedPostProcessor : orderedPostProcessors) {
             orderedPostProcessor.postProcess(entity);
         }
+    }
+    public static  <TEntity>  void executePreProcessors(TEntity entity){
+        executePreProcessors(AntFlowOrderPreProcessor.class,entity);
     }
     public static  <TProcessor extends AntFlowOrderPreProcessor<TEntity>,TEntity> void executePreProcessors(Class<TProcessor> processorClass,TEntity entity){
         List<TProcessor> orderedPostProcessors = getOrderedPostProcessors(processorClass, entity.getClass());
@@ -25,6 +31,10 @@ public class ProcessorFactory {
     private static  <TProcessor extends OrderedBean,TEntity> List<TProcessor> getOrderedPostProcessors(Class<TProcessor> processorCls, Class<TEntity> cls){
         List<TProcessor> orderedBeans = SpringBeanUtils.getOrderedBeans(processorCls);
         List<TProcessor> processorsOfType=new ArrayList<>();
+        //if only one element gotten,it is a specified type bean,no need to do checks
+        if(orderedBeans.size()==1){
+            return orderedBeans;
+        }
         for (TProcessor bean : orderedBeans) {
             Type[] genericInterfaces = bean.getClass().getGenericInterfaces();
             for (Type genericInterface : genericInterfaces) {

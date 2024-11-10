@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class FormConfigWrapper {
 
     private List<LFWidget> LFWidgetList;
@@ -14,12 +15,14 @@ public class FormConfigWrapper {
     public static class LFWidget {
         private int key;
         private String type;
+        private String category;
         private String icon;
         private boolean formItemFlag;
         private LFOption options;
         private String id;
-
-
+        private List<TableRow> rows;
+        private List<LFWidget> cols;
+        private List<LFWidget> widgetList;
         @Data
         // Nested static class for Options
         public static class LFOption {
@@ -57,6 +60,11 @@ public class FormConfigWrapper {
             private String onBlur;
             private String onValidate;
         }
+    }
+
+    @Data
+    public static class TableRow {
+        List<LFWidget> cols;
     }
 
     @Data
