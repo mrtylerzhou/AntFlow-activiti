@@ -204,7 +204,7 @@
         s.submit_url as submitUrl,
         s.condition_url as conditionUrl,
         s.user_request_uri as userRequestUri,
-        s.roel_request_uri as roleRequestUri,
+        s.role_request_uri as roleRequestUri,
         s.parent_id as parentId,
         s.application_url as applicationUrl,
         s.route as route,
