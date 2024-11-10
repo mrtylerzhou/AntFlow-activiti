@@ -49,7 +49,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/getUser/{roleId}")
+    @GetMapping(value ={"/getUser/{roleId}","/getUser"})
     public Result<List<BaseIdTranStruVo>> getUsers(@PathVariable(required = false) Integer roleId) {
         LinkedList<BaseIdTranStruVo> list = userMapper.selectAll(roleId);
         return Result.newSuccessResult(list);

@@ -76,7 +76,8 @@ public class OutSideBpmBusinessPartyController {
 
     @GetMapping("/businessParty/getThirdPartyApplications/{businessPartyMark}")
     public Result<List<BpmProcessAppApplicationVo>> getThirdPartyApplications(@PathVariable String businessPartyMark){
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.findThirdPartyApplications(businessPartyMark));
+        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.findThirdPartyApplications(businessPartyMark);
+        return Result.newSuccessResult(thirdPartyApplications);
     }
 
     /**
