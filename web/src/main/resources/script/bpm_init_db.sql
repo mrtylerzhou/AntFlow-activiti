@@ -977,7 +977,10 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null
+    source           varchar(255)                       null,
+    user_request_uri varchar(255)                       null comment 'get user info',
+    role_request_uri varchar(255)                       null comment 'get role info'
+
 )
     comment 'BPM Process Application Table';
 
@@ -1378,6 +1381,15 @@ PRIMARY KEY (`id`)
 
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
+
+CREATE TABLE `t_user_role` (
+                               `id` int(11) NOT NULL AUTO_INCREMENT,
+                               `user_id` int(11) DEFAULT NULL COMMENT 'user id ',
+                               `role_id` int(11) DEFAULT NULL COMMENT 'role id',
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+
+
 
 SET FOREIGN_KEY_CHECKS = 1;
 

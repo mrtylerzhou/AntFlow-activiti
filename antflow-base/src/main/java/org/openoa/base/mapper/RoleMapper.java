@@ -4,9 +4,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Role;
 import org.openoa.base.entity.User;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,4 +20,6 @@ import java.util.List;
 public interface RoleMapper {
     List<Role> queryRoleByIds(@Param("roleIds") Collection<String> roleIds);
     List<User> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);
+
+    LinkedList<BaseIdTranStruVo> selectAll();
 }

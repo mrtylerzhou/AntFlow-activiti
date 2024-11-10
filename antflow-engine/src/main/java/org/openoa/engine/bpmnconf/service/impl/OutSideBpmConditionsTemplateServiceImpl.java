@@ -255,8 +255,10 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
      */
     public List<OutSideBpmConditionsTemplateVo> selectListByPartMarkAndFormCode(Long businessPartyId, String formCode) {
 
-        BpmProcessAppApplication application = Optional.ofNullable(bpmProcessAppApplicationService.getBaseMapper().selectOne(new QueryWrapper<BpmProcessAppApplication>()
-                .eq("process_key", formCode))).orElse(new BpmProcessAppApplication());
+        BpmProcessAppApplication application = Optional.ofNullable(bpmProcessAppApplicationService.getBaseMapper()
+                .selectOne(new QueryWrapper<BpmProcessAppApplication>()
+                        .eq("process_key", formCode)
+                )).orElse(new BpmProcessAppApplication());
 
         if (application.getId()==null) {
             throw new JiMuBizException("formCode 无效");

@@ -44,12 +44,12 @@ public class OutSideBpmConditionsTemplateController {
      * query template conf list by businessPartyId and formcode
      *
      * @param businessPartyId
-     * @param formcode
+     * @param formCode
      * @return
      */
-    @GetMapping("/templateConf/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formcode}")
-    public Result selectListByPartyMarkIdAndFormCode(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("formcode") String formcode) {
-        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMarkAndFormCode(businessPartyId, formcode));
+    @GetMapping("/templateConf/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formCode}")
+    public Result selectListByPartyMarkIdAndFormCode(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("formCode") String formCode) {
+        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMarkAndFormCode(businessPartyId, formCode));
     }
     /**
      * query a specified template conf's detail info
