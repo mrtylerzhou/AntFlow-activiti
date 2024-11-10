@@ -7,6 +7,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,4 +54,6 @@ public interface BpmProcessAppApplicationMapper extends BaseMapper<BpmProcessApp
      * @return
      */
     List<BpmProcessAppApplicationVo> listProcessIcon(BpmProcessAppApplicationVo vo);
+
+    LinkedList<BpmProcessAppApplicationVo> selectAllByBusinessPart(String businessPartyMark);
 }

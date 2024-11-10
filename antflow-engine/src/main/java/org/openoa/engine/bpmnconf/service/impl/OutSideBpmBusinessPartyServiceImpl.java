@@ -456,4 +456,9 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
         outsideEmpConf.setIsDel(0);
         return outsideEmpConf;
     }
+
+
+    public List<BpmProcessAppApplicationVo> findThirdPartyApplications(String businessPartyMark) {
+        return bpmProcessAppApplicationService.selectThirdPartyApplications(businessPartyMark);
+    }
 }

@@ -713,4 +713,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         return processKey;
     }
 
+    public List<BpmProcessAppApplicationVo> selectThirdPartyApplications(String businessPartyMark) {
+        return bpmProcessAppApplicationMapper.selectAllByBusinessPart(businessPartyMark);
+    }
 }
