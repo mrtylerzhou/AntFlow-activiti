@@ -56,4 +56,6 @@ public interface BpmProcessAppApplicationMapper extends BaseMapper<BpmProcessApp
     List<BpmProcessAppApplicationVo> listProcessIcon(BpmProcessAppApplicationVo vo);
 
     LinkedList<BpmProcessAppApplicationVo> selectAllByBusinessPart(String businessPartyMark);
+
+    LinkedList<BpmProcessAppApplicationVo> selectAllByPartMarkId(Integer partyMarkId);
 }
