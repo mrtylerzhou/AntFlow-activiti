@@ -79,7 +79,11 @@ public class OutSideBpmBusinessPartyController {
         List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.findThirdPartyApplications(businessPartyMark);
         return Result.newSuccessResult(thirdPartyApplications);
     }
-
+    @GetMapping("/businessParty/getApplicationsByPartyMarkId/{partyMarkId}")
+    public Result<List<BpmProcessAppApplicationVo>> getApplicationsByPartyMarkId(@PathVariable Integer partyMarkId){
+        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.getApplicationsByPartyMarkId(partyMarkId);
+        return Result.newSuccessResult(thirdPartyApplications);
+    }
     /**
      * add application  business party
      */

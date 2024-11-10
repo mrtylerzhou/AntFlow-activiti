@@ -461,4 +461,8 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
     public List<BpmProcessAppApplicationVo> findThirdPartyApplications(String businessPartyMark) {
         return bpmProcessAppApplicationService.selectThirdPartyApplications(businessPartyMark);
     }
+
+    public List<BpmProcessAppApplicationVo> getApplicationsByPartyMarkId(Integer partyMarkId) {
+        return bpmProcessAppApplicationService.selectAllByPartMarkId(partyMarkId);
+    }
 }
