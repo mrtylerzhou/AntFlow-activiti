@@ -1,4 +1,4 @@
-package org.openoa.engine.lowflow.entity;
+package org.openoa.base.vo;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class FormConfigWrapper {
 
-    private List<LFWidget> LFWidgetList;
+    private List<LFWidget> widgetList;
     private FormConfig formConfig;
 
     @Data
@@ -30,10 +30,14 @@ public class FormConfigWrapper {
             private String label;
             private String labelAlign;
             private String type;
+            /**
+             * {@link org.openoa.base.constant.enums.LFFieldTypeEnum}
+             */
+            private Integer fieldType;
             private String defaultValue;
             private String startPlaceholder;
             private String endPlaceholder;
-            private Double columnWidth;
+            private String columnWidth;
             private String size;
             private Boolean autoFullWidth;
             private Double labelWidth;

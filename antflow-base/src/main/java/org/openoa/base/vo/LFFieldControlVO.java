@@ -21,12 +21,12 @@ public class LFFieldControlVO {
 
 
     /**
-     * 是否可写（0不限制，1限制）
+     * 是否可写（0不限制，1限制,即1为可见）
      */
     private Integer isVisible;
 
     /**
-     * 是否可读（即是否限制，0不限制，1限制）
+     * 是否可读（即是否限制，0不限制，1限制,即1为只读）
      */
     private Integer isReadonly;
 

@@ -9,9 +9,10 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.engine.bpmnconf.controller.BpmnConfController;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
-import org.openoa.engine.lowflow.entity.FormConfigWrapper;
+import org.openoa.base.vo.FormConfigWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,7 +39,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
             return;
         }
         Long confId = confVo.getId();
-        String lfForm = confVo.getLfForm();
+        String lfForm = confVo.getLfFormData();
         BpmnConfLfFormdata lfFormdata=new BpmnConfLfFormdata();
         lfFormdata.setBpmnConfId(confId);
         lfFormdata.setFormdata(lfForm);
@@ -46,7 +47,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         lfFormdataService.save(lfFormdata);
         confVo.setLfFormDataId(lfFormdata.getId());
         FormConfigWrapper formConfigWrapper = JSON.parseObject(lfForm, FormConfigWrapper.class);
-        List<FormConfigWrapper.LFWidget> lfWidgetList = formConfigWrapper.getLFWidgetList();
+        List<FormConfigWrapper.LFWidget> lfWidgetList = formConfigWrapper.getWidgetList();
         if(CollectionUtils.isEmpty(lfWidgetList)){
             throw new JiMuBizException(Strings.lenientFormat("lowcode form has no widget,confId:%d,formCode:%s",confId,confVo.getFormCode()));
         }

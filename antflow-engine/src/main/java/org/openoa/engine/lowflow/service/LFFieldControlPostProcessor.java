@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmnNodeLfFormdataFieldControl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,19 +38,22 @@ public class LFFieldControlPostProcessor implements AntFlowOrderPostProcessor<Bp
         Long lfFormDataId = confVo.getLfFormDataId();
         List<BpmnNodeLfFormdataFieldControl> fieldControls=new ArrayList<>();
         for (BpmnNodeVo bpmnNodeVo : bpmnNodeVos) {
-            LFFieldControlVO lfFieldControlVO = bpmnNodeVo.getLfFieldControlVO();
+            List<LFFieldControlVO> lfFieldControlVOs = bpmnNodeVo.getLfFieldControlVOs();
             //todo lf if not specified,set it as default
-            if(lfFieldControlVO==null){
+            if(CollectionUtils.isEmpty(lfFieldControlVOs)){
                 continue;
             }
-            BpmnNodeLfFormdataFieldControl fieldControl=new BpmnNodeLfFormdataFieldControl();
-            fieldControl.setFormdataId(lfFormDataId);
-            fieldControl.setNodeId(bpmnNodeVo.getId());
-            fieldControl.setFieldName(lfFieldControlVO.getFieldName());
-            fieldControl.setIsVisible(lfFieldControlVO.getIsVisible());
-            fieldControl.setIsReadonly(lfFieldControlVO.getIsReadonly());
-            fieldControl.setCreateUser(SecurityUtils.getLogInEmpName());
-            fieldControls.add(fieldControl);
+            for (LFFieldControlVO lfFieldControlVO : lfFieldControlVOs) {
+                BpmnNodeLfFormdataFieldControl fieldControl=new BpmnNodeLfFormdataFieldControl();
+                fieldControl.setFormdataId(lfFormDataId);
+                fieldControl.setNodeId(bpmnNodeVo.getId());
+                fieldControl.setFieldName(lfFieldControlVO.getFieldName());
+                fieldControl.setIsVisible(lfFieldControlVO.getIsVisible());
+                fieldControl.setIsReadonly(lfFieldControlVO.getIsReadonly());
+                fieldControl.setCreateUser(SecurityUtils.getLogInEmpName());
+                fieldControls.add(fieldControl);
+            }
+
         }
         lfFormdataFieldControlService.saveBatch(fieldControls);
     }

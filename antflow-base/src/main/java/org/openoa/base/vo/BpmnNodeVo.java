@@ -151,7 +151,7 @@ public class BpmnNodeVo  implements Serializable {
     private String formCode;
 
     private Integer isOutSideProcess;
-    private LFFieldControlVO lfFieldControlVO;
+    private List<LFFieldControlVO> lfFieldControlVOs;
 
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;

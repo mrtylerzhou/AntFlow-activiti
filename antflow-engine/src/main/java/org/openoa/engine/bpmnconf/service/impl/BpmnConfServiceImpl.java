@@ -101,7 +101,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         if(confId==null){
             throw new JiMuBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
         }
-
+        bpmnConfVo.setId(confId);
         bpmnViewPageButtonBizService.editBpmnViewPageButton(bpmnConfVo, confId);
 
         bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
