@@ -1,5 +1,8 @@
 package org.openoa.common.config;
 
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.support.config.FastJsonConfig;
+import com.alibaba.fastjson2.support.spring.http.converter.FastJsonHttpMessageConverter;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -37,21 +40,27 @@ public class WebConfig  implements WebMvcConfigurer {
 
     private JacksonMapper jacksonMapper;
 
-    public WebConfig(JacksonMapper jacksonMapper ) {
-        this.jacksonMapper = jacksonMapper;
-    }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(jacksonMapper);
+//        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(jacksonMapper);
+
+        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
+        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+        fastJsonConfig.setWriterFeatures(JSONWriter.Feature.WriteNullListAsEmpty,
+                JSONWriter.Feature.WriteMapNullValue,
+                JSONWriter.Feature.WriteNullNumberAsZero,
+                JSONWriter.Feature.WriteNullStringAsEmpty,
+                JSONWriter.Feature.WriteNullBooleanAsFalse);
+        fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
 
         //springboot2.7必须这样改，不能直接注册bean
-        jackson2HttpMessageConverter.setDefaultCharset(StandardCharsets.UTF_8);
+        fastJsonHttpMessageConverter.setDefaultCharset(StandardCharsets.UTF_8);
         List<MediaType> mediaTypes = new ArrayList<>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         mediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
         mediaTypes.add(MediaType.TEXT_PLAIN);
-        jackson2HttpMessageConverter.setSupportedMediaTypes(mediaTypes);
+        fastJsonHttpMessageConverter.setSupportedMediaTypes(mediaTypes);
         for (int i = 0; i < converters.size(); i++) {
             if (converters.get(i) instanceof MappingJackson2HttpMessageConverter) {
                 converters.remove(i);
@@ -59,7 +68,7 @@ public class WebConfig  implements WebMvcConfigurer {
         }
 
 //        converters.add(jackson2HttpMessageConverter);
-        converters.add(0, jackson2HttpMessageConverter);
+        converters.add(0, fastJsonHttpMessageConverter);
     }
 
     @Bean
@@ -73,7 +82,7 @@ public class WebConfig  implements WebMvcConfigurer {
 
 
     }
-    @Bean
+//    @Bean
     public FilterRegistrationBean<HttpLogFilter> httpLogFilter() {
         FilterRegistrationBean<HttpLogFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new HttpLogFilter());

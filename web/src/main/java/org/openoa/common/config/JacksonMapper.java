@@ -24,7 +24,7 @@ import java.util.*;
 /**
  *
  */
-@Component
+//@Component
 public class JacksonMapper extends ObjectMapper {
     private static final long serialVersionUID = 7840849083907067915L;
 
@@ -34,7 +34,7 @@ public class JacksonMapper extends ObjectMapper {
 
     private static final String NORM_TIME_PATTERN = "HH:mm:ss";
 
-    private static final String FULL_DATE_TIME_FORMAT ="yyyy-MM-dd HH:mm:ss";
+    private static final String FULL_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
@@ -46,7 +46,7 @@ public class JacksonMapper extends ObjectMapper {
         this.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-        this.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
+        this.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 //        this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         this.setDateFormat(new SimpleDateFormat(FULL_DATE_TIME_FORMAT));
         SimpleModule simpleModule = new SimpleModule();
@@ -158,3 +158,4 @@ public class JacksonMapper extends ObjectMapper {
         registerModule(simpleModule);
     }
 }
+
