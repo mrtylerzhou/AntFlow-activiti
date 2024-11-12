@@ -181,6 +181,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 BpmnConf bpmnConf = bpmnConfMap.get(record.getProcessKey());
                 if(bpmnConf!=null){
                     record.setIsOutSideProcess(Objects.equals(1,bpmnConf.getIsOutSideProcess()));
+                    record.setIsLowCodeFlow(Objects.equals(1,bpmnConf.getIsLowCodeFlow()));
+                    record.setConfId(bpmnConf.getId());
                 }
                 Integer applyUserId = record.getApplyUserId();
                 //todo get the actual user info from db

@@ -31,6 +31,10 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
     CONDITION_TYPE_TOTAL_MONEY(38, "总金额", "totalMoney", 2, String.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
+    CONDITION_TYPE_LF_STR_CONDITION(39,"无代码字符串流程条件","lfConditions",2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
+    CONDITION_TYPE_LF_NUM_CONDITION(39,"无代码数字流程条件","lfConditions",2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
     ;
 
     @Getter

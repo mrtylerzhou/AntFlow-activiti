@@ -45,11 +45,12 @@ public class BpmnConfNodePropertyConverter {
             if(columnId==null){
                 throw new JiMuBizException("each and every node must have a columnId value");
             }
-            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(Integer.parseInt(columnId));
+            int columnIdInt = Integer.parseInt(columnId);
+            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
             if(enumByCode==null){
                 throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
             }
-            conditionTypes.add(Integer.parseInt(columnId));
+            conditionTypes.add(columnIdInt);
             String fieldName = enumByCode.getFieldName();
             String columnDbname = newModel.getColumnDbname();
             if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){

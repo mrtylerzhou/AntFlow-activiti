@@ -335,6 +335,9 @@ public class BpmnConfCommonServiceImpl {
         object.put("formCode", detail.getFormCode());
 
         BusinessDataVo vo = formFactory.dataFormConversion(JSON.toJSONString(object),null);
+        vo.setIsOutSideAccessProc(Objects.equals(1,detail.getIsOutSideProcess()));
+        vo.setIsLowCodeFlow(detail.getIsLowCodeFlow());
+        vo.setBpmnConfVo(detail);
         //set a flag to indicate whether is a start page preview
         vo.setIsStartPagePreview(isStartPagePreview);
 

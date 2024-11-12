@@ -156,6 +156,7 @@ public class BpmnSendMessageAspect {
                 vo.setIsOutside(true);
                 businessDataVo.setIsOutSideAccessProc(true);
             }
+            businessDataVo.setIsLowCodeFlow(bpmnConfVo.getIsLowCodeFlow());
             bpmVariableMessageService.sendTemplateMessagesAsync(vo);
         }
 

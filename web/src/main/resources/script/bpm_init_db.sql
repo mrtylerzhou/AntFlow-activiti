@@ -1467,7 +1467,40 @@ create table t_lf_main_field
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单字段值表';
 
+create table t_demo_dict_main
+(
+    id          bigint auto_increment comment '字典主键'
+        primary key,
+    dict_name   varchar(100) default ''                null comment '字典名称',
+    dict_type   varchar(100) default ''                null comment '字典类型',
+    is_del      tinyint      default 0                 not null,
+    create_user varchar(255)                           null,
+    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    update_user varchar(255)                           null,
+    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    remark      varchar(500)                           null comment '备注',
+    constraint dict_type
+        unique (dict_type)
+) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
 
+create table t_demo_dict_data
+(
+    id          bigint auto_increment comment '字典编码'
+        primary key,
+    dict_sort   int(4)       default 0                 null comment '字典排序',
+    dict_label  varchar(100) default ''                null comment '字典标签',
+    dict_value  varchar(100) default ''                null comment '字典键值',
+    dict_type   varchar(100) default ''                null comment '字典类型',
+    css_class   varchar(100)                           null comment '样式属性（其他样式扩展）',
+    list_class  varchar(100)                           null comment '表格回显样式',
+    is_default  char         default 'N'               null comment '是否默认（Y是 N否）',
+    is_del      tinyint      default 0                 not null,
+    create_user varchar(255)                           null,
+    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    update_user varchar(255)                           null,
+    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    remark      varchar(500)                           null comment '备注'
+) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 

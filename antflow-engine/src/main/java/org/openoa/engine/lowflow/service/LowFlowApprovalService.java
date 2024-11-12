@@ -194,7 +194,6 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             for (BpmnConfLfFormdataField field : allFields) {
                 String fieldName = field.getFieldName();
                 name2SelfMap.put(fieldName,field);
-                Integer const1=1;
                 if(field.getIsConditionField()!=null&&field.getIsConditionField()==1){
                     condFieldNames.add(fieldName);
                 }
