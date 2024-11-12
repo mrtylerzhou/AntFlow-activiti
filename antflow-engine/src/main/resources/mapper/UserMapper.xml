@@ -51,7 +51,7 @@
     </select>
 
     <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        select  u.id , u.user_name as name
+        select    u.id , u.user_name as name
          from   t_user u
         left join  t_user_role ur on u.id = ur.user_id
         <where>
@@ -59,5 +59,7 @@
                 ur.role_id = #{roleId}
             </if>
         </where>
+        group by  u.id
+        order by  u.id
     </select>
 </mapper>
