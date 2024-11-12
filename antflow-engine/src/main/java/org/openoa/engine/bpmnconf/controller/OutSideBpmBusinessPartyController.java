@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
@@ -38,10 +39,6 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * get business party list by page
-     *
-     * @param page
-     * @param vo
-     * @return
      */
     @GetMapping("/businessParty/listPage")
     public Result listPage(PageDto page, OutSideBpmBusinessPartyVo vo) {
@@ -51,9 +48,6 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * get business party detail
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/businessParty/detail/{id}")
     public Result detail(@PathVariable("id") Integer id) {
@@ -62,9 +56,6 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * edit business party's info
-     *
-     * @param vo
-     * @return
      */
     @PostMapping("/businessParty/edit")
     public Result edit(@RequestBody OutSideBpmBusinessPartyVo vo) {
@@ -74,9 +65,6 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * get business Party applications Page List
-     * @param page
-     * @param vo
-     * @return
      */
     @GetMapping("/businessParty/applicationsPageList")
     public Result applicationsPageList(PageDto page, BpmProcessAppApplicationVo vo) {
@@ -85,11 +73,19 @@ public class OutSideBpmBusinessPartyController {
         }
         return Result.newSuccessResult(outSideBpmBusinessPartyService.applicationsPageList(page, vo));
     }
+
+    @GetMapping("/businessParty/getThirdPartyApplications/{businessPartyMark}")
+    public Result<List<BpmProcessAppApplicationVo>> getThirdPartyApplications(@PathVariable String businessPartyMark){
+        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.findThirdPartyApplications(businessPartyMark);
+        return Result.newSuccessResult(thirdPartyApplications);
+    }
+    @GetMapping("/businessParty/getApplicationsByPartyMarkId/{partyMarkId}")
+    public Result<List<BpmProcessAppApplicationVo>> getApplicationsByPartyMarkId(@PathVariable Integer partyMarkId){
+        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.getApplicationsByPartyMarkId(partyMarkId);
+        return Result.newSuccessResult(thirdPartyApplications);
+    }
     /**
      * add application  business party
-     *
-     * @param
-     * @return
      */
     @PostMapping("/businessParty/registerApplication")
     public Result<Long> registerApplication(@RequestBody OutSideBpmApplicationVo vo) {
@@ -98,11 +94,9 @@ public class OutSideBpmBusinessPartyController {
 
         return Result.newSuccessResult(applicationId);
     }
+
     /**
      * add application  business party
-     *
-     * @param
-     * @return
      */
     @PostMapping("/businessParty/addBpmProcessAppApplication")
     public Result<Boolean> addBpmProcessAppApplication(@RequestBody BpmProcessAppApplicationVo vo) {
@@ -112,8 +106,6 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * get business Party applications detail
-     * @param id
-     * @return
      */
     @GetMapping("/businessParty/applicationDetail/{id}")
     public Result applicationDetail(@PathVariable("id") Integer id) {
@@ -122,25 +114,26 @@ public class OutSideBpmBusinessPartyController {
 
     /**
      * get business Party
-     * @param businessPartyMark
-     * @return
      */
     @GetMapping("/businessParty/getPartyMarkByIdBpmConf/{businessPartyMark}")
     public Result<List<BpmnConfVo>> getPartyMarkByIdBpmConf(@PathVariable String businessPartyMark) {
         return Result.newSuccessResult(outSideBpmBusinessPartyService.getBpmConf(businessPartyMark));
     }
 
+
+
     /**
      * get business PartyMark  for key-value
      */
     @GetMapping("/businessParty/getPartyMarkKV")
-    public Result getPartyMarkKV(){
+    public Result getPartyMarkKV() {
         return Result.newSuccessResult(basePartyMark());
     }
-    private List<BaseKeyValueStruVo> basePartyMark(){
-        List<BaseKeyValueStruVo> results=new ArrayList<>();
-        for ( OutSideBpmBusinessParty  osBpmParty: outSideBpmBusinessPartyService.list()) {
-            if(!StringUtils.isEmpty(osBpmParty.getBusinessPartyMark())){
+
+    private List<BaseKeyValueStruVo> basePartyMark() {
+        List<BaseKeyValueStruVo> results = new ArrayList<>();
+        for (OutSideBpmBusinessParty osBpmParty : outSideBpmBusinessPartyService.list()) {
+            if (!StringUtils.isEmpty(osBpmParty.getBusinessPartyMark())) {
                 results.add(
                         BaseKeyValueStruVo
                                 .builder()
