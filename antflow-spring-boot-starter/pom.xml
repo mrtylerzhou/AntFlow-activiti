@@ -5,13 +5,39 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
-    <version>0.11.0</version>
+    <version>${antflow.version}</version>
     <packaging>jar</packaging>
     <properties>
+
+        <!-- 主版本        -->
+        <antflow.version>0.11.0</antflow.version>
+
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>2.7.17</spring-boot.version>
+
+        <!--  ORM      -->
+        <mysql.version>8.0.27</mysql.version>
+        <druid.version>1.1.17</druid.version>
+        <mybatis-spring-start.version>2.2.0</mybatis-spring-start.version>
+        <mybatis-plus.version>3.5.1</mybatis-plus.version>
+
+        <!--  第三方包       -->
+        <jgroups.version>4.2.30.Final</jgroups.version>
+        <pinyin4j.version>2.5.0</pinyin4j.version>
+        <fastjson2.version>2.0.53</fastjson2.version>
+        <drools.version>6.5.0.Final</drools.version>
+        <jodd-core.version>5.3.0</jodd-core.version>
+        <joda-time.version>2.9.9</joda-time.version>
+        <jodd-servlet.version>4.1.2</jodd-servlet.version>
+        <jodd-mail.version>5.1.6</jodd-mail.version>
+        <jodd-bean.version>4.1.2</jodd-bean.version>
+        <jgraphx.version>4.2.2</jgraphx.version>
+        <javax.enterprise.concurrent.version>1.0</javax.enterprise.concurrent.version>
+        <transmittable-thread-local.version>2.12.6</transmittable-thread-local.version>
+        <geronimo-jta.version>1.1.1</geronimo-jta.version>
+        <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
     </properties>
 <dependencies>
     <dependency>
@@ -25,17 +51,17 @@
     <dependency>
         <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-base</artifactId>
-        <version>0.11.0</version>
+        <version>${antflow.version}</version>
     </dependency>
     <dependency>
         <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-common</artifactId>
-        <version>0.11.0</version>
+        <version>${antflow.version}</version>
     </dependency>
     <dependency>
         <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-engine</artifactId>
-        <version>0.11.0</version>
+        <version>${antflow.version}</version>
     </dependency>
 
     <dependency>
@@ -47,12 +73,12 @@
     <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter</artifactId>
-        <version>2.2.0</version>
+        <version>${mybatis-spring-start.version}</version>
     </dependency>
     <dependency>
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-boot-starter</artifactId>
-        <version>3.5.1</version>
+        <version>${mybatis-plus.version}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -62,24 +88,24 @@
     <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>4.2.30.Final</version>
+        <version>${jgroups.version}</version>
     </dependency>
 
     <dependency>
         <groupId>com.alibaba</groupId>
         <artifactId>druid</artifactId>
-        <version>1.1.17</version>
+        <version>${druid.version}</version>
     </dependency>
     <dependency>
         <groupId>com.belerweb</groupId>
         <artifactId>pinyin4j</artifactId>
-        <version>2.5.0</version>
+        <version>${pinyin4j.version}</version>
     </dependency>
 
     <dependency>
         <groupId>com.alibaba.fastjson2</groupId>
         <artifactId>fastjson2</artifactId>
-        <version>2.0.53</version>
+        <version>${fastjson2.version}</version>
     </dependency>
 
     <dependency>
@@ -89,72 +115,72 @@
     <dependency>
         <groupId>org.jodd</groupId>
         <artifactId>jodd-core</artifactId>
-        <version>5.3.0</version>
+        <version>${jodd-core.version}</version>
     </dependency>
     <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.9.9</version>
+        <version>${joda-time.version}</version>
     </dependency>
     <dependency>
         <groupId>org.jodd</groupId>
         <artifactId>jodd-servlet</artifactId>
-        <version>4.1.2</version>
+        <version>${jodd-servlet.version}</version>
     </dependency>
     <dependency>
         <groupId>org.jodd</groupId>
         <artifactId>jodd-mail</artifactId>
-        <version>5.1.6</version>
+        <version>${jodd-mail.version}</version>
     </dependency>
     <dependency>
         <groupId>org.jodd</groupId>
         <artifactId>jodd-bean</artifactId>
-        <version>4.1.2</version>
+        <version>${jodd-bean.version}</version>
     </dependency>
     <dependency>
         <groupId>com.github.vlsi.mxgraph</groupId>
         <artifactId>jgraphx</artifactId>
-        <version>4.2.2</version>
+        <version>${jgraphx.version}</version>
     </dependency>
     <dependency>
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-extension</artifactId>
-        <version>3.5.1</version>
+        <version>${mybatis-plus.version}</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.27</version>
+        <version>${mysql.version}</version>
     </dependency>
     <dependency>
         <groupId>com.alibaba</groupId>
         <artifactId>transmittable-thread-local</artifactId>
-        <version>2.12.6</version>
+        <version>${transmittable-thread-local.version}</version>
     </dependency>
     <dependency>
         <groupId>javax.enterprise.concurrent</groupId>
         <artifactId>javax.enterprise.concurrent-api</artifactId>
-        <version>1.0</version>
+        <version>${javax.enterprise.concurrent.version}</version>
     </dependency>
     <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>6.5.0.Final</version>
+        <version>${drools.version}</version>
     </dependency>
     <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
-        <version>6.5.0.Final</version>
+        <version>${drools.version}</version>
     </dependency>
     <dependency>
         <groupId>org.drools</groupId>
         <artifactId>knowledge-api</artifactId>
-        <version>6.5.0.Final</version>
+        <version>${drools.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
-        <version>1.1.1</version>
+        <version>${geronimo-jta.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.commons</groupId>
@@ -163,7 +189,7 @@
     <dependency>
         <groupId>com.fasterxml.uuid</groupId>
         <artifactId>java-uuid-generator</artifactId>
-        <version>3.1.4</version>
+        <version>${java-uuid-generator.version}</version>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
