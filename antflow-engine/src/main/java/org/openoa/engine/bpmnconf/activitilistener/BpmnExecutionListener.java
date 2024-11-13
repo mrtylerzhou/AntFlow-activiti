@@ -17,10 +17,12 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
 import org.openoa.engine.factory.FormFactory;
+import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.openoa.engine.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,8 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.Optional;
+
+import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_FINISH_CALL_BACK;
 
 
 /**
@@ -55,6 +59,8 @@ public class BpmnExecutionListener implements ExecutionListener {
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
     @Resource
     private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
+    @Resource
+    private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
 
 
     @Override
@@ -107,7 +113,8 @@ public class BpmnExecutionListener implements ExecutionListener {
             BpmnConfVo bpmnConfVo = new BpmnConfVo();
             BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
-            //todo third party call back
+            //回调通知业务方流程已完成
+            thirdPartyCallBackService.doCallback(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl(), PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
 
         } else {
             formFactory.getFormAdaptor(formCode).finishData(businessId);

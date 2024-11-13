@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -80,7 +80,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
         if (outSideBpmAccessBusiness!=null) {
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
-            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.updateById(outSideBpmAccessBusiness);
         } else {
@@ -107,9 +107,9 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             //set business party's id
             outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
-            outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setCreateTime(new Date());
-            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpName());
+            outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.save(outSideBpmAccessBusiness);
         }
@@ -135,23 +135,25 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 //        }
 
         //set start user id
-        businessDataVo.setStartUserId(vo.getUserId());
+        businessDataVo.setStartUserId(SecurityUtils.getLogInEmpIdSafe());
+        businessDataVo.setStartUserName(SecurityUtils.getLogInEmpNameSafe());
 
         //set approval
-        if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-//            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-//            if(approvalEmployee!=null){
-//                String id = approvalEmployee.getId();
-//                if(!StringUtils.isEmpty(id)){
-//                    businessDataVo.setEmplId(id);
-//                }
-//            }
-
-            businessDataVo.setEmpId(vo.getUserId());
-            businessDataVo.setSubmitUser(vo.getApprovalUsername());
-
-        }
-
+//        if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
+////            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
+////            if(approvalEmployee!=null){
+////                String id = approvalEmployee.getId();
+////                if(!StringUtils.isEmpty(id)){
+////                    businessDataVo.setEmplId(id);
+////                }
+////            }
+//
+//            businessDataVo.setEmpId(vo.getUserId());
+//            businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
+//
+//        }
+        businessDataVo.setEmpId(SecurityUtils.getLogInEmpIdSafe());
+        businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
 
         //set embed nodes
         businessDataVo.setEmbedNodes(reSetEmbedNodes(vo.getEmbedNodes()));

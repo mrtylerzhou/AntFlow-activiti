@@ -426,6 +426,7 @@ CREATE TABLE `ACT_RU_TASK`
     `TASK_DEF_KEY_`     varchar(255)      DEFAULT NULL,
     `OWNER_`            varchar(255)      DEFAULT NULL,
     `ASSIGNEE_`         varchar(255)      DEFAULT NULL,
+     `ASSIGNEE_NAME`  varchar(255)   DEFAULT NULL,
     `DELEGATION_`       varchar(64)       DEFAULT NULL,
     `PRIORITY_`         int               DEFAULT NULL,
     `CREATE_TIME_`      timestamp(3)      NULL DEFAULT NULL,
@@ -535,3 +536,6 @@ INSERT INTO `act_ge_property` (`NAME_`, `VALUE_`, `REV_`)
 VALUES ('schema.history', 'create(5.22.0.0)', 1);
 INSERT INTO `act_ge_property` (`NAME_`, `VALUE_`, `REV_`)
 VALUES ('schema.version', '5.22.0.0', 1);
+
+
+CREATE INDEX idx_assignee_name ON ACT_HI_TASKINST(`ASSIGNEE_NAME`);

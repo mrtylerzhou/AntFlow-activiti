@@ -8,15 +8,12 @@ import com.google.common.collect.Maps;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
-import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
-import org.openoa.engine.bpmnconf.common.ProcessContans;
-import org.openoa.engine.bpmnconf.confentity.BpmBusiness;
+import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
@@ -42,7 +39,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     @Autowired
     private BpmBusinessProcessServiceImpl processService;
     @Autowired
-    private ProcessContans processContans;
+    private ProcessConstants processConstants;
     @Autowired
     private EmployeeMapper employeeMapper;
     @Autowired

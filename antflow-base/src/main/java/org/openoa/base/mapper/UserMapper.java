@@ -4,9 +4,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -28,4 +28,6 @@ public interface UserMapper {
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") String employeeId,@Param("tier") Integer tier);
     BaseIdTranStruVo getHrpbByEmployeeId(@Param("employeeId") String employeeId);
     BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
+
+    LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
 }

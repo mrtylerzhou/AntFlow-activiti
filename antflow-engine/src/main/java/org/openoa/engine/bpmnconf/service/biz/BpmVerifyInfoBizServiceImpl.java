@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -241,6 +241,46 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //get approvers
         Map<String, List<BaseIdTranStruVo>> nodeApproveds = getNodeApproveds(bpmVariable.getId());
 
+        List<ActivityImpl> collect = activitiList.stream().filter(a -> a.getId().equals(taskVo.getElementId())).collect(Collectors.toList());
+
+        if (collect.size() > 0) {
+
+            ActivityImpl activity = collect.get(0);
+            Map<String, Object> properties = activity.getProperties();
+            Object multiInstance = properties.get("multiInstance");
+            if("sequential".equals(multiInstance)){
+                List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(taskVo.getElementId());
+
+                List<BpmVerifyInfoVo> verifyInfoVos = bpmVerifyInfoVos.stream().filter(a -> taskVo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
+
+                List<BaseIdTranStruVo> idTranStruVos=new ArrayList<>();
+
+                for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
+
+                    for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
+                        if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
+                            idTranStruVos.add(baseIdTranStruVo);
+                        }
+
+                    }
+                }
+                for (BaseIdTranStruVo idTranStruVo : idTranStruVos) {
+                    BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder()
+                            .verifyUserId(idTranStruVo.getId())
+                            .verifyUserIds(Lists.newArrayList(idTranStruVo.getId()))
+                            .elementId(taskVo.getElementId())
+                            .taskName(taskVo.getTaskName())
+                            .verifyUserName(idTranStruVo.getName())
+                            .verifyStatus(0)
+                            .sort(sort)
+                            .build();
+                    bpmVerifyInfoVos.add(bpmVerifyInfoVo);
+                    sort++;
+                }
+
+
+            };
+        }
 
         //get signup node's element id and collection name
         Map<String, String> signUpNodeCollectionNameMap = getSignUpNodeCollectionNameMap(bpmVariable.getId());
@@ -252,8 +292,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         Multimap<String, HistoricVariableInstance> variableInstanceMap = activitiAdditionalInfoService.getVariableInstanceMap(historicProcessInstance.getId());
 
         //do append record
-        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,bpmVariable.getId());
-    }
+        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId());    }
 
     /**
      * to process the signup special node

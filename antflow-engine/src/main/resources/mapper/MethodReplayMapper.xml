@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.base.mapper.MethodReplayMapper">
+
+    <insert id="insert" parameterType="org.openoa.base.entity.MethodReplayEntity">
+        INSERT INTO OPS_METHOD_REPLAY (
+        ID,
+        PROJECT_NAME,
+        CLASS_NAME,
+        METHOD_NAME,
+        PARAM_TYPE,
+        ARGS,
+        NOW_TIME,
+        ERROR_MSG,
+        ALREADY_REPLAY_TIMES,
+        MAX_REPLAY_TIMES
+        ) VALUES (
+        #{id,jdbcType=BIGINT},
+        #{projectName,jdbcType=VARCHAR},
+        #{className,jdbcType=VARCHAR},
+        #{methodName,jdbcType=VARCHAR},
+        #{paramType,jdbcType=VARCHAR},
+        #{args,jdbcType=VARCHAR},
+        sysdate,
+        #{errorMsg,jdbcType=VARCHAR},
+        #{alreadyReplayTimes,jdbcType=INTEGER},
+        #{maxReplayTimes,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <select id="select" resultType="org.openoa.base.entity.MethodReplayEntity">
+        SELECT * FROM OPS_METHOD_REPLAY
+        WHERE PROJECT_NAME = #{projectName,jdbcType=VARCHAR}
+        AND MAX_REPLAY_TIMES > ALREADY_REPLAY_TIMES
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        ORDER BY NOW_TIME
+    </select>
+
+    <select id="selectById" resultType="org.openoa.base.entity.MethodReplayEntity">
+        SELECT * FROM OPS_METHOD_REPLAY
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </select>
+
+    <update id="addAlreadyReplayTimes">
+        UPDATE OPS_METHOD_REPLAY SET ALREADY_REPLAY_TIMES = ALREADY_REPLAY_TIMES + 1 WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM OPS_METHOD_REPLAY WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByIds">
+        DELETE FROM OPS_METHOD_REPLAY WHERE ID IN
+        <foreach collection="delIds" item="delId" open="(" close=")" separator=",">
+            #{delId,jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+</mapper>

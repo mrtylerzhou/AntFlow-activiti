@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -218,38 +218,53 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
     }
 
     /**
-     * query condition template list by business party mark and application id
+     * query condition template list by business party mark id and application id
      *
-     * @param businessPartyMark
+     * @param businessPartyMarkId
+     * @param applicationId
      * @return
      */
-    public List<OutSideBpmConditionsTemplateVo> selectListByPartMark(String businessPartyMark, Integer applicationId) {
+    public List<OutSideBpmConditionsTemplateVo> selectListByPartMark(Long businessPartyMarkId, Integer applicationId) {
 
-        OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
-                .eq("business_party_mark", businessPartyMark));
+        List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates = this.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
+                .eq("is_del", 0)
+                .eq("business_party_id",businessPartyMarkId)
+                .eq("application_id", applicationId));
 
-        if (outSideBpmBusinessParty!=null) {
-            List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates = this.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
-                    .eq("is_del", 0)
-                    .eq("business_party_id", outSideBpmBusinessParty.getId())
-                    .eq("application_id", applicationId));
-
-            if (!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)) {
-                return outSideBpmConditionsTemplates
-                        .stream()
-                        .map(o -> OutSideBpmConditionsTemplateVo
-                                .builder()
-                                .id(o.getId())
-                                .templateMark(o.getTemplateMark())
-                                .templateName(o.getTemplateName())
-                                .build())
-                        .collect(Collectors.toList());
-            }
+        if (!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)) {
+            return outSideBpmConditionsTemplates
+                    .stream()
+                    .map(o -> OutSideBpmConditionsTemplateVo
+                            .builder()
+                            .id(o.getId())
+                            .templateMark(o.getTemplateMark())
+                            .templateName(o.getTemplateName())
+                            .remark(o.getRemark())
+                            .createTime(o.getCreateTime())
+                            .build())
+                    .collect(Collectors.toList());
         }
         return Collections.EMPTY_LIST;
     }
 
+    /**
+     * query condition template list by business party mark Id and formCode
+     * @param businessPartyId
+     * @param formCode
+     * @return
+     */
+    public List<OutSideBpmConditionsTemplateVo> selectListByPartMarkAndFormCode(Long businessPartyId, String formCode) {
 
+        BpmProcessAppApplication application = Optional.ofNullable(bpmProcessAppApplicationService.getBaseMapper()
+                .selectOne(new QueryWrapper<BpmProcessAppApplication>()
+                        .eq("process_key", formCode)
+                )).orElse(new BpmProcessAppApplication());
+
+        if (application.getId()==null) {
+            throw new JiMuBizException("formCode 无效");
+        }
+       return selectListByPartMark(businessPartyId,application.getId());
+    }
     /**
      * query details by id
      *
@@ -288,9 +303,9 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
      */
     public void edit(OutSideBpmConditionsTemplateVo vo) {
 
-        if (vo.getBusinessPartyId()==null) {
-            throw new JiMuBizException("业务方为空无法新建");
-        }
+//        if (vo.getBusinessPartyId()==null) {
+//            throw new JiMuBizException("业务方为空无法新建");
+//        }
 
         if (StringUtil.isEmpty(vo.getApplicationFormCode())) {
             throw new JiMuBizException("关联应用未选择，编辑失败");
@@ -303,11 +318,16 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
             throw new JiMuBizException("");
         }
 
+        OutSideBpmBusinessParty outSideBpmBusinessModel = Optional.ofNullable(outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
+                .eq("business_party_mark", application.getBusinessCode()))).orElse(new OutSideBpmBusinessParty());
 
+        if (outSideBpmBusinessModel.getId()==null) {
+            throw new JiMuBizException("业务方为空无法新建");
+        }
         //check whether the template mark is repeated
         QueryWrapper<OutSideBpmConditionsTemplate> wrapperTemplateMark = new QueryWrapper<OutSideBpmConditionsTemplate>()
                 .eq("is_del", 0)
-                .eq("business_party_id", vo.getBusinessPartyId())
+                .eq("business_party_id", outSideBpmBusinessModel.getId())
                 .eq("template_mark", vo.getTemplateMark())
                 .eq("application_id", application.getId());
         if (vo.getId()!=null) {
@@ -321,7 +341,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
         //check whether the template name is repeated,although the name can be repeated,but it may cause confusion,so make it not repeatable
         QueryWrapper<OutSideBpmConditionsTemplate> wrapperTemplateName = new QueryWrapper<OutSideBpmConditionsTemplate>()
                 .eq("is_del", 0)
-                .eq("business_party_id", vo.getBusinessPartyId())
+                .eq("business_party_id",  outSideBpmBusinessModel.getId())
                 .eq("template_name", vo.getTemplateName())
                 .eq("application_id", application.getId());
         if (vo.getId()!=null) {
@@ -345,6 +365,8 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
 
             outSideBpmConditionsTemplate = new OutSideBpmConditionsTemplate();
             BeanUtils.copyProperties(vo, outSideBpmConditionsTemplate);
+            outSideBpmConditionsTemplate.setIsDel(0);
+            outSideBpmConditionsTemplate.setBusinessPartyId(outSideBpmBusinessModel.getId());
             outSideBpmConditionsTemplate.setApplicationId(application.getId());
             outSideBpmConditionsTemplate.setCreateUserId(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmConditionsTemplate.setCreateUser(SecurityUtils.getLogInEmpName());

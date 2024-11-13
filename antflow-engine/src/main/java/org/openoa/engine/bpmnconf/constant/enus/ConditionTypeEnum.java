@@ -11,27 +11,26 @@ import org.openoa.base.vo.BpmnStartConditionsVo;
  * 条件类型枚举
  */
 public enum ConditionTypeEnum {
-    CONDITION_PURCHASE_FEE(1, "采购费用", "planProcurementTotalMoney", 2, String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "planProcurementTotalMoney", ThirdAccountJudge.class),
-    CONDITION_PURCHASE_TYPE(2, "采购类型", "procurementType", 2, String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "procurementType", ThirdAccountJudge.class),
-    CONDITION_THIRD_PARK_AREA(3, "园区面积", "parkArea", 2, Double.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
-
-    CONDITION_THIRD_ACCOUNT_TYPE(4, "三方账户", "accountType", 1, Integer.class,
+    CONDITION_THIRD_ACCOUNT_TYPE(1, "三方账户", "accountType", 1, Integer.class,
             BpmnNodeConditionsAccountTypeAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
+    CONDITION_BIZ_LEAVE_TIME(2, "请假时长", "leaveHour", 3, Double.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
+    CONDITION_PURCHASE_FEE(3, "采购费用", "planProcurementTotalMoney", 3, Double.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "planProcurementTotalMoney", PurchaseTotalMoneyJudge.class),
+    CONDITION_TYPE_OUT_TOTAL_MONEY(4, "支出费用", "outTotalMoney", 2, String.class,
+            BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "outTotalMoney", OutTotalMoneyJudge.class),
     CONDITION_JOB_LEVEL_TYPE(5, "职级列表", "jobLevelVo", 2, BaseIdTranStruVo.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "jobLevelVo", JobLevelJudge.class),
-    CONDITION_TYPE_TOTAL_MONEY(6, "总金额", "totalMoney", 2, String.class,
-            BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
+    CONDITION_PURCHASE_TYPE(6, "采购类型", "purchaseType", 1, Integer.class,
+            BpmnNodeConditionsPurchaseTypeAdp.class, BpmnStartConditionsVo.class, "purchaseType", PurchaseTypeJudge.class),
     CONDITION_TYPE_MONEY_OPERATOR(7, "总金额运算符枚举", "numberOperator", 2, Integer.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoneyOperator", MoneyOperatorJudge.class),
-
-    CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, Integer.class,
+    CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, String.class,
             BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
-
-    CONDITION_BIZ_LEAVE_TIME(37, "请假时长", "leaveHour", 2, Double.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
+    CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
+    CONDITION_TYPE_TOTAL_MONEY(38, "总金额", "totalMoney", 2, String.class,
+            BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
     ;
 
     @Getter

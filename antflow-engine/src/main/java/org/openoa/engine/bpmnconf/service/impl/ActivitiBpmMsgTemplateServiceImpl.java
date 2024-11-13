@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import jodd.bean.BeanUtil;
 import jodd.util.StringUtil;
@@ -539,8 +539,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         log.info("content数据转换,activitiBpmMsgVo:{},msgNoticeType:{}", JSON.toJSONString(activitiBpmMsgVo), msgNoticeType);
         BpmnConfNoticeTemplateDetail bpmnConfNoticeTemplateDetail = null;
         if (!StringUtils.isBlank(activitiBpmMsgVo.getBpmnCode())) {
-            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(),
-                    msgNoticeType);
+            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(), msgNoticeType);
         }
         String content = null;
         if (bpmnConfNoticeTemplateDetail == null) {

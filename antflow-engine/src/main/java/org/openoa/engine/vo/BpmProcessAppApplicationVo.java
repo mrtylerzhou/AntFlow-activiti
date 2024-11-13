@@ -23,6 +23,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 public class BpmProcessAppApplicationVo implements Serializable {
 
     private Integer id;
+    private Long businessPartyId;
     /**
      * business code,mainly for third party business,the central system's business code generally set to empty
      */
@@ -201,5 +202,16 @@ public class BpmProcessAppApplicationVo implements Serializable {
      * appversion 0 or empty means old version 1 means new version
      */
     private Integer appVersion;
+
+    /**
+     * user request uri
+     */
+    private String  userRequestUri;
+
+    /**
+     * role request uri
+     */
+    private String  roleRequestUri;
+
 
 }

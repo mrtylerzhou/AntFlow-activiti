@@ -50,7 +50,7 @@ public class ProcessServiceFactory {
     protected BpmTaskconfigMapper bpmTaskconfigMapper;
 
     @Autowired
-    protected ProcessContans processContans;
+    protected ProcessConstants processConstants;
 
     @Autowired
     protected NotifyServiceImpl notifyService;

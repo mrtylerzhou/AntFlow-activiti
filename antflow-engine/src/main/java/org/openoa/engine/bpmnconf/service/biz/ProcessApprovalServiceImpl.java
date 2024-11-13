@@ -178,7 +178,10 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
 
             for (TaskMgmtVO record : page.getRecords()) {
-
+                BpmnConf bpmnConf = bpmnConfMap.get(record.getProcessKey());
+                if(bpmnConf!=null){
+                    record.setIsOutSideProcess(Objects.equals(1,bpmnConf.getIsOutSideProcess()));
+                }
                 Integer applyUserId = record.getApplyUserId();
                 //todo get the actual user info from db
                 record.setActualName(SecurityUtils.getLogInEmpName());
@@ -217,7 +220,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
 
-        BusinessDataVo businessDataVo =  formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+        BusinessDataVo businessDataVo = null;
+        if(!vo.getIsOutSideAccessProc()){
+            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+        }else{
+            businessDataVo=vo;
+        }
 
         //set the businessId
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());

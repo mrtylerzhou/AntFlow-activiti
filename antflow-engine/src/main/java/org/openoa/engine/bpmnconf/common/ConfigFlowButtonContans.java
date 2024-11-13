@@ -179,7 +179,7 @@ public class ConfigFlowButtonContans {
     }
 
     private List<ProcessActionButtonVo> getButtons(List<BpmVariableButton> bpmVariableButtons,ButtonPageTypeEnum buttonPageTypeEnum) {
-        List<ProcessActionButtonVo> buttonlist = new ArrayList<ProcessActionButtonVo>();
+        List<ProcessActionButtonVo> buttonlist = new ArrayList<>();
         for (BpmVariableButton bpmVariableButton : bpmVariableButtons) {
             if (bpmVariableButton.getButtonPageType() == buttonPageTypeEnum.getCode()) {
                 buttonlist.add(ProcessActionButtonVo.builder().buttonType(bpmVariableButton.getButtonType())

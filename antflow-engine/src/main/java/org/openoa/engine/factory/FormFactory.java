@@ -1,20 +1,26 @@
 package org.openoa.engine.factory;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
+import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * @Classname FormFactory
@@ -26,6 +32,8 @@ import java.lang.reflect.Type;
 public class FormFactory implements ApplicationContextAware {
     @Autowired
     private IAdaptorFactory adaptorFactory;
+    @Autowired
+    private OutSideBpmAccessBusinessServiceImpl outSideBpmAccessBusinessService;
     private ApplicationContext applicationContext;
 
     public FormOperationAdaptor getFormAdaptor(String formCode){
@@ -49,15 +57,20 @@ public class FormFactory implements ApplicationContextAware {
      * @return
      */
     public BusinessDataVo dataFormConversion(String params,String formCode) {
-
+        BusinessDataVo vo = JSON.parseObject(params, BusinessDataVo.class);
         if(formCode==null){
-            BusinessDataVo vo = JSON.parseObject(params, BusinessDataVo.class);
             formCode=vo.getFormCode();
-            if(vo.getIsOutSideAccessProc()){
-                return vo;
-            }
         }
-
+        if(vo.getIsOutSideAccessProc()){
+            LambdaQueryWrapper<OutSideBpmAccessBusiness> qryWrapper = Wrappers
+                    .<OutSideBpmAccessBusiness>lambdaQuery()
+                    .eq(OutSideBpmAccessBusiness::getProcessNumber, vo.getProcessNumber());
+            List<OutSideBpmAccessBusiness> bpmAccessBusinesses = outSideBpmAccessBusinessService.list(qryWrapper);
+            if(!CollectionUtils.isEmpty(bpmAccessBusinesses)){
+                vo.setFormData(bpmAccessBusinesses.get(0).getFormDataPc());
+            }
+            return vo;
+        }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
             throw new JiMuBizException("can not get the processing bean by form code:{}!"+formCode);

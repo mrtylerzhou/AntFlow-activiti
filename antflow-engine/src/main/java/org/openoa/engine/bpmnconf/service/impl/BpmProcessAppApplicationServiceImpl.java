@@ -15,6 +15,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.vo.*;
 import org.openoa.base.vo.ResultAndPage;
@@ -227,34 +228,33 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
      * add or modify applications that are icon applications
      */
     public boolean addBpmProcessAppApplication(BpmProcessAppApplicationVo vo) {
-        if (vo.getProcessTypes()!=null) {
-            String[] passFilList = new String[]{"serialVersionUID", "isAll"};
-            BpmProcessAppApplication forVo = new BpmProcessAppApplication();
-            String route = StringEscapeUtils.unescapeHtml3(vo.getRoute());
-            vo.setRoute(route);
-            BeanUtils.copyProperties(vo, forVo, passFilList);
-            if (vo.getId()!=null) {
-                forVo.setEffectiveSource(vo.getEffectiveSource());
-                this.updateById(forVo);
-            } else {
-                forVo.setCreateTime(new Date());
-                forVo.setEffectiveSource(vo.getEffectiveSource());
-
-                // to check whether there is duplicate data
-                QueryWrapper<BpmProcessAppApplication> wrapper = new QueryWrapper<BpmProcessAppApplication>().eq("process_name", vo.getTitle()).eq("is_del", 0);
-                if (this.count(wrapper) > 0) {
-                    throw new JiMuBizException( "该选项名称已存在");
-                }
-                this.save(forVo);
+        String[] passFilList = new String[]{"serialVersionUID", "isAll"};
+        BpmProcessAppApplication forVo = new BpmProcessAppApplication();
+        String route = StringEscapeUtils.unescapeHtml3(vo.getRoute());
+        vo.setRoute(route);
+        BeanUtils.copyProperties(vo, forVo, passFilList);
+        if (vo.getId() != null) {
+            forVo.setEffectiveSource(vo.getEffectiveSource());
+            this.updateById(forVo);
+        } else {
+            forVo.setCreateTime(new Date());
+            forVo.setEffectiveSource(vo.getEffectiveSource());
+            forVo.setProcessKey(vo.getBusinessCode() + "_" + StrUtils.getFirstLetters(vo.getTitle()));
+            // to check whether there is duplicate data
+            QueryWrapper<BpmProcessAppApplication> wrapper = new QueryWrapper<BpmProcessAppApplication>().eq("process_name", vo.getTitle()).eq("is_del", 0);
+            if (this.count(wrapper) > 0) {
+                throw new JiMuBizException("该选项名称已存在");
             }
-            Serializable id = Optional.ofNullable(Optional.ofNullable(forVo).orElseGet(() -> {
-                return new BpmProcessAppApplication();
-            }).getId()).orElse((int) 0L);
-            bpmProcessApplicationTypeService.editProcessApplicationType(BpmProcessApplicationTypeVo.builder()
-                    .applicationId(((Integer) id).longValue())
-                    .processTypes(vo.getProcessTypes())
-                    .build());
+            this.save(forVo);
         }
+//            Serializable id = Optional.ofNullable(Optional.ofNullable(forVo).orElseGet(() -> {
+//                return new BpmProcessAppApplication();
+//            }).getId()).orElse((int) 0L);
+//            bpmProcessApplicationTypeService.editProcessApplicationType(BpmProcessApplicationTypeVo.builder()
+//                    .applicationId(((Integer) id).longValue())
+//                    .processTypes(vo.getProcessTypes())
+//                    .build());
+
         return true;
     }
 
@@ -291,6 +291,18 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             }
         }*/
         return true;
+    }
+    /**
+     *  all list on the pc
+     */
+    public ResultAndPage<BpmProcessAppApplicationVo> applicationsNewList(PageDto pageDto, BpmProcessAppApplicationVo vo) {
+        //排序字段链表
+        LinkedHashMap<String, SortTypeEnum> orderFieldMap = new LinkedHashMap<>();
+        orderFieldMap.put("id", SortTypeEnum.DESC);
+        Page<BpmProcessAppApplicationVo> page = PageUtils.getPageByPageDto(pageDto, orderFieldMap);
+        page.setRecords(bpmProcessAppApplicationMapper.newListPage(page, vo));
+        this.getPcProcessData(page);
+        return PageUtils.getResultAndPage(page);
     }
 
     /**
@@ -701,4 +713,11 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         return processKey;
     }
 
+    public List<BpmProcessAppApplicationVo> selectThirdPartyApplications(String businessPartyMark) {
+        return bpmProcessAppApplicationMapper.selectAllByBusinessPart(businessPartyMark);
+    }
+
+    public List<BpmProcessAppApplicationVo> selectAllByPartMarkId(Integer partyMarkId) {
+        return bpmProcessAppApplicationMapper.selectAllByPartMarkId(partyMarkId);
+    }
 }

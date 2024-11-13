@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.common;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -10,6 +11,7 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.TaskMgmtVO;
@@ -25,7 +27,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class ProcessContans extends ProcessServiceFactory {
+public class ProcessConstants extends ProcessServiceFactory {
 
     /**
      * get next node activity by process instance id
@@ -121,4 +123,15 @@ public class ProcessContans extends ProcessServiceFactory {
                 processInstanceId).taskDefinitionKey(key).list();
     }
 
+    public HistoricTaskInstance getPrevTask(String taskDefKey,String procInstId){
+        if(StringUtils.isEmpty(taskDefKey)){
+            return null;
+        }
+        if(StringUtils.isEmpty(procInstId)){
+            throw new JiMuBizException("taskId不为空,流程实例Id不存在!");
+        }
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).orderByTaskCreateTime().desc().list();
+        HistoricTaskInstance historicTaskInstance = list.stream().filter(a -> !taskDefKey.equals(a.getTaskDefinitionKey())).findFirst().orElse(null);
+        return historicTaskInstance;
+    }
 }

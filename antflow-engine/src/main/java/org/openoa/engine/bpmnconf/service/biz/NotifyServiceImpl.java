@@ -15,7 +15,7 @@ import org.openoa.base.vo.OperationResp;
 import org.openoa.base.vo.SendParam;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.vo.UrlParams;
-import org.openoa.engine.bpmnconf.common.ProcessContans;
+import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.BpmManualNotify;
 import org.openoa.engine.bpmnconf.mapper.*;
 import org.openoa.engine.bpmnconf.service.impl.BpmTaskconfigServiceImpl;
@@ -41,7 +41,7 @@ public class NotifyServiceImpl {
     private TaskMgmtMapper taskMgmtMapper;
 
     @Autowired
-    private ProcessContans processContans;
+    private ProcessConstants processConstants;
 
     @Autowired
     private TaskService taskService;
@@ -84,7 +84,7 @@ public class NotifyServiceImpl {
             urlParams.setBusinessId(entryId.split(":")[1]);
             urlParams.setCode(code);
             Map<String, Object> map = bpmTaskconfigMapper.findByAppRoute(procDefId, null, "test");
-            String appUrl = StringUtils.join(processContans.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
+            String appUrl = StringUtils.join(processConstants.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
             SendParam sendParam = SendParam.builder()
                     .appUrl(appUrl)
                     .userId(taskMgmtVO.getApplyUser())
@@ -124,7 +124,7 @@ public class NotifyServiceImpl {
             urlParams.setBusinessId(entryId.split(":")[1]);
             urlParams.setCode(code);
             Map<String, Object> map = bpmTaskconfigMapper.findByAppRoute(procDefId, null, "test");
-            String appUrl = StringUtils.join(processContans.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
+            String appUrl = StringUtils.join(processConstants.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
             //经办人列表
             List<String> assignees = taskMgmtMapper.getAssigneesByEntryId(entryId);
             if (!ObjectUtils.isEmpty(assignees)) {
@@ -249,7 +249,7 @@ public class NotifyServiceImpl {
             url = "/user/workflow/Upcoming/apply/" + processCode + "/" + bpmBusinessProcess.getBusinessId();
         } else {
             Map<String, Object> map = bpmTaskconfigService.findTaskNodeType(task.getTaskDefinitionKey());
-            url = "/user/workflow/Upcoming/check/" + processCode + "/" + bpmBusinessProcess.getBusinessId() + "/" + processContans.getMapValue(map, "nodeType") + "/" + task.getId();
+            url = "/user/workflow/Upcoming/check/" + processCode + "/" + bpmBusinessProcess.getBusinessId() + "/" + processConstants.getMapValue(map, "nodeType") + "/" + task.getId();
         }
         /*if(!processCode.equals(Contants.ENTRY_NUMBER)){
         }*/
@@ -353,7 +353,7 @@ public class NotifyServiceImpl {
             urlParams.setCode(code);
 
             Map<String, Object> map = bpmTaskconfigMapper.findByAppRoute(procDefId, null, "test");
-            String appUrl = StringUtils.join(processContans.getMapValue(map, "routeUrl"), entryId.split(":")[0]);
+            String appUrl = StringUtils.join(processConstants.getMapValue(map, "routeUrl"), entryId.split(":")[0]);
 
             bpmFlowrunEntrusts.forEach(o -> {
                 SendParam sendParam = SendParam.builder()

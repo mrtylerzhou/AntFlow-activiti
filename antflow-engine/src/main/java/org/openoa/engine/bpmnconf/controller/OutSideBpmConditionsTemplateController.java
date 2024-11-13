@@ -29,7 +29,28 @@ public class OutSideBpmConditionsTemplateController {
     public Result listPage(PageDto page, OutSideBpmConditionsTemplateVo vo) {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.listPage(page, vo));
     }
-
+    /**
+     * query template conf list by businessPartyMarkId and applicationId
+     *
+     * @param businessPartyId
+     * @param applicationId
+     * @return
+     */
+    @GetMapping("/templateConf/selectListByPartMarkIdAndAppId/{businessPartyId}/{applicationId}")
+    public Result selectListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
+        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMark(businessPartyId, applicationId));
+    }
+    /**
+     * query template conf list by businessPartyId and formcode
+     *
+     * @param businessPartyId
+     * @param formCode
+     * @return
+     */
+    @GetMapping("/templateConf/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formCode}")
+    public Result selectListByPartyMarkIdAndFormCode(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("formCode") String formCode) {
+        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMarkAndFormCode(businessPartyId, formCode));
+    }
     /**
      * query a specified template conf's detail info
      *

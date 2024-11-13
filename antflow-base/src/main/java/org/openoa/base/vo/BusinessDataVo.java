@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.constant.enums.MsgProcessEventEnum;
 import org.openoa.base.dto.PageDto;
 
 import java.util.List;
@@ -162,7 +163,10 @@ public class BusinessDataVo extends PageDto {
      */
     private String backToEmployeeId;
 
-
+    /**
+     * {@link org.openoa.base.constant.enums.ProcessDisagreeTypeEnum}
+     */
+    private Integer backToModifyType;
     //===============>>third party process<<===================
 
     /**
@@ -229,4 +233,6 @@ public class BusinessDataVo extends PageDto {
      * level nodes
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
+
+    private MsgProcessEventEnum msgProcessEventEnum;
 }

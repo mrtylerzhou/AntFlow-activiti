@@ -165,7 +165,9 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
     `runinfoid`   varchar(11)      DEFAULT NULL COMMENT 'process instance id',
     `runtaskid`   varchar(64)      DEFAULT NULL COMMENT 'task id',
     `original`    varchar(64)          DEFAULT NULL COMMENT 'original assignee',
+     `original_name`    varchar(255)          DEFAULT NULL COMMENT 'original assignee name',
     `actual`      varchar(64)          DEFAULT NULL COMMENT 'actual assignee',
+     `actual_name`   varchar(100)  null comment 'actual assignee name',
     `type`        int(20)          DEFAULT NULL COMMENT 'type 1: entrust 2:view',
     `is_read`     int(11)          DEFAULT '2' COMMENT 'is read 1:yes,2:no',
     `proc_def_id` varchar(100)     DEFAULT NULL COMMENT 'proces deployment id',
@@ -684,6 +686,26 @@ CREATE TABLE if not exists `t_user_email_send`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='user email send';
 
+create table if not exists t_method_replay
+(
+    id                   int auto_increment
+        primary key,
+    PROJECT_NAME         varchar(100) null comment 'project name',
+    CLASS_NAME           varchar(255) null,
+    METHOD_NAME          varchar(255) null,
+    PARAM_TYPE           varchar(255) null,
+    ARGS                 text         null,
+    NOW_TIME             timestamp    null,
+    ERROR_MSG            text         null,
+    ALREADY_REPLAY_TIMES int          null,
+    MAX_REPLAY_TIMES     int          null
+)ENGINE = InnoDB
+   DEFAULT CHARSET = utf8mb4 comment 'method replay records';
+
+create index t_method_replay_NOW_TIME_index
+    on t_method_replay (NOW_TIME);
+
+
 CREATE TABLE if not exists `t_user_entrust`
 (
     `id`            int(11)      NOT NULL AUTO_INCREMENT,
@@ -751,7 +773,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `BUSINESS_ID`      varchar(64) NOT NULL COMMENT 'business id',
     `BUSINESS_NUMBER`  varchar(64)  DEFAULT NULL COMMENT 'process number',
     `ENTRY_ID`         varchar(64)  DEFAULT NULL,
-    `VERSION`          bigint(11)   DEFAULT NULL COMMENT 'version',
+    `VERSION`          varchar(30)   DEFAULT NULL COMMENT 'version',
     `CREATE_TIME`      timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `UPDATE_TIME`      timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     `description`      varchar(100) DEFAULT NULL COMMENT 'title',
@@ -762,6 +784,8 @@ CREATE TABLE if not exists `bpm_business_process`
     `data_source_id`   bigint(10)   DEFAULT NULL COMMENT 'data source id',
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
+     user_name           varchar(255)           null,
+     is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes'
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
     KEY `process_entry_id` (`ENTRY_ID`) USING BTREE,
@@ -953,7 +977,10 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null
+    source           varchar(255)                       null,
+    user_request_uri varchar(255)                       null comment 'get user info',
+    role_request_uri varchar(255)                       null comment 'get role info'
+
 )
     comment 'BPM Process Application Table';
 
@@ -1067,11 +1094,12 @@ CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
         primary key,
     business_party_id     bigint       null comment 'business party id',
     bpmn_conf_id          bigint       null comment 'bpmn confi id',
+    form_code         varchar(64) null comment 'formcode',
     bpm_conf_callback_url varchar(500) null comment 'conf callback url',
     bpm_flow_callback_url varchar(500) null comment 'process flow call back url',
     api_client_id         varchar(100) null comment 'appId',
-    api_client_secrent    varchar(100) null comment 'appSecret',
-    status                tinyint default 1 comment '1 for enable,2 for disable',
+    api_client_secret    varchar(100) null comment 'appSecret',
+    status                tinyint default 0 comment '0 for enable,1 for disable',
     create_user           varchar(50) null comment 'as its name says',
     update_user           varchar(50) null,
     remark                varchar(50)         null comment 'remark',
@@ -1175,6 +1203,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
      `bpmn_node_id` BIGINT(20) NOT NULL COMMENT 'node id',
      `role_id` varchar(64) NOT NULL COMMENT 'role id',
+     `role_name` varchar(64) NOT NULL COMMENT 'role name'
      `sign_type` INT(11) NOT NULL COMMENT 'sign type 1 all sign,2 or sign',
      `remark` VARCHAR(255) DEFAULT NULL COMMENT 'remark',
      `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
@@ -1315,26 +1344,52 @@ CREATE TABLE `t_biz_leavetime`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for t_biz_purchase
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_purchase`;
+CREATE TABLE `t_biz_purchase`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `purchase_user_id` int(11) NOT NULL,
+  `purchase_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `purchase_type` int(11) NOT NULL,
+  `purchase_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `plan_procurement_total_money` double NOT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_biz_ucar_refuel
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_ucar_refuel`;
+CREATE TABLE `t_biz_ucar_refuel` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+`license_plate_number` varchar(32) DEFAULT NULL COMMENT '车牌号',
+`refuel_time` datetime DEFAULT NULL COMMENT '加油日期',
+`remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+`create_user` varchar(50) DEFAULT NULL COMMENT '创建人',
+`create_time` datetime DEFAULT NULL COMMENT '创建日期',
+`update_user` varchar(50) DEFAULT NULL COMMENT '更新人',
+`update_time` datetime DEFAULT NULL COMMENT '更新日期',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
+
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
-ALTER TABLE t_bpmn_node_role_conf ADD COLUMN `role_name` varchar(255) NULL COMMENT 'role name s' AFTER `role_id`;
+CREATE TABLE `t_user_role` (
+                               `id` int(11) NOT NULL AUTO_INCREMENT,
+                               `user_id` int(11) DEFAULT NULL COMMENT 'user id ',
+                               `role_id` int(11) DEFAULT NULL COMMENT 'role id',
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
 
-ALTER TABLE bpm_flowrun_entrust MODIFY  original VARCHAR(64) default null;
 
-ALTER TABLE bpm_flowrun_entrust MODIFY  actual VARCHAR(64) default null;
-
-ALTER TABLE  bpm_business_process  ADD COLUMN user_name VARCHAR(100) DEFAULT NULL;
-
-alter table bpm_flowrun_entrust
-	add original_name varchar(100) null comment 'original assignee name' after original;
-
-alter table bpm_flowrun_entrust
-	add actual_name varchar(100) null comment 'actual assignee name';
-alter table bpm_business_process modify VERSION varchar(30) null comment '版本';
-
-alter table bpm_business_process
-	add is_out_side_process tinyint default 0 null comment '是否是三方接入工作流,0不是,1是';
 
 SET FOREIGN_KEY_CHECKS = 1;
 
