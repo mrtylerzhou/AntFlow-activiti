@@ -127,6 +127,7 @@ public class LFMainField {
                 mainField.setFieldValueNumber(fieldValueNumber);
                 break;
             case DATE:
+            case DATE_TIME:
                 Date fieldValueDt = !StringUtils.isEmpty(fieldValueStr) ? DateUtil.parseStandard(fieldValueStr) : null;
                 mainField.setFieldValueDt(fieldValueDt);
                 break;

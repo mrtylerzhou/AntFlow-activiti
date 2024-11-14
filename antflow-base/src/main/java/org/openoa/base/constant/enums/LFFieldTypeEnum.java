@@ -11,8 +11,9 @@ public enum LFFieldTypeEnum {
     STRING(1,"字符串"),
     NUMBER(2,"数字"),
     DATE(3,"日期"),
-    TEXT(4,"长字符串"),
-    BLOB(5,"二进制")
+    DATE_TIME(4,"日期时间"),
+    TEXT(5,"长字符串"),
+    BLOB(6,"二进制"),
     ;
     private static LFFieldTypeEnum[] allInstances;
     private final Integer type;
