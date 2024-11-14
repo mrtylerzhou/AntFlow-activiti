@@ -1281,27 +1281,27 @@ create table if not exists t_user
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES (1, '张三');
-INSERT INTO `t_user` VALUES (2, '李四');
-INSERT INTO `t_user` VALUES (3, '王五');
-INSERT INTO `t_user` VALUES (4, '菜六');
-INSERT INTO `t_user` VALUES (5, '牛七');
-INSERT INTO `t_user` VALUES (6, '马八');
-INSERT INTO `t_user` VALUES (7, '李九');
-INSERT INTO `t_user` VALUES (8, '周十');
-INSERT INTO `t_user` VALUES (9, '肖十一');
-INSERT INTO `t_user` VALUES (10, '令狐冲');
-INSERT INTO `t_user` VALUES (11, '风清扬');
-INSERT INTO `t_user` VALUES (12, '刘正风');
-INSERT INTO `t_user` VALUES (13, '岳不群');
-INSERT INTO `t_user` VALUES (14, '宁中则');
-INSERT INTO `t_user` VALUES (15, '桃谷六仙');
-INSERT INTO `t_user` VALUES (16, '不介和尚');
-INSERT INTO `t_user` VALUES (17, '丁一师太');
-INSERT INTO `t_user` VALUES (18, '依林师妹');
-INSERT INTO `t_user` VALUES (19, '邱灵珊');
-INSERT INTO `t_user` VALUES (20, '任盈盈');
-INSERT INTO `t_user` VALUES (1001, 'test');
+INSERT INTO `t_user` (id,user_name)VALUES (1, '张三');
+INSERT INTO `t_user` (id,user_name)VALUES (2, '李四');
+INSERT INTO `t_user` (id,user_name)VALUES (3, '王五');
+INSERT INTO `t_user` (id,user_name)VALUES (4, '菜六');
+INSERT INTO `t_user` (id,user_name)VALUES (5, '牛七');
+INSERT INTO `t_user` (id,user_name)VALUES (6, '马八');
+INSERT INTO `t_user` (id,user_name)VALUES (7, '李九');
+INSERT INTO `t_user` (id,user_name)VALUES (8, '周十');
+INSERT INTO `t_user` (id,user_name)VALUES (9, '肖十一');
+INSERT INTO `t_user` (id,user_name)VALUES (10, '令狐冲');
+INSERT INTO `t_user` (id,user_name)VALUES (11, '风清扬');
+INSERT INTO `t_user` (id,user_name)VALUES (12, '刘正风');
+INSERT INTO `t_user` (id,user_name)VALUES (13, '岳不群');
+INSERT INTO `t_user` (id,user_name)VALUES (14, '宁中则');
+INSERT INTO `t_user` (id,user_name)VALUES (15, '桃谷六仙');
+INSERT INTO `t_user` (id,user_name)VALUES (16, '不介和尚');
+INSERT INTO `t_user` (id,user_name)VALUES (17, '丁一师太');
+INSERT INTO `t_user` (id,user_name)VALUES (18, '依林师妹');
+INSERT INTO `t_user` (id,user_name)VALUES (19, '邱灵珊');
+INSERT INTO `t_user` (id,user_name)VALUES (20, '任盈盈');
+INSERT INTO `t_user` (id,user_name)VALUES (1001, 'test');
 
 DROP TABLE IF EXISTS `t_role`;
 CREATE TABLE `t_role`  (
