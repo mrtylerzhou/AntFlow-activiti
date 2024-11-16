@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.constant;
 
-public class JimContants {
+public class AntFlowConstants {
     /**
      * un approved task when a process is ending
      */

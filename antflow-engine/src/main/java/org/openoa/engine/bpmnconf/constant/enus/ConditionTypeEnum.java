@@ -1,11 +1,16 @@
 package org.openoa.engine.bpmnconf.constant.enus;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import static org.openoa.base.constant.StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 条件类型枚举
@@ -25,16 +30,16 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsPurchaseTypeAdp.class, BpmnStartConditionsVo.class, "purchaseType", PurchaseTypeJudge.class),
     CONDITION_TYPE_MONEY_OPERATOR(7, "总金额运算符枚举", "numberOperator", 2, Integer.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoneyOperator", MoneyOperatorJudge.class),
-    CONDITION_TYPE_LF_STR_CONDITION(8,"无代码字符串流程条件","lfConditions",1,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
-    CONDITION_TYPE_LF_NUM_CONDITION(9,"无代码数字流程条件","lfConditions",1,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
-    CONDITION_TYPE_LF_DATE_CONDITION(10,"无代码日期流程条件","lfConditions",1,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
-    CONDITION_TYPE_LF_DATE_TIME_CONDITION(11,"无代码日期时间流程条件","lfConditions",1,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
-    CONDITION_TYPE_LF_COLLECTION_CONDITION(12,"无代码集合流程条件","lfConditions",2,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",null),
+    CONDITION_TYPE_LF_STR_CONDITION(8,"无代码字符串流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",LFStringConditionJudge.class),
+    CONDITION_TYPE_LF_NUM_CONDITION(9,"无代码数字流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Double.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions", LFNumberFormatJudge.class),
+    CONDITION_TYPE_LF_DATE_CONDITION(10,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, Date.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
+    CONDITION_TYPE_LF_DATE_TIME_CONDITION(11,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Date.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
+    CONDITION_TYPE_LF_COLLECTION_CONDITION(12,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
     CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, String.class,
             BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
     CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
@@ -43,7 +48,15 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
 
     ;
-
+static{
+    lowFlowCodes=  Lists.newArrayList(
+            CONDITION_TYPE_LF_STR_CONDITION.code,
+            CONDITION_TYPE_LF_NUM_CONDITION.code,
+            CONDITION_TYPE_LF_DATE_CONDITION.code,
+            CONDITION_TYPE_LF_DATE_TIME_CONDITION.code,
+            CONDITION_TYPE_LF_COLLECTION_CONDITION.code
+            );
+}
     @Getter
     private Integer code;
 
@@ -86,6 +99,7 @@ public enum ConditionTypeEnum {
     @Getter
     private String alignmentFieldName;
 
+    private static final List<Integer> lowFlowCodes;
     /**
      * 不同条件对应不同的判断类
      */
@@ -120,6 +134,9 @@ public enum ConditionTypeEnum {
         return null;
     }
 
+    public static boolean isLowCodeFlow(ConditionTypeEnum conditionTypeEnum){
+      return lowFlowCodes.contains(conditionTypeEnum.code);
+    }
     /**
      * 根据条件字段名称获得枚举
      *

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
@@ -55,6 +56,8 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         }
         //get conditions conf
 
+        String extJson = bpmnNodeConditionsConf.getExtJson();
+        List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
 
         BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo = new BpmnNodeConditionsConfBaseVo();
         bpmnNodeConditionsConfBaseVo.setIsDefault(bpmnNodeConditionsConf.getIsDefault());
@@ -85,16 +88,29 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                         .getEnumByCode(nodeConditionsParamConf.getConditionParamType());
 
                 String conditionParamJsom = nodeConditionsParamConf.getConditionParamJsom();
+
                 if (!ObjectUtils.isEmpty(conditionParamJsom)) {
                     if (conditionTypeEnum.getFieldType().equals(1)) {//列表
                         List<?> objects = JSON.parseArray(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                        Map<String,Object> wrappedValue=null;
+                        if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                            String columnDbname = extFields.get(0).getColumnDbname();
+                            wrappedValue=new HashMap<>();
+                            wrappedValue.put(columnDbname,objects);
+                        }
                         Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
-                        ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo, objects);
+                        ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo, wrappedValue!=null?wrappedValue:objects);
 
                     } else if (conditionTypeEnum.getFieldType().equals(2)) {//对象
                         Object object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                        Map<String,Object> wrappedValue=null;
+                        if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                            String columnDbname = extFields.get(0).getColumnDbname();
+                            wrappedValue=new HashMap<>();
+                            wrappedValue.put(columnDbname,object);
+                        }
                         Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
-                        ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo, object);
+                        ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo,  wrappedValue!=null?wrappedValue:object);
                     }
                 }
 
@@ -108,10 +124,13 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
         List<BpmnNodeConditionsConfVueVo> bpmnNodeConditionsConfVueVos = BpmnConfNodePropertyConverter.toVue3Model(bpmnNodeConditionsConfBaseVo);
         Map<String, BpmnNodeConditionsConfVueVo> voMap = bpmnNodeConditionsConfVueVos.stream().collect(Collectors.toMap(BpmnNodeConditionsConfVueVo::getColumnDbname, v -> v, (k1, k2) -> k1));
-        String extJson = bpmnNodeConditionsConf.getExtJson();
-        List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
+
         for (BpmnNodeConditionsConfVueVo extField : extFields) {
             String columnDbname = extField.getColumnDbname();
+            boolean lowCodeFlow = ConditionTypeEnum.isLowCodeFlow(ConditionTypeEnum.getEnumByCode(Integer.parseInt(extField.getColumnId())));
+            if(lowCodeFlow){
+                columnDbname=StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME;
+            }
             if(!CollectionUtils.isEmpty(voMap)){
                 BpmnNodeConditionsConfVueVo vueVo = voMap.get(columnDbname);
                 if(vueVo==null){
@@ -180,13 +199,24 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         if (nodeConditionsId > 0) {
 
 
-            Integer emptyCondition = 0;
+            int emptyCondition = 0;
 
 
             for (ConditionTypeEnum conditionTypeEnum : ConditionTypeEnum.values()) {
                 Object conditionParam = ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);
 
                 if (!ObjectUtils.isEmpty(conditionParam)) {
+                    if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                        Map<String, Object> containerWrapper = (Map<String, Object>) conditionParam;
+                        Set<String> keys = containerWrapper.keySet();
+                        if(keys.size()>1){
+                            throw new JiMuBizException("conditions field can not have more than 1 field at the moment");
+                        }
+                        //when codes run to here,keys only have one element,through iterate it by a for statement(set value can not be  reached via index)
+                        for (String key : keys) {
+                            conditionParam= containerWrapper.get(key);
+                        }
+                    }
                     String conditionParamJson;
                     if(conditionParam instanceof String){
                         conditionParamJson=conditionParam.toString();

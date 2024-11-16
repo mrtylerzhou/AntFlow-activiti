@@ -5,7 +5,8 @@ import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.openoa.engine.bpmnconf.constant.JimContants;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.vo.*;
@@ -54,7 +55,10 @@ public class BpmnConfNodePropertyConverter {
             String fieldName = enumByCode.getFieldName();
             String columnDbname = newModel.getColumnDbname();
             if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
-                throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+                //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
+               if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
+                   throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+               }
             }
             Integer fieldType = enumByCode.getFieldType();
             Class<?> fieldCls = enumByCode.getFieldCls();
@@ -78,6 +82,7 @@ public class BpmnConfNodePropertyConverter {
                 ReflectionUtils.setField(field, result, values);
             }else{
                 String zdy1 = newModel.getZdy1();
+
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 String opt1 = newModel.getOpt1();
                 if(!StringUtils.isEmpty(opt1)){
@@ -85,13 +90,26 @@ public class BpmnConfNodePropertyConverter {
                     if(symbol==null){
                         throw new JiMuBizException(String.format("condition symbol of %s is undefined!",opt1));
                     }
-                    Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, JimContants.NUM_OPERATOR, true);
+                    Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
                     ReflectionUtils.setField(opField,result,symbol.getCode());
                 }
                 if(String.class.isAssignableFrom(fieldCls)){
-                    ReflectionUtils.setField(field, result, zdy1);
+                    Object valueOrWrapper=null;
+                    if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        Map<String,Object> wrapperResult=new HashMap<>();
+                        wrapperResult.put(fieldName,zdy1);
+                        valueOrWrapper=wrapperResult;
+                    }
+                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                 }else{
-                    ReflectionUtils.setField(field, result, JSON.parseObject(zdy1,fieldCls));
+                    Object valueOrWrapper=null;
+                    Object actualValue=JSON.parseObject(zdy1,fieldCls);
+                    if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        Map<String,Object> wrapperResult=new HashMap<>();
+                        wrapperResult.put(fieldName,actualValue);
+                        valueOrWrapper=wrapperResult;
+                    }
+                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                 }
 
             }

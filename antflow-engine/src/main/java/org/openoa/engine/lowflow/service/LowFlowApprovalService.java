@@ -74,12 +74,12 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long confId = lfMain.getConfId();
         String formCode = lfMain.getFormCode();
 
-        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(mainId);
+        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
         if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
             Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
             allFieldConfMap.put(confId,name2SelfMap);
         }
-        lfFormdataFieldMap=allFieldConfMap.get(mainId);
+        lfFormdataFieldMap=allFieldConfMap.get(confId);
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
         if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%d has no formdata",formCode,confId));
@@ -149,9 +149,14 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         mainService.save(main);
         Long mainId = main.getId();
 
+        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
+        if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
+            Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+            allFieldConfMap.put(confId,name2SelfMap);
+        }
         Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
         if(CollectionUtils.isEmpty(fieldConfMap)){
-            throw  new JiMuBizException(Strings.lenientFormat("confId %d,formCode:%s does not has a field config",confId,vo.getFormCode()));
+            throw  new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
         List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId);
         mainFieldService.saveBatch(mainFields);
@@ -204,7 +209,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             conditionFieldNameMap.put(confId,condFieldNames);
             allFieldConfMap.put(confId,name2SelfMap);
         }
-
+        conditionFieldNames=conditionFieldNameMap.get(confId);
         Map<String,Object>conditionFieldMap=null;
 
         //if it is still empty here,it indicates that this approval has no condition fields
