@@ -978,7 +978,9 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null
+    source           varchar(255)                       null,
+    user_request_uri varchar(255)                       null comment 'get user info',
+    role_request_uri varchar(255)                       null comment 'get role info'
 )
     comment 'BPM Process Application Table';
 
