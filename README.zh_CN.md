@@ -10,8 +10,9 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 ![系统架构图](./doc/images/AntFlow架构.png)
 
 # 界面一览
-- 本项目是后端，前端完整功能请移步[gitee地址](https://gitee.com/ldhnet/AntFlow-Vue3)
-- 集成ruoyi演示项目 [http://117.72.70.166/admin/](http://117.72.70.166/admin/)
+-  🚦**本项目是后端，前端完整功能请移步** [gitee地址](https://gitee.com/ldhnet/AntFlow-Vue3)
+- 🚦集成ruoyi演示项目 [http://117.72.70.166/admin/](http://117.72.70.166/admin/)
+> 前端使用了ruoyi进行功能展示,后端暂无集成ruoyi(目前是纯粹的、独立的、可嵌入已有系统的工作流引擎，后续会做一个基于ruoyi的admin系统）
 ![1.png](./doc/images/1.png)
 
 添加节点
@@ -51,7 +52,7 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 # 核心技术栈
 
 * Java8-21 (main分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
-* Activiti 5.23
+* Activiti（fork了activiti5源码，并进行了魔改，⚠⚠用户请使用antflow源码中提供的sql进行建表，不要使用activiti自动创建表功能）
 * Spring Boot 2.7.17
 * MybatisPlus 3.5.1
 * MySql 5.7+
