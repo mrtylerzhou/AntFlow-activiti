@@ -118,6 +118,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             }
 
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
+            bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
 
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())

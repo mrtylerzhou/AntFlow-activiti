@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper">
-    <!--employeeMap can be implement or not,if not,you can write just like fieldxx as userName in the sql-->
+    <!--employeeMap can be implemented or not,if not,you can write just like fieldxx as userName in the sql-->
     <resultMap id="employeeMap" type="org.openoa.base.entity.Employee">
         <id column="id" property="id"/>
         <result column="department_id" property="departmentId"/>
@@ -20,7 +20,7 @@
     <sql id="queryUserByNameFuzzy">
         select id,user_name as name from t_user
         <where>
-            <if test="user_name != null and user_name != ''">
+            <if test="userName != null and userName != ''">
                 <bind name="user_name" value="'%' + user_name + '%'" />
                 and  user_name like #{user_name}
             </if>
