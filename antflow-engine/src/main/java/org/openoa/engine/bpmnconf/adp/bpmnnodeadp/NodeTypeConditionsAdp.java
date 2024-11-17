@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +11,13 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
+import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsConf;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsParamConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper;
+import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsParamConfServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
@@ -44,7 +47,9 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
     @Autowired
     private BpmnNodeConditionsParamConfServiceImpl bpmnNodeConditionsParamConfService;
     @Autowired
-    public BpmnNodeConditionsConfMapper confMapper;
+    private BpmnNodeConditionsConfMapper confMapper;
+    @Autowired
+    private BpmnConfLfFormdataFieldServiceImpl lfFormdataFieldService;
 
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
@@ -235,7 +240,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                             ObjectUtils.isEmpty(JSON.parseArray(conditionParamJson, conditionTypeEnum.getFieldCls()))) {
                         continue;
                     }
-
+                    String columnDbname = extField.getColumnDbname();
                     bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
                             .builder()
                             .bpmnNodeConditionsId(nodeConditionsId)
@@ -245,7 +250,10 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                             .createUser(SecurityUtils.getLogInEmpNameSafe())
                             .createTime(new Date())
                             .build());
+                    Long confId = bpmnNodeVo.getConfId();
+                    lfFormdataFieldService.getBaseMapper().updateByConfIdAndFieldName(confId,columnDbname);
                 }
+
             }
             /*for (ConditionTypeEnum conditionTypeEnum : ConditionTypeEnum.values()) {
                 Object conditionParam = ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);

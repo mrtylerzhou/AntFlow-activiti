@@ -6,6 +6,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.entity.BizLeaveTime;
 import org.openoa.vo.BizLeaveTimeVo;
 import org.openoa.mapper.BizLeaveTimeMapper;
@@ -92,12 +93,12 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(BizLeaveTimeVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }

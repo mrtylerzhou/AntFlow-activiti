@@ -11,6 +11,7 @@ import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_FINISH_CALL_BACK;
@@ -117,7 +119,18 @@ public class BpmnExecutionListener implements ExecutionListener {
             thirdPartyCallBackService.doCallback(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl(), PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
 
         } else {
-            formFactory.getFormAdaptor(formCode).finishData(businessId);
+            BusinessDataVo businessDataVo=new BusinessDataVo();
+            businessDataVo.setBusinessId(businessId);
+            businessDataVo.setFormCode(formCode);
+           if(Objects.equals(bpmnConf.getIsLowCodeFlow(),1)){
+               businessDataVo=new BusinessDataVo();
+               businessDataVo.setIsLowCodeFlow(1);
+               BpmnConfVo confVo=new BpmnConfVo();
+               BeanUtils.copyProperties(bpmnConf,confVo);
+               businessDataVo.setBpmnConfVo(confVo);
+
+           }
+            formFactory.getFormAdaptor(businessDataVo).finishData(businessDataVo);
         }
 
         //execute the process finish method and update status

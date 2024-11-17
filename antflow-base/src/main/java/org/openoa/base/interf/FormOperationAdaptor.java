@@ -65,15 +65,15 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
     /**
      * when a process is cancelled,it will call this method to do some business logic,it is a must method,usually,it is used to invalid the business data
      *
-     * @param businessId businessId
+     * @param businessDataVo businessDataVo
      */
-    void cancellationData(String businessId);
+    void cancellationData(T businessDataVo);
 
     /**
      * this method is called when a process is finished,it is a must method usually
      *
-     * @param businessId businessId
+     * @param businessDataVo businessDataVo
      */
-    void finishData(String businessId);
+    void finishData(BusinessDataVo businessDataVo);
 
 }

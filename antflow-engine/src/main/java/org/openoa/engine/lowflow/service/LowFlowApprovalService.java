@@ -12,12 +12,14 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainServiceImpl;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
+import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +41,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private LFMainFieldServiceImpl mainFieldService;
     @Autowired
     private LFMainServiceImpl mainService;
-
+    @Autowired(required = false)
+    private List<LFProcessFinishHook> lfProcessFinishHooks;
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
         String userId =  vo.getStartUserId();
@@ -177,13 +180,15 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(UDLFApplyVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
-
+    public void finishData(BusinessDataVo vo) {
+        for (LFProcessFinishHook lfProcessFinishHook : lfProcessFinishHooks) {
+            lfProcessFinishHook.onFinishData(vo);
+        }
     }
     private Map<String,Object> filterConditionFields(UDLFApplyVo vo){
         Long confId = vo.getBpmnConfVo().getId();

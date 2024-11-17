@@ -7,6 +7,7 @@ import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.interf.ActivitiServiceAnno;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.entity.ThirdPartyAccountApply;
 import org.openoa.mapper.ThirdPartyAccountApplyMapper;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -86,12 +87,12 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(ThirdPartyAccountApplyVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }

@@ -6,6 +6,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.entity.BizUcarfuel;
 import org.openoa.mapper.BizUcarFuelMapper;
 import org.openoa.vo.BizUcarRefuelVo;
@@ -88,12 +89,12 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(BizUcarRefuelVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }
