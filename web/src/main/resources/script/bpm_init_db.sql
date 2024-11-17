@@ -262,7 +262,8 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
 (
     `id`                      bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `bpmn_node_conditions_id` bigint(20)          NOT NULL COMMENT 'conf id',
-    `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine whether it is shown in the config page',
+    `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine ConditionTypeEnum',
+     `condition_param_name`  varchar(50)             NOT NULL COMMENT 'param field name',
     `condition_param_jsom`    text                NOT NULL COMMENT 'paramJSON',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',

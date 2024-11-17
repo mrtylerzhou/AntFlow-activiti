@@ -116,7 +116,7 @@ public class LFMainField {
         Integer fieldType = fieldConfig.getFieldType();
         LFFieldTypeEnum fieldTypeEnum = LFFieldTypeEnum.getByType(fieldType);
         if(fieldTypeEnum==null){
-            throw new JiMuBizException(Strings.lenientFormat("field type %d can not be empty",fieldConfig));
+            throw new JiMuBizException(Strings.lenientFormat("field type can not be empty,%s",fieldConfig));
         }
         switch (fieldTypeEnum){
             case STRING:

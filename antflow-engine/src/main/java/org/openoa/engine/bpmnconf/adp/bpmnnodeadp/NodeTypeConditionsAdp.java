@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -201,8 +202,52 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
 
             int emptyCondition = 0;
 
+            String extJson = bpmnNodeConditionsConfBaseVo.getExtJson();
+            List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
+            for (BpmnNodeConditionsConfVueVo extField : extFields) {
+                String columnId = extField.getColumnId();
+                ConditionTypeEnum conditionTypeEnum=ConditionTypeEnum.getEnumByCode(Integer.parseInt(columnId));
+                if(conditionTypeEnum==null){
+                    throw new JiMuBizException(Strings.lenientFormat("can not get node ConditionTypeEnum by code:%s",columnId));
+                }
+                Object conditionParam = ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);
+                if (!ObjectUtils.isEmpty(conditionParam)) {
+                    if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                        Map<String, Object> containerWrapper = (Map<String, Object>) conditionParam;
+                        Set<String> keys = containerWrapper.keySet();
+                        if(keys.size()>1){
+                            throw new JiMuBizException("conditions field can not have more than 1 field at the moment");
+                        }
+                        //when codes run to here,keys only have one element,through iterate it by a for statement(set value can not be  reached via index)
+                        for (String key : keys) {
+                            conditionParam= containerWrapper.get(key);
+                        }
+                    }
+                    String conditionParamJson;
+                    if(conditionParam instanceof String){
+                        conditionParamJson=conditionParam.toString();
+                    }else{
+                        conditionParamJson=JSON.toJSONString(conditionParam);
+                    }
 
-            for (ConditionTypeEnum conditionTypeEnum : ConditionTypeEnum.values()) {
+
+                    if (conditionTypeEnum.getFieldType() == 1 &&
+                            ObjectUtils.isEmpty(JSON.parseArray(conditionParamJson, conditionTypeEnum.getFieldCls()))) {
+                        continue;
+                    }
+
+                    bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
+                            .builder()
+                            .bpmnNodeConditionsId(nodeConditionsId)
+                            .conditionParamType(conditionTypeEnum.getCode())
+                            .conditionParamName(extField.getColumnDbname())
+                            .conditionParamJsom(conditionParamJson)
+                            .createUser(SecurityUtils.getLogInEmpNameSafe())
+                            .createTime(new Date())
+                            .build());
+                }
+            }
+            /*for (ConditionTypeEnum conditionTypeEnum : ConditionTypeEnum.values()) {
                 Object conditionParam = ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);
 
                 if (!ObjectUtils.isEmpty(conditionParam)) {
@@ -245,7 +290,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
             }
             if (emptyCondition == ConditionTypeEnum.values().length) {
                 throw new JiMuBizException("condition node has no condition config,can not save the config！");
-            }
+            }*/
         }
     }
 

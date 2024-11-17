@@ -35,6 +35,8 @@ public class BpmnNodeConditionsParamConf {
 
     @TableField("condition_param_type")
     private Integer conditionParamType;
+    @TableField("condition_param_name")
+    private String conditionParamName;
     /**
      * condition param json
      */
