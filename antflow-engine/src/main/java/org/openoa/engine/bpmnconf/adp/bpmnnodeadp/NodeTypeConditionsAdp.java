@@ -59,7 +59,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
 
         String extJson = bpmnNodeConditionsConf.getExtJson();
         List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
-
+        Map<String,BpmnNodeConditionsConfVueVo> name2confVueMap=extFields.stream().collect(Collectors.toMap(BpmnNodeConditionsConfVueVo::getColumnDbname, b->b,(k1, k2)->k1));
         BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo = new BpmnNodeConditionsConfBaseVo();
         bpmnNodeConditionsConfBaseVo.setIsDefault(bpmnNodeConditionsConf.getIsDefault());
         bpmnNodeConditionsConfBaseVo.setSort(bpmnNodeConditionsConf.getSort());
@@ -95,7 +95,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                         List<?> objects = JSON.parseArray(conditionParamJsom, conditionTypeEnum.getFieldCls());
                         Map<String,Object> wrappedValue=null;
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
-                            String columnDbname = extFields.get(0).getColumnDbname();
+                            String columnDbname = name2confVueMap.get(nodeConditionsParamConf.getConditionParamName()).getColumnDbname();
                             wrappedValue=new HashMap<>();
                             wrappedValue.put(columnDbname,objects);
                         }
@@ -106,7 +106,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                         Object object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
                         Map<String,Object> wrappedValue=null;
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
-                            String columnDbname = extFields.get(0).getColumnDbname();
+                            String columnDbname = name2confVueMap.get(nodeConditionsParamConf.getConditionParamName()).getColumnDbname();
                             wrappedValue=new HashMap<>();
                             wrappedValue.put(columnDbname,object);
                         }
