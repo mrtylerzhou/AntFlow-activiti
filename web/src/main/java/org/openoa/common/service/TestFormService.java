@@ -50,9 +50,8 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(String businessId) {
-        ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(businessId);
-        ThirdPartyAccountApplyVo vo=new ThirdPartyAccountApplyVo();
+    public ThirdPartyAccountApplyVo queryData(ThirdPartyAccountApplyVo vo) {
+        ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(accountApply,vo);
         return vo;
     }

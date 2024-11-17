@@ -50,9 +50,8 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public BizLeaveTimeVo queryData(String businessId) {
-        BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(businessId);
-        BizLeaveTimeVo vo=new BizLeaveTimeVo();
+    public BizLeaveTimeVo queryData(BizLeaveTimeVo vo) {
+        BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(leaveTime,vo);
         return vo;
     }

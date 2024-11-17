@@ -48,9 +48,8 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
     }
 
     @Override
-    public BizUcarRefuelVo queryData(String businessId) {
-        BizUcarfuel ucarFuel = bizUcarfuelMapper.selectById(businessId);
-        BizUcarRefuelVo vo=new BizUcarRefuelVo();
+    public BizUcarRefuelVo queryData(BizUcarRefuelVo vo) {
+        BizUcarfuel ucarFuel = bizUcarfuelMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(ucarFuel,vo);
         return vo;
     }

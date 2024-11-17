@@ -52,9 +52,8 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
     }
 
     @Override
-    public BizPurchaseVo queryData(String businessId) {
-        BizPurchase purchase = bizPurchaseMapper.selectById(businessId);
-        BizPurchaseVo vo=new BizPurchaseVo();
+    public BizPurchaseVo queryData(BizPurchaseVo vo) {
+        BizPurchase purchase = bizPurchaseMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(purchase,vo);
         return vo;
     }

@@ -1432,6 +1432,10 @@ create table t_bpmn_node_lf_formdata_field_control
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- ----------------------------
+⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
+-- 此表为路由表,通过lf.main.table.count控制,默认为2个,索引从0开始,需要自己手动创建
+-- ----------------------------
 create table t_lf_main
 (
 	id bigint auto_increment,
@@ -1446,6 +1450,10 @@ create table t_lf_main
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单主表';
 
+-- ----------------------------
+⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
+-- 此表为路由表,通过lf.field.table.count控制,默认为10个,索引从0开始,需要自己手动创建
+-- ----------------------------
 create table t_lf_main_field
 (
 	id bigint auto_increment,

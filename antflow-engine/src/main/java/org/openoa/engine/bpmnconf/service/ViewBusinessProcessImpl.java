@@ -45,8 +45,8 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
         }
-
-        BusinessDataVo queryData = formFactory.getFormAdaptor(businessDataVo).queryData(bpmBusinessProcess.getBusinessId());
+        businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
+        businessDataVo =formFactory.getFormAdaptor(businessDataVo).queryData(businessDataVo);
 
         //set the businessId
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());

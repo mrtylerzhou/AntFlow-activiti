@@ -67,10 +67,10 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
-    public UDLFApplyVo queryData(String businessId) {
-        LFMain lfMain = mainService.getById(businessId);
+    public UDLFApplyVo queryData(UDLFApplyVo vo) {
+        LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
-            log.error("can not get lowcode from data by specified Id:{}",businessId);
+            log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
             throw new JiMuBizException("can not get lowcode form data by specified id");
         }
         Long mainId = lfMain.getId();
@@ -132,7 +132,6 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 fieldVoMap.put(fieldName,actualMultiValue);
             }
         }
-        UDLFApplyVo vo=new UDLFApplyVo();
         vo.setLfFields(fieldVoMap);
         return vo;
     }
