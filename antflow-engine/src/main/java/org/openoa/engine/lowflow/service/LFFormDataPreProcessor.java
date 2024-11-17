@@ -1,7 +1,9 @@
 package org.openoa.engine.lowflow.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
+import org.activiti.engine.impl.Condition;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
@@ -29,7 +31,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
 
 
     @Override
-    public void preProcess(BpmnConfVo confVo) {
+    public void preWriteProcess(BpmnConfVo confVo) {
         if(confVo==null){
             return;
         }
@@ -57,6 +59,26 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
             throw new JiMuBizException(Strings.lenientFormat("lowcode form fields can not be empty,confId:%d,formCode:%s",confId,confVo.getFormCode()));
         }
         lfFormdataFieldService.saveBatch(formdataFields);
+    }
+
+    @Override
+    public void preReadProcess(BpmnConfVo confVo) {
+        if(confVo==null){
+            return;
+        }
+        Integer isLowCodeFlow = confVo.getIsLowCodeFlow();
+        boolean lowCodeFlowFlag=isLowCodeFlow!=null&&isLowCodeFlow==1;
+        if(!lowCodeFlowFlag){
+            return;
+        }
+        Long confId = confVo.getId();
+        List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
+        if(CollectionUtils.isEmpty(bpmnConfLfFormdataList)){
+            throw  new JiMuBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
+        }
+        BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
+        confVo.setLfFormData(lfFormdata.getFormdata());
+        confVo.setLfFormDataId(lfFormdata.getId());
     }
 
     private void parseWidgetListRecursively(List<FormConfigWrapper.LFWidget> widgetList,Long confId,Long formDataId,List<BpmnConfLfFormdataField> result){

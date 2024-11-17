@@ -19,13 +19,22 @@ public class ProcessorFactory {
             orderedPostProcessor.postProcess(entity);
         }
     }
-    public static  <TEntity>  void executePreProcessors(TEntity entity){
-        executePreProcessors(AntFlowOrderPreProcessor.class,entity);
+    public static <TEntity> void  executePreReadProcessors(TEntity entity){
+        executePreReadProcessors(AntFlowOrderPreProcessor.class,entity);
     }
-    public static  <TProcessor extends AntFlowOrderPreProcessor<TEntity>,TEntity> void executePreProcessors(Class<TProcessor> processorClass,TEntity entity){
+    public static  <TEntity>  void executePreWriteProcessors(TEntity entity){
+        executePreWriteProcessors(AntFlowOrderPreProcessor.class,entity);
+    }
+    public static  <TProcessor extends AntFlowOrderPreProcessor<TEntity>,TEntity> void executePreWriteProcessors(Class<TProcessor> processorClass, TEntity entity){
         List<TProcessor> orderedPostProcessors = getOrderedPostProcessors(processorClass, entity.getClass());
         for (TProcessor orderedPostProcessor : orderedPostProcessors) {
-            orderedPostProcessor.preProcess(entity);
+            orderedPostProcessor.preWriteProcess(entity);
+        }
+    }
+    public static  <TProcessor extends AntFlowOrderPreProcessor<TEntity>,TEntity> void executePreReadProcessors(Class<TProcessor> processorClass, TEntity entity){
+        List<TProcessor> orderedPostProcessors = getOrderedPostProcessors(processorClass, entity.getClass());
+        for (TProcessor orderedPostProcessor : orderedPostProcessors) {
+            orderedPostProcessor.preReadProcess(entity);
         }
     }
     private static  <TProcessor extends OrderedBean,TEntity> List<TProcessor> getOrderedPostProcessors(Class<TProcessor> processorCls, Class<TEntity> cls){

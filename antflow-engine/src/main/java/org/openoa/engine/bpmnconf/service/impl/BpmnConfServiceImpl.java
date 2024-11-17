@@ -8,8 +8,6 @@ import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.AntFlowOrderPostProcessor;
-import org.openoa.base.service.AntFlowOrderPreProcessor;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -109,7 +107,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
         Integer isLowCodeFlow = bpmnConfVo.getIsLowCodeFlow();
 
-        ProcessorFactory.executePreProcessors(bpmnConfVo);
+        ProcessorFactory.executePreWriteProcessors(bpmnConfVo);
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
@@ -308,7 +306,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                 conditionsUrl = applicationUrl.getConditionUrl();
             }
         }
-
+        ProcessorFactory.executePreReadProcessors(bpmnConfVo);
         //set nodes
         List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
                 .eq("conf_id", bpmnConf.getId())
