@@ -74,10 +74,10 @@ public class SqlInterceptor implements Interceptor {
             String modifiedSql="";
             for (String tableName : tableNames) {
                 if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
-                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+mainTableCount;
+                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
                     modifiedSql=replaceTableName(tableName,newTblName,sql);
                 }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
-                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+mainTableCount;
+                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(mainTableCount-1));
                     String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
                     modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
                 }
