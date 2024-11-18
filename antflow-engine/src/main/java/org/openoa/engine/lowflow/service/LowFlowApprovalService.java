@@ -85,7 +85,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         lfFormdataFieldMap=allFieldConfMap.get(confId);
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
         if(CollectionUtils.isEmpty(lfMainFields)){
-            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%d has no formdata",formCode,confId));
+            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         //returned to page for presenting
         Map<String,Object> fieldVoMap=new HashMap<>(lfMainFields.size());

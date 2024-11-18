@@ -1458,6 +1458,7 @@ create table t_lf_main_field
 (
 	id bigint auto_increment,
 	main_id bigint not null,
+	form_code varchar(255) null,
 	field_id varchar(255) null,
 	field_name varchar(255) null,
 	parent_field_id varchar(255) null,

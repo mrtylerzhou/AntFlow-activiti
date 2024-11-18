@@ -24,6 +24,8 @@ public class LFMainField {
     private Long id;
     @TableField("main_id")
     private Long mainId;
+    @TableField("form_code")
+    private String formCode;
     @TableField("field_id")
     private String fieldId;
     @TableField("field_name")

@@ -32,5 +32,6 @@ public class StringConstants {
     public static final String LOWFLOW_FORM_DATA_FIELD_TABLE_NAME="t_lf_main_field";
 
 
-    public static final String FORM_CODE="formCode";
+    public static final String FORMCODE_NO_CAMAL="formCode";
+    public static final String FORM_CODE="form_code";
 }
