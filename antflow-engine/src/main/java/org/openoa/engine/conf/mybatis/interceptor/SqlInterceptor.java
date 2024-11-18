@@ -50,50 +50,53 @@ public class SqlInterceptor implements Interceptor {
     private  Integer mainTableCount;
     @Value("${lf.field.table.count:2}")
     private Integer fieldTableCount;
+    @Value("${lf.dynamicRoutingtable:true}")
+    private boolean isLFDynamicRoutingTableOn;
     private static final List<String> lfTableNames = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
     private static final List<String> formCodesUpper=Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        // 获取拦截的参数
-        Object[] args = invocation.getArgs();
-        MappedStatement mappedStatement = (MappedStatement) args[0];
-        Object parameterObject = args[1];
+       if(isLFDynamicRoutingTableOn){
+           // 获取拦截的参数
+           Object[] args = invocation.getArgs();
+           MappedStatement mappedStatement = (MappedStatement) args[0];
+           Object parameterObject = args[1];
 
 
-        BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
+           BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
 
-        String sql = boundSql.getSql();
-        List<String> tableNames = getTableNames(sql);
-        if(CollectionUtils.containsAny(lfTableNames,tableNames)){
-            String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
-            CRC32 crc32=new CRC32();
-            crc32.update(restoredFormCode.getBytes(StandardCharsets.UTF_8));
-            long value = crc32.getValue();
-            Map<String,String> original2newTblName=new HashMap<>();
-            String modifiedSql="";
-            for (String tableName : tableNames) {
-                if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
-                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
-                    modifiedSql=replaceTableName(tableName,newTblName,sql);
-                }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
-                    String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(mainTableCount-1));
-                    String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
-                    modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
-                }
-            }
-            BoundSql newBoundSql = new BoundSql(
-                    mappedStatement.getConfiguration(),
-                    modifiedSql,
-                    boundSql.getParameterMappings(),
-                    boundSql.getParameterObject()
-            );
+           String sql = boundSql.getSql();
+           List<String> tableNames = getTableNames(sql);
+           if(CollectionUtils.containsAny(lfTableNames,tableNames)){
+               String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
+               CRC32 crc32=new CRC32();
+               crc32.update(restoredFormCode.getBytes(StandardCharsets.UTF_8));
+               long value = crc32.getValue();
+               Map<String,String> original2newTblName=new HashMap<>();
+               String modifiedSql="";
+               for (String tableName : tableNames) {
+                   if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
+                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                       modifiedSql=replaceTableName(tableName,newTblName,sql);
+                   }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
+                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                       String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
+                       modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
+                   }
+               }
+               BoundSql newBoundSql = new BoundSql(
+                       mappedStatement.getConfiguration(),
+                       modifiedSql,
+                       boundSql.getParameterMappings(),
+                       boundSql.getParameterObject()
+               );
 
 
-            MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
-            args[0] = newMappedStatement;
-        }
-
+               MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
+               args[0] = newMappedStatement;
+           }
+       }
 
         return invocation.proceed();
     }
