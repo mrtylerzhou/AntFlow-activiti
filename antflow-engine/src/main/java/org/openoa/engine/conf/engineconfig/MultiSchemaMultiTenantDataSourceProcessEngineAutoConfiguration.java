@@ -1,5 +1,6 @@
 package org.openoa.engine.conf.engineconfig;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.activiti.engine.impl.cfg.TransactionContextFactory;
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -32,12 +33,11 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
     }
 
     @Bean
-    public CustomTenantInfoHolder tenantInfoHolder(DataSource dataSource) {
+    public CustomTenantInfoHolder tenantInfoHolder() {
         CustomTenantInfoHolder tenantInfoHolder = new CustomTenantInfoHolder();
-
         // 添加租户数据源
-        //tenantInfoHolder.addTenant("tenantA", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantA", "user", "password"));
-        //tenantInfoHolder.addTenant("tenantB", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantB", "user", "password"));
+        tenantInfoHolder.addTenant("tenantA",dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenanta", "root", "dsb0004699"));
+        tenantInfoHolder.addTenant("tenantB", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantb", "dsb0004699", "password"));
 
         return tenantInfoHolder;
     }
@@ -48,7 +48,6 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
                                                                                                   PlatformTransactionManager transactionManager,
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
-
         // 配置默认数据源
         configuration.setDataSource(defaultDataSource);
         configuration.setDatabaseType(MultiSchemaMultiTenantProcessEngineConfiguration.DATABASE_TYPE_MYSQL);
@@ -61,7 +60,6 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         configuration.setTransactionContextFactory(transactionContextFactory);
         return configuration;
     }
-
 
 
     @Configuration
