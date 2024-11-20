@@ -19,6 +19,7 @@ import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.conf.engineconfig.CustomTenantInfoHolder;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -163,6 +164,7 @@ public class ActivitiTest {
         if (StringUtils.isBlank(res)) {
             res = "test01.bpmn20.xml";
         }
+
         traditionalActivitiService.createDeployment(res);
         return "ok";
     }

@@ -1,7 +1,6 @@
 package org.openoa.engine.conf.engineconfig;
 
 import org.activiti.engine.impl.cfg.multitenant.TenantInfoHolder;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -9,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class CustomTenantInfoHolder implements TenantInfoHolder {
 
     private final ThreadLocal<String> currentTenantId = new ThreadLocal<>();

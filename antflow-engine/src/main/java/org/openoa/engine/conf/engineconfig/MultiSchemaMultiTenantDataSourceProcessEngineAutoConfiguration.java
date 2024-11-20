@@ -1,8 +1,10 @@
 package org.openoa.engine.conf.engineconfig;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.cfg.TransactionContextFactory;
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
+import org.activiti.engine.impl.cfg.multitenant.TenantAwareDataSource;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
@@ -19,6 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.Collection;
 
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
@@ -37,7 +40,7 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         CustomTenantInfoHolder tenantInfoHolder = new CustomTenantInfoHolder();
         // 添加租户数据源
         tenantInfoHolder.addTenant("tenantA",dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenanta", "root", "dsb0004699"));
-        tenantInfoHolder.addTenant("tenantB", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantb", "dsb0004699", "password"));
+        //tenantInfoHolder.addTenant("tenantB", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantb", "dsb0004699", "dsb0004699"));
 
         return tenantInfoHolder;
     }
@@ -49,15 +52,21 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
         // 配置默认数据源
-        configuration.setDataSource(defaultDataSource);
+        configuration.setDataSource(new TenantAwareDataSource(tenantInfoHolder));
         configuration.setDatabaseType(MultiSchemaMultiTenantProcessEngineConfiguration.DATABASE_TYPE_MYSQL);
         configuration.setDatabaseSchemaUpdate(MultiSchemaMultiTenantProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE);
         // 告诉 Activiti 使用外部事务管理器
         configuration.setTransactionsExternallyManaged(true);
+        configuration.setAsyncExecutor(springAsyncExecutor);
 
         // 配置事务上下文工厂
         TransactionContextFactory transactionContextFactory = new SpringTransactionContextFactory(transactionManager);
         configuration.setTransactionContextFactory(transactionContextFactory);
+        Collection<String> allTenants = tenantInfoHolder.getAllTenants();
+        for (String currentTenant : allTenants) {
+            DataSource dataSource = tenantInfoHolder.getDataSource(currentTenant);
+            configuration.registerTenant(currentTenant,dataSource);
+        }
         return configuration;
     }
 
