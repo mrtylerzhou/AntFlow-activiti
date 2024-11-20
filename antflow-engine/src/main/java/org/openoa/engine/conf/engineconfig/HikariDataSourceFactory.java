@@ -16,7 +16,6 @@ public class HikariDataSourceFactory implements DataSourceFactory{
         dataSource.setPassword(password);
         dataSource.setMaximumPoolSize(10);
         dataSource.setMinimumIdle(2);
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         return dataSource;
     }
 }

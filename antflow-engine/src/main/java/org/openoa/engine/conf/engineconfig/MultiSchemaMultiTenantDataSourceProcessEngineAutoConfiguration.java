@@ -26,8 +26,7 @@ import java.util.Collection;
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration extends AbstractProcessEngineAutoConfiguration{
-    @Autowired
-    private DataSourceFactory dataSourceFactory;
+
 
     @Bean
     @ConditionalOnMissingBean
@@ -35,15 +34,6 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean
-    public CustomTenantInfoHolder tenantInfoHolder() {
-        CustomTenantInfoHolder tenantInfoHolder = new CustomTenantInfoHolder();
-        // 添加租户数据源
-        tenantInfoHolder.addTenant("tenantA",dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenanta", "root", "dsb0004699"));
-        //tenantInfoHolder.addTenant("tenantB", dataSourceFactory.createDataSource("jdbc:mysql://localhost:3306/tenantb", "dsb0004699", "dsb0004699"));
-
-        return tenantInfoHolder;
-    }
 
     @Bean
     public MultiSchemaMultiTenantProcessEngineConfiguration multiTenantProcessEngineConfiguration(CustomTenantInfoHolder tenantInfoHolder,
@@ -52,7 +42,7 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
         // 配置默认数据源
-        configuration.setDataSource(new TenantAwareDataSource(tenantInfoHolder));
+        configuration.setDataSource(defaultDataSource);
         configuration.setDatabaseType(MultiSchemaMultiTenantProcessEngineConfiguration.DATABASE_TYPE_MYSQL);
         configuration.setDatabaseSchemaUpdate(MultiSchemaMultiTenantProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE);
         // 告诉 Activiti 使用外部事务管理器

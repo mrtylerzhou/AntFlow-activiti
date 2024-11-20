@@ -1,6 +1,8 @@
 package org.openoa.engine.conf.engineconfig;
 
 import org.activiti.engine.impl.cfg.multitenant.TenantInfoHolder;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.util.ThreadLocalContainer;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -10,7 +12,6 @@ import java.util.Map;
 
 public class CustomTenantInfoHolder implements TenantInfoHolder {
 
-    private final ThreadLocal<String> currentTenantId = new ThreadLocal<>();
     private final Map<String, DataSource> tenantDataSources = new HashMap<>();
 
     public void addTenant(String tenantId, DataSource dataSource) {
@@ -28,16 +29,17 @@ public class CustomTenantInfoHolder implements TenantInfoHolder {
 
     @Override
     public void setCurrentTenantId(String tenantId) {
-        currentTenantId.set(tenantId);
+        ThreadLocalContainer.set(StringConstants.TENANT_USER,tenantId);
     }
 
     @Override
     public String getCurrentTenantId() {
-        return currentTenantId.get();
+        Object value = ThreadLocalContainer.get(StringConstants.TENANT_USER);
+        return value==null?"":value.toString();
     }
 
 
     public void clearCurrentTenantId() {
-        currentTenantId.remove();
+       ThreadLocalContainer.remove(StringConstants.TENANT_USER);
     }
 }
