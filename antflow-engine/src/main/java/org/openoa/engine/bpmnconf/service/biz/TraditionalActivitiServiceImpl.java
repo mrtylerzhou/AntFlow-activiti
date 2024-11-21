@@ -3,11 +3,10 @@ package org.openoa.engine.bpmnconf.service.biz;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.cfg.multitenant.TenantAwareDataSource;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.openoa.engine.conf.engineconfig.CustomTenantInfoHolder;
+import org.openoa.engine.conf.engineconfig.MultiTenantInfoHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class TraditionalActivitiServiceImpl {
     @Autowired
     private TaskService taskService;
     @Autowired
-    private CustomTenantInfoHolder tenantInfoHolder;
+    private MultiTenantInfoHolder tenantInfoHolder;
 
     @Autowired
     private RepositoryService repositoryService;

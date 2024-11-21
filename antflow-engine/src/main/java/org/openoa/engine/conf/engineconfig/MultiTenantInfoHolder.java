@@ -3,28 +3,23 @@ package org.openoa.engine.conf.engineconfig;
 import org.activiti.engine.impl.cfg.multitenant.TenantInfoHolder;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.ThreadLocalContainer;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-public class CustomTenantInfoHolder implements TenantInfoHolder {
+@Component
+public class MultiTenantInfoHolder extends TenantDataSourceRegistry implements TenantInfoHolder {
 
-    private final Map<String, DataSource> tenantDataSources = new HashMap<>();
 
-    public void addTenant(String tenantId, DataSource dataSource) {
-        tenantDataSources.put(tenantId, dataSource);
-    }
 
     public DataSource getDataSource(String tenantId) {
-        return tenantDataSources.get(tenantId);
+        return super.getDataSource(tenantId);
     }
 
     @Override
     public Collection<String> getAllTenants() {
-        return tenantDataSources.keySet();
+        return dataSources.keySet();
     }
 
     @Override
@@ -42,4 +37,5 @@ public class CustomTenantInfoHolder implements TenantInfoHolder {
     public void clearCurrentTenantId() {
        ThreadLocalContainer.remove(StringConstants.TENANT_USER);
     }
+
 }

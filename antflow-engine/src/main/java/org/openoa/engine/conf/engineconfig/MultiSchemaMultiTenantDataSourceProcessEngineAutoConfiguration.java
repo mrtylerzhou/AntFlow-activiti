@@ -1,7 +1,5 @@
 package org.openoa.engine.conf.engineconfig;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.cfg.TransactionContextFactory;
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.multitenant.TenantAwareDataSource;
@@ -9,7 +7,6 @@ import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.SpringTransactionContextFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -27,7 +24,6 @@ import java.util.Collection;
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration extends AbstractProcessEngineAutoConfiguration{
 
-
     @Bean
     @ConditionalOnMissingBean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
@@ -36,14 +32,16 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
 
 
     @Bean
-    public MultiSchemaMultiTenantProcessEngineConfiguration multiTenantProcessEngineConfiguration(CustomTenantInfoHolder tenantInfoHolder,
-                                                                                                  DataSource defaultDataSource,
+    public MultiSchemaMultiTenantProcessEngineConfiguration multiTenantProcessEngineConfiguration(MultiTenantInfoHolder tenantInfoHolder,
                                                                                                   PlatformTransactionManager transactionManager,
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
+
+        TenantAwareDataSource tenantAwareDataSource = new TenantAwareDataSource(tenantInfoHolder);
+
         // 配置默认数据源
-        configuration.setDataSource(defaultDataSource);
-        configuration.setDatabaseType(MultiSchemaMultiTenantProcessEngineConfiguration.DATABASE_TYPE_MYSQL);
+        configuration.setDataSource(tenantAwareDataSource);
+        configuration.setDatabaseType(DefaultDataBaseTypeDetector.detectDataSourceDbType(tenantInfoHolder.getDefaultDataSource()));
         configuration.setDatabaseSchemaUpdate(MultiSchemaMultiTenantProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE);
         // 告诉 Activiti 使用外部事务管理器
         configuration.setTransactionsExternallyManaged(true);
