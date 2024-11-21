@@ -50,14 +50,12 @@ public class LFRoutingSqlInterceptor implements Interceptor {
     private  Integer mainTableCount;
     @Value("${lf.field.table.count:2}")
     private Integer fieldTableCount;
-    @Value("${lf.dynamicRoutingtable:true}")
-    private boolean isLFDynamicRoutingTableOn;
     private static final List<String> lfTableNames = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
     private static final List<String> formCodesUpper=Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-       if(isLFDynamicRoutingTableOn){
+
            // 获取拦截的参数
            Object[] args = invocation.getArgs();
            MappedStatement mappedStatement = (MappedStatement) args[0];
@@ -75,28 +73,31 @@ public class LFRoutingSqlInterceptor implements Interceptor {
                long value = crc32.getValue();
                Map<String,String> original2newTblName=new HashMap<>();
                String modifiedSql="";
-               for (String tableName : tableNames) {
-                   if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
-                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(Math.max(mainTableCount,2)-1));
-                       modifiedSql=replaceTableName(tableName,newTblName,sql);
-                   }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
-                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(Math.max(mainTableCount,2)-1));
-                       String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
-                       modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
+               if(mainTableCount>=2){
+                   for (String tableName : tableNames) {
+                       if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
+
+                               String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                               modifiedSql=replaceTableName(tableName,newTblName,sql);
+                       }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
+
+                               String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(fieldTableCount-1));
+                               String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
+                               modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
+                       }
                    }
+
+                       BoundSql newBoundSql = new BoundSql(
+                               mappedStatement.getConfiguration(),
+                               modifiedSql,
+                               boundSql.getParameterMappings(),
+                               boundSql.getParameterObject()
+                       );
+
+                       MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
+                       args[0] = newMappedStatement;
                }
-               BoundSql newBoundSql = new BoundSql(
-                       mappedStatement.getConfiguration(),
-                       modifiedSql,
-                       boundSql.getParameterMappings(),
-                       boundSql.getParameterObject()
-               );
-
-
-               MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
-               args[0] = newMappedStatement;
            }
-       }
 
         return invocation.proceed();
     }
