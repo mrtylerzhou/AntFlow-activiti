@@ -45,7 +45,7 @@ import java.util.zip.CRC32;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
 })
-public class SqlInterceptor implements Interceptor {
+public class LFRoutingSqlInterceptor implements Interceptor {
     @Value("${lf.main.table.count:2}")
     private  Integer mainTableCount;
     @Value("${lf.field.table.count:2}")
@@ -77,10 +77,10 @@ public class SqlInterceptor implements Interceptor {
                String modifiedSql="";
                for (String tableName : tableNames) {
                    if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
-                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(Math.max(mainTableCount,2)-1));
                        modifiedSql=replaceTableName(tableName,newTblName,sql);
                    }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
-                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                       String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(Math.max(mainTableCount,2)-1));
                        String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
                        modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
                    }
