@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
+/**
+ * 这个类是默认简单实现,用户可以自定义一个类实现DataSourceFactory,并标注为@primary来覆盖这个默认的
+ */
 @Component
 public class HikariDataSourceFactory implements DataSourceFactory{
     @Override
