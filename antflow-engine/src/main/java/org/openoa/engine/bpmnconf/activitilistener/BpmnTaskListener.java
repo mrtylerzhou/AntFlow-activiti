@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
@@ -26,6 +28,7 @@ import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -89,8 +92,13 @@ public class BpmnTaskListener implements TaskListener {
 
         //set process entrust info
         String oldUserId = delegateTask.getAssignee();
-        String userId = userEntrustService.getEntrustEmployee(oldUserId, formCode);
-
+        String oldUserName="";
+        if(delegateTask instanceof TaskEntity){
+            oldUserName=((TaskEntity)delegateTask).getAssigneeName();
+        }
+        BaseIdTranStruVo entrustEmployee = userEntrustService.getEntrustEmployee(oldUserId,oldUserName, formCode);
+        String userId =entrustEmployee.getId();
+        String userName=entrustEmployee.getName();
 
         //if userId is not null and valid then set user task delegate
         if (!StringUtils.isEmpty(userId)) {
@@ -104,7 +112,9 @@ public class BpmnTaskListener implements TaskListener {
             entrust.setType(1);
             entrust.setRuntaskid(delegateTask.getId());
             entrust.setActual(userId);
+            entrust.setActualName(userName);
             entrust.setOriginal(oldUserId);
+            entrust.setOriginalName(oldUserName);
             entrust.setIsRead(2);
             entrust.setProcDefId(formCode);
             entrust.setRuninfoid(delegateTask.getProcessInstanceId());
