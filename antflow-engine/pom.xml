@@ -65,6 +65,13 @@
             <version>3.5.1</version>
             <scope>provided</scope>
         </dependency>
+        <!--非必须依赖,仅用于判断mybatisplus dynamic datasource是否存在-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.5.1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>

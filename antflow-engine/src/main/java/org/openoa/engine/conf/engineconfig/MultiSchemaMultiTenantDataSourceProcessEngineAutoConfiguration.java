@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 @Configuration
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
@@ -33,12 +35,28 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
 
     @Bean
     public MultiSchemaMultiTenantProcessEngineConfiguration multiTenantProcessEngineConfiguration(MultiTenantInfoHolder tenantInfoHolder,
+                                                                                                  TenantAwareDataSource tenantAwareDataSource,
                                                                                                   PlatformTransactionManager transactionManager,
+                                                                                                  MBPDynamicDataSourceDetector mbpDynamicDataSourceDetector,
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
 
-        TenantAwareDataSource tenantAwareDataSource = new TenantAwareDataSource(tenantInfoHolder);
 
+        Map<DataSource,String > stringDataSourceMap = mbpDynamicDataSourceDetector.detectMybatisPlusDynamicDataSource();
+        if(!CollectionUtils.isEmpty(stringDataSourceMap)){
+            int index=0;
+            for (Map.Entry<DataSource, String> dataSourceStringEntry : stringDataSourceMap.entrySet()) {
+                DataSource dataSource = dataSourceStringEntry.getKey();
+                String dataSourceName = dataSourceStringEntry.getValue();
+                if(index==0){
+                    //默认数据源
+                    tenantInfoHolder.registerDataSource("",dataSource);
+                }else{
+                    tenantInfoHolder.registerDataSource(dataSourceName,dataSource);
+                }
+                index++;
+            }
+        }
         // 配置默认数据源
         configuration.setDataSource(tenantAwareDataSource);
         configuration.setDatabaseType(DefaultDataBaseTypeDetector.detectDataSourceDbType(tenantInfoHolder.getDefaultDataSource()));
