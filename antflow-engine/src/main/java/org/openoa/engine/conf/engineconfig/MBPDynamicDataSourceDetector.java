@@ -2,6 +2,8 @@ package org.openoa.engine.conf.engineconfig;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.util.SpringBeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -14,9 +16,12 @@ import java.util.Map;
  */
 @Component
 public class MBPDynamicDataSourceDetector {
-    public Map<String, DataSource> detectMybatisPlusDynamicDataSource(DataSource dataSource){
+    @Autowired
+    private DataSource dataSource;
 
-            if(dataSource.getClass().getName().equals("com.baomidou.dynamic.datasource.DynamicRoutingDataSource")){
+    public Map<String, DataSource> detectMybatisPlusDynamicDataSource(){
+
+        if(dataSource.getClass().getName().equals("com.baomidou.dynamic.datasource.DynamicRoutingDataSource")){
                 Field dataSourceMapField = FieldUtils.getField(dataSource.getClass(), "dataSourceMap", true);
                 if(dataSourceMapField==null){
                     throw new JiMuBizException("mybatisplus dynamic datasource不包含dataSourceMap字段,请检查所使用的mybatisplus版本!");
