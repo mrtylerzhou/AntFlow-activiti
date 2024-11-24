@@ -313,7 +313,7 @@ CREATE TABLE if not exists `bpm_process_dept`
     `process_code` varchar(50)         DEFAULT NULL COMMENT 'process number',
     `process_type` int(11)             DEFAULT NULL COMMENT 'process type',
     `process_name` varchar(50)         DEFAULT NULL COMMENT 'process name',
-    `dep_id`       bigint(20)          DEFAULT NULL COMMENT 'dept id',
+    `dep_id`       varchar(64)          DEFAULT NULL COMMENT 'dept id',
     `remarks`      varchar(255)        DEFAULT NULL COMMENT 'remark',
     `create_time`  timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `create_user`  bigint(20)          DEFAULT NULL COMMENT 'as its name says',
@@ -1025,7 +1025,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='BPM Process Category Table';
 
-CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
+CREATE TABLE IF NOT EXISTS `bpm_process_permission` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
       `user_id` varchar(64) COMMENT 'User ID',
       `dep_id` varchar(64) COMMENT 'Department ID',
@@ -1037,6 +1037,17 @@ CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='process permission';
 
+CREATE TABLE if not exists `bpm_process_resource_permission` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `process_key` VARCHAR(255) DEFAULT NULL,
+  `resource_code` VARCHAR(255) DEFAULT NULL,
+  `create_user` VARCHAR(255) DEFAULT NULL,
+  `create_time` DATETIME DEFAULT NULL,
+  `is_del` TINYINT(1) DEFAULT NULL,
+  `update_time` DATETIME DEFAULT NULL,
+  `update_user` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      `id` BIGINT AUTO_INCREMENT,
@@ -1323,6 +1334,34 @@ INSERT INTO `t_role` VALUES (7, 'JAVA开发');
 INSERT INTO `t_role` VALUES (8, '测试审批角色');
 
 
+CREATE TABLE if not exists `t_department` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `short_name` VARCHAR(255),
+    `parent_id` INT,
+    `path` VARCHAR(255),
+    `level` INT,
+    `sort` INT,
+    `is_del` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 for no and 1 for yes',
+    `is_hide` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 show 1 hide',
+    `create_user` VARCHAR(255),
+    `create_time` DATETIME,
+    `update_time` DATETIME,
+    `update_user` VARCHAR(255),
+    FOREIGN KEY (`parent_id`) REFERENCES `t_department`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='department info';
+
+CREATE TABLE if not exists `t_department_employee` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `department_id` INT DEFAULT NULL,
+  `employee_id` INT DEFAULT NULL,
+  `is_leader` TINYINT(1) DEFAULT NULL,
+  `is_master` TINYINT(1) DEFAULT NULL,
+  `is_hrbp` TINYINT(1) DEFAULT NULL,
+  `create_time` DATETIME DEFAULT NULL,
+  `update_time` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for t_biz_leavetime

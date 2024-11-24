@@ -510,5 +510,13 @@ public class BpmnConfCommonServiceImpl {
                 .eq("effective_status", 1)
                 .eq("is_del", 0));
     }
-
+    /**
+     *
+     * @param bpmnConfId
+     * @return
+     */
+    public BpmnConf getBpmnConfById(Integer bpmnConfId) {
+        return Optional.ofNullable(bpmnConfService.getById(bpmnConfId))
+                .orElse(new BpmnConf());
+    }
 }

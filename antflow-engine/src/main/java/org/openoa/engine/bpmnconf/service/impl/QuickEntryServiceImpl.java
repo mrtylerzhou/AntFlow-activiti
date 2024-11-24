@@ -17,7 +17,7 @@ import org.openoa.engine.bpmnconf.confentity.QuickEntryType;
 import org.openoa.engine.bpmnconf.confentity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
-import org.openoa.engine.vo.ProcessTypeInforVo;
+import org.openoa.engine.vo.ProcessTypeInfoVo;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +84,7 @@ public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEn
     }
 
 
-    public ProcessTypeInforVo allQuickEntry(String version) {
+    public ProcessTypeInfoVo allQuickEntry(String version) {
         List<BpmProcessAppApplicationVo> appApplicationList = new ArrayList<>();
         SysVersion infoByVersion = sysVersionService.getInfoByVersion(version);
         if (infoByVersion==null) {
@@ -107,7 +107,7 @@ public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEn
                                 .sort(o.getSort())
                                 .build();
                     }).collect(Collectors.toList()));
-            return ProcessTypeInforVo.builder()
+            return ProcessTypeInfoVo.builder()
                     .applicationList(appApplicationList)
                     .processTypeName("快捷入口")
                     .build();

@@ -17,7 +17,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 @AllArgsConstructor
 @JsonSerialize(include=NON_NULL)
 public class IconInforVo implements Serializable {
-    private ProcessTypeInforVo commonFunction;
-    private List<ProcessTypeInforVo> applicationList;
-    private ProcessTypeInforVo sonApplicationList;
+    private ProcessTypeInfoVo commonFunction;
+    private List<ProcessTypeInfoVo> applicationList;
+    private ProcessTypeInfoVo sonApplicationList;
 }

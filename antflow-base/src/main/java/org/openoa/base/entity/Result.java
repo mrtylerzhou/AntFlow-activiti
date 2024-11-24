@@ -104,6 +104,9 @@ public class Result<T> {
         result.setRequestId(MDCLogUtil.getLogId());
         return result;
     }
+    public static <T> Result success(T data){
+        return Result.newSuccessResult(data);
+    }
     public static Result success(){
         return Result.newSuccessResult(null);
     }

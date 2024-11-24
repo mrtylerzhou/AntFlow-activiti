@@ -2,13 +2,14 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 import org.openoa.base.adp.FilterDataAdaptor;
+import org.openoa.base.adp.ProcessDeptFilterDataAdp;
 import org.openoa.base.adp.SecurityAccountDeviceFilterDataAdp;
 
 //todo
 public enum FilterDataEnum {
 
     FD_SECURITY_ACCOUNT_DEVICE(1, "账号与设备关联表漏斗数据", SecurityAccountDeviceFilterDataAdp.class),
-
+    FD_PROCESS_CONF(11,"流程配置管理", ProcessDeptFilterDataAdp.class),
     ;
     @Getter
     private Integer code;

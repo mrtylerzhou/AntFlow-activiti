@@ -120,12 +120,13 @@
     </sql>
     <!--only id and name is needed,you only need change the table name and field name if needed-->
     <sql id="getSubDepartmentsByEmpId">
-        select id,name from t_department
-        <where>
-            <if test="employeeId != null">
-                id = #{employeeId}
-            </if>
-        </where>
+        select
+        d.*
+        from t_user as e
+        left join t_department_employee as de on e.id = de.employee_id
+        left join t_department as d on d.id = de.department_id
+        WHERE e.id = #{employeeId}
+        and e.is_del = 0 and d.is_del = 0
     </sql>
     <sql id="getDepartmentByEmployeeId">
         select id,name from t_department

@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -49,7 +48,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Autowired
     private BpmProcessAppDataServiceImpl processAppDataService;
     @Autowired
-    private BpmProcessPermissionsServiceImpl processPermissionsService;
+    private BpmProcessPermissionServiceImpl processPermissionsService;
     @Autowired
     private SysVersionServiceImpl sysVersionService;
     @Autowired
@@ -247,13 +246,11 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             }
             this.save(forVo);
         }
-//            Serializable id = Optional.ofNullable(Optional.ofNullable(forVo).orElseGet(() -> {
-//                return new BpmProcessAppApplication();
-//            }).getId()).orElse((int) 0L);
-//            bpmProcessApplicationTypeService.editProcessApplicationType(BpmProcessApplicationTypeVo.builder()
-//                    .applicationId(((Integer) id).longValue())
-//                    .processTypes(vo.getProcessTypes())
-//                    .build());
+        Integer id = Optional.ofNullable(Optional.ofNullable(forVo).orElseGet(BpmProcessAppApplication::new).getId()).orElse((int) 0L);
+        bpmProcessApplicationTypeService.editProcessApplicationType(BpmProcessApplicationTypeVo.builder()
+                   .applicationId(id.longValue())
+                   .processTypes(vo.getProcessTypes())
+                   .build());
 
         return true;
     }
@@ -268,28 +265,6 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         BpmProcessAppApplication processApplicationType = bpmProcessAppApplicationMapper.selectById(id);
         processApplicationType.setIsDel(1);
         bpmProcessAppApplicationMapper.updateById(processApplicationType);
-        /*List<BpmProcessApplicationType> applicationType = bpmProcessApplicationTypeService.getProcessApplicationType(BpmProcessApplicationTypeVo.builder()
-                .applicationId(id)
-                .build());
-        for (BpmProcessApplicationType type : applicationType) {
-            Wrapper<BpmProcessApplicationType> wrapper = new EntityWrapper<BpmProcessApplicationType>().eq("is_del", 0).eq("category_id", type.getId());
-            Integer countTotal = bpmProcessApplicationTypeMapper.selectCount(wrapper);
-            List<BpmProcessApplicationType> processApplicationTypes = bpmProcessApplicationTypeMapper.selectList(wrapper);
-            Integer sort=0;
-            if(CheckUtil.checkObj(processApplicationTypes)){
-                sort=processApplicationTypes.get(0).getSort();
-            }
-            List<BpmProcessApplicationType> list = bpmProcessApplicationTypeMapper.selectList(wrapper.gt("sort", sort));
-            //修改当前常用功能排序
-            if (sort < countTotal) {
-                int countChanged = 0;
-                for (BpmProcessApplicationType o : list) {
-                    o.setSort(o.getSort() - 1);
-                    countChanged += bpmProcessApplicationTypeMapper.updateById(o);
-                }
-                return countChanged == countTotal - sort;
-            }
-        }*/
         return true;
     }
     /**
@@ -356,12 +331,12 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     /**
      * process application list
      */
-    public List<ProcessTypeInforVo> processApplicationList() {
+    public List<ProcessTypeInfoVo> processApplicationList() {
         List<BpmProcessCategory> bpmProcessCategories = bpmProcessCategoryService.getBaseMapper().selectList(new QueryWrapper<BpmProcessCategory>().eq("is_app", 1).eq("is_del", 0).ne("id", appCommonId));
-        bpmProcessCategories.sort((BpmProcessCategory bpmProcessAppApplication, BpmProcessCategory appApplication) -> bpmProcessAppApplication.getSort().compareTo(appApplication.getSort()));
-        List<ProcessTypeInforVo> list = new ArrayList<>();
+        bpmProcessCategories.sort(Comparator.comparing(BpmProcessCategory::getSort));
+        List<ProcessTypeInfoVo> list = new ArrayList<>();
         for (BpmProcessCategory processCategory : bpmProcessCategories) {
-            ProcessTypeInforVo processTypeInforVo = new ProcessTypeInforVo();
+            ProcessTypeInfoVo processTypeInforVo = new ProcessTypeInfoVo();
             processTypeInforVo.setProcessTypeName(processCategory.getProcessTypeName());
             processTypeInforVo.setApplicationList(bpmProcessAppApplicationMapper.listProcessIcon(BpmProcessAppApplicationVo.builder().id(processCategory.getId().intValue()).build()));
             list.add(processTypeInforVo);
@@ -370,9 +345,9 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     }
 
     /**
-     * aapp process list;
+     * app process list;
      */
-    public List<ProcessTypeInforVo> list(String version) {
+    public List<ProcessTypeInfoVo> list(String version) {
 
        //todo to be redesigned
         return null;
@@ -399,7 +374,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             //查询类别
             BpmProcessCategory processCategory = bpmProcessCategoryService.getBaseMapper().selectById(processCategoryId);
             IconInforVo iconInforVo = new IconInforVo();
-            ProcessTypeInforVo typeInforVo = new ProcessTypeInforVo();
+            ProcessTypeInfoVo typeInforVo = new ProcessTypeInfoVo();
             List<BpmProcessAppApplicationVo> vos = bpmProcessAppApplicationMapper.listIcon(BpmProcessAppApplicationVo.builder()
                     .id(processCategoryId)
                     .isSon(1)
@@ -412,9 +387,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             return iconInforVo;
         }
 
-//        //1:querying all app
-//        List<BpmProcessAppApplication> appApplications = this.applicationsList();
-//        List<String> stringStream = appApplications.stream().map(BpmProcessAppApplication::getProcessKey).collect(Collectors.toList());
+
         Integer isPc = 1;
         Integer id = appCommonId;
         if (isApp.equals(0)) {
@@ -425,7 +398,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         //2: querying all category list
         List<BpmProcessCategory> bpmProcessCategoryList = bpmProcessCategoryService.processCategoryList(BpmProcessCategoryVo.builder().isApp(isPc).build());
         //常用功能
-        ProcessTypeInforVo typeInforVo = new ProcessTypeInforVo();
+        ProcessTypeInfoVo typeInforVo = new ProcessTypeInfoVo();
         BpmProcessCategory processCategory = bpmProcessCategoryService.getProcessCategory(id.longValue());
         if (processCategory!=null) {
             List<BpmProcessAppApplicationVo> vos = bpmProcessAppApplicationMapper.listIcon(BpmProcessAppApplicationVo.builder()
@@ -438,14 +411,13 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         }
         iconInforVo.setCommonFunction(typeInforVo);
         //process type info
-        List<ProcessTypeInforVo> typeInforVoList = new ArrayList<>();
+        List<ProcessTypeInfoVo> typeInforVoList = new ArrayList<>();
         for (BpmProcessCategory bpmProcessCategory : bpmProcessCategoryList) {
-            ProcessTypeInforVo processTypeInforVo = new ProcessTypeInforVo();
+            ProcessTypeInfoVo processTypeInforVo = new ProcessTypeInfoVo();
             if (bpmProcessCategory.getId().equals(id.longValue())) {
                 continue;
             }
             List<BpmProcessAppApplicationVo> vos = bpmProcessAppApplicationMapper.listIcon(BpmProcessAppApplicationVo.builder()
-//                    .processKeyList(stringStream)
                     .id(bpmProcessCategory.getId().intValue())
                     .isSon(0)
                     .build());
@@ -461,9 +433,9 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     /**
      * home page process info on the pc
      */
-    public List<ProcessTypeInforVo> homePageIcon(BpmProcessAppApplicationVo vo) {
+    public List<ProcessTypeInfoVo> homePageIcon(BpmProcessAppApplicationVo vo) {
 
-        List<ProcessTypeInforVo> typeInforVoList = new ArrayList<>();
+        List<ProcessTypeInfoVo> typeInforVoList = new ArrayList<>();
 
         List<String> collect = processDeptService.findProcessKey();
 
@@ -474,7 +446,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             if (vo.getProcessCategoryId()!=null) {
                 //get sub process
                 BpmProcessAppApplication application = this.getBaseMapper().selectById(vo.getParentId());
-                ProcessTypeInforVo processTypeInforVo = new ProcessTypeInforVo();
+                ProcessTypeInfoVo processTypeInforVo = new ProcessTypeInfoVo();
                 List<BpmProcessAppApplicationVo> vos;
 
                 // querying the sub application under the category
@@ -494,7 +466,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
 
                 //get sub process from frequently used application
                 BpmProcessAppApplication application =this.getBaseMapper().selectById(vo.getParentId());
-                ProcessTypeInforVo processTypeInforVo = new ProcessTypeInforVo();
+                ProcessTypeInfoVo processTypeInforVo = new ProcessTypeInfoVo();
                 List<BpmProcessAppApplicationVo> vos;
 
                 //querying the sub application under the parent application
@@ -526,7 +498,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         //query all category
         List<BpmProcessCategory> bpmProcessCategoryList = bpmProcessCategoryService.processCategoryList(BpmProcessCategoryVo.builder().isApp(0).build());
         for (BpmProcessCategory bpmProcessCategory : bpmProcessCategoryList) {
-            ProcessTypeInforVo processTypeInforVo = new ProcessTypeInforVo();
+            ProcessTypeInfoVo processTypeInforVo = new ProcessTypeInfoVo();
             List<BpmProcessAppApplicationVo> vos;
             if (bpmProcessCategory.getId() == 1) {
 
@@ -627,7 +599,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     /**
      * app's home page frequently used app
      */
-    public ProcessTypeInforVo iconCommon() {
+    public ProcessTypeInfoVo iconCommon() {
 
         BpmProcessCategory processCategory = bpmProcessCategoryService.getBaseMapper().selectById(appCommonId);
         if (processCategory!=null) {
@@ -638,7 +610,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
                             .visbleState(1)
                             .build());
 
-            return ProcessTypeInforVo
+            return ProcessTypeInfoVo
                     .builder()
                     .applicationList(vos)
                     .processTypeName(processCategory.getProcessTypeName())

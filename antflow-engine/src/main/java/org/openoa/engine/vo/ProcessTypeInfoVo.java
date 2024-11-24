@@ -17,7 +17,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSerialize(include=NON_NULL)
-public class ProcessTypeInforVo implements Serializable {
+public class ProcessTypeInfoVo implements Serializable {
     /**
      * 流程类别名称
      */

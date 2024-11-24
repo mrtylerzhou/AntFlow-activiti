@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.constant.StringConstants;
 
 import java.io.Serializable;
 import java.util.Set;
 
 /**
  * may be your system do not have all these concepts,but feel free
+ * 此表主要用于控制流程权限，虽然工作流不关心系统组织架构，但是一般系统流程权限往往以部分为基础设置，这里并非所有字段都有用，根据实际情况而定
  */
 @Data
 @Builder

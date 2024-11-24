@@ -9,6 +9,7 @@ import org.activiti.engine.impl.pvm.runtime.StartingExecution;
  * @Created by AntOffice
  */
 public class StringConstants {
+    public static final String PROCESSTYPE_DIC_TYPE="DIC_LCLB";
     public static final String SCAN_BASE_PACKAGES="org.openoa";
     public static final String SPECIAL_CHARACTERS = "[ _`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
     public static final String BPMN_CODE_SPLITMARK = "-";

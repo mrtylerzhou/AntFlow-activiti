@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.mapper;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.openoa.engine.bpmnconf.confentity.Department;
-import org.springframework.stereotype.Repository;
+import org.openoa.base.entity.Department;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * @since 0.5
  */
 @Mapper
-public interface DepartmentMapper  {
+public interface DepartmentMapper extends BaseMapper<Department> {
     List<Department> ListSubDepartmentByEmployeeId(@Param("employeeId") String employeeId);
 
     Department getDepartmentByEmployeeId(@Param("employeeId") String employeeId);

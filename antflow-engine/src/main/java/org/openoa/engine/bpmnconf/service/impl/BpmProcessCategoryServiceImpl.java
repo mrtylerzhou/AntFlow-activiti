@@ -203,10 +203,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
      * mapping
      */
     public List<BpmProcessCategoryVo> bpmProcessAppApplicationVoList(List<BpmProcessCategoryVo> list) {
-        return list.stream().map(o -> {
-            o.setName(o.getProcessTypeName() + o.getEntrance());
-            return o;
-        }).collect(Collectors.toList());
+        return list.stream().peek(o -> o.setName(o.getProcessTypeName() + o.getEntrance())).collect(Collectors.toList());
     }
 
     /**

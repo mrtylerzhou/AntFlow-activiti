@@ -27,7 +27,7 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
         wrapper.eq("process_key", processKey);
         this.getBaseMapper().delete(wrapper);
         if (!ObjectUtils.isEmpty(notifyTypeIds)) {
-            notifyTypeIds.stream().forEach(o -> {
+            notifyTypeIds.forEach(o -> {
                 this.getBaseMapper().insert(BpmProcessNotice.builder()
                         .processKey(processKey)
                         .type(o)

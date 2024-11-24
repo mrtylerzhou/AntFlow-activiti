@@ -45,7 +45,7 @@ public class BpmProcessDept {
      * process belonging department id
      */
     @TableField("dep_id")
-    private Long deptId;
+    private String deptId;
     /**
      * process remark
      */

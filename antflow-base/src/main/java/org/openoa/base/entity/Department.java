@@ -1,9 +1,10 @@
-package org.openoa.engine.bpmnconf.confentity;
+package org.openoa.base.entity;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("t_department")
 public class Department {
 
 
@@ -33,14 +35,14 @@ public class Department {
     /**
      * short name
      */
-    @TableField("name_scn")
-    private String nameScn;
+    @TableField("short_name")
+    private String shortName;
     /**
      * parent Id
      */
     @TableField("parent_id")
     private Integer parentId;
-
+    private String path;
     /**
      * department level
      */
@@ -60,18 +62,24 @@ public class Department {
     /**
      * create user
      */
+    @TableField("create_user")
     private String createUser;
-    private Date createTime;
-    private Date updateTime;
     /**
-     * modify user
+     *create time
      */
-    private String updateUser;
+    @TableField("create_time")
+    private Date createTime;
 
     /**
-     * department Id in qywx
+     * update time
      */
-    private Integer qywxId;
+    @TableField("update_time")
+    private Date updateTime;
+    /**
+     * update time
+     */
+    @TableField("update_user")
+    private String updateUser;
 
 
 }
