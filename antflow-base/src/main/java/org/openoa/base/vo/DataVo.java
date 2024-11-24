@@ -1,5 +1,6 @@
 package org.openoa.base.vo;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ public class DataVo implements Serializable {
     /**
      * start time
      */
+    @JSONField(format = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date beginTime;
 
