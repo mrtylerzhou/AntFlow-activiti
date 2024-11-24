@@ -35,7 +35,7 @@ public class BpmProcessPermissions {
      * dept id
      */
     @TableField("dep_id")
-    private Long depId;
+    private String depId;
     /**
      * permission type 1 for view 2 for create 3 for monitor
      */

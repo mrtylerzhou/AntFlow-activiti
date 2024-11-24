@@ -1028,7 +1028,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
 CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
       `user_id` varchar(64) COMMENT 'User ID',
-      `dep_id` BIGINT COMMENT 'Department ID',
+      `dep_id` varchar(64) COMMENT 'Department ID',
       `permissions_type` INT COMMENT 'Permission type (1 for view, 2 for create, 3 for monitor)',
       `create_user` varchar(64) COMMENT 'Create user ID',
       `create_time` timestamp not null default current_timestamp COMMENT 'Create time',
