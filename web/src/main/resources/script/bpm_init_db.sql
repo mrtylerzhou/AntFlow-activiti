@@ -162,7 +162,7 @@ CREATE TABLE if not exists `bpm_business`
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (
     `id`          int(11) NOT NULL AUTO_INCREMENT,
-    `runinfoid`   varchar(11)      DEFAULT NULL COMMENT 'process instance id',
+    `runinfoid`   varchar(64)      DEFAULT NULL COMMENT 'process instance id',
     `runtaskid`   varchar(64)      DEFAULT NULL COMMENT 'task id',
     `original`    varchar(64)          DEFAULT NULL COMMENT 'original assignee',
      `original_name`    varchar(255)          DEFAULT NULL COMMENT 'original assignee name',
@@ -181,7 +181,7 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
 CREATE TABLE if not exists `bpm_flowruninfo`
 (
     `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `runinfoid`     bigint(20) NOT NULL COMMENT 'process instance id',
+    `runinfoid`     varchar(64) NOT NULL COMMENT 'process instance id',
     `create_UserId` varchar(64)   DEFAULT NULL COMMENT 'userid',
     `entitykey`     varchar(100) DEFAULT NULL COMMENT 'business key',
     `entityclass`   varchar(100) DEFAULT NULL COMMENT 'entity class',
@@ -331,7 +331,7 @@ CREATE TABLE if not exists `bpm_process_forward`
     `id`                 int(11)      NOT NULL AUTO_INCREMENT,
     `forward_user_id`    varchar(50)            DEFAULT NULL COMMENT 'forwarded user id',
     `Forward_user_name`  varchar(50)           DEFAULT NULL COMMENT 'forwarded user name',
-    `processInstance_Id` varchar(50)           DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)           DEFAULT NULL COMMENT 'process instance id',
     `create_time`        timestamp             not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user_id`     varchar(50)            DEFAULT NULL COMMENT 'as its name says',
     `task_id`            varchar(50)           DEFAULT NULL COMMENT 'taskid',
@@ -362,7 +362,7 @@ CREATE TABLE if not exists `bpm_process_node_overtime`
 CREATE TABLE if not exists `bpm_process_node_record`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `task_id`            varchar(50)         DEFAULT NULL COMMENT 'taskid',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`) USING BTREE
@@ -372,7 +372,7 @@ CREATE TABLE if not exists `bpm_process_node_record`
 CREATE TABLE if not exists `bpm_process_node_submit`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_Id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `back_type`          tinyint(11)             DEFAULT NULL COMMENT 'back type',
     `node_key`           varchar(50)         DEFAULT NULL COMMENT 'node key',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -493,6 +493,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
     `element_id`      varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
     `element_name`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
     `collection_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'collection name',
+     node_id         varchar(60)                                   null,
     `sign_type`       int(11)             NOT NULL COMMENT 'sign type 1: all sign 2:or sign',
     `remark`          varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`          tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -552,6 +553,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up`
     `id`                bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `variable_id`       bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
+     node_id             varchar(60)                                   null,
     `after_sign_up_way` int(11)             NOT NULL DEFAULT '1' COMMENT 'after sign up way,1:back to current assignee,2 go on',
     `sub_elements`      text                NOT NULL COMMENT 'sub elements stored in json',
     `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',

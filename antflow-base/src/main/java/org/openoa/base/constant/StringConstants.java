@@ -27,4 +27,6 @@ public class StringConstants {
 
     public static final String TASK_ASSIGNEE_NAME="assigneeName";
     public static final String PROJECT_NAME="antFlow";
+
+    public static final String TENANT_USER="tenantUser";
 }

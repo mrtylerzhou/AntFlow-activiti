@@ -533,9 +533,9 @@ CREATE TABLE `ACT_RU_VARIABLE`
 INSERT INTO `act_ge_property` (`NAME_`, `VALUE_`, `REV_`)
 VALUES ('next.dbid', '1', 1);
 INSERT INTO `act_ge_property` (`NAME_`, `VALUE_`, `REV_`)
-VALUES ('schema.history', 'create(5.22.0.0)', 1);
+VALUES ('schema.history', 'create(5.23.0.0)', 1);
 INSERT INTO `act_ge_property` (`NAME_`, `VALUE_`, `REV_`)
-VALUES ('schema.version', '5.22.0.0', 1);
+VALUES ('schema.version', '5.23.0.0', 1);
 
 
 CREATE INDEX idx_assignee_name ON ACT_HI_TASKINST(`ASSIGNEE_NAME`);

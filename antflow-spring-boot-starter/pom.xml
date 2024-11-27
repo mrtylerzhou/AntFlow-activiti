@@ -9,7 +9,7 @@
     <properties>
 
         <!-- 主版本        -->
-        <antflow.version>0.11.0</antflow.version>
+        <antflow.version>0.20.0</antflow.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -37,6 +37,9 @@
         <transmittable-thread-local.version>2.12.6</transmittable-thread-local.version>
         <geronimo-jta.version>1.1.1</geronimo-jta.version>
         <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
+        <commons-io.version>2.6</commons-io.version>
+        <guava.version>31.0.1-jre</guava.version>
+        <knife4j-openapi3.version>4.5.0</knife4j-openapi3.version>
     </properties>
 <dependencies>
     <dependency>
@@ -106,7 +109,16 @@
         <artifactId>fastjson2</artifactId>
         <version>${fastjson2.version}</version>
     </dependency>
-
+    <dependency>
+        <groupId>com.alibaba.fastjson2</groupId>
+        <artifactId>fastjson2-extension</artifactId>
+        <version>${fastjson2.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.alibaba.fastjson2</groupId>
+        <artifactId>fastjson2-extension-spring5</artifactId>
+        <version>${fastjson2.version}</version>
+    </dependency>
     <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aspects</artifactId>
@@ -186,6 +198,11 @@
         <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
         <groupId>com.fasterxml.uuid</groupId>
         <artifactId>java-uuid-generator</artifactId>
         <version>${java-uuid-generator.version}</version>
@@ -219,6 +236,16 @@
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+        <version>${knife4j-openapi3.version}</version>
     </dependency>
 </dependencies>
     <dependencyManagement>
