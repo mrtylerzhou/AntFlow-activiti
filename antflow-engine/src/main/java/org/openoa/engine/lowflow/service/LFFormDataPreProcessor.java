@@ -88,13 +88,26 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 BpmnConfLfFormdataField formdataField=new BpmnConfLfFormdataField();
                 formdataField.setBpmnConfId(confId);
                 formdataField.setFormDataId(formDataId);
-                //todo lf field type
+                formdataField.setFieldType(lfOption.getFieldType());
                 formdataField.setFieldId(lfWidget.getId());
                 formdataField.setFieldName(lfOption.getName());
                 result.add(formdataField);
             }else{
-                for (FormConfigWrapper.TableRow row : lfWidget.getRows()) {
-                    List<FormConfigWrapper.LFWidget> cols = row.getCols();
+                List<FormConfigWrapper.TableRow> rows = lfWidget.getRows();
+                if(!CollectionUtils.isEmpty(rows)){
+                    for (FormConfigWrapper.TableRow row : lfWidget.getRows()) {
+                        List<FormConfigWrapper.LFWidget> cols = row.getCols();
+                        for (FormConfigWrapper.LFWidget col : cols) {
+                            List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
+                            if(CollectionUtils.isEmpty(subWidgetList)){
+                                continue;
+                            }
+                            parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                        }
+                    }
+                }else{
+                    //grid has no rows,only cols
+                    List<FormConfigWrapper.LFWidget> cols = lfWidget.getCols();
                     for (FormConfigWrapper.LFWidget col : cols) {
                         List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
                         if(CollectionUtils.isEmpty(subWidgetList)){
@@ -103,6 +116,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                         parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
                     }
                 }
+
             }
         }
     }
