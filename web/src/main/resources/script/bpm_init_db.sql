@@ -247,6 +247,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
     `bpmn_node_id` bigint(20)          NOT NULL COMMENT 'conf id',
     `is_default`   int(11)             NOT NULL DEFAULT '0' COMMENT 'is default 0:no,1:yes',
     `sort`         int(11)             NOT NULL COMMENT 'condition,s priority',
+     ext_json     varchar(2000)                                 null comment '前端vue3版本conditionlist参数模型',
     `remark`       varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`       tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -1477,7 +1478,7 @@ create table t_lf_main_field
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单字段值表';
 
-create table t_demo_dict_main
+create table t_dict_main
 (
     id          bigint auto_increment comment '字典主键'
         primary key,
@@ -1493,7 +1494,7 @@ create table t_demo_dict_main
         unique (dict_type)
 ) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
 
-create table t_demo_dict_data
+create table t_dict_data
 (
     id          bigint auto_increment comment '字典编码'
         primary key,
