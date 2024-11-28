@@ -148,7 +148,7 @@ public class BpmnSendMessageAspect {
 
         //send message
         if (!ObjectUtils.isEmpty(vo)) {
-
+            businessDataVo.setIsLowCodeFlow(bpmnConfVo.getIsLowCodeFlow());
             //if it is a third party process then execute the finish call back method
             if (bpmnConf.getIsOutSideProcess() == 1) {
 
@@ -156,7 +156,6 @@ public class BpmnSendMessageAspect {
                 vo.setIsOutside(true);
                 businessDataVo.setIsOutSideAccessProc(true);
             }
-            businessDataVo.setIsLowCodeFlow(bpmnConfVo.getIsLowCodeFlow());
             bpmVariableMessageService.sendTemplateMessagesAsync(vo);
         }
 

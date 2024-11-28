@@ -1477,7 +1477,7 @@ create table t_lf_main_field
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单字段值表';
 
-create table t_demo_dict_main
+create table t_dict_main
 (
     id          bigint auto_increment comment '字典主键'
         primary key,
@@ -1493,7 +1493,7 @@ create table t_demo_dict_main
         unique (dict_type)
 ) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
 
-create table t_demo_dict_data
+create table t_dict_data
 (
     id          bigint auto_increment comment '字典编码'
         primary key,
