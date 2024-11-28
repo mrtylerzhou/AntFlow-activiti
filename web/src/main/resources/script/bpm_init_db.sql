@@ -1397,7 +1397,7 @@ create table t_bpmn_conf_lf_formdata
 		primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-create table t_bpmn_conf_lf_formdata_field
+create table if not exists t_bpmn_conf_lf_formdata_field
 (
 	id bigint auto_increment,
 	bpmn_conf_id bigint null,
@@ -1416,7 +1416,7 @@ create table t_bpmn_conf_lf_formdata_field
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码配置字段明细表';
 
 
-create table t_bpmn_node_lf_formdata_field_control
+create table if not exists t_bpmn_node_lf_formdata_field_control
 (
 	id bigint auto_increment,
 	node_id bigint not null,
