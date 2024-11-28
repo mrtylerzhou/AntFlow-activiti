@@ -1517,4 +1517,44 @@ ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInst
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- ----------------------------
+-- Table structure for t_bpmn_conf_lf_formdata
+-- ----------------------------
+DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata`;
+CREATE TABLE `t_bpmn_conf_lf_formdata`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `bpmn_conf_id` bigint(20) NOT NULL,
+  `formdata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `is_del` tinyint(4) NOT NULL DEFAULT 0,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+-- ----------------------------
+-- Table structure for t_bpmn_conf_lf_formdata_field
+-- ----------------------------
+DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata_field`;
+CREATE TABLE `t_bpmn_conf_lf_formdata_field`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `bpmn_conf_id` bigint(20) NULL DEFAULT NULL,
+  `formdata_id` bigint(20) NULL DEFAULT NULL,
+  `field_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `field_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `field_type` tinyint(4) NULL DEFAULT NULL,
+  `is_condition` tinyint(4) NULL DEFAULT 0 COMMENT '是否是流程条件,0否,1是',
+  `is_del` tinyint(4) NOT NULL DEFAULT 0,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '低代码配置字段明细表' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;
