@@ -108,7 +108,13 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                         ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo, wrappedValue!=null?wrappedValue:objects);
 
                     } else if (conditionTypeEnum.getFieldType().equals(2)) {//对象
-                        Object object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                        Object object=null;
+                        if(String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
+                            object=conditionParamJsom;
+                        }else{
+                            object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                        }
+
                         Map<String,Object> wrappedValue=null;
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
                             String columnDbname = name2confVueMap.get(nodeConditionsParamConf.getConditionParamName()).getColumnDbname();

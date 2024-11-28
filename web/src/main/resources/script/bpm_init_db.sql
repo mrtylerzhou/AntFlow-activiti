@@ -247,6 +247,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
     `bpmn_node_id` bigint(20)          NOT NULL COMMENT 'conf id',
     `is_default`   int(11)             NOT NULL DEFAULT '0' COMMENT 'is default 0:no,1:yes',
     `sort`         int(11)             NOT NULL COMMENT 'condition,s priority',
+     ext_json     varchar(2000)                                 null comment '前端vue3版本conditionlist参数模型',
     `remark`       varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`       tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
