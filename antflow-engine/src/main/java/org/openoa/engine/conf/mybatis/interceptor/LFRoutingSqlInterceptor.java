@@ -46,9 +46,9 @@ import java.util.zip.CRC32;
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
 })
 public class LFRoutingSqlInterceptor implements Interceptor {
-    @Value("${lf.main.table.count:2}")
+    @Value("${lf.main.table.count:1}")
     private  Integer mainTableCount;
-    @Value("${lf.field.table.count:2}")
+    @Value("${lf.field.table.count:1}")
     private Integer fieldTableCount;
     private static final List<String> lfTableNames = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
     private static final List<String> formCodesUpper=Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
