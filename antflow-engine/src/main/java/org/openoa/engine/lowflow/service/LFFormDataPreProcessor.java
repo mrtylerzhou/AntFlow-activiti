@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.activiti.engine.impl.Condition;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
 import org.openoa.base.util.SecurityUtils;
@@ -90,13 +91,40 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 formdataField.setFormDataId(formDataId);
                 formdataField.setFieldType(lfOption.getFieldType());
                 formdataField.setFieldId(lfWidget.getId());
-                formdataField.setFieldName(lfOption.getName());
+                formdataField.setFieldName(lfOption.getLabel());
                 result.add(formdataField);
-            }else{
-                List<FormConfigWrapper.TableRow> rows = lfWidget.getRows();
-                if(!CollectionUtils.isEmpty(rows)){
-                    for (FormConfigWrapper.TableRow row : lfWidget.getRows()) {
-                        List<FormConfigWrapper.LFWidget> cols = row.getCols();
+            }else{//走到这里一定是容器类型
+                String containerType = lfWidget.getType();
+                VariantFormContainerTypeEnum containerTypeEnum = VariantFormContainerTypeEnum.getByTypeName(containerType);
+                if(containerTypeEnum==null){
+                    throw new JiMuBizException("未定义container类型!");
+                }
+                if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)){
+                    List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();
+                    parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                }else if(VariantFormContainerTypeEnum.TAB.equals(containerTypeEnum)){
+                    List<FormConfigWrapper.LFWidget> tabs = lfWidget.getTabs();
+                    for (FormConfigWrapper.LFWidget tab : tabs) {
+                        List<FormConfigWrapper.LFWidget> subWidgetList = tab.getWidgetList();
+                        parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                    }
+                }else{
+
+                    List<FormConfigWrapper.TableRow> rows = lfWidget.getRows();
+                    if(!CollectionUtils.isEmpty(rows)){//table
+                        for (FormConfigWrapper.TableRow row : lfWidget.getRows()) {
+                            List<FormConfigWrapper.LFWidget> cols = row.getCols();
+                            for (FormConfigWrapper.LFWidget col : cols) {
+                                List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
+                                if(CollectionUtils.isEmpty(subWidgetList)){
+                                    continue;
+                                }
+                                parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                            }
+                        }
+                    }else{
+                        //grid has no rows,only cols
+                        List<FormConfigWrapper.LFWidget> cols = lfWidget.getCols();
                         for (FormConfigWrapper.LFWidget col : cols) {
                             List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
                             if(CollectionUtils.isEmpty(subWidgetList)){
@@ -104,16 +132,6 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                             }
                             parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
                         }
-                    }
-                }else{
-                    //grid has no rows,only cols
-                    List<FormConfigWrapper.LFWidget> cols = lfWidget.getCols();
-                    for (FormConfigWrapper.LFWidget col : cols) {
-                        List<FormConfigWrapper.LFWidget> subWidgetList = col.getWidgetList();
-                        if(CollectionUtils.isEmpty(subWidgetList)){
-                            continue;
-                        }
-                        parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
                     }
                 }
 

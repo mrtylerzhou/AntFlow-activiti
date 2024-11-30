@@ -20,6 +20,7 @@ public class FormConfigWrapper {
         private boolean formItemFlag;
         private LFOption options;
         private String id;
+        private List<LFWidget> tabs;
         private List<TableRow> rows;
         private List<LFWidget> cols;
         private List<LFWidget> widgetList;
@@ -68,7 +69,7 @@ public class FormConfigWrapper {
 
     @Data
     public static class TableRow {
-        List<LFWidget> cols;
+       private List<LFWidget> cols;
     }
 
     @Data

@@ -76,7 +76,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
         startParamMap.put("processNumber", bpmnConfCommonVo.getProcessNum());
 
         // Setup the user
-        Authentication.setAuthenticatedUserId(bpmnStartConditions.getStartUserId().toString());
+        Authentication.setAuthenticatedUserId(bpmnStartConditions.getStartUserId());
 
         // 1. Build up the model from scratch
         BpmnModel model = new BpmnModel();
