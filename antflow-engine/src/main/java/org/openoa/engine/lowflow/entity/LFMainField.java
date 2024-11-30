@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.DateUtil;
+import org.openoa.base.util.SnowFlake;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.springframework.util.CollectionUtils;
 
@@ -20,7 +21,7 @@ public class LFMainField {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
     @TableField("main_id")
     private Long mainId;
@@ -112,6 +113,7 @@ public class LFMainField {
             fieldValueStr=fieldValue.toString();
         }
         LFMainField mainField=new LFMainField();
+        mainField.setId(SnowFlake.nextId());
         mainField.setMainId(mainId);
         mainField.setFieldId(fieldConfig.getFieldId());
         mainField.setFieldName(fieldConfig.getFieldName());

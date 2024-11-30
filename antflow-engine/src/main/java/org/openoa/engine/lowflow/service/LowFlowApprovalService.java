@@ -11,6 +11,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
@@ -145,6 +146,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long confId = vo.getBpmnConfVo().getId();
         String formCode = vo.getFormCode();
         LFMain main=new LFMain();
+        main.setId(SnowFlake.nextId());
         main.setConfId(confId);
         main.setFormCode(formCode);
         main.setCreateUser(SecurityUtils.getLogInEmpName());
