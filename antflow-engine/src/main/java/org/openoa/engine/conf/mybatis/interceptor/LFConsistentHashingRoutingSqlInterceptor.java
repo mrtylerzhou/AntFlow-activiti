@@ -27,6 +27,8 @@ import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.engine.utils.ConsistentHashingAlg;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -45,13 +47,17 @@ import java.util.zip.CRC32;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
 })
-public class LFRoutingSqlInterceptor implements Interceptor {
+public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, InitializingBean {
     @Value("${lf.main.table.count:1}")
     private  Integer mainTableCount;
     @Value("${lf.field.table.count:1}")
     private Integer fieldTableCount;
-    private static final List<String> lfTableNames = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
-    private static final List<String> formCodesUpper=Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
+
+    private ConsistentHashingAlg mainTableHashing;
+    private ConsistentHashingAlg fieldTableHashing;
+
+    private static final List<String> LF_TABLE_NAMES = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
+    private static final List<String> FORM_CODES_UPPER =Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -66,27 +72,22 @@ public class LFRoutingSqlInterceptor implements Interceptor {
 
            String sql = boundSql.getSql();
            List<String> tableNames = getTableNames(sql);
-           if(CollectionUtils.containsAny(lfTableNames,tableNames)){
+           if(CollectionUtils.containsAny(LF_TABLE_NAMES,tableNames)){
                String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
-               CRC32 crc32=new CRC32();
-               crc32.update(restoredFormCode.getBytes(StandardCharsets.UTF_8));
-               long value = crc32.getValue();
-               Map<String,String> original2newTblName=new HashMap<>();
                String modifiedSql="";
                if(mainTableCount>=2){
                    for (String tableName : tableNames) {
                        if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
 
-                               String newTblName=StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME+"_"+(value%(mainTableCount-1));
+                               String newTblName= mainTableHashing.getServer(restoredFormCode);
                                modifiedSql=replaceTableName(tableName,newTblName,sql);
                        }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
 
-                               String newTblName=StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME+"_"+(value%(fieldTableCount-1));
+                               String newTblName= fieldTableHashing.getServer(restoredFormCode);
                                String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
                                modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
                        }
                    }
-
                        BoundSql newBoundSql = new BoundSql(
                                mappedStatement.getConfiguration(),
                                modifiedSql,
@@ -145,7 +146,7 @@ public class LFRoutingSqlInterceptor implements Interceptor {
 
         for (ParameterMapping parameterMapping : parameterMappings) {
             String propertyName = parameterMapping.getProperty();
-            if(!formCodesUpper.contains(propertyName.toUpperCase())){
+            if(!FORM_CODES_UPPER.contains(propertyName.toUpperCase())){
                 continue;
             }
             Object value;
@@ -326,5 +327,11 @@ public class LFRoutingSqlInterceptor implements Interceptor {
     @Override
     public void setProperties(Properties properties) {
         // 可选：设置插件属性
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        mainTableHashing=new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,mainTableCount);
+        fieldTableHashing=new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME,fieldTableCount);
     }
 }
