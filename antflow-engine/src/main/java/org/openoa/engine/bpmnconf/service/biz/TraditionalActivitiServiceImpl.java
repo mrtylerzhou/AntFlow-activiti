@@ -6,6 +6,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.openoa.engine.conf.engineconfig.MultiTenantInfoHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,14 @@ public class TraditionalActivitiServiceImpl {
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private MultiTenantInfoHolder tenantInfoHolder;
 
     @Autowired
     private RepositoryService repositoryService;
 
     public boolean createDeployment(String resourceName) {
+        tenantInfoHolder.setCurrentTenantId("tenantA");
         DeploymentBuilder builder = repositoryService.createDeployment();
         builder.addClasspathResource("processdiagram/" + resourceName);
         builder.deploy();

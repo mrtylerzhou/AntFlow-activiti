@@ -212,7 +212,7 @@ public class BpmnConfCommonServiceImpl {
 
         String processStartConditions = bpmnVariable.getProcessStartConditions();
         JSONObject objectStart = JSON.parseObject(processStartConditions);
-        objectStart.put("BpmnCode", bpmnVariable.getBpmnCode());
+        objectStart.put("bpmnCode", bpmnVariable.getBpmnCode());
         return getPreviewNode(objectStart.toString(), false);
     }
 

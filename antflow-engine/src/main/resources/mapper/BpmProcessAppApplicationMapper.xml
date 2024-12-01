@@ -189,4 +189,63 @@
         order by t.sort asc
     </select>
 
+    <select id="selectAllByBusinessPart" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        select
+        s.id as id,
+        p.name as businessName,
+        p.id as businessPartyId,
+        s.process_name as title,
+        s.business_code as businessCode,
+        s.apply_type as applyType,
+        s.pc_icon as pcIcon,
+        s.effective_source as effectiveSource,
+        s.is_son as isSon,
+        s.look_url as lookUrl,
+        s.submit_url as submitUrl,
+        s.condition_url as conditionUrl,
+        s.user_request_uri as userRequestUri,
+        s.role_request_uri as roleRequestUri,
+        s.parent_id as parentId,
+        s.application_url as applicationUrl,
+        s.route as route,
+        s.process_key as processKey,
+        s.permissions_code as permissionsCode,
+        s.create_user_id as createUserId,
+        s.create_time as createTime
+        from bpm_process_app_application s
+        left join t_out_side_bpm_business_party p on s.business_code = p.business_party_mark
+        where s.is_del=0 and  p.business_party_mark = #{businessPartyMark}
+        order by s.create_time desc
+
+    </select>
+
+    <select id="selectAllByPartMarkId" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
+        select
+        s.id as id,
+        p.name as businessName,
+        p.id as businessPartyId,
+        s.process_name as title,
+        s.business_code as businessCode,
+        s.apply_type as applyType,
+        s.pc_icon as pcIcon,
+        s.effective_source as effectiveSource,
+        s.is_son as isSon,
+        s.look_url as lookUrl,
+        s.submit_url as submitUrl,
+        s.condition_url as conditionUrl,
+        s.user_request_uri as userRequestUri,
+        s.role_request_uri as roleRequestUri,
+        s.parent_id as parentId,
+        s.application_url as applicationUrl,
+        s.route as route,
+        s.process_key as processKey,
+        s.permissions_code as permissionsCode,
+        s.create_user_id as createUserId,
+        s.create_time as createTime
+        from bpm_process_app_application s
+        left join t_out_side_bpm_business_party p on s.business_code = p.business_party_mark
+        where s.is_del=0 and  p.id = #{PartMarkId}
+        order by s.create_time desc
+
+    </select>
 </mapper>

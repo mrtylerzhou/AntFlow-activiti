@@ -84,12 +84,12 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
     }
 
 
-    public String getEntrustEmployee(String employeeId, String powerId) {
+    public BaseIdTranStruVo getEntrustEmployee(String employeeId,String employeeName, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
-            return employeeId;
+            return BaseIdTranStruVo.builder().id(employeeId).name(employeeName).build();
         }
 
-        String result = this.getEntrustEmployeeOnly(employeeId, powerId);
+        BaseIdTranStruVo result = this.getEntrustEmployeeOnly(employeeId,employeeName, powerId);
         return result;
     }
 
@@ -100,9 +100,9 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
      * @param powerId    formid
      * @return
      */
-    public String getEntrustEmployeeOnly(String employeeId, String powerId) {
+    public BaseIdTranStruVo getEntrustEmployeeOnly(String employeeId,String employeeName, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
-            return employeeId;
+            return BaseIdTranStruVo.builder().id(employeeId).name(employeeName).build();
         }
         QueryWrapper<UserEntrust> wrapper = new QueryWrapper<>();
         wrapper.eq("power_id", powerId).eq("sender", employeeId);
@@ -110,17 +110,17 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
         if(!CollectionUtils.isEmpty(list)){
             for (UserEntrust u : list) {
                 if (u.getBeginTime()!=null && u.getEndTime()!=null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime()) && (new Date().getTime() <= DateUtil.getDayEnd(u.getEndTime()).getTime())) {
-                    return u.getReceiverId();
+                    return BaseIdTranStruVo.builder().id(u.getReceiverId()).name(u.getReceiverName()).build();
                 } else if (u.getBeginTime()!=null && u.getEndTime()==null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime())) {
-                    return u.getReceiverId();
+                    return BaseIdTranStruVo.builder().id(u.getReceiverId()).name(u.getReceiverName()).build();
                 } else if (u.getBeginTime()==null && u.getEndTime()==null) {
-                    return u.getReceiverId();
+                    return BaseIdTranStruVo.builder().id(u.getReceiverId()).name(u.getReceiverName()).build();
                 } else if (u.getBeginTime()==null && u.getEndTime()!=null && (new Date().getTime() <= DateUtil.getDayStart(u.getEndTime()).getTime())) {
-                    return u.getReceiverId();
+                    return BaseIdTranStruVo.builder().id(u.getReceiverId()).name(u.getReceiverName()).build();
                 }
             }
         }
-        return employeeId;
+        return BaseIdTranStruVo.builder().id(employeeId).name(employeeName).build();
     }
 
 

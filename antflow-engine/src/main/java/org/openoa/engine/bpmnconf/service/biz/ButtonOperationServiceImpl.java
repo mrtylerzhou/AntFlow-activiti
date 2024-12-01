@@ -6,6 +6,7 @@ import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +43,14 @@ public class ButtonOperationServiceImpl{
             processOperation.doProcessButton(vo);
             if (vo.getIsOutSideAccessProc()) {
 
-                String verifyUserName = StringUtils.EMPTY;
+                String verifyUserName = SecurityUtils.getLogInEmpNameSafe();
 
-                String verifyUserId = StringUtils.EMPTY;
-                Map<String, Object> objectMap = vo.getObjectMap();
-                if (!CollectionUtils.isEmpty(objectMap)) {
-                    verifyUserName = Optional.ofNullable(objectMap.get("employeeName")).map(String::valueOf).orElse(StringUtils.EMPTY);
-                    verifyUserId = Optional.ofNullable(objectMap.get("employeeId")).map(Object::toString).orElse("");
-                }
+                String verifyUserId = SecurityUtils.getLogInEmpIdSafe();
+//                Map<String, Object> objectMap = vo.getObjectMap();
+//                if (!CollectionUtils.isEmpty(objectMap)) {
+//                    verifyUserName = Optional.ofNullable(objectMap.get("employeeName")).map(String::valueOf).orElse(StringUtils.EMPTY);
+//                    verifyUserId = Optional.ofNullable(objectMap.get("employeeId")).map(Object::toString).orElse("");
+//                }
                 ProcessOperationEnum poEnum = ProcessOperationEnum.getEnumByCode(vo.getOperationType());
                 switch (Objects.requireNonNull(poEnum)){
                     case BUTTON_TYPE_SUBMIT:

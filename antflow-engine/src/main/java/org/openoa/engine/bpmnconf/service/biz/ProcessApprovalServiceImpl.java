@@ -111,7 +111,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 break;
             // mornitor current processes
             case 2:
-                //todo to be implemented
+                page.setRecords(this.getBaseMapper().viewPcProcessList(page, vo));
                 break;
             // recently build task
             case 3:
@@ -222,7 +222,13 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        BusinessDataVo businessDataVo =  formFactory.getFormAdaptor(vo).queryData(vo);
+
+        BusinessDataVo businessDataVo = null;
+        if(!vo.getIsOutSideAccessProc()){
+            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(vo);
+        }else{
+            businessDataVo=vo;
+        }
 
         //set the businessId
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());

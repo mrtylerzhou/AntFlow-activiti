@@ -34,4 +34,6 @@ public class StringConstants {
 
     public static final String FORMCODE_NO_CAMAL="formCode";
     public static final String FORM_CODE="form_code";
+
+    public static final String TENANT_USER="tenantUser";
 }

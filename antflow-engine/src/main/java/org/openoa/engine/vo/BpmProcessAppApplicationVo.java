@@ -203,4 +203,15 @@ public class BpmProcessAppApplicationVo implements Serializable {
      */
     private Integer appVersion;
 
+    /**
+     * user request uri
+     */
+    private String  userRequestUri;
+
+    /**
+     * role request uri
+     */
+    private String  roleRequestUri;
+
+
 }

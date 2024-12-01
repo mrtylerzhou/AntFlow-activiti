@@ -12,4 +12,9 @@
             <property name="roleIds" value="#{roleIds}"/>
         </include>
     </select>
+
+    <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select id ,role_name as name
+         from t_role
+    </select>
 </mapper>

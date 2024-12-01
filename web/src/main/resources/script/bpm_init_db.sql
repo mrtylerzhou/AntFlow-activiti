@@ -163,7 +163,7 @@ CREATE TABLE if not exists `bpm_business`
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (
     `id`          int(11) NOT NULL AUTO_INCREMENT,
-    `runinfoid`   varchar(11)      DEFAULT NULL COMMENT 'process instance id',
+    `runinfoid`   varchar(64)      DEFAULT NULL COMMENT 'process instance id',
     `runtaskid`   varchar(64)      DEFAULT NULL COMMENT 'task id',
     `original`    varchar(64)          DEFAULT NULL COMMENT 'original assignee',
      `original_name`    varchar(255)          DEFAULT NULL COMMENT 'original assignee name',
@@ -182,7 +182,7 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
 CREATE TABLE if not exists `bpm_flowruninfo`
 (
     `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `runinfoid`     bigint(20) NOT NULL COMMENT 'process instance id',
+    `runinfoid`     varchar(64) NOT NULL COMMENT 'process instance id',
     `create_UserId` varchar(64)   DEFAULT NULL COMMENT 'userid',
     `entitykey`     varchar(100) DEFAULT NULL COMMENT 'business key',
     `entityclass`   varchar(100) DEFAULT NULL COMMENT 'entity class',
@@ -334,7 +334,7 @@ CREATE TABLE if not exists `bpm_process_forward`
     `id`                 int(11)      NOT NULL AUTO_INCREMENT,
     `forward_user_id`    varchar(50)            DEFAULT NULL COMMENT 'forwarded user id',
     `Forward_user_name`  varchar(50)           DEFAULT NULL COMMENT 'forwarded user name',
-    `processInstance_Id` varchar(50)           DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)           DEFAULT NULL COMMENT 'process instance id',
     `create_time`        timestamp             not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user_id`     varchar(50)            DEFAULT NULL COMMENT 'as its name says',
     `task_id`            varchar(50)           DEFAULT NULL COMMENT 'taskid',
@@ -365,7 +365,7 @@ CREATE TABLE if not exists `bpm_process_node_overtime`
 CREATE TABLE if not exists `bpm_process_node_record`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `task_id`            varchar(50)         DEFAULT NULL COMMENT 'taskid',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`) USING BTREE
@@ -375,7 +375,7 @@ CREATE TABLE if not exists `bpm_process_node_record`
 CREATE TABLE if not exists `bpm_process_node_submit`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_Id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `back_type`          tinyint(11)             DEFAULT NULL COMMENT 'back type',
     `node_key`           varchar(50)         DEFAULT NULL COMMENT 'node key',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -497,6 +497,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
     `element_name`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
      `node_id`        varchar(60)                                             null,
     `collection_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'collection name',
+     node_id         varchar(60)                                   null,
     `sign_type`       int(11)             NOT NULL COMMENT 'sign type 1: all sign 2:or sign',
     `remark`          varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`          tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -983,7 +984,10 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null
+    source           varchar(255)                       null,
+    user_request_uri varchar(255)                       null comment 'get user info',
+    role_request_uri varchar(255)                       null comment 'get role info'
+
 )
     comment 'BPM Process Application Table';
 
@@ -1514,6 +1518,15 @@ create table t_dict_data
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
+
+CREATE TABLE `t_user_role` (
+                               `id` int(11) NOT NULL AUTO_INCREMENT,
+                               `user_id` int(11) DEFAULT NULL COMMENT 'user id ',
+                               `role_id` int(11) DEFAULT NULL COMMENT 'role id',
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+
+
 
 SET FOREIGN_KEY_CHECKS = 1;
 
