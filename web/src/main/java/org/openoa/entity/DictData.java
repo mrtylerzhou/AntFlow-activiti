@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("t_demo_dict_data")
+@TableName("t_dict_data")
 public class DictData {
     @TableId(value = "id", type = IdType.AUTO)
     private Long Id;

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
 
-@TableName("t_demo_dict_main")
+@TableName("t_dict_main")
 public class DictMain {
     @TableId(value = "id", type = IdType.AUTO)
     private Long Id;

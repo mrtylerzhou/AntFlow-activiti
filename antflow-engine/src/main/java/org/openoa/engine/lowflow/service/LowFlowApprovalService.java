@@ -14,8 +14,10 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainServiceImpl;
 import org.openoa.engine.lowflow.entity.LFMain;
@@ -44,6 +46,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private LFMainServiceImpl mainService;
     @Autowired(required = false)
     private List<LFProcessFinishHook> lfProcessFinishHooks;
+    @Autowired
+    private BpmnConfLfFormdataServiceImpl lfFormdataService;
+
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
         String userId =  vo.getStartUserId();
@@ -134,6 +139,13 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             }
         }
         vo.setLfFields(fieldVoMap);
+
+        List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
+        if(CollectionUtils.isEmpty(bpmnConfLfFormdataList)){
+            throw  new JiMuBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
+        }
+        BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
+        vo.setLfFormData(lfFormdata.getFormdata());
         return vo;
     }
 
