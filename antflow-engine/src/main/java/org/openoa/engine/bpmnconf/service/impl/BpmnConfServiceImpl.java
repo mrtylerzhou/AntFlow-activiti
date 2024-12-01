@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
@@ -17,12 +18,14 @@ import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
+import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -76,6 +79,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private ApplicationServiceImpl applicationService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
+    @Autowired
+    private BpmnNodeLfFormdataFieldControlServiceImpl nodeLfFormdataFieldControlService;
 
     @Transactional
     public void edit(BpmnConfVo bpmnConfVo) {
@@ -311,8 +316,13 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
                 .eq("conf_id", bpmnConf.getId())
                 .eq("is_del", 0));
-        if(bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess().equals(1)){
-            bpmnNodes.forEach(a->a.setIsOutSideProcess(1));
+        boolean isOutSideProcess=bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1;
+        boolean isLowCodeFlow=bpmnConf.getIsLowCodeFlow()!=null&&bpmnConf.getIsLowCodeFlow()==1;
+        if(isOutSideProcess||isLowCodeFlow){
+            for (BpmnNode bpmnNode : bpmnNodes) {
+                bpmnNode.setIsOutSideProcess(bpmnConf.getIsOutSideProcess());
+                bpmnNode.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
+            }
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
@@ -451,11 +461,18 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
 
         Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
+        Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
+        Map<Long, List<BpmnNodeLfFormdataFieldControl>> bpmnNodeFieldControlConfMap;
+        if(isLowCodeFlow!=null&&isLowCodeFlow==1){
+            bpmnNodeFieldControlConfMap = getBpmnNodeFieldControlConfMap(idList);
+        } else {
+            bpmnNodeFieldControlConfMap = null;
+        }
 
         return bpmnNodeList
                 .stream()
                 .map(o -> getBpmnNodeVo(o, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap, conditionsUrl))
+                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl))
                 .collect(Collectors.toList());
 
     }
@@ -556,6 +573,20 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         }));
     }
 
+    private Map<Long,List<BpmnNodeLfFormdataFieldControl>> getBpmnNodeFieldControlConfMap(List<Long> idList){
+        return nodeLfFormdataFieldControlService.list(
+                Wrappers.<BpmnNodeLfFormdataFieldControl>lambdaQuery()
+                        .in(BpmnNodeLfFormdataFieldControl::getNodeId,idList)
+        ).stream()
+                .collect(Collectors.toMap(
+                        BpmnNodeLfFormdataFieldControl::getNodeId,
+                        Lists::newArrayList,
+                        (a,b)->{
+                            a.addAll(b);
+                            return a;
+                        }
+                ));
+    }
     /**
      * convert bpmnnode to nodevo
      *
@@ -566,6 +597,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap, Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap,
                                      Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap,
                                      Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap,
+                                     Map<Long, List<BpmnNodeLfFormdataFieldControl>> lfFieldControlMap,
                                      String conditionsUrl) {
 
 
@@ -610,7 +642,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         //set sign up conf
         setBpmnNodeSignUpConf(bpmnNode, bpmnNodeSignUpConfMap, bpmnNodeVo);
-
+        setFieldControlVOs(bpmnNode,lfFieldControlMap,bpmnNodeVo);
         return bpmnNodeVo;
     }
 
@@ -734,7 +766,28 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                             return a;
                         }));
     }
-
+    private void setFieldControlVOs(BpmnNode bpmnNode,Map<Long,List<BpmnNodeLfFormdataFieldControl>> fieldControlMap,BpmnNodeVo nodeVo){
+        boolean isLowFlow=Objects.equals(bpmnNode.getIsLowCodeFlow(),1);
+        if(!isLowFlow){
+            return;
+        }
+        if(CollectionUtils.isEmpty(fieldControlMap)){
+            throw new JiMuBizException("低代码工作流无任何字段!");
+        }
+        List<BpmnNodeLfFormdataFieldControl> fieldControls = fieldControlMap.get(bpmnNode.getId());
+        if(CollectionUtils.isEmpty(fieldControls)){
+            throw new JiMuBizException(Strings.lenientFormat("当前节点:%s无任何字段",bpmnNode.getId()));
+        }
+        List<LFFieldControlVO> fieldControlVOS=new ArrayList<>();
+        for (BpmnNodeLfFormdataFieldControl fieldControl : fieldControls) {
+            LFFieldControlVO lfFieldControlVO=new LFFieldControlVO();
+            lfFieldControlVO.setFieldId(fieldControl.getFieldId());
+            lfFieldControlVO.setFieldName(fieldControl.getFieldName());
+            lfFieldControlVO.setPerm(fieldControl.getPerm());
+            fieldControlVOS.add(lfFieldControlVO);
+        }
+        nodeVo.setLfFieldControlVOs(fieldControlVOS);
+    }
     /**
      * effective bpmn conf
      *

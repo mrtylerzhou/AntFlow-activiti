@@ -5,6 +5,6 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataFieldMapper">
 
     <update id="updateByConfIdAndFieldName">
-        update t_bpmn_conf_lf_formdata_field set is_condition=1 where bpmn_conf_id=#{confId} and field_name=#{fieldName}
+        update t_bpmn_conf_lf_formdata_field set is_condition=1 where bpmn_conf_id=#{confId} and field_id=#{fieldName}
     </update>
 </mapper>

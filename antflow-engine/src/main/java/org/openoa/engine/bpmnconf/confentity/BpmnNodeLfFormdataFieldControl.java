@@ -25,32 +25,28 @@ public class BpmnNodeLfFormdataFieldControl implements Serializable {
   
     /**  
      * 节点ID  
-     */  
+     */
+    @TableField("node_id")
     private Long nodeId;  
   
     /**  
      * 表单数据ID  
-     */  
-    private Long formdataId;  
-  
+     */
+    @TableField("formdata_id")
+    private Long formdataId;
+
+    /**
+     * 字段id
+     */
+    @TableField("field_id")
+    private String fieldId;
     /**  
      * 字段名  
      */  
     @TableField("field_name")  
-    private String fieldName;  
-
-  
-    /**  
-     * 是否可写（0不限制，1限制）  
-     */  
-    @TableField("is_visible")
-    private Integer isVisible;
-  
-    /**  
-     * 是否可读（即是否限制，0不限制，1限制）  
-     */  
-    @TableField("is_readonly")
-    private Integer isReadonly;
+    private String fieldName;
+    @TableField("field_perm")
+    private String perm;
   
     /**  
      * 逻辑删除标记（0：未删除，1：已删除）  

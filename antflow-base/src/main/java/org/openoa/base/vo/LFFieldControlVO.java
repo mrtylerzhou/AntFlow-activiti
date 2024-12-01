@@ -12,22 +12,20 @@ public class LFFieldControlVO {
      * 表单数据ID
      */
     private Long formdataId;
-
+    /**
+     * 字段id
+     */
+    private String fieldId;
     /**
      * 字段名
      */
 
     private String fieldName;
 
-
     /**
-     * 是否可写（0不限制，1限制,即1为可见）
+     * 字段权限
      */
-    private Integer isVisible;
+   private String perm;
 
-    /**
-     * 是否可读（即是否限制，0不限制，1限制,即1为只读）
-     */
-    private Integer isReadonly;
 
 }

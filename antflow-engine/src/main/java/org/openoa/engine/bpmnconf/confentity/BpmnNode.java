@@ -123,5 +123,7 @@ public class BpmnNode {
     private String nodeFroms;
     @TableField(exist = false)
     private Integer isOutSideProcess;
+    @TableField(exist = false)
+    private Integer isLowCodeFlow;
 
 }

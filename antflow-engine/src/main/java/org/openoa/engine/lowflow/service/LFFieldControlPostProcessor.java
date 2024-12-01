@@ -39,7 +39,7 @@ public class LFFieldControlPostProcessor implements AntFlowOrderPostProcessor<Bp
         List<BpmnNodeLfFormdataFieldControl> fieldControls=new ArrayList<>();
         for (BpmnNodeVo bpmnNodeVo : bpmnNodeVos) {
             List<LFFieldControlVO> lfFieldControlVOs = bpmnNodeVo.getLfFieldControlVOs();
-            //todo lf if not specified,set it as default
+
             if(CollectionUtils.isEmpty(lfFieldControlVOs)){
                 continue;
             }
@@ -47,9 +47,9 @@ public class LFFieldControlPostProcessor implements AntFlowOrderPostProcessor<Bp
                 BpmnNodeLfFormdataFieldControl fieldControl=new BpmnNodeLfFormdataFieldControl();
                 fieldControl.setFormdataId(lfFormDataId);
                 fieldControl.setNodeId(bpmnNodeVo.getId());
+                fieldControl.setFieldId(lfFieldControlVO.getFieldId());
                 fieldControl.setFieldName(lfFieldControlVO.getFieldName());
-                fieldControl.setIsVisible(lfFieldControlVO.getIsVisible());
-                fieldControl.setIsReadonly(lfFieldControlVO.getIsReadonly());
+                fieldControl.setPerm(lfFieldControlVO.getPerm());
                 fieldControl.setCreateUser(SecurityUtils.getLogInEmpName());
                 fieldControls.add(fieldControl);
             }
