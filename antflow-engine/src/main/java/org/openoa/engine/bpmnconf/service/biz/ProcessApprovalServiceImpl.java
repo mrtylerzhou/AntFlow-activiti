@@ -111,7 +111,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 break;
             // mornitor current processes
             case 2:
-                //todo to be implemented
+                page.setRecords(this.getBaseMapper().viewPcProcessList(page, vo));
                 break;
             // recently build task
             case 3:
