@@ -85,8 +85,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
         Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
         if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
-            Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
-            allFieldConfMap.put(confId,name2SelfMap);
+            Map<String, BpmnConfLfFormdataField> Id2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+            allFieldConfMap.put(confId,Id2SelfMap);
         }
         lfFormdataFieldMap=allFieldConfMap.get(confId);
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
@@ -219,16 +219,18 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             }
 
             List<String> condFieldNames=new ArrayList<>();
-            Map<String,BpmnConfLfFormdataField> name2SelfMap=new HashMap<>();
+            Map<String,BpmnConfLfFormdataField> Id2SelfMap=new HashMap<>();
             for (BpmnConfLfFormdataField field : allFields) {
-                String fieldName = field.getFieldName();
-                name2SelfMap.put(fieldName,field);
+                String fieldId = field.getFieldId();
+                Id2SelfMap.put(fieldId,field);
                 if(field.getIsConditionField()!=null&&field.getIsConditionField()==1){
-                    condFieldNames.add(fieldName);
+                    condFieldNames.add(fieldId);
                 }
             }
             conditionFieldNameMap.put(confId,condFieldNames);
-            allFieldConfMap.put(confId,name2SelfMap);
+           if(!allFieldConfMap.containsKey(confId)){
+               allFieldConfMap.put(confId,Id2SelfMap);
+           }
         }
         conditionFieldNames=conditionFieldNameMap.get(confId);
         Map<String,Object>conditionFieldMap=null;

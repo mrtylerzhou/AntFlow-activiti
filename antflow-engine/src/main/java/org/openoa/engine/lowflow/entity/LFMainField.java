@@ -84,13 +84,13 @@ public class LFMainField {
             throw new JiMuBizException("field configs are empty,please check your logic");
         }
         List<LFMainField> mainFields=new ArrayList<>(fieldMap.size());
-        for (Map.Entry<String, Object> fieldName2ValueEntry : fieldMap.entrySet()) {
-            String fieldName = fieldName2ValueEntry.getKey();
-            BpmnConfLfFormdataField fieldConfig = fieldConfigMap.get(fieldName);
+        for (Map.Entry<String, Object> fieldId2ValueEntry : fieldMap.entrySet()) {
+            String fieldId = fieldId2ValueEntry.getKey();
+            BpmnConfLfFormdataField fieldConfig = fieldConfigMap.get(fieldId);
             if(fieldConfig==null){
-                throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldName));
+                throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
-            Object value = fieldName2ValueEntry.getValue();
+            Object value = fieldId2ValueEntry.getValue();
             if(value instanceof Iterable){
                 Iterable iterableValue = (Iterable) value;
                 Iterator iterator = iterableValue.iterator();
