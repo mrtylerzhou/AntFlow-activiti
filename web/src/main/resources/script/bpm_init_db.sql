@@ -1264,6 +1264,19 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
 
+CREATE TABLE `t_bpmn_node_hrbp_conf` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
+  `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',
+  `hrbp_conf_type` INT(11) NULL COMMENT 'hrbp type 1-hrbp,2-hrbp leader,this is only for extensibility purpose,if your system do not have hrbp leader,you can ignore this field if your system have other concept,for example hrbp manager,you can use this field to store hrbp manager(eg 3 for hrbp manager)',
+  `remark` VARCHAR(255) NULL COMMENT 'remark',
+  `is_del` INT(11) NULL COMMENT '0 for normal,1 for deleted',
+  `create_user` VARCHAR(255) NULL COMMENT 'create user',
+  `create_time` DATETIME NULL COMMENT 'create time',
+  `update_user` VARCHAR(255) NULL COMMENT 'update user',
+  `update_time` DATETIME NULL COMMENT 'update time',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hrpb config entity';
+
 DROP TABLE IF EXISTS `t_user`;
 create table if not exists t_user
 (
