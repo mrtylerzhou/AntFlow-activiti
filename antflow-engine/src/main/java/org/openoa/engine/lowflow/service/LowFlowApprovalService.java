@@ -95,14 +95,14 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         //returned to page for presenting
         Map<String,Object> fieldVoMap=new HashMap<>(lfMainFields.size());
-        Map<String, List<LFMainField>> fieldName2SelfMap = lfMainFields.stream().collect(Collectors.groupingBy(LFMainField::getFieldName));
-        for (Map.Entry<String, List<LFMainField>> name2SelfEntry : fieldName2SelfMap.entrySet()) {
-            String fieldName = name2SelfEntry.getKey();
+        Map<String, List<LFMainField>> fieldName2SelfMap = lfMainFields.stream().collect(Collectors.groupingBy(LFMainField::getFieldId));
+        for (Map.Entry<String, List<LFMainField>> Id2SelfEntry : fieldName2SelfMap.entrySet()) {
+            String fieldName = Id2SelfEntry.getKey();
             BpmnConfLfFormdataField currentFieldProp = lfFormdataFieldMap.get(fieldName);
             if(currentFieldProp==null){
                 throw new JiMuBizException(Strings.lenientFormat("field with name:%s has no property",fieldName));
             }
-            List<LFMainField> fields = name2SelfEntry.getValue();
+            List<LFMainField> fields = Id2SelfEntry.getValue();
             int valueLen = fields.size();
             List<Object> actualMultiValue=valueLen==1?null:new ArrayList<>(valueLen);
             for (LFMainField field : fields) {
@@ -199,6 +199,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public void finishData(BusinessDataVo vo) {
+        if(CollectionUtils.isEmpty(lfProcessFinishHooks)){
+            return;
+        }
         for (LFProcessFinishHook lfProcessFinishHook : lfProcessFinishHooks) {
             lfProcessFinishHook.onFinishData(vo);
         }

@@ -65,6 +65,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                 .businessId(vo.getBusinessId())
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId())
+                .isLowCodeFlow(vo.getIsLowCodeFlow())
                 .createUser(businessDataVo.getStartUserId())
                 .userName(businessDataVo.getStartUserName())
                 .createTime(new Date())

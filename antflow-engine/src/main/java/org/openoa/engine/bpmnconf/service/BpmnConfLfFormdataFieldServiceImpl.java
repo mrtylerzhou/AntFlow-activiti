@@ -20,11 +20,11 @@ public class BpmnConfLfFormdataFieldServiceImpl extends ServiceImpl<BpmnConfLfFo
         if(CollectionUtils.isEmpty(allFields)){
             throw new JiMuBizException("lowcode form data has no fields");
         }
-        Map<String,BpmnConfLfFormdataField> name2SelfMap=new HashMap<>();
+        Map<String,BpmnConfLfFormdataField> id2SelfMap=new HashMap<>();
         for (BpmnConfLfFormdataField field : allFields) {
-            String fieldName = field.getFieldName();
-            name2SelfMap.put(fieldName,field);
+            String fieldId = field.getFieldId();
+            id2SelfMap.put(fieldId,field);
         }
-        return name2SelfMap;
+        return id2SelfMap;
     }
 }

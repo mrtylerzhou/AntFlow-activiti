@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -225,7 +226,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
         BusinessDataVo businessDataVo = null;
         if(!vo.getIsOutSideAccessProc()){
-            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(vo);
+            FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
+            businessDataVo=formAdaptor.queryData(vo);
         }else{
             businessDataVo=vo;
         }

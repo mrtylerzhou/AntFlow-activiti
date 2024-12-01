@@ -4,13 +4,13 @@
 
     <select id="getFieldControlByProcessNumberAndElementId"
             resultType="org.openoa.base.vo.LFFieldControlVO">
-        select tbnlffc.field_id as nodeId,tbnlffc.field_name as fieldName,tbnlffc.field_perm as perm from t_bpmn_node_lf_formdata_field_control tbnlffc inner join
-        (select  tbvs.node_id as nodeId from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
-        where tbv.process_num='DSFZH_WMA_830' and tbvs.element_id='task1418018332272'
+        select tbnlffc.field_id as fieldId,tbnlffc.field_name as fieldName,tbnlffc.field_perm as perm from t_bpmn_node_lf_formdata_field_control tbnlffc inner join
+        (select  tbvs.node_id  from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
+        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId}
         union all
-        select tbvm.node_id as nodeId from t_bpm_variable tbv
+        select tbvm.node_id  from t_bpm_variable tbv
         left join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
-        where tbv.process_num='DSFZH_WMA_830' and tbvm.element_id='task1418018332272')tmp
-        on tbnlffc.node_id=tmp.nodeId
+        where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId})tmp
+        on tbnlffc.node_id=tmp.node_id
     </select>
 </mapper>
