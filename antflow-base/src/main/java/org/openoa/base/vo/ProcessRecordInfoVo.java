@@ -111,4 +111,8 @@ public class ProcessRecordInfoVo {
      * start page init data
      */
     private Object initDatas;
+    /**
+     * lowcode flow field permissions
+     */
+    private List<LFFieldControlVO> lfFieldControlVOs;
 }
