@@ -24,10 +24,8 @@ public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
         String startUserId = startConditionsVo.getStartUserId();
-        if (propertysVo==null || CollectionUtils.isEmpty(propertysVo.getRoleIds())) {
-            throw new JiMuBizException("指定角色找人条件不全，无法找人！");
-        }
-        if (propertysVo.getAssignLevelType()==null || startUserId==null) {
+
+        if (propertysVo==null||propertysVo.getAssignLevelGrade()==null || startUserId==null) {
             throw new JiMuBizException("指定层级审批条件不全，无法找人！");
         }
         Integer assignLevelType = propertysVo.getAssignLevelType();

@@ -62,7 +62,7 @@ public class UserServiceImpl{
      */
     public BaseIdTranStruVo queryLeaderByEmployeeIdAndLevel(String employeeId,Integer level){
 
-        return null;
+        return userMapper.getLeaderByLeventDepartment(employeeId,level);
     }
     public BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId){
         BaseIdTranStruVo baseIdTranStruVo = userMapper.getHrpbByEmployeeId(employeeId);

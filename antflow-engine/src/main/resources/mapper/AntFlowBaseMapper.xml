@@ -140,4 +140,11 @@
             </if>
         </where>
     </sql>
+    <sql id="getLeaderByLeventDepartment">
+        select tu.id,tu.user_name as name
+        from t_user tu
+        inner join t_department_employee tde on tu.id=tde.employee_id
+        inner join t_department td on tde.department_id=td.id and tde.is_leader
+        where td.level = #{assignLevelGrade}
+    </sql>
 </mapper>

@@ -30,4 +30,6 @@ public interface UserMapper {
     BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
+
+    BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
 }

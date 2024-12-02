@@ -62,4 +62,9 @@
         group by  u.id
         order by  u.id
     </select>
+    <select id="getLeaderByLeventDepartment" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getLeaderByLeventDepartment">
+
+        </include>
+    </select>
 </mapper>
