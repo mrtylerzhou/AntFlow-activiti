@@ -94,15 +94,29 @@
     </sql>
     <!--dummy sql for test-->
     <sql id="getLevelLeadersByEmployeeIdAndTier">
-        select id,user_name as name from t_user
-        <where>
-            <if test="employeeId != null">
-                id = #{employeeId}
-            </if>
-            <if test="tier != null">
-                and tier = #{tier}
-            </if>
-        </where>
+        select id,user_name as name from
+        (SELECT distinct tu.*
+        FROM (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED) AS dept_id
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9
+        ) AS numbers
+        WHERE path ='/3/4/5/6/7/8'
+        ) AS path_ids
+        JOIN t_department_employee e
+        ON path_ids.dept_id = e.department_id
+        JOIN t_department d
+        ON path_ids.dept_id = d.id
+        join  t_user tu on tu.id=e.employee_id)tmp
     </sql>
     <sql id="getHrpbByEmployeeId">
         select id,user_name as name from t_user where id=
