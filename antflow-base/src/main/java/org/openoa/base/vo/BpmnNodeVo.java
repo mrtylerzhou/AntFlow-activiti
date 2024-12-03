@@ -152,6 +152,11 @@ public class BpmnNodeVo  implements Serializable {
 
     private Integer isOutSideProcess;
 
+    /**
+     * 0 for no and 1 for yes
+     */
+    private List<BpmnNodeVo> fromNodes;
+    private String elementId;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){
