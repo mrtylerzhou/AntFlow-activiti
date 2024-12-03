@@ -9,6 +9,7 @@ public enum ElementTypeEnum {
     ELEMENT_TYPE_GATEWAY(3, "Gateway"),
     ELEMENT_TYPE_SEQUENCE_FLOW(4, "SequenceFlow"),
     ELEMENT_TYPE_END_EVENT(5, "EndEvent"),
+    ELEMENT_TYPE_PARALLEL_GATEWAY(6,"ParallelGateWay")
     ;
 
 
