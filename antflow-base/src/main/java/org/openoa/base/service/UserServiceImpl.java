@@ -51,7 +51,7 @@ public class UserServiceImpl{
      * @return
      */
     public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndGrade(String employeeId,Integer grade){
-        List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndTier(employeeId,grade);
+        List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndEndGrade(employeeId,grade);
         return users;
     }
     /**

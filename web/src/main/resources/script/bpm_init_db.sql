@@ -1277,6 +1277,27 @@ CREATE TABLE `t_bpmn_node_hrbp_conf` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hrpb config entity';
 
+create table t_department
+(
+    id          int auto_increment comment 'Primary key'
+        primary key,
+    name        varchar(255) null comment 'Name',
+    short_name  varchar(255) null comment 'Short name',
+    parent_id   int          null comment 'Parent ID',
+    path        varchar(255) null comment 'Path',
+    level       int          null comment 'Department level',
+    leader_id   bigint       null,
+    sort        int          null comment 'Sort order',
+    is_del      tinyint      null comment 'Is deleted (0 for no, 1 for yes)',
+    is_hide     tinyint      null comment 'Is hidden (0 for show, 1 for hide)',
+    create_user varchar(255) null comment 'Create user',
+    update_user varchar(255) null comment 'Update user',
+    create_time datetime     null comment 'Creation time',
+    update_time datetime     null comment 'Update time'
+) comment 'department info';
+
+
+
 DROP TABLE IF EXISTS `t_user`;
 create table if not exists t_user
 (
@@ -1288,6 +1309,7 @@ create table if not exists t_user
     leader_id      bigint            null comment 'emp direct leader id',
     hrbp_id        bigint            null comment '用户的hrb的id,这里仅仅是用作选择hrbp审批时展示使用,实际上有的的公司组织架构里每个员工都有一个hrbp,有的则是hrbp挂在部门下面.具体根据公司业务而定',
     mobile_is_show tinyint default 0 null comment '是否展示用户手机号,如果用户手机号不展示时发送流程短信通知时也不应当通知给他.当然有的公司设置必须发送短信.这个根据公司业务而定,这里只是展示可以做很多人性化的定制设置',
+    department_id  bigint            null comment '部门id',
     path           varchar(1000)     null comment '员工组织线path,用于层层审批流程展示,有些公司的表员工的组织链并非这样的,这里只是展示用,具体根据公司业务而定只要能根据员工的id找到他的上级,上级的上线,上级的上级的上线的上线即可.当然如果没有这样的组织架构关系,不用这种审批规则即可',
     is_del         tinyint default 0 null comment '0,正常1,删除',
     head_img       varchar(3000)     null

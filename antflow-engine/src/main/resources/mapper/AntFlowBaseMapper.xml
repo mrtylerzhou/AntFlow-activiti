@@ -92,12 +92,12 @@
             </if>
         </where>
     </sql>
-    <!--dummy sql for test-->
+
     <sql id="getLevelLeadersByEmployeeIdAndTier">
-        select id,user_name as name from
-        (SELECT distinct tu.*
-        FROM (
-        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED) AS dept_id
+        SELECT tu2.id,tu2.user_name as name
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
         FROM t_department
         JOIN (
         SELECT 1 AS n UNION ALL
@@ -108,15 +108,32 @@
         SELECT 6 UNION ALL
         SELECT 7 UNION ALL
         SELECT 8 UNION ALL
-        SELECT 9
+        SELECT 9 UNION ALL
+        SELECT 10
         ) AS numbers
-        WHERE path ='/3/4/5/6/7/8'
-        ) AS path_ids
-        JOIN t_department_employee e
-        ON path_ids.dept_id = e.department_id
-        JOIN t_department d
-        ON path_ids.dept_id = d.id
-        join  t_user tu on tu.id=e.employee_id)tmp
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
+        ) order by tu2.id desc limit #{tier}
+    </sql>
+    <sql id="getLevelLeadersByEmployeeIdAndEndGrade">
+        SELECT tu2.id,tu2.user_name as name
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10
+        ) AS numbers
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
+        ) and td2.level>#{endGrade}
     </sql>
     <sql id="getHrpbByEmployeeId">
         select id,user_name as name from t_user where id=
@@ -155,10 +172,27 @@
         </where>
     </sql>
     <sql id="getLeaderByLeventDepartment">
-        select tu.id,tu.user_name as name
-        from t_user tu
-        inner join t_department_employee tde on tu.id=tde.employee_id
-        inner join t_department td on tde.department_id=td.id and tde.is_leader
-        where td.level = #{assignLevelGrade}
+        <!--指定层审批,有的组织层级不够,则取最近一层级-->
+        select id,user_name as name
+        from
+        (SELECT tu2.id,tu2.user_name,td2.level
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10
+        ) AS numbers
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
+        ) AND  <![CDATA[ td2.level<#{assignLevelGrade} ]]>)tmp order by level desc  limit 1
     </sql>
 </mapper>

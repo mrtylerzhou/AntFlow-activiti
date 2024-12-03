@@ -67,4 +67,9 @@
 
         </include>
     </select>
+    <select id="getLevelLeadersByEmployeeIdAndEndGrade" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getLevelLeadersByEmployeeIdAndEndGrade">
+
+        </include>
+    </select>
 </mapper>
