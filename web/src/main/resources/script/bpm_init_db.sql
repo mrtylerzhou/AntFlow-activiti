@@ -865,6 +865,7 @@ CREATE TABLE if not exists `bpm_process_node_back`
 (
     `id`          bigint(20) NOT NULL AUTO_INCREMENT,
     `node_key`    varchar(50)  DEFAULT NULL COMMENT 'node key',
+     node_id     bigint       null comment '节点id',
     `back_type`   int(11)      DEFAULT NULL COMMENT 'back type',
     `process_key` varchar(100) DEFAULT NULL COMMENT 'process key',
     PRIMARY KEY (`id`) USING BTREE
