@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
+    @Resource
+    private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
 
     public List<BpmVerifyInfoVo> getVerifyInfoList(String processCode) {
         List<BpmVerifyInfoVo> bpmVerifyInfoVos = service.verifyInfoList(processCode);
@@ -177,6 +181,19 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setVerifyStatus(99);
             taskVo.setVerifyStatusName("处理中");
             bpmVerifyInfoVos.add(taskVo);
+
+            BpmFlowrunEntrust flowrunEntrust = bpmFlowrunEntrustService.getOne(
+                    Wrappers.
+                            <BpmFlowrunEntrust>lambdaQuery()
+                            .eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()));
+            if(flowrunEntrust!=null){
+                String actual = flowrunEntrust.getActual();
+                if(taskVo.getVerifyUserId().equals(actual)){
+                    String actualVerifyUserName = taskVo.getVerifyUserName();
+                    String actualName = flowrunEntrust.getActualName();
+                    taskVo.setVerifyUserName(actualVerifyUserName+"代"+actualName+"审批");
+                }
+            }
             sort++;
 
 

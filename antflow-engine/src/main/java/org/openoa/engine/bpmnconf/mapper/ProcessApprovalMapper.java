@@ -84,4 +84,6 @@ public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
      * @return
      */
     List<TaskMgmtVO> viewPcForwardList(Page<TaskMgmtVO> page,@Param("taskMgmtVO") TaskMgmtVO vo);
+
+    List<TaskMgmtVO> viewPcProcessList(Page page, TaskMgmtVO taskMgmtVO);
 }

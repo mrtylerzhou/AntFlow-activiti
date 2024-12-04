@@ -5,7 +5,7 @@
 
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-engine</artifactId>
-    <version>0.11.0</version>
+    <version>0.30.0</version>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -25,13 +25,13 @@
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-base</artifactId>
-           <version>0.11.0</version>
+           <version>0.30.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-common</artifactId>
-           <version>0.11.0</version>
+           <version>0.30.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -62,6 +62,13 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-core</artifactId>
+            <version>3.5.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--非必须依赖,仅用于判断mybatisplus dynamic datasource是否存在-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
             <version>3.5.1</version>
             <scope>provided</scope>
         </dependency>

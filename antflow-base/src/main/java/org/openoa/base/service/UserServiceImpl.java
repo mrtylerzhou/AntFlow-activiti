@@ -51,7 +51,7 @@ public class UserServiceImpl{
      * @return
      */
     public  List<BaseIdTranStruVo> queryLeadersByEmployeeIdAndGrade(String employeeId,Integer grade){
-        List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndTier(employeeId,grade);
+        List<BaseIdTranStruVo> users = userMapper.getLevelLeadersByEmployeeIdAndEndGrade(employeeId,grade);
         return users;
     }
     /**
@@ -62,7 +62,7 @@ public class UserServiceImpl{
      */
     public BaseIdTranStruVo queryLeaderByEmployeeIdAndLevel(String employeeId,Integer level){
 
-        return null;
+        return userMapper.getLeaderByLeventDepartment(employeeId,level);
     }
     public BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId){
         BaseIdTranStruVo baseIdTranStruVo = userMapper.getHrpbByEmployeeId(employeeId);

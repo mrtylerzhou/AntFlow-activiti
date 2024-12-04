@@ -1,6 +1,8 @@
 package org.openoa.controller;
 
 import com.google.common.collect.Lists;
+import org.activiti.engine.impl.cfg.multitenant.TenantInfoHolder;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.openoa.base.entity.Employee;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 @IgnoreLog
 @RequestMapping("/user")
@@ -29,12 +32,20 @@ public class UserController {
     private UserMapper userMapper;
     @Autowired
     private SqlSessionFactory sqlSessionFactory;
+    @Autowired
+    private TenantInfoHolder infoHolder;
 
     @Autowired
     private RoleMapper roleMapper;
 
     @RequestMapping("/queryUserByNameFuzzy")
     public Result queryUserByNameFuzzy(String userName){
+        int i = RandomUtils.nextInt();
+        if(i%2==0){
+            infoHolder.setCurrentTenantId("tenantA");
+        }else{
+            infoHolder.setCurrentTenantId("");
+        }
         Employee employeeDetailById = userMapper.getEmployeeDetailById("1");
         if(StringUtils.isEmpty(userName)){
             return Result.newSuccessResult(Lists.newArrayList());

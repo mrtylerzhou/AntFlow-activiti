@@ -68,10 +68,4 @@ public class Department {
      */
     private String updateUser;
 
-    /**
-     * department Id in qywx
-     */
-    private Integer qywxId;
-
-
 }

@@ -162,7 +162,7 @@ CREATE TABLE if not exists `bpm_business`
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (
     `id`          int(11) NOT NULL AUTO_INCREMENT,
-    `runinfoid`   varchar(11)      DEFAULT NULL COMMENT 'process instance id',
+    `runinfoid`   varchar(64)      DEFAULT NULL COMMENT 'process instance id',
     `runtaskid`   varchar(64)      DEFAULT NULL COMMENT 'task id',
     `original`    varchar(64)          DEFAULT NULL COMMENT 'original assignee',
      `original_name`    varchar(255)          DEFAULT NULL COMMENT 'original assignee name',
@@ -181,7 +181,7 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
 CREATE TABLE if not exists `bpm_flowruninfo`
 (
     `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `runinfoid`     bigint(20) NOT NULL COMMENT 'process instance id',
+    `runinfoid`     varchar(64) NOT NULL COMMENT 'process instance id',
     `create_UserId` varchar(64)   DEFAULT NULL COMMENT 'userid',
     `entitykey`     varchar(100) DEFAULT NULL COMMENT 'business key',
     `entityclass`   varchar(100) DEFAULT NULL COMMENT 'entity class',
@@ -331,7 +331,7 @@ CREATE TABLE if not exists `bpm_process_forward`
     `id`                 int(11)      NOT NULL AUTO_INCREMENT,
     `forward_user_id`    varchar(50)            DEFAULT NULL COMMENT 'forwarded user id',
     `Forward_user_name`  varchar(50)           DEFAULT NULL COMMENT 'forwarded user name',
-    `processInstance_Id` varchar(50)           DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)           DEFAULT NULL COMMENT 'process instance id',
     `create_time`        timestamp             not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user_id`     varchar(50)            DEFAULT NULL COMMENT 'as its name says',
     `task_id`            varchar(50)           DEFAULT NULL COMMENT 'taskid',
@@ -362,7 +362,7 @@ CREATE TABLE if not exists `bpm_process_node_overtime`
 CREATE TABLE if not exists `bpm_process_node_record`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `task_id`            varchar(50)         DEFAULT NULL COMMENT 'taskid',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`) USING BTREE
@@ -372,7 +372,7 @@ CREATE TABLE if not exists `bpm_process_node_record`
 CREATE TABLE if not exists `bpm_process_node_submit`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
-    `processInstance_Id` varchar(50)         DEFAULT NULL COMMENT 'process instance id',
+    `processInstance_Id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
     `back_type`          tinyint(11)             DEFAULT NULL COMMENT 'back type',
     `node_key`           varchar(50)         DEFAULT NULL COMMENT 'node key',
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -493,6 +493,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
     `element_id`      varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
     `element_name`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
     `collection_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'collection name',
+     node_id         varchar(60)                                   null,
     `sign_type`       int(11)             NOT NULL COMMENT 'sign type 1: all sign 2:or sign',
     `remark`          varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`          tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -552,6 +553,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up`
     `id`                bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `variable_id`       bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
+     node_id             varchar(60)                                   null,
     `after_sign_up_way` int(11)             NOT NULL DEFAULT '1' COMMENT 'after sign up way,1:back to current assignee,2 go on',
     `sub_elements`      text                NOT NULL COMMENT 'sub elements stored in json',
     `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
@@ -1262,6 +1264,40 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
 
+CREATE TABLE `t_bpmn_node_hrbp_conf` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
+  `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',
+  `hrbp_conf_type` INT(11) NULL COMMENT 'hrbp type 1-hrbp,2-hrbp leader,this is only for extensibility purpose,if your system do not have hrbp leader,you can ignore this field if your system have other concept,for example hrbp manager,you can use this field to store hrbp manager(eg 3 for hrbp manager)',
+  `remark` VARCHAR(255) NULL COMMENT 'remark',
+  `is_del` INT(11) NULL COMMENT '0 for normal,1 for deleted',
+  `create_user` VARCHAR(255) NULL COMMENT 'create user',
+  `create_time` DATETIME NULL COMMENT 'create time',
+  `update_user` VARCHAR(255) NULL COMMENT 'update user',
+  `update_time` DATETIME NULL COMMENT 'update time',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hrpb config entity';
+
+create table t_department
+(
+    id          int auto_increment comment 'Primary key'
+        primary key,
+    name        varchar(255) null comment 'Name',
+    short_name  varchar(255) null comment 'Short name',
+    parent_id   int          null comment 'Parent ID',
+    path        varchar(255) null comment 'Path',
+    level       int          null comment 'Department level',
+    leader_id   bigint       null,
+    sort        int          null comment 'Sort order',
+    is_del      tinyint      null comment 'Is deleted (0 for no, 1 for yes)',
+    is_hide     tinyint      null comment 'Is hidden (0 for show, 1 for hide)',
+    create_user varchar(255) null comment 'Create user',
+    update_user varchar(255) null comment 'Update user',
+    create_time datetime     null comment 'Creation time',
+    update_time datetime     null comment 'Update time'
+) comment 'department info';
+
+
+
 DROP TABLE IF EXISTS `t_user`;
 create table if not exists t_user
 (
@@ -1273,6 +1309,7 @@ create table if not exists t_user
     leader_id      bigint            null comment 'emp direct leader id',
     hrbp_id        bigint            null comment '用户的hrb的id,这里仅仅是用作选择hrbp审批时展示使用,实际上有的的公司组织架构里每个员工都有一个hrbp,有的则是hrbp挂在部门下面.具体根据公司业务而定',
     mobile_is_show tinyint default 0 null comment '是否展示用户手机号,如果用户手机号不展示时发送流程短信通知时也不应当通知给他.当然有的公司设置必须发送短信.这个根据公司业务而定,这里只是展示可以做很多人性化的定制设置',
+    department_id  bigint            null comment '部门id',
     path           varchar(1000)     null comment '员工组织线path,用于层层审批流程展示,有些公司的表员工的组织链并非这样的,这里只是展示用,具体根据公司业务而定只要能根据员工的id找到他的上级,上级的上线,上级的上级的上线的上线即可.当然如果没有这样的组织架构关系,不用这种审批规则即可',
     is_del         tinyint default 0 null comment '0,正常1,删除',
     head_img       varchar(3000)     null

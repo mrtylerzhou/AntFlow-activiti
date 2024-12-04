@@ -26,6 +26,7 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
@@ -50,6 +51,11 @@ public abstract class AbstractProcessEngineConfiguration {
     processEngineFactoryBean.setProcessEngineConfiguration(configuration);
     return processEngineFactoryBean;
   }
+    public ProcessEngineFactoryBean springProcessEngineBean(MultiSchemaMultiTenantProcessEngineConfiguration configuration) {
+        ProcessEngineFactoryBean processEngineFactoryBean = new ProcessEngineFactoryBean();
+        processEngineFactoryBean.setProcessEngineConfiguration(configuration);
+        return processEngineFactoryBean;
+    }
 
   public SpringProcessEngineConfiguration processEngineConfigurationBean(Resource[] processDefinitions,
                                                                          DataSource dataSource,
