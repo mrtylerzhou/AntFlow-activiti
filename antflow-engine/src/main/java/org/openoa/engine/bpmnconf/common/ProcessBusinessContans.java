@@ -87,7 +87,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .build());
             //modify notice
             userMessageService.readNode(processInstanceId);
-            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId().toString()).list();
+            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
             if (!ObjectUtils.isEmpty(list)) {
                 String taskDefinitionKey = list.get(0).getTaskDefinitionKey();
                 processInfoVo.setTaskId(list.get(0).getId());
