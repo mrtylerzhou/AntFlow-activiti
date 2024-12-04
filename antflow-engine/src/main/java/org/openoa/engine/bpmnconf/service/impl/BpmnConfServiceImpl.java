@@ -776,7 +776,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         List<BpmnNodeLfFormdataFieldControl> fieldControls = fieldControlMap.get(bpmnNode.getId());
         if(CollectionUtils.isEmpty(fieldControls)){
-            throw new JiMuBizException(Strings.lenientFormat("当前节点:%s无任何字段",bpmnNode.getId()));
+            return;
         }
         List<LFFieldControlVO> fieldControlVOS=new ArrayList<>();
         for (BpmnNodeLfFormdataFieldControl fieldControl : fieldControls) {
