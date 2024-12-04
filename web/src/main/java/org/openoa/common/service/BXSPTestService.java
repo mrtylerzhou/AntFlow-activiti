@@ -5,6 +5,7 @@ import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.ThirdPartyAccountApplyVo;
 
 /**
@@ -32,7 +33,7 @@ public class BXSPTestService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(String businessId) {
+    public ThirdPartyAccountApplyVo queryData(ThirdPartyAccountApplyVo vo) {
         return new ThirdPartyAccountApplyVo();
     }
 
@@ -54,12 +55,12 @@ public class BXSPTestService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(ThirdPartyAccountApplyVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }
