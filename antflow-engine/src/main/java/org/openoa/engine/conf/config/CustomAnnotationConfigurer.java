@@ -30,8 +30,15 @@ public class CustomAnnotationConfigurer implements ApplicationContextAware, Bean
     private ApplicationContext applicationContext;
     public static Map<String, String> activitiServiceMap = Maps.newHashMap();
 
+    /**
+     * 需要扫描的流程包.
+     */
+    private String[] scanPackages;
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
+        scanPackages = configurableListableBeanFactory.resolveEmbeddedValue("${antflow.common.scan-packages:" +
+                StringConstants.SCAN_BASE_PACKAGES + "}").split(",");
         scanningAndAssemblingAnnotation(configurableListableBeanFactory, ActivitiServiceAnno.class, activitiServiceMap,
                 "启动扫描并装配扫描标注有@ActivitiServiceAnno注解bean实现类失败");
     }
@@ -89,6 +96,6 @@ public class CustomAnnotationConfigurer implements ApplicationContextAware, Bean
         CustomAnnotationScanner activitiAnnoScanner = CustomAnnotationScanner.getScanner((BeanDefinitionRegistry) beanFactory, clazz);
         activitiAnnoScanner.setResourceLoader(this.applicationContext);
         activitiAnnoScanner.setBeanNameGenerator(new SdpAnnotationBeanNameGenerator());
-        return activitiAnnoScanner.doScanPackages(StringConstants.SCAN_BASE_PACKAGES);
+        return activitiAnnoScanner.doScanPackages(scanPackages);
     }
 }

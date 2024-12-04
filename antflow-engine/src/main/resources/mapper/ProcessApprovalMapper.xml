@@ -130,7 +130,7 @@
                           LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
                  where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
-                   and t.END_TIME_ <![CDATA[ <> ]]> ''
+                   and t.END_TIME_ IS NOT NULL
                    and t.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
                    and b.is_del = 0
              ) s
