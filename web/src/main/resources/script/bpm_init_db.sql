@@ -775,7 +775,7 @@ CREATE TABLE if not exists `t_bpmn_node_button_conf`
 
 CREATE TABLE if not exists `bpm_business_process`
 (
-    `id`               bigint(11)  NOT NULL AUTO_INCREMENT,
+    `id`               bigint(20)  NOT NULL AUTO_INCREMENT COMMENT 'id',
     `PROCESSINESS_KEY` varchar(64)  DEFAULT NULL,
     `BUSINESS_ID`      varchar(64) NOT NULL COMMENT 'business id',
     `BUSINESS_NUMBER`  varchar(64)  DEFAULT NULL COMMENT 'process number',
@@ -803,6 +803,7 @@ CREATE TABLE if not exists `bpm_business_process`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4 COMMENT ='process and business association table';
+
 
 
 
@@ -870,6 +871,7 @@ CREATE TABLE if not exists `bpm_process_node_back`
 (
     `id`          bigint(20) NOT NULL AUTO_INCREMENT,
     `node_key`    varchar(50)  DEFAULT NULL COMMENT 'node key',
+     node_id     bigint       null comment '节点id',
     `back_type`   int(11)      DEFAULT NULL COMMENT 'back type',
     `process_key` varchar(100) DEFAULT NULL COMMENT 'process key',
     PRIMARY KEY (`id`) USING BTREE
@@ -988,7 +990,6 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     source           varchar(255)                       null,
     user_request_uri varchar(255)                       null comment 'get user info',
     role_request_uri varchar(255)                       null comment 'get role info'
-
 )
     comment 'BPM Process Application Table';
 
@@ -1270,6 +1271,40 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
 
+CREATE TABLE `t_bpmn_node_hrbp_conf` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
+  `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',
+  `hrbp_conf_type` INT(11) NULL COMMENT 'hrbp type 1-hrbp,2-hrbp leader,this is only for extensibility purpose,if your system do not have hrbp leader,you can ignore this field if your system have other concept,for example hrbp manager,you can use this field to store hrbp manager(eg 3 for hrbp manager)',
+  `remark` VARCHAR(255) NULL COMMENT 'remark',
+  `is_del` INT(11) NULL COMMENT '0 for normal,1 for deleted',
+  `create_user` VARCHAR(255) NULL COMMENT 'create user',
+  `create_time` DATETIME NULL COMMENT 'create time',
+  `update_user` VARCHAR(255) NULL COMMENT 'update user',
+  `update_time` DATETIME NULL COMMENT 'update time',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hrpb config entity';
+
+create table t_department
+(
+    id          int auto_increment comment 'Primary key'
+        primary key,
+    name        varchar(255) null comment 'Name',
+    short_name  varchar(255) null comment 'Short name',
+    parent_id   int          null comment 'Parent ID',
+    path        varchar(255) null comment 'Path',
+    level       int          null comment 'Department level',
+    leader_id   bigint       null,
+    sort        int          null comment 'Sort order',
+    is_del      tinyint      null comment 'Is deleted (0 for no, 1 for yes)',
+    is_hide     tinyint      null comment 'Is hidden (0 for show, 1 for hide)',
+    create_user varchar(255) null comment 'Create user',
+    update_user varchar(255) null comment 'Update user',
+    create_time datetime     null comment 'Creation time',
+    update_time datetime     null comment 'Update time'
+) comment 'department info';
+
+
+
 DROP TABLE IF EXISTS `t_user`;
 create table if not exists t_user
 (
@@ -1281,6 +1316,7 @@ create table if not exists t_user
     leader_id      bigint            null comment 'emp direct leader id',
     hrbp_id        bigint            null comment '用户的hrb的id,这里仅仅是用作选择hrbp审批时展示使用,实际上有的的公司组织架构里每个员工都有一个hrbp,有的则是hrbp挂在部门下面.具体根据公司业务而定',
     mobile_is_show tinyint default 0 null comment '是否展示用户手机号,如果用户手机号不展示时发送流程短信通知时也不应当通知给他.当然有的公司设置必须发送短信.这个根据公司业务而定,这里只是展示可以做很多人性化的定制设置',
+    department_id  bigint            null comment '部门id',
     path           varchar(1000)     null comment '员工组织线path,用于层层审批流程展示,有些公司的表员工的组织链并非这样的,这里只是展示用,具体根据公司业务而定只要能根据员工的id找到他的上级,上级的上线,上级的上级的上线的上线即可.当然如果没有这样的组织架构关系,不用这种审批规则即可',
     is_del         tinyint default 0 null comment '0,正常1,删除',
     head_img       varchar(3000)     null
@@ -1519,15 +1555,6 @@ create table t_dict_data
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
-
-CREATE TABLE `t_user_role` (
-                               `id` int(11) NOT NULL AUTO_INCREMENT,
-                               `user_id` int(11) DEFAULT NULL COMMENT 'user id ',
-                               `role_id` int(11) DEFAULT NULL COMMENT 'role id',
-                               PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
-
-
 
 SET FOREIGN_KEY_CHECKS = 1;
 

@@ -70,13 +70,11 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
         if(CollectionUtils.isEmpty(baseIdTranStruVos)){
             throw new JiMuBizException("未能根据发起人找到审批人信息");
         }
-        List<String> approverIds = baseIdTranStruVos.stream().map(a -> a.getId().toString()).collect(Collectors.toList());
+        List<String> approverIds = baseIdTranStruVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         List<String> finalApproverIds = new ArrayList<>();
         for (String approverId : approverIds) {
             if(!loopEndPersonList.contains(approverId)){
                 finalApproverIds.add(approverId);
-            }else{
-                break;
             }
         }
         return  finalApproverIds;
