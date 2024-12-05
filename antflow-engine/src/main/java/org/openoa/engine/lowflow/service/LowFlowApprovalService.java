@@ -54,7 +54,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(filterConditionFields(vo))
+                .lfConditions(vo.getLfConditions())
                 .build();
     }
 
@@ -68,7 +68,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(filterConditionFields(vo))
+                .lfConditions(vo.getLfConditions())
                 .build();
     }
 
@@ -209,9 +209,13 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private Map<String,Object> filterConditionFields(UDLFApplyVo vo){
         Long confId = vo.getBpmnConfVo().getId();
         List<String> conditionFieldNames = conditionFieldNameMap.get(confId);
+        Map<String,Object>conditionFieldMap=null;
         //put values into cache
         if(CollectionUtils.isEmpty(conditionFieldNames)){
-
+            Map<String, Object> lfConditions = vo.getLfConditions();
+            if(!CollectionUtils.isEmpty(lfConditions)){
+                conditionFieldMap=lfConditions;
+            }
             List<BpmnConfLfFormdataField> allFields = lfFormdataFieldService.list(Wrappers.<BpmnConfLfFormdataField>lambdaQuery()
                     .eq(BpmnConfLfFormdataField::getBpmnConfId, confId));
             if(CollectionUtils.isEmpty(allFields)){
@@ -233,7 +237,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
            }
         }
         conditionFieldNames=conditionFieldNameMap.get(confId);
-        Map<String,Object>conditionFieldMap=null;
+
 
         //if it is still empty here,it indicates that this approval has no condition fields
         if(!CollectionUtils.isEmpty(conditionFieldNames)){
