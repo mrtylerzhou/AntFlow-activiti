@@ -772,6 +772,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             return;
         }
         if(CollectionUtils.isEmpty(fieldControlMap)){
+
             return;
         }
         List<BpmnNodeLfFormdataFieldControl> fieldControls = fieldControlMap.get(bpmnNode.getId());
