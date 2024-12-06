@@ -6,6 +6,11 @@
 # 简介
 AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
 
+-  开源前端地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Vue3) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Vue3) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview) 
+-  开源后端地址 [Gitee仓库](https://gitee.com/tylerzhou/Antflow) | [Github仓库](https://github.com/mrtylerzhou/AntFlow) | [GitCode仓库](https://gitcode.com/zypqqgc/AntFlow/overview) 
+-  成品案例集成若依  [预览入口](http://117.72.70.166/admin/)
+-  独立流程设计器 [预览入口](http://117.72.70.166/ant-flow/dist/) 
+
 # 系统架构图
 ![系统架构图](./doc/images/AntFlow架构.png)
 
