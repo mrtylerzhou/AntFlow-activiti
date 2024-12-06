@@ -236,4 +236,6 @@ public class BusinessDataVo extends PageDto {
     private List<OutSideLevelNodeVo>outSideLevelNodes;
 
     private MsgProcessEventEnum msgProcessEventEnum;
+
+    private Map<String,Object> lfConditions;
 }

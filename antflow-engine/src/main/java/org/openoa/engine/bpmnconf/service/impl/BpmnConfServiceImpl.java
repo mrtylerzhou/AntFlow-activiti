@@ -772,7 +772,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             return;
         }
         if(CollectionUtils.isEmpty(fieldControlMap)){
-            return; //throw new JiMuBizException("低代码工作流无任何字段!");
+            throw new JiMuBizException("低代码工作流无任何字段!");
         }
         List<BpmnNodeLfFormdataFieldControl> fieldControls = fieldControlMap.get(bpmnNode.getId());
         if(CollectionUtils.isEmpty(fieldControls)){
