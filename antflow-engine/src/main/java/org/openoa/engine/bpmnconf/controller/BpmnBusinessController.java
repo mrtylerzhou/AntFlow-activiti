@@ -15,6 +15,7 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,8 @@ public class BpmnBusinessController {
 
     @Autowired
     private UserEntrustServiceImpl userEntrustService;
-
+    @Autowired(required = false)
+    private LowCodeFlowBizService lowCodeFlowBizService;
 
     @Operation(summary ="" )
     @RequestMapping("/listFormCodes")
@@ -55,6 +57,14 @@ public class BpmnBusinessController {
     public Result listFormInfo(String desc){
 
         return Result.newSuccessResult(baseFormInfo(desc));
+    }
+    /**
+     * get all form code and desc information
+     * @return
+     */
+    @GetMapping("/allFormCodes")
+    public Result allFormCodes(){
+        return Result.newSuccessResult(allFormInfo());
     }
     @GetMapping("/listNodeProperties")
     public Result listPersonnelProperties(){
@@ -112,6 +122,9 @@ public class BpmnBusinessController {
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
             String key=stringFormOperationAdaptorEntry.getKey();
             ActivitiServiceAnno annotation = stringFormOperationAdaptorEntry.getValue().getClass().getAnnotation(ActivitiServiceAnno.class);
+            if (StringUtils.isEmpty(annotation.desc())){
+                continue;
+            }
             if(!StringUtils.isEmpty(desc)){
                 if(annotation.desc().contains(desc)){
                     results.add(
@@ -119,18 +132,30 @@ public class BpmnBusinessController {
                                     .builder()
                                     .key(key)
                                     .value(annotation.desc())
+                                    .type("DIY")
                                     .build()
                     );
                 }
-            }else{
+            }
+            else{
                 results.add(
                         BaseKeyValueStruVo
                                 .builder()
                                 .key(key)
                                 .value(annotation.desc())
+                                .type("DIY")
                                 .build()
                 );
             }
+        }
+        return results;
+    }
+
+    private List<BaseKeyValueStruVo> allFormInfo(){
+        List<BaseKeyValueStruVo> results= baseFormInfo("");
+        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLowCodeFlowFormCodes();
+        if (lfFormCodes != null){
+            results.addAll(lfFormCodes);
         }
         return results;
     }

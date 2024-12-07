@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.Result;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
@@ -38,7 +39,7 @@ public class LowCodeFlowController {
         return Result.newSuccessResult(lfFormDataByFormCode.getFormdata());
     }
     @GetMapping("/getLowCodeFlowFormCodes")
-    public Result<List<String>> getLowCodeFormCodes(){
+    public Result<List<BaseKeyValueStruVo>> getLowCodeFormCodes(){
         return Result.newSuccessResult(lowCodeFlowBizService.getLowCodeFlowFormCodes());
     }
 }
