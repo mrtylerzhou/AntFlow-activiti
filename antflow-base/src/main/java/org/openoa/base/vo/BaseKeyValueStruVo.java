@@ -16,4 +16,5 @@ import lombok.NoArgsConstructor;
 public class BaseKeyValueStruVo {
     private String key;
     private String value;
+    private String type;
 }

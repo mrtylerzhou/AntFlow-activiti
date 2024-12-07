@@ -30,8 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-@ActivitiServiceAnno(svcName = StringConstants.LOWFLOW_FORM_CODE,desc = "拖拽表单低代码审批流")
+/**
+ * desc = 拖拽表单低代码审批流
+ * */
+@ActivitiServiceAnno(svcName = StringConstants.LOWFLOW_FORM_CODE,desc = "")
 public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>, ActivitiService {
     private static final Logger log = LoggerFactory.getLogger(LowFlowApprovalService.class);
     //key is confid,value is a list of condition fields names which belongs to this conf

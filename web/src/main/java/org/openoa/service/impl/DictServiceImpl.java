@@ -3,6 +3,9 @@ package org.openoa.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.entity.DictData;
 import org.openoa.mapper.DicDataMapper;
@@ -10,9 +13,7 @@ import org.openoa.mapper.DictMainMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,8 +37,21 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     }
 
     @Override
-    public List<String> getLowCodeFlowFormCodes() {
+    public List<BaseKeyValueStruVo> getLowCodeFlowFormCodes() {
         List<DictData> lowcodeflow = getDictItemsByType("lowcodeflow");
-        return lowcodeflow.stream().map(DictData::getValue).collect(Collectors.toList());
+        List<BaseKeyValueStruVo> results=new ArrayList<>();
+        if(lowcodeflow != null ) {
+            for (DictData item : lowcodeflow) {
+                results.add(
+                        BaseKeyValueStruVo
+                                .builder()
+                                .key(item.getValue())
+                                .value(item.getLabel())
+                                .type("LF")
+                                .build()
+                );
+            }
+        }
+        return results;
     }
 }
