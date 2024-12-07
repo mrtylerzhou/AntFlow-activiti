@@ -6,14 +6,9 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.LFMainServiceImpl;
 import org.openoa.engine.lowflow.service.BpmnConfLFFormDataBizServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.w3c.dom.stylesheets.LinkStyle;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,4 +37,9 @@ public class LowCodeFlowController {
     public Result<List<BaseKeyValueStruVo>> getLowCodeFormCodes(){
         return Result.newSuccessResult(lowCodeFlowBizService.getLowCodeFlowFormCodes());
     }
+    @PostMapping("/createLowCodeFormCode")
+    public Result createLowCodeFormCode(@RequestBody BaseKeyValueStruVo vo){
+        return Result.newSuccessResult(lowCodeFlowBizService.addFormCode(vo));
+    }
+
 }

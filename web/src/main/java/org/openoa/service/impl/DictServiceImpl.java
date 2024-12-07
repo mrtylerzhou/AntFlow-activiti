@@ -3,9 +3,12 @@ package org.openoa.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
+import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.entity.DictData;
 import org.openoa.mapper.DicDataMapper;
@@ -48,10 +51,31 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                                 .key(item.getValue())
                                 .value(item.getLabel())
                                 .type("LF")
+                                .remark(item.getRemark())
                                 .build()
                 );
             }
         }
         return results;
+    }
+    @Override
+    public Integer addFormCode(BaseKeyValueStruVo vo) {
+        Integer result = 0;
+        LambdaQueryWrapper<DictData> qryByValue =  Wrappers.<DictData>lambdaQuery()
+                .eq(DictData::getValue, vo.getKey());
+        List<DictData> dictData = dicDataMapper.selectList(qryByValue);
+        if (dictData.isEmpty()){
+            DictData  entity = new DictData();
+            entity.setDictType("lowcodeflow");
+            entity.setValue(vo.getKey());
+            entity.setLabel(vo.getValue());
+            entity.setRemark(vo.getRemark());
+            entity.setIsDefault("N");
+            entity.setIsDel(0);
+            entity.setCreateUser(SecurityUtils.getLogInEmpName());
+            entity.setCreateTime(new Date());
+            result = dicDataMapper.insert(entity);
+        }
+        return  result;
     }
 }
