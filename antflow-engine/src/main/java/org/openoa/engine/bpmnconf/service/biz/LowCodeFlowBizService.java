@@ -7,4 +7,6 @@ import java.util.List;
 public interface LowCodeFlowBizService {
     //todo cbcbu
     List<BaseKeyValueStruVo> getLowCodeFlowFormCodes();
+
+    Integer addFormCode(BaseKeyValueStruVo vo);
 }
