@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsConf;
@@ -256,6 +254,19 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                             .createUser(SecurityUtils.getLogInEmpNameSafe())
                             .createTime(new Date())
                             .build());
+                    //if condition value doest not a collection and doest not a string type,it must have an operator
+                    if(conditionTypeEnum.getFieldType()==2&&!String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
+                        Integer numberOperator = bpmnNodeConditionsConfBaseVo.getNumberOperator();
+                        bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
+                                .builder()
+                                .bpmnNodeConditionsId(nodeConditionsId)
+                                .conditionParamType(ConditionTypeEnum.CONDITION_TYPE_NUMBER_OPERATOR.getCode())
+                                .conditionParamName(ConditionTypeEnum.CONDITION_TYPE_NUMBER_OPERATOR.getFieldName())
+                                .conditionParamJsom(numberOperator.toString())
+                                .createUser(SecurityUtils.getLogInEmpNameSafe())
+                                .createTime(new Date())
+                                .build());
+                    }
                     Long confId = bpmnNodeVo.getConfId();
                     lfFormdataFieldService.getBaseMapper().updateByConfIdAndFieldName(confId,columnDbname);
                 }

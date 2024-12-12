@@ -18,7 +18,7 @@ import java.util.List;
 public enum ConditionTypeEnum {
     CONDITION_THIRD_ACCOUNT_TYPE(1, "三方账户", "accountType", 1, Integer.class,
             BpmnNodeConditionsAccountTypeAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
-    CONDITION_BIZ_LEAVE_TIME(2, "请假时长", "leaveHour", 3, Double.class,
+    CONDITION_BIZ_LEAVE_TIME(2, "请假时长", "leaveHour", 2, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
     CONDITION_PURCHASE_FEE(3, "采购费用", "planProcurementTotalMoney", 3, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "planProcurementTotalMoney", PurchaseTotalMoneyJudge.class),
@@ -28,8 +28,8 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "jobLevelVo", JobLevelJudge.class),
     CONDITION_PURCHASE_TYPE(6, "采购类型", "purchaseType", 1, Integer.class,
             BpmnNodeConditionsPurchaseTypeAdp.class, BpmnStartConditionsVo.class, "purchaseType", PurchaseTypeJudge.class),
-    CONDITION_TYPE_MONEY_OPERATOR(7, "总金额运算符枚举", "numberOperator", 2, Integer.class,
-            BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoneyOperator", MoneyOperatorJudge.class),
+    CONDITION_TYPE_NUMBER_OPERATOR(7, "数字运算符", "numberOperator", 2, Integer.class,
+            BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "numberOperator", MoneyOperatorJudge.class),
 
     CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),

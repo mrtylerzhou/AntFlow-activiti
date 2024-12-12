@@ -14,7 +14,7 @@ public class LFNumberFormatJudge extends AbstractLFConditionJudge{
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,(a,b)->super.compareJudge(NumberUtils.toScaledBigDecimal(a.toString(),2, RoundingMode.HALF_UP)
-               ,NumberUtils.toScaledBigDecimal(a.toString(),2, RoundingMode.HALF_UP),conditionsConf.getNumberOperator()));
+               ,NumberUtils.toScaledBigDecimal(b.toString(),2, RoundingMode.HALF_UP),conditionsConf.getNumberOperator()));
     }
 
 }

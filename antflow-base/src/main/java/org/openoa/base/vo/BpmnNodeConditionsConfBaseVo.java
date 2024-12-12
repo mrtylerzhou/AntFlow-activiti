@@ -74,7 +74,7 @@ public class BpmnNodeConditionsConfBaseVo {
     private Double leaveHour;
 
     /**
-     * total money operator
+     * number operator
      */
     private Integer numberOperator;
     private String extJson;

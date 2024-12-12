@@ -87,10 +87,11 @@ public class BpmnConfNodePropertyConverter {
 
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 String opt1 = newModel.getOpt1();
-                if(!StringUtils.isEmpty(opt1)){
-                    JudgeOperatorEnum symbol = JudgeOperatorEnum.getBySymbol(opt1);
+                Integer optType = newModel.getOptType();
+                if(optType!=null){
+                    JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
                     if(symbol==null){
-                        throw new JiMuBizException(String.format("condition symbol of %s is undefined!",opt1));
+                        throw new JiMuBizException(String.format("condition optype of %d is undefined!",optType));
                     }
                     Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
                     ReflectionUtils.setField(opField,result,symbol.getCode());

@@ -17,7 +17,7 @@ public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditi
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
         BiPredicate<Object,Object> predicate=(a,b)->{
             try {
-                Date dateFromDb =currentDateFormatter().parse(a.toString());
+                Date dateFromDb =(Date) a;
                 Date dateFromUser = currentDateFormatter().parse(b.toString());
                 BigDecimal dateFromDbBig=new BigDecimal(dateFromDb.getTime());
                 BigDecimal dateFromUserBig=new BigDecimal(dateFromUser.getTime());
