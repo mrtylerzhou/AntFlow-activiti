@@ -30,23 +30,28 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsPurchaseTypeAdp.class, BpmnStartConditionsVo.class, "purchaseType", PurchaseTypeJudge.class),
     CONDITION_TYPE_MONEY_OPERATOR(7, "总金额运算符枚举", "numberOperator", 2, Integer.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoneyOperator", MoneyOperatorJudge.class),
-    CONDITION_TYPE_LF_STR_CONDITION(8,"无代码字符串流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",LFStringConditionJudge.class),
-    CONDITION_TYPE_LF_NUM_CONDITION(9,"无代码数字流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Double.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions", LFNumberFormatJudge.class),
-    CONDITION_TYPE_LF_DATE_CONDITION(10,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, Date.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
-    CONDITION_TYPE_LF_DATE_TIME_CONDITION(11,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Date.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
-    CONDITION_TYPE_LF_COLLECTION_CONDITION(12,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
-    CONDITION_TEMPLATEMARK(36, "条件模板标识", "templateMarks", 1, String.class,
-            BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
+
     CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
     CONDITION_TYPE_TOTAL_MONEY(38, "总金额", "totalMoney", 2, String.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
 
+
+    //三方工作流条件
+    CONDITION_TEMPLATEMARK(9999, "条件模板标识", "templateMarks", 1, String.class,
+            BpmnTemplateMarkAdp.class, BpmnStartConditionsVo.class, "templateMarks", BpmnTemplateMarkJudge.class),
+
+    //低(无)代码流程条件
+    CONDITION_TYPE_LF_STR_CONDITION(10000,"无代码字符串流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",LFStringConditionJudge.class),
+    CONDITION_TYPE_LF_NUM_CONDITION(10001,"无代码数字流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Double.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions", LFNumberFormatJudge.class),
+    CONDITION_TYPE_LF_DATE_CONDITION(10002,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, Date.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
+    CONDITION_TYPE_LF_DATE_TIME_CONDITION(10003,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Date.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
+    CONDITION_TYPE_LF_COLLECTION_CONDITION(10004,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
     ;
 static{
     lowFlowCodes=  Lists.newArrayList(

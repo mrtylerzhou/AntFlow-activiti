@@ -92,7 +92,7 @@ public class BpmnSendMessageAspect {
 
 
         //map bpmn conf to bpmn conf vo
-        BpmnConfVo bpmnConfVo = Optional.ofNullable(bpmnConf).map(o -> {
+        BpmnConfVo bpmnConfVo = Optional.of(bpmnConf).map(o -> {
             BpmnConfVo bcVo = new BpmnConfVo();
             BeanUtils.copyProperties(o,bcVo);
             return bcVo;
