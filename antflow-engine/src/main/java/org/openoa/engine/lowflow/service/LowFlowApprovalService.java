@@ -56,7 +56,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(vo.getLfConditions())
+                .lfConditions(vo.getLfFields())
                 .build();
     }
 
@@ -70,7 +70,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(vo.getLfConditions())
+                .lfConditions(vo.getLfFields())
                 .build();
     }
 
