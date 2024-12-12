@@ -54,10 +54,15 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
         String userId =  vo.getStartUserId();
-        return BpmnStartConditionsVo.builder()
+        BpmnStartConditionsVo startConditionsVo = BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(vo.getLfFields())
                 .build();
+        if(!CollectionUtils.isEmpty(vo.getLfConditions())){
+            startConditionsVo.setLfConditions(vo.getLfConditions());
+        }else {
+            startConditionsVo.setLfConditions(vo.getLfFields());
+        }
+        return startConditionsVo;
     }
 
     @Override
@@ -68,10 +73,15 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     @Override
     public BpmnStartConditionsVo launchParameters(UDLFApplyVo vo) {
         String userId =  vo.getStartUserId();
-        return BpmnStartConditionsVo.builder()
+        BpmnStartConditionsVo startConditionsVo = BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .lfConditions(vo.getLfFields())
                 .build();
+        if(!CollectionUtils.isEmpty(vo.getLfConditions())){
+            startConditionsVo.setLfConditions(vo.getLfConditions());
+        }else {
+            startConditionsVo.setLfConditions(vo.getLfFields());
+        }
+        return startConditionsVo;
     }
 
     @Override
