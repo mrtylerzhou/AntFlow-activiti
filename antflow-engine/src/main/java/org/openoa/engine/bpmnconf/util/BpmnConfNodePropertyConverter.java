@@ -6,6 +6,7 @@ import com.google.common.base.Joiner;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.util.DateUtil;
 import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
@@ -17,6 +18,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -103,7 +105,22 @@ public class BpmnConfNodePropertyConverter {
                     ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                 }else{
                     Object valueOrWrapper=null;
-                    Object actualValue=JSON.parseObject(zdy1,fieldCls);
+                    Object actualValue=null;
+                    if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_CONDITION){
+                        try {
+                            actualValue= DateUtil.SDF_DATE_PATTERN.parse(zdy1);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_TIME_CONDITION){
+                        try {
+                            actualValue=DateUtil.SDF_DATETIME_PATTERN.parse(zdy1);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else{
+                       actualValue= JSON.parseObject(zdy1,fieldCls);
+                    }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                         Map<String,Object> wrapperResult=new HashMap<>();
                         wrapperResult.put(fieldName,actualValue);
