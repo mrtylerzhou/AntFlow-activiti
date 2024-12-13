@@ -20,6 +20,7 @@ public class BpmnNodeConditionsConfVueVo {
     private String opt2;
     private String columnDbname;
     private String columnType;
+    private String fieldTypeName;
     private String fixedDownBoxValue;
 
 }
