@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
+import com.sun.org.apache.bcel.internal.generic.INEG;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
@@ -66,13 +67,13 @@ public class BpmnConfNodePropertyConverter {
             Class<?> fieldCls = enumByCode.getFieldCls();
             if(fieldType==1){//list
                 String fixedDownBoxValue = newModel.getFixedDownBoxValue();
-                Map<String, BaseKeyValueStruVo> valueStruVoMap = JSON.parseObject(fixedDownBoxValue, new TypeReference<Map<String, BaseKeyValueStruVo>>() {
-                });
+                List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
                 String zdy1 = newModel.getZdy1();
                 String[] keys = zdy1.split(",");
                 List<Object> values=new ArrayList<>(keys.length);
-                for (String key : keys) {
-                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoMap.get(key);
+
+                for (int i = 0; i < keys.length; i++) {
+                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.get(i);
                     if(fieldCls.equals(String.class)){
                         values.add(baseKeyValueStruVo.getKey());
                     }else{
@@ -162,20 +163,17 @@ public class BpmnConfNodePropertyConverter {
                 vueVo.setZdy1(join);
                 Field extField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
                 List<BaseIdTranStruVo> extFields = (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
-                Map<String,BaseKeyValueStruVo> map=new HashMap<>();
                 if(CollectionUtils.isEmpty(extFields)){
                     continue;
                 }
+                List<BaseKeyValueStruVo> keyValuePairVos=new ArrayList<>();
                 for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
-                    String id = baseIdTranStruVo.getId();
-                    String name = baseIdTranStruVo.getName();
-                    BaseKeyValueStruVo keyValueStruVo=new BaseKeyValueStruVo();
-                    String key= id;
-                    keyValueStruVo.setKey(key);
-                    keyValueStruVo.setValue(name);
-                    map.put(key,keyValueStruVo);
+                    BaseKeyValueStruVo keyValuePairVo=new BaseKeyValueStruVo();
+                    keyValuePairVo.setKey(baseIdTranStruVo.getId());
+                    keyValuePairVo.setValue(baseIdTranStruVo.getName());
+                    keyValuePairVos.add(keyValuePairVo);
                 }
-                String extJson = JSON.toJSONString(map);
+                String extJson = JSON.toJSONString(keyValuePairVos);
                 vueVo.setFixedDownBoxValue(extJson);
 
             }else{
