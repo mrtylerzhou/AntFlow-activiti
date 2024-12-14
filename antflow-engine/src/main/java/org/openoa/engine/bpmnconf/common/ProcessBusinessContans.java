@@ -24,6 +24,7 @@ import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -88,16 +89,33 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
             //modify notice
             userMessageService.readNode(processInstanceId);
             List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
+            String taskDefKey="";
             if (!ObjectUtils.isEmpty(list)) {
-                String taskDefinitionKey = list.get(0).getTaskDefinitionKey();
+                taskDefKey = list.get(0).getTaskDefinitionKey();
                 processInfoVo.setTaskId(list.get(0).getId());
-                processInfoVo.setNodeId(taskDefinitionKey);
+                processInfoVo.setNodeId(taskDefKey);
+
+            }else{
                 if(Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
-                    List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
-                            .getBaseMapper()
-                            .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefinitionKey);
-                    processInfoVo.setLfFieldControlVOs(currentFieldControls);
+                    List<HistoricTaskInstance> historicTaskInstances = historyService
+                            .createHistoricTaskInstanceQuery()
+                            .processInstanceId(bpmBusinessProcess
+                                    .getProcInstId()).
+                                    taskAssignee(SecurityUtils.getLogInEmpId())
+                            .orderByHistoricTaskInstanceEndTime()
+                            .desc()
+                            .list();
+                    if(!CollectionUtils.isEmpty(historicTaskInstances)){
+                        taskDefKey=historicTaskInstances.get(0).getTaskDefinitionKey();
+                    }
                 }
+            }
+            if(!StringUtils.isEmpty(taskDefKey)&&Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
+
+                List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
+                        .getBaseMapper()
+                        .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefKey);
+                processInfoVo.setLfFieldControlVOs(currentFieldControls);
             }
         }
         return processInfoVo;
