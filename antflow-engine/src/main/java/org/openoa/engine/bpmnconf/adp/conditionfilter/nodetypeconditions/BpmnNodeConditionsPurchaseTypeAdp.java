@@ -21,7 +21,7 @@ public class BpmnNodeConditionsPurchaseTypeAdp extends BpmnNodeConditionsAdaptor
        //todo for demo only
         List<BaseIdTranStruVo>vos=new ArrayList<>();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i < 4; i++) {
             BaseIdTranStruVo vo=new BaseIdTranStruVo();
             vo.setId(String.valueOf(i));
             String name= "";
