@@ -51,12 +51,17 @@
         a.effective_status AS effectiveStatus,
         a.business_party_id AS businessPartyId,
         a.update_time AS updateTime,
+        a.is_out_side_process as isOutSideProcess,
+        a.is_lowcode_flow as isLowCodeFlow,
         a.remark AS remark
         FROM t_bpmn_conf a
         left join t_out_side_bpm_business_party b on a.business_party_id = b.id
         WHERE a.is_del = 0
         <if test="bpmnConfVo.isOutSideProcess!=null">
             AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
+        </if>
+        <if test="bpmnConfVo.isLowCodeFlow!=null">
+            AND a.is_lowcode_flow = #{bpmnConfVo.isLowCodeFlow}
         </if>
         <if test="bpmnConfVo.search != null and bpmnConfVo.search != ''">
             AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')

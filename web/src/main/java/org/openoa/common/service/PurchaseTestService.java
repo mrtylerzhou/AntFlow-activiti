@@ -6,6 +6,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.entity.BizPurchase;
 import org.openoa.mapper.BizPurchaseMapper;
 import org.openoa.vo.BizPurchaseVo;
@@ -51,9 +52,8 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
     }
 
     @Override
-    public BizPurchaseVo queryData(String businessId) {
-        BizPurchase purchase = bizPurchaseMapper.selectById(businessId);
-        BizPurchaseVo vo=new BizPurchaseVo();
+    public BizPurchaseVo queryData(BizPurchaseVo vo) {
+        BizPurchase purchase = bizPurchaseMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(purchase,vo);
         return vo;
     }
@@ -94,12 +94,12 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(BizPurchaseVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }

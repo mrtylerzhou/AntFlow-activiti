@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -181,6 +182,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 BpmnConf bpmnConf = bpmnConfMap.get(record.getProcessKey());
                 if(bpmnConf!=null){
                     record.setIsOutSideProcess(Objects.equals(1,bpmnConf.getIsOutSideProcess()));
+                    record.setIsLowCodeFlow(Objects.equals(1,bpmnConf.getIsLowCodeFlow()));
+                    record.setConfId(bpmnConf.getId());
                 }
                 Integer applyUserId = record.getApplyUserId();
                 //todo get the actual user info from db
@@ -219,10 +222,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
+        vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
         BusinessDataVo businessDataVo = null;
         if(!vo.getIsOutSideAccessProc()){
-            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+            FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
+            businessDataVo=formAdaptor.queryData(vo);
         }else{
             businessDataVo=vo;
         }

@@ -7,6 +7,7 @@ public enum ProcessOperationEnum {
     BUTTON_TYPE_RESUBMIT(2, "重新提交"),
     BUTTON_TYPE_AGREE(3,"同意"),
     BUTTON_TYPE_DIS_AGREE(4,"不同意"),
+    BUTTON_TYPE_VIEW_BUSINESS_PROCESS(5,"查看流程详情"),
     BUTTON_TYPE_ABANDON(7,"作废"),
     BUTTON_TYPE_UNDERTAKE(10, "承办"),
     BUTTON_TYPE_CHANGE_ASSIGNEE(11,  "变更处理人"),

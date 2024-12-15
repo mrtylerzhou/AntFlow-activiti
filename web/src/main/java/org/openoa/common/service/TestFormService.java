@@ -7,6 +7,7 @@ import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.interf.ActivitiServiceAnno;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.entity.ThirdPartyAccountApply;
 import org.openoa.mapper.ThirdPartyAccountApplyMapper;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -49,9 +50,8 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(String businessId) {
-        ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(businessId);
-        ThirdPartyAccountApplyVo vo=new ThirdPartyAccountApplyVo();
+    public ThirdPartyAccountApplyVo queryData(ThirdPartyAccountApplyVo vo) {
+        ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(accountApply,vo);
         return vo;
     }
@@ -73,7 +73,7 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
             ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
             BeanUtils.copyProperties(vo,thirdPartyAccountApply);
-            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            Integer id=  Integer.valueOf((vo.getBusinessId()));
             thirdPartyAccountApply.setId(id);
             thirdPartyAccountApplyMapper.updateById(thirdPartyAccountApply);
         }
@@ -86,12 +86,12 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public void cancellationData(String businessId) {
+    public void cancellationData(ThirdPartyAccountApplyVo vo) {
 
     }
 
     @Override
-    public void finishData(String businessId) {
+    public void finishData(BusinessDataVo vo) {
 
     }
 }

@@ -2,6 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.JiMuBizException;
 
 
 /**
@@ -35,5 +36,13 @@ public enum JudgeOperatorEnum {
             }
         }
         return null;
+    }
+    public static JudgeOperatorEnum getByOpType(Integer opType){
+        for (JudgeOperatorEnum value : JudgeOperatorEnum.values()) {
+            if(value.code.equals(opType)){
+                return value;
+            }
+        }
+        throw new JiMuBizException("操作符类型未定义");
     }
 }

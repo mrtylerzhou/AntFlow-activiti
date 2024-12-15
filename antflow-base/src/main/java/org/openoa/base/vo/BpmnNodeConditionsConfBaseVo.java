@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname BpmnNodeConditionsConfBaseVo
@@ -73,7 +74,7 @@ public class BpmnNodeConditionsConfBaseVo {
     private Double leaveHour;
 
     /**
-     * total money operator
+     * number operator
      */
     private Integer numberOperator;
     private String extJson;
@@ -106,4 +107,8 @@ public class BpmnNodeConditionsConfBaseVo {
      */
     private List<Integer> templateMarks;
 
+    /**
+     * node code flow conditions
+     */
+    private Map<String,Object> lfConditions;
 }

@@ -29,7 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class SubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
-    private FormFactory fromFactory;
+    private FormFactory formFactory;
     @Autowired
     private BpmnConfCommonServiceImpl bpmnConfCommonService;
     @Autowired
@@ -41,7 +41,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
         log.info("Start submit process. param:{}", businessDataVo);
-        FormOperationAdaptor formAdapter = fromFactory.getFormAdaptor(businessDataVo);
+        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
 
         BusinessDataVo vo = formAdapter.submitData(businessDataVo);
         // call the process's launch method to get launch parameters
@@ -65,6 +65,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                 .businessId(vo.getBusinessId())
                 .processinessKey(businessDataVo.getFormCode())
                 .businessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId())
+                .isLowCodeFlow(vo.getIsLowCodeFlow())
                 .createUser(businessDataVo.getStartUserId())
                 .userName(businessDataVo.getStartUserName())
                 .createTime(new Date())

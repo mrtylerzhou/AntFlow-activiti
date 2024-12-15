@@ -33,6 +33,10 @@ public class TaskMgmtVO implements Serializable {
      */
     private String processInstanceId;
     /**
+     * its config id
+     */
+    private Long confId;
+    /**
      * process's id
      */
     public String processId;
@@ -273,7 +277,7 @@ public class TaskMgmtVO implements Serializable {
      * is third party process
      */
     private Boolean isOutSideProcess;
-
+    private Boolean isLowCodeFlow;
     /**
      * access type 1 for embedded 2 for api access
      */

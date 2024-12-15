@@ -10,6 +10,7 @@ CREATE TABLE if not exists `t_bpmn_conf`
     `effective_status`    int(11)             NOT NULL DEFAULT '0' COMMENT 'is effect 0:no 1:yes',
     `is_all`              int(11)             NOT NULL DEFAULT '0' COMMENT 'is to all,0 no 1yes',
     `is_out_side_process` int(11)                      DEFAULT '0' COMMENT 'is it a third party process',
+    `is_lowcode_flow` tinyint default 0 null comment '是否是低代码审批流0,否,1是',
     `business_party_id`   int(11)                      DEFAULT NULL COMMENT 'its belong to business party',
     `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`              tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:in use,1:delete',
@@ -246,6 +247,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
     `bpmn_node_id` bigint(20)          NOT NULL COMMENT 'conf id',
     `is_default`   int(11)             NOT NULL DEFAULT '0' COMMENT 'is default 0:no,1:yes',
     `sort`         int(11)             NOT NULL COMMENT 'condition,s priority',
+     ext_json     varchar(2000)                                 null comment '前端vue3版本conditionlist参数模型',
     `remark`       varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`       tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -261,7 +263,8 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
 (
     `id`                      bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `bpmn_node_conditions_id` bigint(20)          NOT NULL COMMENT 'conf id',
-    `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine whether it is shown in the config page',
+    `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine ConditionTypeEnum',
+     `condition_param_name`  varchar(50)             NOT NULL COMMENT 'param field name',
     `condition_param_jsom`    text                NOT NULL COMMENT 'paramJSON',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -492,6 +495,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
     `variable_id`     bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`      varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
     `element_name`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
+     `node_id`        varchar(60)                                             null,
     `collection_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'collection name',
      node_id         varchar(60)                                   null,
     `sign_type`       int(11)             NOT NULL COMMENT 'sign type 1: all sign 2:or sign',
@@ -553,7 +557,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up`
     `id`                bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `variable_id`       bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-     node_id             varchar(60)                                   null,
+     `node_id`          varchar(60)                                        null,
     `after_sign_up_way` int(11)             NOT NULL DEFAULT '1' COMMENT 'after sign up way,1:back to current assignee,2 go on',
     `sub_elements`      text                NOT NULL COMMENT 'sub elements stored in json',
     `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
@@ -595,6 +599,7 @@ CREATE TABLE if not exists `t_bpm_variable_single`
     `id`                  bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
     `variable_id`         bigint(20)          NOT NULL COMMENT 'variable id',
     `element_id`          varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
+     `node_id`            varchar(60)                                      null,
     `element_name`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
     `assignee_param_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'variable name',
     `assignee`            varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee',
@@ -788,6 +793,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
      user_name           varchar(255)           null,
      is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes',
+      is_lowcode_flow     tinyint     default 0  null comment '是否是低代码工作流0,否,1是',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `PROC_INST_ID_index` (`PROC_INST_ID_`) USING BTREE,
     KEY `process_entry_id` (`ENTRY_ID`) USING BTREE,
@@ -865,6 +871,7 @@ CREATE TABLE if not exists `bpm_process_node_back`
 (
     `id`          bigint(20) NOT NULL AUTO_INCREMENT,
     `node_key`    varchar(50)  DEFAULT NULL COMMENT 'node key',
+     node_id     bigint       null comment '节点id',
     `back_type`   int(11)      DEFAULT NULL COMMENT 'back type',
     `process_key` varchar(100) DEFAULT NULL COMMENT 'process key',
     PRIMARY KEY (`id`) USING BTREE
@@ -1046,8 +1053,8 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      `bpmn_conf_id` BIGINT NOT NULL,
      `form_code` VARCHAR(50) DEFAULT NULL,
      `process_number` VARCHAR(50) DEFAULT NULL,
-     `form_data_pc` TEXT,
-     `form_data_app` TEXT,
+     `form_data_pc` LONGTEXT,
+     `form_data_app` LONGTEXT,
      `template_mark` VARCHAR(50) DEFAULT NULL,
      `start_username` VARCHAR(50) DEFAULT NULL,
      `remark` TEXT,
@@ -1264,6 +1271,40 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='specified level approvement config';
 
+CREATE TABLE `t_bpmn_node_hrbp_conf` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
+  `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',
+  `hrbp_conf_type` INT(11) NULL COMMENT 'hrbp type 1-hrbp,2-hrbp leader,this is only for extensibility purpose,if your system do not have hrbp leader,you can ignore this field if your system have other concept,for example hrbp manager,you can use this field to store hrbp manager(eg 3 for hrbp manager)',
+  `remark` VARCHAR(255) NULL COMMENT 'remark',
+  `is_del` INT(11) NULL COMMENT '0 for normal,1 for deleted',
+  `create_user` VARCHAR(255) NULL COMMENT 'create user',
+  `create_time` DATETIME NULL COMMENT 'create time',
+  `update_user` VARCHAR(255) NULL COMMENT 'update user',
+  `update_time` DATETIME NULL COMMENT 'update time',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hrpb config entity';
+
+create table t_department
+(
+    id          int auto_increment comment 'Primary key'
+        primary key,
+    name        varchar(255) null comment 'Name',
+    short_name  varchar(255) null comment 'Short name',
+    parent_id   int          null comment 'Parent ID',
+    path        varchar(255) null comment 'Path',
+    level       int          null comment 'Department level',
+    leader_id   bigint       null,
+    sort        int          null comment 'Sort order',
+    is_del      tinyint      null comment 'Is deleted (0 for no, 1 for yes)',
+    is_hide     tinyint      null comment 'Is hidden (0 for show, 1 for hide)',
+    create_user varchar(255) null comment 'Create user',
+    update_user varchar(255) null comment 'Update user',
+    create_time datetime     null comment 'Creation time',
+    update_time datetime     null comment 'Update time'
+) comment 'department info';
+
+
+
 DROP TABLE IF EXISTS `t_user`;
 create table if not exists t_user
 (
@@ -1275,6 +1316,7 @@ create table if not exists t_user
     leader_id      bigint            null comment 'emp direct leader id',
     hrbp_id        bigint            null comment '用户的hrb的id,这里仅仅是用作选择hrbp审批时展示使用,实际上有的的公司组织架构里每个员工都有一个hrbp,有的则是hrbp挂在部门下面.具体根据公司业务而定',
     mobile_is_show tinyint default 0 null comment '是否展示用户手机号,如果用户手机号不展示时发送流程短信通知时也不应当通知给他.当然有的公司设置必须发送短信.这个根据公司业务而定,这里只是展示可以做很多人性化的定制设置',
+    department_id  bigint            null comment '部门id',
     path           varchar(1000)     null comment '员工组织线path,用于层层审批流程展示,有些公司的表员工的组织链并非这样的,这里只是展示用,具体根据公司业务而定只要能根据员工的id找到他的上级,上级的上线,上级的上级的上线的上线即可.当然如果没有这样的组织架构关系,不用这种审批规则即可',
     is_del         tinyint default 0 null comment '0,正常1,删除',
     head_img       varchar(3000)     null
@@ -1304,6 +1346,7 @@ INSERT INTO `t_user`(`id`, `user_name`) VALUES (18, '依林师妹');
 INSERT INTO `t_user`(`id`, `user_name`) VALUES (19, '邱灵珊');
 INSERT INTO `t_user`(`id`, `user_name`) VALUES (20, '任盈盈');
 INSERT INTO `t_user`(`id`, `user_name`) VALUES (1001, 'test');
+
 
 DROP TABLE IF EXISTS `t_role`;
 CREATE TABLE `t_role`  (
@@ -1381,9 +1424,178 @@ CREATE TABLE `t_biz_ucar_refuel` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
 
+create table t_bpmn_conf_lf_formdata
+(
+	id bigint auto_increment,
+	bpmn_conf_id bigint not null,
+	formdata longtext null,
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_conf_lf_formdata_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+create table if not exists t_bpmn_conf_lf_formdata_field
+(
+	id bigint auto_increment,
+	bpmn_conf_id bigint null,
+	formdata_id bigint null,
+	field_id varchar(255) null,
+	field_name varchar(255) null,
+	field_type tinyint null,
+	is_condition tinyint default 0 null comment '是否是流程条件,0否,1是',
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_conf_lf_formdata_field_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码配置字段明细表';
+
+
+create table if not exists t_bpmn_node_lf_formdata_field_control
+(
+	id bigint auto_increment,
+	node_id bigint not null,
+	formdata_id bigint not null,
+	field_id    varchar(100)  null comment '字段id',
+	field_name varchar(255) null comment '字段名',
+	field_perm  varchar(10)  null comment '字段权限,是否显示,是否可编辑',
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_bpmn_node_lf_formdata_field_control_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
+-- 此表为路由表,通过lf.main.table.count控制,默认为2个,索引从0开始,需要自己手动创建
+-- ----------------------------
+create table t_lf_main
+(
+	id bigint auto_increment,
+	conf_id bigint null,
+	form_code varchar(255) null,
+	is_del tinyint default 0 not null,
+	create_user varchar(255) null,
+	create_time timestamp default current_timestamp,
+	update_user varchar(255) null,
+	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_lf_main_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单主表';
+
+-- ----------------------------
+⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
+-- 此表为路由表,通过lf.field.table.count控制,默认为10个,索引从0开始,需要自己手动创建
+-- ----------------------------
+create table t_lf_main_field
+(
+	id bigint auto_increment,
+	main_id bigint not null,
+	form_code varchar(255) null,
+	field_id varchar(255) null,
+	field_name varchar(255) null,
+	parent_field_id varchar(255) null,
+    parent_field_name varchar(255) null,
+	field_value varchar(2000) null,
+	field_value_number double(14,2) null,
+	field_value_dt timestamp null,
+	field_value_text longtext null,
+	sort int default 0 not null,
+	is_del tinyint default 0 not null,
+    create_user varchar(255) null,
+    create_time timestamp default current_timestamp,
+    update_user varchar(255) null,
+    update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+	constraint t_lf_main_field_pk
+		primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单字段值表';
+
+create table t_dict_main
+(
+    id          bigint auto_increment comment '字典主键'
+        primary key,
+    dict_name   varchar(100) default ''                null comment '字典名称',
+    dict_type   varchar(100) default ''                null comment '字典类型',
+    is_del      tinyint      default 0                 not null,
+    create_user varchar(255)                           null,
+    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    update_user varchar(255)                           null,
+    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    remark      varchar(500)                           null comment '备注',
+    constraint dict_type
+        unique (dict_type)
+) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
+
+create table t_dict_data
+(
+    id          bigint auto_increment comment '字典编码'
+        primary key,
+    dict_sort   int(4)       default 0                 null comment '字典排序',
+    dict_label  varchar(100) default ''                null comment '字典标签',
+    dict_value  varchar(100) default ''                null comment '字典键值',
+    dict_type   varchar(100) default ''                null comment '字典类型',
+    css_class   varchar(100)                           null comment '样式属性（其他样式扩展）',
+    list_class  varchar(100)                           null comment '表格回显样式',
+    is_default  char         default 'N'               null comment '是否默认（Y是 N否）',
+    is_del      tinyint      default 0                 not null,
+    create_user varchar(255)                           null,
+    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    update_user varchar(255)                           null,
+    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    remark      varchar(500)                           null comment '备注'
+) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- ----------------------------
+-- Table structure for t_bpmn_conf_lf_formdata
+-- ----------------------------
+DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata`;
+CREATE TABLE `t_bpmn_conf_lf_formdata`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `bpmn_conf_id` bigint(20) NOT NULL,
+  `formdata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `is_del` tinyint(4) NOT NULL DEFAULT 0,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+-- ----------------------------
+-- Table structure for t_bpmn_conf_lf_formdata_field
+-- ----------------------------
+DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata_field`;
+CREATE TABLE `t_bpmn_conf_lf_formdata_field`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `bpmn_conf_id` bigint(20) NULL DEFAULT NULL,
+  `formdata_id` bigint(20) NULL DEFAULT NULL,
+  `field_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `field_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `field_type` tinyint(4) NULL DEFAULT NULL,
+  `is_condition` tinyint(4) NULL DEFAULT 0 COMMENT '是否是流程条件,0否,1是',
+  `is_del` tinyint(4) NOT NULL DEFAULT 0,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '低代码配置字段明细表' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;

@@ -83,7 +83,7 @@ public class NodePropertyLoopAdp extends BpmnNodeAdaptor {
                     .noparticipatingStaffIds(noList)
                     .noparticipatingStaffs(noparticipatingStaffs)
                     .build());
-            bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.OUT_SIDE_NODE.getCode());
+            bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
         }
 
         return bpmnNodeVo;

@@ -158,6 +158,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                         .variableId(variableId)
                         .afterSignUpWay(elementVo.getAfterSignUpWay())
                         .elementId(key)
+                        .nodeId(elementVo.getNodeId())
                         .subElements(JSON.toJSONString(subElements))
                         .build());
             }

@@ -4,12 +4,14 @@ import com.alibaba.fastjson2.JSON;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -70,6 +72,9 @@ public class FormFactory implements ApplicationContextAware {
                 vo.setFormData(bpmAccessBusinesses.get(0).getFormDataPc());
             }
             return vo;
+        }
+        if(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1){
+            formCode=StringConstants.LOWFLOW_FORM_CODE;
         }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {

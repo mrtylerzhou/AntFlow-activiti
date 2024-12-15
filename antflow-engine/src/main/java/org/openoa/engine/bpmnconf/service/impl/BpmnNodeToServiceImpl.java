@@ -8,6 +8,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmnNodeToMapper;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import sun.security.jgss.LoginConfigImpl;
 
 import java.util.Date;
 import java.util.List;
@@ -18,22 +19,23 @@ public class BpmnNodeToServiceImpl extends ServiceImpl<BpmnNodeToMapper, BpmnNod
 
 
     public void editNodeTo(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
-        List<String> nodeTo = bpmnNodeVo.getNodeTo();
-        if (ObjectUtils.isEmpty(bpmnNodeVo)) {
+        if (bpmnNodeVo==null) {
             return;
         }
-
+        List<String> nodeTo = bpmnNodeVo.getNodeTo();
         //delete existing data
         this.getBaseMapper().delete(new QueryWrapper<BpmnNodeTo>()
                 .eq("bpmn_node_id", bpmnNodeId));
 
+        String logInEmpNameSafe = SecurityUtils.getLogInEmpNameSafe();
+        Date nowDate = new Date();
         List<BpmnNodeTo> bpmnNodeToList = nodeTo.stream()
                 .map(o -> BpmnNodeTo
                         .builder()
                         .bpmnNodeId(bpmnNodeId)
                         .nodeTo(o)
-                        .createUser(SecurityUtils.getLogInEmpNameSafe())
-                        .createTime(new Date())
+                        .createUser(logInEmpNameSafe)
+                        .createTime(nowDate)
                         .build())
                 .collect(Collectors.toList());
 

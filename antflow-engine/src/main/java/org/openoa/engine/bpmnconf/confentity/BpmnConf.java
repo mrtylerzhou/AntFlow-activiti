@@ -81,6 +81,9 @@ public class BpmnConf {
     @TableField("is_out_side_process")
     private Integer isOutSideProcess;
 
+    @TableField("is_lowcode_flow")
+    private Integer isLowCodeFlow;
+
     /**
      * business party mark
      */

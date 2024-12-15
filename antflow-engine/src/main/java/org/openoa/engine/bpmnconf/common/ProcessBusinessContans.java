@@ -13,18 +13,24 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
+import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,7 +49,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private HistoryService historyService;
     @Autowired
     private EmployeeServiceImpl employeeService;
-
+    @Autowired
+    private BpmnNodeLfFormdataFieldControlServiceImpl bpmnNodeLfFormdataFieldControlService;
 
 
 
@@ -81,10 +88,34 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .build());
             //modify notice
             userMessageService.readNode(processInstanceId);
-            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId().toString()).list();
+            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
+            String taskDefKey="";
             if (!ObjectUtils.isEmpty(list)) {
+                taskDefKey = list.get(0).getTaskDefinitionKey();
                 processInfoVo.setTaskId(list.get(0).getId());
-                processInfoVo.setNodeId(list.get(0).getTaskDefinitionKey());
+                processInfoVo.setNodeId(taskDefKey);
+
+            }else{
+                if(Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
+                    List<HistoricTaskInstance> historicTaskInstances = historyService
+                            .createHistoricTaskInstanceQuery()
+                            .processInstanceId(bpmBusinessProcess
+                                    .getProcInstId()).
+                                    taskAssignee(SecurityUtils.getLogInEmpId())
+                            .orderByHistoricTaskInstanceEndTime()
+                            .desc()
+                            .list();
+                    if(!CollectionUtils.isEmpty(historicTaskInstances)){
+                        taskDefKey=historicTaskInstances.get(0).getTaskDefinitionKey();
+                    }
+                }
+            }
+            if(!StringUtils.isEmpty(taskDefKey)&&Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
+
+                List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
+                        .getBaseMapper()
+                        .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefKey);
+                processInfoVo.setLfFieldControlVOs(currentFieldControls);
             }
         }
         return processInfoVo;

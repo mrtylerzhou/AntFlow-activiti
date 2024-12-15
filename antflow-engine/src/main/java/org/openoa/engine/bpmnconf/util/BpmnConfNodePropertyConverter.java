@@ -3,9 +3,12 @@ package org.openoa.engine.bpmnconf.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
+import com.sun.org.apache.bcel.internal.generic.INEG;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.openoa.engine.bpmnconf.constant.JimContants;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.util.DateUtil;
+import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.vo.*;
@@ -16,6 +19,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -45,27 +49,31 @@ public class BpmnConfNodePropertyConverter {
             if(columnId==null){
                 throw new JiMuBizException("each and every node must have a columnId value");
             }
-            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(Integer.parseInt(columnId));
+            int columnIdInt = Integer.parseInt(columnId);
+            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
             if(enumByCode==null){
                 throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
             }
-            conditionTypes.add(Integer.parseInt(columnId));
+            conditionTypes.add(columnIdInt);
             String fieldName = enumByCode.getFieldName();
             String columnDbname = newModel.getColumnDbname();
             if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
-                throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+                //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
+               if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
+                   throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+               }
             }
             Integer fieldType = enumByCode.getFieldType();
             Class<?> fieldCls = enumByCode.getFieldCls();
             if(fieldType==1){//list
                 String fixedDownBoxValue = newModel.getFixedDownBoxValue();
-                Map<String, BaseKeyValueStruVo> valueStruVoMap = JSON.parseObject(fixedDownBoxValue, new TypeReference<Map<String, BaseKeyValueStruVo>>() {
-                });
+                List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
                 String zdy1 = newModel.getZdy1();
                 String[] keys = zdy1.split(",");
                 List<Object> values=new ArrayList<>(keys.length);
-                for (String key : keys) {
-                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoMap.get(key);
+
+                for (int i = 0; i < keys.length; i++) {
+                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.get(i);
                     if(fieldCls.equals(String.class)){
                         values.add(baseKeyValueStruVo.getKey());
                     }else{
@@ -77,20 +85,50 @@ public class BpmnConfNodePropertyConverter {
                 ReflectionUtils.setField(field, result, values);
             }else{
                 String zdy1 = newModel.getZdy1();
+
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 String opt1 = newModel.getOpt1();
-                if(!StringUtils.isEmpty(opt1)){
-                    JudgeOperatorEnum symbol = JudgeOperatorEnum.getBySymbol(opt1);
+                Integer optType = newModel.getOptType();
+                if(optType!=null){
+                    JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
                     if(symbol==null){
-                        throw new JiMuBizException(String.format("condition symbol of %s is undefined!",opt1));
+                        throw new JiMuBizException(String.format("condition optype of %d is undefined!",optType));
                     }
-                    Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, JimContants.NUM_OPERATOR, true);
+                    Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
                     ReflectionUtils.setField(opField,result,symbol.getCode());
                 }
                 if(String.class.isAssignableFrom(fieldCls)){
-                    ReflectionUtils.setField(field, result, zdy1);
+                    Object valueOrWrapper=null;
+                    if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        Map<String,Object> wrapperResult=new HashMap<>();
+                        wrapperResult.put(fieldName,zdy1);
+                        valueOrWrapper=wrapperResult;
+                    }
+                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                 }else{
-                    ReflectionUtils.setField(field, result, JSON.parseObject(zdy1,fieldCls));
+                    Object valueOrWrapper=null;
+                    Object actualValue=null;
+                    if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_CONDITION){
+                        try {
+                            actualValue= DateUtil.SDF_DATE_PATTERN.parse(zdy1);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_TIME_CONDITION){
+                        try {
+                            actualValue=DateUtil.SDF_DATETIME_PATTERN.parse(zdy1);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else{
+                       actualValue= JSON.parseObject(zdy1,fieldCls);
+                    }
+                    if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        Map<String,Object> wrapperResult=new HashMap<>();
+                        wrapperResult.put(fieldName,actualValue);
+                        valueOrWrapper=wrapperResult;
+                    }
+                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                 }
 
             }
@@ -125,20 +163,17 @@ public class BpmnConfNodePropertyConverter {
                 vueVo.setZdy1(join);
                 Field extField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
                 List<BaseIdTranStruVo> extFields = (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
-                Map<String,BaseKeyValueStruVo> map=new HashMap<>();
                 if(CollectionUtils.isEmpty(extFields)){
                     continue;
                 }
+                List<BaseKeyValueStruVo> keyValuePairVos=new ArrayList<>();
                 for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
-                    String id = baseIdTranStruVo.getId();
-                    String name = baseIdTranStruVo.getName();
-                    BaseKeyValueStruVo keyValueStruVo=new BaseKeyValueStruVo();
-                    String key= id;
-                    keyValueStruVo.setKey(key);
-                    keyValueStruVo.setValue(name);
-                    map.put(key,keyValueStruVo);
+                    BaseKeyValueStruVo keyValuePairVo=new BaseKeyValueStruVo();
+                    keyValuePairVo.setKey(baseIdTranStruVo.getId());
+                    keyValuePairVo.setValue(baseIdTranStruVo.getName());
+                    keyValuePairVos.add(keyValuePairVo);
                 }
-                String extJson = JSON.toJSONString(map);
+                String extJson = JSON.toJSONString(keyValuePairVos);
                 vueVo.setFixedDownBoxValue(extJson);
 
             }else{

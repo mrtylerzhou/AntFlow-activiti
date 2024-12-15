@@ -1,7 +1,5 @@
 package org.openoa.base.constant;
 
-import org.activiti.engine.impl.pvm.runtime.StartingExecution;
-
 /**
  * @Classname StringConstant
  * @Description TODO
@@ -27,6 +25,16 @@ public class StringConstants {
 
     public static final String TASK_ASSIGNEE_NAME="assigneeName";
     public static final String PROJECT_NAME="antFlow";
+    public static final String LOWFLOW_FORM_CODE="LF";
+    public static final String LOWFLOW_FORM_CONTAINER_TYPE="container";
+    public static final String LOWFLOW_CONDITION_CONTAINER_FIELD_NAME="lfConditions";
+    public static final String LOWFLOW_FORM_DATA_MAIN_TABLE_NAME="t_lf_main";
+    public static final String LOWFLOW_FORM_DATA_FIELD_TABLE_NAME="t_lf_main_field";
+
+
+    public static final String FORMCODE_NO_CAMAL="formCode";
+    public static final String FORM_CODE="form_code";
 
     public static final String TENANT_USER="tenantUser";
+    public static final String LOWCODE_FLOW_DICT_TYPE="lowcodeflow";
 }

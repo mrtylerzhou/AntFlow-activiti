@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author AntFlow
@@ -149,4 +150,5 @@ public class BpmnStartConditionsVo {
      * third party level nodes
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
+    private Map<String,Object> lfConditions;
 }

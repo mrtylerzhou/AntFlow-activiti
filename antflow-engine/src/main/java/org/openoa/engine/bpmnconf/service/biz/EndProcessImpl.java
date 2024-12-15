@@ -116,7 +116,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         //call business adaptor method
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
         if(!vo.getIsOutSideAccessProc()){
-            formFactory.getFormAdaptor(vo).cancellationData(vo.getBusinessId());
+            formFactory.getFormAdaptor(vo).cancellationData(vo);
         }
 
     }

@@ -4,7 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="APP_NAME" value="antflow"/>
     <property name="LOG_LEVEL" value="INFO"/>
-    <property name="user.home" value="C:/Log"/>
+    <property name="user.home" value="log"/>
     <property name="LOG_ROOT_PATH" value="${user.home}"/>
     <!--应用业务日志统一打印到 ${LOG_ROOT_PATH}/${APP_NAME}/logs下面 -->
     <property name="LOG_PATH" value="${LOG_ROOT_PATH}/${APP_NAME}/logs"/>

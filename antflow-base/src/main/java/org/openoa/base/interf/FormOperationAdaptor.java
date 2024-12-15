@@ -34,10 +34,10 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
     /**
      * query business data,most of the times,it is a must method,it is used to query business data for a process for approvers reference
      *
-     * @param businessId businessId the business id for a specified process,it will passed by antflow engine,and you should use it to query business data
+     * @param vo businessId the business id for a specified process,it will passed by antflow engine,and you should use it to query business data
      * @return business data
      */
-    T queryData(String businessId);
+    T queryData(T vo);
 
     /**
      * a method to submit data for a process,most of the times,it is a must method,it is used to submit business data for a process
@@ -65,15 +65,15 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
     /**
      * when a process is cancelled,it will call this method to do some business logic,it is a must method,usually,it is used to invalid the business data
      *
-     * @param businessId businessId
+     * @param businessDataVo businessDataVo
      */
-    void cancellationData(String businessId);
+    void cancellationData(T businessDataVo);
 
     /**
      * this method is called when a process is finished,it is a must method usually
      *
-     * @param businessId businessId
+     * @param businessDataVo businessDataVo
      */
-    void finishData(String businessId);
+    void finishData(BusinessDataVo businessDataVo);
 
 }

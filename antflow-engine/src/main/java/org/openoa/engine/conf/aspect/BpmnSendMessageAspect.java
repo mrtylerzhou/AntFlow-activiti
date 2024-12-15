@@ -92,7 +92,7 @@ public class BpmnSendMessageAspect {
 
 
         //map bpmn conf to bpmn conf vo
-        BpmnConfVo bpmnConfVo = Optional.ofNullable(bpmnConf).map(o -> {
+        BpmnConfVo bpmnConfVo = Optional.of(bpmnConf).map(o -> {
             BpmnConfVo bcVo = new BpmnConfVo();
             BeanUtils.copyProperties(o,bcVo);
             return bcVo;
@@ -148,7 +148,7 @@ public class BpmnSendMessageAspect {
 
         //send message
         if (!ObjectUtils.isEmpty(vo)) {
-
+            businessDataVo.setIsLowCodeFlow(bpmnConfVo.getIsLowCodeFlow());
             //if it is a third party process then execute the finish call back method
             if (bpmnConf.getIsOutSideProcess() == 1) {
 
