@@ -49,7 +49,7 @@ public enum ConditionTypeEnum {
     CONDITION_TYPE_LF_DATE_CONDITION(10002,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, Date.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
     CONDITION_TYPE_LF_DATE_TIME_CONDITION(10003,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Date.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateTimeConditionJudge.class),
     CONDITION_TYPE_LF_COLLECTION_CONDITION(10004,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
     ;
