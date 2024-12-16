@@ -5,7 +5,7 @@
     <parent>
         <artifactId>antflow</artifactId>
        <groupId>io.github.mrtylerzhou</groupId>
-       <version>0.50.2</version>
+       <version>0.55.0</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -25,7 +25,7 @@
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-base</artifactId>
-       <version>0.50.2</version>
+       <version>0.55.0</version>
     </dependency>
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
@@ -36,7 +36,7 @@
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-engine</artifactId>
-       <version>0.50.2</version>
+       <version>0.55.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
