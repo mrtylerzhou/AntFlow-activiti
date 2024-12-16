@@ -1,0 +1,334 @@
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [ 
+        { 
+            "path": "", 
+            "redirect": "/startflow",
+            "component": "Layout", 
+            "children": [ 
+                {
+                    "name": "startflow",
+                    "path": "/startflow",
+                    "hidden": false,
+                    "component": "startflow/index", 
+                    "meta": {
+                        "title": "发起请求",
+                        "icon": "guide",
+                        "affix": false ,
+                        "noCache": false,
+                        "link": null
+                    }
+                }
+            ]
+        },{
+            "name": "FlowTask",
+            "path": "/flowtask",
+            "hidden": false,
+            "redirect": "noRedirect",
+            "component": "Layout",
+            "alwaysShow": true,
+            "meta": {
+                "title": "任务中心",
+                "icon": "example",
+                "noCache": false,
+                "link": null
+            },
+            "children": [ 
+                {
+                    "name": "MyTask",
+                    "path": "mytask",
+                    "hidden": false,
+                    "component": "flowtask/mytask/index",
+                    "meta": {
+                        "title": "我的发起",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "PenddingTask",
+                    "path": "pendding",
+                    "hidden": false,
+                    "component": "flowtask/pendding/index",
+                    "meta": {
+                        "title": "待办任务",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "ApprovedTask",
+                    "path": "approved",
+                    "hidden": false,
+                    "component": "flowtask/approved/index",
+                    "meta": {
+                        "title": "已办任务",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                }, 
+                {
+                    "name": "CopyToMeTask",
+                    "path": "CopyToMe",
+                    "hidden": false,
+                    "component": "flowtask/copyToMe/index",
+                    "meta": {
+                        "title": "抄送到我",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "approve",
+                    "path": "pendding/approve",
+                    "hidden": true,
+                    "component": "flowtask/pendding/approve",
+                    "meta": {
+                        "title": "流程审批",
+                        "icon": "",
+                        "noCache": true,
+                        "link": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Workflow",
+            "path": "/workflow",
+            "hidden": false,
+            "redirect": "noRedirect",
+            "component": "Layout",
+            "alwaysShow": true,
+            "meta": {
+                "title": "流程管理",
+                "icon": "system",
+                "noCache": false,
+                "link": null
+            },
+            "children": [ 
+                {
+                    "name": "FlowInstance",
+                    "path": "instance",
+                    "hidden": false,
+                    "component": "workflow/instance/index",
+                    "meta": {
+                        "title": "流程实例",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },   
+                {
+                    "name": "flowtemp",
+                    "path": "flowtemp",
+                    "hidden": false,
+                    "component": "workflow/temp/index",
+                    "meta": {
+                        "title": "流程模板",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "FlowConfig",
+                    "path": "config",
+                    "hidden": false,
+                    "component": "workflow/config/index",
+                    "meta": {
+                        "title": "流程设计",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "LF-FlowDesign",
+                    "path": "lf-design",
+                    "hidden": true,
+                    "component": "workflow/design/lf",
+                    "meta": {
+                        "title": "低代码表单流程设计",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "DIY-FlowDesign",
+                    "path": "diy-design",
+                    "hidden": true,
+                    "component": "workflow/design/diy",
+                    "meta": {
+                        "title": "自定义表单流程设计",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "FlowPreview",
+                    "path": "preview",
+                    "hidden": true,
+                    "component": "workflow/preview/index",
+                    "meta": {
+                        "title": "流程模板预览",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "BizEntry",
+                    "path": "/bizentry/index",
+                    "hidden": true,
+                    "component": "bizentry/index",
+                    "meta": {
+                        "title": "发起申请流程",
+                        "icon": "",
+                        "noCache": true,
+                        "link": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "flowentrust",
+            "path": "/flowentrust",
+            "hidden": false,
+            "redirect": "noRedirect",
+            "component": "Layout",
+            "alwaysShow": true,
+            "meta": {
+                "title": "委托管理",
+                "icon": "clipboard",
+                "noCache": false,
+                "link": null
+            },
+            "children": [{
+                    "name": "FlowEntrustSet",
+                    "path": "entrustset",
+                    "hidden": false,
+                    "component": "flowentrust/entrustset/index",
+                    "meta": {
+                        "title": "委托设置",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },{
+                    "name": "FlowEntrustList",
+                    "path": "entrustlist",
+                    "hidden": false,
+                    "component": "flowentrust/entrustlist/index",
+                    "meta": {
+                        "title": "委托列表",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                } 
+            ]
+        },
+        {
+            "name": "http://117.72.70.166:7001/doc.html",
+            "path": "http://117.72.70.166:7001/doc.html",
+            "hidden": false,
+            "component": "Layout",
+            "meta": {
+                "title": "接口文档",
+                "icon": "swagger",
+                "noCache": false,
+                "link": "http://117.72.70.166:7001/doc.html"
+            }
+        }, {
+            "name": "outsideMgt",
+            "path": "/outsideMgt",
+            "hidden": false,
+            "redirect": "noRedirect",
+            "component": "Layout",
+            "alwaysShow": true,
+            "meta": {
+                "title": "业务方管理",
+                "icon": "component",
+                "noCache": false,
+                "link": null
+            },
+            "children": [{
+                    "name": "outsideJoin",
+                    "path": "outsideJoin",
+                    "hidden": false,
+                    "component": "outsideMgt/outsideJoin/index",
+                    "meta": {
+                        "title": "业务方申请",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },{
+                    "name": "outsideApp",
+                    "path": "outsideApp",
+                    "hidden": false,
+                    "component": "outsideMgt/outsideApp/index",
+                    "meta": {
+                        "title": "应用管理",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },{
+                    "name": "outsideTemp",
+                    "path": "outsideTemp",
+                    "hidden": false,
+                    "component": "outsideMgt/outsideTemp/index",
+                    "meta": {
+                        "title": "流程管理",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },{
+                    "name": "outsideDesign",
+                    "path": "outsideDesign",
+                    "hidden": false,
+                    "component": "outsideMgt/outsideDesign/index",
+                    "meta": {
+                        "title": "流程设计",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "outsideflowPreview",
+                    "path": "preview",
+                    "hidden": true,
+                    "component": "outsideMgt/preview/index",
+                    "meta": {
+                        "title": "三方流程模板预览",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                },
+                {
+                    "name": "bizForm",
+                    "path": "bizForm",
+                    "hidden": true,
+                    "component": "outsideMgt/bizForm/form1",
+                    "meta": {
+                        "title": "业务方表单发起测试",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                }
+            ]
+        }
+    ]
+}

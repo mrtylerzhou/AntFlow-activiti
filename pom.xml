@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>web</module>
+        <module>antflow-web</module>
         <module>antflow-base</module>
         <module>antflow-engine</module>
         <module>antflow-spring-boot-starter</module>
