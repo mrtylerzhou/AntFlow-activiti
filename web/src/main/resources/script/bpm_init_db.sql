@@ -497,7 +497,6 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
     `element_name`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
      `node_id`        varchar(60)                                             null,
     `collection_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'collection name',
-     node_id         varchar(60)                                   null,
     `sign_type`       int(11)             NOT NULL COMMENT 'sign type 1: all sign 2:or sign',
     `remark`          varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`          tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
