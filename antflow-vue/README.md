@@ -1,7 +1,7 @@
 <p align="center">
 	<img alt="logo" src="https://gitee.com/ldhnet/ant-flow/raw/master/public/images/logo.png"   width = 25%; height=25%;>
 </p>
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">FlowAdmin v3.0.0</h1>
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">Antflow v3.0.0</h1>
 <h4 align="center">基于Vue3 Element-Plus 前端快速开发框架</h4>
  
 ## 平台简介
@@ -15,7 +15,7 @@
 
  - QQ技术交流群（972107977） 期待您的加入
  - 有疑问可以Issues留言，我们会认真对待
-  [issues地址](https://gitee.com/ldhnet/FlowAdmin-vue/issues)
+  [issues地址](https://gitee.com/tylerzhou/Antflow/issues)
 
 ## 前端运行
 

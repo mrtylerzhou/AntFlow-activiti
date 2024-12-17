@@ -1,5 +1,5 @@
 {
-  "name": "flowadmin",
+  "name": "antflow-vue",
   "version": "3.9.0",
   "description": "流程管理系统",
   "author": "lidonghui",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/ldhnet/FlowAdmin-Vue.git"
+    "url": "https://gitee.com/tylerzhou/Antflow.git"
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",

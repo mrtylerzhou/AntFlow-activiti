@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('https://gitee.com/ldhnet/FlowAdmin-vue');
+const url = ref('https://gitee.com/tylerzhou/Antflow');
 
 function goto() {
   window.open(url.value)

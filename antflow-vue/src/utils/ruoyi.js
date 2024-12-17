@@ -2,7 +2,7 @@
 
 /**
  * 通用js方法封装处理
- * Copyright (c) 2024 flowadmin
+ * Copyright (c) 2024 Antflow
  */
 
 // 日期格式化

@@ -10,14 +10,14 @@
             type="success"
             icon="Cloudy"
             plain
-            @click="goTarget('https://gitee.com/ldhnet/FlowAdmin-vue/blob/dev-lowcode/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E4%BD%8E%E4%BB%A3%E7%A0%81%E7%89%88%E6%9C%AC.md')"
+            @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E4%BD%8E%E4%BB%A3%E7%A0%81%E7%89%88%E6%9C%AC.md')"
             >操作手册【低代码表单】</el-button
           >     
           <el-button
             type="success"
             icon="Cloudy"
             plain
-            @click="goTarget('https://gitee.com/ldhnet/FlowAdmin-vue/blob/dev-lowcode/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%8D%95.md')"
+            @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%8D%95.md')"
             >操作手册【自定义表单】</el-button
           >     
         <h2>流程后台管理框架</h2>
