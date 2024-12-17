@@ -9,7 +9,7 @@
 -  在线预览  &nbsp;&nbsp; [预览入口](http://117.72.70.166/admin/) &nbsp;&nbsp;&nbsp; [系统操作手册](https://gitee.com/tylerzhou/Antflow/wikis/)
 -  📢📢预览功能以及API介绍文档来啦(持续完善中...) [wiki](https://gitee.com/tylerzhou/Antflow/wikis/) 
 -  📢📢 **完全开源免费,无付费引导,可放心使用** 
--  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Vue3) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Vue3) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview) 
+-  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Designer) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview) 
 
 -  开源项目地址 [Gitee仓库](https://gitee.com/tylerzhou/Antflow) | [Github仓库](https://github.com/mrtylerzhou/AntFlow) | [GitCode仓库](https://gitcode.com/zypqqgc/AntFlow/overview) 
 
@@ -55,8 +55,8 @@ npm run dev
 😀 你可以请作者喝杯咖啡表示鼓励
 <table>
     <tr>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/wxpay.jpg"/></td>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/alipay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/wxpay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/alipay.jpg"/></td>
     </tr>  
 </table>
 
