@@ -1,19 +1,19 @@
 
 <p align="center" style="margin-bottom: 0 !important">
-	<img alt="logo" src="./doc/images/logo.png"  width = 25%; height=25%;>
+	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
 </p>
 
-# 简介
-AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
--  在线预览(设计器) &nbsp;[预览入口](http://117.72.70.166/ant-flow/dist/#/)
--  在线预览(成品案例) &nbsp;[预览入口](http://117.72.70.166/admin/) 
+# Antflow 简介
+AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
+-  在线预览(**设计器**) &nbsp;[预览入口](http://117.72.70.166/ant-flow/dist/#/)
+-  在线预览(**成品案例**) &nbsp;[预览入口](http://117.72.70.166/admin/) 
 -  系统操作手册 [查看入口](https://gitee.com/tylerzhou/Antflow/wikis/)
 -  📢📢预览功能以及API介绍文档来啦(持续完善中...) [wiki](https://gitee.com/tylerzhou/Antflow/wikis/)
 -  📢📢 **完全开源免费,无付费引导,可放心使用**
--  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Vue3) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Vue3) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview)
+-  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Designer) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview)
 -  开源Antflow项目地址 [Gitee仓库](https://gitee.com/tylerzhou/Antflow) | [Github仓库](https://github.com/mrtylerzhou/AntFlow) | [GitCode仓库](https://gitcode.com/zypqqgc/AntFlow/overview)
 -  QQ技术交流群（972107977） 期待您的加入
--  有疑问可以Issues留言，我们会认真对待  [issues地址](https://gitee.com/ldhnet/FlowAdmin-vue/issues)
+-  有疑问可以Issues留言，我们会认真对待  [issues地址](https://gitee.com/tylerzhou/Antflow/issues)
 
 
 # Antflow核心技术栈
@@ -60,7 +60,7 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 
 ## 前端运行
 
-```bash
+```
 # gitee克隆项目
 git clone https://gitee.com/tylerzhou/Antflow.git 
 
@@ -77,18 +77,19 @@ npm run dev
 # 构建生产环境 npm run build:prod
 # 前端访问地址 http://localhost:80
 ```
+
 ## 后端运行
-1. git clone 本项目
-2. 打开 **web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
-3. 打开里面**web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
-4. 启动项目,如果一切顺利,这时候后端就启动起来了 
-5. 
+1. 项目下载 git clone https://gitee.com/tylerzhou/Antflow.git
+2. 打开 **antflow-web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
+3. 打开里面**antflow-web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
+4. 启动项目,如果一切顺利,这时候后端就启动起来了  
+
 ##  捐赠支持
 😀 你可以请作者喝杯咖啡表示鼓励
 <table>
     <tr>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/wxpay.jpg"/></td>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Vue3/raw/master/public/images/alipay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/wxpay.jpg"/></td>
+        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/alipay.jpg"/></td>
     </tr>  
 </table>
 
