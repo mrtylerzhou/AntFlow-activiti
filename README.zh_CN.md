@@ -15,25 +15,6 @@ AntFlow 是一款基于activiti的、✈久经生产环境考验的、企业级�
 -  QQ技术交流群（972107977） 期待您的加入
 -  有疑问可以Issues留言，我们会认真对待  [issues地址](https://gitee.com/ldhnet/FlowAdmin-vue/issues)
 
-## 前端运行
-
-```bash
-# gitee克隆项目
-git clone https://gitee.com/tylerzhou/Antflow.git 
-
-# 进入项目目录
-cd Antflow/antflow-vue
-
-# 安装依赖
-npm  install  --registry=https://registry.npmmirror.com
-
-# 启动服务
-npm run dev
-
-# 构建测试环境 npm run build:stage
-# 构建生产环境 npm run build:prod
-# 前端访问地址 http://localhost:80
-```
 
 # Antflow核心技术栈
 
@@ -77,6 +58,26 @@ npm run dev
  
 # 快速开始
 
+## 前端运行
+
+```bash
+# gitee克隆项目
+git clone https://gitee.com/tylerzhou/Antflow.git 
+
+# 进入项目目录
+cd Antflow/antflow-vue
+
+# 安装依赖
+npm  install  --registry=https://registry.npmmirror.com
+
+# 启动服务
+npm run dev
+
+# 构建测试环境 npm run build:stage
+# 构建生产环境 npm run build:prod
+# 前端访问地址 http://localhost:80
+```
+## 后端运行
 1. git clone 本项目
 2. 打开 **web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
 3. 打开里面**web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
