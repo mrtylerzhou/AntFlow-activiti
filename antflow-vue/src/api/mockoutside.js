@@ -6,15 +6,12 @@
  */
 import http from '@/utils/axios';
 import cache from '@/plugins/cache';
+let baseUrl = import.meta.env.VITE_APP_BASE_API
 const headers = {
   "Userid": cache.session.get('userId'),
   "Username": cache.session.get('userName')
-}
-let baseUrl = "http://117.72.70.166:7001";
-//let baseUrl = "http://localhost:7001";
-
-/** 流程设计 * /
- 
+} 
+/** 三方接入模块 流程设计 * / 
 /**
  * 获取审批数据
  * @param {*} data 

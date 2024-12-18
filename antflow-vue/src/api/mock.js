@@ -1,6 +1,5 @@
  import http from '@/utils/axios' 
 let baseUrl = import.meta.env.BASE_URL
-
 /**
  * 用户登录
  */
@@ -69,6 +68,7 @@ export function getDepartments(data) {
 export function getEmployees(data) {
   return http.get(`${baseUrl}mock/employees.json`, { params: data })
 }
+
 /**
  * 获取条件字段
  * @param {*} data 
@@ -93,9 +93,9 @@ export function getWorkFlowData(data) {
 export function getSignatureData() {
   return http.get(`${baseUrl}mock/signature.json`)
 }
-
+ 
 /**
- * 获取数据根据url
+ * 三方接入 获取数据根据url
  * @returns 
  */
 export function getDynamicsList(url) { 
@@ -104,6 +104,4 @@ export function getDynamicsList(url) {
     "Username": '%E5%BC%A0%E4%B8%89'
   }
   return http.get(url, { headers })
-}
- 
- 
+} 

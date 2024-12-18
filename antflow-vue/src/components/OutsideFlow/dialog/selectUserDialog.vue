@@ -123,8 +123,7 @@
 </template>
 
 <script setup name="selectUserDialog">
-import { watch } from "vue";
-//import { getEmployees } from '@/api/mockoutsideflow';
+import { watch } from "vue"; 
 import { getDynamicsList } from "@/api/mock";
 import { useStore } from "@/store/modules/outsideflow";
 let store = useStore();

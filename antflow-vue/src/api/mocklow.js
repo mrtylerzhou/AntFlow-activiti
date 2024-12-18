@@ -6,13 +6,11 @@
  */
 import http from '@/utils/axios';
 import cache from '@/plugins/cache';
+let baseUrl = import.meta.env.VITE_APP_BASE_API
 const headers = {
   "Userid": cache.session.get('userId'),
   "Username": cache.session.get('userName')
-}
-let baseUrl = "http://117.72.70.166:7001";
-//let baseUrl = "http://localhost:8001";
- 
+}  
 /**
  * 获取低代码表单根据FromCode
  * @param { String } formCode 
