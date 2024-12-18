@@ -85,17 +85,7 @@ export function getConditions(data) {
  */
 export function getWorkFlowData(data) {
   return http.get(`${baseUrl}mock/data.json`, { params: data })
-}
- 
-/**
- * 获取审批mock数据
- * @param {*} data 
- * @returns 
- */
-export function getMockWorkFlowData(data) {
-  return http.get(`${baseUrl}mock/datashow.json`, { params: data })
-}
-
+} 
 /**
  * 获取电子签名 
  * @returns 

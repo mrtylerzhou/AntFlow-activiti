@@ -6,15 +6,7 @@
  */
  
 import http from '@/utils/axios' 
-let baseUrl = import.meta.env.BASE_URL
- /**
- * 获取审批mock数据
- * @param {*} data 
- * @returns 
- */
-export function getMockWorkFlowData(data) {
-  return http.get(`${baseUrl}mockoutside/datashow.json`, { params: data })
-}
+let baseUrl = import.meta.env.BASE_URL 
 
 /**
  * 获取职员
