@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, getCurrentInstance } from 'vue' 
+import { ref,reactive, getCurrentInstance } from 'vue' 
 const { proxy } = getCurrentInstance()
 
 let props = defineProps({
@@ -71,10 +71,7 @@ let rules = {
         trigger: 'change'
     }],
 };
-
-watch(form, (val) => {
-    //console.log(val)
-})
+/**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
 const getFromData = () => {
     return JSON.stringify(form);
 }

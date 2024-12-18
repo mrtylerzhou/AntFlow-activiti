@@ -95,7 +95,7 @@ let statusColor = {
     "LEAVE_WMA": 'leave',
     "DSFZH_WMA": 'jiejing',
     "PURCHASE_WMA": 'bought',
-    "UCARREFUEl_WMA": 'trip',
+    "UCARREFUEl_WMA": 'trip2',
     "LFTEST_WMA": 'zhushou',
 };
 

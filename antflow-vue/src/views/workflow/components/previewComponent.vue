@@ -59,8 +59,8 @@ const preview = async (param) => {
     proxy.$modal.loading();
     await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
-            const responseData = response.data; 
-            if (responseData.isOutSideAccessProc && responseData.isOutSideAccessProc == 'true') {//外部接入
+            const responseData = response.data;  
+            if (responseData.isOutSideAccessProc && responseData.isOutSideAccessProc) {//外部接入 
                 formData.value = responseData.formData;
             }
             else if (responseData.isLowCodeFlow && responseData.isLowCodeFlow == '1') {//低代码表单

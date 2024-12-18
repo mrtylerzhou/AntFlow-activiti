@@ -4,14 +4,19 @@
             style="max-width: 600px;min-height: 100px; margin: auto;">
             <el-row :class="{ disableClss: props.isPreview }">
                 <el-col :span="24">
-                    <el-form-item label=" 车 牌 号" prop="licensePlateNumber">
-                        <el-input v-model="form.licensePlateNumber"  style="width: 220px;"  placeholder="请输入车牌号" />
+                    <el-form-item label="采购人姓名" prop="PurchaseUserName">
+                        <el-input v-model="form.UserName"  style="width: 220px;"  placeholder="请输入采购人姓名" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                    <el-form-item label="加油日期" prop="refuelTime">
-                        <el-date-picker v-model="form.refuelTime" type="datetime"
-                            placeholder="请选择加油日期" format="YYYY/MM/DD HH:mm" />
+                    <el-form-item label="采购日期" prop="PurchaseDate">
+                        <el-date-picker v-model="form.PurchaseDate" type="datetime"
+                            placeholder="请选择采购日期" format="YYYY/MM/DD HH:mm" />
+                    </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                    <el-form-item label="采购金额" prop="PurchaseMoney">
+                        <el-input v-model="form.PurchaseMoney"  style="width: 220px;"  placeholder="请输入采购金额" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -25,7 +30,7 @@
                     <el-form-item style="float: right;">
                         <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
-                </el-col>
+                </el-col> 
             </el-row>
         </el-form>
     </div>
@@ -44,30 +49,39 @@ let props = defineProps({
         type: Boolean,
         default: true,
     }
-});  
-const ruleFormRef = ref(null) 
+});
+  
+const ruleFormRef = ref(null)
+ 
 const form = reactive({
-    licensePlateNumber: props.previewData?.licensePlateNumber??'',
-    refuelTime: props.previewData?.refuelTime??'',
+    PurchaseUserName: props.previewData?.PurchaseUserName??'',
+    PurchaseDate: props.previewData?.PurchaseDate??'',
+    PurchaseMoney: props.previewData?.PurchaseMoney??'',
     remark:props.previewData?.remark??''
 })
+
 let rules = {
     remark: [{
         required: true,
         message: '请输入备注说明',
         trigger: 'blur'
     }],
-    licensePlateNumber: [{
+    PurchaseUserName: [{
         required: true,
-        message: '请输入车牌号',
+        message: '请输入采购人姓名',
         trigger: 'blur'
     }],
-    refuelTime: [{
+    PurchaseDate: [{
         required: true,
-        message: '请选择加油时间',
+        message: '请选择采购时间',
         trigger: 'blur'
     }],
-};
+    PurchaseMoney: [{
+        required: true,
+        message: '请输入采购金额',
+        trigger: 'blur'
+    }],
+}; 
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
 const getFromData = () => {
     return JSON.stringify(form);
@@ -79,7 +93,6 @@ const handleSubmit = () => {
         }
     });
 }
-
 const handleValidate = () => {
     return proxy.$refs['ruleFormRef'].validate((valid) => {
         if (!valid) {
