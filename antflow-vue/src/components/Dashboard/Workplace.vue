@@ -77,7 +77,7 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue'
-import { getAllFormCodes } from "@/api/mockflow"
+import { getAllFormCodes } from "@/api/workflow"
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);

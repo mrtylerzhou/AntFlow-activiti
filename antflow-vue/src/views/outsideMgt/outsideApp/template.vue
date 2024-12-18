@@ -34,7 +34,7 @@
   
   <script setup>
   import { ref } from "vue";
-  import { getTemplatelistPage } from "@/api/mockoutside";
+  import { getTemplatelistPage } from "@/api/outsideApi";
   const { proxy } = getCurrentInstance();
  
   const list = ref([]);

@@ -20,7 +20,7 @@ import Sidebar from './components/Sidebar/index.vue'
 import { AppMain, Navbar, Settings, TagsView } from './components'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
-import { getCurrentVersion } from "@/api/version"
+import { getCurrentVersion } from "@/api/mock"
  
  
 const settingsStore = useSettingsStore()

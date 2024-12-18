@@ -147,10 +147,9 @@ import shortcuts from "@/components/Dashboard/Shortcuts";
 import cache from '@/plugins/cache'; 
 import { approveList } from '@/utils/flow/const';
 const version = ref('3.5.0')  
-console.log("VITE_APP_BASE_URL=======",import.meta.env.VITE_APP_BASE_URL);
+console.log("VITE_APP_ENV=======",import.meta.env.VITE_APP_ENV);
 console.log("VITE_APP_BASE_API=======",import.meta.env.VITE_APP_BASE_API);
-console.log("BASE_URL=======",import.meta.env.BASE_URL);
-
+console.log("BASE_URL=======",import.meta.env.BASE_URL); 
 onMounted(() => {
     let userId = cache.session.get('userId'); 
     let name = approveList[userId];  

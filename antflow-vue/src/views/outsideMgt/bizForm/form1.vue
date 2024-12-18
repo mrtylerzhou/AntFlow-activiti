@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref, watch, reactive, getCurrentInstance } from 'vue' 
-import { processSubmit} from "@/api/mockoutside";
+import { processSubmit} from "@/api/outsideApi";
 import { formToHTMLString } from '@/utils/index'
 const { proxy } = getCurrentInstance() 
   

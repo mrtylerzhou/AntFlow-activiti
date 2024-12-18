@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { getPenddinglistPage } from "@/api/mockflow";
+import { getPenddinglistPage } from "@/api/workflow";
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
 let { setPreviewDrawerConfig } = store

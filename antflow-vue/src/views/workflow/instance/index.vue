@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { getAllProcesslistPage } from "@/api/mockflow"
+import { getAllProcesslistPage } from "@/api/workflow"
 import { useStore } from '@/store/modules/workflow'
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
 let store = useStore()

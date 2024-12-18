@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref, onMounted,getCurrentInstance } from "vue"; 
-import { getBpmnConflistPage,getEffectiveBpmn,getAllFormCodes } from "@/api/mockflow";
+import { getBpmnConflistPage,getEffectiveBpmn,getAllFormCodes } from "@/api/workflow";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 let formCodeOptions = ref([]);

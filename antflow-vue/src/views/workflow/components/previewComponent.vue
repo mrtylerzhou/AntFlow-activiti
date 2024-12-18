@@ -18,7 +18,7 @@
 </template>
 <script setup>
 import { ref,computed } from 'vue' 
-import { getViewBusinessProcess } from "@/api/mockflow" 
+import { getViewBusinessProcess } from "@/api/workflow" 
 import { useStore } from '@/store/modules/workflow' 
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 const { proxy } = getCurrentInstance()

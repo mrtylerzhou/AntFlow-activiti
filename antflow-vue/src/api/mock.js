@@ -1,5 +1,23 @@
- import http from '@/utils/axios' 
+/*
+ * @Date:  2024-05-25 14:06:59
+ * @LastEditors: LDH 574427343@qq.com
+ * @LastEditTime: 2024-06-29 15:52:57
+ * @FilePath: src\api\mock.js
+ * 静态数据模拟接口
+ */
+import http from '@/utils/axios' 
 let baseUrl = import.meta.env.BASE_URL
+
+/**
+ * 获取版本信息
+ */
+export function getCurrentVersion() {
+  const headers = {
+    'Cache-Control': 'no-cache', 
+  }
+  return http.get(`${baseUrl}version.json`, { headers })
+} 
+ 
 /**
  * 用户登录
  */

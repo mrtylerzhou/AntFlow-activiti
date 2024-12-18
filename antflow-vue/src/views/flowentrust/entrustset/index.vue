@@ -132,7 +132,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { getEntrustListPage, entrustDetail, setEntrust, getFromCodeData } from "@/api/mockflow";
+import { getEntrustListPage, entrustDetail, setEntrust, getFromCodeData } from "@/api/workflow";
 import { approveList } from '@/utils/flow/const'
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);

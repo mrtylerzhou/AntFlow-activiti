@@ -101,8 +101,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getAllFormCodes } from "@/api/mockflow";
-import { getLowCodeFromCodeData,createLFFormCode } from '@/api/mocklow'
+import { getAllFormCodes } from "@/api/workflow";
+import { getLowCodeFromCodeData,createLFFormCode } from '@/api/lowcodeApi'
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 const list = ref([]);

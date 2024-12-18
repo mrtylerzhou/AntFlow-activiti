@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { getApprovedlistPage } from "@/api/mockflow";
+import { getApprovedlistPage } from "@/api/workflow";
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()

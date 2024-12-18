@@ -1,4 +1,4 @@
- //import { logout,login,getInfo } from '@/api/login'
+ //import { logout,login,getInfo } from '@/api/system/login'
 import { login,getInfo,logout } from '@/api/mock'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'

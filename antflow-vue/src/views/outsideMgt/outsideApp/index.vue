@@ -186,7 +186,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue"; 
-import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV,setTemplateConf } from "@/api/mockoutside";
+import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV,setTemplateConf } from "@/api/outsideApi";
 import TemplateList from "./template.vue"; 
 const { proxy } = getCurrentInstance();
 const list = ref([]);

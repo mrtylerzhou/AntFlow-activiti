@@ -89,7 +89,7 @@
 import { ref, reactive, onMounted, getCurrentInstance } from "vue";
 import { NodeUtils } from "@/utils/flow/nodeUtils";
 import { useStore } from "@/store/modules/outsideflow";
-import { getApplicationsByPartyMarkId } from "@/api/mockoutside";
+import { getApplicationsByPartyMarkId } from "@/api/outsideApi";
 const { proxy } = getCurrentInstance();
 const emit = defineEmits(["nextChange"]);
 let store = useStore();
@@ -146,13 +146,15 @@ onMounted(async () => {
     form.appId = props.basicData.appId;
     form.remark = props.basicData.remark;
     form.deduplicationType = props.basicData.deduplicationType;
-  }
-  await getApplicationsList(form.businessPartyId);
+  } 
+  if (form.businessPartyId) {
+    await getApplicationsList(form.businessPartyId);
+  } 
 });
 watch(
   () => form.businessPartyId,
   (val) => {
-    if (val) {
+    if (val) { 
       getApplicationsList(val);
     }
   }

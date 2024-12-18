@@ -37,7 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getApiWorkFlowData } from "@/api/mockflow";
+import { getApiWorkFlowData } from "@/api/workflow";
 import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';

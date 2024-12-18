@@ -35,7 +35,7 @@ import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import BasicSetting from "@/components/OutsideFlow/BasicSetting/index.vue";
 import Process from "@/components/OutsideFlow/Process/index.vue";  
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/mockoutside'; 
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/outsideApi'; 
 import { FormatUtils } from '@/utils/flow/formatcommit_data'; 
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data'; 
 import { NodeUtils } from '@/utils/flow/nodeUtils';
@@ -64,14 +64,13 @@ let title = ref('');
 onMounted(async () => {  
  let mockjson = {};
  proxy.$modal.loading();
- if (route.query.id&& route.query.id != 0) {
+ if (route.query.id && route.query.id != 0) { 
      mockjson = await getApiWorkFlowData({ id: route.query.id });
- } else {
+ } else { 
      mockjson = NodeUtils.createStartNode();
  }
  let data = FormatDisplayUtils.getToTree(mockjson.data);
- // console.log("old===data=nodes==========", JSON.stringify(data.nodes));
- // console.log("old===data=nodeConfig==============", JSON.stringify(data.nodeConfig));
+ // console.log("old===data=nodes==========", JSON.stringify(data.nodes)); 
  proxy.$modal.closeLoading();
 
  processConfig.value = data;

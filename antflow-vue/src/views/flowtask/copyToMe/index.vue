@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { getCopyToMelistPage } from "@/api/mockflow";
+import { getCopyToMelistPage } from "@/api/workflow";
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()

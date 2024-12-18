@@ -88,8 +88,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { ElMessage } from 'element-plus';
-import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/mockflow";
-import { getApplicationsPageList , getBusinessPartyList } from "@/api/mockoutside";
+import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/workflow";
+import { getApplicationsPageList , getBusinessPartyList } from "@/api/outsideApi";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 let formCodeOptions = ref([]);

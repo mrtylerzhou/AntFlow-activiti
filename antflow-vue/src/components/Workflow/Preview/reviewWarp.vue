@@ -11,7 +11,7 @@
 </template>
 <script setup>
 import LineWarp from "@/components/Workflow/Preview/lineWarp.vue"
-import { getFlowPreview } from '@/api/mockflow'
+import { getFlowPreview } from '@/api/workflow'
 import { FormatUtils } from '@/utils/flow/formatFlowPreview'
 import { useStore } from '@/store/modules/workflow' 
 const { proxy } = getCurrentInstance()

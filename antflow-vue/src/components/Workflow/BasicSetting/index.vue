@@ -48,8 +48,8 @@
 <script setup>
 import { ref, reactive, onMounted, watch,getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getFromCodeData,getAllFormCodes } from "@/api/mockflow";
-import { getLowCodeFlowFormCodes } from "@/api/mocklow";
+import { getFromCodeData,getAllFormCodes } from "@/api/workflow";
+import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
 let loading = ref(false);

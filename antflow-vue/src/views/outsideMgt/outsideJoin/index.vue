@@ -98,7 +98,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getBusinessPartyList, setBusinessParty,getBusinessPartyDetail } from "@/api/mockoutside";
+import { getBusinessPartyList, setBusinessParty,getBusinessPartyDetail } from "@/api/outsideApi";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);

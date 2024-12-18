@@ -39,7 +39,7 @@
 <script setup>
 import { ref, onMounted } from "vue"; 
 import { useRoute } from 'vue-router';
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/mockflow';
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
 import { FormatUtils } from '@/utils/flow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { NodeUtils } from '@/utils/flow/nodeUtils';

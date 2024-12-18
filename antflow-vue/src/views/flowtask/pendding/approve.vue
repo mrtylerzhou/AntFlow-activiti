@@ -70,7 +70,7 @@ import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import employeesDialog from '@/components/Workflow/dialog/usersDialog.vue'
 import { pageButtonsColor, approvalPageButtons, approvalButtonConf } from "@/utils/flow/const"
-import { getViewBusinessProcess, processOperation } from "@/api/mockflow"
+import { getViewBusinessProcess, processOperation } from "@/api/workflow"
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 const { proxy } = getCurrentInstance()
 const route = useRoute();

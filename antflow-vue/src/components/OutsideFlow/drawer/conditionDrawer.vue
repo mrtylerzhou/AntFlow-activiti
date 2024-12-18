@@ -48,7 +48,7 @@
 import { ref, watch, computed } from 'vue' 
 import $func from '@/utils/flow/index'
 import { useStore } from '@/store/modules/outsideflow' 
-import { getTemplateByPartyMarkIdAndFormCode } from '@/api/mockoutside'  
+import { getTemplateByPartyMarkIdAndFormCode } from '@/api/outsideApi'  
 
 let store = useStore()
 let { setCondition, setConditionsConfig } = store

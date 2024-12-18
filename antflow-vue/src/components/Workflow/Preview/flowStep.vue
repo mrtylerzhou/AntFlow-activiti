@@ -30,7 +30,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { statusColor } from '@/utils/flow/const'; 
-import { getBpmVerifyInfoVos } from '@/api/mockflow';
+import { getBpmVerifyInfoVos } from '@/api/workflow';
   
 let activityList = ref(null);
 

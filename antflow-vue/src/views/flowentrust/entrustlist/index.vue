@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref, onMounted} from "vue";
-import { getUserEntrustListPage, getFromCodeData } from "@/api/mockflow";
+import { getUserEntrustListPage, getFromCodeData } from "@/api/workflow";
 import { approveList } from '@/utils/flow/const'
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
