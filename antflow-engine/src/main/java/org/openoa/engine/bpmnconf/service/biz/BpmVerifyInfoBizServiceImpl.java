@@ -31,6 +31,7 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -272,15 +273,18 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
                 List<BaseIdTranStruVo> idTranStruVos=new ArrayList<>();
 
-                for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
+                if(!CollectionUtils.isEmpty(baseIdTranStruVos)){
+                    for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
 
-                    for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
-                        if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
-                            idTranStruVos.add(baseIdTranStruVo);
+                        for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
+                            if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
+                                idTranStruVos.add(baseIdTranStruVo);
+                            }
+
                         }
-
                     }
                 }
+
                 for (BaseIdTranStruVo idTranStruVo : idTranStruVos) {
                     BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder()
                             .verifyUserId(idTranStruVo.getId())
