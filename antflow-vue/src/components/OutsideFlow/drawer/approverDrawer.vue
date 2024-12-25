@@ -1,89 +1,106 @@
 <template>
-    <el-drawer :append-to-body="true" title="审批人设置" v-model="visible" class="set_promoter"  :with-header="false" :size="680">
-        <span class="drawer-title">审批人设置</span> 
-        <div class="demo-drawer__content">
-            <div class="drawer_content">
-                <div class="approver_content">
-                    <p><p style="font-weight: 100;font-size: small;color: red;">*测试环境，仅开放指定人员</p></p>
-                    <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
-                        <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio> 
-                    </el-radio-group>
+    <el-drawer :append-to-body="true" title="审批人设置" v-model="visible" class="set_promoter" :with-header="false"
+        :size="680">
+        <div class="el-drawer__header">
+            <span class="drawer-title">审批人</span>
+        </div>
+        <el-tabs v-model="activeName">
+            <el-tab-pane label="审批人设置" name="approverStep">
+                <div class="drawer_content">
+                    <div class="approver_content">
+                        <p>
+                        <p style="font-weight: 100;font-size: small;color: red;">*测试环境，仅开放指定人员</p>
+                        </p>
+                        <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
+                            <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
+                        </el-radio-group>
 
-                    <el-button type="primary" @click="addApprover" size="default" v-if="approverConfig.setType == 5">添加成员</el-button>
-                    <p class="selected_list">
-                        <span v-for="(item,index) in approverConfig.nodeApproveList" :key="index">{{item.name}}
-                            <img src="@/assets/images/add-close1.png" @click="$func.removeEle(approverConfig.nodeApproveList,item,'targetId')">
-                        </span>
-                        <a v-if="approverConfig.nodeApproveList&&approverConfig.nodeApproveList.length!=0" @click="approverConfig.nodeApproveList=[]">清除</a>
-                    </p>
+                        <el-button type="primary" @click="addApprover"
+                            v-if="approverConfig.setType == 5">添加/修改人员</el-button>
+                        <p class="selected_list" v-if="approverConfig.setType == 5">
+                            <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{ item.name
+                                }}
+                                <img src="@/assets/images/add-close1.png"
+                                    @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
+                            </span>
+                            <a v-if="approverConfig.nodeApproveList.length != 0"
+                                @click="approverConfig.nodeApproveList = []">清除</a>
+                        </p>
+                    </div>
+                    <div class="approver_manager" v-if="approverConfig.setType == 3">
+                        <p>
+                            <span>发起人的：</span>
+                            <select v-model="approverConfig.directorLevel">
+                                <option v-for="item in directorMaxLevel" :value="item" :key="item">
+                                    {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
+                            </select>
+                        </p>
+                        <p class="tip">找不到主管时，由上级主管代审批</p>
+                    </div>
+
+                    <div class="approver_self" v-if="approverConfig.setType == 12">
+                        <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
+                    </div>
+                    <div class="approver_self" v-if="approverConfig.setType == 13">
+                        <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
+                    </div>
+
+                    <div class="approver_some">
+                        <p>多人审批时采用的审批方式</p>
+                        <el-radio-group v-model="approverConfig.signType" class="clear">
+                            <el-radio :value="1">会签（需所有审批人同意，不限顺序）</el-radio>
+                            <br />
+                            <el-radio :value="2">或签（只需一名审批人同意或拒绝即可）</el-radio>
+                            <br />
+                            <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
+                        </el-radio-group>
+                    </div>
+                    <div class="approver_some">
+                        <p>审批人为空时</p>
+                        <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
+                            <el-radio :value="1">自动审批通过/不允许发起</el-radio>
+                            <br />
+                            <el-radio :value="2">转交给审核管理员</el-radio>
+                        </el-radio-group>
+                    </div>
                 </div>
-    
-                <el-tabs v-model="activeName" class="set-tabs">
-                    <el-tab-pane label="基础设置" name="baseTab">                        
-                        <div class="approver_some">
-                            <p>多人审批时采用的审批方式</p>
-                            <el-radio-group v-model="approverConfig.signType" class="clear">
-                                <el-radio :value="1">会签（需所有审批人同意，不限顺序）</el-radio>
-                                <br />
-                                <el-radio :value="2">或签（只需一名审批人同意或拒绝即可）</el-radio>
-                                <br />
-                                <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
-                            </el-radio-group>
-                        </div>
-                        <div class="approver_some">
-                            <p>审批人为空时</p>
-                            <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
-                                <el-radio :value="1">自动审批通过/不允许发起</el-radio>
-                                <br />
-                                <el-radio :value="2">转交给审核管理员</el-radio>
-                            </el-radio-group>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="按钮设置" name="btnTab">                    
-                        <div class="approver_some">
-                            <p>【审批页面】按钮权限显示控制</p> 
-
-                            <el-checkbox-group class="clear"  v-model="checkApprovalPageBtns"> 
-                                <el-checkbox style="margin: 6px 0;width: 100%;height: 45px;"  border
-                                    v-for="opt in approvalPageButtons"  
-                                    :value="opt.value" 
-                                    :disabled="opt.type === 'default'"
-                                    @change="handleCheckedButtonsChange(opt.value)"
-                                    >
-                                    【{{opt.label}}】 
-                                    <span class="opt-description">
-                                        {{opt.description}}
-                                    </span>
-                                </el-checkbox>
-                            </el-checkbox-group> 
-                            <el-checkbox border style="margin-top: 6px;width: 100%;height: 45px;" 
-                            v-if="afterSignUpWayVisible"  
-                            v-model="checkAfterSignUpWay"
-                            @change="handleAfterSignUpWay(checkAfterSignUpWay)">
-                                是否回到加批人
-                                <span class="opt-description">
-                                    选中后，加批人审批完之后，会回到本节点的审批人再次审批
-                                 </span>
-                            </el-checkbox>
-                        </div> 
-                     
-                    </el-tab-pane> 
-                </el-tabs> 
-            </div>
-            <div class="demo-drawer__footer clear">
-                <el-button type="primary"  size="default"  @click="saveApprover">确 定</el-button>
-                <el-button  size="default"  @click="closeDrawer">取 消</el-button>
-            </div> 
-            <selectUser  v-model:visible="approverVisible" :data="userSelectedList"  @change="sureApprover" />
+            </el-tab-pane>
+            <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
+                <div class="approver_some drawer_content">
+                    <p>【审批页面】按钮权限显示控制</p>
+                    <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
+                        <el-checkbox style="margin: 6px 0;width: 100%;height: 45px;" border
+                            v-for="opt in approvalPageButtons" :value="opt.value" :disabled="opt.type === 'default'"
+                            @change="handleCheckedButtonsChange(opt.value)">
+                            【{{ opt.label }}】
+                            <span class="opt-description">
+                                {{ opt.description }}
+                            </span>
+                        </el-checkbox>
+                    </el-checkbox-group>
+                    <el-checkbox border style="margin-top: 6px;width: 100%;height: 45px;" v-if="afterSignUpWayVisible"
+                        v-model="checkAfterSignUpWay" @change="handleAfterSignUpWay(checkAfterSignUpWay)">
+                        是否回到加批人
+                        <span class="opt-description">
+                            选中后，加批人审批完之后，会回到本节点的审批人再次审批
+                        </span>
+                    </el-checkbox>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="saveApprover">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
         </div>
     </el-drawer>
+    <selectUser v-model:visible="approverVisible" :data="userSelectedList" @change="sureApprover" />
 </template>
 <script setup>
-import { ref, watch, computed } from 'vue' 
+import { ref, watch, computed } from 'vue'
 import selectUser from '../dialog/selectUserDialog.vue'
 import $func from '@/utils/flow/index'
-import { setTypes,approvalPageButtons } from '@/utils/flow/const'
-import { useStore } from '@/store/modules/outsideflow'  
+import { setTypes, approvalPageButtons } from '@/utils/flow/const'
+import { useStore } from '@/store/modules/outsideflow'
 let store = useStore()
 let props = defineProps({
     directorMaxLevel: {
@@ -93,16 +110,16 @@ let props = defineProps({
 });
 let approverVisible = ref(false)
 
-const activeName = ref('baseTab')
-let approverConfig = ref({}) 
-let checkApprovalPageBtns = ref([]) 
-let approvalPageBtns = ref([]) 
- 
-const userSelectedList = ref([]) 
+const activeName = ref('approverStep')
+let approverConfig = ref({})
+let checkApprovalPageBtns = ref([])
+let approvalPageBtns = ref([])
 
-let afterSignUpWayVisible = computed(()=> approverConfig.value?.isSignUp == 1) 
+const userSelectedList = ref([])
+
+let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
 let checkAfterSignUpWay = ref(false)
- 
+
 let approverConfig1 = computed(() => store.approverConfig1)
 let approverDrawer = computed(() => store.approverDrawer)
 
@@ -113,24 +130,23 @@ let visible = computed({
     set() {
         closeDrawer()
     }
-})  
+})
 /**监听对象 */
 watch(approverConfig1, (val) => { 
-    approverConfig.value = val.value;   
-    checkApprovalPageBtns.value = val.value.buttons?.approvalPage;   
-})
+    approverConfig.value = val.value;
+    checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+}) 
 /**监听属性 */
-watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => { 
-        checkAfterSignUpWay.value = newVal == 1?true:false
-    } 
-)
+watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => {
+    checkAfterSignUpWay.value = newVal == 1 ? true : false
+})
 /**选择审批人类型 */
-const changeType = (val) => {  
+const changeType = (val) => {
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
     approverConfig.value.noHeaderAction = 2;
-    approverConfig.value.directorLevel = 1; 
-} 
+    approverConfig.value.directorLevel = 1;
+}
 /**选择人员 */
 const addApprover = () => {
     approverVisible.value = true;
@@ -142,9 +158,8 @@ const sureApprover = (data) => {
     approverVisible.value = false;
 }
 /**保存并关闭抽屉 */
-const saveApprover = () => {  
-    //console.log(' approverConfig.value.nodeApproveList=======',JSON.stringify(approverConfig.value.nodeApproveList)) 
-    approverConfig.value.error = !$func.setApproverStr(approverConfig.value)     
+const saveApprover = () => { 
+    approverConfig.value.error = !$func.setApproverStr(approverConfig.value)
     store.setApproverConfig({
         value: approverConfig.value,
         flag: true,
@@ -153,13 +168,15 @@ const saveApprover = () => {
     closeDrawer()
 }
 /**选择审批页面按钮显示 */
-const handleCheckedButtonsChange = (val) =>  {   
-    const index = approvalPageBtns.value.indexOf(val); 
-    index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);    
-    const isAddStep = approvalPageBtns.value.indexOf(19); 
-    if(isAddStep >= 0){
+const handleCheckedButtonsChange = (val) => {
+    const index = approvalPageBtns.value.indexOf(val);  
+    index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
+    const indexSet = approverConfig.value.buttons.approvalPage.indexOf(val); 
+    indexSet < 0 ? approverConfig.value.buttons.approvalPage.push(val):approverConfig.value.buttons.approvalPage.splice(indexSet, 1);      
+    const isAddStep = approvalPageBtns.value.indexOf(19);
+    if (isAddStep >= 0) {
         approverConfig.value.isSignUp = 1;
-    }else{
+    } else {
         approverConfig.value.isSignUp = 0;
     }
 }
@@ -176,16 +193,17 @@ const handleAfterSignUpWay = (val) => {
         Object.assign(approverConfig.value, {
             property: { afterSignUpWay: val ? 1 : 2 }
         });
-    } 
+    }
 }
 /**关闭抽屉 */
 const closeDrawer = () => {
     store.setApprover(false)
-} 
+}
 
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
+
 .selected_list {
     margin-bottom: 20px;
     line-height: 30px;
@@ -213,24 +231,28 @@ const closeDrawer = () => {
     cursor: pointer;
 }
 
-.el-tabs { 
+.el-tabs {
     margin-left: 20px !important;
 }
+
 .set_promoter {
     .approver_content {
         padding-bottom: 10px;
         border-bottom: 1px solid #f2f2f2;
         min-height: 250px;
-    }  
+    }
+
     .approver_content {
         .el-button {
             margin-bottom: 20px;
         }
     }
+
     .approver_content,
     .approver_some,
     .approver_self_select {
-        padding-top:5px;
+        padding-top: 5px;
+
         .el-radio-group {
             display: unset;
         }
@@ -242,19 +264,21 @@ const closeDrawer = () => {
         }
     }
 
-    .approver_self_select, 
+    .approver_self_select,
     .approver_content {
         padding: 20px 20px 0;
-    } 
+    }
+
     .approver_some p {
         line-height: 19px;
         font-size: 14px;
         margin-bottom: 14px;
-    } 
+    }
 }
+
 .opt-description {
-      margin-top: 3px;
-      font-size: 12px;
-      color: var(--el-text-color-placeholder);
-    } 
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+}
 </style>

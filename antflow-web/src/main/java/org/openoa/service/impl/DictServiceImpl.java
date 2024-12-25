@@ -58,6 +58,25 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         }
         return results;
     }
+
+    @Override
+    public List<BaseKeyValueStruVo> getLFActiveFormCodes() {
+        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodes();
+        List<BaseKeyValueStruVo> results=new ArrayList<>();
+        for (DictData item : dictDataList) {
+            results.add(
+                    BaseKeyValueStruVo
+                            .builder()
+                            .key(item.getValue())
+                            .value(item.getLabel())
+                            .type("LF")
+                            .remark(item.getRemark())
+                            .build()
+            );
+        }
+        return results;
+    }
+
     @Override
     public Integer addFormCode(BaseKeyValueStruVo vo) {
         Integer result = 0;
