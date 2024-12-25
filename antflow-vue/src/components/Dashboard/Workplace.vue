@@ -93,10 +93,11 @@ const outsideflowList = [
 ];
 let statusColor = {
     "LEAVE_WMA": 'leave',
-    "DSFZH_WMA": 'jiejing',
+    "DSFZH_WMA": 'shenpi',
     "PURCHASE_WMA": 'bought',
-    "UCARREFUEl_WMA": 'trip2',
+    "UCARREFUEl_WMA": 'trip',
     "LFTEST_WMA": 'zhushou',
+    "BXSP_WMA": 'time_00',
 };
 
 onMounted(async () => {
@@ -109,7 +110,7 @@ onMounted(async () => {
                     title: c.value,
                     formType: c.type,
                     description: c.value + '流程办理',
-                    IconUrl: getAssetsFile(statusColor[c.key] || 'icon-manage-19')
+                    IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
             });
             lfFlowList.value = totalData.filter(c => c.formType == 'LF');
