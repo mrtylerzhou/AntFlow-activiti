@@ -93,7 +93,7 @@ const outsideflowList = [
 ];
 let statusColor = {
     "LEAVE_WMA": 'leave',
-    "DSFZH_WMA": 'shenpi',
+    "DSFZH_WMA": 'hire',
     "PURCHASE_WMA": 'bought',
     "UCARREFUEl_WMA": 'trip',
     "LFTEST_WMA": 'zhushou',
@@ -125,15 +125,15 @@ function handleStart(row) {
         formType: row.formType,
         formCode: row.formCode
     };
-    if ('PURCHASE_WMA' == row.formCode) {
-        proxy.$modal.msgWarning("采购表单努力开发中！^-^");
+    if ('PURCHASE_WMA' == row.formCode || 'BXSP_WMA' == row.formCode) {
+        proxy.$modal.msgWarning("表单努力开发中！^-^");
         return;
     }
     const obj = { path: '/bizentry/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function handleOutSide(row) {
-    proxy.$tab.openPage("/outsideMgt/bizForm", "采购");
+    proxy.$tab.openPage("/outsideMgt/bizForm", "三方接入表单");
     return;
 }
 function getAssetsFile(pathUrl) {
@@ -157,7 +157,9 @@ function getAssetsFile(pathUrl) {
     }
 
 }
-
+.el-card{
+    margin-bottom: 5px !important;
+}
 .card-title {
     float: left;
     margin-left: 15px;
