@@ -5,7 +5,7 @@
             <el-row :class="{ disableClss: props.isPreview }">
                 <el-col :span="24">
                     <el-form-item label="采购人姓名" prop="PurchaseUserName">
-                        <el-input v-model="form.UserName"  style="width: 220px;"  placeholder="请输入采购人姓名" />
+                        <el-input v-model="form.PurchaseUserName"  style="width: 220px;"  placeholder="请输入采购人姓名" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -64,22 +64,22 @@ let rules = {
     remark: [{
         required: true,
         message: '请输入备注说明',
-        trigger: 'blur'
+        trigger: ['blur', 'change'],
     }],
     PurchaseUserName: [{
         required: true,
         message: '请输入采购人姓名',
-        trigger: 'blur'
+        trigger: ['blur', 'change'],
     }],
     PurchaseDate: [{
         required: true,
         message: '请选择采购时间',
-        trigger: 'blur'
+        trigger: ['blur', 'change'],
     }],
     PurchaseMoney: [{
         required: true,
         message: '请输入采购金额',
-        trigger: 'blur'
+        trigger: ['blur', 'change'],
     }],
 }; 
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
