@@ -153,7 +153,7 @@ public class BpmnBusinessController {
 
     private List<BaseKeyValueStruVo> allFormInfo(){
         List<BaseKeyValueStruVo> results= baseFormInfo("");
-        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLowCodeFlowFormCodes();
+        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLFActiveFormCodes();
         if (lfFormCodes != null){
             results.addAll(lfFormCodes);
         }
