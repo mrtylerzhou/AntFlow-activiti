@@ -81,7 +81,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         if (vo.getFlag()) {
             processState = END_STATE.getCode();
         }
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId().toString()).list();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
         Task taskData;
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
