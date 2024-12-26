@@ -90,8 +90,8 @@ export class NodeUtils {
       error: true,
       property: null,
       conditionNodes: [
-        this.createConditionNode("条件1", child, 0),
-        this.createConditionNode("条件2", null, 1),
+        this.createConditionNode("条件1", child,1, 0),
+        this.createConditionNode("条件2", null,2, 1),
       ],
     };
     return gatewayNode;
@@ -100,7 +100,7 @@ export class NodeUtils {
    * 创建条件对象
    * @returns object
    */
-  static createConditionNode(name, childNode, isDefault) {
+  static createConditionNode(name, childNode,priority, isDefault) {
     let conditionNode = {
       nodeId: this.idGenerator(),
       nodeName: name || "条件1",
@@ -108,7 +108,7 @@ export class NodeUtils {
       nodeType: 3,
       nodeFrom: "",
       nodeTo: [],
-      priorityLevel: 1,
+      priorityLevel: priority,
       conditionList: [],
       nodeApproveList: [],
       error: true,

@@ -125,7 +125,7 @@ All.prototype = {
     conditionStr(nodeConfig, index) { 
         var { conditionList, nodeApproveList } = nodeConfig.conditionNodes[index];   
         if (conditionList.length == 0) { 
-            return (index == nodeConfig.conditionNodes.length - 1) && nodeConfig.conditionNodes[0].conditionList.length != 0 ? '其他条件进入此流程' : '请设置条件'
+            return (index == nodeConfig.conditionNodes.length - 1) && nodeConfig.conditionNodes[index].conditionList.length == 0 ? '其他条件进入此流程' : '请设置条件'
         } else {
             let str = ""
             for (var i = 0; i < conditionList.length; i++) {

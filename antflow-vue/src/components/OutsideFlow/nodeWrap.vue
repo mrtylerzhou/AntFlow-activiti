@@ -203,20 +203,8 @@ const delNode = () => {
 };
 const addTerm = () => {
     let len = props.nodeConfig.conditionNodes.length + 1;
-    props.nodeConfig.conditionNodes.push({
-        nodeId: NodeUtils.idGenerator(),
-        nodeName: "条件" + len,
-        nodeType: 3,
-        nodeFrom: "", 
-        prevId: [],
-        nodeTo: [],
-        priorityLevel: len,
-        conditionList: [],
-        nodeApproveList: [],
-        childNode: null,
-        isDefault: 0,
-        error: true
-    });
+    let n_name='条件' + len;
+    props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name,null,len,0));
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
 };
