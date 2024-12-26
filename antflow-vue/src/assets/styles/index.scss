@@ -212,3 +212,32 @@ aside {
   border-color: #46A6FE #46A6FE transparent transparent;
   content: '';
 }
+
+.pin-top-right-corner {
+  position: absolute;
+  top: -0;
+  right: -0; 
+  text-align: center;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.pin-top-right-corner img {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background-image: url();
+}
+
+.pin-pass:before {
+  content:  url("../images/flow-pass.png");
+}
+.pin-in:before {
+  content:  url("../images/flow-in.png");
+}
+.pin-refuse:before {
+  content:  url("../images/flow-refuse.png");
+} 
+.pin-end:before {
+  content:  url("../images/flow-end.png");
+}

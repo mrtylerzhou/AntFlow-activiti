@@ -6,7 +6,8 @@
       <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
         <el-tab-pane label="表单信息" name="baseTab">
           <div v-if="baseTabShow"> 
-            <previewComponent :isPreview="true" />
+            <previewComponent :isPreview="true" />  
+            <!-- <i class="pin-top-right-corner pin-pass"></i> -->
           </div> 
         </el-tab-pane>
         <el-tab-pane label="审批记录" name="flowStep">
@@ -65,3 +66,4 @@ const closeDrawer = () => {
 } 
 handleTabClick({ paneName: "baseTab" }) 
 </script>
+ 
