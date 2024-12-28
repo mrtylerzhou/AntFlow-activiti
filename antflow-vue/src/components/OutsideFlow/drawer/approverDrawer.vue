@@ -1,5 +1,5 @@
 <template>
-    <el-drawer :append-to-body="true" title="审批人设置" v-model="visible" class="set_promoter" :with-header="false"
+    <el-drawer :append-to-body="true" title="审批人设置" v-model="visible" class="set_approver" :with-header="false"
         :size="680">
         <div class="el-drawer__header">
             <span class="drawer-title">审批人</span>
@@ -12,10 +12,11 @@
                             <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
                         </el-radio-group>
 
-                        <div class="approver_self_select" v-show="approverConfig.setType == 5">
+                        <div class="approver_btn" v-show="approverConfig.setType == 5">
                             <el-button type="primary" @click="addApprover">添加/修改人员</el-button>
-                            <p class="selected_list"> 
-                                <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{ item.name }}
+                            <p class="selected_list">
+                                <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{ item.name
+                                    }}
                                     <img src="@/assets/images/add-close1.png"
                                         @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                 </span>
@@ -24,8 +25,8 @@
                             </p>
                         </div>
 
-                        <div class="approver_self_select" v-show="approverConfig.setType == 4">
-                            <p style="color: red;">*暂未开发</p>
+                        <div class="approver_btn" v-show="approverConfig.setType == 4">
+                            <p style="color: red;">*预览地址暂未开放</p>
                             <!-- <el-button type="primary" @click="addApprover">添加/修改角色</el-button>
                             <p class="selected_list">
                                 <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
@@ -38,14 +39,14 @@
                                     @click="approverConfig.nodeApproveList = []">清除</a>
                             </p> -->
                         </div>
-                        <div class="approver_self" v-if="approverConfig.setType == 6">
-                            <p style="color: red;">*暂未开发</p>
+                        <div class="approver_text" v-if="approverConfig.setType == 6">
+                            <p style="color: red;">*预览地址暂未开放</p>
                         </div>
 
-                        <div class="approver_manager" v-if="approverConfig.setType == 3">
+                        <div class="approver_select" v-if="approverConfig.setType == 3">
                             <p>
                                 <span>发起人的：</span>
-                                <select v-model="approverConfig.directorLevel">
+                                <select v-model="approverConfig.directorLevel" style="width: 300px;">
                                     <option v-for="item in directorMaxLevel" :value="item" :key="item">
                                         {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
                                 </select>
@@ -53,14 +54,14 @@
                             <p class="tip">找不到主管时，由上级主管代审批</p>
                         </div>
 
-                        <div class="approver_self" v-if="approverConfig.setType == 12">
+                        <div class="approver_text" v-if="approverConfig.setType == 12">
                             <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
                         </div>
-                        <div class="approver_self" v-if="approverConfig.setType == 13">
+                        <div class="approver_text" v-if="approverConfig.setType == 13">
                             <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
                         </div>
                     </div>
-                    <div class="approver_some">
+                    <div class="approver_block">
                         <p>多人审批时采用的审批方式</p>
                         <el-radio-group v-model="approverConfig.signType" class="clear">
                             <el-radio :value="1">会签（需所有审批人同意，不限顺序）</el-radio>
@@ -70,7 +71,7 @@
                             <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
                         </el-radio-group>
                     </div>
-                    <div class="approver_some">
+                    <div class="approver_block">
                         <p>审批人为空时</p>
                         <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
                             <el-radio :value="1">自动审批通过/不允许发起</el-radio>
@@ -81,7 +82,7 @@
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
-                <div class="approver_some drawer_content">
+                <div class="approver_block drawer_content">
                     <p>【审批页面】按钮权限显示控制</p>
                     <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                         <el-checkbox style="margin: 6px 0;width: 100%;height: 45px;" border
@@ -147,10 +148,10 @@ let visible = computed({
     }
 })
 /**监听对象 */
-watch(approverConfig1, (val) => { 
+watch(approverConfig1, (val) => {
     approverConfig.value = val.value;
     checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
-}) 
+})
 /**监听属性 */
 watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => {
     checkAfterSignUpWay.value = newVal == 1 ? true : false
@@ -173,7 +174,7 @@ const sureApprover = (data) => {
     approverVisible.value = false;
 }
 /**保存并关闭抽屉 */
-const saveApprover = () => { 
+const saveApprover = () => {
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value)
     store.setApproverConfig({
         value: approverConfig.value,
@@ -184,10 +185,10 @@ const saveApprover = () => {
 }
 /**选择审批页面按钮显示 */
 const handleCheckedButtonsChange = (val) => {
-    const index = approvalPageBtns.value.indexOf(val);  
+    const index = approvalPageBtns.value.indexOf(val);
     index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
-    const indexSet = approverConfig.value.buttons.approvalPage.indexOf(val); 
-    indexSet < 0 ? approverConfig.value.buttons.approvalPage.push(val):approverConfig.value.buttons.approvalPage.splice(indexSet, 1);      
+    const indexSet = approverConfig.value.buttons.approvalPage.indexOf(val);
+    indexSet < 0 ? approverConfig.value.buttons.approvalPage.push(val) : approverConfig.value.buttons.approvalPage.splice(indexSet, 1);
     const isAddStep = approvalPageBtns.value.indexOf(19);
     if (isAddStep >= 0) {
         approverConfig.value.isSignUp = 1;
@@ -250,7 +251,7 @@ const closeDrawer = () => {
     margin-left: 20px !important;
 }
 
-.set_promoter {
+.set_approver {
     .approver_content {
         padding-bottom: 10px;
         border-bottom: 1px solid #f2f2f2;
@@ -264,8 +265,8 @@ const closeDrawer = () => {
     }
 
     .approver_content,
-    .approver_some,
-    .approver_self_select {
+    .approver_block,
+    .approver_btn {
         padding-top: 5px;
 
         .el-radio-group {
@@ -277,8 +278,9 @@ const closeDrawer = () => {
             margin-bottom: 20px;
             height: 16px;
         }
-    } 
-    .approver_some p {
+    }
+
+    .approver_block p {
         line-height: 19px;
         font-size: 14px;
         margin-bottom: 14px;
@@ -291,27 +293,29 @@ const closeDrawer = () => {
     color: var(--el-text-color-placeholder);
 }
 
-.approver_manager p {
-        line-height: 32px;
-    } 
-    .approver_manager select {
-        width: 420px;
-        height: 32px;
-        background: rgba(255, 255, 255, 1);
-        border-radius: 4px;
-        border: 1px solid rgba(217, 217, 217, 1);
-    }
+.approver_select p {
+    line-height: 32px;
+}
 
-    .approver_manager p.tip {
-        margin: 10px 0 22px 0;
-        font-size: 12px;
-        line-height: 16px;
-        color: #f8642d;
-    } 
-    .approver_manager p:first-of-type,
-    .approver_some p {
-        line-height: 19px;
-        font-size: 14px;
-        margin-bottom: 14px;
-    }
+.approver_select select {
+    width: 420px;
+    height: 32px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    border: 1px solid rgba(217, 217, 217, 1);
+}
+
+.approver_select p.tip {
+    margin: 10px 0 22px 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #f8642d;
+}
+
+.approver_select p:first-of-type,
+.approver_block p {
+    line-height: 19px;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
 </style>
