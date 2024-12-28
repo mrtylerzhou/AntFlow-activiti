@@ -307,11 +307,12 @@ const changePermVal = (data) => {
 
 .selected_list span {
     margin-right: 10px;
-    padding: 3px 6px 3px 9px;
+    padding: 8px;
     line-height: 12px;
     white-space: nowrap;
     border-radius: 5px;
-    border: 1px solid rgba(220, 220, 220, 1);
+    border: 1px solid #9fceff;
+    background-color: #9fceff;
 }
 
 .selected_list img {
