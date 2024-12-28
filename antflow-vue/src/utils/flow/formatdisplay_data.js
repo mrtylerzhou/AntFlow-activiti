@@ -1,5 +1,5 @@
 // import { FormatDisplayUtils } from '@/utils/formatdisplay_data'
-import { approveList,hrbpOptions,typeCodes} from '@/utils/flow/const'
+import { approveList,hrbpOptions } from '@/utils/flow/const'
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : false
 
 export class FormatDisplayUtils {
@@ -128,9 +128,8 @@ export class FormatDisplayUtils {
                     }
 
                 }
-                Object.assign(node, { signType: node.property?.signType }); 
-                let typeCode = typeCodes.filter(t => t.type == node.nodeProperty);
-                node.setType = typeCode[0]?.value??0;
+                Object.assign(node, { signType: node.property?.signType });  
+                node.setType = node.nodeProperty;
                 Object.assign(node, { nodeApproveList: [] });
                 
                 node.nodeApproveList = empList;

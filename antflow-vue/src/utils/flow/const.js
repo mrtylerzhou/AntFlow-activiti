@@ -19,36 +19,7 @@ export let setTypes = [
   // { value: 8, label: '关联业务表' },
   { value: 12, label: '发起人自己' }, 
   // { value: 14, label: '指定部门' },
-]
-export const nodeConf = {
-  nodeType: {
-    start : 1,//发起人
-    getway : 2,//'网关'
-    condition : 3,//'条件'
-    approve: 4,//'审核人'
-    copy: 6//'抄送人'
-  },
-  approveType: {
-      role: 4,//'指定角色'
-      user: 5,//'指定人员' 
-      hrbp: 6,//'HRBP'
-      leader: 13,//'直属领导'
-      // layer: 2,//'层层审批'
-      level: 3,//'指定层级审批'
-      // business: 8,//'关联业务表'
-      self: 12,//'发起人自己' 
-      // department: 14,//'指定部门'
-  }
-}
-export let typeCodes = [
-  { value: 2, type: 1 },
-  { value: 3, type: 3 },
-  { value: 4, type: 4 },
-  { value: 5, type: 5 },
-  { value: 12, type: 2 },
-  { value: 13, type: 13 },
-]
-
+] 
 export let hrbpOptions = [
   { value: 1, label: 'HRBP' },
   { value: 2, label: 'HRBP Leader' },

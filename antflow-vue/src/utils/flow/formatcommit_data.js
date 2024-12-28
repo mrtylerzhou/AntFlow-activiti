@@ -1,6 +1,5 @@
 // import { FormatUtils } from '@/utils/flow/formatcommit_data'
-//import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { typeCodes } from '@/utils/flow/const'
+//import { NodeUtils } from '@/utils/flow/nodeUtils' 
 const isEmpty = data => data === null || data === undefined || data === ''
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true
 
@@ -158,6 +157,7 @@ export class FormatUtils {
                     emplList: [],
                     roleIds: [],
                     roleList: [],
+                    hrbpConfType: 0,
                     signType: node.signType,
                 }
 
@@ -178,13 +178,16 @@ export class FormatUtils {
                             approveObj.emplIds.push(parseInt(approve.targetId));
                             approveObj.emplList.push(emp);
                         }
+                    } else if(node.setType== 6){
+                        for (let approve of node.nodeApproveList) {                      
+                            approveObj.hrbpConfType= parseInt(approve.targetId);
+                        }
                     }
                 }
                 //node.nodeProperty = node.setType;
 
-                Object.assign(approveObj, { afterSignUpWay : node.property.afterSignUpWay });
-                let typeNodeProperty= typeCodes.filter(t=>t.value==node.setType);
-                node.nodeProperty=typeNodeProperty[0]?.type;    
+                Object.assign(approveObj, { afterSignUpWay : node.property.afterSignUpWay }); 
+                node.nodeProperty=node.setType; 
                 node.property = approveObj;
                 delete node.nodeApproveList;
             }
