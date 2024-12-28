@@ -56,7 +56,7 @@ let emits = defineEmits(['del'])
   width: 320px;
   height: 100%;
   font-size: 12px; 
-  margin-left: -30px;
+  margin-left: 0px;
   ul {
     height: 460px;
     overflow-y: auto; 

@@ -2,15 +2,7 @@
   <el-dialog title="选择成员" v-model="visibleDialog" style="width: 650px !important;"  append-to-body class="promoter_person">
       <div class="person_body clear">
           <div class="person_tree l">
-              <input type="text" placeholder="搜索成员" v-model="searchVal" @input="getDebounceData($event,activeName)">
-              <el-tabs v-model="activeName" @tab-change="handleClick">
-                  <el-tab-pane label="组织架构" name="1"></el-tab-pane>
-                  <el-tab-pane label="角色列表" name="2"></el-tab-pane>
-              </el-tabs>
-              <p class="ellipsis tree_nav" v-if="activeName === '1' && !searchVal"> 
-                  <span v-for="(item,index) in departments.titleDepartments" class="ellipsis" 
-                  :key="index+'a'" @click="getDepartmentList(item.id)">{{item.departmentName}}</span>   
-              </p>
+              <input type="text" placeholder="搜索成员" v-model="searchVal" @input="getDebounceData($event,activeName)"> 
               <selectBox :list="list" style="height: 360px;"/>
           </div>
           <selectResult :total="total" @del="delList" :list="resList"/>

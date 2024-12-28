@@ -78,11 +78,11 @@ let resList = computed(()=>{
 watch(()=> props.visible, (val)=>{
   if(val){
     getDepartmentList();
-    searchVal.value = "";
-    checkedEmployessList.value = props.data.filter(item=>item.type===1).map(({name,targetId})=>({
+    searchVal.value = ""; 
+    checkedEmployessList.value = props.data.filter(item=>item.type===5).map(({name,targetId})=>({
       employeeName: name,
       id: targetId
-    }));
+    })); 
     checkedDepartmentList.value = props.data.filter(item=>item.type===3).map(({name,targetId})=>({
       departmentName: name,
       id: targetId

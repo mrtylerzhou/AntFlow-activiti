@@ -197,9 +197,6 @@ watch(approverConfig1, (val) => {
 watch(approverConfig1, (val) => {
     approvalPageBtns.value = val.value.buttons?.approvalPage;
     if (val.value.nodeProperty == 6) {
-        // val.value.nodeApproveList.length > 0 && val.value.nodeApproveList.map(item => {
-        //     checkedHRBP.value = item.targetId
-        // })
         checkedHRBP.value =  val.value.property.hrbpConfType 
     }
 })
@@ -299,12 +296,12 @@ const changePermVal = (data) => {
 
 .selected_list {
     margin-bottom: 20px;
-    line-height: 30px;
+    line-height: 40px;
 }
 
 .selected_list span {
-    margin-right: 10px;
-    padding: 8px;
+    margin-right: 10px; 
+    padding: 5px;
     line-height: 12px;
     white-space: nowrap;
     border-radius: 5px;
