@@ -158,6 +158,7 @@ export class FormatUtils {
                     roleIds: [],
                     roleList: [],
                     hrbpConfType: 0,
+                    assignLevelGrade: 0,
                     signType: node.signType,
                 }
 
@@ -166,7 +167,7 @@ export class FormatUtils {
                         for(let approve of node.nodeApproveList){
                             let role={};
                             role.id=parseInt(approve.targetId);
-                            role.name=node.name;
+                            role.name = approve.name;
                             approveObj.roleIds.push(parseInt(approve.targetId));
                             approveObj.roleList.push(role);
                         }
@@ -183,9 +184,10 @@ export class FormatUtils {
                             approveObj.hrbpConfType= parseInt(approve.targetId);
                         }
                     }
-                }
-                //node.nodeProperty = node.setType;
-
+                } 
+                else if(node.setType== 3){ 
+                    approveObj.assignLevelGrade = node.directorLevel; 
+                } 
                 Object.assign(approveObj, { afterSignUpWay : node.property.afterSignUpWay }); 
                 node.nodeProperty=node.setType; 
                 node.property = approveObj;

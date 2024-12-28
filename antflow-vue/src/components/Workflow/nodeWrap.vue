@@ -135,8 +135,9 @@ const resetConditionNodesErr = () => {
     }
 }
 onMounted(() => {
-    if (props.nodeConfig.nodeType == 4) {
+    if (props.nodeConfig.nodeType == 4) { 
         props.nodeConfig.error = !$func.setApproverStr(props.nodeConfig);
+        console.log("props.nodeConfig.error", props.nodeConfig.error);
     } else if (props.nodeConfig.nodeType == 6) {
         props.nodeConfig.error = !$func.copyerStr(props.nodeConfig);
     } else if (props.nodeConfig.nodeType == 2) {

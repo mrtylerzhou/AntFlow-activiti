@@ -61,7 +61,7 @@ All.prototype = {
         });
         arr.splice(includesIndex, 1);
     },
-    setApproverStr(nodeConfig) {
+    setApproverStr(nodeConfig) { 
         if(!nodeConfig) return; 
         if (nodeConfig.setType == 5) {
             if (nodeConfig.nodeApproveList.length == 1) {
@@ -76,11 +76,11 @@ All.prototype = {
                 }
             }
         } else if (nodeConfig.setType == 3) {
-            let level = nodeConfig.directorLevel == 1 ? '直接主管' : '第' + nodeConfig.directorLevel + '级主管'
-            if (nodeConfig.signType == 1) {
-                return level
-            } else if (nodeConfig.signType == 2) {
+            let level = nodeConfig.directorLevel == 1 ? '直接主管' : '第' + nodeConfig.directorLevel + '级主管' 
+            if (nodeConfig.signType == 2) {
                 return level + "会签"
+            }else{
+                return level
             }
         }else if (nodeConfig.setType == 4) {
             if (nodeConfig.nodeApproveList.length > 0) {

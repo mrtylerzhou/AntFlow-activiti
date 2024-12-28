@@ -96,17 +96,15 @@ export class FormatDisplayUtils {
 
             if (node.nodeType == 4 || node.nodeType == 6) {
                 let empList = [];
-                if (node.nodeProperty == 6 && !isEmptyArray(node.property.emplIds)) {
-                    for (let emplId of node.property.emplIds) {
-                        let approveObj = {
-                            type: 5,
-                            targetId: parseInt(emplId),
-                            name: hrbpOptions.find(item => item.value == emplId)?.label
-                        };
-                        empList.push(approveObj);
-                    }
+                if (node.nodeProperty == 6) {
+                    let approveObj = {
+                        type: 5,
+                        targetId: parseInt(node.property.hrbpConfType||0),
+                        name: hrbpOptions.find(item => item.value == node.property.hrbpConfType)?.label
+                    };
+                    empList.push(approveObj);
                 }
-                if (node.nodeProperty == 4 && !isEmptyArray(node.property.roleList)) {
+                else if (node.nodeProperty == 4 && !isEmptyArray(node.property.roleList)) {
                     for (let role of node.property.roleList) {
                         let r = {
                             type: 3,
@@ -115,19 +113,19 @@ export class FormatDisplayUtils {
                         };
                         empList.push(r);
                     }
-                } else {
-                    if (node.nodeProperty == 5 && !isEmptyArray(node.property.emplIds)) {
-                        for (let emplId of node.property.emplIds) {
+                } else if (node.nodeProperty == 5 && !isEmptyArray(node.property.emplList)) {
+                        for (let emp of node.property.emplList) {
                             let approveObj = {
                                 type: 5,
-                                targetId: parseInt(emplId),
-                                name: approveList[emplId]
+                                targetId: parseInt(emp.id),
+                                name: emp.name
                             };
                             empList.push(approveObj);
                         }
-                    }
-
-                }
+                } 
+                else if (node.nodeProperty == 3){
+                    node.directorLevel = node.property.assignLevelGrade;
+                }               
                 Object.assign(node, { signType: node.property?.signType });  
                 node.setType = node.nodeProperty;
                 Object.assign(node, { nodeApproveList: [] });

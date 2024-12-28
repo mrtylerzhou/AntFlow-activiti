@@ -191,16 +191,16 @@ let visible = computed({
 
 watch(approverConfig1, (val) => {
     approverConfig.value = val.value;
-    formItems.value = approverConfig.value.lfFieldControlVOs || [];
-    //console.log("approverConfig.value========", JSON.stringify(approverConfig.value))
+    formItems.value = approverConfig.value.lfFieldControlVOs || []; 
     checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
 })
 watch(approverConfig1, (val) => {
     approvalPageBtns.value = val.value.buttons?.approvalPage;
     if (val.value.nodeProperty == 6) {
-        val.value.nodeApproveList.length > 0 && val.value.nodeApproveList.map(item => {
-            checkedHRBP.value = item.targetId
-        })
+        // val.value.nodeApproveList.length > 0 && val.value.nodeApproveList.map(item => {
+        //     checkedHRBP.value = item.targetId
+        // })
+        checkedHRBP.value =  val.value.property.hrbpConfType 
     }
 })
 watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => {
