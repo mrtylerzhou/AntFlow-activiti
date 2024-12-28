@@ -26,8 +26,6 @@ export default {
                 "nodeName": "审核人",
                 "type": 1,
                 "setType": 2,
-                
-                
                 "directorLevel": 1,
                 "signType": 1,
                 "noHeaderAction": 2, 
@@ -36,12 +34,9 @@ export default {
                     "type": 4,
                     "priorityLevel": 1,
                     "setType": 1,
-                    
-                    
                     "directorLevel": 1,
                     "signType": 1,
-                    "noHeaderAction": 2,
-                    
+                    "noHeaderAction": 2,                    
                     "ccSelfSelectFlag": 1,
                     "conditionList": [],
                     "nodeApproveList": [],
@@ -50,20 +45,16 @@ export default {
                         "type": 2,
                         "ccSelfSelectFlag": 1,
                         "childNode": null,
-                        "nodeApproveList": [],
-                        
+                        "nodeApproveList": [],                        
                     },
                     "conditionNodes": [{ //条件节点
                         "nodeName": "条件1",
                         "type": 3,
                         "priorityLevel": 1, 
-                        "setType": 1,
-                        
-                        
+                        "setType": 1,         
                         "directorLevel": 1,
                         "signType": 1,
-                        "noHeaderAction": 2,
-                        
+                        "noHeaderAction": 2,                        
                         "ccSelfSelectFlag": 1,
                         "isDefault": 0,
                         "conditionList": [{ //当前条件
@@ -90,18 +81,15 @@ export default {
                             "nodeName": "审核人",
                             "type": 1,
                             "priorityLevel": 1,
-                            "setType": 1,
-                            
-                            
-                            "directorLevel": 1,
+                            "setType": 5,   //指定审批人类型，5-指定人员，4-指定角色，3-指定层级审批 ，13-直属领导，12-发起人自己，6-HRBP
+                            "directorLevel": 1, //当 setType= 3时，代表指定第几级领导审批
                             "signType": 1,
                             "noHeaderAction": 2,
-                            
                             "ccSelfSelectFlag": 1,
                             "conditionList": [],
                             "nodeApproveList": [{
-                                "targetId": 2515744,
-                                "type": 1,
+                                "type": 5, //指定审批人类型，5-指定人员，4-指定角色，3-指定层级审批 ，13-直属领导，12-发起人自己，6-HRBP
+                                "targetId": 2515744, 
                                 "name": "哈哈哈哈"
                             }],
                             "childNode": null,
@@ -115,19 +103,15 @@ export default {
                         "type": 3,
                         "priorityLevel": 2,
                         "setType": 1,
-                        
-                        
                         "directorLevel": 1,
                         "signType": 1,
                         "noHeaderAction": 2,
-                        
                         "ccSelfSelectFlag": 1,
                         "conditionList": [],
                         "nodeApproveList": [],
                         "childNode": null,
                         "conditionNodes": [],
                         "isDefault": 1,
-                        
                     }]
                 },
                 "nodeApproveList": []

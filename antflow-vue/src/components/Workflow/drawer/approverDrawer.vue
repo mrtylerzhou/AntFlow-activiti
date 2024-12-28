@@ -9,13 +9,10 @@
                 <div v-if="approverStepShow">
                     <div class="drawer_content">
                         <div class="approver_content">
-                            <p>
-                            <p style="font-weight: 100;font-size: small;color: red;">*测试环境，仅开放指定人员</p>
-                            </p>
+                            <!-- <p style="font-weight: 100;font-size: small;color: red;">*测试环境，仅开放指定人员</p> -->
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
                             </el-radio-group>
-
                             <el-button type="primary" @click="addApprover"
                                 v-if="approverConfig.setType == 5">添加/修改人员</el-button>
                             <p class="selected_list" v-if="approverConfig.setType == 5">
@@ -27,59 +24,60 @@
                                 <a v-if="approverConfig.nodeApproveList.length != 0"
                                     @click="approverConfig.nodeApproveList = []">清除</a>
                             </p>
-                        </div>
-                        <div class="approver_manager" v-if="approverConfig.setType == 3">
-                            <p>
-                                <span>发起人的：</span>
-                                <select v-model="approverConfig.directorLevel">
-                                    <option v-for="item in directorMaxLevel" :value="item" :key="item">
-                                        {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
-                                </select>
-                            </p>
-                            <p class="tip">找不到主管时，由上级主管代审批</p>
-                        </div>
 
-                        <div class="approver_self_select" v-show="approverConfig.setType == 4">
-                            <el-button type="primary" @click="addRoleApprover">添加/修改角色</el-button>
-                            <p class="selected_list">
-                                <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{ item.name
-                                    }}
-                                    <img src="@/assets/images/add-close1.png"
-                                        @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
-                                </span>
-                                <a v-if="approverConfig?.nodeApproveList?.length != 0"
-                                    @click="approverConfig.nodeApproveList = []">清除</a>
-                            </p>
-                        </div>
-                        <div class="approver_self_select" v-show="approverConfig.setType == 14">
-                            <el-button type="primary" @click="addRoleApprover">添加/修改部门</el-button>
-                            <p class="selected_list">
-                                <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{ item.name
-                                    }}
-                                    <img src="@/assets/images/add-close1.png"
-                                        @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
-                                </span>
-                                <a v-if="approverConfig.nodeApproveList?.length != 0"
-                                    @click="approverConfig.nodeApproveList = []">清除</a>
-                            </p>
-                        </div>
+                            <div class="approver_manager" v-if="approverConfig.setType == 3">
+                                <p>
+                                    <span>发起人的：</span>
+                                    <select v-model="approverConfig.directorLevel">
+                                        <option v-for="item in directorMaxLevel" :value="item" :key="item">
+                                            {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
+                                    </select>
+                                </p>
+                                <p class="tip">找不到主管时，由上级主管代审批</p>
+                            </div>
 
-                        <div class="approver_self" v-if="approverConfig.setType == 6">
-                            <p>HRBP选择设置</p>
-                            <div class="approver_some">
-                                <el-select v-model="checkedHRBP" placeholder="请选择">
-                                    <el-option v-for="item in hrbpOptions" required :key="item.value"
-                                        :label="item.label" :value="item.value" />
-                                </el-select>
+                            <div class="approver_self_select" v-show="approverConfig.setType == 4">
+                                <el-button type="primary" @click="addRoleApprover">添加/修改角色</el-button>
+                                <p class="selected_list">
+                                    <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
+                                        item.name
+                                        }}
+                                        <img src="@/assets/images/add-close1.png"
+                                            @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
+                                    </span>
+                                    <a v-if="approverConfig?.nodeApproveList?.length != 0"
+                                        @click="approverConfig.nodeApproveList = []">清除</a>
+                                </p>
+                            </div>
+                            <div class="approver_self_select" v-show="approverConfig.setType == 14">
+                                <el-button type="primary" @click="addRoleApprover">添加/修改部门</el-button>
+                                <p class="selected_list">
+                                    <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
+                                        item.name
+                                        }}
+                                        <img src="@/assets/images/add-close1.png"
+                                            @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
+                                    </span>
+                                    <a v-if="approverConfig.nodeApproveList?.length != 0"
+                                        @click="approverConfig.nodeApproveList = []">清除</a>
+                                </p>
+                            </div>
+                            <div class="approver_self" v-if="approverConfig.setType == 6">
+                                <p>HRBP选择设置</p>
+                                <div class="approver_some" style="width: 350px;">
+                                    <el-select v-model="checkedHRBP" placeholder="请选择">
+                                        <el-option v-for="item in hrbpOptions" required :key="item.value"
+                                            :label="item.label" :value="item.value" />
+                                    </el-select>
+                                </div>
+                            </div>
+                            <div class="approver_self" v-if="approverConfig.setType == 12">
+                                <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
+                            </div>
+                            <div class="approver_self" v-if="approverConfig.setType == 13">
+                                <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
                             </div>
                         </div>
-                        <div class="approver_self" v-if="approverConfig.setType == 12">
-                            <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
-                        </div>
-                        <div class="approver_self" v-if="approverConfig.setType == 13">
-                            <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
-                        </div>
-
                         <div class="approver_some">
                             <p>多人审批时采用的审批方式</p>
                             <el-radio-group v-model="approverConfig.signType" class="clear">
@@ -378,15 +376,9 @@ const changePermVal = (data) => {
     }
 
     .approver_self {
-        padding: 28px 20px;
+        padding: 28px 0px;
     }
-
-    .approver_self_select,
-    .approver_manager,
-    .approver_content {
-        padding: 0px 20px 0;
-    }
-
+ 
     .approver_manager p:first-of-type,
     .approver_some p {
         line-height: 19px;

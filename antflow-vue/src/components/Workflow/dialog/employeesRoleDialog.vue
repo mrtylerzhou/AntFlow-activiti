@@ -138,7 +138,7 @@ const saveDialog = ()=> {
     ...checkedEmployessList.value,
     ...checkedDepartmentList.value
   ].map(item=>({
-    type: item.employeeName?1:(item.roleName?2:3),
+    type: item.employeeName?5:4,//(item.roleName?4:3),
     targetId: item.id || item.roleId,
     name: item.employeeName || item.roleName || item.departmentName
   }))

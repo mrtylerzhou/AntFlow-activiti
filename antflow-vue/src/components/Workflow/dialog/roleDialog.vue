@@ -76,7 +76,7 @@ watch(() => props.visible, (val) => {
 let total = computed(() => checkedRoleList.value.length)
 const saveDialog = () => {
   let checkedList = checkedRoleList.value.map(item => ({
-    type: 2,
+    type: 4,
     targetId: item.roleId,
     name: item.roleName
   }))

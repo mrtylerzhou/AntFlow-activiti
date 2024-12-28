@@ -48,12 +48,11 @@ defineProps({
 })
 </script>
 <style scoped lang="scss">  
-@import "@/assets/styles/flow/dialog.scss";
-</style>
-<style lang="scss">
+@import "@/assets/styles/flow/dialog.scss"; 
 .select-box {
-  height: 370px;
+  height: 400px;
   overflow-y: auto; 
+  margin-left: -30px;
   li {
     padding: 5px 0;
     list-style-type: none;

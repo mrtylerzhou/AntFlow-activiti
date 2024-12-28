@@ -10,14 +10,14 @@ export let placeholderList = ["发起人", "审核人", "抄送人"];
 export let nodeTypeList = ["未知", "发起人", "网关", "条件", "审核人", "抄送人", "抄送人"];
 
 export let setTypes = [
-  //{ value: 4, label: '指定角色' },  
   { value: 5, label: '指定人员' }, 
-  //{ value: 6, label: 'HRBP' },
-  //{ value: 13, label: '直属领导' },
+  { value: 4, label: '指定角色' },   
+  { value: 6, label: 'HRBP' },
+  { value: 13, label: '直属领导' },
   // { value: 2, label: '层层审批' },
-  // { value: 3, label: '指定层级审批' },
+  { value: 3, label: '指定层级审批' },
   // { value: 8, label: '关联业务表' },
-  // { value: 12, label: '发起人自己' }, 
+  { value: 12, label: '发起人自己' }, 
   // { value: 14, label: '指定部门' },
 ]
 export const nodeConf = {
@@ -34,9 +34,9 @@ export const nodeConf = {
       hrbp: 6,//'HRBP'
       leader: 13,//'直属领导'
       // layer: 2,//'层层审批'
-      // level: 3,//'指定层级审批'
+      level: 3,//'指定层级审批'
       // business: 8,//'关联业务表'
-      // self: 12,//'发起人自己' 
+      self: 12,//'发起人自己' 
       // department: 14,//'指定部门'
   }
 }

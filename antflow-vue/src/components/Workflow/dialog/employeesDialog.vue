@@ -2,11 +2,7 @@
    <el-dialog title="选择成员" v-model="visibleDialog" style="width: 680px !important;" append-to-body class="promoter_person">
       <div class="person_body clear">
           <div class="person_tree l">
-              <input type="text" placeholder="搜索成员" v-model="searchVal" @input="getDebounceData($event)">
-              <p class="ellipsis tree_nav" v-if="!searchVal"> 
-                  <span v-for="(item,index) in departments.titleDepartments" class="ellipsis" 
-                  :key="index+'a'" @click="getDepartmentList(item.id)">{{item.departmentName}}</span>   
-              </p>
+              <input type="text" placeholder="搜索成员" v-model="searchVal" @input="getDebounceData($event)"> 
               <selectBox :list="list"/>
           </div>
           <selectResult :total="total" @del="delList" :list="resList"/>
@@ -105,7 +101,7 @@ let saveDialog = ()=> {
     ...checkedDepartmentList.value,
     ...checkedEmployessList.value
   ].map(item=>({
-    type: item.employeeName ? 1: 3,
+    type: item.employeeName ? 5: 4,
     targetId: item.id,
     name: item.employeeName || item.departmentName
   }))
