@@ -123,7 +123,6 @@ public class BpmnExecutionListener implements ExecutionListener {
             businessDataVo.setBusinessId(businessId);
             businessDataVo.setFormCode(formCode);
            if(Objects.equals(bpmnConf.getIsLowCodeFlow(),1)){
-               businessDataVo=new BusinessDataVo();
                businessDataVo.setIsLowCodeFlow(1);
                BpmnConfVo confVo=new BpmnConfVo();
                BeanUtils.copyProperties(bpmnConf,confVo);
