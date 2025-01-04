@@ -204,8 +204,10 @@ watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => 
     checkAfterSignUpWay.value = newVal == 1 ? true : false
 })
 watch(checkedHRBP, (val) => { 
-    let labelName = hrbpOptions.find(item => item.value == val)?.label;
-    approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }]; 
+    let labelName = hrbpOptions.find(item => item.value == val)?.label; 
+    if(labelName){
+        approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }]; 
+    } 
 })
 
 const changeType = (val) => {

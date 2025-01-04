@@ -188,7 +188,7 @@ export class FormatUtils {
                 else if(node.setType== 3){ 
                     approveObj.assignLevelGrade = node.directorLevel; 
                 } 
-                Object.assign(approveObj, { afterSignUpWay : node.property.afterSignUpWay }); 
+                Object.assign(approveObj, { afterSignUpWay : node.property?.afterSignUpWay??0 }); 
                 node.nodeProperty=node.setType; 
                 node.property = approveObj;
                 delete node.nodeApproveList;
