@@ -70,9 +70,9 @@
                                     <span>HRBP选择：</span>
                                     <select v-model="checkedHRBP" style="width: 300px;">
                                         <option disabled selected value>--请选择--</option>
-                                        <option v-for="item in hrbpOptions" required :key="item.value"
-                                            :value="item.value">
-                                            {{ item.label }}</option>
+                                        <option v-for="item in hrbpOptions" required :key="item.value" :value="item.value">
+                                            {{ item.label }}
+                                        </option>
                                     </select>
                                 </p>
                             </div>
@@ -194,16 +194,23 @@ watch(approverConfig1, (val) => {
     formItems.value = approverConfig.value.lfFieldControlVOs || []; 
     checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
 })
+
 watch(approverConfig1, (val) => {
     approvalPageBtns.value = val.value.buttons?.approvalPage;
     if (val.value.nodeProperty == 6) {
         checkedHRBP.value =  val.value.property.hrbpConfType 
-    }
+    } 
 })
+
 watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => {
     checkAfterSignUpWay.value = newVal == 1 ? true : false
 })
-watch(checkedHRBP, (val) => { 
+
+watch(checkedHRBP, (val) => {  
+    if (approverConfig.value.setType != 6) {
+       return;
+    }
+    approverConfig.value.property.hrbpConfType = val;
     let labelName = hrbpOptions.find(item => item.value == val)?.label; 
     if(labelName){
         approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }]; 
@@ -230,7 +237,7 @@ const addRoleApprover = () => {
     approverRoleVisible.value = true;
     checkedRoleList.value = approverConfig.value.nodeApproveList
 }
-const sureApprover = (data) => {
+const sureApprover = (data) => { 
     approverConfig.value.nodeApproveList = data;
     approverVisible.value = false;
 }
