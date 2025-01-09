@@ -16,7 +16,8 @@
                                 :lfFormData="lfFormDataConfig"
                                 :lfFieldsData="lfFieldsConfig"
                                 :lfFieldPerm="lfFieldControlVOs" 
-                                :isPreview="true">
+                                :isPreview="isPreview"
+                                :reSubmit="reSubmit">
                                 </component>
                             </div>
                             <div v-else-if="isOutSideAccess == 'true'">
@@ -89,7 +90,8 @@ let flowReviewShow = ref(false);
 let componentData = ref(null);
 let componentLoaded = ref(false);
 let loadedComponent = ref(null);
-let enableClass = ref(false);
+let isPreview = ref(true);
+let reSubmit = ref(false);
 let approvalButtons = ref([]);
 const approveFormRef = ref(null);
 const approveForm = reactive({
@@ -129,7 +131,8 @@ onMounted(() => {
     });
 });
 watch(approvalButtons, (val) => {
-    enableClass.value = val.some(c => c.value == approvalButtonConf.resubmit);
+    reSubmit.value = val.some(c => c.value == approvalButtonConf.resubmit);
+    isPreview.value = !val.some(c => c.value == approvalButtonConf.resubmit);
 })
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;

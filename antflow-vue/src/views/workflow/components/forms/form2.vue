@@ -35,7 +35,7 @@
                             :style="{ width: '100%' }"></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="24" v-if="!props.isPreview">
+                <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
                     <el-form-item>
                         <el-button type="primary" style="position: absolute;top:5px; right: 5px;"
                             @click="handleSubmit">提交</el-button>
@@ -53,6 +53,10 @@ let props = defineProps({
     previewData: {
         type: Object,
         default: () => ({}),
+    },
+    reSubmit: {//是否重新提交
+        type: Boolean,
+        default: false,
     },
     isPreview: {
         type: Boolean,

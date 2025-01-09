@@ -2,7 +2,7 @@
   <div style="max-width: 720px;left: 0;right: 0;margin: auto;">
     <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
     </v-form-render>
-    <el-button v-if="!isPreview" type="primary" @click="submitForm">提交</el-button>
+    <el-button v-if="!isPreview && !props.reSubmit" type="primary" @click="submitForm">提交</el-button>
   </div>
 </template>
 
@@ -14,11 +14,11 @@ const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true;
 
 const { proxy } = getCurrentInstance()
 let props = defineProps({
-  lfFormData: {
+  lfFormData: {//业务表单字段
     type: String,
     default: "{}",
   },
-  lfFieldsData: {
+  lfFieldsData: {//字段权限控制
     type: String,
     default: "{}",
   },
@@ -26,7 +26,11 @@ let props = defineProps({
     type: String,
     default: "[]",
   },
-  isPreview: {
+  reSubmit: {//是否重新提交
+    type: Boolean,
+    default: false,
+  },
+  isPreview: {//是否预览
     type: Boolean,
     default: true,
   }
@@ -50,8 +54,8 @@ const advanceHandleFormData = () => {
   if (!isEmpty(props.lfFieldPerm)) {
     handleFormPerm();
   } else {
-    if (props.isPreview) {
-      let handlerFn = (fieldOpt) => {
+    if (props.isPreview && !props.reSubmit) {
+      let handlerFn = (fieldOpt) => { //控制元素是否可编辑
         fieldOpt.readonly = true;
         fieldOpt.hidden = false;
       }

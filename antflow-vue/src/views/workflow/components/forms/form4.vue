@@ -45,6 +45,10 @@ let props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    reSubmit: {//是否重新提交
+        type: Boolean,
+        default: false,
+    },
     isPreview: {
         type: Boolean,
         default: true,
