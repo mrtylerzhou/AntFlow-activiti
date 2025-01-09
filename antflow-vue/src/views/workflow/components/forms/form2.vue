@@ -119,7 +119,13 @@ const disabledEndDate = (time) => {
 }
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
 const getFromData = () => {
-    return JSON.stringify(form);
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(JSON.stringify(form));
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 const handleSubmit = () => {
     handleValidate().then((isValid) => {

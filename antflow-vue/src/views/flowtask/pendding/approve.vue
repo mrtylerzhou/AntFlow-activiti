@@ -153,9 +153,11 @@ const approveSubmit = async (param, type) => {
             approveSubData.approvalComment = approveForm.remark;
             approveSubData.operationType = type;
             if (type == approvalButtonConf.resubmit) {
-                await componentFormRef.value.handleValidate().then((isValid) => {
+                await componentFormRef.value.handleValidate().then(async (isValid) => {
                     if (isValid) {
-                        Object.assign(approveSubData, JSON.parse(componentFormRef.value.getFromData()));
+                        await componentFormRef.value.getFromData().then((data) => {
+                            Object.assign(approveSubData, JSON.parse(data));
+                        })
                     }
                 });
             };
