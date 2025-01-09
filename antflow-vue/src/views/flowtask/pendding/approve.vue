@@ -10,7 +10,8 @@
                     <el-row style="padding-left: -5px;padding-right: -5px;">
                         <el-col :span="24" class="my-col" v-if="baseTabShow">
                             <div v-if="componentLoaded"  class="component">
-                                <component :is="loadedComponent" 
+                                <component ref="componentFormRef"
+                                :is="loadedComponent" 
                                 :previewData="componentData" 
                                 :lfFormData="lfFormDataConfig"
                                 :lfFieldsData="lfFieldsConfig"
