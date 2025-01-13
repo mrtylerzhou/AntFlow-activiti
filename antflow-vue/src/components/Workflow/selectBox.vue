@@ -16,17 +16,7 @@
             <img src="@/assets/images/icon_role.png">{{item.roleName}}
           </a>
         </li>
-      </template>
-      <template v-if="elem.type === 'department'">
-        <li v-for="item in elem.data" :key="item.id" class="check_box" :class="{not: !elem.isDepartment}">
-          <a v-if="elem.isDepartment" 
-            :class="elem.isActive(item) && 'active'" 
-            @click="elem.change(item)">
-              <img src="@/assets/images/icon_file.png">{{item.departmentName}}</a>
-          <a v-else><img src="@/assets/images/icon_file.png">{{item.departmentName}}</a>
-          <i @click="elem.next(item)">下级</i>
-        </li>
-      </template>
+      </template> 
       <template v-if="elem.type === 'employee'">
         <li v-for="item in elem.data" :key="item.id" class="check_box">
             <a :class="elem.isActive(item) && 'active'" 
@@ -40,17 +30,17 @@
   </ul>
 </template>
 <script setup>
-defineProps({
+const props = defineProps({
   list: {
     type: Array,
     default: () => []
   }
-})
+}) 
 </script>
 <style scoped lang="scss">  
 @import "@/assets/styles/flow/dialog.scss"; 
 .select-box {
-  height: 400px;
+  height: 440px;
   overflow-y: auto; 
   margin-left: -30px;
   li {
