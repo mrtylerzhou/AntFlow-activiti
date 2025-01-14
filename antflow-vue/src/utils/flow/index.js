@@ -113,12 +113,21 @@ All.prototype = {
         }
         return arr.join("或")
     },  
-
+    // index 为Number
     getLabelStr(index, obj) {  
-        if(!obj) return; 
+        if(!obj) return;  
         let ret = obj[index-1];
         if (ret) {
             return ret.value;
+        }
+        return '';
+    },  
+     // index 为string
+     getOutSideConditionLabelStr(index, obj) {   
+        if(!obj) return;   
+        let ret = obj.filter(c=>c.key == index).map(x => x.value); 
+        if (ret && ret.length > 0) {
+            return ret;
         }
         return '';
     },  
@@ -158,14 +167,18 @@ All.prototype = {
                         }
                     }             
                 }
-                else if (fieldTypeName == "select") {
+                else if (fieldTypeName == "select") { 
                     if (!fixedDownBoxValue) {
                         str += nodeConfig.conditionNodes[index].nodeDisplayName + "     "
-                    }else { 
+                    }else {  
                         if (zdy1) {
-                            str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                            if(!isNaN(Number(zdy1))){
+                                    str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                            }else {
+                                str += showName + '：' + this.getOutSideConditionLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 " 
+                            } 
                         }
-                    }              
+                    }        
                 }
                 else if (fieldTypeName == "date") {
                     if (zdy1) { 

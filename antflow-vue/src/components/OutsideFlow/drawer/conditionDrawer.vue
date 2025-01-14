@@ -55,7 +55,7 @@ import { ref, watch, computed } from 'vue'
 import $func from '@/utils/flow/index'
 import { useStore } from '@/store/modules/outsideflow'
 import { getTemplateByPartyMarkIdAndFormCode } from '@/api/outsideApi'
-
+import { NodeUtils } from '@/utils/flow/nodeUtils'
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
 let conditionsConfig = ref({
@@ -82,34 +82,18 @@ watch(conditionsConfig1, async (val) => {
     conditionConfig.value = val.priorityLevel ? conditionsConfig.value.conditionNodes[val.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
 }, { deep: true, immediate: true })
 
-watch(conditionConfig, async (newVal, oldVal) => {
-    // console.log('newVal===================',JSON.stringify(newVal.conditionList))
-    // console.log('basideFormConfig.value===================',JSON.stringify(basideFormConfig.value))
-    //console.log('oldVal===================',JSON.stringify(oldVal))
+watch(conditionConfig, async (newVal, oldVal) => { 
     if (Array.isArray(newVal.conditionList) && newVal.conditionList.length == 0) {
         let { code, data } = await getTemplateByPartyMarkIdAndFormCode(basideFormConfig.value.partyMarkId, basideFormConfig.value.formCode);
         if (code == 200) {
-            const conditionMaps = data.map(item => { return { key: item.templateMark, value: item.name } })
-            let conditionGroup = {}
-            for (let t of conditionMaps) {
-                if (!conditionGroup.hasOwnProperty(t.key)) {
-                    conditionGroup[t.key] = t
-                }
-            }
-            conditionConfig.value.conditionList = [{
-                columnId: "36",
-                showType: "2",
-                showName: "条件",
-                columnName: "templateMarks",
-                columnType: "String",
-                fixedDownBoxValue: JSON.stringify(conditionGroup),
-            }]
-            conditionsIsExist.value = true;
+            const conditionMaps = data.map(item => { return { key: item.templateMark, value: item.name } }) 
+            conditionConfig.value.conditionList = [NodeUtils.createOutsideConditionNode(JSON.stringify(conditionMaps))]
+            conditionsIsExist.value = true
         } else {
-            conditionsIsExist.value = false;
+            conditionsIsExist.value = false
         }
     } else {
-        conditionsIsExist.value = true;
+        conditionsIsExist.value = true
     }
 }, { deep: true, immediate: true })
 

@@ -18,10 +18,10 @@
             <el-button
                type="success"
                plain
-               icon="Plus"
+               icon="Setting"
                :disabled="single"
                @click="addConditionsTemplate" 
-            >添加条件</el-button>
+            >设置条件</el-button>
          </el-col>
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">

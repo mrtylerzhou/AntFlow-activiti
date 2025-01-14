@@ -206,6 +206,24 @@ export class NodeUtils {
     }
     return judgeNode;
   }
+  /**
+   * 三方接入条件对象
+   * @param {*} conditionValue 
+   * @returns 
+   */
+  static createOutsideConditionNode(conditionValue){
+      let outsideConditionNode ={
+            formId: "9999",
+            columnId: "9999",
+            showType: "2",
+            showName: "条件",
+            columnName: "templateMarks",
+            columnType: "String",
+            fieldTypeName: "select", 
+            fixedDownBoxValue: conditionValue,
+        }
+    return outsideConditionNode;
+  } 
 }
 
 /**
