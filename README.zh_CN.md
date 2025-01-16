@@ -66,7 +66,7 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 # 快速开始
 
 ## 前端运行
-
+### Nodejs V16.20.0 及以上版本
 ```
 # gitee克隆项目
 git clone https://gitee.com/tylerzhou/Antflow.git 
