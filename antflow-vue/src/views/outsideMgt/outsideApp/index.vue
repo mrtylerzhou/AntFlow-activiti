@@ -116,14 +116,34 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="审批人模板URL" prop="userRequestUri">
-                <el-input v-model="form.userRequestUri" placeholder="请输入审批人模板URL" />
+                <el-input v-model="form.userRequestUri" placeholder="请输入审批人模板URL(必须http或https开头)">
+                  <template #append>
+                    <el-tooltip class="box-item" effect="dark" content="检查审批人模板URL是否连通" placement="bottom-end">
+                      <el-button @click="handleCheckUserUrl">
+                        <el-icon>
+                          <CircleCheck />
+                        </el-icon>
+                      </el-button>
+                    </el-tooltip>
+                  </template>
+                </el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="角色模板URL" prop="roleRequestUri">
-                <el-input v-model="form.roleRequestUri" placeholder="请输入审批角色模板URL" />
+                <el-input v-model="form.roleRequestUri" placeholder="请输入审批角色模板URL(必须http或https开头)">
+                  <template #append>
+                    <el-tooltip class="box-item" effect="dark" content="检查角色模板URL是否连通" placement="bottom-end">
+                      <el-button @click="handleCheckRoleUrl">
+                        <el-icon>
+                          <CircleCheck />
+                        </el-icon>
+                      </el-button>
+                    </el-tooltip>
+                  </template>
+                </el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -141,7 +161,7 @@
                   </el-form-item>
                 </el-col>
               </el-row> -->
-        </el-card> 
+        </el-card>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -204,23 +224,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"; 
-import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV,setTemplateConf } from "@/api/outsideApi";
-import TemplateList from "./template.vue"; 
+import { ref, onMounted } from "vue";
+import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV, setTemplateConf } from "@/api/outsideApi";
+import TemplateList from "./template.vue";
+import { getDynamicsList } from "@/api/mock";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
 const open = ref(false);
-const openTemplate = ref(false); 
+const openTemplate = ref(false);
 const title = ref("");
 const appIds = ref([]);
 const single = ref(true);
 const multiple = ref(true);
 const businessPartyName = ref("");
-const applicationName = ref(""); 
-const processKey = ref(""); 
+const applicationName = ref("");
+const processKey = ref("");
 
 let partyMarkOptions = ref([]);
 let templateListVisible = ref(false)
@@ -237,12 +258,14 @@ const data = reactive({
     title: [{ required: true, message: '请输入应用名称', trigger: 'blur' }],
     applyType: [{ required: true, message: '', trigger: 'change' }],
     clientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用唯一标识(不能输入中文)', trigger: 'blur' }],
-    clientSecret: [{ required: true,pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用密钥(不能输入中文)', trigger: 'blur' }],
+    clientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用密钥(不能输入中文)', trigger: 'blur' }],
     userRequestUri: [
-      { required: true, 
+      {
+        required: true,
         pattern: /^https?:\/\//,
-        message: '请输入正确的URL', 
-        trigger: 'blur' }],
+        message: '请输入正确的URL',
+        trigger: 'blur'
+      }],
     roleRequestUri: [{ required: false, pattern: /^https?:\/\//, message: '请输入正确的URL', trigger: 'blur' }]
   },
   templateRules: {
@@ -252,7 +275,7 @@ const data = reactive({
     name: [{ required: true, message: '请输入条件模板名称', trigger: 'blur' }]
   }
 });
-const { page, vo, form, rules,templateForm,templateRules } = toRefs(data);
+const { page, vo, form, rules, templateForm, templateRules } = toRefs(data);
 
 onMounted(async () => {
   getList();
@@ -289,7 +312,7 @@ function handleSelectionChange(selection) {
 
   processKey.value = selection.map(item => item.processKey);
   businessPartyName.value = selection.map(item => item.businessName);
-  applicationName.value = selection.map(item => item.name); 
+  applicationName.value = selection.map(item => item.name);
 }
 
 /** 新增接入业务方 */
@@ -327,7 +350,7 @@ function submitForm() {
 function handleEdit(row) {
   reset();
   const id = row.id;
-  if(id == 1 || id== 2){
+  if (id == 1 || id == 2) {
     proxy.$modal.msgError("演示数据不允许修改操作！");
     return;
   }
@@ -351,9 +374,9 @@ function addConditionsTemplate(row) {
   const appId = row.id || appIds.value[0];
   templateForm.value.applicationId = appId;
   templateForm.value.businessPartyName = businessPartyName.value[0];
-  templateForm.value.applicationName = applicationName.value[0];  
-  templateForm.value.applicationFormCode = processKey.value[0]; 
-  openTemplate.value = true;  
+  templateForm.value.applicationName = applicationName.value[0];
+  templateForm.value.applicationFormCode = processKey.value[0];
+  openTemplate.value = true;
   //console.log(JSON.stringify(templateForm.value)); 
 }
 
@@ -361,11 +384,11 @@ function addConditionsTemplate(row) {
 function submitTemplateForm() {
   proxy.$refs["formTemplateRef"].validate(valid => {
     if (valid) {
-       setTemplateConf(templateForm.value).then(response => {
-          proxy.$modal.msgSuccess("添加成功");
-          openTemplate.value = false; 
-        });
-      }
+      setTemplateConf(templateForm.value).then(response => {
+        proxy.$modal.msgSuccess("添加成功");
+        openTemplate.value = false;
+      });
+    }
   });
 }
 /** 取消操作表单 */
@@ -378,13 +401,51 @@ function cancel() {
 function cancelTemplate() {
   openTemplate.value = false;
   reset();
-} 
-
-function handleTemplateList(row) { 
-
-  proxy.$refs["templateListRef"].show(row.businessPartyId,row.id);
 }
- 
+
+function handleTemplateList(row) {
+
+  proxy.$refs["templateListRef"].show(row.businessPartyId, row.id);
+}
+
+function handleCheckUserUrl() { 
+  let url = form.value.userRequestUri;
+  if (!url) {
+    proxy.$modal.msgError("审批人模板URL不能为空");
+    return;
+  }
+  else {
+    const regex = /^https?:\/\//;
+    if(!regex.test(url)) {
+      proxy.$modal.msgError("请输入正确审批人模板URL");
+      return;
+    } 
+    getDynamicsList(url).then((res) => {
+      proxy.$modal.msgSuccess("审批人模板URL链接成功");
+    }).catch((res) => {
+      proxy.$modal.msgError("请输入正确审批人模板URL");
+    });
+  }
+}
+function handleCheckRoleUrl() { 
+  let url = form.value.roleRequestUri;
+  if (!url) {
+    proxy.$modal.msgError("角色模板URL不能为空");
+    return;
+  }
+  else {
+    const regex = /^https?:\/\//;
+    if(!regex.test(url)) {
+      proxy.$modal.msgError("请输入正确角色模板URL");
+      return;
+    } 
+    getDynamicsList(url).then((res) => {
+      proxy.$modal.msgSuccess("角色模板URL链接成功");
+    }).catch((res) => {
+      proxy.$modal.msgError("请输入正确角色模板URL");
+    });
+  }
+}
 /** 重置操作表单 */
 function reset() {
   form.value = {
@@ -407,7 +468,7 @@ function reset() {
     applicationId: undefined,
     applicationFormCode: undefined,
     templateMark: undefined,
-    name: undefined, 
+    name: undefined,
     remark: undefined
   };
   proxy.resetForm("queryRef");
