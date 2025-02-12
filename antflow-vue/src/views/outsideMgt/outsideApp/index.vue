@@ -15,21 +15,16 @@
         <el-button type="primary" plain icon="Plus" @click="handleAdd">注册应用</el-button>
       </el-col>
       <el-col :span="1.5">
-            <el-button
-               type="success"
-               plain
-               icon="Setting"
-               :disabled="single"
-               @click="addConditionsTemplate" 
-            >设置条件</el-button>
-         </el-col>
+        <el-button type="success" plain icon="Setting" :disabled="single"
+          @click="addConditionsTemplate">设置条件</el-button>
+      </el-col>
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="业务方名称" align="center" prop="businessName" />
       <el-table-column label="业务方标识" align="center" prop="businessCode" />
       <el-table-column label="应用名称" align="center" prop="title" />
-      <el-table-column label="应用标识" align="center" prop="processKey" />      
+      <el-table-column label="应用标识" align="center" prop="processKey" />
       <el-table-column label="应用类型" align="center" prop="applyTypeName" />
       <el-table-column label="创建时间" align="center" prop="createTime">
         <template #default="scope">
@@ -51,79 +46,102 @@
     <!-- 添加或修改委托对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="业务方" prop="businessCode">
-              <el-select v-model="form.businessCode" placeholder="请选择业务方" :style="{ width: '100%' }">
-                <el-option v-for="(item, index) in partyMarkOptions" :key="index" :label="item.value"
-                  :value="item.key"></el-option>
-              </el-select>
-            </el-form-item> 
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="应用名称" prop="title">
-              <el-input v-model="form.title" placeholder="请输入应用名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="应用类型" prop="applyType">
-              <el-radio-group v-model="form.applyType">
-                <el-radio value="1" :disabled=true>流程</el-radio>
-                <el-radio value="2" :disabled=true>应用</el-radio>
-                <el-radio value="3" :disabled=true>父级应用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="子应用" prop="isSon">
-              <el-radio-group v-model="form.isSon">
-                <el-radio value="1" :disabled=true>是</el-radio>
-                <el-radio value="2" :disabled=true>否</el-radio> 
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="审批人模板URL" prop="userRequestUri">
-              <el-input v-model="form.userRequestUri" placeholder="请输入审批人模板URL" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="角色模板URL" prop="roleRequestUri">
-              <el-input v-model="form.roleRequestUri" placeholder="请输入审批角色模板URL" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <!-- <el-row>
-          <el-col :span="24">
-            <el-form-item label="应用URL" prop="applicationUrl">
-              <el-input v-model="form.applicationUrl" placeholder="请输入应用URL" />
-            </el-form-item>
-          </el-col>
-        </el-row> -->
-        <!-- <el-row>
-          <el-col :span="24">
-            <el-form-item label="icon图(app)" prop="effectiveSource">
-              <ImageUpload :limit="1" :fileSize="3" :fileType="['jpg']"/>
-            </el-form-item>
-          </el-col>
-        </el-row> -->
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>基本信息</span>
+            </div>
+          </template>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="业务方" prop="businessCode">
+                <el-select v-model="form.businessCode" placeholder="请选择业务方" :style="{ width: '100%' }">
+                  <el-option v-for="(item, index) in partyMarkOptions" :key="index" :label="item.value"
+                    :value="item.key"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="应用名称" prop="title">
+                <el-input v-model="form.title" placeholder="请输入应用名称" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="应用类型" prop="applyType">
+                <el-radio-group v-model="form.applyType">
+                  <el-radio value="1" :disabled=true>流程</el-radio>
+                  <el-radio value="2" :disabled=true>应用</el-radio>
+                  <el-radio value="3" :disabled=true>父级应用</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="子应用" prop="isSon">
+                <el-radio-group v-model="form.isSon">
+                  <el-radio value="1" :disabled=true>是</el-radio>
+                  <el-radio value="2" :disabled=true>否</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+        </el-card>
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>人员设置</span>
+            </div>
+          </template>
+          <!-- <el-row>
+            <el-col :span="24">
+              <el-form-item label="应用ID" prop="clientId">
+                <el-input v-model="form.clientId" placeholder="请输入应用唯一标识" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="应用密钥" prop="clientSecret">
+                <el-input v-model="form.clientSecret" placeholder="请输入应用密钥" />
+              </el-form-item>
+            </el-col>
+          </el-row> -->
+
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="审批人模板URL" prop="userRequestUri">
+                <el-input v-model="form.userRequestUri" placeholder="请输入审批人模板URL" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="角色模板URL" prop="roleRequestUri">
+                <el-input v-model="form.roleRequestUri" placeholder="请输入审批角色模板URL" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <!-- <el-row>
+                <el-col :span="24">
+                  <el-form-item label="应用URL" prop="applicationUrl">
+                    <el-input v-model="form.applicationUrl" placeholder="请输入应用URL" />
+                  </el-form-item>
+                </el-col>
+              </el-row> -->
+          <!-- <el-row>
+                <el-col :span="24">
+                  <el-form-item label="icon图(app)" prop="effectiveSource">
+                    <ImageUpload :limit="1" :fileSize="3" :fileType="['jpg']"/>
+                  </el-form-item>
+                </el-col>
+              </el-row> -->
+        </el-card> 
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -133,14 +151,15 @@
       </template>
     </el-dialog>
 
-     <!-- 添加条件模板对话框 -->
-     <el-dialog title="添加条件" v-model="openTemplate" width="550px" append-to-body>
-      <el-form :model="templateForm" :rules="templateRules" ref="formTemplateRef" label-width="130px" style="margin: 0 20px;">
+    <!-- 添加条件模板对话框 -->
+    <el-dialog title="添加条件" v-model="openTemplate" width="550px" append-to-body>
+      <el-form :model="templateForm" :rules="templateRules" ref="formTemplateRef" label-width="130px"
+        style="margin: 0 20px;">
         <el-row>
           <el-col :span="24">
             <el-form-item label="业务方名称" prop="businessPartyName">
-              <el-input v-model="templateForm.businessPartyName"  :disabled=true placeholder="请输入业务方名称" />
-            </el-form-item> 
+              <el-input v-model="templateForm.businessPartyName" :disabled=true placeholder="请输入业务方名称" />
+            </el-form-item>
           </el-col>
         </el-row>
         <el-row>
@@ -153,7 +172,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="条件模板ID" prop="templateMark">
-              <el-input v-model="templateForm.templateMark"  placeholder="请输入条件模板唯一标识" />
+              <el-input v-model="templateForm.templateMark" placeholder="请输入条件模板唯一标识" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -179,8 +198,8 @@
         </div>
       </template>
     </el-dialog>
-    
-    <TemplateList ref="templateListRef" :visible="templateListVisible"  />
+
+    <TemplateList ref="templateListRef" :visible="templateListVisible" />
   </div>
 </template>
 
@@ -217,8 +236,14 @@ const data = reactive({
     businessCode: [{ required: true, message: '请选择业务方', trigger: 'change' }],
     title: [{ required: true, message: '请输入应用名称', trigger: 'blur' }],
     applyType: [{ required: true, message: '', trigger: 'change' }],
-    userRequestUri: [{ required: true, message: '请输入审批人模板URL', trigger: 'blur' }],
-    roleRequestUri: [{ required: true, message: '请输入审批角色模板URL', trigger: 'blur' }]
+    clientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用唯一标识(不能输入中文)', trigger: 'blur' }],
+    clientSecret: [{ required: true,pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用密钥(不能输入中文)', trigger: 'blur' }],
+    userRequestUri: [
+      { required: true, 
+        pattern: /^https?:\/\//,
+        message: '请输入正确的URL', 
+        trigger: 'blur' }],
+    roleRequestUri: [{ required: false, pattern: /^https?:\/\//, message: '请输入正确的URL', trigger: 'blur' }]
   },
   templateRules: {
     businessPartyName: [{ required: true, message: '', trigger: 'blur' }],
