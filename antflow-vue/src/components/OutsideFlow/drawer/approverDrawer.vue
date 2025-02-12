@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="approver_btn" v-show="approverConfig.setType == 4">
-                            <p style="color: red;">*预览地址暂未开放</p>
+                            <p style="color: red;">*预览地址暂未开放,请不要使用</p>
                             <!-- <el-button type="primary" @click="addApprover">添加/修改角色</el-button>
                             <p class="selected_list">
                                 <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
@@ -40,25 +40,28 @@
                             </p> -->
                         </div>
                         <div class="approver_text" v-if="approverConfig.setType == 6">
-                            <p style="color: red;">*预览地址暂未开放</p>
+                            <p style="color: red;">*预览地址暂未开放,请不要使用</p>
                         </div>
 
                         <div class="approver_select" v-if="approverConfig.setType == 3">
-                            <p>
+                            <p style="color: red;">*预览地址暂未开放,请不要使用</p>
+                            <!-- <p>
                                 <span>发起人的：</span>
                                 <select v-model="approverConfig.directorLevel" style="width: 300px;">
                                     <option v-for="item in directorMaxLevel" :value="item" :key="item">
                                         {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
                                 </select>
                             </p>
-                            <p class="tip">找不到主管时，由上级主管代审批</p>
+                            <p class="tip">找不到主管时，由上级主管代审批</p> -->
                         </div>
 
                         <div class="approver_text" v-if="approverConfig.setType == 12">
-                            <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
+                            <p style="color: red;">*预览地址暂未开放,请不要使用</p>
+                            <!-- <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p> -->
                         </div>
                         <div class="approver_text" v-if="approverConfig.setType == 13">
-                            <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
+                            <p style="color: red;">*预览地址暂未开放,请不要使用</p>
+                            <!-- <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p> -->
                         </div>
                     </div>
                     <div class="approver_block">
@@ -72,7 +75,8 @@
                         </el-radio-group>
                     </div>
                     <div class="approver_block">
-                        <p>审批人为空时</p>
+                        <p>审批人为空时</p> 
+                        <p style="color: red;">*该功能暂时未开放，请忽略</p>
                         <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
                             <el-radio :value="1">自动审批通过/不允许发起</el-radio>
                             <br />
