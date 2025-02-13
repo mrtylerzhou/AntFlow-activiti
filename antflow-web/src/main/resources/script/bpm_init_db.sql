@@ -1377,14 +1377,14 @@ CREATE TABLE `t_biz_leavetime`  (
   `leave_user_id` int(11) NOT NULL,
   `leave_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `leave_type` int(11) NOT NULL,
-  `begin_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
-  `end_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `begin_time` datetime NULL,
+  `end_time` datetime NULL,
   `leavehour` double NOT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `create_time` timestamp default current_timestamp,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1397,13 +1397,13 @@ CREATE TABLE `t_biz_purchase`  (
   `purchase_user_id` int(11) NOT NULL,
   `purchase_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `purchase_type` int(11) NOT NULL,
-  `purchase_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `purchase_time` timestamp default current_timestamp,
   `plan_procurement_total_money` double NOT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `create_time` timestamp default current_timestamp,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1547,9 +1547,9 @@ create table t_dict_data
     is_default  char         default 'N'               null comment '是否默认（Y是 N否）',
     is_del      tinyint      default 0                 not null,
     create_user varchar(255)                           null,
-    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    create_time timestamp    default CURRENT_TIMESTAMP,
     update_user varchar(255)                           null,
-    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    update_time timestamp    default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
     remark      varchar(500)                           null comment '备注'
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
@@ -1567,9 +1567,9 @@ CREATE TABLE `t_bpmn_conf_lf_formdata`  (
   `formdata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `is_del` tinyint(4) NOT NULL DEFAULT 0,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1591,10 +1591,24 @@ CREATE TABLE `t_bpmn_conf_lf_formdata_field`  (
   `is_condition` tinyint(4) NULL DEFAULT 0 COMMENT '是否是流程条件,0否,1是',
   `is_del` tinyint(4) NOT NULL DEFAULT 0,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '低代码配置字段明细表' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- ----------------------------
+-- Table structure for t_user_role
+-- ----------------------------
+DROP TABLE IF EXISTS `t_user_role`;
+CREATE TABLE `t_user_role`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NULL DEFAULT NULL COMMENT ' user id ',
+  `role_id` int(11) NULL DEFAULT NULL COMMENT 'role id',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

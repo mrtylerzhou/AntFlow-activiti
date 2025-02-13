@@ -1,9 +1,7 @@
 package org.openoa.engine.bpmnconf.util;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
-import com.sun.org.apache.bcel.internal.generic.INEG;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
@@ -16,7 +14,6 @@ import org.openoa.base.exception.JiMuBizException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;

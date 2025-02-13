@@ -37,11 +37,11 @@
             <el-button type="primary" @click="saveCopyer">确 定</el-button>
             <el-button @click="closeDrawer">取 消</el-button>
         </div>
-        <employees-role-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
+        <employees-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
     </el-drawer>
 </template>
 <script setup>
-import employeesRoleDialog from '../dialog/employeesRoleDialog.vue'
+import employeesDialog from '../dialog/employeesDialog.vue'
 import FormPermConf from "../config/FormPermConf.vue";
 import $func from '@/utils/flow/index'
 import { useStore } from '@/store/modules/workflow'
@@ -74,7 +74,7 @@ let visible = computed({
 watch(copyerConfig1, (val) => {
     copyerConfig.value = val.value;
     formItems.value = copyerConfig.value.lfFieldControlVOs || [];
-    console.log("copyerConfig.value========", JSON.stringify(copyerConfig.value))
+    //console.log("copyerConfig.value========", JSON.stringify(copyerConfig.value))
     ccSelfSelectFlag.value = copyerConfig.value.ccSelfSelectFlag == 0 ? [] : [copyerConfig.value.ccSelfSelectFlag]
 })
 
@@ -97,7 +97,7 @@ const saveCopyer = () => {
     closeDrawer();
 }
 const closeDrawer = () => {
-    console.log("copyerConfig.value.lfFieldControlVOs========", JSON.stringify(copyerConfig.value))
+    //console.log("copyerConfig.value.lfFieldControlVOs========", JSON.stringify(copyerConfig.value))
     setCopyer(false)
 }
 const handleTabClick = (tab, event) => {

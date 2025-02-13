@@ -24,7 +24,8 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 
 # Antflow核心技术栈
 
-* Java8-21 (main分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
+* Java8-21 (master分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
+* 温馨提示：java8版本 需要使用JDK-8.0.382.5 以上版本,如需要JDK文件可以加入QQ群下载
 * Activiti（fork了activiti5源码，并进行了魔改，⚠⚠用户请使用antflow源码中提供的sql进行建表，不要使用activiti自动创建表功能）
 * Spring Boot 2.7.17
 * MybatisPlus 3.5.1
@@ -65,7 +66,7 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 # 快速开始
 
 ## 前端运行
-
+### Nodejs V16.20.0 及以上版本
 ```
 # gitee克隆项目
 git clone https://gitee.com/tylerzhou/Antflow.git 

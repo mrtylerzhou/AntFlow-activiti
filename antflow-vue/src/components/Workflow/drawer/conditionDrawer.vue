@@ -141,9 +141,7 @@
                         <el-button type="primary" @click="sureCondition">确 定</el-button>
                     </template>
                 </el-dialog>
-            </div>
-            <employees-role-dialog v-model:visible="conditionRoleVisible" :data="checkedList"
-                @change="sureConditionRole" :isDepartment="true" />
+            </div> 
             <div class="demo-drawer__footer clear">
                 <el-button type="primary" @click="saveCondition">确 定</el-button>
                 <el-button @click="closeDrawer">取 消</el-button>
@@ -157,8 +155,7 @@ import { useStore } from '@/store/modules/workflow'
 import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/flow/const'
 import $func from '@/utils/flow/index'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getConditions } from '@/api/mock'
-import employeesRoleDialog from '../dialog/employeesRoleDialog.vue'
+import { getConditions } from '@/api/mock' 
 const route = useRoute();
 const routePath = route.path || '';
 let conditionVisible = ref(false)
@@ -330,11 +327,7 @@ const saveCondition = () => {
 const addConditionRole = () => {
     conditionRoleVisible.value = true;
     checkedList.value = conditionConfig.value.nodeApproveList
-}
-const sureConditionRole = (data) => {
-    conditionConfig.value.nodeApproveList = data;
-    conditionRoleVisible.value = false;
-}
+} 
 const closeDrawer = (val) => {
     setCondition(false)
 }

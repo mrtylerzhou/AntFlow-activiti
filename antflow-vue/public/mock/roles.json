@@ -1,15 +1,7 @@
 {
     "code": "200",
     "msg": "操作成功",
-    "data": {
-        "navigatepageNums": [],
-        "startRow": "1",
-        "hasNextPage": "false",
-        "prePage": "0",
-        "nextPage": "0",
-        "endRow": "8",
-        "pageSize": "0",
-        "list": [{
+    "data": [{
             "code": "SHGLY",
             "roleId": "1",
             "scope": "1",
@@ -65,16 +57,5 @@
             "roleName": "主管",
             "description": "",
             "status": "1"
-        }],
-        "pageNum": "1",
-        "navigatePages": "8",
-        "navigateFirstPage": "0",
-        "total": "8",
-        "pages": "0",
-        "size": "8",
-        "isLastPage": "true",
-        "hasPreviousPage": "false",
-        "navigateLastPage": "0",
-        "isFirstPage": "true"
-    }
+        }]
 }

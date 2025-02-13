@@ -10,12 +10,14 @@
                     <el-row style="padding-left: -5px;padding-right: -5px;">
                         <el-col :span="24" class="my-col" v-if="baseTabShow">
                             <div v-if="componentLoaded"  class="component">
-                                <component :is="loadedComponent" 
+                                <component ref="componentFormRef"
+                                :is="loadedComponent" 
                                 :previewData="componentData" 
                                 :lfFormData="lfFormDataConfig"
                                 :lfFieldsData="lfFieldsConfig"
                                 :lfFieldPerm="lfFieldControlVOs" 
-                                :isPreview="true">
+                                :isPreview="isPreview"
+                                :reSubmit="reSubmit">
                                 </component>
                             </div>
                             <div v-else-if="isOutSideAccess == 'true'">
@@ -88,7 +90,8 @@ let flowReviewShow = ref(false);
 let componentData = ref(null);
 let componentLoaded = ref(false);
 let loadedComponent = ref(null);
-let enableClass = ref(false);
+let isPreview = ref(true);
+let reSubmit = ref(false);
 let approvalButtons = ref([]);
 const approveFormRef = ref(null);
 const approveForm = reactive({
@@ -128,7 +131,8 @@ onMounted(() => {
     });
 });
 watch(approvalButtons, (val) => {
-    enableClass.value = val.some(c => c.value == approvalButtonConf.resubmit);
+    reSubmit.value = val.some(c => c.value == approvalButtonConf.resubmit);
+    isPreview.value = !val.some(c => c.value == approvalButtonConf.resubmit);
 })
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
@@ -152,9 +156,11 @@ const approveSubmit = async (param, type) => {
             approveSubData.approvalComment = approveForm.remark;
             approveSubData.operationType = type;
             if (type == approvalButtonConf.resubmit) {
-                await componentFormRef.value.handleValidate().then((isValid) => {
+                await componentFormRef.value.handleValidate().then(async (isValid) => {
                     if (isValid) {
-                        Object.assign(approveSubData, JSON.parse(componentFormRef.value.getFromData()));
+                        await componentFormRef.value.getFromData().then((data) => {
+                            Object.assign(approveSubData, JSON.parse(data));
+                        })
                     }
                 });
             };
