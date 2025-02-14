@@ -60,7 +60,7 @@ export class NodeUtils {
       nodeType: 6,
       nodeFrom: "",
       nodeTo: [],
-      setType: 1,
+      setType: 5,//仅支持选择人员
       error: true,
       ccFlag: 1,
       childNode: {},

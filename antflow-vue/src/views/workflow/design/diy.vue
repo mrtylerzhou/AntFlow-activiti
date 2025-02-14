@@ -94,6 +94,7 @@ const publish = () => {
             let basicData = res[0].formData; 
             var nodes = FormatUtils.formatSettings(res[1].formData); 
             Object.assign(basicData, { nodes: nodes });
+            //console.log("New===Json==========", JSON.stringify(basicData));
             return basicData;
         })
         .then((data) => {        
