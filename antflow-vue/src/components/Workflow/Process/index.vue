@@ -54,7 +54,7 @@ onMounted(async () => {
 });
 
 /**
- * 判断流程中是否有审批节点
+ * 判断流程中是否有审批节点 Demo 预览需要，项目中不使用可以去掉这步验证
  * @param treeNode 
  */
  const preTreeIsApproveNode = (treeNode) =>  { 
