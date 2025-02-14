@@ -1,12 +1,12 @@
 <template>
     <div class="app-container">
-        <section class="dingflow-design">
+        <section class="dingflow-design" ref="dingflowDesignRef">
             <div class="zoom">
-                <div class="zoom-out" :class="nowVal == 50 && 'disabled'" @click="zoomSize(1)"></div>
+                <div class="zoom-out" @click="zoomOut"></div>
                 <span>{{ nowVal }}%</span>
-                <div class="zoom-in" :class="nowVal == 300 && 'disabled'" @click="zoomSize(2)"></div>
+                <div class="zoom-in" @click="zoomIn"></div>
             </div>
-            <div class="box-scale" :style="`transform: scale(${nowVal / 100});`">
+            <div class="box-scale" ref="boxScaleRef">
                 <outsideNodeWrap v-model:nodeConfig="nodeConfig" />
                 <div class="end-node">
                     <div class="end-node-circle"></div>
@@ -33,7 +33,7 @@ import approverDrawer from "@/components/OutsideFlow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/OutsideFlow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/OutsideFlow/drawer/conditionDrawer.vue"; 
 import outsideNodeWrap from "@/components/OutsideFlow/nodeWrap.vue";
-const { proxy } = getCurrentInstance();
+import {wheelZoomFunc, zoomInit} from "@/utils/zoom.js"; 
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
 let props = defineProps({
@@ -42,13 +42,17 @@ let props = defineProps({
         default: () => (null),
     }
 });
-
+const dingflowDesignRef = ref(null);
+const boxScaleRef = ref(null);
 let tipList = ref([]);
 let tipVisible = ref(false);
 let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
-onMounted(async () => {
+onMounted(async () => { 
+    zoomInit(dingflowDesignRef, boxScaleRef, (val) => { 
+        nowVal.value = val
+    })
     if (props.processData) {
         nodeConfig.value = props.processData;
     }
@@ -102,19 +106,15 @@ const reErr = ({ childNode }) => {
     }
 };
 
-const zoomSize = (type) => {
-    if (type == 1) {
-        if (nowVal.value == 50) {
-            return;
-        }
-        nowVal.value -= 10;
-    } else {
-        if (nowVal.value == 300) {
-            return;
-        }
-        nowVal.value += 10;
-    }
-};
+/** 页面放大 */
+function zoomIn() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})
+}
+
+/** 页面缩小 */
+function zoomOut() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
+}
 
 const getJson = () => {
     setIsTried(true);
