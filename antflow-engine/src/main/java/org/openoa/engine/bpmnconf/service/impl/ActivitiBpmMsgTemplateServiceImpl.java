@@ -513,24 +513,20 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         return employee;
     }
     private MessageSendTypeEnum[] getMessageSendTypeEnums(String processId, String formCode, Integer selectMack) {
-        if (selectMack.intValue() == 1) {
+        if (selectMack == 1) {
             List<BpmProcessNotice> bpmProcessNotices = bpmProcessNoticeService.processNoticeList(formCode);
             if (!CollectionUtils.isEmpty(bpmProcessNotices)) {
-                List<MessageSendTypeEnum> sendTypeEnums = bpmProcessNotices
+                return bpmProcessNotices
                         .stream()
-                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getType()))
-                        .collect(Collectors.toList());
-                return sendTypeEnums.toArray(new MessageSendTypeEnum[sendTypeEnums.size()]);
+                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getType())).toArray(MessageSendTypeEnum[]::new);
             }
-        } else if (selectMack.intValue() == 2) {
+        } else if (selectMack == 2) {
             BpmBusinessProcess bpmBusinessProcess = Optional.ofNullable(bpmBusinessProcessService.getBpmBusinessProcess(processId)).orElse(new BpmBusinessProcess());
             List<BpmProcessNodeOvertimeVo> bpmProcessNodeOvertimeVos = processNodeOvertimeService.selectNoticeNodeName(Optional.ofNullable(bpmBusinessProcess.getProcessinessKey()).orElse(processId));
             if (!CollectionUtils.isEmpty(bpmProcessNodeOvertimeVos)) {
-                List<MessageSendTypeEnum> sendTypeEnums = bpmProcessNodeOvertimeVos
+                return bpmProcessNodeOvertimeVos
                         .stream()
-                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getNoticeType()))
-                        .collect(Collectors.toList());
-                return sendTypeEnums.toArray(new MessageSendTypeEnum[sendTypeEnums.size()]);
+                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getNoticeType())).toArray(MessageSendTypeEnum[]::new);
             }
         }
         return new MessageSendTypeEnum[0];
@@ -568,7 +564,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         }
         if (!CollectionUtils.isEmpty(noticeReplaceEnums)) {
             Employee employee = null;
-            if (noticeReplaceEnums.stream().filter(o -> o.getIsSelectEmpl()).findAny().isPresent()) {
+            if (noticeReplaceEnums.stream().anyMatch(NoticeReplaceEnum::getIsSelectEmpl)) {
                 employee = employeeService.getEmployeeDetailById(activitiBpmMsgVo.getOtherUserId());
             }
             for (NoticeReplaceEnum noticeReplaceEnum : noticeReplaceEnums) {
