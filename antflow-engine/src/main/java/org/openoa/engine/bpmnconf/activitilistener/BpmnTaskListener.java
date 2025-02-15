@@ -153,6 +153,13 @@ public class BpmnTaskListener implements TaskListener {
             //set template message
             bpmVariableMessageListenerService.listenerSendTemplateMessages(bpmVariableMessageVo);
         } else {
+            ProcessInforVo processInforVo = ProcessInforVo
+                    .builder()
+                    .processinessKey(bpmnCode)
+                    .businessNumber(processNumber)
+                    .formCode(formCode)
+                    .type(2)
+                    .build();
 
             ActivitiTemplateMsgUtils.sendBpmApprovalMsg(
                     ActivitiBpmMsgVo
@@ -164,29 +171,11 @@ public class BpmnTaskListener implements TaskListener {
                             .processType("")//todo set process type
                             .processName(bpmnConf.getBpmnName())
                             .emailUrl(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(2)
-                                            .build(), isOutside))
+                                    processInforVo , isOutside))
                             .url(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(2)
-                                            .build(), isOutside))
+                                    processInforVo, isOutside))
                             .appPushUrl(processBusinessContans.getRoute(ProcessNoticeEnum.APP_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(2)
-                                            .build(), isOutside))
+                                    processInforVo, isOutside))
                             .taskId(delegateTask.getProcessInstanceId())
                             .build());
         }

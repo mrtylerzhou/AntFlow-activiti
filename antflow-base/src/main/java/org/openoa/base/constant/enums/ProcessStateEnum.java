@@ -7,10 +7,10 @@ public enum ProcessStateEnum {
      * process state
      */
 
-    COMLETE_STATE(1, "审批中"),
+    HANDLING_STATE(1, "审批中"),
     END_STATE(3, "作废"),
-    HANDLE_STATE(2, "审批通过"),
-    CRMCEL_STATE(6, "审批拒绝"),
+    HANDLED_STATE(2, "审批通过"),
+    REJECT_STATE(6, "审批拒绝"),
     ;
     @Getter
     private Integer code;

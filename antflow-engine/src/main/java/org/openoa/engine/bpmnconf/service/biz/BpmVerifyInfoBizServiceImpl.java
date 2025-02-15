@@ -221,12 +221,12 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         Integer processState = bpmBusinessProcess.getProcessState();
 
         Integer endVerifyStatus = 100;
-        if (processState != CRMCEL_STATE.getCode() || processState != END_STATE.getCode()) {
+        if (processState != REJECT_STATE.getCode() || processState != END_STATE.getCode()) {
             if (!finishFlag) {
                 //追加流程记录
                 addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
             }
-            if (processState == COMLETE_STATE.getCode()) {
+            if (processState == HANDLING_STATE.getCode()) {
                 endVerifyStatus = 0;
             }
         }
