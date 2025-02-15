@@ -32,7 +32,7 @@ public class BpmnTestEmployeeInfoProvider implements BpmnEmployeeInfoProviderSer
         if(CollectionUtils.isEmpty(users)){
             return Maps.newHashMap();
         }
-        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(a-> a.getId(),BaseIdTranStruVo::getName,(k1, k2)->k1));
+        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId,BaseIdTranStruVo::getName,(k1, k2)->k1));
 
         return empIdAndNameMap;
     }
