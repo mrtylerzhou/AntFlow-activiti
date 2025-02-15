@@ -15,8 +15,8 @@
                             <div class="approver_Btn" v-show="approverConfig.setType == 5">
                                 <el-button type="primary" @click="addApprover">添加/修改人员</el-button>
                                 <p class="selected_list">
-                                    <span v-for="(item, index) in approverConfig.nodeApproveList"
-                                        :key="index">🙍‍♂️ {{ item.name }}
+                                    <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">🙍‍♂️ {{
+                                        item.name }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -30,7 +30,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
+                                        }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -44,7 +44,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
+                                        }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -56,7 +56,7 @@
                             <div class="approver_select" v-if="approverConfig.setType == 3">
                                 <p>
                                     <span>发起人的：</span>
-                                    <select v-model="approverConfig.directorLevel" style="width: 300px;"> 
+                                    <select v-model="approverConfig.directorLevel" style="width: 300px;">
                                         <option disabled selected value>--请选择--</option>
                                         <option v-for="item in directorMaxLevel" :value="item" :key="item">
                                             {{ item == 1 ? '直接' : '第' + item + '级' }}主管</option>
@@ -70,7 +70,8 @@
                                     <span>HRBP选择：</span>
                                     <select v-model="checkedHRBP" style="width: 300px;">
                                         <option disabled selected value>--请选择--</option>
-                                        <option v-for="item in hrbpOptions" required :key="item.value" :value="item.value">
+                                        <option v-for="item in hrbpOptions" required :key="item.value"
+                                            :value="item.value">
                                             {{ item.label }}
                                         </option>
                                     </select>
@@ -106,7 +107,7 @@
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
-                <div class="approver_block drawer_content">
+                <div class="drawer_content">
                     <p>【审批页面】按钮权限显示控制</p>
                     <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                         <el-checkbox style="margin: 6px 0;width: 100%;height: 45px;" border
@@ -118,13 +119,30 @@
                             </span>
                         </el-checkbox>
                     </el-checkbox-group>
-                    <el-checkbox border style="margin-top: 6px;width: 100%;height: 45px;" v-if="afterSignUpWayVisible"
-                        v-model="checkAfterSignUpWay" @change="handleAfterSignUpWay(checkAfterSignUpWay)">
-                        是否回到加批人
-                        <span class="opt-description">
-                            选中后，加批人审批完之后，会回到本节点的审批人再次审批
-                        </span>
-                    </el-checkbox>
+
+                    <div v-if="afterSignUpWayVisible">
+                        <el-radio-group v-model="approvalBtnSubOption"  @change="handleApprovalBtnSubOption(approvalBtnSubOption)" class="clear"> 
+                            <el-radio :value="1" class="auth-btn" border>
+                                【顺序会签】
+                                <span class="opt-description">
+                                    多个会签人员，依次进行审批
+                                </span>
+                            </el-radio>
+                            <el-radio :value="2" class="auth-btn" border>
+                                【会签】
+                                <span class="opt-description">
+                                    多个会签人员，同步进行审批
+                                </span>
+                            </el-radio>
+                            <el-radio :value="3" class="auth-btn" border>
+                                【回到加批人】
+                                <span class="opt-description">
+                                    只能是顺序会签，加批人审批完之后，会回到本节点的审批人再次审批
+                                </span>
+                            </el-radio>
+                        </el-radio-group>
+                    </div>
+
                 </div>
 
             </el-tab-pane>
@@ -168,9 +186,8 @@ let checkApprovalPageBtns = ref([])
 let checkedHRBP = ref('')
 let approvalPageBtns = ref([])
 
-let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
-let checkAfterSignUpWay = ref(false)
-
+let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1) 
+let approvalBtnSubOption= ref(1)
 let formItems = ref([])
 
 let activeName = ref('approverStep')
@@ -201,10 +218,14 @@ watch(approverConfig1, (val) => {
         checkedHRBP.value =  val.value.property.hrbpConfType 
     } 
 })
-
-watch(() => approverConfig.value?.property?.afterSignUpWay, (newVal, oldVal) => {
-    checkAfterSignUpWay.value = newVal == 1 ? true : false
-})
+ 
+watch(() => approverConfig.value?.property, (newVal, oldVal) => {
+     let afterSignUpWayTemp = newVal.afterSignUpWay;
+     console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
+     if (afterSignUpWayTemp) {
+        approvalBtnSubOption.value = afterSignUpWayTemp == 1 ? 3 : approverConfig.value?.property?.signUpType;
+     }
+}, { deep: true})
 
 watch(checkedHRBP, (val) => {  
     if (approverConfig.value.setType != 6) {
@@ -269,21 +290,30 @@ const handleCheckedButtonsChange = (val) => {
         approverConfig.value.isSignUp = 0;
     }
 }
-const handleAfterSignUpWay = (val) => {
+/**处理加批按钮 子操作 */
+const handleApprovalBtnSubOption = (val) => {
     const isTure = approverConfig.value.hasOwnProperty("property");
     if (isTure) {
         if (approverConfig.value.property.hasOwnProperty("afterSignUpWay")) {
-            approverConfig.value.property.afterSignUpWay = val ? 1 : 2;
+            approverConfig.value.property.afterSignUpWay = val&&val==3 ? 1 : 2;
         } else {
-            Object.assign(approverConfig.value.property, { afterSignUpWay: val ? 1 : 2 });
+            Object.assign(approverConfig.value.property, { afterSignUpWay: val&&val==3 ? 1 : 2 });
         }
+        if (approverConfig.value.property.hasOwnProperty("signUpType")) {
+            approverConfig.value.property.signUpType = val&&val==3 ? 1 : val;
+        } else {
+            Object.assign(approverConfig.value.property, { signUpType: val&&val==3 ? 1 : val });
+        } 
     } else {
         Object.assign(approverConfig.value, {
-            property: { afterSignUpWay: val ? 1 : 2 }
+            property: {
+                 afterSignUpWay: val&&val==3 ? 1 : 2,
+                 signUpType: val&&val==3 ? 1 : val 
+                }
         });
     }
-    //console.log('approverConfig.value=============', JSON.stringify(approverConfig.value))
-}
+    //console.log('approverConfig.value=============', JSON.stringify(approverConfig.value)) signUpType
+} 
 const handleTabClick = (tab, event) => {
     activeName.value = tab.paneName;
     if (tab.paneName == 'formStep') {
@@ -353,11 +383,9 @@ const changePermVal = (data) => {
     .approver_block,
     .approver_Btn {
         padding-top: 10px;
-
         .el-radio-group {
             display: unset;
         }
-
         .el-radio {
             width: 27%;
             margin-bottom: 20px;
@@ -401,5 +429,14 @@ const changePermVal = (data) => {
         font-weight: bold;
         line-height: 19px;
     }
+}
+.opt-description{
+    font-size: smaller;
+    color: gray;
+}
+.auth-btn{
+    margin-top: 6px;
+    width: 95%;
+    height: 45px;
 }
 </style>
