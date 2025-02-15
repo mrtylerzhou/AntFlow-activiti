@@ -261,7 +261,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         List<ActivityImpl> collect = activitiList.stream().filter(a -> a.getId().equals(taskVo.getElementId())).collect(Collectors.toList());
 
-        if (collect.size() > 0) {
+        if (!collect.isEmpty()) {
 
             ActivityImpl activity = collect.get(0);
             Map<String, Object> properties = activity.getProperties();

@@ -90,6 +90,11 @@ public class BpmnTaskListener implements TaskListener {
         BpmnConf bpmnConf = bpmnConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", bpmnCode));
 
+        if (bpmnConf==null) {
+            log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
+            throw new JiMuBizException("Task监听-查询流程配置数据为空");
+        }
+        boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);
         //set process entrust info
         String oldUserId = delegateTask.getAssignee();
         String oldUserName="";
@@ -103,7 +108,11 @@ public class BpmnTaskListener implements TaskListener {
         //if userId is not null and valid then set user task delegate
         if (!StringUtils.isEmpty(userId)) {
             delegateTask.setAssignee(userId);
+            if(delegateTask instanceof  TaskEntity){
+                ((TaskEntity)delegateTask).setAssigneeName(userName);
+            }
         }
+
 
 
         //如果委托生效 则在我的委托列表中加一条数据
@@ -137,13 +146,6 @@ public class BpmnTaskListener implements TaskListener {
                 .build();
 
 
-        if (bpmnConf==null) {
-            log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            throw new JiMuBizException("Task监听-查询流程配置数据为空");
-        }
-
-
-        boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);
 
 
         if (bpmVariableMessageListenerService.listenerCheckIsSendByTemplate(bpmVariableMessageVo)) {
