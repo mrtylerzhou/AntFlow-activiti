@@ -36,7 +36,8 @@ export class NodeUtils {
       childNode: {},
       error: true,
       property: {
-        afterSignUpWay: 1,
+        afterSignUpWay: 2,
+        signUpType: 1,
       },
       lfFieldControlVOs: [],
       buttons: {
