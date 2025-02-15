@@ -160,6 +160,8 @@ export class FormatUtils {
                     hrbpConfType: 0,
                     assignLevelGrade: 0,
                     signType: node.signType,
+                    signUpType:1,
+                    afterSignUpWay:2,
                 }
 
                 if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
@@ -188,7 +190,8 @@ export class FormatUtils {
                 else if(node.setType== 3){ 
                     approveObj.assignLevelGrade = node.directorLevel; 
                 } 
-                Object.assign(approveObj, { afterSignUpWay : node.property?.afterSignUpWay??0 }); 
+                approveObj.afterSignUpWay = node.property?.afterSignUpWay??2;
+                approveObj.signUpType = node.property?.signUpType??1; 
                 node.nodeProperty=node.setType; 
                 node.property = approveObj;
                 delete node.nodeApproveList;
