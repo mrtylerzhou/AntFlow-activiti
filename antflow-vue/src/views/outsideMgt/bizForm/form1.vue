@@ -92,7 +92,7 @@ const handleSubmit = () => {
         "formCode":"adbgxx",
         "businessPartyId":1, 
         "businessPartyMark":"kbgschool",
-        "templateMark":"",
+        "templateMark":"id2",
         "outSideType":2,
         "userId":"1",
         "formDataPc":htmlString

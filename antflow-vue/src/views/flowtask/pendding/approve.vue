@@ -26,7 +26,7 @@
                             <div v-else-if="isOutSideAccess == 'true'">
                                 <p v-if="formData" v-html="formData"></p>
                             </div>
-                        </el-col> 
+                        </el-col>
                     </el-row>
                 </div>
             </el-tab-pane>
@@ -51,8 +51,8 @@
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="备注/说明" prop="remark">
-                            <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入审批备注" :maxlength="100"
-                                show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
+                            <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入审批备注"
+                                :maxlength="100" show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
                                 :style="{ width: '100%' }"></el-input>
                         </el-form-item>
                     </el-col>
@@ -70,7 +70,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import cache from '@/plugins/cache';
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
@@ -87,8 +87,8 @@ const isLowCodeFlow = route.query?.isLowCodeFlow || false;
 const taskId = route.query?.taskId
 const activeName = ref('baseTab')
 
-let openApproveDialog= ref(false);
-let approveDialogTitle= ref("审批");
+let openApproveDialog = ref(false);
+let approveDialogTitle = ref("审批");
 
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
@@ -114,7 +114,7 @@ let isMultiple = ref(false);//false 转办，true 加批
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
- 
+
 let rules = {
     remark: [{
         required: true,
@@ -148,7 +148,7 @@ watch(handleClickType, (val) => {
 
 
 /**点击页面审批操作按钮 */
-const clickApproveSubmit = async (btnType) =>{
+const clickApproveSubmit = async (btnType) => {
     //console.log('btnType========',JSON.stringify(btnType))     
     handleClickType.value = btnType;
     switch (btnType) {
@@ -164,6 +164,9 @@ const clickApproveSubmit = async (btnType) =>{
             openApproveDialog.value = true;
             approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
             break;
+        case approvalButtonConf.undertake:
+            approveUndertakeSubmit();
+            break;
     }
 }
 
@@ -172,9 +175,9 @@ const clickApproveSubmit = async (btnType) =>{
  * @param param 
  * @param type 
  */
-const approveSubmit = async (param, type) => {
+const approveSubmit = async (param) => {
     if (!param) return;
-    param.validate(async (valid, fields) => {
+    param.validate(async (valid) => {
         if (valid) {
             approveSubData.approvalComment = approveForm.remark;
             approveSubData.operationType = handleClickType.value;
@@ -192,6 +195,28 @@ const approveSubmit = async (param, type) => {
     })
 }
 /**
+ * 承办操作确定
+ * @param param 
+ * @param type 
+ */
+const approveUndertakeSubmit = async () => {
+    approveSubData.approvalComment = "承办";
+    approveSubData.operationType = handleClickType.value;
+    ElMessageBox.confirm('确定完成操作吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        let resData = await processOperation(approveSubData);
+        if (resData.code == 200) {
+            proxy.$modal.msgSuccess("承办成功");
+            handleTabClick({ paneName: "baseTab" });
+        } else {
+            proxy.$modal.msgError("承办失败:" + resData.errMsg);
+        }
+    }).catch(() => { });
+}
+/**
  * 表单预览
  */
 const preview = () => {
@@ -201,7 +226,7 @@ const preview = () => {
         "type": 2,
         "isOutSideAccessProc": isOutSideAccess,
         "isLowCodeFlow": isLowCodeFlow
-    }); 
+    });
     proxy.$modal.loading();
     getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
@@ -211,10 +236,10 @@ const preview = () => {
             }
             else if (isLowCodeFlow && isLowCodeFlow == 'true') {//低代码表单
                 lfFormDataConfig.value = response.data.lfFormData;
-                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs); 
+                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                 lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
                 loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true; 
+                componentLoaded.value = true;
             } else {//自定义表单
                 loadedComponent.value = await loadDIYComponent(formCode);
                 componentData.value = response.data;
@@ -230,7 +255,7 @@ const preview = () => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
         } else {
-            ElMessage.error("获取表单数据失败:" + response.errMsg);
+            proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
             close();
         }
         proxy.$modal.closeLoading();
@@ -251,7 +276,7 @@ function uniqueByMap(arr) {
 /**
  * 关闭当前审批页
  */
-const close = () => { 
+const close = () => {
     const obj = { path: "/flowtask/pendding" };
     proxy.$tab.closeOpenPage(obj);
 }
@@ -283,7 +308,7 @@ const sureDialogBtn = async (data) => {
  * 审批
  * @param param 
  */
- const approveProcess = async (param) => {
+const approveProcess = async (param) => {
     ElMessageBox.confirm('确定完成操作吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -293,10 +318,10 @@ const sureDialogBtn = async (data) => {
         proxy.$modal.loading();
         let resData = await processOperation(param);
         if (resData.code == 200) {
-            ElMessage.success("审批成功");
+            proxy.$modal.msgSuccess("审批成功");
             close();
         } else {
-            ElMessage.error("审批失败:" + resData.errMsg);
+            proxy.$modal.msgError("审批失败:" + resData.errMsg);
         }
         proxy.$modal.closeLoading();
     }).catch(() => { });
@@ -329,6 +354,7 @@ handleTabClick({ paneName: "baseTab" });
     right: 0 !important;
     /* margin: auto !important;*/
 }
+
 .approve {
     width: 100%;
     height: 100%;
