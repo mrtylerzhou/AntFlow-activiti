@@ -3,7 +3,7 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 
 /**
- * todo implement it
+ *
  */
 public enum CallbackTypeEnum {
 

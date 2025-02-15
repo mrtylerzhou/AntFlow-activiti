@@ -65,7 +65,7 @@ public class ConfigFlowButtonContans {
 
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNum);
         if (bpmBusinessProcess == null || bpmBusinessProcess.getProcessState() == null
-                || bpmBusinessProcess.getProcessState() == ProcessStateEnum.COMLETE_STATE.getCode()) {//审批中
+                || bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLING_STATE.getCode()) {//审批中
 
             if (processNum != null && elementId != null) {
                 List<BpmVariableButton> bpmVariableButtons = bpmVariableButtonService
@@ -116,9 +116,9 @@ public class ConfigFlowButtonContans {
                 auditButtons.clear();
                 auditButtons.add(undertake);
             }
-        } else if (bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLE_STATE.getCode()
+        } else if (bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLED_STATE.getCode()
                 //|| bpmBusinessProcess.getProcessState() == ProcessStateEnum.DISAGREE_STATE.getCode()
-                || bpmBusinessProcess.getProcessState() == ProcessStateEnum.CRMCEL_STATE.getCode()
+                || bpmBusinessProcess.getProcessState() == ProcessStateEnum.REJECT_STATE.getCode()
                 || bpmBusinessProcess.getProcessState() == ProcessStateEnum.END_STATE.getCode()) {
 
             // process complete

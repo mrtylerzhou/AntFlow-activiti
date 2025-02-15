@@ -14,7 +14,6 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.confentity.Department;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
@@ -23,7 +22,6 @@ import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceIm
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -135,7 +133,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .createUser(businessDataVo.getStartUserId())
                 .userName(businessDataVo.getSubmitUser())
                 .createTime(new Date())
-                .processState(ProcessStateEnum.COMLETE_STATE.getCode())
+                .processState(ProcessStateEnum.HANDLING_STATE.getCode())
                 .entryId(processNum)
                 .description(processTitlePrefix + "-" + businessDataVo.getBpmnName())
                 .version(businessDataVo.getBpmnCode())
