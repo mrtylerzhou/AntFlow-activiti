@@ -8,42 +8,25 @@
             <el-tab-pane label="表单信息" name="baseTab">
                 <div class="approve">
                     <el-row style="padding-left: -5px;padding-right: -5px;">
+                        <el-col :span="24" class="my-col">
+                            <div v-for="btn in approvalButtons" style="float: left;">
+                                <el-button style="margin: 5px;" v-if="btn.label" :type="pageButtonsColor[btn.value]"
+                                    @click="clickApproveSubmit(btn.value)">
+                                    {{ btn.label }}
+                                </el-button>
+                            </div>
+                        </el-col>
                         <el-col :span="24" class="my-col" v-if="baseTabShow">
-                            <div v-if="componentLoaded"  class="component">
-                                <component ref="componentFormRef"
-                                :is="loadedComponent" 
-                                :previewData="componentData" 
-                                :lfFormData="lfFormDataConfig"
-                                :lfFieldsData="lfFieldsConfig"
-                                :lfFieldPerm="lfFieldControlVOs" 
-                                :isPreview="isPreview"
-                                :reSubmit="reSubmit">
+                            <div v-if="componentLoaded" class="component">
+                                <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
+                                    :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
+                                    :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview" :reSubmit="reSubmit">
                                 </component>
                             </div>
                             <div v-else-if="isOutSideAccess == 'true'">
                                 <p v-if="formData" v-html="formData"></p>
-                            </div> 
-                        </el-col>
-                        <el-col :span="24" class="my-col">
-                            <el-form ref="approveFormRef" :model="approveForm" :rules="rules" class="my-form">
-                                <el-form-item label="备注/说明" prop="remark">
-                                    <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入备注"
-                                        :maxlength="100" show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
-                                        :style="{ width: '100%' }"></el-input>
-                                </el-form-item>
-                                <el-form-item style="float: right;">
-                                    <!-- <el-button type="primary" @click="approveSubmit(approveFormRef,3)">同意</el-button> -->
-                                    <div v-for="btn in approvalButtons">
-                                        <el-button style="margin: 5px;" v-if="btn.label"
-                                            :type="pageButtonsColor[btn.value]"
-                                            @click="approveSubmit(approveFormRef, btn.value)">
-                                            {{ btn.label }}
-                                        </el-button>
-                                    </div>
-
-                                </el-form-item>
-                            </el-form>
-                        </el-col>
+                            </div>
+                        </el-col> 
                     </el-row>
                 </div>
             </el-tab-pane>
@@ -61,6 +44,27 @@
         <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
         <employees-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
             @change="sureDialogBtn" />
+        <!-- 审批对话框 -->
+        <el-dialog :title="approveDialogTitle" v-model="openApproveDialog" width="550px" append-to-body>
+            <el-form :model="approveForm" :rules="rules" ref="approveFormRef" label-width="130px"
+                style="margin: 0 20px;">
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="备注/说明" prop="remark">
+                            <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入审批备注" :maxlength="100"
+                                show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
+                                :style="{ width: '100%' }"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button type="primary" @click="approveSubmit(approveFormRef)">确 定</el-button>
+                    <el-button @click="openApproveDialog = false">取 消</el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -82,6 +86,9 @@ const isOutSideAccess = route.query?.isOutSideAccess || false;
 const isLowCodeFlow = route.query?.isLowCodeFlow || false;
 const taskId = route.query?.taskId
 const activeName = ref('baseTab')
+
+let openApproveDialog= ref(false);
+let approveDialogTitle= ref("审批");
 
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
@@ -139,23 +146,39 @@ watch(handleClickType, (val) => {
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
 })
 
+
+/**点击页面审批操作按钮 */
+const clickApproveSubmit = async (btnType) =>{
+    //console.log('btnType========',JSON.stringify(btnType))     
+    handleClickType.value = btnType;
+    switch (btnType) {
+        case approvalButtonConf.addApproval:
+        case approvalButtonConf.transfer:
+            dialogTitle.value = `设置${approvalButtonConf.buttonsObj[btnType]}人员`;
+            addUserDialog();
+            break;
+        case approvalButtonConf.agree:
+        case approvalButtonConf.noAgree:
+        case approvalButtonConf.resubmit:
+        case approvalButtonConf.repulse:
+            openApproveDialog.value = true;
+            approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
+            break;
+    }
+}
+
 /**
- * 点击页面按钮
+ * 审批操作确定
  * @param param 
  * @param type 
  */
 const approveSubmit = async (param, type) => {
     if (!param) return;
-    handleClickType.value = type;
-    if (type == approvalButtonConf.addApproval || type == approvalButtonConf.transfer) {
-        addUserDialog();
-        return;
-    };
     param.validate(async (valid, fields) => {
         if (valid) {
             approveSubData.approvalComment = approveForm.remark;
-            approveSubData.operationType = type;
-            if (type == approvalButtonConf.resubmit) {
+            approveSubData.operationType = handleClickType.value;
+            if (handleClickType.value == approvalButtonConf.resubmit) {
                 await componentFormRef.value.handleValidate().then(async (isValid) => {
                     if (isValid) {
                         await componentFormRef.value.getFromData().then((data) => {
@@ -224,28 +247,7 @@ function uniqueByMap(arr) {
     const res = new Map();
     return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
 }
-/**
- * 审批
- * @param param 
- */
-const approveProcess = async (param) => {
-    ElMessageBox.confirm('确定完成操作吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async () => {
-        dialogVisible.value = false;
-        proxy.$modal.loading();
-        let resData = await processOperation(param);
-        if (resData.code == 200) {
-            ElMessage.success("审批成功");
-            close();
-        } else {
-            ElMessage.error("审批失败:" + resData.errMsg);
-        }
-        proxy.$modal.closeLoading();
-    }).catch(() => { });
-}
+
 /**
  * 关闭当前审批页
  */
@@ -277,7 +279,28 @@ const sureDialogBtn = async (data) => {
     //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
     await approveProcess(approveSubData);
 }
-
+/**
+ * 审批
+ * @param param 
+ */
+ const approveProcess = async (param) => {
+    ElMessageBox.confirm('确定完成操作吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        dialogVisible.value = false;
+        proxy.$modal.loading();
+        let resData = await processOperation(param);
+        if (resData.code == 200) {
+            ElMessage.success("审批成功");
+            close();
+        } else {
+            ElMessage.error("审批失败:" + resData.errMsg);
+        }
+        proxy.$modal.closeLoading();
+    }).catch(() => { });
+}
 const handleTabClick = async (tab, event) => {
     activeName.value = tab.paneName;
     if (tab.paneName == 'baseTab') {
@@ -300,11 +323,11 @@ handleTabClick({ paneName: "baseTab" });
 <style lang="scss" scoped>
 .component {
     background: white !important;
-    padding: 30px !important;
+    padding: 10px !important;
     max-width: 720px !important;
     left: 0 !important;
     right: 0 !important;
-    margin: auto !important;
+    /* margin: auto !important;*/
 }
 .approve {
     width: 100%;
