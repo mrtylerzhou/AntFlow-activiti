@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ProcessOperationAdaptor;
@@ -11,7 +10,6 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
-import org.openoa.engine.bpmnconf.service.biz.callback.BusinessCallBackFactory;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
 
@@ -21,7 +19,6 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -29,9 +26,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
-import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_END_CALL_BACK;
-import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_AGREE;
-import static org.openoa.base.constant.enums.ProcessStateEnum.CRMCEL_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 
 /**
@@ -77,7 +72,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         }
 
         String processInstanceId = bpmBusinessProcess.getProcInstId();
-        Integer processState = CRMCEL_STATE.getCode();
+        Integer processState = REJECT_STATE.getCode();
         if (vo.getFlag()) {
             processState = END_STATE.getCode();
         }

@@ -70,7 +70,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                 .userName(businessDataVo.getStartUserName())
                 .createTime(new Date())
                 .processDigest(vo.getProcessDigest())
-                .processState(ProcessStateEnum.COMLETE_STATE.getCode())
+                .processState(ProcessStateEnum.HANDLING_STATE.getCode())
                 .entryId(vo.getEntityName() + ":" + vo.getBusinessId())
                 .description(applyName + "-" + processName)
                 .dataSourceId(vo.getDataSourceId())
