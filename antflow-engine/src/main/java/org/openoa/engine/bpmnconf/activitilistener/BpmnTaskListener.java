@@ -108,12 +108,15 @@ public class BpmnTaskListener implements TaskListener {
         //if userId is not null and valid then set user task delegate
         if (!StringUtils.isEmpty(userId)) {
             delegateTask.setAssignee(userId);
+            if(delegateTask instanceof  TaskEntity){
+                ((TaskEntity)delegateTask).setAssigneeName(userName);
+            }
         }
 
 
 
         //如果委托生效 则在我的委托列表中加一条数据
-        if (!isOutside&&!oldUserId.equals(userId)) {
+        if (!oldUserId.equals(userId)) {
             BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
             entrust.setType(1);
             entrust.setRuntaskid(delegateTask.getId());
