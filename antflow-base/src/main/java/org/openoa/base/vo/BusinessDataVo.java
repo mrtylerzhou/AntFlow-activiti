@@ -71,7 +71,7 @@ public class BusinessDataVo extends PageDto {
     Map<String, Object> objectMap;
 
     /**
-     * nnode sign up approvers
+     * node sign up approvers
      */
     public List<String> moreHandlers;
 

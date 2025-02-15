@@ -191,8 +191,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
                 String actual = flowrunEntrust.getActual();
                 if(taskVo.getVerifyUserId().equals(actual)){
                     String actualVerifyUserName = taskVo.getVerifyUserName();
-                    String actualName = flowrunEntrust.getActualName();
-                    taskVo.setVerifyUserName(actualVerifyUserName+"代"+actualName+"审批");
+                    String originalName = flowrunEntrust.getOriginalName();
+                    taskVo.setVerifyUserName(actualVerifyUserName+"代"+originalName+"审批");
                 }
             }
             sort++;
@@ -261,7 +261,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         List<ActivityImpl> collect = activitiList.stream().filter(a -> a.getId().equals(taskVo.getElementId())).collect(Collectors.toList());
 
-        if (collect.size() > 0) {
+        if (!collect.isEmpty()) {
 
             ActivityImpl activity = collect.get(0);
             Map<String, Object> properties = activity.getProperties();

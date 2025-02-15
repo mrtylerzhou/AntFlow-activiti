@@ -45,6 +45,7 @@ export class approvalButtonConf {
   static agree = 3;//同意
   static noAgree = 4;//拒绝
   static print = 8;//打印
+  static undertake = 10;//承办
   static terminate = 12;//终止
   static forward = 15;//转发
   static repulse = 18;//打回
@@ -58,6 +59,7 @@ export class approvalButtonConf {
     3: '同意',//拒绝
     4: '不同意',//拒绝 
     8: '打印',//打印
+    10: '承办',//承办
     12: '终止',//终止
     15: '转发',//转发
     18: '打回修改',//打回

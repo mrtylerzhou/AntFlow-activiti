@@ -215,7 +215,13 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         }
 
         List<String> verifyUserIds = tasks.stream().map(BpmVerifyInfoVo::getVerifyUserId).collect(Collectors.toList());
-        Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(verifyUserIds);
+        Integer isOutSideProcess = bpmBusinessProcess.getIsOutSideProcess();
+        Map<String, String> stringStringMap = null;
+        if(Objects.equals(isOutSideProcess,1)){
+            stringStringMap=tasks.stream().collect(Collectors.toMap(BpmVerifyInfoVo::getVerifyUserId, BpmVerifyInfoVo::getVerifyUserName,(k1, k2)->k1));
+        }else{
+            stringStringMap= bpmnEmployeeInfoProviderService.provideEmployeeInfo(verifyUserIds);
+        }
         for (BpmVerifyInfoVo task : tasks) {
             String verifyUidStr = task.getVerifyUserId();
             String verifyUserName = stringStringMap.get(verifyUidStr);
