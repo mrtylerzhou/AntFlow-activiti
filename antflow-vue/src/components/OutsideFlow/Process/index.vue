@@ -2,9 +2,11 @@
     <div class="app-container">
         <section class="dingflow-design" ref="dingflowDesignRef">
             <div class="zoom">
-                <div class="zoom-out" @click="zoomOut"></div>
+                <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
-                <div class="zoom-in" @click="zoomIn"></div>
+                <div class="zoom-in" @click="zoomIn" title="放大"></div>
+                <!--刷新图标代码-->
+                <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
             </div>
             <div class="box-scale" ref="boxScaleRef">
                 <outsideNodeWrap v-model:nodeConfig="nodeConfig" />
@@ -33,7 +35,7 @@ import approverDrawer from "@/components/OutsideFlow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/OutsideFlow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/OutsideFlow/drawer/conditionDrawer.vue"; 
 import outsideNodeWrap from "@/components/OutsideFlow/nodeWrap.vue";
-import {wheelZoomFunc, zoomInit} from "@/utils/zoom.js"; 
+import {wheelZoomFunc, zoomInit,resetImage} from "@/utils/zoom.js"; 
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
 let props = defineProps({
@@ -115,7 +117,10 @@ function zoomIn() {
 function zoomOut() {
   wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
 }
-
+/** 还原缩放比例 */
+function zoomReset() {
+  resetImage()
+}
 const getJson = () => {
     setIsTried(true);
     tipList.value = []; 
@@ -164,47 +169,5 @@ defineExpose({
 .clearfix {
     zoom: 1
 }
-
-.zoom {
-    display: flex;
-    position: fixed;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    height: 40px;
-    width: 125px;
-    right: 40px;
-    margin-top: 30px;
-    z-index: 10
-}
-
-.zoom .zoom-in,
-.zoom .zoom-out {
-    width: 30px;
-    height: 30px;
-    background: #fff;
-    color: #c1c1cd;
-    cursor: pointer;
-    background-size: 100%;
-    background-repeat: no-repeat
-}
-
-.zoom .zoom-out {
-    background-image: url(https://gw.alicdn.com/tfs/TB1s0qhBHGYBuNjy0FoXXciBFXa-90-90.png)
-}
-
-.zoom .zoom-out.disabled {
-    opacity: .5
-}
-
-.zoom .zoom-in {
-    background-image: url(https://gw.alicdn.com/tfs/TB1UIgJBTtYBeNjy1XdXXXXyVXa-90-90.png)
-}
-
-.zoom .zoom-in.disabled {
-    opacity: .5
-}
+ 
 </style>

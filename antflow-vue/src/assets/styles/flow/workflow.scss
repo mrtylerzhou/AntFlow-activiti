@@ -640,32 +640,34 @@
      filter: blur(3px)
  }
 
- .zoom {
-     display: flex;
-     // position: fixed;
-     -webkit-box-align: center;
-     -ms-flex-align: center;
-     align-items: center;
-     -webkit-box-pack: justify;
-     -ms-flex-pack: justify;
-     justify-content: space-between;
-     height: 40px;
-     width: 125px;
-     right: 40px;
-     margin-top: 30px;
-     z-index: 10
- }
 
- .zoom .zoom-in,
- .zoom .zoom-out {
-     width: 30px;
-     height: 30px;
-     background: #fff;
-     color: #c1c1cd;
-     cursor: pointer;
-     background-size: 100%;
-     background-repeat: no-repeat
- }
+ .zoom {
+    display: flex;
+    position: fixed;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    height: 40px;
+    /*width: 125px;*/
+    right: 40px;
+    margin-top: 30px;
+    z-index: 10
+}
+
+.zoom .zoom-in,
+.zoom .zoom-out {
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    color: #c1c1cd;
+    cursor: pointer;
+    background-size: 100%;
+    background-repeat: no-repeat
+}
+
 
  .zoom .zoom-out {
      background-image: url(https://gw.alicdn.com/tfs/TB1s0qhBHGYBuNjy0FoXXciBFXa-90-90.png)
@@ -682,7 +684,21 @@
  .zoom .zoom-in.disabled {
      opacity: .5
  }
-
+ 
+ .zoom-reset {
+    color: #595D62;
+    font-weight: bold;
+    padding: 2px 7px;
+    background: #ffffff;
+    border: 1px solid #E3E4E4;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.zoom > span {
+    text-align: center;
+    width: 39px;
+    margin: 0 10px;
+}
  .auto-judge:hover .editable-title,
  .node-wrap-box:hover .editable-title {
      border-bottom: 1px dashed #fff
