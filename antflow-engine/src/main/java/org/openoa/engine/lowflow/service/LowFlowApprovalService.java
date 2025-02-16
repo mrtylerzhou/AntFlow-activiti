@@ -1,8 +1,10 @@
 package org.openoa.engine.lowflow.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
@@ -127,6 +129,14 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 switch (fieldTypeEnum){
                     case STRING:
                       actualValue=field.getFieldValue();
+                      if(actualValue!=null){
+                          String actualValueString = actualValue.toString();
+                          if(actualValueString.startsWith("{")){
+                              actualValue=JSON.parseObject(actualValueString);
+                          }else if(actualValueString.startsWith("[")){
+                              actualValue=JSON.parseArray(actualValueString);
+                          }
+                      }
                         break;
                     case NUMBER:
                        actualValue=field.getFieldValueNumber();
