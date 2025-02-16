@@ -167,6 +167,7 @@ public class BusinessDataVo extends PageDto {
      * {@link org.openoa.base.constant.enums.ProcessDisagreeTypeEnum}
      */
     private Integer backToModifyType;
+    private String backToNodeId;
     //===============>>third party process<<===================
 
     /**

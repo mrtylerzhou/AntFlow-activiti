@@ -7,6 +7,8 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
+import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.base.constant.enums.ProcessDisagreeTypeEnum;
@@ -15,6 +17,7 @@ import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
@@ -64,6 +67,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     protected TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private ProcessConstants processConstants;
+    @Autowired
+    private BpmVariableMapper variableMapper;
+    @Autowired
+    private ActivitiAdditionalInfoServiceImpl additionalInfoService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -107,6 +114,14 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             case THREE_DISAGREE://default behavior
                 restoreNodeKey=taskData.getTaskDefinitionKey();
                 backToNodeKey=ProcessNodeEnum.START_TASK_KEY.getDesc();
+            case FOUR_DISAGREE:
+                String elementId = variableMapper.getElementIsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                backToNodeKey=elementId;
+                restoreNodeKey=additionalInfoService.getNextElement(elementId,bpmBusinessProcess.getProcInstId()).getId();
+                break;
+            case FIVE_DISAGREE:
+                restoreNodeKey=taskData.getTaskDefinitionKey();
+                backToNodeKey=variableMapper.getElementIsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 break;
             default:
                 throw new JiMuBizException("未支持的打回类型!");

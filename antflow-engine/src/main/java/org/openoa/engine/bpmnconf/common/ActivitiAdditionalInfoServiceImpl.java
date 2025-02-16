@@ -11,9 +11,14 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.ProcessRecordInfoVo;
+import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +49,10 @@ public class ActivitiAdditionalInfoServiceImpl {
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    @Autowired
+    private TaskMgmtMapper taskMgmtMapper;
+
+
     /**
      * get a list of activiti by a historic process instance
      *
@@ -52,10 +61,13 @@ public class ActivitiAdditionalInfoServiceImpl {
      */
     public List<ActivityImpl> getActivitiList(HistoricProcessInstance historicProcessInstance) {
 
+        return getActivitiList(historicProcessInstance.getProcessDefinitionId());
 
+    }
+    public List<ActivityImpl> getActivitiList(String procDefId){
         // get current process's defination entity by process definition id.then get all activities
         ProcessDefinitionEntity def = (ProcessDefinitionEntity) repositoryService
-                .getDeployedProcessDefinition(historicProcessInstance.getProcessDefinitionId());
+                .getDeployedProcessDefinition(procDefId);
         List<ActivityImpl> activitiList = def.getActivities();
 
         return activitiList;
@@ -89,6 +101,18 @@ public class ActivitiAdditionalInfoServiceImpl {
         }
         return null;
     }
+    public PvmActivity getNextElement(String elementId,String procInstId){
+        if(StringUtils.isAnyBlank(elementId,procInstId)){
+            throw new JiMuBizException("获取流程下一节点失败,elementId或procInstId值为空!");
+        }
+        String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(procInstId);
+        if(StringUtils.isBlank(procDefIdByInstId)){
+            throw new JiMuBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
+        }
+        List<ActivityImpl> activitiList = getActivitiList(procDefIdByInstId);
+        return getNextElement(elementId,activitiList);
+    }
+
     /**
      * get assignees from activity engine
      *
