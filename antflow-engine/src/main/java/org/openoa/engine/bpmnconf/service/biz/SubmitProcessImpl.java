@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
@@ -46,7 +47,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         BusinessDataVo vo = formAdapter.submitData(businessDataVo);
         // call the process's launch method to get launch parameters
         BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
-        bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Arrays.asList()));
+        bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Maps.newHashMap()));
         bpmnStartConditionsVo.setProcessNum(businessDataVo.getFormCode() + "_" + vo.getBusinessId());
         bpmnStartConditionsVo.setEntryId(vo.getEntityName() + ":" + vo.getBusinessId());
         bpmnStartConditionsVo.setBusinessId(vo.getBusinessId());
