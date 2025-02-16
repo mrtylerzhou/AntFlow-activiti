@@ -114,6 +114,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             case THREE_DISAGREE://default behavior
                 restoreNodeKey=taskData.getTaskDefinitionKey();
                 backToNodeKey=ProcessNodeEnum.START_TASK_KEY.getDesc();
+                break;
             case FOUR_DISAGREE:
                 String elementId = variableMapper.getElementIsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 backToNodeKey=elementId;
