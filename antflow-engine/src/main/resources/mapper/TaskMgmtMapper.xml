@@ -503,4 +503,7 @@
         from act_ru_task t
         where t.id_ = #{taskId}
     </select>
+    <select id="findProcDefIdByInstId" resultType="java.lang.String">
+        select PROC_DEF_ID_ from jimuoffice.act_hi_procinst where PROC_INST_ID_=#{procInstId}
+    </select>
 </mapper>

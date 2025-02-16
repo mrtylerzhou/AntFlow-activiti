@@ -295,4 +295,5 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
      * @return
      */
     public Map<String, Object> findTaskById(@Param("taskId") String taskId);
+    public String findProcDefIdByInstId(String procInstId);
 }
