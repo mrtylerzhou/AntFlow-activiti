@@ -124,12 +124,13 @@ let rules = {
 };
 
 let approveSubData = reactive({
-    "taskId": taskId,
-    "processNumber": processNumber,
-    "formCode": formCode,
-    "isOutSideAccessProc": isOutSideAccess,
-    "outSideType": 2,
-    "isLowCodeFlow": isLowCodeFlow
+    taskId: taskId,
+    processNumber: processNumber,
+    formCode: formCode,
+    isOutSideAccessProc: isOutSideAccess,
+    outSideType: 2,
+    isLowCodeFlow: isLowCodeFlow,
+    lfFields: null, //低代码表单字段
 });
 
 onMounted(() => {
@@ -180,16 +181,18 @@ const approveSubmit = async (param) => {
     param.validate(async (valid) => {
         if (valid) {
             approveSubData.approvalComment = approveForm.remark;
-            approveSubData.operationType = handleClickType.value;
+            approveSubData.operationType = handleClickType.value; 
             if (handleClickType.value == approvalButtonConf.resubmit) {
                 await componentFormRef.value.handleValidate().then(async (isValid) => {
                     if (isValid) {
-                        await componentFormRef.value.getFromData().then((data) => {
-                            Object.assign(approveSubData, JSON.parse(data));
+                        await componentFormRef.value.getFromData().then((data) => { 
+                            approveSubData.lfFields = JSON.parse(data); //低代码表单字段
                         })
+                      
                     }
                 });
             };
+            console.log('approveSubData==========', JSON.stringify(approveSubData));
             await approveProcess(approveSubData);//业务处理
         }
     })
@@ -221,11 +224,11 @@ const approveUndertakeSubmit = async () => {
  */
 const preview = () => {
     let queryParams = ref({
-        "formCode": formCode,
-        "processNumber": processNumber,
-        "type": 2,
-        "isOutSideAccessProc": isOutSideAccess,
-        "isLowCodeFlow": isLowCodeFlow
+        formCode: formCode,
+        processNumber: processNumber,
+        type: 2,
+        isOutSideAccessProc: isOutSideAccess,
+        isLowCodeFlow: isLowCodeFlow
     });
     proxy.$modal.loading();
     getViewBusinessProcess(queryParams.value).then(async (response) => {
