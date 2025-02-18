@@ -91,19 +91,8 @@ public class LFMainField {
                 throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
             Object value = fieldId2ValueEntry.getValue();
-            if(value instanceof Iterable){
-                Iterable iterableValue = (Iterable) value;
-                Iterator iterator = iterableValue.iterator();
-                int sort=0;
-                while (iterator.hasNext()){
-                    Object actualValue=iterator.next();
-                    LFMainField mainField = buildMainField(actualValue, mainId, sort, fieldConfig);
-                    mainFields.add(mainField);
-                }
-            }else{
-                LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
-                mainFields.add(mainField);
-            }
+            LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
+            mainFields.add(mainField);
         }
         return mainFields;
     }
