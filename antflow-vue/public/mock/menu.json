@@ -287,7 +287,7 @@
                     "hidden": false,
                     "component": "outsideMgt/outsideTemp/index",
                     "meta": {
-                        "title": "流程管理",
+                        "title": "流程设计",
                         "icon": "",
                         "noCache": false,
                         "link": null
@@ -295,7 +295,7 @@
                 },{
                     "name": "outsideDesign",
                     "path": "outsideDesign",
-                    "hidden": false,
+                    "hidden": true,
                     "component": "outsideMgt/outsideDesign/index",
                     "meta": {
                         "title": "流程设计",

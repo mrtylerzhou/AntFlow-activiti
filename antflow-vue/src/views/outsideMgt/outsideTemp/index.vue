@@ -28,14 +28,8 @@
 
      <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-           <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-        </el-col>
-        <el-col :span="1.5">
-           <el-button type="success" plain icon="Edit"  @click="handleUpdate">修改</el-button>
-        </el-col>
-        <el-col :span="1.5">
-           <el-button type="danger" plain icon="Delete"  @click="handleDelete">删除</el-button>
-        </el-col>
+           <el-button type="primary" plain icon="Edit" @click="handleAdd">流程设计</el-button>
+        </el-col> 
      </el-row>
 
      <el-table v-loading="loading" :data="configList">
@@ -74,8 +68,7 @@
               <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
               <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
               <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
-              <el-button link type="primary" @click="handleEdit(scope.row)">复制</el-button> 
-              <el-button link type="primary"  @click="handleDelete(scope.row)">删除</el-button>
+              <el-button link type="primary" @click="handleEdit(scope.row)">复制</el-button>  
            </template>
         </el-table-column>
      </el-table>
@@ -181,12 +174,7 @@ function handleQuery() {
 
 function handleAdd() {
   router.push({ path: "/outsideMgt/outsideDesign"});
-}
-
-function handleUpdate() {
-  proxy.$modal.msgError("演示环境不允许删除操作！");
-}
-
+} 
 /** 重置按钮操作 */
 function resetQuery() {
   taskMgmtVO.value = {
@@ -197,11 +185,7 @@ function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
 }
-
-/** 删除按钮操作 */
-function handleDelete(row) {
-  proxy.$modal.msgError("演示环境不允许删除操作！");
-}
+ 
 /** 预览 */
 function handlePreview(row) { 
   const params ={
