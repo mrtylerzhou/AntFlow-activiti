@@ -6,15 +6,19 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.confentity.BpmnNode;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,8 @@ public class BpmnBusinessController {
     private UserEntrustServiceImpl userEntrustService;
     @Autowired(required = false)
     private LowCodeFlowBizService lowCodeFlowBizService;
+    @Autowired
+    private BpmnNodeMapper bpmnNodeMapper;
 
     @Operation(summary ="" )
     @RequestMapping("/listFormCodes")
@@ -117,6 +123,14 @@ public class BpmnBusinessController {
         return Result.newSuccessResult("ok");
     }
 
+    @GetMapping("/getchooseModules")
+    public Result getStartUserPickAssigneeNodes(String formCode){
+        if(StringUtils.isEmpty(formCode)){
+            throw new JiMuBizException("请传入formCode");
+        }
+        List<BpmnNode> nodes = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
+        return Result.newSuccessResult(nodes);
+    }
     private List<BaseKeyValueStruVo> baseFormInfo(String desc){
         List<BaseKeyValueStruVo> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {

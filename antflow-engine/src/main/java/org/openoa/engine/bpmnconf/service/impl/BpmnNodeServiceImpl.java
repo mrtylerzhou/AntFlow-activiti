@@ -6,6 +6,8 @@ import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BpmnNodeServiceImpl extends ServiceImpl<BpmnNodeMapper, BpmnNode> {
 

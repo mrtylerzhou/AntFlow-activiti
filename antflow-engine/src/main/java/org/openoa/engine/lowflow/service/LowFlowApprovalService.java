@@ -206,6 +206,27 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public UDLFApplyVo consentData(UDLFApplyVo vo) {
+        Map<String, Object> lfFields = vo.getLfFields();
+        if(CollectionUtils.isEmpty(lfFields)){
+            throw new JiMuBizException("form data does not contains any field");
+        }
+        LFMain lfMain = mainService.getById(vo.getBusinessId());
+        if(lfMain==null){
+            log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
+            throw new JiMuBizException("can not get lowcode form data by specified id");
+        }
+        Long mainId = lfMain.getId();
+        String formCode = vo.getFormCode();
+        Long confId = vo.getBpmnConfVo().getId();
+        List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
+        if(CollectionUtils.isEmpty(lfMainFields)){
+            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
+        }
+        for (LFMainField field : lfMainFields){
+            String f_value = lfFields.get(field.getFieldId()).toString();
+            field.setFieldValue(f_value);
+            mainFieldService.updateById(field);
+        }
         return vo;
     }
 

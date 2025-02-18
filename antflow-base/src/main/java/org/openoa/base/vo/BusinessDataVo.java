@@ -89,9 +89,9 @@ public class BusinessDataVo extends PageDto {
     public List<String> userIds;
     public List<BaseIdTranStruVo> userInfos;
     /**
-     * approvers list
+     * key is node's id,value is a list of approves,if there is only one start user chosen node,the map's key is ignored
      */
-    private List<String> approversList;
+    private Map<String,List<BaseIdTranStruVo>> approversList;
 
     private Boolean flag;
 

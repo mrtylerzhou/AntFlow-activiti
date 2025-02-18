@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ApprovalFormCodeEnum;
@@ -99,7 +100,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 //        }
 
         //set approvers list
-        bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Lists.newArrayList()));
+        bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Maps.newHashMap()));
 
         //set process number
         bpmnStartConditionsVo.setProcessNum(processNum);

@@ -136,7 +136,7 @@ export function getBpmnConflistPage(pageDto, taskMgmtVO) {
 /**
  * 审批,发起审批
  * @param {*} data 
- * operationType 1 发起 3 审批
+ * operationType 1 发起 2 重新提交 3 审批
  * @returns 
  */
 export function processOperation(data) {

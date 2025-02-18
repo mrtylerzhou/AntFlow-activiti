@@ -65,9 +65,9 @@ public class BpmnStartConditionsVo {
     private List<String> employeeIds;
 
     /**
-     * a list of approver
+     * key is node's id,value is a list of approves,if there is only one start user chosen node,the map's key is ignored
      */
-    private List<String> approversList;
+    private Map<String,List<BaseIdTranStruVo>> approversList;
     /**
      * entry Id
      */
