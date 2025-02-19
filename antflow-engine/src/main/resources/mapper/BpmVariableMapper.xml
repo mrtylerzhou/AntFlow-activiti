@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmVariableMapper">
 
 
-    <select id="getElementsdByNodeId" resultType="java.lang.String">
+    <select id="getElementIdsdByNodeId" resultType="java.lang.String">
         select tbvs.element_id from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
         where tbv.process_num=#{processNum} and tbvs.node_id=#{nodeId}
         union all

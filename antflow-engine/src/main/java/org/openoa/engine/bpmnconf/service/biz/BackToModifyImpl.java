@@ -115,13 +115,13 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 backToNodeKey=ProcessNodeEnum.START_TASK_KEY.getDesc();
                 break;
             case FOUR_DISAGREE:
-                String elementId = variableMapper.getElementsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                String elementId = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 backToNodeKey=elementId;
                 restoreNodeKey=additionalInfoService.getNextElement(elementId,bpmBusinessProcess.getProcInstId()).getId();
                 break;
             case FIVE_DISAGREE:
                 restoreNodeKey=taskData.getTaskDefinitionKey();
-                backToNodeKey=variableMapper.getElementsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                backToNodeKey=variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 break;
             default:
                 throw new JiMuBizException("未支持的打回类型!");
