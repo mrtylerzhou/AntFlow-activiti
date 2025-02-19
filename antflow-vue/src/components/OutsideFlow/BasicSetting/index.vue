@@ -7,10 +7,10 @@
       label-width="auto"
       style="max-width: 600px; margin: auto"
     >
-      <el-form-item label="业务方名称" prop="businessPartyId">
+      <el-form-item label="项目名称" prop="businessPartyId">
         <el-select
           v-model="form.businessPartyId"
-          placeholder="请选择业务方"
+          placeholder="请选择项目"
           :style="{ width: '100%' }"
         >
           <el-option
@@ -21,19 +21,19 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="模板类型" prop="formCode">
+      <el-form-item label="业务类型" prop="formCode">
         <template #label>
           <span>
-            <el-tooltip content="业务方注册的应用集合" placement="top">
+            <el-tooltip content="项目注册的业务表单集合" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
-            模板类型
+            业务类型
           </span>
         </template>
         <el-select
           @change="selectFormCodeChanged"
           v-model="form.formCode"
-          placeholder="请选择模板类型"
+          placeholder="请选择业务类型"
           :style="{ width: '100%' }"
         >
           <el-option
@@ -178,11 +178,11 @@ watch(
 );
 
 let rules = {
-  formCode: [{ required: true, message: "请选择模板类型", trigger: "blur" }],
+  formCode: [{ required: true, message: "请选择项目类型", trigger: "blur" }],
   bpmnName: [{ required: true, message: "请输入流程名称", trigger: "blur" }],
   bpmnCode: [{ required: true, message: "请输入流程编号", trigger: "blur" }],
   businessPartyId: [
-    { required: true, message: "请输选择业务方", trigger: "change" },
+    { required: true, message: "请输选择项目", trigger: "change" },
   ],
 };
 const nextSubmit = (ruleFormRef) => {

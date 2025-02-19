@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="vo" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="应用名称" prop="title">
+      <el-form-item label="业务表单名称" prop="title">
         <el-input v-model="vo.title" placeholder="请输入关键字" clearable style="width: 200px" @keyup.enter="handleQuery" />
       </el-form-item>
 
@@ -12,7 +12,7 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd">注册应用</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd">注册业务表单</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" plain icon="Setting" :disabled="single"
@@ -23,9 +23,9 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="业务方名称" align="center" prop="businessName" />
       <el-table-column label="业务方标识" align="center" prop="businessCode" />
-      <el-table-column label="应用名称" align="center" prop="title" />
-      <el-table-column label="应用标识" align="center" prop="processKey" />
-      <el-table-column label="应用类型" align="center" prop="applyTypeName" />
+      <el-table-column label="业务表单名称" align="center" prop="title" />
+      <el-table-column label="业务表单标识" align="center" prop="processKey" />
+      <el-table-column label="业务表单类型" align="center" prop="applyTypeName" />
       <el-table-column label="创建时间" align="center" prop="createTime">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
@@ -64,14 +64,14 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="应用名称" prop="title">
-                <el-input v-model="form.title" placeholder="请输入应用名称" />
+              <el-form-item label="业务表单名称" prop="title">
+                <el-input v-model="form.title" placeholder="请输入业务表单名称" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="应用类型" prop="applyType">
+              <el-form-item label="业务表单类型" prop="applyType">
                 <el-radio-group v-model="form.applyType">
                   <el-radio value="1" :disabled=true>流程</el-radio>
                   <el-radio value="2" :disabled=true>应用</el-radio>
@@ -82,7 +82,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="子应用" prop="isSon">
+              <el-form-item label="子业务表单" prop="isSon">
                 <el-radio-group v-model="form.isSon">
                   <el-radio value="1" :disabled=true>是</el-radio>
                   <el-radio value="2" :disabled=true>否</el-radio>
@@ -100,15 +100,15 @@
           </template>
           <!-- <el-row>
             <el-col :span="24">
-              <el-form-item label="应用ID" prop="clientId">
-                <el-input v-model="form.clientId" placeholder="请输入应用唯一标识" />
+              <el-form-item label="业务表单ID" prop="clientId">
+                <el-input v-model="form.clientId" placeholder="请输入业务表单唯一标识" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="应用密钥" prop="clientSecret">
-                <el-input v-model="form.clientSecret" placeholder="请输入应用密钥" />
+              <el-form-item label="业务表单密钥" prop="clientSecret">
+                <el-input v-model="form.clientSecret" placeholder="请输入业务表单密钥" />
               </el-form-item>
             </el-col>
           </el-row> -->
@@ -149,8 +149,8 @@
           </el-row>
           <!-- <el-row>
                 <el-col :span="24">
-                  <el-form-item label="应用URL" prop="applicationUrl">
-                    <el-input v-model="form.applicationUrl" placeholder="请输入应用URL" />
+                  <el-form-item label="业务表单URL" prop="applicationUrl">
+                    <el-input v-model="form.applicationUrl" placeholder="请输入业务表单URL" />
                   </el-form-item>
                 </el-col>
               </el-row> -->
@@ -184,8 +184,8 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="应用名称" prop="applicationName">
-              <el-input v-model="templateForm.applicationName" :disabled=true placeholder="请输入应用名称" />
+            <el-form-item label="业务表单名称" prop="applicationName">
+              <el-input v-model="templateForm.applicationName" :disabled=true placeholder="请输入业务表单名称" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -255,10 +255,10 @@ const data = reactive({
   vo: {},
   rules: {
     businessCode: [{ required: true, message: '请选择业务方', trigger: 'change' }],
-    title: [{ required: true, message: '请输入应用名称', trigger: 'blur' }],
+    title: [{ required: true, message: '请输入业务表单名称', trigger: 'blur' }],
     applyType: [{ required: true, message: '', trigger: 'change' }],
-    clientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用唯一标识(不能输入中文)', trigger: 'blur' }],
-    clientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入应用密钥(不能输入中文)', trigger: 'blur' }],
+    clientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务表单唯一标识(不能输入中文)', trigger: 'blur' }],
+    clientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务表单密钥(不能输入中文)', trigger: 'blur' }],
     userRequestUri: [
       {
         required: true,
@@ -292,7 +292,7 @@ function getListAA() {
   });
 }
 
-/** 查询注册应用列表 */
+/** 查询注册业务表单列表 */
 function getList() {
   loading.value = true;
   getApplicationsPageList(page.value, vo.value).then(response => {
@@ -318,7 +318,7 @@ function handleSelectionChange(selection) {
 /** 新增接入业务方 */
 function handleAdd() {
   reset();
-  title.value = "注册应用";
+  title.value = "注册业务";
   open.value = true;
 }
 /** 提交表单 */
@@ -359,7 +359,7 @@ function handleEdit(row) {
     form.value.applyType = form.value.applyType.toString();
     form.value.isSon = form.value.isSon?.toString();
     open.value = true;
-    title.value = "编辑应用";
+    title.value = "编辑业务表单";
   });
 }
 
