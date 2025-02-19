@@ -40,6 +40,6 @@ public class PreviewNode{
     private Integer deduplicationType;
     //deduplication type name
     private String deduplicationTypeName;
-
-
+    //当前流程节点ElementId
+    private String currentTaskElementId;
 }

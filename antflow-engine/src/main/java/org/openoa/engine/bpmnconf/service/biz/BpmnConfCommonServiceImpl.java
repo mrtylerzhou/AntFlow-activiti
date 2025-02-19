@@ -60,7 +60,8 @@ public class BpmnConfCommonServiceImpl {
     private BpmnPersonnelFormat bpmnPersonnelFormat;
     @Autowired
     private BpmVariableServiceImpl bpmnVariableService;
-
+    @Autowired
+    private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     /**
      * query conf by formCode
      *
@@ -215,6 +216,7 @@ public class BpmnConfCommonServiceImpl {
         JSONObject objectStart = JSON.parseObject(processStartConditions);
         objectStart.put("bpmnCode", bpmnVariable.getBpmnCode());
         objectStart.put("isLowCodeFlow",Boolean.TRUE.equals(isLowCodeFlow));
+        objectStart.put("processNumber",processNumber);
         return getPreviewNode(objectStart.toString(), false);
     }
 
@@ -391,6 +393,9 @@ public class BpmnConfCommonServiceImpl {
         previewNode.setBpmnNodeList(setNodeFrom(bpmnConfVo.getNodes()));
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
+
+        previewNode.setCurrentTaskElementId(bpmVerifyInfoBizService.findCurrentTaskElementId(vo.getProcessNumber()));
+
         return previewNode;
 
     }

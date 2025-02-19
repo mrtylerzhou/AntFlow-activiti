@@ -340,7 +340,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         return signUpNodeCollectionNameMap;
     }
-
+    /**
+     * 根据processNumber 获取当前审批节点的ElementId
+     * @param processNumber
+     * @return
+     */
+    public  String  findCurrentTaskElementId(String processNumber) {
+      return  service.findCurrentTaskElementId(processNumber);
+    }
     /**
      * do append verify info
      *

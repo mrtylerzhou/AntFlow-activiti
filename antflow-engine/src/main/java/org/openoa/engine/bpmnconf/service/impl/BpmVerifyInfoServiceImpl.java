@@ -201,6 +201,29 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
                 }).collect(Collectors.toList()));
         return infoVoList;
     }
+
+    /**
+     * 根据processNumber 获取当前审批节点的ElementId
+     * @param processNumber
+     * @return
+     */
+    public  String  findCurrentTaskElementId(String processNumber){
+        //query business process info
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
+
+        if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
+            return "";
+        }
+        // act_ru_task 表的 PROC_INST_ID_
+        String procInstId = bpmBusinessProcess.getProcInstId();
+
+        List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getBaseMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());
+        if (ObjectUtils.isEmpty(tasks)) {
+            return "";
+        }
+        return  tasks.get(0).getElementId();
+    }
+
     /**
      * get to do task info
      *
