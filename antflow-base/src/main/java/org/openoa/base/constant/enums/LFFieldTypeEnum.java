@@ -8,12 +8,13 @@ import java.util.List;
 
 @Getter
 public enum LFFieldTypeEnum {
-    STRING(1,"字符串"),
-    NUMBER(2,"数字"),
-    DATE(3,"日期"),
-    DATE_TIME(4,"日期时间"),
-    TEXT(5,"长字符串"),
-    BLOB(6,"二进制"),
+    STRING(1,"字符串"),//string
+    NUMBER(2,"数字"),//int
+    DATE(3,"日期"),//date
+    DATE_TIME(4,"日期时间"),//time
+    TEXT(5,"长字符串"),//text/string
+    BOOLEAN(6,"布尔"),//boolean
+    BLOB(7,"二进制"),//byte
     ;
     private static LFFieldTypeEnum[] allInstances;
     private final Integer type;

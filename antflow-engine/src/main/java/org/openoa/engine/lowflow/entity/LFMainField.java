@@ -116,8 +116,8 @@ public class LFMainField {
                 mainField.setFieldValue(fieldValueStr);
                 break;
             case NUMBER:
-                Double fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Double.parseDouble(fieldValueStr) : null;
-                mainField.setFieldValueNumber(fieldValueNumber);
+                Integer fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Integer.parseInt(fieldValueStr) : null;
+                mainField.setFieldValue(String.valueOf(fieldValueNumber));
                 break;
             case DATE:
             case DATE_TIME:
@@ -126,6 +126,10 @@ public class LFMainField {
                 break;
             case TEXT:
                 mainField.setFieldValueText(fieldValueStr);
+                break;
+            case BOOLEAN:
+                mainField.setFieldValue(String.valueOf(fieldValueStr));
+                break;
         }
         mainField.setSort(sort);
         return mainField;

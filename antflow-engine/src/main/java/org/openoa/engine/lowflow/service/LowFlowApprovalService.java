@@ -141,7 +141,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                       }
                         break;
                     case NUMBER:
-                       actualValue=field.getFieldValueNumber();
+                       actualValue=Integer.parseInt(field.getFieldValue());;
                         break;
                     case DATE:
                        actualValue=DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
@@ -151,6 +151,10 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                         break;
                     case TEXT:
                        actualValue=field.getFieldValueText();
+                       break;
+                    case BOOLEAN:
+                        actualValue=Boolean.parseBoolean(field.getFieldValue());
+                        break;
                 }
                 if(valueLen==1){
                     fieldVoMap.put(fieldName,actualValue);
