@@ -88,7 +88,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 formdataField.setBpmnConfId(confId);
                 formdataField.setFormDataId(formDataId);
                 formdataField.setFieldType(lfOption.getFieldType());
-                formdataField.setFieldId(lfWidget.getId());
+                formdataField.setFieldId(lfOption.getName());
                 formdataField.setFieldName(lfOption.getLabel());
                 result.add(formdataField);
             }else{//走到这里一定是容器类型
