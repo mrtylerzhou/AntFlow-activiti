@@ -8,7 +8,6 @@ import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.base.constant.enums.ProcessDisagreeTypeEnum;
@@ -116,13 +115,13 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 backToNodeKey=ProcessNodeEnum.START_TASK_KEY.getDesc();
                 break;
             case FOUR_DISAGREE:
-                String elementId = variableMapper.getElementIsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                String elementId = variableMapper.getElementsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 backToNodeKey=elementId;
                 restoreNodeKey=additionalInfoService.getNextElement(elementId,bpmBusinessProcess.getProcInstId()).getId();
                 break;
             case FIVE_DISAGREE:
                 restoreNodeKey=taskData.getTaskDefinitionKey();
-                backToNodeKey=variableMapper.getElementIsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                backToNodeKey=variableMapper.getElementsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 break;
             default:
                 throw new JiMuBizException("未支持的打回类型!");
