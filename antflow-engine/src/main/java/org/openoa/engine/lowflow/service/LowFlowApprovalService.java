@@ -208,12 +208,12 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public UDLFApplyVo consentData(UDLFApplyVo vo) {
+        if (!vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            return vo;
+        }
         Map<String, Object> lfFields = vo.getLfFields();
-
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
-            if(CollectionUtils.isEmpty(lfFields)){
-                throw new JiMuBizException("form data does not contains any field");
-            }
+        if(CollectionUtils.isEmpty(lfFields)){
+            throw new JiMuBizException("form data does not contains any field");
         }
         LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
