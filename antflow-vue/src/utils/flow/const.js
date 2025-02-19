@@ -171,7 +171,11 @@ export let approveList = {
   19: '邱灵珊',
   20: '任盈盈'
 };
-//控件对应后端api的判断类型
+/**
+ * 1、控件对应后端api的判断类型
+ * 2、用于条件节点 对接 流程引擎中 条件判断
+ * 3、与后端约定的值
+ */
 export const condition_columnTypeMap = new Map([
   ['input', '10000'],//"int/fload/double/string" input
   ['input-number', '10001'],//"Double" 
@@ -184,29 +188,36 @@ export const condition_columnTypeMap = new Map([
   ['data-range', '10002'],
   ['date', '10002']
 ]);
-//控件是否显示
+ 
+/**
+ * 1、控件是在条件节点 选择条件时候否显示
+ * 2、对应后端数据解析 与后端约定的值
+ * Mapping: 1-string 2-int 3-date 4-time 5-text/长字符串 6-boolean 7-二进制/byte
+ */
 export const condition_filedTypeMap = new Map([
-  ['input', '4'],//"String" 
-  ['input-number', '1'],//"Double" 
-  ['select', '2'],//"String" select
-  ['checkbox', '3'],//"String" checkbox
-  //['radio', '1'],
-  ['switch', '1'],
+  ['input', '1'],//"String" 
+  ['input-number', '4'],//"time" 
+  ['select', '2'],//"int" select
+  ['checkbox', '1'],//"String" checkbox
+  //['radio', '2'], //  int radio
+  ['switch', '6'], // boolean switch
   ['time', '1'],
-  //['time-range', '1'],
-  //['data-range', '1'],
+  // ['time-range', '1'],
+  // ['data-range', '1'],
   ['date', '1']
 ]);
-//判断控件的值的类型
+/**
+ * 判断控件的值的类型 
+ */
 export const condition_filedValueTypeMap = new Map([
   ['input', 'String'],//"Double" 
-  ['input-number', 'Double'],//"Double" 
-  ['select', 'String'],//"String" select
-  ['checkbox', 'String'],//"String" checkbox
-  ['radio', 'Double'],
-  ['switch', 'Double'],
-  ['time', 'Double'],
-  ['time-range', 'Double'],
-  ['data-range', 'Double'],
-  ['date', 'Double']
+  ['input-number', 'String'],//"Double" 
+  ['select', 'Int'],//"Int" select
+  ['checkbox', 'String'],//checkbox 对应 VForm 是Array
+  ['radio', 'Int'],
+  ['switch', 'Boolean'],
+  ['time', 'String'],
+  ['time-range', 'String'],
+  ['data-range', 'String'],
+  ['date', 'String']
 ]);
