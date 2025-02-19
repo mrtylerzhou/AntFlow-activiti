@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
@@ -28,6 +29,7 @@ import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -207,8 +209,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     @Override
     public UDLFApplyVo consentData(UDLFApplyVo vo) {
         Map<String, Object> lfFields = vo.getLfFields();
-        if(CollectionUtils.isEmpty(lfFields)){
-            throw new JiMuBizException("form data does not contains any field");
+
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            if(CollectionUtils.isEmpty(lfFields)){
+                throw new JiMuBizException("form data does not contains any field");
+            }
         }
         LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
