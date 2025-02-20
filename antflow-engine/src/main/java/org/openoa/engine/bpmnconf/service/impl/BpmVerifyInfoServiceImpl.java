@@ -14,9 +14,10 @@ import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
-import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
-import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
+import org.openoa.engine.bpmnconf.confentity.*;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,10 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;;
+    @Autowired
+    private BpmVariableMapper bpmVariableMapper;
+    @Autowired
+    private BpmnNodeMapper bpmnNodeMapper;
 
     public void addVerifyInfo(String businessId, String remark, Integer businessType, String taskName, Integer verifyStatuss) {
         BpmVerifyInfo verifyInfo = new BpmVerifyInfo();
@@ -207,7 +212,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * @param processNumber
      * @return
      */
-    public  String  findCurrentTaskElementId(String processNumber){
+    public  String  findCurrentNodeIds(String processNumber){
         //query business process info
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
 
@@ -221,7 +226,20 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         if (ObjectUtils.isEmpty(tasks)) {
             return "";
         }
-        return  tasks.get(0).getElementId();
+        String elementId = tasks.get(0).getElementId();
+        List<String> bpmnNodeIds =  bpmVariableMapper.getNodeIdsByeElementId(processNumber,elementId);
+
+        QueryWrapper<BpmnNode> wrapper = new QueryWrapper<>();
+        wrapper.in("id", bpmnNodeIds);
+        List<BpmnNode> bpmnNodes = bpmnNodeMapper.selectList(wrapper);
+        if (bpmnNodes.isEmpty()){
+            return "";
+        }
+        List<String> nodeCollect = bpmnNodes
+                .stream()
+                .map(BpmnNode::getNodeId)
+                .collect(Collectors.toList());
+        return String.join(",", nodeCollect);
     }
 
     /**

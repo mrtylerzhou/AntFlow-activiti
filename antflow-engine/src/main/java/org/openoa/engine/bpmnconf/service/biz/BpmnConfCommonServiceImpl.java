@@ -391,7 +391,7 @@ public class BpmnConfCommonServiceImpl {
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
 
-        previewNode.setCurrentTaskElementId(bpmVerifyInfoBizService.findCurrentTaskElementId(vo.getProcessNumber()));
+        previewNode.setCurrentNodeIds(bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber()));
 
         return previewNode;
 

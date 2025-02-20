@@ -345,8 +345,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @param processNumber
      * @return
      */
-    public  String  findCurrentTaskElementId(String processNumber) {
-      return  service.findCurrentTaskElementId(processNumber);
+    public  String  findCurrentNodeIds(String processNumber) {
+      return  service.findCurrentNodeIds(processNumber);
     }
     /**
      * do append verify info
