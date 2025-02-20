@@ -219,14 +219,14 @@ public class BusinessDataVo extends PageDto {
      */
     private Integer outSideType;
     /**
-     * template mark
+     * template marks
      */
-    private String templateMark;
+    private List<String> templateMarks;
 
     /**
      * template mark id
      */
-    private Integer templateMarkId;
+    private List<Integer> templateMarkIds;
     /**
      * embedded node
      */

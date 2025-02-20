@@ -55,9 +55,9 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      */
     private String formDataApp;
     /**
-     * template mark
+     * template marks
      */
-    private String templateMark;
+    private List<String> templateMarks;
     /**
      * start user id
      */

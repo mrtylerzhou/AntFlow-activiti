@@ -128,7 +128,7 @@ public class BpmnStartConditionsVo {
     /**
      * template mark id
      */
-    private Integer templateMarkId;
+    private List<Integer> templateMarkIds;
 
     /**
      * 业务方类型（1-嵌入式；2-接入式）

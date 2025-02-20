@@ -7,12 +7,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
-import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -22,7 +20,6 @@ import org.openoa.common.adaptor.bpmnelementadp.BpmnNodeFormatImpl;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnOptionalDuplicatesAdaptor;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnOptionalDuplicatesImpl;
 import org.openoa.common.formatter.BpmnPersonnelFormat;
-import org.openoa.common.formatter.BpmnPersonnelFormatImpl;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
@@ -371,7 +368,7 @@ public class BpmnConfCommonServiceImpl {
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
         if(dataVo.getIsOutSideAccessProc()){
             //set conditions before preview
-            bpmnStartConditionsVo.setTemplateMarkId(dataVo.getTemplateMarkId());
+            bpmnStartConditionsVo.setTemplateMarkIds(dataVo.getTemplateMarkIds());
             bpmnStartConditionsVo.setOutSideType(dataVo.getOutSideType());
             //set embedded nodes
             bpmnStartConditionsVo.setEmbedNodes(dataVo.getEmbedNodes());

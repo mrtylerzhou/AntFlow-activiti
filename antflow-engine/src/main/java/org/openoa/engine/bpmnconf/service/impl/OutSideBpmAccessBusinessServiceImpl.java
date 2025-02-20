@@ -105,6 +105,10 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             vo.setBpmnConfId(effectiveConfByFormCode.getId());
             outSideBpmAccessBusiness = new OutSideBpmAccessBusiness();
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
+            if(!CollectionUtils.isEmpty(vo.getTemplateMarks())){
+                String templateMarksJoin = String.join(",", vo.getTemplateMarks());
+                outSideBpmAccessBusiness.setTemplateMark(templateMarksJoin);
+            }
             //set business party's id
             outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
@@ -264,15 +268,15 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             throw new JiMuBizException("发起人不合法，无法预览流程");
         }
         //query condition template
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate=null;
-        if(!StringUtils.isEmpty(vo.getTemplateMark())){
-            outSideBpmConditionsTemplate= outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+        List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates=null;
+        if(!CollectionUtils.isEmpty(vo.getTemplateMarks())){
+            outSideBpmConditionsTemplates= outSideBpmConditionsTemplateService.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
                     .eq("is_del", 0)
                     .eq("business_party_id", outSideBpmBusinessParty.getId())
-                    .eq("template_mark", vo.getTemplateMark()));
+                    .in("template_mark", vo.getTemplateMarks()));
 
 
-            if (outSideBpmConditionsTemplate==null) {
+            if (outSideBpmConditionsTemplates==null) {
                 throw new JiMuBizException("模板信息不合法，无法预览流程");
             }
         }
@@ -284,11 +288,14 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .formCode(vo.getFormCode())
                 .startUserId(employee.getId())
                 .startUserName(employee.getUsername())
-                .templateMark(vo.getTemplateMark())
+                .templateMarks(vo.getTemplateMarks())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
-        if(outSideBpmConditionsTemplate!=null&&outSideBpmConditionsTemplate.getId()!=null){
-            dataVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+
+        if(!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)){
+            List<Integer> templateIds = outSideBpmConditionsTemplates.stream().filter(a -> a.getId() != null).map(a->a.getId().intValue()).collect(Collectors.toList());
+
+            dataVo.setTemplateMarkIds(templateIds);
         }
 
         PreviewNode previewNode = bpmnConfCommonService.startPagePreviewNode(JSON.toJSONString(dataVo));

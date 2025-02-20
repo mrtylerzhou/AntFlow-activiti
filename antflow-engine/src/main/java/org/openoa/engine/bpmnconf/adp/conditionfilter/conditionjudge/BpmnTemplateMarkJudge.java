@@ -18,7 +18,8 @@ public class BpmnTemplateMarkJudge extends ConditionJudge {
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
         if (!CollectionUtils.isEmpty(conditionsConf.getTemplateMarks()) &&
-                conditionsConf.getTemplateMarks().contains(bpmnStartConditionsVo.getTemplateMarkId())) {
+                CollectionUtils.containsAny(conditionsConf.getTemplateMarks(),bpmnStartConditionsVo.getTemplateMarkIds())
+        ) {
             return true;
         }
         return false;

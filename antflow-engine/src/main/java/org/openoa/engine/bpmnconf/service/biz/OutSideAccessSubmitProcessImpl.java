@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * third party process submit
@@ -69,18 +70,21 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(businessDataVo.getBusinessId());
         //new start conditions vo
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+        //调整以后,这里存储的实际上是逗号分割的字符串
         String templateMark=outSideBpmAccessBusiness.getTemplateMark();
         if(!StringUtils.isEmpty(templateMark)){
+            String[] templateMarkList = templateMark.split(",");
             //query template mark
-            OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+            List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplate = outSideBpmConditionsTemplateService.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
                     .eq("is_del", 0)
                     .eq("business_party_id", outSideBpmAccessBusiness.getBusinessPartyId())
-                    .eq("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
+                    .in("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
 
             if (outSideBpmConditionsTemplate==null) {
                 throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
             }
-            bpmnStartConditionsVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+            List<Integer> templateMarkIds = outSideBpmConditionsTemplate.stream().map(a -> a.getId().intValue()).collect(Collectors.toList());
+            bpmnStartConditionsVo.setTemplateMarkIds(templateMarkIds);
         }
 
         bpmnStartConditionsVo.setOutSideType(businessDataVo.getOutSideType());
