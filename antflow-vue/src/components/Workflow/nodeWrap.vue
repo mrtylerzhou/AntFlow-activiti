@@ -200,6 +200,7 @@ const resetConditionNodesErr = () => {
  * 重置并行节点错误状态和展示名称
  */
 const resetParallelNodesErr = () => {   
+    if(!props.nodeConfig.parallelNodes) return;
     for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {  
         let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);   
         props.nodeConfig.parallelNodes[i].error = false;//props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
