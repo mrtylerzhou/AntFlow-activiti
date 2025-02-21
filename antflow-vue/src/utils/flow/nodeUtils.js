@@ -223,8 +223,8 @@ export class NodeUtils {
       error: true,
       property: null,
       parallelNodes: [
-        this.createParallelNode("审核人1", child,1, 0),
-        this.createParallelNode("审核人2", null,2, 0),
+        this.createParallelNode("并行审核人1", child,1, 0),
+        this.createParallelNode("并行审核人2", null,2, 0),
       ],
     };
     return parallelwayNode;
@@ -236,7 +236,7 @@ export class NodeUtils {
   static createParallelNode(name, childNode, priority, isDefault) {
     let parallelNode = {
       nodeId: this.idGenerator(),
-      nodeName: name || "审核人1",
+      nodeName: name || "并行审核人1",
       nodeDisplayName: '',
       nodeType: 4,
       nodeFrom: "",
