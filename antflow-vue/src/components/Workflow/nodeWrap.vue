@@ -20,7 +20,7 @@
                     <i class="anticon anticon-close close" @click="delNode"></i>
                 </template>
             </div>
-            <div class="content" @click="setPerson">
+            <div class="content" @click="setNodeInfo">
                 <div class="text">
                     <span class="placeholder" v-if="!showText">请选择{{defaultText}}</span>
                     {{showText}}
@@ -49,13 +49,13 @@
                                         v-model="item.nodeName" />
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
                                         }}</span>
-                                    <span class="priority-title" @click="setPerson(item.priorityLevel)">优先级{{
+                                    <span class="priority-title" @click="setNodeInfo(item.priorityLevel)">优先级{{
                                         item.priorityLevel }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                 </div>
                                 <div class="sort-right" v-if="index != nodeConfig.conditionNodes.length - 1"
                                     @click="arrTransfer(index)">&gt;</div>
-                                <div class="content" @click="setPerson(item.priorityLevel)">
+                                <div class="content" @click="setNodeInfo(item.priorityLevel)">
                                     {{item.nodeDisplayName||$func.conditionStr(nodeConfig, index) }}</div>
                                 <div class="error_tip" v-if="isTried && item.error">
                                     <i class="anticon anticon-exclamation-circle"></i>
@@ -98,17 +98,16 @@
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                 </div>
 
-                                <div class="content" @click="setPerson(index)">
+                                <div class="content" @click="setNodeInfo(index)">
                                     <div class="text">
                                         <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{defaultText}}</span>
                                         {{ item.nodeDisplayName }}
                                     </div>
                                     <i class="anticon anticon-right arrow"></i>
                                 </div>
-                                <div class="error_tip" v-if="isTried && nodeConfig.error">
+                                <div class="error_tip" v-if="isTried && item.error">
                                     <i class="anticon anticon-exclamation-circle"></i>
-                                </div>
-
+                                </div> 
                             </div>
                             <addNode v-model:childNodeP="item.childNode" />
                         </div>
@@ -234,29 +233,30 @@ watch(conditionsConfig1, (condition) => {
     }
 });
 /**
- * 条件节点 修改名称
+ * 点击节点名称
  * 点击事件
  * @param index 条件索引
  */
-const clickEvent = (index) => {
-    console.log("clickEvent=====点击事件===00000==", JSON.stringify(index)); 
+const clickEvent = (index) => { 
     if (index || index === 0) {
         isInputList.value[index] = true;
     } else {
         isInput.value = true;
-    }
-    console.log("clickEvent=====点击事件==1111===", JSON.stringify(isInputList)); 
+    } 
 };
 /**
- * 条件节点 修改名称
+ * 修改节点名称
  * 失焦事件
  * @param index 条件索引
  */
-const blurEvent = (index) => {
-    console.log("blurEvent=====失焦事件=====", JSON.stringify(index)); 
+const blurEvent = (index) => { 
     if (index || index === 0) {
         isInputList.value[index] = false;
-        props.nodeConfig.conditionNodes[index].nodeName = props.nodeConfig.conditionNodes[index].nodeName || "条件";
+        if (props.nodeConfig.nodeType == 2) {
+            props.nodeConfig.conditionNodes[index].nodeName = props.nodeConfig.conditionNodes[index].nodeName || "条件";
+        }else if (props.nodeConfig.nodeType == 7) {
+            props.nodeConfig.parallelNodes[index].nodeName = props.nodeConfig.parallelNodes[index].nodeName || "审批人";
+        }        
     } else {
         isInput.value = false;
         props.nodeConfig.nodeName = props.nodeConfig.nodeName || defaultText
@@ -269,20 +269,38 @@ const delNode = () => {
     emits("update:nodeConfig", props.nodeConfig.childNode);
 };
 /**
- * 添加条件
+ * 添加网关下节点
  */
-const addTerm = () => { 
-    let len = props.nodeConfig.conditionNodes.length + 1;
-    let n_name='条件' + len;
-    props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name,null,len,0));
-    resetConditionNodesErr()
+const addTerm = () => {
+    if (props.nodeConfig.nodeType == 2) {
+        let len = props.nodeConfig.conditionNodes.length + 1;
+        let n_name = '条件' + len;
+        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
+        resetConditionNodesErr()
+    } else if (props.nodeConfig.nodeType == 7) {
+        let len = props.nodeConfig.parallelNodes.length + 1;
+        let n_name = '审核人' + len;
+        props.nodeConfig.parallelNodes.push(NodeUtils.createParallelNode(n_name, null, len, 0));
+        resetParallelNodesErr();
+    }
     emits("update:nodeConfig", props.nodeConfig);
+};
+/**
+ * 删除网关下节点
+ * @param index 条件索引
+ */
+const delTerm = (index) => { 
+    if (props.nodeConfig.nodeType == 2) {
+        delConditionNodeTerm(index);
+    } else if (props.nodeConfig.nodeType == 7) {
+        delParallelNodeTerm(index);
+    }
 };
 /**
  * 删除条件
  * @param index 条件索引
  */
-const delTerm = (index) => {
+const delConditionNodeTerm = (index) => {
     props.nodeConfig.conditionNodes.splice(index, 1);
     props.nodeConfig.conditionNodes.map((item, index) => {
         item.priorityLevel = index + 1;
@@ -290,6 +308,7 @@ const delTerm = (index) => {
     });
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
+
     if (props.nodeConfig.conditionNodes.length == 1) {
         if (props.nodeConfig.childNode) {
             if (props.nodeConfig.conditionNodes[0].childNode) {
@@ -300,7 +319,32 @@ const delTerm = (index) => {
         }
         emits("update:nodeConfig", props.nodeConfig.conditionNodes[0].childNode);
     }
-};
+}
+/**
+ * 删除并行审批节点
+ * @param index 条件索引
+ */
+const delParallelNodeTerm = (index) => {
+    props.nodeConfig.parallelNodes.splice(index, 1);
+    props.nodeConfig.parallelNodes.map((item, index) => {
+        item.priorityLevel = index + 1;
+        item.nodeName = `审批人${index + 1}`;
+    });
+    resetParallelNodesErr(); 
+    emits("update:nodeConfig", props.nodeConfig);
+
+    if (props.nodeConfig.parallelNodes.length == 1) {
+        if (props.nodeConfig.childNode) {
+            if (props.nodeConfig.parallelNodes[0].childNode) {
+                reData(props.nodeConfig.parallelNodes[0].childNode, props.nodeConfig.childNode);
+            } else {
+                props.nodeConfig.parallelNodes[0].childNode = props.nodeConfig.childNode;
+            }
+        }
+        emits("update:nodeConfig", props.nodeConfig.parallelNodes[0].childNode);
+    }
+}
+/**重置子节点 */
 const reData = (data, addData) => {
     if (!data.childNode) {
         data.childNode = addData;
@@ -309,9 +353,9 @@ const reData = (data, addData) => {
     }
 };
 /**
- * 设置人员
+ * 设置节点信息
  */
-const setPerson = (index) => {
+const setNodeInfo = (index) => {
     var { nodeType } = props.nodeConfig;
     if (nodeType == 1) {
         setPromoter(true);
