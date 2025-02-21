@@ -66,9 +66,11 @@ export class FormatDisplayUtils {
             return a.nodeType - b.nodeType;
         });
         for (let node of parmData) { 
+            //起始节点
             if (1 == node.nodeType) {
                 startNode = node;
             }
+            //并行节点
             if (7 == node.nodeType) {
                 Object.assign(node, { parallelNodes: [] });
                 let currNodeId = node.nodeId;
@@ -90,6 +92,7 @@ export class FormatDisplayUtils {
                 } 
                 startNode.childNode = node;
             }
+            //条件节点
             if (2 == node.nodeType) {
                 Object.assign(node, { conditionNodes: [] });
                 let currNodeId = node.nodeId;
@@ -104,7 +107,18 @@ export class FormatDisplayUtils {
                     }
                 }
                 startNode.childNode = node;
-            }  
+            } 
+            //审批人节点 和 抄送人节点
+            if (4 == node.nodeType || 6 == node.nodeType) {
+              let currNodeId = node.nodeId;
+              if (nodesGroup.hasOwnProperty(currNodeId)) {
+                let itemNodes = nodesGroup[currNodeId];
+                for (let itemNode of itemNodes) {
+                    node.childNode = itemNode;
+                }
+              }
+              startNode.childNode = node;
+            }
         } 
         return startNode
     }
