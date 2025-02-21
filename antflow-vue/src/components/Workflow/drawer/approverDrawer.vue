@@ -20,7 +20,7 @@
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
-                                    <a v-if="approverConfig.nodeApproveList.length != 0"
+                                    <a v-if="approverConfig.nodeApproveList?.length != 0"
                                         @click="approverConfig.nodeApproveList = []">清除</a>
                                 </p>
                             </div>
@@ -179,6 +179,7 @@ let props = defineProps({
 
 let approverConfig = ref({})
 let approverVisible = ref(false)
+ 
 let approverRoleVisible = ref(false)
 let checkedRoleList = ref([])
 let checkedList = ref([])
@@ -195,7 +196,7 @@ let approverStepShow = ref(true)
 let formStepShow = ref(false)
 
 let approverConfig1 = computed(() => store.approverConfig1)
-let approverDrawer = computed(() => store.approverDrawer)
+let approverDrawer = computed(() => store.approverDrawer) 
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" })
@@ -207,21 +208,27 @@ let visible = computed({
 })
 
 watch(approverConfig1, (val) => {
-    approverConfig.value = val.value;
+    if (val.value.nodeType ==7) {
+        approverConfig.value = val.value.parallelNodes[val.value.index];
+        //approverConfigStore.value = val.value.parallelNodes.splice(val.value.index, val.value.index);
+    }
+    else{
+        approverConfig.value = val.value;
+    }
     formItems.value = approverConfig.value.lfFieldControlVOs || []; 
-    checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+    checkApprovalPageBtns.value = val.value.buttons?.approvalPage;  
 })
 
-watch(approverConfig1, (val) => {
-    approvalPageBtns.value = val.value.buttons?.approvalPage;
-    if (val.value.nodeProperty == 6) {
+watch(approverConfig, (val) => {
+    approvalPageBtns.value = val.value?.buttons?.approvalPage;
+    if (val.value?.nodeProperty == 6) {
         checkedHRBP.value =  val.value.property.hrbpConfType 
     } 
 })
  
 watch(() => approverConfig.value?.property, (newVal, oldVal) => {
-     let afterSignUpWayTemp = newVal.afterSignUpWay;
-     console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
+     let afterSignUpWayTemp = newVal?.afterSignUpWay??1;
+     //console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
      if (afterSignUpWayTemp) {
         approvalBtnSubOption.value = afterSignUpWayTemp == 1 ? 3 : approverConfig.value?.property?.signUpType;
      }
@@ -266,23 +273,10 @@ const sureRoleApprover = (data) => {
     approverConfig.value.nodeApproveList = data;
     approverRoleVisible.value = false;
 }
-const saveApprover = () => {
-    approverConfig.value.error = !$func.setApproverStr(approverConfig.value)
-    //console.log('approverConfig.===saveApprover=======',JSON.stringify(approverConfig.value)) 
-    store.setApproverConfig({
-        value: approverConfig.value,
-        flag: true,
-        id: approverConfig1.value.id
-    })
-    closeDrawer()
-}
-const closeDrawer = () => {
-    store.setApprover(false)
-}
 
 const handleCheckedButtonsChange = (val) => {
-    const index = approvalPageBtns.value.indexOf(val);
-    index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
+    const index = approvalPageBtns?.value?.indexOf(val)??-1;
+    index < 0 ? approvalPageBtns?.value?.push(val) : approvalPageBtns.value.splice(index, 1);
     const isAddStep = approvalPageBtns.value.indexOf(19);
     if (isAddStep >= 0) {
         approverConfig.value.isSignUp = 1;
@@ -325,6 +319,19 @@ const handleTabClick = (tab, event) => {
 const changePermVal = (data) => {
     approverConfig.value.lfFieldControlVOs = data;
 }    
+/**条件抽屉的确认 */
+const saveApprover = () => { 
+    approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);   
+    store.setApproverConfig({
+        value: approverConfig1.value.value,
+        flag: true,
+        id: approverConfig1.value.id
+    })
+    closeDrawer()
+}
+const closeDrawer = () => {
+    store.setApprover(false)
+} 
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";

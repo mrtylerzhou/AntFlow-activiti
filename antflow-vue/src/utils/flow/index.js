@@ -60,8 +60,8 @@ All.prototype = {
             }
         });
         arr.splice(includesIndex, 1);
-    },
-    setApproverStr(nodeConfig) { 
+    }, 
+    setApproverStr(nodeConfig) {  
         if(!nodeConfig) return; 
         if (nodeConfig.setType == 5) {
             if (nodeConfig.nodeApproveList.length == 1) {
@@ -98,8 +98,10 @@ All.prototype = {
             return "发起人自己"
         }  else if (nodeConfig.setType == 13) { 
             return "直属领导"
-        }  
-    },
+        } else {
+            return ""
+        }
+    }, 
     dealStr(str, obj) {
         if(!obj) return; 
         let arr = [];
@@ -130,7 +132,7 @@ All.prototype = {
             return ret;
         }
         return '';
-    },  
+    },   
     conditionStr(nodeConfig, index) { 
         var { conditionList, nodeApproveList } = nodeConfig.conditionNodes[index];   
         if (conditionList.length == 0) { 

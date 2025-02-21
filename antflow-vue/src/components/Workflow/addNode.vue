@@ -9,6 +9,15 @@
                         </div>
                         <p>审批人</p>
                     </a>
+                    <a class="add-node-popover-item approver" @click="addType(7)">
+                        <div class="item-wrapper">
+                            <span style="padding-top: 20px; color:#c45656;">
+                                <svg width="50" height="50"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+                                    <path fill="currentColor" d="m679.872 348.8-301.76 188.608a127.808 127.808 0 0 1 5.12 52.16l279.936 104.96a128 128 0 1 1-22.464 59.904l-279.872-104.96a128 128 0 1 1-16.64-166.272l301.696-188.608a128 128 0 1 1 33.92 54.272z"></path></svg>
+                            </span>
+                        </div>
+                        <p>并行审批</p>
+                    </a>
                     <a class="add-node-popover-item notifier" @click="addType(6)">
                         <div class="item-wrapper">
                             <span class="iconfont"></span>
@@ -53,6 +62,9 @@ const addType = (type)=> {
             _dataNode = NodeUtils.createCopyNode();  
             _dataNode.childNode = props.childNodeP;  
         }
+        else if (type == 7) {
+            _dataNode = NodeUtils.createParallelWayNode(props.childNodeP);   
+        }
         emits("update:childNodeP", _dataNode)
     } else { 
         let gatewayNode= NodeUtils.createGatewayNode(props.childNodeP); 
@@ -62,6 +74,19 @@ const addType = (type)=> {
 </script>
 <style scoped lang="scss">  
 @import "@/assets/styles/flow/workflow.scss";
+.el-icon {
+    --color: inherit;
+    align-items: center;
+    display: inline-flex;
+    height: 1em;
+    justify-content: center;
+    line-height: 1em;
+    position: relative;
+    width: 1em;
+    fill: currentColor;
+    color: var(--color);
+    font-size: inherit;
+}
 .add-node-btn-box {
     width: 240px;
     display: -webkit-inline-box;

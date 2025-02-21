@@ -5,10 +5,14 @@
  * @FilePath: /src/utils/flow/const.js
  */
 
-export let bgColors = ["192,192,192", '87, 106, 149', '255，97，0', '65，105，225', '255, 148, 62', '50, 150, 250', '50, 150, 250'] // '灰色, 蓝色, 橙色, 黄色, 黄色'
+export let bgColors = ["192,192,192", '87, 106, 149', '255，97，0', '65，105，225', '255, 148, 62', '50, 150, 250', '50, 150, 250']; // '灰色, 蓝色, 橙色, 黄色, 黄色'
 export let placeholderList = ["发起人", "审核人", "抄送人"];
-export let nodeTypeList = ["未知", "发起人", "网关", "条件", "审核人", "抄送人", "抄送人"];
-
+export let nodeTypeList = ["未知", "发起人", "网关", "条件", "审核人", "未知", "抄送人", "并行审批"];
+export let signTypeObj = {
+  1: '会签', 
+  2: '或签',//
+  3: '顺序会签',//拒绝
+}; 
 export let setTypes = [
   { value: 5, label: '指定人员' }, 
   { value: 4, label: '指定角色' },   

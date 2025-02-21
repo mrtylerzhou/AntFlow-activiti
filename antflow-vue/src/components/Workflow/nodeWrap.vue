@@ -5,86 +5,130 @@
  * @FilePath: /ant-flow/src/components/nodeWrap.vue
 -->
 <template>
-  <div class="node-wrap" v-if="nodeConfig.nodeType != 2">
-    <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '') +(isTried && nodeConfig.error ? 'active error' : '')">
-        <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
-          <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
-          <template v-else>
-            <span class="iconfont">{{nodeConfig.nodeType == 4?'':''}}</span>
-            <input
-              v-if="isInput"
-              type="text"
-              class="fd-input editable-title-input"
-              @blur="blurEvent()"
-              @focus="$event.currentTarget.select()"
-              v-focus
-              v-model="nodeConfig.nodeName"
-              :placeholder="defaultText"
-            />
-            <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
-            <i class="anticon anticon-close close" @click="delNode"></i>
-          </template>
-        </div>
-        <div class="content" @click="setPerson">
-          <div class="text">
-              <span class="placeholder" v-if="!showText">请选择{{defaultText}}</span>
-              {{showText}}
-          </div>
-          <i class="anticon anticon-right arrow"></i>
-        </div>
-        <div class="error_tip" v-if="isTried && nodeConfig.error">
-          <i class="anticon anticon-exclamation-circle"></i>
-        </div>
-    </div>
-    <addNode v-model:childNodeP="nodeConfig.childNode" />
-  </div>
-  <div class="branch-wrap" v-if="nodeConfig.nodeType == 2">
-    <div class="branch-box-wrap">
-      <div class="branch-box">
-        <button class="add-branch" @click="addTerm">添加条件</button>
-        <div class="col-box" v-for="(item, index) in nodeConfig.conditionNodes" :key="index">
-          <div class="condition-node">
-            <div class="condition-node-box">
-              <div class="auto-judge" :class="isTried && item.error ? 'error active' : ''">
-                <div class="sort-left" v-if="index != 0" @click="arrTransfer(index, -1)">&lt;</div>
-                <div class="title-wrapper">
-                  <input
-                    v-if="isInputList[index]"
-                    type="text"
-                    class="fd-input editable-title-input"
-                    @blur="blurEvent(index)"
-                    @focus="$event.currentTarget.select()"
-                    v-focus
-                    v-model="item.nodeName"
-                  />
-                  <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName }}</span>
-                  <span class="priority-title" @click="setPerson(item.priorityLevel)">优先级{{ item.priorityLevel }}</span>
-                  <i class="anticon anticon-close close" @click="delTerm(index)"></i>
-                </div>
-                <div class="sort-right" v-if="index != nodeConfig.conditionNodes.length - 1" @click="arrTransfer(index)">&gt;</div>
-                <div class="content" @click="setPerson(item.priorityLevel)">{{item.nodeDisplayName||$func.conditionStr(nodeConfig, index) }}</div>
-                <div class="error_tip" v-if="isTried && item.error">
-                    <i class="anticon anticon-exclamation-circle"></i>
-                </div>
-              </div>
-              <addNode v-model:childNodeP="item.childNode" />
+    <!--审批人，抄送人分支-->
+    <div class="node-wrap" v-if="nodeConfig.nodeType != 2 && nodeConfig.nodeType != 7">
+        <div class="node-wrap-box"
+            :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '') +(isTried && nodeConfig.error ? 'active error' : '')">
+            <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
+                <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
+                <template v-else>
+                    <span class="iconfont">{{nodeConfig.nodeType == 4?'':''}}</span>
+                    <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
+                        @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
+                        :placeholder="defaultText" />
+                    <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
+                    <i class="anticon anticon-close close" @click="delNode"></i>
+                </template>
             </div>
-          </div>
-          <nodeWrap v-if="item.childNode" v-model:nodeConfig="item.childNode" />
-          <template v-if="index == 0">
-            <div class="top-left-cover-line"></div>
-            <div class="bottom-left-cover-line"></div>
-          </template>
-          <template v-if="index == nodeConfig.conditionNodes.length - 1">
-            <div class="top-right-cover-line"></div>
-            <div class="bottom-right-cover-line"></div>
-          </template>
+            <div class="content" @click="setPerson">
+                <div class="text">
+                    <span class="placeholder" v-if="!showText">请选择{{defaultText}}</span>
+                    {{showText}}
+                </div>
+                <i class="anticon anticon-right arrow"></i>
+            </div>
+            <div class="error_tip" v-if="isTried && nodeConfig.error">
+                <i class="anticon anticon-exclamation-circle"></i>
+            </div>
         </div>
-      </div>
-      <addNode v-model:childNodeP="nodeConfig.childNode" />
+        <addNode v-model:childNodeP="nodeConfig.childNode" />
     </div>
-  </div>
-  <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode"/>
+    <!--条件分支-->
+    <div class="branch-wrap" v-if="nodeConfig.nodeType == 2">
+        <div class="branch-box-wrap">
+            <div class="branch-box">
+                <button class="add-branch" @click="addTerm">添加条件</button>
+                <div class="col-box" v-for="(item, index) in nodeConfig.conditionNodes" :key="index">
+                    <div class="condition-node">
+                        <div class="condition-node-box">
+                            <div class="auto-judge" :class="isTried && item.error ? 'error active' : ''">
+                                <div class="sort-left" v-if="index != 0" @click="arrTransfer(index, -1)">&lt;</div>
+                                <div class="title-wrapper">
+                                    <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
+                                        @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
+                                        v-model="item.nodeName" />
+                                    <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
+                                        }}</span>
+                                    <span class="priority-title" @click="setPerson(item.priorityLevel)">优先级{{
+                                        item.priorityLevel }}</span>
+                                    <i class="anticon anticon-close close" @click="delTerm(index)"></i>
+                                </div>
+                                <div class="sort-right" v-if="index != nodeConfig.conditionNodes.length - 1"
+                                    @click="arrTransfer(index)">&gt;</div>
+                                <div class="content" @click="setPerson(item.priorityLevel)">
+                                    {{item.nodeDisplayName||$func.conditionStr(nodeConfig, index) }}</div>
+                                <div class="error_tip" v-if="isTried && item.error">
+                                    <i class="anticon anticon-exclamation-circle"></i>
+                                </div>
+                            </div>
+                            <addNode v-model:childNodeP="item.childNode" />
+                        </div>
+                    </div>
+                    <nodeWrap v-if="item.childNode" v-model:nodeConfig="item.childNode" />
+                    <template v-if="index == 0">
+                        <div class="top-left-cover-line"></div>
+                        <div class="bottom-left-cover-line"></div>
+                    </template>
+                    <template v-if="index == nodeConfig.conditionNodes.length - 1">
+                        <div class="top-right-cover-line"></div>
+                        <div class="bottom-right-cover-line"></div>
+                    </template>
+                </div>
+            </div>
+            <addNode v-model:childNodeP="nodeConfig.childNode" />
+        </div>
+    </div>
+    <!--并行审批分支-->
+    <div class="branch-wrap" v-if="nodeConfig.nodeType == 7">
+        <div class="branch-box-wrap">
+            <div class="branch-box">
+                <button class="add-branch" @click="addTerm">添加审批节点</button>
+                <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
+                    <div class="condition-node">
+                        <div class="condition-node-box">
+                            <div class="node-wrap-box" :class="isTried && item.error ? 'error active' : ''">
+                                <div class="title" :style="`background: rgb(${bgColors[4]});`">
+                                    <span class="iconfont"></span>
+                                    <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
+                                        @blur="blurEvent(index)" 
+                                        @focus="$event.currentTarget.select()" 
+                                        v-focus
+                                        v-model="item.nodeName" />
+                                    <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName }}</span>
+                                    <i class="anticon anticon-close close" @click="delTerm(index)"></i>
+                                </div>
+
+                                <div class="content" @click="setPerson(index)">
+                                    <div class="text">
+                                        <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{defaultText}}</span>
+                                        {{ item.nodeDisplayName }}
+                                    </div>
+                                    <i class="anticon anticon-right arrow"></i>
+                                </div>
+                                <div class="error_tip" v-if="isTried && nodeConfig.error">
+                                    <i class="anticon anticon-exclamation-circle"></i>
+                                </div>
+
+                            </div>
+                            <addNode v-model:childNodeP="item.childNode" />
+                        </div>
+                    </div>
+                    <nodeWrap v-if="item.childNode" v-model:nodeConfig="item.childNode" />
+                    <template v-if="index == 0">
+                        <div class="top-left-cover-line"></div>
+                        <div class="bottom-left-cover-line"></div>
+                    </template>
+                    <template v-if="index == nodeConfig.parallelNodes.length - 1">
+                        <div class="top-right-cover-line"></div>
+                        <div class="bottom-right-cover-line"></div>
+                    </template>
+                </div>
+            </div>
+            <addNode v-model:childNodeP="nodeConfig.childNode" />
+        </div>
+    </div>
+
+    <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
 import { onMounted, ref, watch, getCurrentInstance, computed } from "vue";
@@ -103,24 +147,23 @@ let props = defineProps({
         type: Object,
         default: () => [],
     },
-});
-//console.log("props==========", JSON.stringify(props.nodeConfig)); 
-
+}); 
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
-let showText = computed(() => {
+let showText = computed(() => { 
+    if(!props.nodeConfig.nodeType) return'';  
     if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '所有人';
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
-    if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);  
 });
-
-props.nodeConfig.nodeDisplayName = showText;
 
 let isInputList = ref([]);
 let isInput = ref(false);
-const resetConditionNodesErr = () => {
-  
+/**
+ * 重置条件节点错误状态和展示名称
+ */
+const resetConditionNodesErr = () => {  
     for (var i = 0; i < props.nodeConfig.conditionNodes.length; i++) { 
         let conditionTitle= $func.conditionStr(props.nodeConfig, i); 
         props.nodeConfig.conditionNodes[i].error = conditionTitle == "请设置条件" && i != props.nodeConfig.conditionNodes.length - 1; 
@@ -134,13 +177,22 @@ const resetConditionNodesErr = () => {
         node.error = false;
     }
 }
-onMounted(() => {
-    if (props.nodeConfig.nodeType == 4) { 
-        props.nodeConfig.error = !$func.setApproverStr(props.nodeConfig); 
-    } else if (props.nodeConfig.nodeType == 6) {
-        props.nodeConfig.error = !$func.copyerStr(props.nodeConfig);
-    } else if (props.nodeConfig.nodeType == 2) {
-        resetConditionNodesErr()
+
+/**
+ * 重置并行节点错误状态和展示名称
+ */
+const resetParallelNodesErr = () => {   
+    for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {  
+        let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);   
+        props.nodeConfig.parallelNodes[i].error = props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
+        props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle; 
+    }  
+}
+onMounted(() => { 
+    if (props.nodeConfig.nodeType == 2) {
+        resetConditionNodesErr();
+    }else if (props.nodeConfig.nodeType == 7) { 
+        resetParallelNodesErr();
     }
 });
 let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
@@ -181,15 +233,27 @@ watch(conditionsConfig1, (condition) => {
         emits("update:nodeConfig", condition.value);
     }
 });
-
+/**
+ * 条件节点 修改名称
+ * 点击事件
+ * @param index 条件索引
+ */
 const clickEvent = (index) => {
+    console.log("clickEvent=====点击事件===00000==", JSON.stringify(index)); 
     if (index || index === 0) {
         isInputList.value[index] = true;
     } else {
         isInput.value = true;
     }
+    console.log("clickEvent=====点击事件==1111===", JSON.stringify(isInputList)); 
 };
+/**
+ * 条件节点 修改名称
+ * 失焦事件
+ * @param index 条件索引
+ */
 const blurEvent = (index) => {
+    console.log("blurEvent=====失焦事件=====", JSON.stringify(index)); 
     if (index || index === 0) {
         isInputList.value[index] = false;
         props.nodeConfig.conditionNodes[index].nodeName = props.nodeConfig.conditionNodes[index].nodeName || "条件";
@@ -198,9 +262,15 @@ const blurEvent = (index) => {
         props.nodeConfig.nodeName = props.nodeConfig.nodeName || defaultText
     }
 };
+/**
+ * 删除节点
+ */
 const delNode = () => {
     emits("update:nodeConfig", props.nodeConfig.childNode);
 };
+/**
+ * 添加条件
+ */
 const addTerm = () => { 
     let len = props.nodeConfig.conditionNodes.length + 1;
     let n_name='条件' + len;
@@ -208,6 +278,10 @@ const addTerm = () => {
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
 };
+/**
+ * 删除条件
+ * @param index 条件索引
+ */
 const delTerm = (index) => {
     props.nodeConfig.conditionNodes.splice(index, 1);
     props.nodeConfig.conditionNodes.map((item, index) => {
@@ -234,7 +308,10 @@ const reData = (data, addData) => {
         reData(data.childNode, addData);
     }
 };
-const setPerson = (priorityLevel) => {
+/**
+ * 设置人员
+ */
+const setPerson = (index) => {
     var { nodeType } = props.nodeConfig;
     if (nodeType == 1) {
         setPromoter(true);
@@ -247,8 +324,7 @@ const setPerson = (priorityLevel) => {
         setApprover(true);
         setApproverConfig({
             value: {
-                ...JSON.parse(JSON.stringify(props.nodeConfig)),
-                ...{ setType: props.nodeConfig.setType ? props.nodeConfig.setType : 1 },
+                ...JSON.parse(JSON.stringify(props.nodeConfig))
             },
             flag: false,
             id: _uid,
@@ -260,16 +336,33 @@ const setPerson = (priorityLevel) => {
             flag: false,
             id: _uid,
         });
-    } else {
+    } 
+    else if (nodeType == 7) { 
+        setApprover(true);
+        setApproverConfig({
+            value: {
+                ...JSON.parse(JSON.stringify(props.nodeConfig)), 
+                index: index,
+            },
+            flag: false,
+            id: _uid,
+        });
+    } 
+    else {
         setCondition(true);
         setConditionsConfig({
             value: JSON.parse(JSON.stringify(props.nodeConfig)),
-            priorityLevel,
+            priorityLevel:index,
             flag: false,
             id: _uid,
         });
     }
 };
+/**
+ * 条件排序
+ * @param index 条件索引
+ * @param type 排序类型
+ */
 const arrTransfer = (index, type = 1) => {
     //向左-1,向右1
     props.nodeConfig.conditionNodes[index] = props.nodeConfig.conditionNodes.splice(
