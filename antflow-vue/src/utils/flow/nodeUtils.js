@@ -245,6 +245,7 @@ export class NodeUtils {
       nodeApproveList: [],
       setType: 5, 
       signType: 1,
+      noHeaderAction: 1,
       lfFieldControlVOs: [],
       buttons: {
         startPage: [1],

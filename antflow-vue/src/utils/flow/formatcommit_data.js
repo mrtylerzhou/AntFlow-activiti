@@ -57,7 +57,7 @@ export class FormatUtils {
      * @param { Array } parmData -节点关系数组 
      * @returns 
      */
-    static getEndpointNodeId(parmData) {
+    static getEndpointNodeId2(parmData) {
 
         if (isEmptyArray(parmData)) return parmData;
 
@@ -107,7 +107,93 @@ export class FormatUtils {
             }
         }
         return parmData;
+    } 
+    static getEndpointNodeId(parmData) {  
+        if (isEmptyArray(parmData)) return parmData; 
+        let nodesGroup = {};
+        for (let t of parmData) {
+            if (nodesGroup.hasOwnProperty(t.nodeFrom)) {
+                nodesGroup[t.nodeFrom].push(t)
+            } else {
+                nodesGroup[t.nodeFrom] = [t]
+            }
+        } 
+
+        let parallelgetwayList = parmData.filter((c) => {
+            return c.nodeType == 7;
+        }); 
+        if (!isEmptyArray(parallelgetwayList)) { 
+            for (let parallel of parallelgetwayList) { 
+                if (nodesGroup.hasOwnProperty(parallel.nodeId)) { 
+                    let itemNodes = nodesGroup[parallel.nodeId];
+                    let comNode = itemNodes.find((c) => {
+                        return c.nodeType != 4; 
+                    }); 
+                    if (!comNode) continue;
+                    let approveList = itemNodes.filter((c) => {
+                        return c.nodeId != comNode.nodeId; 
+                    });
+                    for (let itemNode of approveList) {
+                        function internalTraverse(info) { 
+                            if (!info) return;
+                            if (!nodesGroup[info.nodeId]) {
+                                info.nodeTo = [comNode.nodeId];
+                            } else { 
+                                let tempNode = nodesGroup[info.nodeId];
+                                if (Array.isArray(tempNode)) { 
+                                    for (let t_item of tempNode) { 
+                                        internalTraverse(t_item); 
+                                    }
+                                } else { 
+                                    internalTraverse(tempNode);
+                                }
+                            }     
+                        }
+                        internalTraverse(itemNode);
+                    }
+                }
+            }
+        };
+       
+        let getwayList = parmData.filter((c) => {
+            return c.nodeType == 2;
+        });
+
+        if (!isEmptyArray(getwayList)) { 
+            for (let getway of getwayList) {
+                if (nodesGroup.hasOwnProperty(getway.nodeId)) {
+                    let itemNodes = nodesGroup[getway.nodeId];
+                    let comNode = itemNodes.find((c) => {
+                        return c.nodeType != 3;
+                    });
+                    if (!comNode) continue;
+                    let conditionList = itemNodes.filter((c) => {
+                        return c.nodeId != comNode.nodeId;
+                    });
+                    for (let itemNode of conditionList) {
+                        function internalTraverse(info) {
+                            if (!info) return;
+                            if (!nodesGroup[info.nodeId]) {
+                                info.nodeTo = [comNode.nodeId];
+                            } else {
+                                let tempNode = nodesGroup[info.nodeId];
+                                if (Array.isArray(tempNode)) {
+                                    for (let t_item of tempNode) {
+                                        internalTraverse(t_item);
+                                    }
+                                } else {
+                                    internalTraverse(tempNode);
+                                }
+                            }
+                        }
+                        internalTraverse(itemNode);
+                    }
+                }
+            }
+        }
+        return parmData;
     }
+    
     /**
      * 清理节点数据
      * @param { Array } arr -节点数组

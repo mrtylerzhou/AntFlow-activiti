@@ -322,6 +322,7 @@ const changePermVal = (data) => {
 /**条件抽屉的确认 */
 const saveApprover = () => { 
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);   
+    approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,

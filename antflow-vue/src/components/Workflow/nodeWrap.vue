@@ -147,6 +147,28 @@ let props = defineProps({
         default: () => [],
     },
 }); 
+
+let isInputList = ref([]);
+let isInput = ref(false);
+
+let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
+let store = useStore();
+let {
+    setPromoter,
+    setApprover,
+    setCopyer,
+    setCondition,
+    setFlowPermission,
+    setApproverConfig,
+    setCopyerConfig,
+    setConditionsConfig,
+} = store;
+let isTried = computed(()=> store.isTried)
+let flowPermission1 = computed(()=> store.flowPermission1)
+let approverConfig1 = computed(()=> store.approverConfig1)
+let copyerConfig1 = computed(()=> store.copyerConfig1)
+let conditionsConfig1 = computed(()=> store.conditionsConfig1)
+
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
@@ -156,10 +178,7 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);  
 });
-
-let isInputList = ref([]);
-let isInput = ref(false);
-/**
+ /**
  * 重置条件节点错误状态和展示名称
  */
 const resetConditionNodesErr = () => {  
@@ -183,35 +202,19 @@ const resetConditionNodesErr = () => {
 const resetParallelNodesErr = () => {   
     for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {  
         let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);   
-        props.nodeConfig.parallelNodes[i].error = props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
+        props.nodeConfig.parallelNodes[i].error = false;//props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
         props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle; 
     }  
 }
-onMounted(() => { 
+
+onMounted(() => {
     if (props.nodeConfig.nodeType == 2) {
         resetConditionNodesErr();
-    }else if (props.nodeConfig.nodeType == 7) { 
+    } else if (props.nodeConfig.nodeType == 7) {
         resetParallelNodesErr();
     }
 });
-let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
-let store = useStore();
-let {
-    setPromoter,
-    setApprover,
-    setCopyer,
-    setCondition,
-    setFlowPermission,
-    setApproverConfig,
-    setCopyerConfig,
-    setConditionsConfig,
-} = store;
-let isTried = computed(()=> store.isTried)
-let flowPermission1 = computed(()=> store.flowPermission1)
-let approverConfig1 = computed(()=> store.approverConfig1)
-let copyerConfig1 = computed(()=> store.copyerConfig1)
-let conditionsConfig1 = computed(()=> store.conditionsConfig1)
- 
+
 watch(flowPermission1, (flow) => {
     if (flow.flag && flow.id === _uid) {
         emits("update:flowPermission", flow.value);

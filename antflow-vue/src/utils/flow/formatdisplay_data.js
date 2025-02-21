@@ -12,8 +12,8 @@ export class FormatDisplayUtils {
         if (isEmptyArray(parmData)) return;
         let node = this.createNodeDisplay(parmData); 
         if (!node) return;
-        let formatList = this.formatDisplayStructNodeList(parmData?.nodes);     
-        node.nodeConfig = this.depthConverterToTree(formatList);//parmData.nodes
+        let formatList = this.formatDisplayStructNodeList(parmData?.nodes);   
+        node.nodeConfig = this.depthConverterToTree(formatList);//parmData.nodes 
         return node;
     }
 
@@ -62,26 +62,63 @@ export class FormatDisplayUtils {
                 nodesGroup[t.nodeFrom] = [t]
             }
         }
-        for (let node of parmData) {
+        parmData = parmData.sort(function(a, b) {
+            return a.nodeType - b.nodeType;
+        });
+        for (let node of parmData) { 
             if (1 == node.nodeType) {
                 startNode = node;
             }
-            Object.assign(node, { conditionNodes: [] });
-            let currNodeId = node.nodeId;
-            if (nodesGroup.hasOwnProperty(currNodeId)) {
-                let itemNodes = nodesGroup[currNodeId];
-                for (let itemNode of itemNodes) {
-                    if (3 == itemNode.nodeType) {
-                        node.conditionNodes.push(itemNode);
-                    } else {
-                        node.childNode = itemNode;
+            if (7 == node.nodeType) {
+                Object.assign(node, { parallelNodes: [] });
+                let currNodeId = node.nodeId;
+                if (nodesGroup.hasOwnProperty(currNodeId)) {
+                    let itemNodes = nodesGroup[currNodeId];  
+                    let nodeToChildArr = itemNodes.map(item => {
+                        return  item.nodeTo;
+                    }).flat();
+                    nodeToChildArr = this.uniqueByMap(nodeToChildArr); 
+                    for (let itemNode of itemNodes) {
+                        if (4 == itemNode.nodeType) { 
+                            if(!nodeToChildArr.includes(itemNode.nodeId)){ 
+                                node.parallelNodes.push(itemNode);
+                            }else {
+                                node.childNode = itemNode;
+                            }
+                        } 
+                    } 
+                } 
+                startNode.childNode = node;
+            }
+            if (2 == node.nodeType) {
+                Object.assign(node, { conditionNodes: [] });
+                let currNodeId = node.nodeId;
+                if (nodesGroup.hasOwnProperty(currNodeId)) {
+                    let itemNodes = nodesGroup[currNodeId];
+                    for (let itemNode of itemNodes) {
+                        if (3 == itemNode.nodeType) {
+                            node.conditionNodes.push(itemNode);
+                        } else {
+                            node.childNode = itemNode;
+                        }
                     }
                 }
-            }
-        }
+                startNode.childNode = node;
+            }  
+        } 
         return startNode
     }
-
+     /**
+ * 数组去重
+ * @param arr 
+ */
+     static uniqueByMap(arr) {
+        if (!Array.isArray(arr)) {
+            return
+        }
+        const res = new Map();
+        return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
+    }
     static formatDisplayStructNodeList(nodeList) {
         if (!nodeList) return;
         if (isEmptyArray(nodeList)) return nodeList;
@@ -93,7 +130,9 @@ export class FormatDisplayUtils {
                 node.conditionList  =  node.property.conditionList ? node.property.conditionList : [];  
                 delete node.property;
             }
-
+            if (node.nodeType == 7) {  
+                delete node.property;
+            }
             if (node.nodeType == 4 || node.nodeType == 6) {
                 let empList = [];
                 if (node.nodeProperty == 6) {
