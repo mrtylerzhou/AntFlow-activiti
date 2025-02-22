@@ -15,7 +15,7 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
          </el-form-item>
       </el-form>
-      <el-table v-loading="loading" :data="dataList">
+      <el-table v-loading="loading" :data="dataList" :row-style="{ height: '49px' }">
          <el-table-column label="模板类型" align="center" prop="processKey">
             <template #default="item">  {{item.row.processKey}} 
                <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
@@ -23,7 +23,16 @@
                </el-tooltip> 
             </template>
          </el-table-column>  
-         <el-table-column label="流程编号" align="center" prop="processNumber"/>
+         <el-table-column label="流程编号" align="center" prop="processNumber" > 
+            <template #default="item"> 
+               <el-tooltip class="box-item" effect="dark" placement="right" >
+                  <template #content>
+                     <span>{{item.row.processNumber}}</span>
+                  </template>
+                  {{ substringHidden(item.row.processNumber) }}
+               </el-tooltip> 
+            </template>
+         </el-table-column>
          <el-table-column label="流程描述" align="center" prop="description" />
          <el-table-column label="状态" align="center" prop="effectiveStatus">
             <template #default="item">
