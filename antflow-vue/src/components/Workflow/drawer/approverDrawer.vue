@@ -30,7 +30,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                        }}
+                                    }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -44,7 +44,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                        }}
+                                    }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -121,7 +121,8 @@
                     </el-checkbox-group>
 
                     <div v-if="afterSignUpWayVisible">
-                        <el-radio-group v-model="approvalBtnSubOption"  @change="handleApprovalBtnSubOption(approvalBtnSubOption)" class="clear"> 
+                        <el-radio-group v-model="approvalBtnSubOption"
+                            @change="handleApprovalBtnSubOption(approvalBtnSubOption)" class="clear">
                             <el-radio :value="1" class="auth-btn" border>
                                 【顺序会签】
                                 <span class="opt-description">
@@ -179,7 +180,7 @@ let props = defineProps({
 
 let approverConfig = ref({})
 let approverVisible = ref(false)
- 
+
 let approverRoleVisible = ref(false)
 let checkedRoleList = ref([])
 let checkedList = ref([])
@@ -187,8 +188,8 @@ let checkApprovalPageBtns = ref([])
 let checkedHRBP = ref('')
 let approvalPageBtns = ref([])
 
-let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1) 
-let approvalBtnSubOption= ref(1)
+let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
+let approvalBtnSubOption = ref(1)
 let formItems = ref([])
 
 let activeName = ref('approverStep')
@@ -196,7 +197,7 @@ let approverStepShow = ref(true)
 let formStepShow = ref(false)
 
 let approverConfig1 = computed(() => store.approverConfig1)
-let approverDrawer = computed(() => store.approverDrawer) 
+let approverDrawer = computed(() => store.approverDrawer)
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" })
@@ -208,41 +209,40 @@ let visible = computed({
 })
 
 watch(approverConfig1, (val) => {
-    if (val.value.nodeType ==7) {
+    if (val.value.nodeType == 7) {//并行审批
         approverConfig.value = val.value.parallelNodes[val.value.index];
-        //approverConfigStore.value = val.value.parallelNodes.splice(val.value.index, val.value.index);
     }
-    else{
+    else {
         approverConfig.value = val.value;
     }
-    formItems.value = approverConfig.value.lfFieldControlVOs || []; 
-    checkApprovalPageBtns.value = val.value.buttons?.approvalPage;  
+    formItems.value = approverConfig.value.lfFieldControlVOs || [];
+    checkApprovalPageBtns.value = val.value.buttons?.approvalPage; 
 })
 
 watch(approverConfig, (val) => {
-    approvalPageBtns.value = val.value?.buttons?.approvalPage;
-    if (val.value?.nodeProperty == 6) {
-        checkedHRBP.value =  val.value.property.hrbpConfType 
-    } 
+    approvalPageBtns.value = val.buttons?.approvalPage;
+    if (val.nodeProperty == 6) {
+        checkedHRBP.value = val.property.hrbpConfType
+    }
 })
- 
-watch(() => approverConfig.value?.property, (newVal, oldVal) => {
-     let afterSignUpWayTemp = newVal?.afterSignUpWay??1;
-     //console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
-     if (afterSignUpWayTemp) {
-        approvalBtnSubOption.value = afterSignUpWayTemp == 1 ? 3 : approverConfig.value?.property?.signUpType;
-     }
-}, { deep: true})
 
-watch(checkedHRBP, (val) => {  
+watch(() => approverConfig.value?.property, (newVal, oldVal) => {
+    let afterSignUpWayTemp = newVal?.afterSignUpWay ?? 1;
+    //console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
+    if (afterSignUpWayTemp) {
+        approvalBtnSubOption.value = afterSignUpWayTemp == 1 ? 3 : approverConfig.value?.property?.signUpType;
+    }
+}, { deep: true })
+
+watch(checkedHRBP, (val) => {
     if (approverConfig.value.setType != 6) {
-       return;
+        return;
     }
     approverConfig.value.property.hrbpConfType = val;
-    let labelName = hrbpOptions.find(item => item.value == val)?.label; 
-    if(labelName){
-        approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }]; 
-    } 
+    let labelName = hrbpOptions.find(item => item.value == val)?.label;
+    if (labelName) {
+        approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }];
+    }
 })
 
 const changeType = (val) => {
@@ -265,7 +265,7 @@ const addRoleApprover = () => {
     approverRoleVisible.value = true;
     checkedRoleList.value = approverConfig.value.nodeApproveList
 }
-const sureApprover = (data) => { 
+const sureApprover = (data) => {
     approverConfig.value.nodeApproveList = data;
     approverVisible.value = false;
 }
@@ -275,9 +275,9 @@ const sureRoleApprover = (data) => {
 }
 
 const handleCheckedButtonsChange = (val) => {
-    const index = approvalPageBtns?.value?.indexOf(val)??-1;
+    const index = approvalPageBtns?.value?.indexOf(val) ?? -1;
     index < 0 ? approvalPageBtns?.value?.push(val) : approvalPageBtns.value.splice(index, 1);
-    const isAddStep = approvalPageBtns.value.indexOf(19);
+    const isAddStep = approvalPageBtns?.value?.indexOf(19) ?? 1;
     if (isAddStep >= 0) {
         approverConfig.value.isSignUp = 1;
     } else {
@@ -287,27 +287,28 @@ const handleCheckedButtonsChange = (val) => {
 /**处理加批按钮 子操作 */
 const handleApprovalBtnSubOption = (val) => {
     const isTure = approverConfig.value.hasOwnProperty("property");
-    if (isTure) {
+    if (isTure && approverConfig.value.property) {
         if (approverConfig.value.property.hasOwnProperty("afterSignUpWay")) {
-            approverConfig.value.property.afterSignUpWay = val&&val==3 ? 1 : 2;
+            approverConfig.value.property.afterSignUpWay = val && val == 3 ? 1 : 2;
         } else {
-            Object.assign(approverConfig.value.property, { afterSignUpWay: val&&val==3 ? 1 : 2 });
+            Object.assign(approverConfig.value, { property: { afterSignUpWay: val && val == 3 ? 1 : 2 } });
         }
+
         if (approverConfig.value.property.hasOwnProperty("signUpType")) {
-            approverConfig.value.property.signUpType = val&&val==3 ? 1 : val;
+            approverConfig.value.property.signUpType = val && val == 3 ? 1 : val;
         } else {
-            Object.assign(approverConfig.value.property, { signUpType: val&&val==3 ? 1 : val });
-        } 
+            Object.assign(approverConfig.value.property, { signUpType: val && val == 3 ? 1 : val });
+        }
     } else {
         Object.assign(approverConfig.value, {
             property: {
-                 afterSignUpWay: val&&val==3 ? 1 : 2,
-                 signUpType: val&&val==3 ? 1 : val 
-                }
+                afterSignUpWay: val && val == 3 ? 1 : 2,
+                signUpType: val && val == 3 ? 1 : val
+            }
         });
     }
     //console.log('approverConfig.value=============', JSON.stringify(approverConfig.value)) signUpType
-} 
+}
 const handleTabClick = (tab, event) => {
     activeName.value = tab.paneName;
     if (tab.paneName == 'formStep') {
@@ -318,10 +319,10 @@ const handleTabClick = (tab, event) => {
 }
 const changePermVal = (data) => {
     approverConfig.value.lfFieldControlVOs = data;
-}    
+}
 /**条件抽屉的确认 */
-const saveApprover = () => { 
-    approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);   
+const saveApprover = () => {
+    approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
     store.setApproverConfig({
         value: approverConfig1.value.value,
@@ -347,7 +348,7 @@ const closeDrawer = () => {
 }
 
 .selected_list span {
-    margin-right: 10px; 
+    margin-right: 10px;
     padding: 5px;
     line-height: 12px;
     white-space: nowrap;
@@ -391,9 +392,11 @@ const closeDrawer = () => {
     .approver_block,
     .approver_Btn {
         padding-top: 10px;
+
         .el-radio-group {
             display: unset;
         }
+
         .el-radio {
             width: 27%;
             margin-bottom: 20px;
@@ -438,11 +441,13 @@ const closeDrawer = () => {
         line-height: 19px;
     }
 }
-.opt-description{
+
+.opt-description {
     font-size: smaller;
     color: gray;
 }
-.auth-btn{
+
+.auth-btn {
     margin-top: 6px;
     width: 95%;
     height: 45px;
