@@ -23,7 +23,12 @@
                </el-tooltip> 
             </template>
          </el-table-column>  
-         <el-table-column label="流程编号" align="center" prop="processNumber" />
+         <el-table-column label="流程编号" align="center" prop="processNumber" > 
+            <template #default="item">
+               {{ item.row.processNumber.length > 18 ? item.row.processNumber.substring(0,10)+'***' + item.row.processNumber.substring(15,item.row.processNumber.length-10) :  item.row.processNumber}}
+            </template>
+         </el-table-column>
+
          <el-table-column label="流程描述" align="center" prop="description" />
          <el-table-column label="状态" align="center" prop="effectiveStatus">
             <template #default="item">

@@ -53,11 +53,9 @@ export class FormatUtils {
         return nodeData;
     }
     /**
-     * 递归处理网关节点下属子节点的nodeTo数据
-     * @param { Array } parmData -节点关系数组 
-     * @returns 
+     * 过时已弃用  
      */
-    static getEndpointNodeId2(parmData) {
+    static obsolete_getEndpointNodeId(parmData) {
 
         if (isEmptyArray(parmData)) return parmData;
 
@@ -108,6 +106,11 @@ export class FormatUtils {
         }
         return parmData;
     } 
+     /**
+     * 递归处理网关节点下属子节点的nodeTo数据
+     * @param { Array } parmData -节点关系数组 
+     * @returns 
+     */
     static getEndpointNodeId(parmData) {  
         if (isEmptyArray(parmData)) return parmData; 
         let nodesGroup = {};
