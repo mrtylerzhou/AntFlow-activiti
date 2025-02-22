@@ -15,9 +15,14 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
          </el-form-item>
       </el-form>
-      <el-table v-loading="loading" :data="dataList" :row-style="{ height: '49px' }">
+      <el-row :gutter="10" class="mb8">
+         <el-col :span="1.5">
+            <el-button type="success" plain icon="Promotion" @click="handleStartflow">发起请求</el-button>
+         </el-col> 
+      </el-row>
+      <el-table v-loading="loading" :data="dataList">
          <el-table-column label="模板类型" align="center" prop="processKey">
-            <template #default="item">  {{item.row.processKey}} 
+            <template #default="item">  {{substringHidden(item.row.processKey)}} 
                <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
                   <el-tag type="warning" round>OUT</el-tag>
                </el-tooltip> 
@@ -65,12 +70,13 @@
 </template>
 
 <script setup>
-import { getMyRequestlistPage } from "@/api/workflow"
-import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
-import { useStore } from '@/store/modules/workflow'
-let store = useStore()
-let { setPreviewDrawer, setPreviewDrawerConfig } = store
-let previewDrawerVisible = computed(() => store.previewDrawer)
+import { getMyRequestlistPage } from "@/api/workflow";
+import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import { useStore } from '@/store/modules/workflow';
+const router = useRouter();
+let store = useStore();
+let { setPreviewDrawer, setPreviewDrawerConfig } = store;
+let previewDrawerVisible = computed(() => store.previewDrawer);
 const dataList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -83,7 +89,7 @@ let visible = computed({
    set() {
       closeDrawer()
    }
-})
+});
 const data = reactive({
    form: {},
    pageDto: {
@@ -111,7 +117,11 @@ function getList() {
       loading.value = false;
    });
 }
-
+ 
+/** 发起请求 */
+function handleStartflow() {
+   router.push({ path: "/startflow"});
+}
 /** 搜索按钮操作 */
 function handleQuery() {
    pageDto.value.page = 1;

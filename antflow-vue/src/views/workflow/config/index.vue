@@ -45,7 +45,7 @@
          </el-col> 
       </el-row>
 
-      <el-table v-loading="loading" :data="configList" :row-style="{ height: '49px' }">
+      <el-table v-loading="loading" :data="configList">
          <el-table-column label="模板类型" align="center" prop="formCode" />  
          <el-table-column label="模板名称" align="center" prop="formCodeName">
             <template #default="item">
