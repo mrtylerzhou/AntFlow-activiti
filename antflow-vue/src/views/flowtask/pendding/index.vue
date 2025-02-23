@@ -90,12 +90,16 @@ const data = reactive({
 const { pageDto, taskMgmtVO } = toRefs(data);
 
 /** 查询岗位列表 */
-function getList() {
+async function getList() {
    loading.value = true;
-   getPenddinglistPage(pageDto.value,taskMgmtVO.value).then(response => {
+   await getPenddinglistPage(pageDto.value, taskMgmtVO.value).then(response => {
       dataList.value = response.data;
       total.value = response.pagination.totalCount;
       loading.value = false;
+   }).catch((r) => {
+      loading.value = false;
+      console.log(r);
+      proxy.$modal.msgError("加载列表失败:" + r.message);
    });
 }
 

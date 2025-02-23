@@ -210,8 +210,9 @@ function getDIYList() {
     getDIYFromCodeData().then(response => {
         DIYList.value = response.data;
         loading.value = false;
-    }).catch(() => {
+    }).catch((err) => {
         loading.value = false;
+        proxy.$modal.msgError("加载列表失败:" + err.message);
     });
 }
 
@@ -222,8 +223,9 @@ function getLFPageList() {
         LFPageList.value = response.data;
         total.value = response.pagination.totalCount; 
         loading.value = false;
-    }).catch(() => {
+    }).catch((err) => {
         loading.value = false;
+        proxy.$modal.msgError("加载列表失败:" + err.message);
     });
 }
 

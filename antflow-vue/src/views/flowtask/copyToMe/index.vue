@@ -17,20 +17,20 @@
       </el-form>
       <el-table v-loading="loading" :data="dataList">
          <el-table-column label="模板类型" align="center" prop="processKey">
-            <template #default="item">  {{substringHidden(item.row.processKey)}} 
+            <template #default="item"> {{ substringHidden(item.row.processKey) }}
                <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
                   <el-tag type="warning" round>OUT</el-tag>
-               </el-tooltip> 
+               </el-tooltip>
             </template>
-         </el-table-column>  
-         <el-table-column label="流程编号" align="center" prop="processNumber" > 
-            <template #default="item"> 
-               <el-tooltip class="box-item" effect="dark" placement="right" >
+         </el-table-column>
+         <el-table-column label="流程编号" align="center" prop="processNumber">
+            <template #default="item">
+               <el-tooltip class="box-item" effect="dark" placement="right">
                   <template #content>
-                     <span>{{item.row.processNumber}}</span>
+                     <span>{{ item.row.processNumber }}</span>
                   </template>
                   {{ substringHidden(item.row.processNumber) }}
-               </el-tooltip> 
+               </el-tooltip>
             </template>
          </el-table-column>
          <el-table-column label="流程描述" align="center" prop="description" />
@@ -64,8 +64,9 @@
 
 <script setup>
 import { getCopyToMelistPage } from "@/api/workflow";
-import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
-import { useStore } from '@/store/modules/workflow'
+import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import { useStore } from '@/store/modules/workflow';
+const { proxy } = getCurrentInstance();
 let store = useStore()
 let { setPreviewDrawer, setPreviewDrawerConfig } = store
 let previewDrawerVisible = computed(() => store.previewDrawer)
@@ -86,9 +87,9 @@ const data = reactive({
    form: {},
    pageDto: {
       page: 1,
-      pageSize: 10 
+      pageSize: 10
    },
-   taskMgmtVO: { 
+   taskMgmtVO: {
       processNumber: undefined,
       processTypeName: undefined
    },
@@ -100,12 +101,16 @@ const data = reactive({
 const { pageDto, taskMgmtVO } = toRefs(data);
 
 /** 查询岗位列表 */
-function getList() {
+async function getList() {
    loading.value = true;
-   getCopyToMelistPage(pageDto.value,taskMgmtVO.value).then(response => {
+   await getCopyToMelistPage(pageDto.value, taskMgmtVO.value).then(response => {
       dataList.value = response.data;
       total.value = response.pagination.totalCount;
       loading.value = false;
+   }).catch((r) => {
+      loading.value = false;
+      console.log(r);
+      proxy.$modal.msgError("加载列表失败:" + r.message);
    });
 }
 
@@ -118,8 +123,8 @@ function resetQuery() {
    taskMgmtVO.value = {
       processNumber: undefined,
       processTypeName: undefined
-  };
-  handleQuery();
+   };
+   handleQuery();
 }
 
 function handlePreview(row) {

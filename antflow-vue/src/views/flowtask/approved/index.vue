@@ -64,8 +64,9 @@
 
 <script setup>
 import { getApprovedlistPage } from "@/api/workflow";
-import previewDrawer from "@/views/workflow/components/previewDrawer.vue"
-import { useStore } from '@/store/modules/workflow'
+import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import { useStore } from '@/store/modules/workflow';
+const { proxy } = getCurrentInstance();
 let store = useStore()
 let { setPreviewDrawer, setPreviewDrawerConfig } = store
 let previewDrawerVisible = computed(() => store.previewDrawer)
@@ -100,12 +101,16 @@ const data = reactive({
 const { pageDto, taskMgmtVO } = toRefs(data);
 
 /** 查询岗位列表 */
-function getList() {
+async function getList() {
    loading.value = true;
-   getApprovedlistPage(pageDto.value,taskMgmtVO.value).then(response => {
+   await getApprovedlistPage(pageDto.value, taskMgmtVO.value).then(response => {
       dataList.value = response.data;
       total.value = response.pagination.totalCount;
       loading.value = false;
+   }).catch((r) => {
+      loading.value = false;
+      console.log(r);
+      proxy.$modal.msgError("加载列表失败:" + r.message);
    });
 }
 

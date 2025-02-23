@@ -10,14 +10,9 @@
                @keyup.enter="handleQuery" />
          </el-form-item>
          <el-form-item label="状态" prop="effectiveStatus">
-            <el-select
-               v-model="taskMgmtVO.effectiveStatus"
-               placeholder="状态"
-               clearable
-               style="width: 240px"
-            >        
-            <el-option label="禁用" value="0" />
-            <el-option label="启动" value="1" /> 
+            <el-select v-model="taskMgmtVO.effectiveStatus" placeholder="状态" clearable style="width: 240px">
+               <el-option label="禁用" value="0" />
+               <el-option label="启动" value="1" />
             </el-select>
          </el-form-item>
 
@@ -29,24 +24,19 @@
 
       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
-            <el-tooltip class="box-item"  effect="dark"  
-               content="需提前开发业务表单"  
-               placement="bottom">
-            <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
+            <el-tooltip class="box-item" effect="dark" content="低代码表单+流程设计器" placement="bottom">
+               <el-button type="success" plain icon="Edit" @click="handleLFDesign">流程设计(LF)</el-button>
             </el-tooltip>
-            
          </el-col>
          <el-col :span="1.5">
-            <el-tooltip class="box-item"  effect="dark"  
-               content="低代码表单+流程设计器"  
-               placement="bottom">
-               <el-button type="success" plain icon="Edit"  @click="handleLFDesign">流程设计(LF)</el-button>
+            <el-tooltip class="box-item" effect="dark" content="需提前开发业务表单" placement="bottom">
+               <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
             </el-tooltip> 
          </el-col> 
       </el-row>
 
       <el-table v-loading="loading" :data="configList">
-         <el-table-column label="模板类型" align="center" prop="formCode" />  
+         <el-table-column label="模板类型" align="center" prop="formCode" />
          <el-table-column label="模板名称" align="center" prop="formCodeName">
             <template #default="item">
                {{ getFromCodeName(item.row.formCode) }}
@@ -56,12 +46,12 @@
          <el-table-column label="流程名称" align="center" prop="bpmnName" />
          <el-table-column label="流程类型" align="center" prop="isLowCodeFlow">
             <template #default="item">
-               <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器"  placement="top">
+               <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器" placement="top">
                   <el-tag type="warning" round>DIY</el-tag>
-               </el-tooltip> 
-               <el-tooltip v-if="item.row.isLowCodeFlow == 1" content="低代码表单+流程设计器"  placement="top">
+               </el-tooltip>
+               <el-tooltip v-if="item.row.isLowCodeFlow == 1" content="低代码表单+流程设计器" placement="top">
                   <el-tag type="success" round>LF</el-tag>
-               </el-tooltip>  
+               </el-tooltip>
             </template>
          </el-table-column>
          <el-table-column label="是否去重" align="center" prop="deduplicationType">
@@ -72,7 +62,7 @@
 
          <el-table-column label="状态" align="center" prop="effectiveStatus">
             <template #default="item">
-               <el-tag>{{ item.row.effectiveStatus == 1 ? '活跃' : '不活跃' }}</el-tag> 
+               <el-tag>{{ item.row.effectiveStatus == 1 ? '活跃' : '不活跃' }}</el-tag>
             </template>
          </el-table-column>
 
@@ -86,8 +76,8 @@
                <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
                <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
                <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
-               <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> 
-               <el-button link type="primary"  @click="handleDelete(scope.row)">删除</el-button>
+               <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button>
+               <el-button link type="primary" @click="handleDelete(scope.row)">删除</el-button>
             </template>
          </el-table-column>
       </el-table>
@@ -98,8 +88,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted,getCurrentInstance } from "vue"; 
-import { getBpmnConflistPage,getEffectiveBpmn,getAllFormCodes } from "@/api/workflow";
+import { ref, onMounted, getCurrentInstance } from "vue";
+import { getBpmnConflistPage, getEffectiveBpmn, getAllFormCodes } from "@/api/workflow";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 let formCodeOptions = ref([]);
@@ -114,10 +104,10 @@ const data = reactive({
       page: 1,
       pageSize: 10
    },
-   taskMgmtVO: { 
+   taskMgmtVO: {
       effectiveStatus: undefined,
-      isOutSideProcess : 0,
-      isLowCodeFlow : undefined,
+      isOutSideProcess: 0,
+      isLowCodeFlow: undefined,
       bpmnCode: undefined,
       bpmnName: undefined
    },
@@ -127,45 +117,48 @@ const data = reactive({
    }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
-onMounted(async() => {
+onMounted(async () => {
    loading.value = true;
-   await initFromCode();    
-   await getList(); 
+   await initFromCode();
+   await getList();
    loading.value = false;
 })
-const initFromCode = async () => {  
-  await getAllFormCodes().then((res) => {
+const initFromCode = async () => {
+   await getAllFormCodes().then((res) => {
       if (res.code == 200) {
-         formCodeOptions.value = res.data; 
+         formCodeOptions.value = res.data;
       }
    });
 }
-const getFromCodeName = (formCode) => { 
-  const result= formCodeOptions.value.filter(item => item.key == formCode)[0];   
-  return result?.value;
+const getFromCodeName = (formCode) => {
+   const result = formCodeOptions.value.filter(item => item.key == formCode)[0];
+   return result?.value;
 }
 /** 查询列表 */
-const getList = async () => { 
-   await getBpmnConflistPage(pageDto.value,taskMgmtVO.value).then(response => {
+const getList = async () => {
+   await getBpmnConflistPage(pageDto.value, taskMgmtVO.value).then(response => {
       let res = response.data;
       configList.value = res.data;
-      total.value = res.pagination.totalCount; 
-   }); 
+      total.value = res.pagination.totalCount;
+   }).catch((r) => {
+      console.log(r);
+      proxy.$modal.msgError("加载列表失败:" + r.message);
+   });
 }
 /**
  * 复制操作
  * @param row 
  */
-const handleCopy =  (row) => {
-   const params ={
+const handleCopy = (row) => {
+   const params = {
       id: row.id
-   }; 
-   let obj = {}; 
-   if(row.isLowCodeFlow == '1'){ 
-      obj = {path: "/workflow/lf-design",query:params}; 
-   }else{  
-      obj = {path: "/workflow/diy-design",query:params}; 
-   } 
+   };
+   let obj = {};
+   if (row.isLowCodeFlow == '1') {
+      obj = { path: "/workflow/lf-design", query: params };
+   } else {
+      obj = { path: "/workflow/diy-design", query: params };
+   }
    proxy.$tab.openPage(obj);
 }
 /**
@@ -173,14 +166,14 @@ const handleCopy =  (row) => {
  * @param data 
  */
 const effectiveById = async (data) => {
-    await getEffectiveBpmn(data).then(async (res) => {
-        if (res.code == 200) {
-            getList(); 
-            proxy.$modal.msgSuccess("操作成功"); 
-        } else {
-         proxy.$modal.msgError("操作失败");  
-        }
-    });
+   await getEffectiveBpmn(data).then(async (res) => {
+      if (res.code == 200) {
+         getList();
+         proxy.$modal.msgSuccess("操作成功");
+      } else {
+         proxy.$modal.msgError("操作失败");
+      }
+   });
 
 }
 /** 搜索按钮操作 */
@@ -189,21 +182,21 @@ function handleQuery() {
    getList();
 }
 /** 跳转到低代码流程设计器 */
-function handleLFDesign() { 
-   router.push({ path: "lf-design"});
+function handleLFDesign() {
+   router.push({ path: "lf-design" });
 }
 /** 跳转到自定义流程设计器 */
-function handleDIYDesign() { 
-   router.push({ path: "diy-design"});
+function handleDIYDesign() {
+   router.push({ path: "diy-design" });
 }
 
 /** 重置按钮操作 */
 function resetQuery() {
    taskMgmtVO.value = {
-      isOutSideProcess : 0,
+      isOutSideProcess: 0,
       bpmnCode: undefined,
       bpmnName: undefined
-  };
+   };
    proxy.resetForm("queryRef");
    handleQuery();
 }
@@ -213,11 +206,11 @@ function handleDelete(row) {
    proxy.$modal.msgError("演示环境不允许删除操作！");
 }
 /** 预览 */
-function handlePreview(row) { 
-   const params ={
+function handlePreview(row) {
+   const params = {
       id: row.id
    };
-   const obj = {path: "/workflow/preview",query:params};
+   const obj = { path: "/workflow/preview", query: params };
    proxy.$tab.openPage(obj);
 }
 
