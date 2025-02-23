@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
@@ -55,22 +56,25 @@ public class BpmnBusinessController {
         return Result.newSuccessResult(formCodes);
     }
     /**
-     * get processes's basic form code and desc information
+     * get DIY FormCode List
      * @param desc
      * @return
      */
-    @GetMapping("/listFormInfo")
-    public Result listFormInfo(String desc){
-
+    @GetMapping("/getDIYFormCodeList")
+    public Result getDIYFormCodeList(String desc){
         return Result.newSuccessResult(baseFormInfo(desc));
     }
+
     /**
-     * get all form code and desc information
+     * get LF FormCode Page List
+     * @param requestDto
      * @return
      */
-    @GetMapping("/allFormCodes")
-    public Result allFormCodes(){
-        return Result.newSuccessResult(allFormInfo());
+    @PostMapping("/getLFActiveFormCodePageList")
+    public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
+        PageDto pageDto = requestDto.getPageDto();
+        TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
+        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto);
     }
     @GetMapping("/listNodeProperties")
     public Result listPersonnelProperties(){
@@ -161,15 +165,6 @@ public class BpmnBusinessController {
                                 .build()
                 );
             }
-        }
-        return results;
-    }
-
-    private List<BaseKeyValueStruVo> allFormInfo(){
-        List<BaseKeyValueStruVo> results= baseFormInfo("");
-        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLFActiveFormCodes();
-        if (lfFormCodes != null){
-            results.addAll(lfFormCodes);
         }
         return results;
     }

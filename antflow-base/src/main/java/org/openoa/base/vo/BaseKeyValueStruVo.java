@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @Author TylerZhou
  * @since 0.0.5
@@ -18,4 +20,5 @@ public class BaseKeyValueStruVo {
     private String value;
     private String type;
     private String remark;
+    private Date createTime;
 }

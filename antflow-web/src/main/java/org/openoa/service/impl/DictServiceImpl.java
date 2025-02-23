@@ -2,12 +2,16 @@ package org.openoa.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.entity.DictData;
@@ -59,6 +63,29 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         return results;
     }
 
+    @Override
+    public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto) {
+        Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page);
+        if (dictDataList ==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        List<BaseKeyValueStruVo> results=new ArrayList<>();
+        for (DictData item : dictDataList) {
+            results.add(
+                    BaseKeyValueStruVo
+                            .builder()
+                            .key(item.getValue())
+                            .value(item.getLabel())
+                            .createTime(item.getCreateTime())
+                            .type("LF")
+                            .remark(item.getRemark())
+                            .build()
+            );
+        }
+        page.setRecords(results);
+        return PageUtils.getResultAndPage(page);
+    }
     @Override
     public List<BaseKeyValueStruVo> getLFActiveFormCodes() {
         List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodes();

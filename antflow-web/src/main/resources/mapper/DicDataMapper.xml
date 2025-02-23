@@ -16,5 +16,24 @@
         inner join t_bpmn_conf as b
         on a.dict_value = b.form_code  and b.is_lowcode_flow =1 and b.effective_status=1
         where a.dict_type ='lowcodeflow'
+        order by a.create_time desc
+    </select>
+
+    <select id="selectLFActiveFormCodePageList" resultType="org.openoa.entity.DictData">
+        select a.id,
+        a.dict_sort as sort,
+        a.dict_value as value,
+        a.dict_label as label,
+        a.dict_type as dictType,
+        a.is_default as isDefault,
+        a.is_del as isDel,
+        a.create_user as createUser,
+        a.create_time as createTime,
+        a.remark as remark
+        from t_dict_data as a
+        inner join t_bpmn_conf as b
+        on a.dict_value = b.form_code  and b.is_lowcode_flow =1 and b.effective_status=1
+        where a.dict_type ='lowcodeflow'
+        order by a.create_time desc
     </select>
 </mapper>
