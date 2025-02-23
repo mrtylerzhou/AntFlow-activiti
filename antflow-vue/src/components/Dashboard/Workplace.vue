@@ -47,7 +47,7 @@
                         </div>             
                     </el-card>   
                 </el-col>     
-                <el-col :md="16"> 
+                <el-col :md="24"> 
                     <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize" @pagination="getLFFormCodePageList" />  
                 </el-col>   
             </el-row>
