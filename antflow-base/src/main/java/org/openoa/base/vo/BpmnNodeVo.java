@@ -158,6 +158,7 @@ public class BpmnNodeVo  implements Serializable {
      * 0 for no and 1 for yes
      */
     private List<BpmnNodeVo> fromNodes;
+    private List<BpmnNodeLabelVO> labelList;
     private String elementId;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
