@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref, onMounted} from "vue";
-import { getUserEntrustListPage, getFromCodeData } from "@/api/workflow";
+import { getUserEntrustListPage, getDIYFromCodeData } from "@/api/workflow";
 import { approveList } from '@/utils/flow/const'
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
@@ -76,7 +76,7 @@ onMounted(async () => {
     getUserList();
 })
 const initFromCode = async () => {
-    await getFromCodeData().then((res) => {
+    await getDIYFromCodeData().then((res) => {
         if (res.code == 200) {
             formCodeOptions.value = res.data;
         }

@@ -48,7 +48,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch,getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getFromCodeData,getAllFormCodes } from "@/api/workflow";
+import { getDIYFromCodeData,getAllFormCodes } from "@/api/workflow";
 import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
@@ -118,7 +118,7 @@ onMounted(async () => {
 /**获取全部DIY FromCode */
 const getDIYFromCodeList = async()=> {
    loading.value = true;
-   await getFromCodeData().then((res) => {
+   await getDIYFromCodeData().then((res) => {
     loading.value = false;
         if (res.code == 200) { 
             formCodeOptions.value = res.data;

@@ -1,13 +1,9 @@
 import { createApp } from 'vue'
-
 import Cookies from 'js-cookie'
-
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import locale from 'element-plus/es/locale/lang/zh-cn'
-
-import '@/assets/styles/index.scss' // global css
- 
+import '@/assets/styles/index.scss' // global css 
 import VForm3 from  '@/./lib/vForm/designer.umd.js'
 import './lib/vForm/designer.style.css'
 

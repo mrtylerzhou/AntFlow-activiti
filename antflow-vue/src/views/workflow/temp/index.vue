@@ -1,91 +1,132 @@
 <template>
     <div class="app-container">
-        <el-form :model="vo" ref="queryRef" :inline="true" v-show="showSearch">
-            <el-form-item label="关键字" prop="key">
-                <el-input v-model="vo.关键字" placeholder="请输入关键字" clearable style="width: 200px"
-                    @keyup.enter="handleQuery" />
-            </el-form-item>
+     
+       
+        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClickTab">           
+            <el-tab-pane label="模板类型(DIY)" name="DIYTab"> 
+                <el-row :gutter="10" class="mb8">
+                    <el-col :span="1.5">
+                        <el-button type="primary" plain icon="CirclePlus" @click="handleDIYTemp">模板类型(DIY)</el-button>
+                    </el-col> 
+                    <right-toolbar v-model:showSearch="showSearch" @queryTable="getDIYList" :columns="columns"></right-toolbar>
+                </el-row>
+                <el-table v-loading="loading" :data="DIYList">
+                    <el-table-column label="模板标识" align="center" prop="key" v-if="columns[0].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="模板名称" align="center" prop="value" v-if="columns[1].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="模板类型" align="center" prop="type" v-if="columns[2].visible"
+                        :show-overflow-tooltip="true">
+                        <template #default="item">
+                            <el-tag v-if="item.row.type === 'LF'" type="success">{{ item.row.type }}</el-tag>
+                            <el-tag v-else type="warning">{{ item.row.type }}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible">
+                        <template #default="scope">
+                            <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
+                        <template #default="scope">
+                            <el-button link type="primary" icon="ZoomIn"
+                                @click="handleLFTemp(scope.row)">查看表单</el-button>
+                            <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
+                            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
 
-            <el-form-item>
-                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-            </el-form-item>
-        </el-form>
-        <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-                <el-button type="primary" plain icon="CirclePlus" @click="handleDIYTemp">模板类型(DIY)</el-button>
-            </el-col>
-            <el-col :span="1.5">
-                <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">模板类型(LF)</el-button>
-            </el-col>
-            <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
-        </el-row>
+            <el-tab-pane label="模板类型(LF)" name="LFTab"> 
+                <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
+                  <el-form-item label="关键字" prop="description">
+                        <el-input v-model="taskMgmtVO.description" placeholder="请输入关键字" clearable style="width: 200px"
+                            @keyup.enter="handleQuery" />
+                    </el-form-item>
 
-        <el-table v-loading="loading" :data="list">
-            <el-table-column label="模板标识" align="center" prop="key" v-if="columns[0].visible"
-                :show-overflow-tooltip="true" />
-            <el-table-column label="模板名称" align="center" prop="value" v-if="columns[1].visible"
-                :show-overflow-tooltip="true" />
-            <el-table-column label="模板类型" align="center" prop="type" v-if="columns[2].visible"
-                :show-overflow-tooltip="true">
-                <template #default="item">
-                    <el-tag v-if="item.row.type === 'LF'" type="success">{{ item.row.type }}</el-tag>
-                    <el-tag v-else type="warning">{{ item.row.type }}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible"
-                :show-overflow-tooltip="true" />
-            <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible">
-                <template #default="scope">
-                    <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
-                <template #default="scope">
-                    <el-button link type="primary" icon="ZoomIn" @click="handleLFTemp(scope.row)">查看表单</el-button>
-                    <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                    <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
+                    <el-form-item>
+                        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+                        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-row :gutter="10" class="mb8"> 
+                    <el-col :span="1.5">
+                        <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">模板类型(LF)</el-button>
+                    </el-col>
+                    <right-toolbar v-model:showSearch="showSearch" @queryTable="getLFPageList" :columns="columns"></right-toolbar>
+                </el-row>
 
+                <el-table v-loading="loading" :data="LFPageList">
+                    <el-table-column label="模板标识" align="center" prop="key" v-if="columns[0].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="模板名称" align="center" prop="value" v-if="columns[1].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="模板类型" align="center" prop="type" v-if="columns[2].visible"
+                        :show-overflow-tooltip="true">
+                        <template #default="item">
+                            <el-tag v-if="item.row.type === 'LF'" type="success">{{ item.row.type }}</el-tag>
+                            <el-tag v-else type="warning">{{ item.row.type }}</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible"
+                        :show-overflow-tooltip="true" />
+                    <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible">
+                        <template #default="scope">
+                            <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
+                        <template #default="scope">
+                            <el-button link type="primary" icon="ZoomIn"
+                                @click="handleLFTemp(scope.row)">查看表单</el-button>
+                            <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
+                            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
+            </el-tab-pane>
+        </el-tabs> 
         <!-- 添加模板类型 -->
         <el-dialog :title="title" v-model="openForm" append-to-body>
             <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;">
-          
+
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="模板标识" prop="key">
-                        <el-input v-model="form.key" placeholder="请输入模板唯一标识" />
+                            <el-input v-model="form.key" placeholder="请输入模板唯一标识" />
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="模板名称" prop="value">
-                        <el-input v-model="form.value" placeholder="请输入模板名称" />
+                            <el-input v-model="form.value" placeholder="请输入模板名称" />
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="备注">
-                        <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+                            <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
             <template #footer>
-                <div class="dialog-footer"> 
+                <div class="dialog-footer">
                     <el-button @click="closeDialog">关 闭</el-button>
-                    <el-button type="primary" @click="submitForm">确 定</el-button>                   
+                    <el-button type="primary" @click="submitForm">确 定</el-button>
                 </div>
             </template>
         </el-dialog>
 
         <!-- 查看表单 -->
         <el-dialog :title="title" v-model="open" append-to-body>
-            <div class="component"> 
+            <div class="component">
                 <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
                     :isPreview="true">
                 </component>
@@ -101,43 +142,48 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getAllFormCodes } from "@/api/workflow";
-import { getLowCodeFromCodeData,createLFFormCode } from '@/api/lowcodeApi'
+import { getDIYFromCodeData,getLFActiveFormCodePageList } from "@/api/workflow";
+import { getLowCodeFromCodeData,createLFFormCode } from '@/api/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
-const list = ref([]);
+const DIYList = ref([]);
+const LFPageList = ref([]); 
 const loading = ref(false);
 const showSearch = ref(true);
 const open = ref(false);
 const openForm = ref(false); 
 const title = ref("");
 
-let lfFormDataConfig = ref(null)
-let loadedComponent = ref(null)
-let componentLoaded = ref(null)
-
+let lfFormDataConfig = ref(null);
+let loadedComponent = ref(null);
+let componentLoaded = ref(null); 
+const activeName = ref('DIYTab');
+const total = ref(0);
 const data = reactive({
     form: {},
-    vo: {},
+    pageDto: {
+        page: 1,
+        pageSize: 10
+    },
+    taskMgmtVO: {
+        description: undefined
+    }, 
     rules: {
-        key: [{ 
-            required: true, 
-            pattern: /^[A-Z]+$/,
-            message: '请输入模板唯一标识(只能是大写字母)', 
-            trigger: ['blur', 'change'] 
+        key: [{
+            required: true,
+            pattern: /^[A-Z]{4,10}$/,
+            message: '请输入模板唯一标识(只能是大写字母,4-10位长度)',
+            trigger: ['blur', 'change']
         }],
-        value: [{ 
-            required: true, 
-            pattern: /[\u4e00-\u9fa5]+/,
-            message: '请输入模板名称(必须包含汉字)', 
-            trigger: ['blur', 'change'] 
-        }], 
+        value: [{
+            required: true,
+            pattern: /^[\u4e00-\u9fa5]{4,10}$/,
+            message: '请输入模板名称(必须包含汉字,4-10位长度)',
+            trigger: ['blur', 'change']
+        }],
     }
 });
-const { vo, form,rules } = toRefs(data);
-onMounted(async () => {
-    getList();
-})
+const { vo,pageDto, taskMgmtVO, form,rules } = toRefs(data);
 
 // 列显隐信息
 const columns = ref([
@@ -145,14 +191,28 @@ const columns = ref([
     { key: 1, label: `模板名称`, visible: true },
     { key: 2, label: `模板类型`, visible: true },
     { key: 3, label: `备注`, visible: true },
-    { key: 4, label: `创建时间`, visible: false }
+    { key: 4, label: `创建时间`, visible: true }
 ]);
+onMounted(async () => {
+    getDIYList();
+})
+/** 查询接入业务方列表 */
+function getDIYList() {
+    loading.value = true;
+    getDIYFromCodeData().then(response => {
+        DIYList.value = response.data;
+        loading.value = false;
+    }).catch(() => {
+        loading.value = false;
+    });
+}
 
 /** 查询接入业务方列表 */
-function getList() {
+function getLFPageList() {
     loading.value = true;
-    getAllFormCodes().then(response => {
-        list.value = response.data;
+    getLFActiveFormCodePageList(pageDto.value, taskMgmtVO.value).then(response => {
+        LFPageList.value = response.data;
+        total.value = response.pagination.totalCount; 
         loading.value = false;
     }).catch(() => {
         loading.value = false;
@@ -181,7 +241,7 @@ function submitForm() {
           }
           proxy.$modal.msgSuccess("新增成功");
           openForm.value = false;
-          getList();
+          getDIYList();
         }); 
     }
   });
@@ -224,11 +284,13 @@ function handleDelete(row) {
 
 /** 搜索按钮操作 */
 function handleQuery() {
-    getList();
+    pageDto.value.page = 1;
+    getLFPageList();
 }
 
 /** 重置按钮操作 */
 function resetQuery() {
+    pageDto.value.page = 1;
     proxy.resetForm("queryRef");
     handleQuery();
 }
@@ -245,6 +307,15 @@ function reset() {
   };
   proxy.resetForm("formRef");
 };
+
+function handleClickTab(tab, event){
+    activeName.value = tab.paneName;
+    if (tab.paneName == 'DIYTab') {
+        getDIYList();
+    } else {
+        getLFPageList();
+    } 
+}
 </script>
 <style lang="scss" scoped> 
 .component{

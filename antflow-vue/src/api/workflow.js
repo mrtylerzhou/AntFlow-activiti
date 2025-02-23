@@ -21,18 +21,29 @@ export function getApiWorkFlowData(data) {
   return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers })
 }
 /**
- * 获取FromCode 
- * @returns 
- */
-export function getFromCodeData() {
-  return http.get(`${baseUrl}/bpmnBusiness/listFormInfo`, { headers })
-}
-/**
- * 获取所有FromCode 包括（DIY和LF）
+ * 获取所有FromCode 
  * @returns 
  */
 export function getAllFormCodes() {
   return http.get(`${baseUrl}/bpmnBusiness/allFormCodes`, { headers })
+}
+/**
+ * 获取DIY FromCode 
+ * @returns 
+ */
+export function getDIYFromCodeData() {
+  return http.get(`${baseUrl}/bpmnBusiness/getDIYFormCodeList`, { headers })
+}
+/**
+ * 获取分页LF活跃FromCode 
+ * @returns 
+ */
+export function getLFActiveFormCodePageList(pageDto, taskMgmtVO) {
+  let paramDto = {
+    "pageDto": pageDto,
+    "taskMgmtVO": taskMgmtVO
+  } 
+  return http.post(`${baseUrl}/bpmnBusiness/getLFActiveFormCodePageList`,paramDto, { headers })
 }
 /**
  * 设置/添加审批流程配置详情
