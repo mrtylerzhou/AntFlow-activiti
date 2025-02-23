@@ -57,7 +57,7 @@
         select tbn.* from t_bpmn_conf tbc join  t_bpmn_node tbn on tbc.id=tbn.conf_id
         where tbc.id=#{confId} and tbn.node_property=#{property}
     </select>
-    <select id="getNodesByFormCodeAndProperty" resultType="org.openoa.engine.bpmnconf.confentity.BpmnNode">
+    <select id="getNodesByFormCodeAndProperty" resultMap="BaseResultMap">
         select tbn.* from t_bpmn_conf tbc join  t_bpmn_node tbn on tbc.id=tbn.conf_id
         where tbc.form_code=#{formCode} and tbc.effective_status=1 and tbn.node_property=#{property}
     </select>

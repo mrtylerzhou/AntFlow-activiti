@@ -28,6 +28,7 @@ public enum ConfigFlowButtonSortEnum {
     BUTTON_TYPE_JP(19, "加批", 19),
     SCAN_HELP(20, "扫码帮助", 20),
     ZB(21, "转办", 21),
+    CHOOSE_ASSIGNEE(22,"自选审批人",22),
             ;
     @Getter
     private final Integer code;
