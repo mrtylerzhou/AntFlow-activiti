@@ -3,15 +3,12 @@ package org.openoa.engine.bpmnconf.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
@@ -22,6 +19,8 @@ import org.openoa.engine.bpmnconf.confentity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.engine.vo.PsPreCheckVO;
+import org.openoa.engine.vo.PsPreRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,6 +142,19 @@ public class BpmnBusinessController {
         List<BpmnNode> nodes = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
         return Result.newSuccessResult(nodes);
     }
+    @PostMapping("/processPreCheck")
+    public Result<PsPreRespVO> processStartUpPreCheck(@RequestBody PsPreCheckVO vo){
+        String formCode = vo.getFormCode();
+        if(StringUtils.isEmpty(formCode)){
+            throw new JiMuBizException("请传入formCode");
+        }
+        List<BpmnNode> nodes = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
+        List<ProcessNodeVo> nodeVos = nodes.stream().map(a -> ProcessNodeVo.builder().id(a.getId()).nodeName(a.getNodeName()).build()).collect(Collectors.toList());
+        PsPreRespVO respVO=new PsPreRespVO();
+        respVO.setStartUserChooseNodes(nodeVos);
+        return Result.newSuccessResult(respVO);
+    }
+
     private List<BaseKeyValueStruVo> baseFormInfo(String desc){
         List<BaseKeyValueStruVo> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
