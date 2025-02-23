@@ -48,7 +48,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch,getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getDIYFromCodeData,getAllFormCodes } from "@/api/workflow";
+import { getDIYFromCodeData } from "@/api/workflow";
 import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
@@ -110,10 +110,7 @@ onMounted(async () => {
         getDIYFromCodeList();
     } else if (props.flowType == 'LF') {
         getLFFromCodeList();
-    }
-    else {
-        getAllFormCodeList();
-    }
+    } 
 });
 /**获取全部DIY FromCode */
 const getDIYFromCodeList = async()=> {
@@ -135,17 +132,7 @@ const getLFFromCodeList = async()=> {
         }
    });
 }
-/**获取全部FromCode (LF和DIY)*/
-const getAllFormCodeList = async()=> {
-   loading.value = true;
-   await getAllFormCodes().then((res) => {
-    loading.value = false;
-        if (res.code == 200) { 
-            formCodeOptions.value = res.data;
-        }
-   });
-}
-
+  
 let rules = {
     formCode: [{
         required: true,

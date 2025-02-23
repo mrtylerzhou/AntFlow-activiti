@@ -1,5 +1,5 @@
-<template>
-    <div>
+<template> 
+    <div> 
         <el-card>
             <template v-slot:header>
                 <div class="clearfix">
@@ -40,13 +40,18 @@
                                 </el-avatar>
                             </div>
                             <div class="card-title">
-                                <a>{{ item.title }}</a>
+                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                                <a>{{ item.title }}</a> 
                                 <p>{{ item.description }}</p>
                             </div>
-                        </div>
-                    </el-card>
-                </el-col>
+                        </div>             
+                    </el-card>   
+                </el-col>     
+                <el-col :md="16"> 
+                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize" @pagination="getLFFormCodePageList" />  
+                </el-col>   
             </el-row>
+
         </el-card>
         <el-card>
             <template v-slot:header>
@@ -64,7 +69,7 @@
                                 </el-avatar>
                             </div>
                             <div class="card-title">
-                                <a>{{ item.title }}</a>
+                                <a>{{ item.title  }}</a>
                                 <p>{{ item.description }}</p>
                             </div>
                         </div>
@@ -77,10 +82,21 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue'
-import { getAllFormCodes } from "@/api/workflow"
+import { getDIYFromCodeData,getLFActiveFormCodePageList } from "@/api/workflow"
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);
+const total = ref(0);
+const data = reactive({ 
+    pageDto: {
+        page: 1,
+        pageSize: 12
+    },
+    taskMgmtVO: {
+        description: undefined
+    }  
+});
+const { pageDto, taskMgmtVO } = toRefs(data);
 function handleFlow(row) {
     proxy.$modal.msgSuccess("演示环境努力开发中！");
 }
@@ -102,9 +118,36 @@ let statusColor = {
 
 onMounted(async () => {
     proxy.$modal.loading();
-    await getAllFormCodes().then((res) => {
+    await getDIYFormCodeList();
+    await getLFFormCodePageList();
+    proxy.$modal.closeLoading();
+})
+/**
+ * 获取自定义表单FormCode List
+ */
+async  function getDIYFormCodeList(){
+    await getDIYFromCodeData().then((res) => {
         if (res.code == 200) {
-            const totalData = res.data.reverse().map(c => {
+            const totalData = res.data.map(c => {
+                return {
+                    formCode: c.key,
+                    title: c.value,
+                    formType: c.type,
+                    description: c.value + '流程办理',
+                    IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
+                }
+            }); 
+            worlflowList.value = totalData;
+        }
+    })
+}
+/**
+ * 获取低代码表单FormCode Page List
+ */
+async  function getLFFormCodePageList(){ 
+    await getLFActiveFormCodePageList(pageDto.value,taskMgmtVO.value).then((res) => {
+        if (res.code == 200) {
+            const totalData = res.data.map(c => {
                 return {
                     formCode: c.key,
                     title: c.value,
@@ -113,22 +156,16 @@ onMounted(async () => {
                     IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
             });
-            lfFlowList.value = totalData.filter(c => c.formType == 'LF');
-            worlflowList.value = totalData.filter(c => c.formType == 'DIY');
-            proxy.$modal.closeLoading();
+            lfFlowList.value = totalData;  
+            total.value = res.pagination.totalCount;
         }
     });
-});
-
+}
 function handleStart(row) {
     const params = {
         formType: row.formType,
         formCode: row.formCode
     };
-    if ('PURCHASE_WMA' == row.formCode || 'BXSP_WMA' == row.formCode) {
-        proxy.$modal.msgWarning("表单努力开发中！^-^");
-        return;
-    }
     const obj = { path: '/bizentry/index', query: params };
     proxy.$tab.openPage(obj);
 }
