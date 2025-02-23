@@ -4,8 +4,6 @@
  * @LastEditTime: 2022-09-21 14:37:02
  * @FilePath: /ant-flow/src/plugins/axios.js
  */
-"use strict";
-
 import axios from "axios";   
 import useUserStore from '@/store/modules/user'
 import cache from '@/plugins/cache';
@@ -39,21 +37,12 @@ _axios.interceptors.response.use(
     let Username = cache.session.get('userName') 
     if (!Userid || !Username) {
       useUserStore().logOut().then(() => {
-        location.href = '/admin/';//index
+        location.href = import.meta.env.VITE_HOME_PATH;//index
       })
     } 
     return response.data;
   },
   function (error) { 
-    //console.log('res=======error=========',JSON.stringify(error))
-    // let { message,status,code,name } = error;
-    // if (status == 500) {
-    //   
-    // }
-    
-    // useUserStore().logOut().then(() => {
-    //   location.href = '/low/';//index
-    // })
     return Promise.reject(error);
   }
 );

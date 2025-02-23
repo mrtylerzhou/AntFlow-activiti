@@ -92,7 +92,7 @@ function logout() {
     type: 'warning'
   }).then(() => {
     userStore.logOut().then(() => {
-      location.href = '/admin/';///index
+      location.href = import.meta.env.VITE_HOME_PATH;///index
     })
   }).catch(() => { });
 }

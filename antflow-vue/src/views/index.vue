@@ -150,6 +150,7 @@ const version = ref('3.5.0')
 console.log("VITE_APP_ENV=======",import.meta.env.VITE_APP_ENV);
 console.log("VITE_APP_BASE_API=======",import.meta.env.VITE_APP_BASE_API);
 console.log("BASE_URL=======",import.meta.env.BASE_URL); 
+console.log("VITE_HOME_PATH=======",import.meta.env.VITE_HOME_PATH); 
 onMounted(() => {
     let userId = cache.session.get('userId'); 
     let name = approveList[userId];  
