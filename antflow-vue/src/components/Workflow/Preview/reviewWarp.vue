@@ -26,15 +26,14 @@ let props = defineProps({
 const nodeConfig = ref(null) 
 const getFlowPreviewList = async (objData) => {  
     let param = {
-        "processNumber": objData.processNumber,
-        "isStartPreview": false,
-        "isOutSideAccessProc": objData.isOutSideAccess || false,
-        "isLowCodeFlow": objData.isLowCodeFlow || false
+        processNumber: objData.processNumber,
+        isStartPreview: false,
+        isOutSideAccessProc: objData.isOutSideAccess || false,
+        isLowCodeFlow: objData.isLowCodeFlow || false
     };
     if(props.previewConf) {
         param = props.previewConf;
     }
-    // console.log("props.previewConf=============", JSON.stringify(props.previewConf))
     // console.log("param=========8888=====", JSON.stringify(param))
     proxy.$modal.loading();
     let resData = await getFlowPreview(param);

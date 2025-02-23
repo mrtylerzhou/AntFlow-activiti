@@ -18,14 +18,23 @@
       <el-table v-loading="loading" :data="dataList"> 
          <el-table-column label="模板类型" align="center" prop="processKey">
             <template #default="item">  
-               {{item.row.processKey}}                
+               {{substringHidden(item.row.processKey)}}                
                <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
                   <el-tag type="warning" round>OUT</el-tag>
                </el-tooltip> 
             </template>
          </el-table-column>  
          <el-table-column label="模板名称" align="center" prop="processTypeName" />
-         <el-table-column label="流程编号" align="center" prop="processNumber" width="320"/>
+         <el-table-column label="流程编号" align="center" prop="processNumber" > 
+            <template #default="item"> 
+               <el-tooltip class="box-item" effect="dark" placement="right" >
+                  <template #content>
+                     <span>{{item.row.processNumber}}</span>
+                  </template>
+                  {{ substringHidden(item.row.processNumber) }}
+               </el-tooltip> 
+            </template>
+         </el-table-column>
          <el-table-column label="流程描述" align="center" prop="description" />
          <el-table-column label="状态" align="center" prop="effectiveStatus">
             <template #default="item">
@@ -37,12 +46,12 @@
                <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
          </el-table-column> -->
-         <el-table-column label="更新时间" align="center" prop="runTime" width="180">
+         <el-table-column label="更新时间" align="center" prop="runTime">
             <template #default="scope">
                <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" width="180" align="center" class-name="small-padding fixed-width">
+         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
                <el-button link type="primary" icon="ZoomIn" @click="handlePreview(scope.row)">查看</el-button>
             </template>

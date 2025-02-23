@@ -15,8 +15,7 @@
                     <div class="end-node-text">流程结束</div>
                 </div>
             </div>
-        </section>
-
+        </section> 
     </div>
     <errorDialog v-model:visible="tipVisible" :list="tipList" />
     <promoterDrawer />
@@ -160,7 +159,7 @@ defineExpose({
 .app-container {
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 200px);
     padding-top: 5px;
     margin-top: 20px !important;
     height: auto;

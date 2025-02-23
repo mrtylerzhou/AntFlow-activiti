@@ -188,7 +188,7 @@ watch(conditionsConfig1, (val) => {
     conditionsConfig.value = val.value;
     PriorityLevel.value = val.priorityLevel
     conditionConfig.value = val.priorityLevel
-        ? conditionsConfig.value.conditionNodes[val.priorityLevel - 1]
+        ? conditionsConfig.value.conditionNodes[val?.priorityLevel - 1]
         : { nodeApproveList: [], conditionList: [] }
 })
 

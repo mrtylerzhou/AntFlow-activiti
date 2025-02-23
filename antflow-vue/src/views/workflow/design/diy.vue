@@ -43,6 +43,7 @@ import { NodeUtils } from '@/utils/flow/nodeUtils';
 import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";  
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
+import { getWorkFlowData } from '@/api/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
  
@@ -126,15 +127,13 @@ const previewJson = () => {
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/workflow.scss";
-
 .app-container{
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 100px); 
+    min-height: calc(100vh - 85px); 
     padding-top: 15px;
     overflow: auto;
 }
-
 .step-tab {
    display: flex;
    justify-content: center;

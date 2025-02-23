@@ -89,8 +89,7 @@ export default {
                             "conditionNodes": [],
                             
                         },
-                        "conditionNodes": [],
-                        
+                        "conditionNodes": [],                        
                     }, {
                         "nodeName": "条件2",
                         "nodeType": 3,
@@ -112,6 +111,7 @@ export default {
                     "targetId": 1, 
                     "name": "张三"
                 }],
+               
             },
             "conditionNodes": []
         }

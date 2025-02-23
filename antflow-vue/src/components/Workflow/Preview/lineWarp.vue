@@ -6,7 +6,7 @@
 -->
 <template>
     <div class="node-wrap">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : 'active')">
             <div class="title" :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
             </div>
@@ -20,7 +20,6 @@
         <div class="pixel-line"></div>
     </div>
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
- 
 </template>
 <script setup> 
 import { bgColors } from '@/utils/flow/const' 

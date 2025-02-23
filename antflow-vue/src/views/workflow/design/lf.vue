@@ -145,7 +145,7 @@ const previewJson = () => {
 .app-container{
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 100px); 
+    min-height: calc(100vh - 85px); 
     padding-top: 15px;
     overflow: auto;
 }

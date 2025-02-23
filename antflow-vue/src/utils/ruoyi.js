@@ -45,7 +45,25 @@ export function parseTime(time, pattern) {
   })
   return time_str
 }
-
+/**
+ * 字符串中间部分隐藏
+ * @param {*} str 
+ * @returns 
+ */
+export function substringHidden(str) {
+  let frontLen=6;
+  let endLen=6;
+  if(str == null || str == undefined || str == '') {
+     return str;
+  }
+  if(str.length <= 18) {
+     return str;
+  } 
+  var xing = "******"; 
+ return (
+   str.substring(0, frontLen) + xing + str.substring(str.length - endLen)
+ );
+} 
 // 表单重置
 export function resetForm(refName) {
   if (this.$refs[refName]) {

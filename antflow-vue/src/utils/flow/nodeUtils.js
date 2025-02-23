@@ -29,7 +29,7 @@ export class NodeUtils {
       nodeType: 4,
       nodeFrom: "",
       nodeTo: [],
-      setType: 1,
+      setType: 5, //选择人员
       directorLevel: 1,
       signType: 1,
       noHeaderAction: 1,
@@ -207,6 +207,58 @@ export class NodeUtils {
     }
     return judgeNode;
   }
+
+/**
+ * 创建并行网关对象
+ * @returns object
+ */
+  static createParallelWayNode(child){
+    let parallelwayNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "并行审核网关",
+      nodeType: 7,
+      nodeFrom: "",
+      nodeTo: [],
+      childNode: null,
+      error: true,
+      property: null,
+      parallelNodes: [
+        this.createParallelNode("并行审核人1", child,1, 0),
+        this.createParallelNode("并行审核人2", null,2, 0),
+      ],
+    };
+    return parallelwayNode;
+  }
+  /**
+   * 创建并行审批人对象
+   * @returns object
+   */
+  static createParallelNode(name, childNode, priority, isDefault) {
+    let parallelNode = {
+      nodeId: this.idGenerator(),
+      nodeName: name || "并行审核人1",
+      nodeDisplayName: '',
+      nodeType: 4,
+      nodeFrom: "",
+      nodeTo: [],
+      priorityLevel: priority, 
+      nodeApproveList: [],
+      setType: 5, 
+      signType: 1,
+      noHeaderAction: 1,
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: [1],
+        approvalPage: [3, 4],
+        viewPage: [0]
+      },
+      error: true,
+      childNode: childNode,
+      isDefault: isDefault || 0,
+    }; 
+    return parallelNode;
+  }
+
   /**
    * 三方接入条件对象
    * @param {*} conditionValue 
@@ -214,13 +266,13 @@ export class NodeUtils {
    */
   static createOutsideConditionNode(conditionValue){
       let outsideConditionNode ={
-            formId: "9999",
-            columnId: "9999",
-            showType: "2",
-            showName: "条件",
+            formId: "9999",//固定值
+            columnId: "9999",//固定值
+            showType: "2",//固定值
+            showName: "条件",//固定值
             columnName: "templateMarks",
-            columnType: "String",
-            fieldTypeName: "select", 
+            columnType: "String",//固定值
+            fieldTypeName: "select", //固定值
             fixedDownBoxValue: conditionValue,
         }
     return outsideConditionNode;
