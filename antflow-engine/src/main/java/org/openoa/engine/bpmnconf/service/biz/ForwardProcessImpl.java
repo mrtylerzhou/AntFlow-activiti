@@ -35,14 +35,14 @@ public class ForwardProcessImpl implements ProcessOperationAdaptor {
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if (bpmBusinessProcess != null) {
-            String processInstanceId = taskMgmtMapper.findByBusinessId(bpmBusinessProcess.getEntryId());
+
             vo.getUserInfos().stream().forEach(o -> {
                 processForwardService.addProcessForward(BpmProcessForward.builder()
                         .createTime(new Date())
                         .createUserId(SecurityUtils.getLogInEmpId())
                         .forwardUserId(o.getId())
                         .ForwardUserName(o.getName())
-                        .processInstanceId(processInstanceId)
+                        .processInstanceId(bpmBusinessProcess.getProcInstId())
                         .processNumber(vo.getProcessNumber())
                         .build());
             });

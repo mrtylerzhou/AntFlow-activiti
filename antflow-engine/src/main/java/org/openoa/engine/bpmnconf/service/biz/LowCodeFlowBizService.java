@@ -8,5 +8,7 @@ public interface LowCodeFlowBizService {
     //todo cbcbu
     List<BaseKeyValueStruVo> getLowCodeFlowFormCodes();
 
+    List<BaseKeyValueStruVo> getLFActiveFormCodes();
+
     Integer addFormCode(BaseKeyValueStruVo vo);
 }

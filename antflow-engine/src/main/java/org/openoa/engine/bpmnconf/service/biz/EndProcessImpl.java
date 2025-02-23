@@ -75,17 +75,13 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 verifyUserName =SecurityUtils.getLogInEmpName();
                 verifyUserId = SecurityUtils.getLogInEmpIdStr();
         }
-        //get the permission right
-        List<HistoricProcessInstance> hisList = Optional.of(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(bpmBusinessProcess.getEntryId()).list()).orElse(Arrays.asList());
-        if (ObjectUtils.isEmpty(hisList)) {
-            throw new JiMuBizException("当前流程已审批！");
-        }
-        String processInstanceId = hisList.get(0).getId();
+
+        String processInstanceId = bpmBusinessProcess.getProcInstId();
         Integer processState = CRMCEL_STATE.getCode();
         if (vo.getFlag()) {
             processState = END_STATE.getCode();
         }
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId().toString()).list();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
         Task taskData;
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
