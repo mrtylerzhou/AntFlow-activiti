@@ -31,7 +31,7 @@
 <script setup>
 import { ref,reactive, getCurrentInstance } from 'vue' 
 const { proxy } = getCurrentInstance()
-
+/**传参不需要修改*/
 let props = defineProps({
     previewData: {
         type: Object,
@@ -58,11 +58,12 @@ let accountTypeOptions = [{
     "label": "阿里云",
     "value": 3
 }];
+/**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
     accountType: props.previewData?.accountType??'',
     remark:props.previewData?.remark??''
 })
-
+/**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
         required: true,

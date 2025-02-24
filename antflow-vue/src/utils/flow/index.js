@@ -1,4 +1,6 @@
 import { parseTime } from '@/utils/ruoyi'
+const isEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
+const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true
 function All() {}
 All.prototype = {
     timer: "",
@@ -43,9 +45,10 @@ All.prototype = {
             return arr.map(item => { return item.name }).toString()
         }
     },
-    toggleClass(arr, elem, key = 'id') {//判断数组中是否包含某个元素 
+    toggleClass(arr, elem, key = 'id') {//判断数组中是否包含某个元素  
+        if(isEmptyArray(arr)) return false;
         if(arr && arr.length > 0) { 
-            return arr.some(item => { return item[key] == elem[key] });
+            return arr.some(item => { return  !isEmpty(item) && item[key] == elem[key] });
         }
     },
     toChecked(arr, elem, key = 'id') { 

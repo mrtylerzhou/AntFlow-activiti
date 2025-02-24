@@ -1,10 +1,8 @@
 <template>
     <div>
         <el-form ref="ruleFormRef" :model="form" :rules="rules" label-position="top" style="max-width: 600px;min-height: 100px; margin: 50px auto;"> 
-            <div style="margin: 30px;">
-                <el-text class="mx-1" style="margin-bottom: 30px;" size="large" type="danger">*发起测试</el-text>
-                <br/>
-                <el-text class="mx-1"  size="large" type="primary">*业务方（第三方）系统的表单，需要审批流程，接入本流程引擎</el-text>
+            <div style="margin-bottom: 20px;">
+                <el-text class="mx-1" size="large" type="danger">*发起测试：模拟外部系统表单，接入本流程引擎</el-text> 
             </div>
             <el-row>
                 <el-col :span="24">
@@ -56,9 +54,9 @@ let accountTypeOptions = [{
     "value": 3
 }];
 const form = reactive({
-    userName: '',
+    userName: '张三',
     accountType: 1,
-    remark:'测试'
+    remark:'外部系统业务表单接入测试'
 })
 
 let rules = {
@@ -89,13 +87,13 @@ const handleSubmit = () => {
   const form = document.querySelector('form'); 
   const htmlString = formToHTMLString(form);
   let param =  {
-        "formCode":"adbgxx",
-        "businessPartyId":1, 
-        "businessPartyMark":"kbgschool",
-        "templateMark":"id2",
-        "outSideType":2,
-        "userId":"1",
-        "formDataPc":htmlString
+        formCode:"adbgxx",
+        businessPartyId:1, 
+        businessPartyMark:"kbgschool",
+        templateMark:"id2",
+        outSideType:2,
+        userId:"1",
+        formDataPc:htmlString
         }
      proxy.$refs['ruleFormRef'].validate((valid) => {
         if (valid) {

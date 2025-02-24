@@ -17,7 +17,7 @@
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
                         :placeholder="defaultText" />
                     <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
-                    <i class="anticon anticon-close close" @click="delNode"></i>
+                    <i class="anticon anticon-close close" @click="delNode()"></i>
                 </template>
             </div>
             <div class="content" @click="setNodeInfo">
@@ -126,7 +126,6 @@
             <addNode v-model:childNodeP="nodeConfig.childNode" />
         </div>
     </div>
-
     <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
@@ -172,6 +171,7 @@ let conditionsConfig1 = computed(()=> store.conditionsConfig1)
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
+/**节点名称展示 */
 let showText = computed(() => { 
     if(!props.nodeConfig.nodeType) return'';  
     if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '所有人';
@@ -195,7 +195,6 @@ const resetConditionNodesErr = () => {
         node.error = false;
     }
 }
-
 /**
  * 重置并行节点错误状态和展示名称
  */
@@ -207,7 +206,6 @@ const resetParallelNodesErr = () => {
         props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle; 
     }  
 }
-
 onMounted(() => {
     if (props.nodeConfig.nodeType == 2) {
         resetConditionNodesErr();
@@ -215,22 +213,25 @@ onMounted(() => {
         resetParallelNodesErr();
     }
 });
-
+/**权限暂未实现 */
 watch(flowPermission1, (flow) => {
     if (flow.flag && flow.id === _uid) {
         emits("update:flowPermission", flow.value);
     }
 });
+/**审批人节点监听 */
 watch(approverConfig1, (approver) => { 
     if (approver.flag && approver.id === _uid) {
         emits("update:nodeConfig", approver.value);
     }
 });
+/**抄送人节点监听 */
 watch(copyerConfig1, (copyer) => {
     if (copyer.flag && copyer.id === _uid) {
         emits("update:nodeConfig", copyer.value);
     }
 });
+/**条件节点监听 */
 watch(conditionsConfig1, (condition) => {
     if (condition.flag && condition.id === _uid) {
         emits("update:nodeConfig", condition.value);
@@ -269,7 +270,7 @@ const blurEvent = (index) => {
 /**
  * 删除节点
  */
-const delNode = () => {
+const delNode = () => { 
     emits("update:nodeConfig", props.nodeConfig.childNode);
 };
 /**
@@ -283,7 +284,7 @@ const addTerm = () => {
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
         let len = props.nodeConfig.parallelNodes.length + 1;
-        let n_name = '审核人' + len;
+        let n_name = '并行审核人' + len;
         props.nodeConfig.parallelNodes.push(NodeUtils.createParallelNode(n_name, null, len, 0));
         resetParallelNodesErr();
     }
@@ -336,7 +337,6 @@ const delParallelNodeTerm = (index) => {
     });
     resetParallelNodesErr(); 
     emits("update:nodeConfig", props.nodeConfig);
-
     if (props.nodeConfig.parallelNodes.length == 1) {
         if (props.nodeConfig.childNode) {
             if (props.nodeConfig.parallelNodes[0].childNode) {
