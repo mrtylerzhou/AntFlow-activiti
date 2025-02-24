@@ -34,7 +34,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue' 
 const { proxy } = getCurrentInstance()
-
+/**传参不需要修改*/
 let props = defineProps({
     previewData: {
         type: Object,
@@ -50,11 +50,13 @@ let props = defineProps({
     }
 });  
 const ruleFormRef = ref(null) 
+/**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
     licensePlateNumber: props.previewData?.licensePlateNumber??'',
     refuelTime: props.previewData?.refuelTime??'',
     remark:props.previewData?.remark??''
 })
+/**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
         required: true,

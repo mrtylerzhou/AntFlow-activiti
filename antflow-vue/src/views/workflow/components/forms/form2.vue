@@ -49,6 +49,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue' 
 const { proxy } = getCurrentInstance()
+/**传参不需要修改*/
 let props = defineProps({
     previewData: {
         type: Object,
@@ -77,7 +78,7 @@ let leaveTypeOptions = [{
     "label": "病假",
     "value": 4
 }];
-
+/**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
     leaveType: props.previewData?.leaveType??1,
     beginDate:props.previewData?.beginDate??"",
@@ -87,7 +88,7 @@ const form = reactive({
     userId:props.previewData?.leaveUserId?? "",
     remark: props.previewData?.remark??""
 })
-
+/**表单字段验证，根据实际业务表单修改*/
 let rules = {
     beginDate: [{
         required: true,
