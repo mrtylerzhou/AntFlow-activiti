@@ -11,7 +11,7 @@ public class BizPurchaseVo extends BusinessDataVo {
     private String PurchaseUserName;
     private Integer PurchaseType;
     private Date PurchaseDate;
-    private Double planProcurementTotalMoney;
+    private Double PlanProcurementTotalMoney;
     private Date createTime;
     private String createName;
     private Date updateTime;
