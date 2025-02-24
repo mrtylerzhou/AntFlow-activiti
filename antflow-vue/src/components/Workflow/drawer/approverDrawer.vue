@@ -143,9 +143,7 @@
                             </el-radio>
                         </el-radio-group>
                     </div>
-
                 </div>
-
             </el-tab-pane>
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
@@ -170,6 +168,7 @@ import { useStore } from '@/store/modules/workflow'
 import employeesDialog from '../dialog/employeesDialog.vue'
 import roleDialog from '../dialog/roleDialog.vue'
 import FormPermConf from "../config/FormPermConf.vue";
+const { proxy } = getCurrentInstance();
 let store = useStore()
 let props = defineProps({
     directorMaxLevel: {
@@ -177,27 +176,22 @@ let props = defineProps({
         default: 0
     }
 });
-
 let approverConfig = ref({})
 let approverVisible = ref(false)
-
 let approverRoleVisible = ref(false)
 let checkedRoleList = ref([])
 let checkedList = ref([])
 let checkApprovalPageBtns = ref([])
 let checkedHRBP = ref('')
 let approvalPageBtns = ref([])
-
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
-let approvalBtnSubOption = ref(1)
+let approvalBtnSubOption  =ref(1)
 let formItems = ref([])
-
 let activeName = ref('approverStep')
 let approverStepShow = ref(true)
 let formStepShow = ref(false)
-
 let approverConfig1 = computed(() => store.approverConfig1)
-let approverDrawer = computed(() => store.approverDrawer)
+let approverDrawer = computed(() => store.approverDrawer) 
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" })
@@ -207,33 +201,29 @@ let visible = computed({
         closeDrawer()
     }
 })
-
-watch(approverConfig1, (val) => {
+/**页面加载监听事件 */
+watch(approverConfig1, (val) => {  
     if (val.value.nodeType == 7) {//并行审批
-        approverConfig.value = val.value.parallelNodes[val.value.index];
+        let currParallel = val.value.parallelNodes[val.value.index]
+        approverConfig.value = currParallel;
+        formItems.value = currParallel.lfFieldControlVOs || []; 
+        checkApprovalPageBtns.value = currParallel.buttons?.approvalPage; 
     }
     else {
         approverConfig.value = val.value;
-    }
-    formItems.value = approverConfig.value.lfFieldControlVOs || [];
-    checkApprovalPageBtns.value = val.value.buttons?.approvalPage; 
+        formItems.value = val.value.lfFieldControlVOs || []; 
+        checkApprovalPageBtns.value = val.value.buttons?.approvalPage; 
+    }  
 })
-
-watch(approverConfig, (val) => {
-    approvalPageBtns.value = val.buttons?.approvalPage;
+  
+/**监听 approverConfig 对象*/
+watch(approverConfig, (val) => { 
+    approvalPageBtns.value = val.buttons?.approvalPage; 
     if (val.nodeProperty == 6) {
         checkedHRBP.value = val.property.hrbpConfType
     }
-})
-
-watch(() => approverConfig.value?.property, (newVal, oldVal) => {
-    let afterSignUpWayTemp = newVal?.afterSignUpWay ?? 1;
-    //console.log('afterSignUpWayTemp=====>',JSON.stringify(afterSignUpWayTemp));
-    if (afterSignUpWayTemp) {
-        approvalBtnSubOption.value = afterSignUpWayTemp == 1 ? 3 : approverConfig.value?.property?.signUpType;
-    }
-}, { deep: true })
-
+}) 
+/**处理HRBP选项 */
 watch(checkedHRBP, (val) => {
     if (approverConfig.value.setType != 6) {
         return;
@@ -244,70 +234,55 @@ watch(checkedHRBP, (val) => {
         approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }];
     }
 })
-
-const changeType = (val) => {
-    //console.log('typevale=====>',val);
+/**选择审批人类型更改事件 */
+const changeType = (val) => { 
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
     approverConfig.value.noHeaderAction = 2;
     checkedHRBP.value = '';
     if (val == 3) {
         approverConfig.value.directorLevel = 1;
-    } else {
-
     }
 }
+/**添加审批人 */
 const addApprover = () => {
     approverVisible.value = true;
     checkedList.value = approverConfig.value.nodeApproveList
 }
+/**添加审批角色 */
 const addRoleApprover = () => {
     approverRoleVisible.value = true;
     checkedRoleList.value = approverConfig.value.nodeApproveList
 }
+/**选择审批人确认按钮 */
 const sureApprover = (data) => {
     approverConfig.value.nodeApproveList = data;
     approverVisible.value = false;
 }
+/**选择角色确认按钮 */
 const sureRoleApprover = (data) => {
     approverConfig.value.nodeApproveList = data;
     approverRoleVisible.value = false;
 }
-
-const handleCheckedButtonsChange = (val) => {
-    const index = approvalPageBtns?.value?.indexOf(val) ?? -1;
-    index < 0 ? approvalPageBtns?.value?.push(val) : approvalPageBtns.value.splice(index, 1);
-    const isAddStep = approvalPageBtns?.value?.indexOf(19) ?? 1;
+/**处理权限按钮变更事件 */
+const handleCheckedButtonsChange = (val) => { 
+    if(proxy.isObjEmpty(approvalPageBtns)) return;
+    if(proxy.isArrayEmpty(approvalPageBtns.value)) return; 
+    const index = approvalPageBtns.value.indexOf(val);
+    index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
+    const isAddStep = approvalPageBtns.value.indexOf(19);
     if (isAddStep >= 0) {
         approverConfig.value.isSignUp = 1;
     } else {
         approverConfig.value.isSignUp = 0;
-    }
+    }  
 }
+ 
 /**处理加批按钮 子操作 */
-const handleApprovalBtnSubOption = (val) => {
-    const isTure = approverConfig.value.hasOwnProperty("property");
-    if (isTure && approverConfig.value.property) {
-        if (approverConfig.value.property.hasOwnProperty("afterSignUpWay")) {
-            approverConfig.value.property.afterSignUpWay = val && val == 3 ? 1 : 2;
-        } else {
-            Object.assign(approverConfig.value, { property: { afterSignUpWay: val && val == 3 ? 1 : 2 } });
-        }
-
-        if (approverConfig.value.property.hasOwnProperty("signUpType")) {
-            approverConfig.value.property.signUpType = val && val == 3 ? 1 : val;
-        } else {
-            Object.assign(approverConfig.value.property, { signUpType: val && val == 3 ? 1 : val });
-        }
-    } else {
-        Object.assign(approverConfig.value, {
-            property: {
-                afterSignUpWay: val && val == 3 ? 1 : 2,
-                signUpType: val && val == 3 ? 1 : val
-            }
-        });
-    }
-    //console.log('approverConfig.value=============', JSON.stringify(approverConfig.value)) signUpType
+const handleApprovalBtnSubOption = (val) => { 
+    //val加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
+    approverConfig.value.property.afterSignUpWay = val && val == 3 ? 1 : 2;
+    approverConfig.value.property.signUpType = val && val == 3 ? 1 : val;  
 }
 const handleTabClick = (tab, event) => {
     activeName.value = tab.paneName;
@@ -317,6 +292,7 @@ const handleTabClick = (tab, event) => {
         formStepShow.value = false;
     }
 }
+/**低代码表单 */
 const changePermVal = (data) => {
     approverConfig.value.lfFieldControlVOs = data;
 }
@@ -324,6 +300,7 @@ const changePermVal = (data) => {
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
+    //console.log('approverConfig1.value==========', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,
@@ -331,6 +308,7 @@ const saveApprover = () => {
     })
     closeDrawer()
 }
+/**关闭抽屉 */
 const closeDrawer = () => {
     store.setApprover(false)
 } 

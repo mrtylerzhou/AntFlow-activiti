@@ -283,7 +283,7 @@ const addTerm = () => {
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
         let len = props.nodeConfig.parallelNodes.length + 1;
-        let n_name = '审核人' + len;
+        let n_name = '并行审核人' + len;
         props.nodeConfig.parallelNodes.push(NodeUtils.createParallelNode(n_name, null, len, 0));
         resetParallelNodesErr();
     }
