@@ -28,7 +28,7 @@
             <template v-slot:header>
                 <div class="clearfix">
                     <span>低代码表单(LF)
-                        <el-tooltip placement="right" effect="light">
+                        <el-tooltip placement="right" >
                             <template #content> 
                                 <span> 
                                     <el-alert style="margin-bottom: 5px;" title="第一步：添加模板类型(LF)：流程管理->流程模板" type="success" effect="dark"  :closable="false" /> 
