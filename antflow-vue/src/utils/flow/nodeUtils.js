@@ -34,7 +34,7 @@ export class NodeUtils {
       isSignUp: 0,//是否加批 0:否，1:是
       directorLevel: 1, 
       noHeaderAction: 1,
-      childNode: {},
+      childNode: null,
       error: true,
       property: {
         afterSignUpWay: 2,
@@ -220,7 +220,7 @@ export class NodeUtils {
       nodeType: 7,
       nodeFrom: "",
       nodeTo: [],
-      childNode: null,
+      childNode: this.createParallelNode("并行聚合节点", null,1, 0),
       error: true,
       property: null,
       parallelNodes: [

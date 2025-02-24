@@ -73,6 +73,24 @@ onMounted(async () => {
   } 
 }
 /**
+ * 并行审批节点验证
+ * 判断存在并行审批就必须有聚合节点
+ * @param treeNode 
+ */
+const preTreeIsParallelNode = (treeNode) => { 
+    if (proxy.isObjEmpty(treeNode)) return true;
+    if (treeNode.nodeType == 7) {
+        if(proxy.isObjEmpty(treeNode.childNode)){
+            return false;
+        }else{
+            return preTreeIsParallelNode(treeNode.childNode);
+        }
+    }
+    else {
+        return preTreeIsParallelNode(treeNode.childNode);
+    }
+}
+/**
  * 节点必填校验
  * @param childNode 
  */
@@ -123,11 +141,19 @@ function zoomReset() {
 
 const getJson = () => {
     setIsTried(true); 
-    let isApproveNode = preTreeIsApproveNode(nodeConfig.value);
-    if (!nodeConfig.value || !nodeConfig.value.childNode || !isApproveNode) {
+     /**并行审批验证 */
+     let verifyParallelNode = preTreeIsParallelNode(nodeConfig.value); 
+    if (!verifyParallelNode) {
+        proxy.$modal.msgError("并行审批下必须有一个审批人节点作为聚合节点");
+        emit('nextChange', { label: "流程设计", key: "processDesign" });
+        return false;
+    }  
+    let verifyApproveNode = preTreeIsApproveNode(nodeConfig.value);   
+    if (!nodeConfig.value || !nodeConfig.value.childNode || !verifyApproveNode) {
         emit('nextChange', { label: "流程设计", key: "processDesign" }); 
         return false;
     } 
+   
     tipList.value = [];
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
