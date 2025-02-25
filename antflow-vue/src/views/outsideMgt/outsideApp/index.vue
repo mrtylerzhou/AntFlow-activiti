@@ -21,10 +21,10 @@
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="业务方名称" align="center" prop="businessName" />
-      <el-table-column label="业务方标识" align="center" prop="businessCode" />
-      <el-table-column label="业务表单名称" align="center" prop="title" />
+      <el-table-column label="项目标识" align="center" prop="businessCode" />
+      <el-table-column label="项目名称" align="center" prop="businessName" /> 
       <el-table-column label="业务表单标识" align="center" prop="processKey" />
+      <el-table-column label="业务表单名称" align="center" prop="title" />
       <el-table-column label="业务表单类型" align="center" prop="applyTypeName" />
       <el-table-column label="创建时间" align="center" prop="createTime">
         <template #default="scope">

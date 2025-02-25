@@ -14,7 +14,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">
-                    <div v-if="reviewWarpShow" style="height: calc(100vh - 200px);overflow-y: auto">
+                    <div v-if="reviewWarpShow" >
                         <ReviewWarp v-model:previewConf="previewConf" />
                     </div>
                 </el-tab-pane>

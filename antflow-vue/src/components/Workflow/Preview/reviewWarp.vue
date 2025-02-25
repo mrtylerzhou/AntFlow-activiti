@@ -1,6 +1,6 @@
 <template>
     <div style="text-align:center;" >
-        <section class="antflow-design" style="padding-top: 20px;" ref="antflowDesignRef">
+        <section class="antflow-design"  ref="antflowDesignRef">
             <div class="zoom">
                 <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
@@ -79,12 +79,12 @@ function zoomReset() {
 }
 </script>
 <style lang="scss" scoped> 
-@import "@/assets/styles/flow/workflow.scss"; 
+ @import "@/assets/styles/flow/workflow.scss"; 
 .end-node-circle {
     width: 20px;
     height: 20px;
     margin: auto;
     border-radius: 50%;
     background: #dbdcdc
-}  
+}   
 </style>
