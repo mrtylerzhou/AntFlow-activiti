@@ -99,6 +99,7 @@ export class FormatUtils {
         } 
       } 
     } 
+    //console.log('startNode====', JSON.stringify(startNode))
     return startNode;
   }
   /**

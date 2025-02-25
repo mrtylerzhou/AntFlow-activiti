@@ -53,7 +53,7 @@ let directorMaxLevel = ref(3);
 onMounted(async () => { 
     zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
         nowVal.value = val
-    })
+    });
     if (props.processData) {
         nodeConfig.value = props.processData;
     }
@@ -181,7 +181,6 @@ defineExpose({
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/workflow.scss";
-
 .app-container {
     position: relative;
     background-color: #f5f5f7;
@@ -190,10 +189,5 @@ defineExpose({
     margin-top: 20px !important;
     height: auto;
     overflow: auto;
-}
-
-.clearfix {
-    zoom: 1
-}
-   
+}  
 </style>

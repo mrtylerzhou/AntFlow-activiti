@@ -12,14 +12,10 @@
                 <span>{{ nodeConfig.nodeName }}</span>
             </div>
             <div class="content">
-                <div v-html="nodeConfig.nodeDisplayName" class="text"></div>
-                <!-- <div class="text">  
-                    {{ nodeConfig.nodeDisplayName ?? '未获取到' }}
-                </div> -->
+                <div v-html="nodeConfig.nodeDisplayName" class="text"></div> 
             </div>
         </div>  
-        <div class="pixel-line"></div> 
-        <div class="testtt"></div> 
+        <div class="pixel-line"></div>  
     </div>
     <!--并行审批分支-->
     <div class="branch-wrap" v-if="nodeConfig.nodeType == 7">
@@ -87,7 +83,7 @@ let nodeConfig = computed(() => {
       props.nodeConfig.nodeDisplayName =nameStr;
     return props.nodeConfig
 })
-//console.log("nodeConfig==============",JSON.stringify(props.nodeConfig)) 
+//console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/workflow.scss"; 

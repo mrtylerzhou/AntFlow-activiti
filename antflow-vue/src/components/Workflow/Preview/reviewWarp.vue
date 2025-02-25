@@ -1,7 +1,14 @@
 <template>
-    <div style="text-align:center;background: #f5f5f7;width: 100%;height: 100%">
-        <section class="antflow-design">
-            <div class="box-scale">
+    <div style="text-align:center;" >
+        <section class="antflow-design" style="padding-top: 20px;" ref="antflowDesignRef">
+            <div class="zoom">
+                <div class="zoom-out" @click="zoomOut" title="缩小"></div>
+                <span>{{ nowVal }}%</span>
+                <div class="zoom-in" @click="zoomIn" title="放大"></div>
+                <!--刷新图标代码-->
+                <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
+            </div>
+            <div class="box-scale" ref="boxScaleRef">
                 <LineWarp v-if="nodeConfig" v-model:nodeConfig="nodeConfig" />
                 <div class="end-node">
                     <div class="end-node-circle"></div>
@@ -12,12 +19,16 @@
     </div>
 </template>
 <script setup>
-import LineWarp from "@/components/Workflow/Preview/lineWarp.vue"
-import { getFlowPreview } from '@/api/workflow'
-import { FormatUtils } from '@/utils/flow/formatFlowPreview'
-import { useStore } from '@/store/modules/workflow' 
-const { proxy } = getCurrentInstance()
-let store = useStore()
+import LineWarp from '@/components/Workflow/Preview/lineWarp.vue';
+import { getFlowPreview } from '@/api/workflow';
+import { FormatUtils } from '@/utils/flow/formatFlowPreview';
+import { useStore } from '@/store/modules/workflow'; 
+import {wheelZoomFunc, zoomInit,resetImage} from '@/utils/zoom.js';
+const { proxy } = getCurrentInstance();
+let store = useStore();
+const antflowDesignRef = ref(null);
+const boxScaleRef = ref(null);
+let nowVal = ref(100);
 let viewConfig = computed(() => store.instanceViewConfig1) 
 let props = defineProps({
     previewConf: {
@@ -25,7 +36,7 @@ let props = defineProps({
         default: () => (null)
     }
 });
-const nodeConfig = ref(null) 
+const nodeConfig = ref(null); 
 const getFlowPreviewList = async (objData) => {  
     let param = {
         processNumber: objData.processNumber,
@@ -35,22 +46,45 @@ const getFlowPreviewList = async (objData) => {
     };
     if(props.previewConf) {
         param = props.previewConf;
-    }
-    // console.log("param=========8888=====", JSON.stringify(param))
+    } 
     proxy.$modal.loading();
     let resData = await getFlowPreview(param);
     proxy.$modal.closeLoading();
     let formatData = FormatUtils.formatSettings(resData.data);
     nodeConfig.value = formatData;
+    //console.log("nodeConfig.value =========8888=====", JSON.stringify(nodeConfig.value ))
 }
-getFlowPreviewList(viewConfig.value);
+onMounted(async () => { 
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
+        nowVal.value = val
+    });
+    await getFlowPreviewList(viewConfig.value);
+    
+    console.log("boxScaleRef.value =========8888=====", JSON.stringify(antflowDesignRef ))
+});
+
+
+/** 页面放大 */
+function zoomIn() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})
+}
+
+/** 页面缩小 */
+function zoomOut() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
+}
+/** 还原缩放比例 */
+function zoomReset() {
+  resetImage()
+}
 </script>
 <style lang="scss" scoped> 
+@import "@/assets/styles/flow/workflow.scss"; 
 .end-node-circle {
     width: 20px;
     height: 20px;
     margin: auto;
     border-radius: 50%;
     background: #dbdcdc
-} 
+}  
 </style>
