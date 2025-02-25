@@ -450,6 +450,7 @@ public class BpmnConfCommonServiceImpl {
                     treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList);
 
                     nowNode = map.get(aggregationNode.getParams().getNodeTo());
+                    lastNode=aggregationNode;
                 }
                 if (nowNode == null) {
                     break;
