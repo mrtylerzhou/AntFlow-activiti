@@ -1,7 +1,7 @@
 <template>
     <div class="add-node-btn-box">
         <div class="add-node-btn">
-            <el-popover placement="right-start" v-model="visible" width="auto">
+            <el-popover placement="right-start" v-model="visible" aria-hidden="true" width="auto">
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item approver" @click="addType(4)">
                         <div class="item-wrapper">
