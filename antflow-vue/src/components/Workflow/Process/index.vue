@@ -1,22 +1,20 @@
 <template>
-    <div class="app-container">
-        <section class="antflow-design" ref="antflowDesignRef">
-            <div class="zoom">
-                <div class="zoom-out" @click="zoomOut" title="缩小"></div>
-                <span>{{ nowVal }}%</span>
-                <div class="zoom-in" @click="zoomIn" title="放大"></div>
-                <!--刷新图标代码-->
-                <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
+    <section class="antflow-design" ref="antflowDesignRef">
+        <div class="zoom">
+            <div class="zoom-out" @click="zoomOut" title="缩小"></div>
+            <span>{{ nowVal }}%</span>
+            <div class="zoom-in" @click="zoomIn" title="放大"></div>
+            <!--刷新图标代码-->
+            <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
+        </div>
+        <div class="box-scale" ref="boxScaleRef">
+            <nodeWrap v-model:nodeConfig="nodeConfig" />
+            <div class="end-node">
+                <div class="end-node-circle"></div>
+                <div class="end-node-text">流程结束</div>
             </div>
-            <div class="box-scale" ref="boxScaleRef">
-                <nodeWrap v-model:nodeConfig="nodeConfig" />
-                <div class="end-node">
-                    <div class="end-node-circle"></div>
-                    <div class="end-node-text">流程结束</div>
-                </div>
-            </div>
-        </section> 
-    </div>
+        </div>
+    </section>
     <errorDialog v-model:visible="tipVisible" :list="tipList" />
     <promoterDrawer />
     <approverDrawer :directorMaxLevel="directorMaxLevel" />
@@ -180,14 +178,5 @@ defineExpose({
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
-.app-container {
-    position: relative;
-    background-color: #f5f5f7;
-    min-height: calc(100vh - 200px);
-    padding-top: 5px;
-    margin-top: 20px !important;
-    height: auto;
-    overflow: auto;
-}  
+@import "@/assets/styles/flow/workflow.scss"; 
 </style>

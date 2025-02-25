@@ -3,21 +3,21 @@
         <div class="task-title">
             <span class="task-title-text">流程详情预览</span>
         </div>
-        <div style="background-color: #f5f5f7;min-height: calc(100vh - 200px);">
+        <div style="background-color: #f5f5f7;min-height: calc(100vh - 176px);">
             <el-row>
-                <el-col :span="24" style="margin-bottom: 20px;">
+                <el-col :span="24">
                     <el-radio-group v-model="tabPosition"> 
                         <el-radio-button value="flowForm">流程基本信息</el-radio-button>
                         <el-radio-button value="formRender">业务表单预览</el-radio-button>
                         <el-radio-button value="flow">流程模板预览</el-radio-button>
                     </el-radio-group>
                 </el-col> 
-                <el-col :span="24" v-if="tabPosition == 'flowForm'">
+                <el-col :span="24" v-if="tabPosition == 'flowForm'" class="mt20">
                     <div v-if="processConfig">
                         <BasicSetting ref="basicSetting" :basicData="processConfig" />
                     </div>
                 </el-col>
-                <el-col :span="24" v-if="tabPosition == 'formRender'">
+                <el-col :span="24" v-if="tabPosition == 'formRender'"  class="mt20">
                     <div v-if="processConfig" class="component"> 
                         <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
                             :isPreview="true">
