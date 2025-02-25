@@ -185,14 +185,19 @@ const approveSubmit = async (param) => {
             if (handleClickType.value == approvalButtonConf.resubmit) {
                 await componentFormRef.value.handleValidate().then(async (isValid) => {
                     if (isValid) {
-                        await componentFormRef.value.getFromData().then((data) => { 
-                            approveSubData.lfFields = JSON.parse(data); //低代码表单字段
+                        await componentFormRef.value.getFromData().then((data) => {                     
+                            if (isLowCodeFlow && isLowCodeFlow == true) {
+                                approveSubData.lfFields = JSON.parse(data); //低代码表单字段
+                            } else {
+                                let componentFormData = JSON.parse(data);
+                                Object.assign(approveSubData, componentFormData); 
+                            }
                         })
                       
                     }
                 });
             };
-            console.log('approveSubData==========', JSON.stringify(approveSubData));
+            //console.log('approveSubData==========', JSON.stringify(approveSubData));
             await approveProcess(approveSubData);//业务处理
         }
     })
