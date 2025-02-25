@@ -11,7 +11,7 @@
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
             </div>
-            <div class="content" @click="setPerson">
+            <div class="content">
                 <div v-html="nodeConfig.nodeDisplayName" class="text"></div>
                 <!-- <div class="text">  
                     {{ nodeConfig.nodeDisplayName ?? '未获取到' }}

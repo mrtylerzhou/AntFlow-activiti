@@ -18,7 +18,7 @@ export class FormatUtils {
    * @param param
    */
   // 静态方法，用于格式化设置参数
-  static formatSettings(param) {
+  static formatSettings(param) { 
     let nodeList = [];
     if (!param || isEmptyArray(param.bpmnNodeList)) return nodeList;
     for (let node of param.bpmnNodeList) {
@@ -78,20 +78,27 @@ export class FormatUtils {
   static depthConverterToTree(parmData) { 
     let nodesGroup = {}, startNode = {};
     for (let t of parmData) {
-      if (!nodesGroup.hasOwnProperty(t.nodeId)) {
-        nodesGroup[t.nodeId] = t;
+      if (isEmpty(t.nodeFrom)) continue;
+      if (nodesGroup.hasOwnProperty(t.nodeFrom)) {
+        nodesGroup[t.nodeFrom].push(t);
+      } else {
+        nodesGroup[t.nodeFrom] = [t];
       }
-    } 
+  } 
     for (let node of parmData) {
       if (1 == node.nodeType) {
         startNode = node;
       }
-      let childNodeId = node.nodeTo;
-      if (nodesGroup.hasOwnProperty(childNodeId)) {
-        let itemNode = nodesGroup[childNodeId];
-        Object.assign(node, { childNode: itemNode });
-      }
-    }
+      let currNodeId = node.nodeId;
+      if (nodesGroup.hasOwnProperty(currNodeId)) {
+        let itemNodes = nodesGroup[currNodeId];
+        for (let itemNode of itemNodes) {
+          if (4 == itemNode.nodeType) {
+            Object.assign(node, { childNode: itemNode });
+          } 
+        } 
+      } 
+    } 
     return startNode;
   }
   /**
@@ -101,13 +108,12 @@ export class FormatUtils {
     let nodesGroup = {}, startNode = {};
     for (let t of parmData) {
         if (isEmpty(t.nodeFrom)) continue;
-        if (nodesGroup.hasOwnProperty(t.nodeFrom) && !isEmpty(t.nodeFrom)) {
+        if (nodesGroup.hasOwnProperty(t.nodeFrom)) {
           nodesGroup[t.nodeFrom].push(t);
         } else {
           nodesGroup[t.nodeFrom] = [t];
         }
-    }
-   
+    } 
     for (let node of parmData) {
       if (1 == node.nodeType) {
         startNode = node;
