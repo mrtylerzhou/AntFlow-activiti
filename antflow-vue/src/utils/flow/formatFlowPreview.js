@@ -15,7 +15,7 @@ const isEmpty = (data) =>
 export class FormatUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
-   * @param params
+   * @param param
    */
   // 静态方法，用于格式化设置参数
   static formatSettings(param) {
@@ -62,8 +62,7 @@ export class FormatUtils {
    * @param {*} parmData
    * @returns
    */
-  static depthConverterNodes(parmData) {
-    //console.log('parmData====', JSON.stringify(parmData))
+  static depthConverterNodes(parmData) { 
     if (isEmptyArray(parmData)) return;   
     //普通审批和并行审批有相同之处，这里偷懒分开处理
     if (!parmData.some((c) => c.nodeType == 7)) {
@@ -76,7 +75,7 @@ export class FormatUtils {
   /**
    * List 转成tree结构（不包含并行网关）
    */
-  static depthConverterToTree(parmData) {
+  static depthConverterToTree(parmData) { 
     let nodesGroup = {}, startNode = {};
     for (let t of parmData) {
       if (!nodesGroup.hasOwnProperty(t.nodeId)) {
@@ -108,13 +107,14 @@ export class FormatUtils {
           nodesGroup[t.nodeFrom] = [t];
         }
     }
+   
     for (let node of parmData) {
       if (1 == node.nodeType) {
         startNode = node;
       }  
       let currNodeId = node.nodeId;
       if (nodesGroup.hasOwnProperty(currNodeId)) {
-        let itemNodes = nodesGroup[currNodeId]; 
+        let itemNodes = nodesGroup[currNodeId];  
         for (let itemNode of itemNodes) {
             if (4 == itemNode.nodeType) {
                 let isTrueParallelNode = this.isParallelChildNode(itemNode, parmData); 

@@ -1,12 +1,14 @@
 <template>
-    <div style="text-align:center;">
-        <div class="box-scale">
-            <LineWarp v-if="nodeConfig" v-model:nodeConfig="nodeConfig" />
-            <div class="end-node">
-                <div class="end-node-circle"></div>
-                <div class="end-node-text">流程结束</div>
+    <div style="text-align:center;background: #f5f5f7;width: 100%;height: 100%">
+        <section class="antflow-design">
+            <div class="box-scale">
+                <LineWarp v-if="nodeConfig" v-model:nodeConfig="nodeConfig" />
+                <div class="end-node">
+                    <div class="end-node-circle"></div>
+                    <div class="end-node-text">流程结束</div>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 </template>
 <script setup>
@@ -43,8 +45,7 @@ const getFlowPreviewList = async (objData) => {
 }
 getFlowPreviewList(viewConfig.value);
 </script>
-<style lang="scss" scoped>
-@import "@/assets/styles/flow/workflow.scss";  
+<style lang="scss" scoped> 
 .end-node-circle {
     width: 20px;
     height: 20px;
