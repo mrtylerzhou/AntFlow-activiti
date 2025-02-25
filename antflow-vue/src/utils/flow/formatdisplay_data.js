@@ -95,7 +95,7 @@ export class FormatDisplayUtils {
     return startNode;
   }
   /**
-   * List 转成tree结构（并行网关）
+   * List 转成tree结构（包含并行网关）
    */
   static depthConverterToTreeForParallelway(nodesGroup, parmData) {
     let startNode = {};
@@ -111,8 +111,8 @@ export class FormatDisplayUtils {
           if (3 == itemNode.nodeType) {
             node.conditionNodes.push(itemNode);
           } else if (4 == itemNode.nodeType) {
-            let isTrue = this.isParallelChildNode(itemNode, parmData); 
-            if (isTrue == false) {
+            let isTrueParallelNode = this.isParallelChildNode(itemNode, parmData); 
+            if (isTrueParallelNode == false) {
               node.childNode = itemNode;
             } else {
               if (!node.hasOwnProperty("parallelNodes")) {

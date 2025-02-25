@@ -35,15 +35,15 @@ let nodeConfig = computed(() => {
         props.nodeConfig.nodeDisplayName = props.nodeConfig.nodeName;
         return props.nodeConfig;
     }        
-    let approvers =props.nodeConfig.assigneeList; 
+    let approvers =props.nodeConfig.property?.emplList; 
     if(!Array.isArray(approvers) || approvers.length == 0){
         return props.nodeConfig;
     }
     for (let item of approvers) {  
         if(item.isDeduplication == 1){ 
-            nameStr +='<del><em>'+ item.assigneeName +'</em></del>' + '  ';
+            nameStr +='<del><em>'+ item.name +'</em></del>' + '  ';
         }else{
-            nameStr += item.assigneeName + '  ';
+            nameStr += item.name + '  ';
         }  
       }
       props.nodeConfig.nodeDisplayName =nameStr;

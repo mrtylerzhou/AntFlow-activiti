@@ -44,6 +44,7 @@ const getFlowPreviewList = async (objData) => {
 getFlowPreviewList(viewConfig.value);
 </script>
 <style lang="scss" scoped>
+@import "@/assets/styles/flow/workflow.scss";  
 .end-node-circle {
     width: 20px;
     height: 20px;
