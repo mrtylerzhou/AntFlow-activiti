@@ -51,19 +51,14 @@ const getFlowPreviewList = async (objData) => {
     let resData = await getFlowPreview(param);
     proxy.$modal.closeLoading();
     let formatData = FormatUtils.formatSettings(resData.data);
-    nodeConfig.value = formatData;
-    //console.log("nodeConfig.value =========8888=====", JSON.stringify(nodeConfig.value ))
+    nodeConfig.value = formatData; 
 }
 onMounted(async () => { 
     zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
         nowVal.value = val
     });
-    await getFlowPreviewList(viewConfig.value);
-    
-    console.log("boxScaleRef.value =========8888=====", JSON.stringify(antflowDesignRef ))
-});
-
-
+    await getFlowPreviewList(viewConfig.value); 
+}); 
 /** 页面放大 */
 function zoomIn() {
   wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})

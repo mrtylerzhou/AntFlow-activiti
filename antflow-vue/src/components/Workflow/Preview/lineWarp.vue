@@ -21,6 +21,7 @@
     <div class="branch-wrap" v-if="nodeConfig.nodeType == 7">
         <div class="branch-box-wrap">
             <div class="branch-box"> 
+                <button class="add-branch">并行审批</button>
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
                         <div class="condition-node-box">
