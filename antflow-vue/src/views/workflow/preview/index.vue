@@ -4,31 +4,24 @@
       <span class="task-title-text">流程详情预览</span>
     </div>
     <div>
-      <!--        <el-col :span="24">-->
       <el-tabs v-model="tabPosition" class="demo-tabs">
         <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
         <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
         <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
       </el-tabs>
-      <!--                    <el-radio-group v-model="tabPosition">-->
-      <!--                        <el-radio-button value="flowForm">流程基本信息</el-radio-button>-->
-      <!--                        <el-radio-button value="formRender">业务表单预览</el-radio-button>-->
-      <!--                        <el-radio-button value="flow">流程模板预览</el-radio-button>-->
-      <!--                    </el-radio-group>-->
-      <!--        </el-col>-->
-      <div :span="24" v-if="tabPosition == 'flowForm'" class="item">
+      <div v-if="tabPosition === 'flowForm'" class="item">
         <div v-if="processConfig">
           <BasicSetting ref="basicSetting" :basicData="processConfig"/>
         </div>
       </div>
-      <div :span="24" v-if="tabPosition == 'formRender'" class="item">
+      <div v-if="tabPosition === 'formRender'" class="item">
         <div v-if="processConfig" class="component">
           <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
                      :isPreview="true">
           </component>
         </div>
       </div>
-      <div :span="24" v-if="tabPosition == 'flow'" class="item">
+      <div v-if="tabPosition === 'flow'" class="item">
         <div v-if="nodeConfig" class="flow">
           <Process ref="processDesign" :processData="nodeConfig"/>
         </div>
