@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <section class="dingflow-design" ref="dingflowDesignRef">
+        <section class="antflow-design" ref="antflowDesignRef">
             <div class="zoom">
                 <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
@@ -44,7 +44,7 @@ let props = defineProps({
         default: () => (null),
     }
 });
-const dingflowDesignRef = ref(null);
+const antflowDesignRef = ref(null);
 const boxScaleRef = ref(null);
 let tipList = ref([]);
 let tipVisible = ref(false);
@@ -52,7 +52,7 @@ let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
 onMounted(async () => { 
-    zoomInit(dingflowDesignRef, boxScaleRef, (val) => { 
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
         nowVal.value = val
     })
     if (props.processData) {

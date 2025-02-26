@@ -1,8 +1,10 @@
  @font-face {
      font-family: anticon;
      font-display: fallback;
-     src: url("https://at.alicdn.com/t/font_148784_v4ggb6wrjmkotj4i.eot");
-     src: url("https://at.alicdn.com/t/font_148784_v4ggb6wrjmkotj4i.woff") format("woff"), url("https://at.alicdn.com/t/font_148784_v4ggb6wrjmkotj4i.ttf") format("truetype"), url("https://at.alicdn.com/t/font_148784_v4ggb6wrjmkotj4i.svg#iconfont") format("svg")
+     src: url("../../font/font_148784_v4ggb6wrjmkotj4i.eot");
+     src: url("../../font/font_148784_v4ggb6wrjmkotj4i.woff") format("woff"), 
+     url("../../font/font_148784_v4ggb6wrjmkotj4i.ttf") format("truetype"), 
+     url("../../font/font_148784_v4ggb6wrjmkotj4i.svg#iconfont") format("svg")
  }
 
  a {
@@ -670,7 +672,7 @@
 
 
  .zoom .zoom-out {
-     background-image: url(https://gw.alicdn.com/tfs/TB1s0qhBHGYBuNjy0FoXXciBFXa-90-90.png)
+     background-image: url("../../images/minus-90-90.png")
  }
 
  .zoom .zoom-out.disabled {
@@ -678,7 +680,7 @@
  }
 
  .zoom .zoom-in {
-     background-image: url(https://gw.alicdn.com/tfs/TB1UIgJBTtYBeNjy1XdXXXXyVXa-90-90.png)
+     background-image: url("../../images/plus-90-90.png")
  }
 
  .zoom .zoom-in.disabled {
@@ -928,11 +930,11 @@
      right: -1px
  }
 
- .dingflow-design {
+ .antflow-design {
      width: 100%;
      background-color: #f5f5f7 !important;
      overflow: hidden;
-     position: absolute;
+    /*position: absolute;*/  
      bottom: 0;
      left: 0;
      right: 0;
@@ -940,9 +942,10 @@
      display: inline-flex;
      flex-direction: column;
      align-items: center;
+     height: calc(100vh - 200px);
  }
 
- .dingflow-design .box-scale {
+ .antflow-design .box-scale {
      transform: scale(1);
      display: inline-block;
      position: relative;
@@ -963,7 +966,7 @@
     /*transform-origin: 50% 0px 0px;*/
  }
 
- .dingflow-design .node-wrap {
+ .antflow-design .node-wrap {
      flex-direction: column;
      -webkit-box-pack: start;
      -ms-flex-pack: start;
@@ -979,13 +982,13 @@
      position: relative
  }
 
- .dingflow-design .branch-wrap,
- .dingflow-design .node-wrap {
+ .antflow-design .branch-wrap,
+ .antflow-design .node-wrap {
      display: inline-flex;
      width: 100%
  }
 
- .dingflow-design .branch-box-wrap {
+ .antflow-design .branch-box-wrap {
      display: flex;
      -webkit-box-orient: vertical;
      -webkit-box-direction: normal;
@@ -1002,7 +1005,7 @@
      flex-shrink: 0
  }
 
- .dingflow-design .branch-box {
+ .antflow-design .branch-box {
      display: flex;
      overflow: visible;
      min-height: 180px;
@@ -1013,11 +1016,11 @@
      margin-top: 15px
  }
 
- .dingflow-design .branch-box .col-box {
+ .antflow-design .branch-box .col-box {
      background: #f5f5f7
  }
 
- .dingflow-design .branch-box .col-box:before {
+ .antflow-design .branch-box .col-box:before {
      content: "";
      position: absolute;
      top: 0;
@@ -1031,7 +1034,7 @@
      background-color: #cacaca
  }
 
- .dingflow-design .add-branch {
+ .antflow-design .add-branch {
      border: none;
      outline: none;
      user-select: none;
@@ -1057,17 +1060,17 @@
      transition: all .3s cubic-bezier(.645, .045, .355, 1)
  }
 
- .dingflow-design .add-branch:hover {
+ .antflow-design .add-branch:hover {
      transform: translateX(-50%) scale(1.1);
      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, .1)
  }
 
- .dingflow-design .add-branch:active {
+ .antflow-design .add-branch:active {
      transform: translateX(-50%);
      box-shadow: none
  }
 
- .dingflow-design .col-box {
+ .antflow-design .col-box {
      display: inline-flex;
      -webkit-box-orient: vertical;
      -webkit-box-direction: normal;
@@ -1077,12 +1080,12 @@
      position: relative
  }
 
- .dingflow-design .condition-node {
+ .antflow-design .condition-node {
      min-height: 220px
  }
 
- .dingflow-design .condition-node,
- .dingflow-design .condition-node-box {
+ .antflow-design .condition-node,
+ .antflow-design .condition-node-box {
      display: inline-flex;
      -webkit-box-orient: vertical;
      -webkit-box-direction: normal;
@@ -1090,7 +1093,7 @@
      -webkit-box-flex: 1
  }
 
- .dingflow-design .condition-node-box {
+ .antflow-design .condition-node-box {
      padding-top: 30px;
      padding-right: 50px;
      padding-left: 50px;
@@ -1102,7 +1105,7 @@
      position: relative
  }
 
- .dingflow-design .condition-node-box:before {
+ .antflow-design .condition-node-box:before {
      content: "";
      position: absolute;
      top: 0;
@@ -1115,7 +1118,7 @@
      background-color: #cacaca
  }
 
- .dingflow-design .auto-judge {
+ .antflow-design .auto-judge {
      position: relative;
      width: 220px;
      min-height: 72px;
@@ -1125,7 +1128,7 @@
      cursor: pointer
  }
 
- .dingflow-design .auto-judge:after {
+ .antflow-design .auto-judge:after {
      pointer-events: none;
      content: "";
      position: absolute;
@@ -1140,25 +1143,25 @@
      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .1)
  }
 
- .dingflow-design .auto-judge.active:after,
- .dingflow-design .auto-judge:active:after,
- .dingflow-design .auto-judge:hover:after {
+ .antflow-design .auto-judge.active:after,
+ .antflow-design .auto-judge:active:after,
+ .antflow-design .auto-judge:hover:after {
      border: 1px solid #3296fa;
      box-shadow: 0 0 6px 0 rgba(50, 150, 250, .3)
  }
 
- .dingflow-design .auto-judge.active .close,
- .dingflow-design .auto-judge:active .close,
- .dingflow-design .auto-judge:hover .close {
+ .antflow-design .auto-judge.active .close,
+ .antflow-design .auto-judge:active .close,
+ .antflow-design .auto-judge:hover .close {
      display: block
  }
 
- .dingflow-design .auto-judge.error:after {
+ .antflow-design .auto-judge.error:after {
      border: 1px solid #f25643;
      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .1)
  }
 
- .dingflow-design .auto-judge .title-wrapper {
+ .antflow-design .auto-judge .title-wrapper {
      position: relative;
      font-size: 12px;
      color: #15bc83;
@@ -1166,7 +1169,7 @@
      line-height: 16px
  }
 
- .dingflow-design .auto-judge .title-wrapper .editable-title {
+ .antflow-design .auto-judge .title-wrapper .editable-title {
      display: inline-block;
      max-width: 120px;
      overflow: hidden;
@@ -1174,18 +1177,18 @@
      text-overflow: ellipsis
  }
 
- .dingflow-design .auto-judge .title-wrapper .priority-title {
+ .antflow-design .auto-judge .title-wrapper .priority-title {
      display: inline-block;
      float: right;
      margin-right: 10px;
      color: rgba(25, 31, 37, .56)
  }
 
- .dingflow-design .auto-judge .placeholder {
+ .antflow-design .auto-judge .placeholder {
      color: #bfbfbf
  }
 
- .dingflow-design .auto-judge .close {
+ .antflow-design .auto-judge .close {
      display: none;
      position: absolute;
      right: -10px;
@@ -1200,7 +1203,7 @@
      z-index: 2
  }
 
- .dingflow-design .auto-judge .content {
+ .antflow-design .auto-judge .content {
      font-size: 14px;
      color: #191f25;
      text-align: left;
@@ -1212,8 +1215,8 @@
      -webkit-box-orient: vertical
  }
 
- .dingflow-design .auto-judge .sort-left,
- .dingflow-design .auto-judge .sort-right {
+ .antflow-design .auto-judge .sort-left,
+ .antflow-design .auto-judge .sort-right {
      position: absolute;
      top: 0;
      bottom: 0;
@@ -1221,35 +1224,35 @@
      z-index: 1
  }
 
- .dingflow-design .auto-judge .sort-left {
+ .antflow-design .auto-judge .sort-left {
      left: 0;
      border-right: 1px solid #f6f6f6
  }
 
- .dingflow-design .auto-judge .sort-right {
+ .antflow-design .auto-judge .sort-right {
      right: 0;
      border-left: 1px solid #f6f6f6
  }
 
- .dingflow-design .auto-judge:hover .sort-left,
- .dingflow-design .auto-judge:hover .sort-right {
+ .antflow-design .auto-judge:hover .sort-left,
+ .antflow-design .auto-judge:hover .sort-right {
      display: flex;
      align-items: center
  }
 
- .dingflow-design .auto-judge .sort-left:hover,
- .dingflow-design .auto-judge .sort-right:hover {
+ .antflow-design .auto-judge .sort-left:hover,
+ .antflow-design .auto-judge .sort-right:hover {
      background: #efefef
  }
 
- .dingflow-design .end-node {
+ .antflow-design .end-node {
      border-radius: 50%;
      font-size: 14px;
      color: rgba(25, 31, 37, .4);
      text-align: left
  }
 
- .dingflow-design .end-node .end-node-circle {
+ .antflow-design .end-node .end-node-circle {
      width: 20px;
      height: 20px;
      margin: auto;
@@ -1257,7 +1260,7 @@
      background: #dbdcdc
  }
 
- .dingflow-design .end-node .end-node-text {
+ .antflow-design .end-node .end-node-text {
      margin-top: 5px;
      text-align: center
  }

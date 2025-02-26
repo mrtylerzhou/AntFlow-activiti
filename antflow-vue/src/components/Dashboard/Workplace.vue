@@ -1,5 +1,5 @@
-<template> 
-    <div> 
+<template>
+    <div>
         <el-card>
             <template v-slot:header>
                 <div class="clearfix">
@@ -27,7 +27,18 @@
         <el-card>
             <template v-slot:header>
                 <div class="clearfix">
-                    <span>低代码表单(LF)</span>
+                    <span>低代码表单(LF)
+                        <el-tooltip placement="right" >
+                            <template #content> 
+                                <span> 
+                                    <el-alert style="margin-bottom: 5px;" title="第一步：添加模板类型(LF)：流程管理->流程模板" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第二步：流程设计：流程管理->流程设计(LF)" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用流程：流程管理->流程设计列表点击【启用】" type="success" effect="dark"  :closable="false" /> 
+                                </span>
+                            </template>
+                            <el-icon><question-filled /></el-icon>
+                        </el-tooltip>  
+                    </span>
                 </div>
             </template>
             <el-row :gutter="10">
@@ -41,22 +52,28 @@
                             </div>
                             <div class="card-title">
                                 <a>【{{ substringHidden(item.formCode) }}】</a>
-                                <a>{{ item.title }}</a> 
+                                <a>{{ item.title }}</a>
                                 <p>{{ item.description }}</p>
                             </div>
-                        </div>             
-                    </el-card>   
-                </el-col>     
-                <el-col :md="24"> 
-                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize" @pagination="getLFFormCodePageList" />  
-                </el-col>   
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :md="24">
+                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
+                        v-model:limit="pageDto.pageSize" @pagination="getLFFormCodePageList" />
+                </el-col>
             </el-row>
 
         </el-card>
         <el-card>
             <template v-slot:header>
                 <div class="clearfix">
-                    <span>第三方流程[1]（业务方流程）【*业务方（第三方）系统的表单，需要审批流程，接入本流程引擎*】</span>
+                    <span>
+                        第三方流程[1]
+                        <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
+                            <el-icon><question-filled /></el-icon>
+                        </el-tooltip> 
+                    </span>
                 </div>
             </template>
             <el-row :gutter="10">
@@ -69,7 +86,7 @@
                                 </el-avatar>
                             </div>
                             <div class="card-title">
-                                <a>{{ item.title  }}</a>
+                                <a>{{ item.title }}</a>
                                 <p>{{ item.description }}</p>
                             </div>
                         </div>
@@ -93,6 +110,7 @@ const data = reactive({
         pageSize: 12
     },
     taskMgmtVO: {
+        processState:1,
         description: undefined
     }  
 });

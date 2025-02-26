@@ -46,6 +46,7 @@
         a.id AS id,
         a.bpmn_code AS bpmnCode,
         a.form_code AS formCode,
+        c.dict_label AS formCodeDisplayName,
         a.bpmn_name AS bpmnName,
         a.deduplication_type AS deduplicationType,
         a.effective_status AS effectiveStatus,
@@ -56,6 +57,7 @@
         a.remark AS remark
         FROM t_bpmn_conf a
         left join t_out_side_bpm_business_party b on a.business_party_id = b.id
+        left join t_dict_data c on c.dict_value = a.form_code  and a.is_lowcode_flow =1
         WHERE a.is_del = 0
         <if test="bpmnConfVo.isOutSideProcess!=null">
             AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
@@ -78,6 +80,9 @@
         </if>
         <if test="bpmnConfVo.effectiveStatus != null">
             AND a.effective_status = #{bpmnConfVo.effectiveStatus}
+        </if>
+        <if test="bpmnConfVo.formCodeDisplayName != null and bpmnConfVo.formCodeDisplayName != ''">
+            AND c.dict_label LIKE CONCAT('%',#{bpmnConfVo.formCodeDisplayName},'%')
         </if>
         ORDER BY a.create_time DESC
     </select>

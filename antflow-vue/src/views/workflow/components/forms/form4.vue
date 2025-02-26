@@ -15,8 +15,8 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                    <el-form-item label="采购金额" prop="PurchaseMoney">
-                        <el-input v-model="form.PurchaseMoney"  style="width: 220px;"  placeholder="请输入采购金额" />
+                    <el-form-item label="采购金额" prop="PlanProcurementTotalMoney">
+                        <el-input v-model="form.PlanProcurementTotalMoney"  style="width: 220px;"  placeholder="请输入采购金额" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -39,7 +39,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue' 
 const { proxy } = getCurrentInstance()
-
+/**传参不需要修改*/
 let props = defineProps({
     previewData: {
         type: Object,
@@ -57,13 +57,14 @@ let props = defineProps({
   
 const ruleFormRef = ref(null)
  
+/**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
-    PurchaseUserName: props.previewData?.PurchaseUserName??'',
-    PurchaseDate: props.previewData?.PurchaseDate??'',
-    PurchaseMoney: props.previewData?.PurchaseMoney??'',
+    PurchaseUserName: props.previewData?.purchaseUserName??'',
+    PurchaseDate: props.previewData?.purchaseDate??'',
+    PlanProcurementTotalMoney: props.previewData?.planProcurementTotalMoney??'',
     remark:props.previewData?.remark??''
 })
-
+/**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
         required: true,
@@ -80,7 +81,7 @@ let rules = {
         message: '请选择采购时间',
         trigger: ['blur', 'change'],
     }],
-    PurchaseMoney: [{
+    PlanProcurementTotalMoney: [{
         required: true,
         message: '请输入采购金额',
         trigger: ['blur', 'change'],

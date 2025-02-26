@@ -32,8 +32,17 @@
         a.remark as remark
         from t_dict_data as a
         inner join t_bpmn_conf as b
-        on a.dict_value = b.form_code  and b.is_lowcode_flow =1 and b.effective_status=1
+        on a.dict_value = b.form_code  and b.is_lowcode_flow =1
         where a.dict_type ='lowcodeflow'
+        <if test="vo.processState != null and vo.processState > 0">
+             and  b.effective_status = #{vo.processState}
+        </if>
+        <if test="vo.description !=null and vo.description !=''">
+            and (
+            a.dict_label like CONCAT("%",#{vo.description},"%")
+            or  a.dict_value like CONCAT("%",#{vo.description},"%")
+            )
+        </if>
         order by a.create_time desc
     </select>
 </mapper>

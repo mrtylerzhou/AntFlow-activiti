@@ -18,7 +18,9 @@ import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeLabelsMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
@@ -81,6 +83,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private IAdaptorFactory adaptorFactory;
     @Autowired
     private BpmnNodeLfFormdataFieldControlServiceImpl nodeLfFormdataFieldControlService;
+    @Autowired
+    private BpmNodeLabelsServiceImpl nodeLabelsService;
 
     @Transactional
     public void edit(BpmnConfVo bpmnConfVo) {

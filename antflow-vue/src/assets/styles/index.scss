@@ -5,7 +5,7 @@
 @import './sidebar.scss';
 @import './btn.scss';
 @import './ruoyi.scss';
- 
+
 body {
   height: 100%;
   margin: 0;
@@ -124,6 +124,10 @@ aside {
 //main-container全局样式
 .app-container {
   padding: 20px;
+  // height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .components-container {
@@ -216,7 +220,7 @@ aside {
 .pin-top-right-corner {
   position: absolute;
   top: -0;
-  right: -0; 
+  right: -0;
   text-align: center;
   cursor: pointer;
   z-index: 999;
@@ -237,7 +241,7 @@ aside {
 }
 .pin-refuse:before {
   content:  url("../images/flow-refuse.png");
-} 
+}
 .pin-end:before {
   content:  url("../images/flow-end.png");
 }

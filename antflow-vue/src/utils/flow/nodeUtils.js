@@ -26,14 +26,15 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "审核人",
       nodeDisplayName: "审核人",
-      nodeType: 4,
+      nodeType: 4,//节点类型 4、审批人
       nodeFrom: "",
       nodeTo: [],
-      setType: 5, //选择人员
-      directorLevel: 1,
-      signType: 1,
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1,//审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
+      isSignUp: 0,//是否加批 0:否，1:是
+      directorLevel: 1, 
       noHeaderAction: 1,
-      childNode: {},
+      childNode: null,
       error: true,
       property: {
         afterSignUpWay: 2,
@@ -219,7 +220,7 @@ export class NodeUtils {
       nodeType: 7,
       nodeFrom: "",
       nodeTo: [],
-      childNode: null,
+      childNode: this.createParallelNode("并行聚合节点", null,1, 0),
       error: true,
       property: null,
       parallelNodes: [
@@ -238,15 +239,20 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: name || "并行审核人1",
       nodeDisplayName: '',
-      nodeType: 4,
+      nodeType: 4,//节点类型 4、审批人
       nodeFrom: "",
       nodeTo: [],
       priorityLevel: priority, 
       nodeApproveList: [],
-      setType: 5, 
-      signType: 1,
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1,//审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
+      isSignUp: 0,//是否加批 0:否，1:是
       noHeaderAction: 1,
       lfFieldControlVOs: [],
+      property: {
+        afterSignUpWay: 2,//是否回到加批人 1:是，2:否
+        signUpType: 1,//加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
+      },
       buttons: {
         startPage: [1],
         approvalPage: [3, 4],

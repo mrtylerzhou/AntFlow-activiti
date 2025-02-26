@@ -11,6 +11,7 @@ import lombok.Data;
 public class BpmnNodeConditionsConfVueVo {
     private String showType;
     private String columnId;
+    private Integer formId;
     private Integer type;
     private String showName;
     private Integer optType;

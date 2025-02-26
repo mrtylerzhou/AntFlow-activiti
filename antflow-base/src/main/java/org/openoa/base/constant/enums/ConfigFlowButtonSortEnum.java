@@ -29,6 +29,7 @@ public enum ConfigFlowButtonSortEnum {
     SCAN_HELP(20, "扫码帮助", 20),
     ZB(21, "转办", 21),
     CHOOSE_ASSIGNEE(22,"自选审批人",22),
+    BACK_TO_ANY_NODE(23,"打回任意节点",23)
             ;
     @Getter
     private final Integer code;

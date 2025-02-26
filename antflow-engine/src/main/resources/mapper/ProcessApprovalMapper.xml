@@ -22,7 +22,7 @@
         ORDER BY s.runTime DESC
     </select>
     <select id="isOperational" resultType="java.lang.Integer">
-        select  count(*) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
+        select  count(1) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
     </select>
     <select id="doneTodayProcess" resultType="java.lang.Integer">
         SELECT count(distinct h.PROC_INST_ID_)

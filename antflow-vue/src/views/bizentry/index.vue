@@ -14,7 +14,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">
-                    <div v-if="reviewWarpShow" style="height: calc(100vh - 200px);overflow-y: auto">
+                    <div v-if="reviewWarpShow" >
                         <ReviewWarp v-model:previewConf="previewConf" />
                     </div>
                 </el-tab-pane>
@@ -75,6 +75,10 @@ const handleClick = async (tab, event) => {
     if (tab.paneName != 'flowFromReview') {
         reviewWarpShow.value = false;
         return;
+    } 
+    if(formRef.value.hasOwnProperty('handleValidate') == false) {
+        proxy.$modal.msgError("未定义表单组件");
+        return;
     }
     await formRef.value.handleValidate().then(async (isValid) => {
         if (!isValid) {
@@ -92,7 +96,10 @@ const handleClick = async (tab, event) => {
             previewConf.value.isOutSideAccess = false;
             reviewWarpShow.value = true;
         }
-    });
+    }).catch((r) => { 
+      console.log(r);
+      proxy.$modal.msgError("加载失败:" + r.message);
+   });
 }
 /**
  * 发起流程

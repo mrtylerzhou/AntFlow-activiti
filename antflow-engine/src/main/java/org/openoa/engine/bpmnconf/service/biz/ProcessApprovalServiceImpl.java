@@ -192,7 +192,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 record.setTaskState(ProcessStateEnum.getDescByCode(record.getProcessState()));
 
                 if (type.equals(ProcessTypeEnum.ENTRUST_TYPE.getCode())) {
-                    // to check whether the forwared record can process in batch
+                    // to check whether the forwarded record can process in batch
                     record.setIsForward(processForwardService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())

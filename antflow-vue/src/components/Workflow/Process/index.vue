@@ -1,22 +1,20 @@
 <template>
-    <div class="app-container">
-        <section class="dingflow-design" ref="dingflowDesignRef">
-            <div class="zoom">
-                <div class="zoom-out" @click="zoomOut" title="缩小"></div>
-                <span>{{ nowVal }}%</span>
-                <div class="zoom-in" @click="zoomIn" title="放大"></div>
-                <!--刷新图标代码-->
-                <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
+    <section class="antflow-design" ref="antflowDesignRef">
+        <div class="zoom">
+            <div class="zoom-out" @click="zoomOut" title="缩小"></div>
+            <span>{{ nowVal }}%</span>
+            <div class="zoom-in" @click="zoomIn" title="放大"></div>
+            <!--刷新图标代码-->
+            <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
+        </div>
+        <div class="box-scale" ref="boxScaleRef">
+            <nodeWrap v-model:nodeConfig="nodeConfig" />
+            <div class="end-node">
+                <div class="end-node-circle"></div>
+                <div class="end-node-text">流程结束</div>
             </div>
-            <div class="box-scale" ref="boxScaleRef">
-                <nodeWrap v-model:nodeConfig="nodeConfig" />
-                <div class="end-node">
-                    <div class="end-node-circle"></div>
-                    <div class="end-node-text">流程结束</div>
-                </div>
-            </div>
-        </section> 
-    </div>
+        </div>
+    </section>
     <errorDialog v-model:visible="tipVisible" :list="tipList" />
     <promoterDrawer />
     <approverDrawer :directorMaxLevel="directorMaxLevel" />
@@ -43,7 +41,7 @@ let props = defineProps({
         default: () => (null),
     }
 });
-const dingflowDesignRef = ref(null);
+const antflowDesignRef = ref(null);
 const boxScaleRef = ref(null);
 let tipList = ref([]);
 let tipVisible = ref(false);
@@ -51,9 +49,9 @@ let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
 onMounted(async () => { 
-    zoomInit(dingflowDesignRef, boxScaleRef, (val) => { 
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
         nowVal.value = val
-    })
+    });
     if (props.processData) {
         nodeConfig.value = props.processData;
     }
@@ -71,6 +69,24 @@ onMounted(async () => {
   else{
     return preTreeIsApproveNode(treeNode.childNode);
   } 
+}
+/**
+ * 并行审批节点验证
+ * 判断存在并行审批就必须有聚合节点
+ * @param treeNode 
+ */
+const preTreeIsParallelNode = (treeNode) => { 
+    if (proxy.isObjEmpty(treeNode)) return true;
+    if (treeNode.nodeType == 7) {
+        if(proxy.isObjEmpty(treeNode.childNode)){
+            return false;
+        }else{
+            return preTreeIsParallelNode(treeNode.childNode);
+        }
+    }
+    else {
+        return preTreeIsParallelNode(treeNode.childNode);
+    }
 }
 /**
  * 节点必填校验
@@ -123,11 +139,19 @@ function zoomReset() {
 
 const getJson = () => {
     setIsTried(true); 
-    let isApproveNode = preTreeIsApproveNode(nodeConfig.value);
-    if (!nodeConfig.value || !nodeConfig.value.childNode || !isApproveNode) {
+     /**并行审批验证 */
+     let verifyParallelNode = preTreeIsParallelNode(nodeConfig.value); 
+    if (!verifyParallelNode) {
+        proxy.$modal.msgError("并行审批下必须有一个审批人节点作为聚合节点");
+        emit('nextChange', { label: "流程设计", key: "processDesign" });
+        return false;
+    }  
+    let verifyApproveNode = preTreeIsApproveNode(nodeConfig.value);   
+    if (!nodeConfig.value || !nodeConfig.value.childNode || !verifyApproveNode) {
         emit('nextChange', { label: "流程设计", key: "processDesign" }); 
         return false;
     } 
+   
     tipList.value = [];
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
@@ -154,20 +178,5 @@ defineExpose({
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
-
-.app-container {
-    position: relative;
-    background-color: #f5f5f7;
-    min-height: calc(100vh - 200px);
-    padding-top: 5px;
-    margin-top: 20px !important;
-    height: auto;
-    overflow: auto;
-}
-
-.clearfix {
-    zoom: 1
-}
-   
+@import "@/assets/styles/flow/workflow.scss"; 
 </style>

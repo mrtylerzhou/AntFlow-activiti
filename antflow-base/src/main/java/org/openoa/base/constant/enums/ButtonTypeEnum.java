@@ -25,6 +25,7 @@ public enum ButtonTypeEnum {
     BUTTON_TYPE_JP(19,"加批"),
     BUTTON_TYPE_ZB(21,"转办"),
     BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
+    BUTTON_TYPE_BACK_TO_ANY_NODE(23,"打回任意节点"),
     ;
 
     @Getter

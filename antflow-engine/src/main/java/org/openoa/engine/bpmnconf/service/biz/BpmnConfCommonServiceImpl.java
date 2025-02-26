@@ -12,6 +12,7 @@ import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.util.BpmnUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.util.StrUtils;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.BpmnNodeParamTypeEnum.*;
@@ -387,7 +389,7 @@ public class BpmnConfCommonServiceImpl {
         PreviewNode previewNode = new PreviewNode();
         previewNode.setBpmnName(detail.getBpmnName());
         previewNode.setFormCode(detail.getFormCode());
-        previewNode.setBpmnNodeList(setNodeFrom(bpmnConfVo.getNodes()));
+        previewNode.setBpmnNodeList(setNodeFromV2(bpmnConfVo.getNodes()));
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
 
@@ -404,7 +406,7 @@ public class BpmnConfCommonServiceImpl {
      * @return
      */
     public List<BpmnNodeVo> setNodeFrom(List<BpmnNodeVo> nodeList) {
-        Map<String, BpmnNodeVo> map = new HashMap<>(16);
+        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
         BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
         List<BpmnNodeVo> resultList = new ArrayList<>();
         BpmnNodeVo lastNode = new BpmnNodeVo();
@@ -434,6 +436,89 @@ public class BpmnConfCommonServiceImpl {
         return resultList;
     }
 
+    public List<BpmnNodeVo> setNodeFromV2(List<BpmnNodeVo> nodeList) {
+        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
+        BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
+        List<BpmnNodeVo> resultList = new ArrayList<>();
+        BpmnNodeVo lastNode = new BpmnNodeVo();
+        lastNode.setNodeId("");
+        BpmnNodeVo nowNode = startNode;
+        if (nowNode != null) {
+            while (true) {
+                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())) {
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nowNode, nodeList);
+                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList);
+
+                    nowNode = map.get(aggregationNode.getParams().getNodeTo());
+                    lastNode=aggregationNode;
+                }
+                if (nowNode == null) {
+                    break;
+                }
+                if(!NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())){
+                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nowNode.getParams().getParamType())) {
+                        nowNode.getParams().setAssigneeList(Collections.singletonList(nowNode.getParams().getAssignee()));
+                    }
+                    nowNode.setNodePropertyName(NodePropertyEnum.getDescByCode(nowNode.getNodeProperty()));
+                    if (StringUtils.isBlank(nowNode.getParams().getNodeTo())) {
+                        nowNode.setNodeFrom(lastNode.getNodeId());
+                        resultList.add(nowNode);
+                        break;
+                    }
+                    if (resultList.size() > nodeList.size()) {
+                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
+                        throw new JiMuBizException("999", "nodeId数据错误");
+                    }
+                    nowNode.setNodeFrom(lastNode.getNodeId());
+                    resultList.add(nowNode);
+                    lastNode = nowNode;
+                    nowNode = map.get(nowNode.getParams().getNodeTo());
+                }
+            }
+
+        }
+        return resultList;
+
+    }
+
+    private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode,BpmnNodeVo itsPrevNode, BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results) {
+
+        String aggregationNodeNodeId = itsAggregationNode.getNodeId();
+        List<String> nodeTos = outerMostParallelGatewayNode.getNodeTo();
+        outerMostParallelGatewayNode.setNodeFrom(itsPrevNode.getNodeId());
+        itsAggregationNode.setNodeFrom(outerMostParallelGatewayNode.getNodeId());
+        results.add(outerMostParallelGatewayNode);
+        results.add(itsAggregationNode);
+        for (String nodeTo : nodeTos) {
+            BpmnNodeVo prevNode=outerMostParallelGatewayNode;
+            BpmnNodeVo currentNodeVo = mapNodes.get(nodeTo);
+
+            for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo!=null&&!nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
+                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(currentNodeVo.getNodeType())) {
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(currentNodeVo, mapNodes.values());
+                    treatParallelGateWayRecursively(currentNodeVo, aggregationNode,prevNode, mapNodes, results);
+                }
+
+
+                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nodeVo.getParams().getParamType())) {
+                        nodeVo.getParams().setAssigneeList(Collections.singletonList(nodeVo.getParams().getAssignee()));
+                    }
+                    nodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(nodeVo.getNodeProperty()));
+                    if (StringUtils.isBlank(nodeVo.getParams().getNodeTo())) {
+                        nodeVo.setNodeFrom(prevNode.getNodeId());
+                        results.add(nodeVo);
+                        break;
+                    }
+                    if (results.size() > mapNodes.values().size()) {
+                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
+                        throw new JiMuBizException("999", "nodeId数据错误");
+                    }
+                    nodeVo.setNodeFrom(prevNode.getNodeId());
+                    results.add(nodeVo);
+                    prevNode = nodeVo;
+                }
+        }
+    }
 
 
     /**

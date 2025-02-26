@@ -2,7 +2,7 @@
   <div class="message" style="font-size: 20px;padding-top: 2px;"> 
     <el-tooltip content="消息通知" placement="bottom" effect="dark">
       <div>
-        <el-popover placement="bottom" :width="310" trigger="click">
+        <el-popover placement="bottom" :width="310" aria-hidden="true" trigger="click">
           <template #reference>       
               <el-icon>
                 <el-badge :value="5" class="item">

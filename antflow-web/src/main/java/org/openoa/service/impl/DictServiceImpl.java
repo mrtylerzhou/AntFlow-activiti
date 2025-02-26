@@ -12,6 +12,7 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.ResultAndPage;
+import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.entity.DictData;
@@ -39,7 +40,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         LambdaQueryWrapper<DictData> qryByDictType = Wrappers.<DictData>lambdaQuery()
                 .eq(DictData::getDictType, dictType);
         List<DictData> dictData = dicDataMapper.selectList(qryByDictType);
-        dictData.sort(Comparator.comparing(DictData::getSort));
+        dictData.sort(Comparator.comparing(DictData::getCreateTime).reversed());
         return dictData;
     }
 
@@ -64,9 +65,9 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     }
 
     @Override
-    public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto) {
+    public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page);
+        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page,taskMgmtVO);
         if (dictDataList ==null) {
             return PageUtils.getResultAndPage(page);
         }

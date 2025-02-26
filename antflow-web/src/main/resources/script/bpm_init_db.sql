@@ -1610,3 +1610,20 @@ CREATE TABLE `t_user_role`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+create table t_bpmn_node_labels
+(
+	id bigint auto_increment,
+	nodeid bigint null,
+	label_name varchar(50) null,
+	label_value varchar(64) null comment 'a user defined tag',
+	remark            varchar(255)        default ''                not null comment '备注',
+    is_del            tinyint(1) unsigned default 0                 not null comment '0:正常,1:删除',
+    create_user       varchar(32)         default ''                null comment '创建人（邮箱前缀）',
+    create_time       timestamp           default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_user       varchar(32)         default ''                null comment '更新人（邮箱前缀）',
+    update_time       timestamp           default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+	constraint t_bpmn_node_labels_pk
+		primary key (id)
+)
+comment 'process node labels,to store additional custom information';

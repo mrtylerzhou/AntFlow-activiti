@@ -1,6 +1,6 @@
 // import { FormatUtils } from '@/utils/flow/formatcommit_data'
 //import { NodeUtils } from '@/utils/flow/nodeUtils' 
-const isEmpty = data => data === null || data === undefined || data === ''
+const isEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true
 
 export class FormatUtils {
@@ -34,14 +34,29 @@ export class FormatUtils {
                     traverse(node.childNode);
                 }
                 if (!isEmptyArray(node.conditionNodes)) {
-                    for (const child of node.conditionNodes) {
+                    for (let child of node.conditionNodes) {
                         child.nodeFrom = node.nodeId;
                         traverse(child);
                     }
                     node.nodeTo = node.conditionNodes.map(item => item.nodeId);
                     delete node.conditionNodes
                 }
-            } else if (node.childNode) {
+            } 
+            else if(node.nodeType == 7) {
+                if (node.childNode) {
+                    node.childNode.nodeFrom = node.nodeId;
+                    traverse(node.childNode);
+                }
+                if (!isEmptyArray(node.parallelNodes)) {
+                    for (let child of node.parallelNodes) {
+                        child.nodeFrom = node.nodeId;
+                        traverse(child);
+                    }
+                    node.nodeTo = node.parallelNodes.map(item => item.nodeId);
+                    delete node.parallelNodes
+                }
+            } 
+            else if (node.childNode) { 
                 node.nodeTo = [node.childNode.nodeId];
                 node.childNode.nodeFrom = node.nodeId;
                 traverse(node.childNode);
@@ -115,32 +130,33 @@ export class FormatUtils {
         if (isEmptyArray(parmData)) return parmData; 
         let nodesGroup = {};
         for (let t of parmData) {
-            if (nodesGroup.hasOwnProperty(t.nodeFrom)) {
+            if (isEmpty(t.nodeFrom)) continue;
+            if (nodesGroup.hasOwnProperty(t.nodeFrom)&& !isEmpty(t.nodeFrom)) {
                 nodesGroup[t.nodeFrom].push(t)
             } else {
                 nodesGroup[t.nodeFrom] = [t]
             }
-        } 
-
+        }  
         let parallelgetwayList = parmData.filter((c) => {
             return c.nodeType == 7;
         }); 
-        if (!isEmptyArray(parallelgetwayList)) { 
+        if (!isEmptyArray(parallelgetwayList)) { //处理并行审批网关
             for (let parallel of parallelgetwayList) { 
                 if (nodesGroup.hasOwnProperty(parallel.nodeId)) { 
                     let itemNodes = nodesGroup[parallel.nodeId];
-                    let comNode = itemNodes.find((c) => {
-                        return c.nodeType != 4; 
-                    }); 
-                    if (!comNode) continue;
-                    let approveList = itemNodes.filter((c) => {
-                        return c.nodeId != comNode.nodeId; 
-                    });
-                    for (let itemNode of approveList) {
-                        function internalTraverse(info) { 
+                    if (isEmptyArray(itemNodes)) continue;
+                    let childParallelList = itemNodes.filter((c) => {
+                        return parallel.nodeTo.includes(c.nodeId);
+                    })
+                    if (isEmptyArray(childParallelList)) continue;
+                    let parallelWayChild = itemNodes.find((c) => {
+                        return !parallel.nodeTo.includes(c.nodeId)
+                    }) 
+                    for (let itemNode of childParallelList) {
+                        function internalTraverse(info) {  
                             if (!info) return;
-                            if (!nodesGroup[info.nodeId]) {
-                                info.nodeTo = [comNode.nodeId];
+                            if (!nodesGroup[info.nodeId] && !isEmpty(parallelWayChild)) {
+                                info.nodeTo = [parallelWayChild.nodeId];
                             } else { 
                                 let tempNode = nodesGroup[info.nodeId];
                                 if (Array.isArray(tempNode)) { 
@@ -162,7 +178,7 @@ export class FormatUtils {
             return c.nodeType == 2;
         });
 
-        if (!isEmptyArray(getwayList)) { 
+        if (!isEmptyArray(getwayList)) {  //处理条件网关
             for (let getway of getwayList) {
                 if (nodesGroup.hasOwnProperty(getway.nodeId)) {
                     let itemNodes = nodesGroup[getway.nodeId];
