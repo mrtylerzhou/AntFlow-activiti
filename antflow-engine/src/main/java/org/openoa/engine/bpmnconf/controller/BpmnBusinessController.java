@@ -63,14 +63,6 @@ public class BpmnBusinessController {
     public Result getDIYFormCodeList(String desc){
         return Result.newSuccessResult(baseFormInfo(desc));
     }
-    /**
-     * get all form code
-     * @return
-     */
-    @GetMapping("/allFormCodes")
-    public Result allFormCodes(){
-        return Result.newSuccessResult(allFormInfo());
-    }
 
     /**
      * 获取低代码表单LF FormCode Page List
@@ -189,12 +181,4 @@ public class BpmnBusinessController {
         return results;
     }
 
-    private List<BaseKeyValueStruVo> allFormInfo(){
-        List<BaseKeyValueStruVo> results= baseFormInfo("");
-        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLFActiveFormCodes();
-        if (lfFormCodes != null){
-            results.addAll(lfFormCodes);
-        }
-        return results;
-    }
 }
