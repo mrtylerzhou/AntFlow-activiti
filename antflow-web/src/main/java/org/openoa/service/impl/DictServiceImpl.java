@@ -40,7 +40,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         LambdaQueryWrapper<DictData> qryByDictType = Wrappers.<DictData>lambdaQuery()
                 .eq(DictData::getDictType, dictType);
         List<DictData> dictData = dicDataMapper.selectList(qryByDictType);
-        dictData.sort(Comparator.comparing(DictData::getSort));
+        dictData.sort(Comparator.comparing(DictData::getCreateTime).reversed());
         return dictData;
     }
 
