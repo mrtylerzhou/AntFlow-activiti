@@ -29,7 +29,7 @@ public class BpmnNodeLabel {
     private String remark;
 
     @TableField("is_del")
-    private Byte isDel;
+    private Integer isDel;
 
     @TableField("create_user")
     private String createUser;
