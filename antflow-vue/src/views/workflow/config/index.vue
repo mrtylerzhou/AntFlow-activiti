@@ -31,8 +31,8 @@
          <el-col :span="1.5">
             <el-tooltip class="box-item" effect="dark" content="需提前开发业务表单" placement="bottom">
                <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
-            </el-tooltip> 
-         </el-col> 
+            </el-tooltip>
+         </el-col>
       </el-row>
 
       <el-table v-loading="loading" :data="configList">
@@ -147,7 +147,7 @@ const getList = async () => {
 }
 /**
  * 复制操作
- * @param row 
+ * @param row
  */
 const handleCopy = (row) => {
    const params = {
@@ -163,7 +163,7 @@ const handleCopy = (row) => {
 }
 /**
  * 启动流程
- * @param data 
+ * @param data
  */
 const effectiveById = async (data) => {
    await getEffectiveBpmn(data).then(async (res) => {

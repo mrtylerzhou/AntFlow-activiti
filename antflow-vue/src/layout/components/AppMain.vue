@@ -7,7 +7,7 @@
         </keep-alive>
       </transition>
     </router-view>
-    <iframe-toggle />
+    <iframe-toggle/>
   </section>
 </template>
 
@@ -21,7 +21,8 @@ const tagsViewStore = useTagsViewStore()
 <style lang="scss" scoped>
 .app-main {
   /* 50= navbar  50  */
-  min-height: calc(100vh - 50px);
+  //min-height: calc(100vh - 50px);
+  height: calc(100% - 84px);
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -32,10 +33,10 @@ const tagsViewStore = useTagsViewStore()
 }
 
 .hasTagsView {
-  .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    min-height: calc(100vh - 84px);
-  }
+  //.app-main {
+  //  /* 84 = navbar + tags-view = 50 + 34 */
+  //  min-height: calc(100vh - 84px);
+  //}
 
   .fixed-header + .app-main {
     padding-top: 84px;
