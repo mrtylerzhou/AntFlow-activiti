@@ -110,6 +110,7 @@ const data = reactive({
         pageSize: 12
     },
     taskMgmtVO: {
+        processState:1,
         description: undefined
     }  
 });
