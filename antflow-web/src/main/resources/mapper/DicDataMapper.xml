@@ -32,7 +32,7 @@
         a.remark as remark
         from t_dict_data as a
         inner join t_bpmn_conf as b
-        on a.dict_value = b.form_code  and b.is_lowcode_flow =1 and b.effective_status=1
+        on a.dict_value = b.form_code  and b.is_lowcode_flow =1
         where a.dict_type ='lowcodeflow'
         order by a.create_time desc
     </select>
