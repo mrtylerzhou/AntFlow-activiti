@@ -20,13 +20,7 @@ const headers = {
 export function getApiWorkFlowData(data) {
   return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers })
 }
-/**
- * 获取所有FromCode 
- * @returns 
- */
-export function getAllFormCodes() {
-  return http.get(`${baseUrl}/bpmnBusiness/allFormCodes`, { headers })
-}
+
 /**
  * 获取DIY FromCode 
  * @returns 

@@ -63,14 +63,6 @@ public class BpmnBusinessController {
     public Result getDIYFormCodeList(String desc){
         return Result.newSuccessResult(baseFormInfo(desc));
     }
-    /**
-     * get all form code
-     * @return
-     */
-    @GetMapping("/allFormCodes")
-    public Result allFormCodes(){
-        return Result.newSuccessResult(allFormInfo());
-    }
 
     /**
      * 获取低代码表单LF FormCode Page List
@@ -81,7 +73,7 @@ public class BpmnBusinessController {
     public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
-        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto);
+        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto,taskMgmtVO);
     }
     @GetMapping("/listNodeProperties")
     public Result listPersonnelProperties(){
@@ -189,12 +181,4 @@ public class BpmnBusinessController {
         return results;
     }
 
-    private List<BaseKeyValueStruVo> allFormInfo(){
-        List<BaseKeyValueStruVo> results= baseFormInfo("");
-        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLFActiveFormCodes();
-        if (lfFormCodes != null){
-            results.addAll(lfFormCodes);
-        }
-        return results;
-    }
 }

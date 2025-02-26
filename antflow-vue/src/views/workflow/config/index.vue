@@ -31,15 +31,16 @@
          <el-col :span="1.5">
             <el-tooltip class="box-item" effect="dark" content="需提前开发业务表单" placement="bottom">
                <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
-            </el-tooltip> 
-         </el-col> 
+            </el-tooltip>
+         </el-col>
       </el-row>
 
       <el-table v-loading="loading" :data="configList">
          <el-table-column label="模板类型" align="center" prop="formCode" />
-         <el-table-column label="模板名称" align="center" prop="formCodeName">
+         <el-table-column label="模板名称" align="center" prop="formCodeDisplayName">
             <template #default="item">
-               {{ getFromCodeName(item.row.formCode) }}
+               <span v-if="item.row.formCodeDisplayName" >{{ item.row.formCodeDisplayName }}</span>
+               <span v-else>{{ getFromCodeName(item.row.formCode) }}</span> 
             </template>
          </el-table-column>
          <el-table-column label="流程编号" align="center" prop="bpmnCode" />
@@ -89,7 +90,7 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { getBpmnConflistPage, getEffectiveBpmn, getAllFormCodes } from "@/api/workflow";
+import { getBpmnConflistPage, getEffectiveBpmn, getDIYFromCodeData } from "@/api/workflow";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 let formCodeOptions = ref([]);
@@ -119,12 +120,12 @@ const data = reactive({
 const { pageDto, taskMgmtVO } = toRefs(data);
 onMounted(async () => {
    loading.value = true;
-   await initFromCode();
+   await initDIYFromCodes();
    await getList();
    loading.value = false;
 })
-const initFromCode = async () => {
-   await getAllFormCodes().then((res) => {
+const initDIYFromCodes = async () => {
+   await getDIYFromCodeData().then((res) => {
       if (res.code == 200) {
          formCodeOptions.value = res.data;
       }
@@ -147,7 +148,7 @@ const getList = async () => {
 }
 /**
  * 复制操作
- * @param row 
+ * @param row
  */
 const handleCopy = (row) => {
    const params = {
@@ -163,7 +164,7 @@ const handleCopy = (row) => {
 }
 /**
  * 启动流程
- * @param data 
+ * @param data
  */
 const effectiveById = async (data) => {
    await getEffectiveBpmn(data).then(async (res) => {

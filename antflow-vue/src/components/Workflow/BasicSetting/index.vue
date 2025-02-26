@@ -10,9 +10,10 @@
                 </el-form-item> -->
 
             <el-form-item label="模板类型" prop="formCode">
-                <el-select v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
-                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value"
-                        :value="item.key"></el-option>
+                <el-select filterable v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
+                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value" :value="item.key">
+                        <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
+                    </el-option>
                 </el-select>
             </el-form-item>
 

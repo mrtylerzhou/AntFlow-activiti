@@ -41,6 +41,10 @@ public class BpmnConfVo {
      */
     private String formCode;
     /**
+     * formCode
+     */
+    private String formCodeDisplayName;
+    /**
      * appId
      */
     private Integer appId;
