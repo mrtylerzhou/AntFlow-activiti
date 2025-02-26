@@ -8,10 +8,10 @@ const isEmptyArray = (data) =>
 const isEmpty = (data) =>
   data === null ||
   data === undefined ||
-  data == "" ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
+  data == '' ||
+  data == '{}' ||
+  data == '[]' ||
+  data == 'null';
 export class FormatUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
@@ -32,30 +32,36 @@ export class FormatUtils {
    * @param {Object} treeData  - 节点数据
    * @returns Array - 节点数组
    */
-  static createNewNode(node) {
+  static createNewNode(node) { 
     if (isEmpty(node)) return null;
     let newNode = {
       nodeId: node.nodeId,
       nodeType: node.nodeType,
       nodeName: node.nodeName,
-      nodeDisplayName: node.nodeDisplayName,//this.arrToStr(node.property),
+      nodeDisplayName: this.arrToStr(node),
       nodeFrom: node.nodeFrom,
       nodeTo: node.nodeTo,
-      property : node.property,
+      params : node.params,
       isNodeDeduplication: node.isDeduplication,
       parallelChildNode:0,
     };
     return newNode;
   }
-  static arrToStr(propertyObj) {
-    let arr = propertyObj?.emplList; 
-    if (!isEmptyArray(arr)) {
-      return arr
-        .map((item) => {
-          return item.name ?? item.nodeDisplayName;
-        })
-        .toString();
-    }
+  static arrToStr(nodeObj) {
+    if (isEmpty(nodeObj)) return '未获取到审批人信息';
+    let arr = nodeObj.params?.assigneeList; 
+    let nodeNameStr = isEmpty(nodeObj.nodeDisplayName) == true ? nodeObj.nodePropertyName : nodeObj.nodeDisplayName ;
+    if (isEmptyArray(arr)) return nodeNameStr; 
+    let strApprovers = arr.map((item) => {
+      if (item.isDeduplication == 1) {
+        return '<del  style="background-color: red !important;font-weight: 100"><em>'+ item.assigneeName +'</em></del>  ';
+      }else { 
+        return  item.assigneeName; 
+      }
+      }
+    ).join(',');    
+
+    return  isEmpty(strApprovers) == true ? nodeNameStr : nodeObj.nodePropertyName + ':' + strApprovers;
   }
   /**
    *  List 转成tree结构
@@ -126,7 +132,7 @@ export class FormatUtils {
             if (4 == itemNode.nodeType) {
                 let isTrueParallelNode = this.isParallelChildNode(itemNode, parmData); 
             if (isTrueParallelNode == false) {
-              node.childNode = itemNode;
+              node.childNode = itemNode; 
             } else {
               if (!node.hasOwnProperty("parallelNodes")) {
                 Object.assign(node, { parallelNodes: [] });

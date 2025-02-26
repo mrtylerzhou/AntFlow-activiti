@@ -30,15 +30,14 @@
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
                                 <div class="content">
-                                    <div class="text">
-                                        <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{ defaultText }}</span>
+                                    <div class="text"> 
                                         {{ item.nodeDisplayName }}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <nodeWrap v-if="item.childNode" v-model:nodeConfig="item.childNode" />
+                    <LineWarp v-if="item.childNode" v-model:nodeConfig="item.childNode" />
                     <template v-if="index == 0">
                         <div class="top-left-cover-line"></div>
                         <div class="bottom-left-cover-line"></div>
@@ -62,27 +61,7 @@ let props = defineProps({
         type: Object,
         default: () => ({}),
     }
-}); 
-let nodeConfig = computed(() => {   
-    let nameStr= '';
-    if(props.nodeConfig.nodeType == 1){
-        props.nodeConfig.nodeDisplayName = props.nodeConfig.nodeName;
-        return props.nodeConfig;
-    }        
-    let approvers =props.nodeConfig.property?.emplList; 
-    if(!Array.isArray(approvers) || approvers.length == 0){
-        return props.nodeConfig;
-    }
-    for (let item of approvers) {  
-        if(item.isDeduplication == 1){ 
-            nameStr +='<del><em>'+ item.name +'</em></del>' + '  ';
-        }else{
-            nameStr += item.name + '  ';
-        }  
-      }
-      props.nodeConfig.nodeDisplayName =nameStr;
-    return props.nodeConfig
-})
+});  
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
 <style scoped lang="scss">
