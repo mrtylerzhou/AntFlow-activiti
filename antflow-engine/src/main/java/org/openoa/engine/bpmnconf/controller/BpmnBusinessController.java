@@ -81,7 +81,7 @@ public class BpmnBusinessController {
     public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
-        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto);
+        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto,taskMgmtVO);
     }
     @GetMapping("/listNodeProperties")
     public Result listPersonnelProperties(){

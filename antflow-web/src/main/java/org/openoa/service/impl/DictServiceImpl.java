@@ -12,6 +12,7 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.ResultAndPage;
+import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.entity.DictData;
@@ -64,9 +65,9 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     }
 
     @Override
-    public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto) {
+    public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page);
+        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page,taskMgmtVO);
         if (dictDataList ==null) {
             return PageUtils.getResultAndPage(page);
         }
