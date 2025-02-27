@@ -176,16 +176,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
 
-            if (bpmnConfVo.getExtraFlags()!=null) {
-                BpmnConf postConf=new BpmnConf();
-                postConf.setId(confId);
-                postConf.setExtraFlags(bpmnConfVo.getExtraFlags());
-                this.updateById(postConf);
-            }
-
         }
-
         ProcessorFactory.executePostProcessors(bpmnConfVo);
+        if (bpmnConfVo.getExtraFlags()!=null) {
+            BpmnConf postConf=new BpmnConf();
+            postConf.setId(confId);
+            postConf.setExtraFlags(bpmnConfVo.getExtraFlags());
+            this.updateById(postConf);
+        }
 
     }
 
@@ -331,7 +329,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                 .eq("is_del", 0));
         boolean isOutSideProcess=bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1;
         boolean isLowCodeFlow=bpmnConf.getIsLowCodeFlow()!=null&&bpmnConf.getIsLowCodeFlow()==1;
-        if(isOutSideProcess||isLowCodeFlow){
+        if(isOutSideProcess||isLowCodeFlow||bpmnConf.getExtraFlags()!=null){
             for (BpmnNode bpmnNode : bpmnNodes) {
                 bpmnNode.setIsOutSideProcess(bpmnConf.getIsOutSideProcess());
                 bpmnNode.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
@@ -475,7 +473,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
 
         Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
-        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap =null;
+        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap =new HashMap<>();
 
         Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
         Integer extraFlags = bpmnNodeList.get(0).getExtraFlags();
