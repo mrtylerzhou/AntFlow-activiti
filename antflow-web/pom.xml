@@ -30,7 +30,7 @@
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-common</artifactId>
-       <version>0.50.0</version>
+       <version>0.70.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>

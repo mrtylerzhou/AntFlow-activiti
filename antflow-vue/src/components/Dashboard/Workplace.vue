@@ -99,7 +99,8 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from 'vue'
-import { getDIYFromCodeData,getLFActiveFormCodePageList } from "@/api/workflow"
+import { getDIYFromCodeData } from "@/api/workflow"
+import { getLFActiveFormCodePageList } from "@/api/lowcodeApi"
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);

@@ -10,8 +10,8 @@ import java.util.List;
 public interface LowCodeFlowBizService {
     //todo cbcbu
     List<BaseKeyValueStruVo> getLowCodeFlowFormCodes();
-
-    List<BaseKeyValueStruVo> getLFActiveFormCodes();
+    //获取LF FormCode Page List 模板列表使用
+    ResultAndPage<BaseKeyValueStruVo> selectLFFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO);
 
     ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO);
 
