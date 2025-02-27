@@ -22,8 +22,17 @@
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="项目标识" align="center" prop="businessCode" />
-      <el-table-column label="项目名称" align="center" prop="businessName" /> 
-      <el-table-column label="业务表单标识" align="center" prop="processKey" />
+      <el-table-column label="项目名称" align="center" prop="businessName"/> 
+      <el-table-column align="center" prop="processKey">
+        <template #header>
+          <span>
+            业务表单标识
+            <el-tooltip content="唯一标识即：FormCode" placement="top">
+              <el-icon><question-filled /></el-icon>
+            </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="业务表单名称" align="center" prop="title" />
       <el-table-column label="业务表单类型" align="center" prop="applyTypeName" />
       <el-table-column label="创建时间" align="center" prop="createTime">
@@ -55,9 +64,10 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="业务方" prop="businessCode">
-                <el-select v-model="form.businessCode" placeholder="请选择业务方" :style="{ width: '100%' }">
-                  <el-option v-for="(item, index) in partyMarkOptions" :key="index" :label="item.value"
-                    :value="item.key"></el-option>
+                <el-select filterable v-model="form.businessCode" placeholder="请选择业务方" :style="{ width: '100%' }">
+                  <el-option v-for="(item, index) in partyMarkOptions" :key="index" :label="item.value" :value="item.key">
+                     <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
+                  </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
