@@ -40,20 +40,8 @@ public class BpmnBusinessController {
 
     @Autowired(required = false)
     Map<String, FormOperationAdaptor> formOperationAdaptorMap;
-
     @Autowired
     private UserEntrustServiceImpl userEntrustService;
-    @Autowired(required = false)
-    private LowCodeFlowBizService lowCodeFlowBizService;
-    @Autowired
-    private BpmnNodeMapper bpmnNodeMapper;
-
-    @Operation(summary ="" )
-    @RequestMapping("/listFormCodes")
-    public Result listFormCodes(String desc){
-        List<String> formCodes = baseFormInfo(desc).stream().map(a -> a.getKey()).collect(Collectors.toList());
-        return Result.newSuccessResult(formCodes);
-    }
     /**
      * 获取自定义表单DIY FormCode List
      * @param desc
@@ -63,31 +51,6 @@ public class BpmnBusinessController {
     public Result getDIYFormCodeList(String desc){
         return Result.newSuccessResult(baseFormInfo(desc));
     }
-
-    /**
-     * 获取低代码表单LF FormCode Page List
-     * @param requestDto
-     * @return
-     */
-    @PostMapping("/getLFActiveFormCodePageList")
-    public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
-        PageDto pageDto = requestDto.getPageDto();
-        TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
-        return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto,taskMgmtVO);
-    }
-    @GetMapping("/listNodeProperties")
-    public Result listPersonnelProperties(){
-        Collection<BpmnNodeAdaptor> beans = SpringBeanUtils.getBeans(BpmnNodeAdaptor.class);
-        List<PersonnelRuleVO> personnelRuleVOS=new ArrayList<>();
-        for (BpmnNodeAdaptor bean : beans) {
-            PersonnelRuleVO personnelRuleVO = bean.formaFieldAttributeInfoVO();
-           if(personnelRuleVO!=null){
-               personnelRuleVOS.add(personnelRuleVO);
-           }
-        }
-        return Result.newSuccessResult(personnelRuleVOS);
-    }
-
     /**
      * 获取委托列表
      * @param requestDto
@@ -101,20 +64,17 @@ public class BpmnBusinessController {
         Entrust vo = new Entrust();
         return userEntrustService.getEntrustPageList(pageDto,vo,type);
     }
-
     /**
      * 获取委托详情
      * @param id
      * @return
      */
-
     @Operation(summary ="获取委托详情")
     @GetMapping("/entrustDetail/{id}")
     public Result entrustDetail(@PathVariable("id") Integer id){
         UserEntrust detail = userEntrustService.getEntrustDetail(id);
         return Result.newSuccessResult(detail);
     }
-
     /**
      * 编辑委托
      * @param dataVo
@@ -125,28 +85,7 @@ public class BpmnBusinessController {
         userEntrustService.updateEntrustList(dataVo);
         return Result.newSuccessResult("ok");
     }
-
-    @GetMapping("/getchooseModules")
-    public Result getStartUserPickAssigneeNodes(String formCode){
-        if(StringUtils.isEmpty(formCode)){
-            throw new JiMuBizException("请传入formCode");
-        }
-        List<BpmnNode> nodes = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
-        return Result.newSuccessResult(nodes);
-    }
-    @PostMapping("/processPreCheck")
-    public Result<PsPreRespVO> processStartUpPreCheck(@RequestBody PsPreCheckVO vo){
-        String formCode = vo.getFormCode();
-        if(StringUtils.isEmpty(formCode)){
-            throw new JiMuBizException("请传入formCode");
-        }
-        List<BpmnNode> nodes = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
-        List<ProcessNodeVo> nodeVos = nodes.stream().map(a -> ProcessNodeVo.builder().id(a.getId()).nodeName(a.getNodeName()).build()).collect(Collectors.toList());
-        PsPreRespVO respVO=new PsPreRespVO();
-        respVO.setStartUserChooseNodes(nodeVos);
-        return Result.newSuccessResult(respVO);
-    }
-
+    /**私有方法 */
     private List<BaseKeyValueStruVo> baseFormInfo(String desc){
         List<BaseKeyValueStruVo> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
