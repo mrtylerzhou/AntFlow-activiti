@@ -87,7 +87,7 @@ npm run dev
 
 ## 后端运行
 1. 项目下载 git clone https://gitee.com/tylerzhou/Antflow.git
-2. 打开 **antflow-web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
+2. 打开 **antflow-web模块**下resources目录下的**application-dev.properties**文件,修改数据库连接信息,新建一个名为**antflow**的数据库
 3. 打开里面**antflow-web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
 4. 启动项目,如果一切顺利,这时候后端就启动起来了  
 
