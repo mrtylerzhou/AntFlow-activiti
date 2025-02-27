@@ -36,75 +36,58 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     @Autowired
     private DicDataMapper dicDataMapper;
 
-    public List<DictData> getDictItemsByType(String dictType){
-        LambdaQueryWrapper<DictData> qryByDictType = Wrappers.<DictData>lambdaQuery()
-                .eq(DictData::getDictType, dictType);
-        List<DictData> dictData = dicDataMapper.selectList(qryByDictType);
-        dictData.sort(Comparator.comparing(DictData::getCreateTime).reversed());
-        return dictData;
-    }
-
+    /**
+     * 获取全部 LF FormCodes 在流程设计时选择使用
+     * @return
+     */
     @Override
     public List<BaseKeyValueStruVo> getLowCodeFlowFormCodes() {
-        List<DictData> lowcodeflow = getDictItemsByType("lowcodeflow");
+        List<DictData> lowcodeList = getDictItemsByType("lowcodeflow");
         List<BaseKeyValueStruVo> results=new ArrayList<>();
-        if(lowcodeflow != null ) {
-            for (DictData item : lowcodeflow) {
-                results.add(
-                        BaseKeyValueStruVo
-                                .builder()
-                                .key(item.getValue())
-                                .value(item.getLabel())
-                                .type("LF")
-                                .remark(item.getRemark())
-                                .build()
-                );
-            }
+        for (DictData item : lowcodeList) {
+            results.add(
+                    BaseKeyValueStruVo
+                            .builder()
+                            .key(item.getValue())
+                            .value(item.getLabel())
+                            .type("LF")
+                            .remark(item.getRemark())
+                            .build()
+            );
         }
         return results;
     }
 
+    /**
+     * 获取LF FormCode Page List 模板列表使用
+     * @param pageDto
+     * @param taskMgmtVO
+     * @return
+     */
+    @Override
+    public ResultAndPage<BaseKeyValueStruVo> selectLFFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
+        Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<DictData> dictDataList = dicDataMapper.selectLFFormCodePageList(page,taskMgmtVO);
+        return handleLFFormCodePageList(pageDto,dictDataList);
+    }
+    /**
+     * 获取 已设计流程并且启用的 LF FormCode Page List 发起页面使用
+     * @param pageDto
+     * @param taskMgmtVO
+     * @return
+     */
     @Override
     public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
         List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page,taskMgmtVO);
-        if (dictDataList ==null) {
-            return PageUtils.getResultAndPage(page);
-        }
-        List<BaseKeyValueStruVo> results=new ArrayList<>();
-        for (DictData item : dictDataList) {
-            results.add(
-                    BaseKeyValueStruVo
-                            .builder()
-                            .key(item.getValue())
-                            .value(item.getLabel())
-                            .createTime(item.getCreateTime())
-                            .type("LF")
-                            .remark(item.getRemark())
-                            .build()
-            );
-        }
-        page.setRecords(results);
-        return PageUtils.getResultAndPage(page);
-    }
-    @Override
-    public List<BaseKeyValueStruVo> getLFActiveFormCodes() {
-        List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodes();
-        List<BaseKeyValueStruVo> results=new ArrayList<>();
-        for (DictData item : dictDataList) {
-            results.add(
-                    BaseKeyValueStruVo
-                            .builder()
-                            .key(item.getValue())
-                            .value(item.getLabel())
-                            .type("LF")
-                            .remark(item.getRemark())
-                            .build()
-            );
-        }
-        return results;
+        return handleLFFormCodePageList(pageDto,dictDataList);
     }
 
+    /**
+     * 新增LF FormCode
+     * @param vo
+     * @return
+     */
     @Override
     public Integer addFormCode(BaseKeyValueStruVo vo) {
         Integer result = 0;
@@ -124,5 +107,35 @@ public class DictServiceImpl implements LowCodeFlowBizService {
             result = dicDataMapper.insert(entity);
         }
         return  result;
+    }
+    /** 私有方法 */
+    private List<DictData> getDictItemsByType(String dictType){
+        LambdaQueryWrapper<DictData> qryByDictType = Wrappers.<DictData>lambdaQuery()
+                .eq(DictData::getDictType, dictType);
+        List<DictData> dictData = dicDataMapper.selectList(qryByDictType);
+        dictData.sort(Comparator.comparing(DictData::getCreateTime).reversed());
+        return dictData;
+    }
+    /** 私有方法 */
+    private ResultAndPage<BaseKeyValueStruVo> handleLFFormCodePageList(PageDto pageDto, List<DictData> dictlist) {
+        Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
+        if (dictlist ==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        List<BaseKeyValueStruVo> results=new ArrayList<>();
+        for (DictData item : dictlist) {
+            results.add(
+                    BaseKeyValueStruVo
+                            .builder()
+                            .key(item.getValue())
+                            .value(item.getLabel())
+                            .createTime(item.getCreateTime())
+                            .type("LF")
+                            .remark(item.getRemark())
+                            .build()
+            );
+        }
+        page.setRecords(results);
+        return PageUtils.getResultAndPage(page);
     }
 }

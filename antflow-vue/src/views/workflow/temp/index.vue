@@ -150,8 +150,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getDIYFromCodeData,getLFActiveFormCodePageList } from "@/api/workflow";
-import { getLowCodeFromCodeData,createLFFormCode } from '@/api/lowcodeApi';
+import { getDIYFromCodeData } from "@/api/workflow";
+import { getLowCodeFromCodeData,createLFFormCode,getLFFormCodePageList } from '@/api/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 const DIYList = ref([]);
@@ -219,7 +219,7 @@ function getDIYList() {
 /** 查询接入业务方列表 */
 function getLFPageList() {
     loading.value = true;
-    getLFActiveFormCodePageList(pageDto.value, taskMgmtVO.value).then(response => {
+    getLFFormCodePageList(pageDto.value, taskMgmtVO.value).then(response => {
         LFPageList.value = response.data;
         total.value = response.pagination.totalCount; 
         loading.value = false;
