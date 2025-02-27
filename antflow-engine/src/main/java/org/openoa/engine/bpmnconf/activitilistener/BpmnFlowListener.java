@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BpmnFlowListener implements ExecutionListener {
-    private FixedValue extraInfo; // 使用 FixedValue 而不是 String
+    private FixedValue extraInfo;
 
     public void setExtraInfo(FixedValue extraInfo) {
         this.extraInfo = extraInfo;

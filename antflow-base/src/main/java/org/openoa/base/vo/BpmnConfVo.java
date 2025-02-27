@@ -67,6 +67,7 @@ public class BpmnConfVo {
      */
     private Integer businessPartyId;
 
+    private Integer extraFlags;
     /**
      */
     private String remark;

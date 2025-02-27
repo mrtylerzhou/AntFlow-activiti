@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.processor;
 
+import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.service.AntFlowOrderPostProcessor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
@@ -39,7 +40,12 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
                 nodeLabels.addAll(labels);
             }
         }
-        nodeLabelsService.saveBatch(nodeLabels);
+        if(!CollectionUtils.isEmpty(nodeLabels)){
+            Integer extraFlags = confVo.getExtraFlags();
+            Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, BpmnConfFlagsEnum.HAS_NODE_LABELS.getCode());
+            confVo.setExtraFlags(extraFlags);
+            nodeLabelsService.saveBatch(nodeLabels);
+        }
     }
 
 

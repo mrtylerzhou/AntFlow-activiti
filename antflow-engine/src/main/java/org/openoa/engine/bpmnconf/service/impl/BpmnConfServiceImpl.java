@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -174,6 +175,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
+
+            if (bpmnConfVo.getExtraFlags()!=null) {
+                BpmnConf postConf=new BpmnConf();
+                postConf.setId(confId);
+                postConf.setExtraFlags(bpmnConfVo.getExtraFlags());
+                this.updateById(postConf);
+            }
+
         }
 
         ProcessorFactory.executePostProcessors(bpmnConfVo);
@@ -465,6 +474,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
 
         Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
+        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap = getBpmnNodeLabelsVoMap(idList);
         Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
         Map<Long, List<BpmnNodeLfFormdataFieldControl>> bpmnNodeFieldControlConfMap;
         if(isLowCodeFlow!=null&&isLowCodeFlow==1){
@@ -476,7 +486,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         return bpmnNodeList
                 .stream()
                 .map(o -> getBpmnNodeVo(o, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl))
+                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl,bpmnNodeLabelsVoMap))
                 .collect(Collectors.toList());
 
     }
@@ -542,7 +552,10 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         },
                         (a, b) -> a));
     }
-
+private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
+    List<BpmnNodeLabel> nodeLabels = nodeLabelsService.list(Wrappers.<BpmnNodeLabel>lambdaQuery().in(BpmnNodeLabel::getNodeId,ids));
+    return nodeLabels.stream().collect(Collectors.groupingBy(BpmnNodeLabel::getNodeId));
+}
     /**
      * get node signup conf map
      *
@@ -602,7 +615,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                                      Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap,
                                      Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap,
                                      Map<Long, List<BpmnNodeLfFormdataFieldControl>> lfFieldControlMap,
-                                     String conditionsUrl) {
+                                     String conditionsUrl, Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap) {
 
 
         BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
@@ -647,6 +660,12 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         //set sign up conf
         setBpmnNodeSignUpConf(bpmnNode, bpmnNodeSignUpConfMap, bpmnNodeVo);
         setFieldControlVOs(bpmnNode,lfFieldControlMap,bpmnNodeVo);
+        List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
+        if(!CollectionUtils.isEmpty(nodeLabels)){
+            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelName(), a.getLabelValue())).collect(Collectors.toList());
+            bpmnNodeVo.setLabelList(labelVOList);
+        }
+
         return bpmnNodeVo;
     }
 
