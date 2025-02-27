@@ -335,6 +335,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             for (BpmnNode bpmnNode : bpmnNodes) {
                 bpmnNode.setIsOutSideProcess(bpmnConf.getIsOutSideProcess());
                 bpmnNode.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
+                bpmnNode.setExtraFlags(bpmnConf.getExtraFlags());
             }
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
@@ -474,8 +475,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
 
         Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
-        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap = getBpmnNodeLabelsVoMap(idList);
+        Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap =null;
+
         Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
+        Integer extraFlags = bpmnNodeList.get(0).getExtraFlags();
+        boolean hasNodeLabels = BpmnConfFlagsEnum.hasFlag(extraFlags, BpmnConfFlagsEnum.HAS_NODE_LABELS);
+        if(hasNodeLabels){
+            bpmnNodeLabelsVoMap=getBpmnNodeLabelsVoMap(idList);
+        }
         Map<Long, List<BpmnNodeLfFormdataFieldControl>> bpmnNodeFieldControlConfMap;
         if(isLowCodeFlow!=null&&isLowCodeFlow==1){
             bpmnNodeFieldControlConfMap = getBpmnNodeFieldControlConfMap(idList);
@@ -483,10 +490,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnNodeFieldControlConfMap = null;
         }
 
+        Map<Long, List<BpmnNodeLabel>> finalBpmnNodeLabelsVoMap = bpmnNodeLabelsVoMap;
         return bpmnNodeList
                 .stream()
                 .map(o -> getBpmnNodeVo(o, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl,bpmnNodeLabelsVoMap))
+                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap))
                 .collect(Collectors.toList());
 
     }

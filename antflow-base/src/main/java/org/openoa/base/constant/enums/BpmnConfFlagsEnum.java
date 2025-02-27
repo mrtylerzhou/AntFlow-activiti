@@ -33,6 +33,22 @@ public enum BpmnConfFlagsEnum {
         }
         return alreadyFlags|newFlag;
     }
+    /**
+     * 从已有的标识中清除某个标识
+     * @param alreadyFlags 已有的标识
+     * @param flagToRemove 要清除的标识
+     * @return 清除后的标识值
+     */
+    public static Integer binaryAndNot(Integer alreadyFlags, BpmnConfFlagsEnum flagToRemove) {
+
+        if (flagToRemove == null) {
+            return alreadyFlags;
+        }
+        if (alreadyFlags == null) {
+            alreadyFlags = 0;
+        }
+        return alreadyFlags & ~flagToRemove.code;
+    }
 
     /**
      * 现有的标识可以拆分出的枚举数
