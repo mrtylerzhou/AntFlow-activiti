@@ -28,17 +28,7 @@ export function getApiWorkFlowData(data) {
 export function getDIYFromCodeData() {
   return http.get(`${baseUrl}/bpmnBusiness/getDIYFormCodeList`, { headers })
 }
-/**
- * 获取分页LF活跃FromCode 
- * @returns 
- */
-export function getLFActiveFormCodePageList(pageDto, taskMgmtVO) {
-  let paramDto = {
-    "pageDto": pageDto,
-    "taskMgmtVO": taskMgmtVO
-  }  
-  return http.post(`${baseUrl}/bpmnBusiness/getLFActiveFormCodePageList`,paramDto, { headers })
-}
+
 /**
  * 设置/添加审批流程配置详情
  * @param {*} data 

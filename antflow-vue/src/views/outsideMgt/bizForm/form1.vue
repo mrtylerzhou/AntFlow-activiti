@@ -87,8 +87,7 @@ const handleSubmit = () => {
   const form = document.querySelector('form'); 
   const htmlString = formToHTMLString(form);
   let param =  {
-        formCode:"adbgxx",
-        businessPartyId:1, 
+        formCode:"adbgxx", 
         businessPartyMark:"kbgschool",
         templateMark:"id2",
         outSideType:2,

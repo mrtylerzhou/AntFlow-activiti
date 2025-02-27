@@ -1,24 +1,11 @@
 <template>
   <div class="form-container">
-    <el-form
-      ref="ruleFormRef"
-      :model="form"
-      :rules="rules"
-      label-width="auto"
-      style="max-width: 600px; margin: auto"
-    >
+    <el-form ref="ruleFormRef" :model="form" :rules="rules" label-width="auto" style="max-width: 600px; margin: auto">
       <el-form-item label="项目名称" prop="businessPartyId">
-        <el-select
-          v-model="form.businessPartyId"
-          placeholder="请选择项目"
-          :style="{ width: '100%' }"
-        >
-          <el-option
-            v-for="(item, index) in businessPartyOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
+        <el-select v-model="form.businessPartyId" filterable placeholder="请选择项目" :style="{ width: '100%' }">
+          <el-option v-for="(item, index) in businessPartyOptions" :key="index" :label="item.label" :value="item.value">
+            <span style="float: left">【{{ item.value }}】 {{ item.label }}</span>
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="业务类型" prop="formCode">
@@ -30,57 +17,28 @@
             业务类型
           </span>
         </template>
-        <el-select
-          @change="selectFormCodeChanged"
-          v-model="form.formCode"
-          placeholder="请选择业务类型"
-          :style="{ width: '100%' }"
-        >
-          <el-option
-            v-for="(item, index) in formCodeOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
+        <el-select @change="selectFormCodeChanged" filterable v-model="form.formCode" placeholder="请选择业务类型"
+          :style="{ width: '100%' }">
+          <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.label"
+            :value="item.value">
+            <span style="float: left">【{{ item.value }}】 {{ item.label }}</span>
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="流程名称" prop="bpmnName">
-        <el-input
-          v-model="form.bpmnName"
-          placeholder="请输入审批名称"
-          :style="{ width: '100%' }"
-        />
+        <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="审批人去重" prop="deduplicationType">
-        <el-select
-          v-model="form.deduplicationType"
-          placeholder="请选择去重类型"
-          :style="{ width: '100%' }"
-        >
-          <el-option
-            v-for="(item, index) in duplicateOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
+        <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :style="{ width: '100%' }">
+          <el-option v-for="(item, index) in duplicateOptions" :key="index" :label="item.label"
+            :value="item.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="流程说明" prop="remark">
-        <el-input
-          v-model="form.remark"
-          type="textarea"
-          placeholder="请输入流程说明"
-          :maxlength="100"
-          show-word-limit
-          :autosize="{ minRows: 4, maxRows: 4 }"
-          :style="{ width: '100%' }"
-        ></el-input>
+        <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
+          :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
       </el-form-item>
-      <el-form-item style="float: right">
-        <el-button type="primary" @click="nextSubmit(ruleFormRef)"
-          >下一步》》》</el-button
-        >
-      </el-form-item>
+ 
     </el-form>
   </div>
 </template>
@@ -146,15 +104,15 @@ onMounted(async () => {
     form.appId = props.basicData.appId;
     form.remark = props.basicData.remark;
     form.deduplicationType = props.basicData.deduplicationType;
-  } 
+  }
   if (form.businessPartyId) {
     await getApplicationsList(form.businessPartyId);
-  } 
+  }
 });
 watch(
   () => form.businessPartyId,
   (val) => {
-    if (val) { 
+    if (val) {
       getApplicationsList(val);
     }
   }
@@ -185,14 +143,7 @@ let rules = {
     { required: true, message: "请输选择项目", trigger: "change" },
   ],
 };
-const nextSubmit = (ruleFormRef) => {
-  if (!ruleFormRef) return;
-  ruleFormRef.validate((valid, fields) => {
-    if (valid) {
-      emit("nextChange", { label: "流程设计", key: "processDesign" });
-    }
-  });
-};
+ 
 // 给父级页面提供得获取本页数据得方法
 const getData = () => {
   return new Promise((resolve, reject) => {
@@ -207,11 +158,11 @@ const getData = () => {
   });
 };
 
-const selectFormCodeChanged = (value) => {};
+const selectFormCodeChanged = (value) => { };
 
 const getApplicationsList = async (partMarkId) => {
   await getApplicationsByPartyMarkId(partMarkId).then((response) => {
-    if(response.code != 200) return;
+    if (response.code != 200) return;
     formCodeOptions.value = response.data.map((item) => {
       return {
         businessPartyId: item.businessPartyId,
