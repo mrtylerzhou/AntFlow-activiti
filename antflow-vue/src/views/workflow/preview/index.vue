@@ -86,7 +86,7 @@ const init = async () => {
 <style scoped lang="scss">
 .home {
   & > div:nth-child(2) {
-    height: calc(100% - 50px);
+    height: calc(100vh - 50px);
 
     .item {
       padding: 10px;
