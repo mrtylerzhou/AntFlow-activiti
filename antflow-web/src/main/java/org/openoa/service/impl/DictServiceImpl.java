@@ -68,7 +68,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     public ResultAndPage<BaseKeyValueStruVo> selectLFFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
         List<DictData> dictDataList = dicDataMapper.selectLFFormCodePageList(page,taskMgmtVO);
-        return handleLFFormCodePageList(pageDto,dictDataList);
+        return handleLFFormCodePageList(page,dictDataList);
     }
     /**
      * 获取 已设计流程并且启用的 LF FormCode Page List 发起页面使用
@@ -80,7 +80,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
         List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page,taskMgmtVO);
-        return handleLFFormCodePageList(pageDto,dictDataList);
+        return handleLFFormCodePageList(page,dictDataList);
     }
 
     /**
@@ -117,8 +117,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         return dictData;
     }
     /** 私有方法 */
-    private ResultAndPage<BaseKeyValueStruVo> handleLFFormCodePageList(PageDto pageDto, List<DictData> dictlist) {
-        Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
+    private ResultAndPage<BaseKeyValueStruVo> handleLFFormCodePageList(Page page, List<DictData> dictlist) {
         if (dictlist ==null) {
             return PageUtils.getResultAndPage(page);
         }
