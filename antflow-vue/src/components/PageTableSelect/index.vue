@@ -11,28 +11,33 @@
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
- 
-      <el-row type="flex" justify="center" :gutter="20">
-        <el-col :span="8">
-          <div style="font-weight: 700;color: #606266;">姓名</div>
-        </el-col>
-        <el-col :span="8" style="font-weight: 700;color: #606266;left: 0;right: 0;"> 
-          <div >日期</div>
-        </el-col>
-        <el-col :span="8">
-          <div style="font-weight: 700;color: #606266;">地址</div>
-        </el-col>
-      </el-row>
+
+      <el-option :disabled="true">
+        <el-row :gutter="20">
+          <el-col :span="5">
+            <div style="font-weight: 700;color: black;">姓名</div>
+          </el-col>
+          <el-col :span="8">
+            <div style="font-weight: 700;color: black;">日期</div>
+          </el-col>
+          <el-col :span="11">
+            <div style="font-weight: 700;color: black;">地址</div>
+          </el-col>
+        </el-row>
+      </el-option> 
       <el-option v-for="(item, index) in options" :key="index" :label="item.name" :value="item.id">
-        <el-row type="flex" justify="center" :gutter="20">
-          <el-col :span="8" style="border-bottom: 1px solid gray;">
-            <div >{{ item.name }}</div>
+        <el-row :gutter="20">
+          <el-col :span="5">
+            <div>
+              {{ item.name }}</div>
           </el-col>
           <el-col :span="8">
-            <div style="border-bottom: 1px solid #606266;">{{ item.date }}</div>
+            <div>
+              {{ item.date }}</div>
           </el-col>
-          <el-col :span="8">
-            <div style="border-bottom: 1px solid #606266;">{{ item.address }}</div>
+          <el-col :span="11">
+            <div>
+              {{ item.address }}</div>
           </el-col>
         </el-row>
       </el-option>
