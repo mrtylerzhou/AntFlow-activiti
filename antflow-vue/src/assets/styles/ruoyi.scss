@@ -91,7 +91,7 @@
 }
 
 .el-table {
-  height: 100%;
+  height: calc(60vh);
 
   .el-table__header-wrapper, .el-table__fixed-header-wrapper {
     th {
