@@ -151,4 +151,5 @@ public class BpmnStartConditionsVo {
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
     private Map<String,Object> lfConditions;
+    private  Boolean isMigration;
 }

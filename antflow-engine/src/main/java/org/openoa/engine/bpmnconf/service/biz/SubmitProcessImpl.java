@@ -44,17 +44,29 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         log.info("Start submit process. param:{}", businessDataVo);
         FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
 
-        BusinessDataVo vo = formAdapter.submitData(businessDataVo);
+        BusinessDataVo vo = businessDataVo;
+        if(!Boolean.TRUE.equals(businessDataVo.getIsMigration())){
+            vo=formAdapter.submitData(businessDataVo);
+        }
         // call the process's launch method to get launch parameters
         BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
         bpmnStartConditionsVo.setApproversList(Optional.ofNullable(businessDataVo.getApproversList()).orElse(Maps.newHashMap()));
-        bpmnStartConditionsVo.setProcessNum(businessDataVo.getFormCode() + "_" + vo.getBusinessId());
+        String processNumber=businessDataVo.getFormCode() + "_" + vo.getBusinessId();
+        if(Boolean.TRUE.equals(businessDataVo.getIsMigration())){
+            processNumber=businessDataVo.getProcessNumber();
+        }
+        bpmnStartConditionsVo.setProcessNum(processNumber);
         bpmnStartConditionsVo.setEntryId(vo.getEntityName() + ":" + vo.getBusinessId());
         bpmnStartConditionsVo.setBusinessId(vo.getBusinessId());
-        String entryId = vo.getEntityName() + ":" + vo.getBusinessId();
-        if (!bpmBusinessProcessService.checkProcessData(entryId)) {
-            throw new JiMuBizException("the process has already been submitted！");
+        if(Boolean.TRUE.equals(businessDataVo.getIsMigration())){
+            bpmnStartConditionsVo.setIsMigration(vo.getIsMigration());
+        }else{
+            String entryId = vo.getEntityName() + ":" + vo.getBusinessId();
+            if (!bpmBusinessProcessService.checkProcessData(entryId)) {
+                throw new JiMuBizException("the process has already been submitted！");
+            }
         }
+
         //process's name
         String processName = Optional
                 .ofNullable(bpmProcessNameService.getBpmProcessName(businessDataVo.getFormCode()))
@@ -62,23 +74,25 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         //apply user info
         String applyName = SecurityUtils.getLogInEmpName();
         //save business and process information
-        bpmBusinessProcessService.addBusinessProcess(BpmBusinessProcess.builder()
-                .businessId(vo.getBusinessId())
-                .processinessKey(businessDataVo.getFormCode())
-                .businessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId())
-                .isLowCodeFlow(vo.getIsLowCodeFlow())
-                .createUser(businessDataVo.getStartUserId())
-                .userName(businessDataVo.getStartUserName())
-                .createTime(new Date())
-                .processDigest(vo.getProcessDigest())
-                .processState(ProcessStateEnum.HANDLING_STATE.getCode())
-                .entryId(vo.getEntityName() + ":" + vo.getBusinessId())
-                .description(applyName + "-" + processName)
-                .dataSourceId(vo.getDataSourceId())
-                .version(businessDataVo.getBpmnCode())
-                .build());
-        //the process number is predictable
-        businessDataVo.setProcessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId());
+        if(!Boolean.TRUE.equals(businessDataVo.getIsMigration())){
+            bpmBusinessProcessService.addBusinessProcess(BpmBusinessProcess.builder()
+                    .businessId(vo.getBusinessId())
+                    .processinessKey(businessDataVo.getFormCode())
+                    .businessNumber(processNumber)
+                    .isLowCodeFlow(vo.getIsLowCodeFlow())
+                    .createUser(businessDataVo.getStartUserId())
+                    .userName(businessDataVo.getStartUserName())
+                    .createTime(new Date())
+                    .processDigest(vo.getProcessDigest())
+                    .processState(ProcessStateEnum.HANDLING_STATE.getCode())
+                    .entryId(vo.getEntityName() + ":" + vo.getBusinessId())
+                    .description(applyName + "-" + processName)
+                    .dataSourceId(vo.getDataSourceId())
+                    .version(businessDataVo.getBpmnCode())
+                    .build());
+            //the process number is predictable
+            businessDataVo.setProcessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId());
+        }
         bpmnConfCommonService.startProcess(businessDataVo.getBpmnCode(), bpmnStartConditionsVo);
     }
 

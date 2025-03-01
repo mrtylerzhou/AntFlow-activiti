@@ -14,6 +14,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
@@ -96,6 +97,13 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
                 new QueryWrapper<BpmBusinessProcess>()
                         .eq("ENTRY_ID", bpmnStartConditions.getEntryId()));
+        if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
+             bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
+                    new QueryWrapper<BpmBusinessProcess>()
+                            .eq("BUSINESS_NUMBER", bpmnStartConditions.getProcessNum()));
+            String procInstId = bpmBusinessProcess.getProcInstId();
+            runtimeService.deleteProcessInstance(procInstId,"migration");
+        }
         if (!ObjectUtils.isEmpty(bpmBusinessProcess) && bpmBusinessProcess.getId()!=null) {
             bpmBusinessProcessService.updateById(BpmBusinessProcess
                     .builder()
@@ -112,6 +120,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
                     .procInstId(procInstId)
                     .build());
             processForwardService.addProcessForwardBatch(procInstId,processNumber,empToForwardList);
+
         }
 
 

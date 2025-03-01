@@ -239,4 +239,5 @@ public class BusinessDataVo extends PageDto {
     private MsgProcessEventEnum msgProcessEventEnum;
 
     private Map<String,Object> lfConditions;
+    private  Boolean isMigration;
 }
