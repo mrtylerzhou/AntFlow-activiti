@@ -146,7 +146,7 @@
 }
 
 .pagination-container .el-pagination {
-  right: 0;
+  right: 15px;
   position: absolute;
 }
 
@@ -301,4 +301,11 @@
 /* 表格右侧工具栏样式 */
 .top-right-btn {
   margin-left: auto;
+}
+/* tag select */
+.append-add {
+  border: none;
+  border-left: 1px solid #dcdfe6;
+  border-radius: 0;
+  background: #f5f7fa;
 }

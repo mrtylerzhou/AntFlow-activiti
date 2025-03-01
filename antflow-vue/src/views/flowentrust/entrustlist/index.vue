@@ -46,7 +46,7 @@
 
 <script setup>
 import { ref, onMounted} from "vue";
-import { getUserEntrustListPage, getDIYFromCodeData } from "@/api/workflow"; 
+import { getUserEntrustListPage } from "@/api/workflow"; 
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false); 
@@ -61,13 +61,13 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO} = toRefs(data); 
 onMounted(async () => { 
-    getList(); 
+    await getList(); 
 })
   
-/** 查询岗位列表 */
-function getList() {
+/** 查询列表 */
+async function getList() {
     loading.value = true;
-    getUserEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
+    await getUserEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
         entrustList.value = response.data;
         total.value = response.pagination.totalCount;
         loading.value = false;
