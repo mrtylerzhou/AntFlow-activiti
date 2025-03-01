@@ -41,7 +41,7 @@ export let opt1s = [
   { value: '<', label: '<' },
   { value: '≤', label: '≤' },
 ]
-
+  /**审批按钮lable-value */
 export class approvalButtonConf {
   static preview =0;//预览
   static submit =1;//提交
@@ -54,7 +54,7 @@ export class approvalButtonConf {
   static forward = 15;//转发
   static repulse = 18;//打回
   static addApproval = 19;//加批
-  static transfer = 21;//转办 
+  static transfer = 21;//转办  
 
   static buttonsObj={
     0: '预览',
@@ -71,7 +71,9 @@ export class approvalButtonConf {
     21: '转办',//转办
   }
 }
-
+/**
+ * 流程设计审批按钮显示
+ */
 export let approvalPageButtons = [
   { 
     value: approvalButtonConf.agree, 
@@ -111,7 +113,9 @@ export let viewPageButtons = [
   { value: approvalButtonConf.print, label: '打印' },
   { value: approvalButtonConf.forward, label: '转发' }
 ]
-
+/**
+ * 自定义表单路径与FormCode映射
+ */
 export const bizFormMaps = new Map([
   ['DSFZH_WMA', '/forms/form1.vue'],
   ['LEAVE_WMA', '/forms/form2.vue'],
@@ -119,7 +123,8 @@ export const bizFormMaps = new Map([
   ['PURCHASE_WMA', '/forms/form4.vue'] 
 ]);
 
-export let statusColor = {
+/**审批按钮颜色显示 */
+export let approveButtonColor = {
   0: 'info',
   1: 'primary',//提交
   2: 'primary',//同意
@@ -134,47 +139,10 @@ export let statusColor = {
   19: 'success',//加批
   99: 'success',//处理中
   21: 'success',//转办
+  23: 'warning',//驳回
   100: 'info'
 };
-
-export let pageButtonsColor = {
-  0: 'primary',
-  1: 'primary',//提交
-  2: 'success',//重新提交
-  3: 'primary',//同意
-  4: 'danger',//不同意
-  8: 'success',//打印
-  10: 'warning',//承办
-  12: 'danger',//终止
-  15: 'primary',//转发
-  18: 'warning',//打回修改
-  13: 'primary',//添加审批人
-  19: 'success',//加批
-  21: 'primary',//转办 
-};
-
-export let approveList = {
-  1: '张三',
-  2: '李四',
-  3: '王五',
-  4: '菜六',
-  5: '牛七',
-  6: '马八',
-  7: '李九',
-  8: '周十',
-  9: '肖十一',
-  10: '令狐冲',
-  11: '风清扬',
-  12: '刘正风',
-  13: '岳不群',
-  14: '宁中则',
-  15: '桃谷六仙',
-  16: '不介和尚',
-  17: '丁一师太',
-  18: '依林师妹',
-  19: '邱灵珊',
-  20: '任盈盈'
-};
+  
 /**
  * 1、控件对应后端api的判断类型
  * 2、用于条件节点 对接 流程引擎中 条件判断

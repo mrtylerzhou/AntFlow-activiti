@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { statusColor } from '@/utils/flow/const';
+import { approveButtonColor } from '@/utils/flow/const';
 import { getBpmVerifyInfoVos } from '@/api/workflow';
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
@@ -41,7 +41,7 @@ const getPreviewData = async () => {
         activityList.value = resData.data.map(c => {
             return {
                 ...c,
-                type: statusColor[c.verifyStatus],
+                type: approveButtonColor[c.verifyStatus],
                 size: c.verifyStatus == 99 ? 'large' : 'default',
                 verifyStatusName: c.verifyStatusName ? c.verifyStatusName : (c.taskName != '流程结束'?'未处理':'结束'),
                 remark: c.verifyDesc

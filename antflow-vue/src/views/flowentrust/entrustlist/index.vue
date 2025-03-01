@@ -32,11 +32,6 @@
                     <span>{{ parseTime(scope.row.endTime, "{y}-{m}-{d}") }}</span>
                 </template>
             </el-table-column>
-            <!-- <el-table-column label="状态" align="center" prop="effectiveStatus">
-             <template #default="item">
-                <el-tag>{{ item.row.effectiveStatus == 1 ? '活跃' : '不活跃' }}</el-tag> 
-             </template>
-          </el-table-column> -->
             <el-table-column label="创建时间" align="center" prop="createTime">
                 <template #default="scope">
                     <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
@@ -51,15 +46,12 @@
 
 <script setup>
 import { ref, onMounted} from "vue";
-import { getUserEntrustListPage, getDIYFromCodeData } from "@/api/workflow";
-import { approveList } from '@/utils/flow/const'
+import { getUserEntrustListPage, getDIYFromCodeData } from "@/api/workflow"; 
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false); 
 const showSearch = ref(true);
-const total = ref(0);
-let formCodeOptions = ref([]);
-let userOptions = ref([]); 
+const total = ref(0); 
 const data = reactive({ 
     pageDto: {
         page: 1,
@@ -67,31 +59,11 @@ const data = reactive({
     },
     taskMgmtVO: {} 
 });
-const { pageDto, taskMgmtVO} = toRefs(data);
-
- 
-onMounted(async () => {
-    await initFromCode();
-    getList();
-    getUserList();
+const { pageDto, taskMgmtVO} = toRefs(data); 
+onMounted(async () => { 
+    getList(); 
 })
-const initFromCode = async () => {
-    await getDIYFromCodeData().then((res) => {
-        if (res.code == 200) {
-            formCodeOptions.value = res.data;
-        }
-    });
-}
-const getUserList = () => {
-    const keys = Object.keys(approveList);
-    for (let t of keys) {
-        userOptions.value.push({
-            label: approveList[t],
-            value: t
-        });
-    }
-}
-
+  
 /** 查询岗位列表 */
 function getList() {
     loading.value = true;
