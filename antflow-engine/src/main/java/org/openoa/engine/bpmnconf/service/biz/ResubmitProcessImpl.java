@@ -78,6 +78,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         if(1==2){
             if(tasks.size()==1){
                 bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(),bpmBusinessProcess,vo, this::executeTaskCompletion);
+                return;
             }
         }
         if (ObjectUtils.isEmpty(task)) {
