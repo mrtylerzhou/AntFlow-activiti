@@ -46,6 +46,7 @@
 
 <script setup>
 import { getUsers } from "@/api/mock";
+import { ref } from "vue";
 const { proxy } = getCurrentInstance();
 const props = defineProps({
   visible: {
@@ -55,6 +56,10 @@ const props = defineProps({
   multiple: {
     type: Boolean,
     default: false,
+  },
+  multiplelimit: {
+    type: Number,
+    default: 3,
   },
   checkedData: {
     type: Array,
@@ -91,8 +96,9 @@ const queryParams = reactive({
 });
 const { pageDto, qform } = toRefs(queryParams);
 
-const canCommit = computed(() => {
-  return props.multiple ? multiSelectUser.value.length > 0 : (selectUserId.value != null && selectUserId.value !== '');
+  
+const canCommit = computed(() => { 
+  return props.multiple ? multiSelectUser.value.length > 0 && multiSelectUser.value.length <= props.multiplelimit: (selectUserId.value != null && selectUserId.value !== '');
 });
 const canSelectable = (row) => {
   return !props.checkedData.some((item) => item.id === row.userId);
@@ -136,11 +142,15 @@ function handleSelectionChange(selection) {
   const selectArr = selection.map(item => ({
     id: item.userId,
     name: item.userName,
-  }));
+  })); 
+  multiSelectUser.value = selectArr;
   if (!proxy.isArrayEmpty(props.checkedData)) {
-    multiSelectUser.value.push(...props.checkedData);
-  };
-  multiSelectUser.value.push(...selectArr);
+    for (let psd of props.checkedData) {
+      if (!multiSelectUser.value.some(c => c.id == psd.id)) {
+        multiSelectUser.value.push(psd);
+      }
+    }
+  }; 
 }
 /**
  * 确认/保存

@@ -5,7 +5,7 @@
         <el-col :span="24" class="my-col">
           <el-form ref="formRef" :model="form" :rules="rules" class="my-form">
             <el-form-item label="选择人员" prop="selectList">
-              <el-select v-if="isMultiple"  v-model="form.selectList" :multiple="true" :multiple-limit="2" filterable remote
+              <!-- <el-select v-if="isMultiple"  v-model="form.selectList" :multiple="true" :multiple-limit="2" filterable remote
                 reserve-keyword placeholder="请输入关键字查询" remote-show-suffix :remote-method="remoteMethod"
                 :loading="loading" style="width: 240px">
                 <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
@@ -24,7 +24,12 @@
                     {{ item.value }}
                   </span>
                 </el-option>
-              </el-select>
+              </el-select> -->
+              <TagUserSelect v-model:value="form.selectList">
+                  <template #append> 
+                      <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
+                  </template>
+              </TagUserSelect>   
             </el-form-item>
             <el-form-item label="备注/说明" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :maxlength="100" show-word-limit
@@ -33,6 +38,7 @@
           </el-form>
         </el-col>
       </el-row>
+      <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" :multiple="isMultiple" v-model:checkedData="form.selectList" @change="saveUserDialog" />
     </div>
     <template #footer>
       <el-button @click="$emit('update:visible', false)">取 消</el-button>
@@ -43,6 +49,8 @@
 
 <script setup>
 import { computed, onMounted, ref,getCurrentInstance } from 'vue';
+import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
+import selectUser from '@/components/BizSelects/userListDialog.vue';
 import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance()
 let props = defineProps({
@@ -68,9 +76,12 @@ let list = ref([])
 let options = ref([])
 let loading = ref(false)
 
+let userDialogVisible= ref(false); 
+
 let emits = defineEmits(['update:visible', 'change'])
 let visibleDialog = computed({
   get() {
+    reset();
     return props.visible
   },
   set() {
@@ -90,7 +101,9 @@ let rules = {
     trigger: 'blur'
   }]
 };
-
+const saveUserDialog = (data) => {
+  form.value.selectList = data;
+}
 /**
  * 关闭弹窗
  */
@@ -143,16 +156,11 @@ let saveDialog = () => {
     if (valid) {
       if (!props.isMultiple) {
         resFrom.selectList = [{
-          id: form.value.selectList,
-          name: approveList[form.value.selectList]
+          id: form.value.selectList[0].id,
+          name: form.value.selectList[0].name
         }]
       } else {
-        resFrom.selectList = form.value.selectList.map((c) => {
-          return {
-            id: c,
-            name: approveList[c]
-          }
-        })
+        resFrom.selectList = form.value.selectList;
       }
       resFrom.remark = form.value.remark
       //console.log('resFrom.value==========', JSON.stringify(resFrom))

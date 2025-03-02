@@ -41,14 +41,14 @@ watch(() => props.value, newValue => {
             return;
         }
         selectValues.value = [...newValue];
-    }
+    } 
 }, { immediate: true, deep: true, },
 );
 
 
 /* <TagUserSelect v-model:value="userSelectedList"  style="width: 220px">
     <template #append> 
-        <el-button class="append-add" type="default" icon="Plus" @change="userDialogVisible = true" />
+        <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
     </template>
 </TagUserSelect>   
 

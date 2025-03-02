@@ -128,17 +128,18 @@ export let approveButtonColor = {
   0: 'info',
   1: 'primary',//提交
   2: 'primary',//同意
-  3: 'danger',//拒绝
-  4: 'danger',//撤回
+  3: 'primary',//同意
+  4: 'danger',//拒绝
   5: 'danger',//作废
   6: 'danger',//终止
   7: 'primary',//
   8: 'danger',//打回修改
   10: 'warning',//承办
   13: 'primary',//添加审批人
+  18: 'warning',//加批
   19: 'success',//加批
   99: 'success',//处理中
-  21: 'success',//转办
+  21: 'primary',//转办
   23: 'warning',//驳回
   100: 'info'
 };

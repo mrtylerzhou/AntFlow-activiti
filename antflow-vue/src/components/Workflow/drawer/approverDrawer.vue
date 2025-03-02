@@ -13,7 +13,7 @@
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
                             </el-radio-group>
                             <div class="approver_Btn" v-show="approverConfig.setType == 5">
-                                <el-button type="primary" @click="addApprover">添加/修改人员</el-button>
+                                <el-button type="primary" plain icon="Plus" @click="addApprover">添加/修改人员</el-button>
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">🙍‍♂️ {{
                                         item.name }}
@@ -26,7 +26,7 @@
                             </div>
 
                             <div class="approver_Btn" v-show="approverConfig.setType == 4">
-                                <el-button type="primary" @click="addRoleApprover">添加/修改角色</el-button>
+                                <el-button type="primary" plain icon="Plus" @click="addRoleApprover">添加/修改角色</el-button>
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
