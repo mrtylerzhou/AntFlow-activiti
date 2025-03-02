@@ -33,13 +33,13 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function (response) {  
 
-    let Userid= cache.session.get('userId')
-    let Username = cache.session.get('userName') 
-    if (!Userid || !Username) {
-      useUserStore().logOut().then(() => {
-        location.href = import.meta.env.VITE_HOME_PATH;//index
-      })
-    } 
+    // let Userid= cache.session.get('userId')
+    // let Username = cache.session.get('userName') 
+    // if (!Userid || !Username) {
+    //   useUserStore().logOut().then(() => {
+    //     location.href = import.meta.env.VITE_HOME_PATH;//index
+    //   })
+    // } 
     return response.data;
   },
   function (error) { 
