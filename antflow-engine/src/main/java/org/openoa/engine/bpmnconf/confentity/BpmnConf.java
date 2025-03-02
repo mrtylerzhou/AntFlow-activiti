@@ -89,7 +89,8 @@ public class BpmnConf {
      */
     @TableField("business_party_id")
     private Integer businessPartyId;
-
+    @TableField("extra_flags")
+    private Integer extraFlags;
     /**
      * remark
      */

@@ -1,16 +1,20 @@
 package org.openoa.engine.bpmnconf.activitilistener;
 
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.impl.el.FixedValue;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
+import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
@@ -28,6 +32,7 @@ import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +45,11 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class BpmnTaskListener implements TaskListener {
+
+    private FixedValue extraInfo;
+    public void setExtraInfo(FixedValue extraInfo) {
+        this.extraInfo = extraInfo;
+    }
 
     @Resource
     private BpmnConfServiceImpl bpmnConfService;
@@ -65,7 +75,6 @@ public class BpmnTaskListener implements TaskListener {
         if (delegateTask.getTaskDefinitionKey().equals(ProcessNodeEnum.START_TASK_KEY.getDesc())) {
             return;
         }
-
         //bpmnCode
         String bpmnCode = Optional.ofNullable(delegateTask.getVariable("bpmnCode"))
                 .map(Object::toString)
@@ -93,6 +102,12 @@ public class BpmnTaskListener implements TaskListener {
         if (bpmnConf==null) {
             log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
             throw new JiMuBizException("Task监听-查询流程配置数据为空");
+        }
+        if(extraInfo!=null){
+            String expressionText = extraInfo.getExpressionText();
+            if(!StringUtils.isEmpty(expressionText)){
+                delegateTask.setFormKey(expressionText);
+            }
         }
         boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);
         //set process entrust info

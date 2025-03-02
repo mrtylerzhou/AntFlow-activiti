@@ -95,6 +95,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     case 1:
                     case 2:
                     case 3:
+                    case 4:
                         processJump.commitProcess(task.getId(), varMap, processNodeSubmit.getNodeKey());
                         break;
                     case 5:
