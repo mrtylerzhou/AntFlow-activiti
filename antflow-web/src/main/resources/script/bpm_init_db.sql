@@ -648,6 +648,7 @@ CREATE TABLE if not exists `bpm_verify_info`
     `verify_date`      timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `task_name`        varchar(64)         DEFAULT NULL COMMENT 'tsk name',
     `task_id`          varchar(64)         DEFAULT NULL COMMENT 'task id',
+    `task_def_key`     varchar(255)                        null,
     `business_type`    int(1)              DEFAULT NULL COMMENT 'business type',
     `business_id`      varchar(128)        DEFAULT NULL COMMENT 'business id',
     `original_id`      varchar(64)          DEFAULT NULL COMMENT 'orig approver name',

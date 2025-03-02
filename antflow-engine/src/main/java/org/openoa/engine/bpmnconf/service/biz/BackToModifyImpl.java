@@ -129,8 +129,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         //save verify info
         verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
                 .businessId(bpmBusinessProcess.getBusinessId())
-                .verifyUserName(SecurityUtils.getLogInEmpName())
-                .verifyUserId(SecurityUtils.getLogInEmpIdStr())
+                .verifyUserName(vo.getStartUserName())
+                .verifyUserId(vo.getStartUserId())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_UPDATE_TYPE.getCode())
                 .processCode(bpmBusinessProcess.getBusinessNumber())
                 .runInfoId(bpmBusinessProcess.getProcInstId())
@@ -145,7 +145,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 .nodeKey(restoreNodeKey)
                 .processInstanceId(taskData.getProcessInstanceId())
                 .backType(backToModifyType)
-                .createUser(SecurityUtils.getLogInEmpIdStr())
+                .createUser(vo.getStartUserId())
                 .build());
 
 

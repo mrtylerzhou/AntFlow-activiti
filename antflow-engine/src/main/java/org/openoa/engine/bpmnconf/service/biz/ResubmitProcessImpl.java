@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.openoa.base.constant.enums.ProcessSubmitStateEnum.PROCESS_SIGN_UP;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
@@ -71,6 +73,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
+        vo.setStartUserId(SecurityUtils.getLogInEmpIdStr());
+        vo.setStartUserName(SecurityUtils.getLogInEmpName());
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpIdStr()).list();
@@ -82,8 +86,11 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())).findFirst().orElse(null);
         } else {
             task = tasks.get(0);
+            if(StringUtils.isEmpty(task.getAssigneeName())){
+                task.setAssigneeName(SecurityUtils.getLogInEmpNameSafe());
+            }
         }
-        if(1==1){
+        if(1==2){
             BusinessDataVo submitVo=new BusinessDataVo();
             submitVo.setAccountType(1);
             submitVo.setFormCode("DSFZH_WMA");
@@ -112,7 +119,24 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                         .processInstanceId(bpmBusinessProcess.getProcInstId())
                         .taskDefinitionKey(activity.getId()).list();
                 if (!CollectionUtils.isEmpty(tsks)) {
+                    Map<String, BpmVerifyInfo> verifyInfoMap =verifyInfoMap=verifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
                     for (Task tsk : tsks) {
+                        if(!CollectionUtils.isEmpty(verifyInfoMap)){
+                            BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
+                            vo.setStartUserId(tsk.getAssignee());
+                            if(bpmVerifyInfo!=null){
+                                if(!StringUtils.isEmpty(tsk.getAssigneeName())){
+                                    vo.setStartUserName(tsk.getAssigneeName());
+                                }else{
+                                   vo.setStartUserName(bpmVerifyInfo.getVerifyUserName());
+                                }
+                                vo.setApprovalComment(bpmVerifyInfo.getVerifyDesc());
+                            }else{
+                                if(!StringUtils.isEmpty(tsk.getAssigneeName())){
+                                    vo.setStartUserName(tsk.getAssigneeName());
+                                }
+                            }
+                        }
                         executeTaskCompletion(vo,tsk,bpmBusinessProcess);
                     }
                 }
@@ -144,7 +168,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 .taskId(task.getId())
                 .runInfoId(bpmBusinessProcess.getProcInstId())
                 .verifyUserId(task.getAssignee())
-                .verifyUserName(SecurityUtils.getLogInEmpName())
+                .verifyUserName(vo.getStartUserName())
+                .taskDefKey(task.getTaskDefinitionKey())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
                 .verifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "同意" : vo.getApprovalComment())
                 .processCode(vo.getProcessNumber())

@@ -77,7 +77,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
     public void processComplete(Task task) {
         BpmProcessNodeSubmit processNodeSubmit = this.findBpmProcessNodeSubmit(task.getProcessInstanceId());
         Map<String,Object> varMap=new HashMap<>();
-        varMap.put(StringConstants.TASK_ASSIGNEE_NAME,SecurityUtils.getLogInEmpName());
+        //varMap.put(StringConstants.TASK_ASSIGNEE_NAME,SecurityUtils.getLogInEmpName());
         if (!ObjectUtils.isEmpty(processNodeSubmit)) {
             this.addProcessNode(BpmProcessNodeSubmit.builder()
                     .state(0)
