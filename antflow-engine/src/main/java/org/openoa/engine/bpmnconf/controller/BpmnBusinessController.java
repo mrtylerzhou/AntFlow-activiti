@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Results;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.entity.CommonError;
 import org.openoa.base.entity.Result;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiServiceAnno;
@@ -14,6 +16,7 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmnNode;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
@@ -38,10 +41,12 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/bpmnBusiness")
 public class BpmnBusinessController {
 
-    @Autowired(required = false)
-    Map<String, FormOperationAdaptor> formOperationAdaptorMap;
+    @Autowired
+    private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private UserEntrustServiceImpl userEntrustService;
+    @Autowired
+    private BpmnNodeMapper bpmnNodeMapper;
     /**
      * 获取自定义表单DIY FormCode List
      * @param desc
@@ -49,7 +54,8 @@ public class BpmnBusinessController {
      */
     @GetMapping("/getDIYFormCodeList")
     public Result getDIYFormCodeList(String desc){
-        return Result.newSuccessResult(baseFormInfo(desc));
+        List<DIYProcessInfoDTO> diyProcessInfoDTOS = taskMgmtService.viewProcessInfo(desc);
+        return Result.newSuccessResult(diyProcessInfoDTOS);
     }
     /**
      * 获取委托列表
@@ -75,6 +81,21 @@ public class BpmnBusinessController {
         UserEntrust detail = userEntrustService.getEntrustDetail(id);
         return Result.newSuccessResult(detail);
     }
+    @Operation(summary ="获取发起人自选节点")
+    @GetMapping("/getStartUserChooseModules")
+    public Result getStartUserChooseModules(String formCode){
+        if(StringUtils.isEmpty(formCode)){
+           throw new JiMuBizException("参数formCode不能为空!");
+        }
+        List<BpmnNode> nodesByFormCodeAndProperty = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
+        List<BpmnNodeVo> nodeVos = nodesByFormCodeAndProperty.stream().map(a -> {
+            BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
+            bpmnNodeVo.setId(a.getId());
+            bpmnNodeVo.setNodeName(a.getNodeName());
+            return bpmnNodeVo;
+        }).collect(Collectors.toList());
+        return Result.newSuccessResult(nodeVos);
+    }
     /**
      * 编辑委托
      * @param dataVo
@@ -85,39 +106,6 @@ public class BpmnBusinessController {
         userEntrustService.updateEntrustList(dataVo);
         return Result.newSuccessResult("ok");
     }
-    /**私有方法 */
-    private List<BaseKeyValueStruVo> baseFormInfo(String desc){
-        List<BaseKeyValueStruVo> results=new ArrayList<>();
-        for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
-            String key=stringFormOperationAdaptorEntry.getKey();
-            ActivitiServiceAnno annotation = stringFormOperationAdaptorEntry.getValue().getClass().getAnnotation(ActivitiServiceAnno.class);
-            if (StringUtils.isEmpty(annotation.desc())){
-                continue;
-            }
-            if(!StringUtils.isEmpty(desc)){
-                if(annotation.desc().contains(desc)){
-                    results.add(
-                            BaseKeyValueStruVo
-                                    .builder()
-                                    .key(key)
-                                    .value(annotation.desc())
-                                    .type("DIY")
-                                    .build()
-                    );
-                }
-            }
-            else{
-                results.add(
-                        BaseKeyValueStruVo
-                                .builder()
-                                .key(key)
-                                .value(annotation.desc())
-                                .type("DIY")
-                                .build()
-                );
-            }
-        }
-        return results;
-    }
+
 
 }

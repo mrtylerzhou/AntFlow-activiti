@@ -1,25 +1,38 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.ActivitiServiceAnno;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseKeyValueStruVo;
+import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author AntFlow
@@ -38,6 +51,10 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     protected BpmBusinessProcessMapper bpmBusinessProcessMapper;
     @Autowired
     private RuntimeService runtimeService;
+    @Autowired(required = false)
+    private Map<String, FormOperationAdaptor> formOperationAdaptorMap;
+    @Autowired
+    private BpmnConfServiceImpl bpmnConfService;
 
 
     /**
@@ -128,5 +145,64 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         Map<String,Object> assigneeMap=new HashMap<>();
         assigneeMap.put(variableName,assignees);
         runtimeService.setVariables(executionId,assigneeMap);
+    }
+
+    public List<DIYProcessInfoDTO> viewProcessInfo(String desc){
+        List<DIYProcessInfoDTO> diyProcessInfoDTOS = baseFormInfo(desc);
+        if(CollectionUtils.isEmpty(diyProcessInfoDTOS)){
+            return diyProcessInfoDTOS;
+        }
+        List<String> formCodes = diyProcessInfoDTOS.stream().map(DIYProcessInfoDTO::getKey).collect(Collectors.toList());
+        LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
+                .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
+                .in(BpmnConf::getFormCode, formCodes)
+                .eq(BpmnConf::getEffectiveStatus, 1)
+                .isNotNull(BpmnConf::getExtraFlags);
+        List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
+        if(!CollectionUtils.isEmpty(bpmnConfs)){
+            Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+            for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
+                Integer flags = formCode2Flags.get(diyProcessInfoDTO.getKey());
+                if(flags!=null){
+                    boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
+                    diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
+                }
+            }
+        }
+        return diyProcessInfoDTOS;
+    }
+    /**私有方法 */
+    private List<DIYProcessInfoDTO> baseFormInfo(String desc){
+        List<DIYProcessInfoDTO> results=new ArrayList<>();
+        for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
+            String key=stringFormOperationAdaptorEntry.getKey();
+            ActivitiServiceAnno annotation = stringFormOperationAdaptorEntry.getValue().getClass().getAnnotation(ActivitiServiceAnno.class);
+            if (StringUtils.isEmpty(annotation.desc())){
+                continue;
+            }
+            if(!StringUtils.isEmpty(desc)){
+                if(annotation.desc().contains(desc)){
+                    results.add(
+                            DIYProcessInfoDTO
+                                    .builder()
+                                    .key(key)
+                                    .value(annotation.desc())
+                                    .type("DIY")
+                                    .build()
+                    );
+                }
+            }
+            else{
+                results.add(
+                        DIYProcessInfoDTO
+                                .builder()
+                                .key(key)
+                                .value(annotation.desc())
+                                .type("DIY")
+                                .build()
+                );
+            }
+        }
+        return results;
     }
 }
