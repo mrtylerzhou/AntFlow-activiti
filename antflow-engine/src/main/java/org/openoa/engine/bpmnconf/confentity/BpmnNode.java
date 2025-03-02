@@ -84,6 +84,8 @@ public class BpmnNode {
      */
     @TableField("is_deduplication")
     private Integer isDeduplication;
+    @TableField("deduplicationExclude")
+    private boolean deduplicationExclude;
     /**
      * is node sign up 0 for no,1 for yes
      */
