@@ -1,15 +1,20 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
+import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
@@ -22,7 +27,9 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -54,13 +61,18 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    @Autowired
+    private ProcessApprovalServiceImpl processApprovalService;
+    @Autowired
+    private ActivitiAdditionalInfoServiceImpl additionalInfoService;
+    @Autowired
+    private TaskMgmtMapper taskMgmtMapper;
 
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpIdStr()).list();
         if (ObjectUtils.isEmpty(tasks)) {
             throw new JiMuBizException("当前流程已审批！");
@@ -71,10 +83,52 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         } else {
             task = tasks.get(0);
         }
+        if(1==1){
+            BusinessDataVo submitVo=new BusinessDataVo();
+            submitVo.setAccountType(1);
+            submitVo.setFormCode("DSFZH_WMA");
+            submitVo.setOperationType(1);
+            submitVo.setIsLowCodeFlow(0);
+            submitVo.setBusinessId(bpmBusinessProcess.getBusinessId());
+            submitVo.setProcessNumber(bpmBusinessProcess.getBusinessNumber());
+            submitVo.setIsMigration(true);
+            submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
+            processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
+            bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
+            String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
+            if(StringUtils.isBlank(procDefIdByInstId)){
+                throw new JiMuBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
+            }
+            List<ActivityImpl> activitiList = additionalInfoService.getActivitiList(procDefIdByInstId);
+            boolean currentExecuted=false;
+            for (ActivityImpl activity : activitiList) {
+                if (currentExecuted) {
+                    break;
+                }
+                String id = activity.getId();
+
+                // 查找当前流程实例的任务
+                List<Task> tsks = taskService.createTaskQuery()
+                        .processInstanceId(bpmBusinessProcess.getProcInstId())
+                        .taskDefinitionKey(activity.getId()).list();
+                if (!CollectionUtils.isEmpty(tsks)) {
+                    for (Task tsk : tsks) {
+                        executeTaskCompletion(vo,tsk,bpmBusinessProcess);
+                    }
+                }
+                if (task.getTaskDefinitionKey().equals(id)) {
+                    currentExecuted = true;
+                }
+            }
+            return;
+        }
         if (ObjectUtils.isEmpty(task)) {
             throw new JiMuBizException("当前流程代办已审批！");
         }
 
+        executeTaskCompletion(vo,task,bpmBusinessProcess);
+    }
+    private void executeTaskCompletion(BusinessDataVo vo,Task task,BpmBusinessProcess bpmBusinessProcess){
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         BusinessDataVo businessDataVo = vo;
@@ -89,7 +143,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 .taskName(task.getName())
                 .taskId(task.getId())
                 .runInfoId(bpmBusinessProcess.getProcInstId())
-                .verifyUserId(SecurityUtils.getLogInEmpIdStr())
+                .verifyUserId(task.getAssignee())
                 .verifyUserName(SecurityUtils.getLogInEmpName())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
                 .verifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "同意" : vo.getApprovalComment())

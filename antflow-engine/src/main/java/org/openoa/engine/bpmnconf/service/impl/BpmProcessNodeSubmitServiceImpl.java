@@ -84,7 +84,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     .nodeKey(task.getTaskDefinitionKey())
                     .processInstanceId(task.getProcessInstanceId())
                     .backType(0)
-                    .createUser(SecurityUtils.getLogInEmpIdStr())
+                    .createUser(task.getAssignee())
                     .build());
             if (processNodeSubmit.getState().equals(0)) {
                 taskService.complete(task.getId());
