@@ -1,15 +1,8 @@
 <template>
     <div class="tag-select">
         <div class="tag-box">
-            <el-tag 
-            v-for="item in selectValues" 
-            :key="item.id" 
-            effect="dark" 
-            style="margin-right: 5px" 
-            type="primary" 
-            :size="layoutSize" 
-            closable 
-            @close="onDeleteTag(item)">
+            <el-tag v-for="item in selectValues" :key="item.id" effect="dark" style="margin-right: 5px" type="primary"
+                :size="layoutSize" closable @close="onDeleteTag(item)">
                 {{ item.name }}
             </el-tag>
         </div>
@@ -18,38 +11,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-{/* <TagUserSelect v-model:value="userSelectedList"  style="width: 220px">
-    <template #append> 
-        <el-button class="append-add" type="default" icon="Plus" @change="onSelectUser" />
-    </template>
-</TagUserSelect>    */}
-
-// import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-// import selectUser from '@/components/BizSelects/userListDialog2.vue';
-
-// let userDialogVisible= ref(false);
-// let userSelectedList = ref([{id:1,name:'张三'},{id:2,name:'李四'}]);
-// const saveUserDialog = () => {
-//     console.log('data====');
-// }
-
-// function onSelectUser() { 
-//     userDialogVisible.value = true;
-//     console.log('data====',userDialogVisible.value);
-// }
- 
-const emits = defineEmits(['update:value']); 
-const props = defineProps({ 
+import { ref } from 'vue'; 
+const emits = defineEmits(['update:value']);
+const props = defineProps({
     value: {
         type: Array,
         default: []
     }
 })
-const layoutSize=ref('default');    
+const layoutSize = ref('default');
 const selectValues = ref([]);
-  
+
 const onDeleteTag = (tag) => {
     let temp = selectValues.value.filter(item => {
         return item.id !== tag.id;
@@ -62,30 +34,35 @@ const onDeleteTag = (tag) => {
 };
 
 watch(() => props.value, newValue => {
-    console.log('newValue====',JSON.stringify(newValue));
-        if (newValue == null || newValue === '') {
-            selectValues.value = [];
-        } else {
-            if (Array.isArray(newValue)) {
-                selectValues.value = [...newValue].map(row => {
-                    return {
-                        id: row.id,
-                        name: row.name,
-                    };
-                });
-                console.log('selectValues====',JSON.stringify(selectValues.value));
-            } else {
-                selectValues.value = newValue.split(',').map(item => {
-                    return {
-                        id: item,
-                        name: item,
-                    };
-                });
-            }
+    if (newValue == null || newValue === '') {
+        selectValues.value = [];
+    } else {
+        if (!Array.isArray(newValue) || newValue.length < 0) {
+            return;
         }
-    },
-    {immediate: true, deep: true, },
+        selectValues.value = [...newValue];
+    }
+}, { immediate: true, deep: true, },
 );
+
+
+/* <TagUserSelect v-model:value="userSelectedList"  style="width: 220px">
+    <template #append> 
+        <el-button class="append-add" type="default" icon="Plus" @change="userDialogVisible = true" />
+    </template>
+</TagUserSelect>   
+
+<selectUser ref="selectUserRef" v-model:visible="userDialogVisible" v-model:checkedData="userSelectedList" @change="saveUserDialog" />
+*/
+
+// import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
+// import selectUser from '@/components/BizSelects/userListDialog.vue';
+
+// let userDialogVisible= ref(false);
+// let userSelectedList = ref([]);//{id:1,name:'张三'},{id:2,name:'李四'}
+// const saveUserDialog = (data) => {
+//   userSelectedList.value = data;
+// }
 </script>
 
 <style scoped lang="scss">

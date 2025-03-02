@@ -121,7 +121,7 @@ export function getSignatureData() {
 export function getUsers(data) {
   let headers = {
     "Userid": '1',
-    "Username": '%E5%BC%A0%E4%B8%89'
+    "Username": ''
   }
   return http.get(`${baseApiUrl}/user/getUser`, { headers })
 }

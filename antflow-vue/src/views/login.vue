@@ -132,7 +132,7 @@ const getUserList = async () => {
             approveList.value = res.data;
             userOptions.value = res.data.map(item => {
                 return {
-                    label: item.name + '|' +item.id,
+                    label: item.name,
                     value: item.id
                 }
             });

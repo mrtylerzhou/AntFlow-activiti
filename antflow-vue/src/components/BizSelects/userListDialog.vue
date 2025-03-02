@@ -1,6 +1,7 @@
 <template>
   <!-- 选择用户 -->
-  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px !important" :before-close="handleClose" append-to-body>
+  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px !important" :before-close="handleClose"
+    append-to-body>
     <el-form :model="qform" ref="queryRef" :inline="true">
       <el-form-item label="用户名称" prop="userName">
         <el-input v-model="qform.userName" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
@@ -12,11 +13,13 @@
       </el-form-item>
       <el-form-item class="pull-right">
         <el-button type="success" size="default" :disabled="!canCommit" @click="saveDialog">确定</el-button>
+        <el-button type="warning" size="default" @click="handleClose">取消</el-button>
       </el-form-item>
     </el-form>
-    <el-radio-group class="radio-table" v-model="selectUserId" style="width: 100%">
-      <el-table ref="refTable" row-key="userId" :data="userList" v-loading="loading" height="350px">
-        <el-table-column v-if="multiple" align="center" type="selection" width="50px" :reserve-selection="multiple" />
+    <el-radio-group class="radio-table" v-model="selectUserId" @change="clickedRadio">
+      <el-table row-key="userId" :data="userList" v-loading="loading" height="350px"
+        @selection-change="handleSelectionChange">
+        <el-table-column v-if="multiple" align="center" type="selection" width="50px" :selectable="canSelectable" />
         <el-table-column v-else align="center" width="50px">
           <template v-slot="scope">
             <el-radio :value="scope.row.userId"></el-radio>
@@ -42,8 +45,8 @@
 </template>
 
 <script setup>
-import { watch } from "vue";
 import { getUsers } from "@/api/mock";
+const { proxy } = getCurrentInstance();
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -53,24 +56,31 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  data: {
+  checkedData: {
     type: Array,
     default: [],
   },
 });
-const { proxy } = getCurrentInstance();
-let emits = defineEmits(["update:visible", "update:value", "change"]);
+
+const emits = defineEmits(["update:visible", "update:checkedData", "change"]);
 const loading = ref(false);
 const userList = ref([]);
 const total = ref(23);
 const layoutSize = 'total, prev, pager, next';
-let checkedUsersList = ref([]);
 
-let canSelect = ref(false);
 // 单选下选中的用户
-const selectUserId = ref('5');
+const selectUserId = ref(null);
 // 多选下选中的用户列表
 const multiSelectUser = ref([]);
+let visibleDialog = computed({
+  get() {
+    getList();
+    return props.visible;
+  },
+  set() {
+    closeDialog();
+  },
+});
 
 const queryParams = reactive({
   qform: {},
@@ -84,27 +94,9 @@ const { pageDto, qform } = toRefs(queryParams);
 const canCommit = computed(() => {
   return props.multiple ? multiSelectUser.value.length > 0 : (selectUserId.value != null && selectUserId.value !== '');
 });
-
-let visibleDialog = computed({
-  get() {
-    return props.visible;
-  },
-  set() {
-    closeDialog();
-  },
-});
-
-// watch(() => props.data, (newVal) => {
-//   console.log('watch==props.data======newVal======',JSON.stringify(newVal));
-//   checkedUsersList.value = newVal.map((item) => {
-//     return {
-//       userId: item.id,
-//       userName: item.name,
-//     };
-//   });
-// },
-//   { deep: true, immediate: true }
-// );
+const canSelectable = (row) => {
+  return !props.checkedData.some((item) => item.id === row.userId);
+}
 // 查询表数据
 const getList = async () => {
   loading.value = true;
@@ -123,29 +115,47 @@ const getList = async () => {
   });
 }
 
-getList();
-
 /** 搜索按钮操作 */
-function handleQuery() {
-  qform.pageNum = 1;
-  getList();
+async function handleQuery() {
+  pageDto.page = 1;
+  await getList();
+}
+/** 点击单框选中数据 */
+function clickedRadio(id) {
+  let selectInfo = userList.value.find((item) => item.userId === id);
+  if (!proxy.isObjEmpty(selectInfo)) {
+    multiSelectUser.value=[{
+      id: selectInfo.userId,
+      name: selectInfo.userName,
+    }];
+  }
 }
 
+/** 点击多选框选中数据 */
+function handleSelectionChange(selection) {
+  const selectArr = selection.map(item => ({
+    id: item.userId,
+    name: item.userName,
+  }));
+  if (!proxy.isArrayEmpty(props.checkedData)) {
+    multiSelectUser.value.push(...props.checkedData);
+  };
+  multiSelectUser.value.push(...selectArr);
+}
 /**
  * 确认/保存
  */
 let saveDialog = () => {
-  console.log('selectUserId======', selectUserId.value);
-  let checkedList = checkedUsersList.value.push(selectUserId.value);
-  // let checkedList = [...checkedUsersList.value].map((item) => ({
-  //   type: 1,
-  //   targetId: item.userId,
-  //   name: item.userName,
-  // }));
-  // handleClose();
-  //emits("change", checkedList);
+  let uniqueMultiSelectUser = uniqueArr(multiSelectUser.value);
+  emits("change", uniqueMultiSelectUser);
+  handleClose();
 };
-
+/**对象数组去重 */
+const uniqueArr = (arr) => {
+  return Array.from(new Set(arr.map(item => item.id))).map(id => {
+    return arr.find(item => item.id === id);
+  });
+}; 
 /**
  * 关闭弹窗
  */
@@ -154,7 +164,7 @@ const closeDialog = () => {
 };
 const handleClose = () => {
   userList.value = [];
-  checkedUsersList.value = [];
+  multiSelectUser.value = [];
   emits("update:visible", false);
 };
 /** 重置按钮操作 */
