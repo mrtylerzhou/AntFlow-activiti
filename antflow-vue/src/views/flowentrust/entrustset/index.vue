@@ -132,8 +132,8 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow";
-import { approveList } from '@/utils/flow/const'
+import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow.js";
+import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false);
@@ -192,8 +192,8 @@ function reset() {
 };
 onMounted(async () => {
     await initFromCode();
-    getList();
-    getUserList();
+    await getList();
+    await getUserList();
 })
 const initFromCode = async () => {
     await getDIYFromCodeData().then((res) => {
@@ -202,20 +202,23 @@ const initFromCode = async () => {
         }
     });
 }
-const getUserList = () => {
-    const keys = Object.keys(approveList);
-    for (let t of keys) {
-        userOptions.value.push({
-            label: approveList[t],
-            value: t
-        });
-    }
+const getUserList = async () => { 
+    await getUsers().then(res => {
+        if (res.code == 200) {
+            userOptions.value = res.data.map(item => {
+                return {
+                    label: item.name,
+                    value: item.id
+                }
+            });
+        }
+    });
 }
 
 /** 查询岗位列表 */
-function getList() {
+async function getList () {
     loading.value = true;
-    getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
+    await getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
         entrustList.value = response.data;
         total.value = response.pagination.totalCount;
         loading.value = false;

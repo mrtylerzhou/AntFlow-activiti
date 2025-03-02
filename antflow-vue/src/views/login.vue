@@ -3,7 +3,7 @@
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">流程后台管理系统</h3>
       <el-form-item>
-        <el-select v-model="userId" placeholder="请选择用户">
+        <el-select v-model="userId" placeholder="请选择用户" @change="changeSelect">
           <el-option v-for="(item, index) in userOptions" :key="index" :label="item.label"
             :value="item.value"></el-option>
         </el-select>
@@ -50,18 +50,17 @@
 import { ref, onMounted } from 'vue';
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
-import useUserStore from '@/store/modules/user'
-import { approveList } from '@/utils/flow/const';
+import useUserStore from '@/store/modules/user' 
 import cache from '@/plugins/cache';
 import { ElMessage } from 'element-plus'
-
+import { getUsers } from "@/api/mock.js"; 
 const userStore = useUserStore()
 const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-
+let approveList= ref([]);
 let userOptions = ref([]);
-let userId = ref('1');
+let userId = ref(null);
 let _userName = ref('');
 const loginForm = ref({
   username: "admin",
@@ -84,11 +83,7 @@ const redirect = ref(undefined);
 watch(route, (newRoute) => {
     redirect.value = newRoute.query && newRoute.query.redirect;
 }, { immediate: true });
-
-watch(userId, (val) => {
-  _userName.value = approveList[val]; 
-}, { immediate: true });
-
+ 
 function handleLogin() {
   if(!userId.value) {
         ElMessage.error("请选择用户");
@@ -127,17 +122,26 @@ function handleLogin() {
     }
   }); 
 }
-
-onMounted(async () => {
-    userId.value = cache.session.get('userId');
-    for (let key in approveList) {
-        userOptions.value.push({
-            label: key + '|' + approveList[key],
-            value: key
-        })
-    }
+ 
+onMounted(async () => {  
+  await getUserList();  
 })
-
+const getUserList = async () => { 
+    await getUsers().then(res => {
+        if (res.code == 200) {
+            approveList.value = res.data;
+            userOptions.value = res.data.map(item => {
+                return {
+                    label: item.name,
+                    value: item.id
+                }
+            });
+        }
+    });
+}
+const changeSelect = async () => {
+  _userName.value = approveList.value.find(item => item.id == userId.value)?.name;  
+}
 function getCookie() {
   const username = Cookies.get("username");
   const password = Cookies.get("password");

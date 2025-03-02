@@ -7,7 +7,7 @@
  */
 import http from '@/utils/axios' 
 let baseUrl = import.meta.env.BASE_URL
-
+let baseApiUrl = import.meta.env.VITE_APP_BASE_API
 /**
  * 获取版本信息
  */
@@ -87,6 +87,7 @@ export function getEmployees(data) {
   return http.get(`${baseUrl}mock/employees.json`, { params: data })
 }
 
+
 /**
  * 获取条件字段
  * @param {*} data 
@@ -111,7 +112,20 @@ export function getWorkFlowData(data) {
 export function getSignatureData() {
   return http.get(`${baseUrl}mock/signature.json`)
 }
- 
+
+ /**
+ * 获取用户信息
+ * @param {*} data 
+ * @returns 
+ */
+export function getUsers(data) {
+  let headers = {
+    "Userid": '1',
+    "Username": ''
+  }
+  return http.get(`${baseApiUrl}/user/getUser`, { headers })
+}
+
 /**
  * 三方接入 获取数据根据url
  * @returns 

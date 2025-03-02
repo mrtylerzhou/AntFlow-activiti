@@ -42,7 +42,7 @@
         </el-row>
       </el-option>
 
-      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize" :layout="layout"
         @pagination="getList" />
     </div>
   </el-select>
@@ -76,6 +76,8 @@ const props = defineProps({
   </el-form-item>
 
  */
+
+const layout=ref('total,  prev, pager, next');
 let loading = ref(false);
 let showSearch = ref(true);
 let total = ref(10);

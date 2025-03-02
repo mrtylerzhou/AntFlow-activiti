@@ -43,7 +43,7 @@
 
 <script setup>
 import { computed, onMounted, ref,getCurrentInstance } from 'vue';
-import { approveList } from '@/utils/flow/const';
+import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance()
 let props = defineProps({
   visible: {
@@ -98,15 +98,23 @@ const closeDialog = () => {
   emits('update:visible', false)
 }
 reset();
-onMounted(() => {
+onMounted(async() => {
   reset();
-  for (let key in approveList) {
-    list.value.push({
-      label: approveList[key],
-      value: key
-    })
-  }
-})
+  await getUserList();
+});
+
+const getUserList = async () => { 
+    await getUsers().then(res => {
+        if (res.code == 200) {
+          list.value = res.data.map(item => {
+                return {
+                    label: item.name,
+                    value: item.id
+                }
+            });
+        }
+    });
+}
 /**
  * 远程查询人员
  * @param query 

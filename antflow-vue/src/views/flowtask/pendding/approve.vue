@@ -10,7 +10,7 @@
                     <el-row style="padding-left: -5px;padding-right: -5px;">
                         <el-col :span="24" class="my-col">
                             <div v-for="btn in approvalButtons" style="float: left;">
-                                <el-button style="margin: 5px;" v-if="btn.label" :type="pageButtonsColor[btn.value]"
+                                <el-button style="margin: 5px;" v-if="btn.label" :type="approveButtonColor[btn.value]"
                                     @click="clickApproveSubmit(btn.value)">
                                     {{ btn.label }}
                                 </el-button>
@@ -75,7 +75,7 @@ import cache from '@/plugins/cache';
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import employeesDialog from '@/components/Workflow/dialog/usersDialog.vue'
-import { pageButtonsColor, approvalPageButtons, approvalButtonConf } from "@/utils/flow/const"
+import { approveButtonColor, approvalPageButtons, approvalButtonConf } from "@/utils/flow/const"
 import { getViewBusinessProcess, processOperation } from "@/api/workflow"
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 const { proxy } = getCurrentInstance()
