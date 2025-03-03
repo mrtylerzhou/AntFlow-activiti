@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="form-container">
         <el-form ref="ruleFormRef" :model="form" :rules="rules"
             style="max-width: 600px;min-height: 100px; margin: auto;">
             <el-row :class="{ disableClss: props.isPreview }">
@@ -37,8 +37,7 @@
                 </el-col>
                 <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
                     <el-form-item>
-                        <el-button type="primary" style="position: absolute;top:5px; right: 5px;"
-                            @click="handleSubmit">提交</el-button>
+                        <el-button type="primary"  @click="handleSubmit">提交</el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -155,5 +154,15 @@ defineExpose({
 <style scoped lang="scss">
 .disableClss {
     pointer-events: none;
+}
+.form-container {
+    background: white !important;
+    padding: 30px;
+    max-width: 750px;
+    min-height:  95%;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
 }
 </style>

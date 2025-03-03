@@ -101,7 +101,9 @@ All.prototype = {
             return "发起人自己"
         }  else if (nodeConfig.setType == 13) { 
             return "直属领导"
-        } else {
+        }  else if (nodeConfig.setType == 7) { 
+            return "由发起人自选审批人"
+        }else {
             return ""
         }
     }, 

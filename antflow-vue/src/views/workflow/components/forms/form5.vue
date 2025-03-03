@@ -24,11 +24,36 @@
                 </el-col>
             </el-row>
         </el-form>
+
+        <div>
+            <span class="optional_approver_title"><el-icon style="color: orange"><Avatar /></el-icon>自选审批人</span>
+            <div class="optional_approver_content">
+                <el-form ref="approverRef" :model="form" :rules="rules"  label-position="top">
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="张三审批" prop="accountType">
+                                <el-button type="success" size="large" icon="Plus" circle />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="李四审批" prop="remark">
+                                <el-button type="success" size="large" icon="Plus" circle />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="24">
+                            <el-form-item label="王五审批" prop="remark">
+                                <el-button type="success" size="large" icon="Plus" circle />
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref,reactive, getCurrentInstance } from 'vue' 
+import { ref, reactive, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
 /**传参不需要修改*/
 let props = defineProps({
@@ -45,7 +70,7 @@ let props = defineProps({
         default: true,
     }
 });
-  
+
 const ruleFormRef = ref(null)
 let accountTypeOptions = [{
     "label": "腾讯云",
@@ -59,8 +84,8 @@ let accountTypeOptions = [{
 }];
 /**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
-    accountType: props.previewData?.accountType??'',
-    remark:props.previewData?.remark??''
+    accountType: props.previewData?.accountType ?? '',
+    remark: props.previewData?.remark ?? ''
 })
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
@@ -76,7 +101,7 @@ let rules = {
     }],
 };
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
- 
+
 const getFromData = () => {
     return new Promise((resolve, reject) => {
         try {
@@ -111,6 +136,7 @@ defineExpose({
 .disableClss {
     pointer-events: none;
 }
+
 .form-container {
     background: white !important;
     padding: 30px;
@@ -120,5 +146,26 @@ defineExpose({
     bottom: 0;
     right: 0;
     margin: auto;
+} 
+.optional_approver_title {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: inline-block;
+    padding: 5px;
+    width: 700px;
+    font-weight: 500;
+    background-color: var(--el-border-color);
+}
+
+.optional_approver_content {
+    padding: 20px 20px 0;
+    border-bottom: 1px solid #f2f2f2;
+    min-height: 260px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid var(--el-border-color);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 700px;
 }
 </style>

@@ -1,20 +1,22 @@
 <template>
     <div class="app-container">
         <div class="box">
-            <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
+            <el-tabs class="demo-tabs" v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane name="createFrom">
                     <template #label>
                         填写表单
                     </template>
-                <div style="height: calc(100vh - 200px);overflow-y: auto">
-                    <component ref="formRef" v-if="componentLoaded" :is="loadedComponent"
-                                :lfFormData="lfFormData" :isPreview="false" @handleBizBtn="handleSubmit">
-                    </component>
-                </div>
+                    <div style="height: calc(100vh - 178px);padding-top: 15px;padding-bottom: 15px;overflow: auto; background-color: #f5f5f7;">
+                        <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
+                            :isPreview="false" @handleBizBtn="handleSubmit">
+                        </component> 
+                    </div>
+
+
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">
-                    <div v-if="reviewWarpShow" >
+                    <div v-if="reviewWarpShow">
                         <ReviewWarp v-model:previewConf="previewConf" />
                     </div>
                 </el-tab-pane>
@@ -46,7 +48,7 @@ const isLFFlow = route.query?.formType == 'LF';
 onMounted(async () => {
     await adapFlowType();
 })
-const adapFlowType = async () => { 
+const adapFlowType = async () => {
     if (isLFFlow && isLFFlow == true) {
         await getLowCodeFromCodeData(flowCode).then((res) => {
             if (res.code == 200) {
@@ -75,8 +77,8 @@ const handleClick = async (tab, event) => {
     if (tab.paneName != 'flowFromReview') {
         reviewWarpShow.value = false;
         return;
-    } 
-    if(formRef.value.hasOwnProperty('handleValidate') == false) {
+    }
+    if (formRef.value.hasOwnProperty('handleValidate') == false) {
         proxy.$modal.msgError("未定义表单组件");
         return;
     }
@@ -96,10 +98,10 @@ const handleClick = async (tab, event) => {
             previewConf.value.isOutSideAccess = false;
             reviewWarpShow.value = true;
         }
-    }).catch((r) => { 
-      console.log(r);
-      proxy.$modal.msgError("加载失败:" + r.message);
-   });
+    }).catch((r) => {
+        console.log(r);
+        proxy.$modal.msgError("加载失败:" + r.message);
+    });
 }
 /**
  * 发起流程
@@ -107,15 +109,15 @@ const handleClick = async (tab, event) => {
  */
 const startTest = (param) => {
     let bizFrom = JSON.parse(param);
-    bizFrom.formCode = flowCode|| '';
+    bizFrom.formCode = flowCode || '';
     bizFrom.operationType = 1;//operationType 1发起 3 审批 
-    bizFrom.isLowCodeFlow = false; 
+    bizFrom.isLowCodeFlow = false;
     bizFrom.lfFields = null;
     if (isLFFlow && isLFFlow == true) {
-        bizFrom = {};  
-        bizFrom.formCode = flowCode|| '';
+        bizFrom = {};
+        bizFrom.formCode = flowCode || '';
         bizFrom.operationType = 1;//operationType 1发起 3 审批 
-        bizFrom.isLowCodeFlow = true;  
+        bizFrom.isLowCodeFlow = true;
         bizFrom.lfFields = JSON.parse(param);
     }
     proxy.$modal.loading();
@@ -142,4 +144,5 @@ function close() {
     font-size: 16px;
     color: #383838;
 }
+
 </style>
