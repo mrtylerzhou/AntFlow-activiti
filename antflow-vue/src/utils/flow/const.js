@@ -22,6 +22,7 @@ export let setTypes = [
   { value: 3, label: '指定层级审批' },
   // { value: 8, label: '关联业务表' },
   { value: 12, label: '发起人自己' }, 
+  { value: 7, label: '发起人自选审批人' },
   // { value: 14, label: '指定部门' },
 ] 
 export let hrbpOptions = [

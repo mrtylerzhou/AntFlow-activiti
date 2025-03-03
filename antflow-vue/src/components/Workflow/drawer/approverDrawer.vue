@@ -83,6 +83,9 @@
                             <div class="approver_text" v-if="approverConfig.setType == 13">
                                 <p>该审批节点设置“直属领导”后，审批人默认为发起人的直属领导</p>
                             </div>
+                            <div class="approver_text" v-if="approverConfig.setType == 7">
+                                <p>该审批节点设置“发起人自选审批人”后，审批人在发起业务表单时由发起人选择</p>
+                            </div>
                         </div>
                         <div class="approver_block">
                             <p>✍多人审批时采用的审批方式</p>
