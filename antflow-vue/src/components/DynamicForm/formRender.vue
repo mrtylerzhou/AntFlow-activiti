@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 720px;left: 0;right: 0;margin: auto;">
+  <div class="form-container">
     <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
     </v-form-render>
     <el-button v-if="!isPreview && !props.reSubmit" type="primary" @click="submitForm">提交</el-button>
@@ -159,3 +159,15 @@ defineExpose({
   getFromData
 })
 </script>
+<style scoped lang="scss"> 
+.form-container {
+    background: white !important;
+    padding: 30px;
+    max-width: 750px;
+    min-height:  95%;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+}
+</style>

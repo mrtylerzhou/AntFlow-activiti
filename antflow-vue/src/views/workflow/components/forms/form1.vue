@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <el-form ref="ruleFormRef" :model="form" :rules="rules"
-            style="max-width: 600px;min-height: 100px; margin: auto;">
+    <div class="form-container">
+        <el-form ref="ruleFormRef" :model="form" :rules="rules">
             <el-row :class="{ disableClss: props.isPreview }">
                 <el-col :span="24">
                     <el-form-item label="申请账户类型" prop="accountType">
@@ -111,5 +110,15 @@ defineExpose({
 <style scoped lang="scss">
 .disableClss {
     pointer-events: none;
+}
+.form-container {
+    background: white !important;
+    padding: 30px;
+    max-width: 750px;
+    min-height: 95%;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
 }
 </style>
