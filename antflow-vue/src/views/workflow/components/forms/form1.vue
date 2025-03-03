@@ -19,7 +19,7 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
-                    <el-form-item style="float: right;">
+                    <el-form-item>
                         <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
                 </el-col>
