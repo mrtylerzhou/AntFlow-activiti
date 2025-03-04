@@ -18,11 +18,10 @@ let config = {
   }
 };
 
-const _axios = axios.create(config);
-
+const _axios = axios.create(config); 
 _axios.interceptors.request.use(
   function (config) {
-    config.headers = config.headers || {};   
+    config.headers = config.headers || {};      
     return config;
   },
   function (error) { 
@@ -31,15 +30,14 @@ _axios.interceptors.request.use(
 );
  
 _axios.interceptors.response.use(
-  function (response) {  
-
-    // let Userid= cache.session.get('userId')
-    // let Username = cache.session.get('userName') 
-    // if (!Userid || !Username) {
-    //   useUserStore().logOut().then(() => {
-    //     location.href = import.meta.env.VITE_HOME_PATH;//index
-    //   })
-    // } 
+  function (response) {     
+    let Userid= cache.session.get('userId');
+    let Username = cache.session.get('userName'); 
+    if ((!Userid || !Username) && !response.config.url.includes('/user/getUser')) {
+      useUserStore().logOut().then(() => {
+        location.href = import.meta.env.VITE_HOME_PATH;//index
+      });
+    } 
     return response.data;
   },
   function (error) { 
