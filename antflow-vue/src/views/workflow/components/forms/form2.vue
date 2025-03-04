@@ -42,12 +42,17 @@
                 </el-col>
             </el-row>
         </el-form>
+        <TagUserSelect ref="tagUserSelectRef" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue' 
-const { proxy } = getCurrentInstance()
+import { ref, reactive, getCurrentInstance } from 'vue';
+import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+const { proxy } = getCurrentInstance();
+const route = useRoute();
+const formCode = route.query?.formCode ?? '';
+const hasChooseApprove = route.query?.hasChooseApprove ??false;
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
@@ -122,6 +127,12 @@ const disabledEndDate = (time) => {
     return time.getTime() < new Date(form.beginDate);
 }
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
+/**自选审批人 */
+const chooseApprovers = (data) => {
+    form.approversList = data.approvers; 
+    form.approversValid = data.nodeVaild;
+}
+
 const getFromData = () => {
     return new Promise((resolve, reject) => {
         try {
@@ -139,10 +150,19 @@ const handleSubmit = () => {
     });
 }
 
-const handleValidate = () => {
+const handleValidate = () => { 
     return proxy.$refs['ruleFormRef'].validate((valid) => {
         if (!valid) {
-            return false;
+            return Promise.reject(false);
+        }  
+        else if(hasChooseApprove){  
+            if (proxy.isArrayEmpty(form.approversValid)) { 
+                proxy.$modal.msgError('请选择自选审批人'); 
+                return Promise.reject(false);
+            }  
+        }
+        else{
+            return Promise.resolve(true);
         }
     });
 }

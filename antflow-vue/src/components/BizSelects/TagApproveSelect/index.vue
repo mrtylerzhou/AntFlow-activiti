@@ -86,15 +86,24 @@ const onDeleteTag = (node,tag) => {
 
 /**格式化返回数据 */
 const formatReturnData = (nodeArr) => { 
+    let returnData = {
+        approvers:{},
+        nodeVaild:false
+    };
     let nodesGroup = {};
     for (let t of nodeArr) { 
       if (nodesGroup.hasOwnProperty(t.id)) {
         nodesGroup[t.id].push(...t.approversList);
       } else {
-        nodesGroup[t.id] = t.approversList;
+        if (t.approversList.length > 0) {
+            nodesGroup[t.id] = t.approversList;
+        }
       }
     }
-    return nodesGroup;
+    //console.log('nodesGroup==keys======',JSON.stringify(Object.keys(nodesGroup)));
+    returnData.approvers = nodesGroup;
+    returnData.nodeVaild = Object.keys(nodesGroup).length == approvaNodeList.value.length; 
+    return returnData;
 } 
 </script>
 <style lang="scss" scoped>
