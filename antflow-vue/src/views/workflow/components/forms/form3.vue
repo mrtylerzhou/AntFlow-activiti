@@ -28,7 +28,7 @@
                 </el-col>
             </el-row>
         </el-form>
-        <TagUserSelect ref="tagUserSelectRef" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+        <TagUserSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
