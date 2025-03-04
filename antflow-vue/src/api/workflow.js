@@ -227,3 +227,11 @@ export function entrustDetail(id) {
 export function setEntrust(data) {
   return http.post(`${baseUrl}/bpmnBusiness/editEntrust`, data, { headers })
 }
+/**
+ * 获取流程自选审批人节点
+ * @param {*} formCode 
+ * @returns 
+ */
+export function getStartUserChooseModules(formCode) {
+  return http.get(`${baseUrl}/bpmnBusiness/getStartUserChooseModules?formCode=${formCode}`, { headers })
+}

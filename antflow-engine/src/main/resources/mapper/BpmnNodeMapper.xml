@@ -34,8 +34,7 @@
             parameterType="java.lang.String">
         SELECT a.id,
                a.conf_id           AS confId,
-               a.node_id           AS
-                                      nodeId,
+               a.node_id           AS nodeId,
                a.node_type         AS nodeType,
                a.node_property     AS nodeProperty,
                a.node_from         AS nodeFrom,
@@ -60,6 +59,6 @@
     <select id="getNodesByFormCodeAndProperty" resultMap="BaseResultMap">
         select tbn.* from t_bpmn_conf tbc join  t_bpmn_node tbn on tbc.id=tbn.conf_id
         where tbc.form_code=#{formCode} and tbc.effective_status=1 and tbn.node_property=#{property}
+        order by tbn.create_time desc
     </select>
-
 </mapper>

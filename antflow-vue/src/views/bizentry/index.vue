@@ -82,7 +82,7 @@ const handleClick = async (tab, event) => {
         proxy.$modal.msgError("未定义表单组件");
         return;
     }
-    await formRef.value.handleValidate().then(async (isValid) => {
+    await formRef.value.handleValidate().then(async (isValid) => { 
         if (!isValid) {
             activeName.value = "createFrom";
         } else {
@@ -99,8 +99,9 @@ const handleClick = async (tab, event) => {
             reviewWarpShow.value = true;
         }
     }).catch((r) => {
-        console.log(r);
-        proxy.$modal.msgError("加载失败:" + r.message);
+        //console.log('errormsg',r);
+        activeName.value = "createFrom";
+        //proxy.$modal.msgError("加载失败:" + r.message);
     });
 }
 /**
