@@ -494,9 +494,9 @@ public class BpmnConfCommonServiceImpl {
             BpmnNodeVo currentNodeVo = mapNodes.get(nodeTo);
 
             for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo!=null&&!nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
-                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(currentNodeVo.getNodeType())) {
-                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(currentNodeVo, mapNodes.values());
-                    treatParallelGateWayRecursively(currentNodeVo, aggregationNode,prevNode, mapNodes, results);
+                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nodeVo.getNodeType())) {
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nodeVo, mapNodes.values());
+                    treatParallelGateWayRecursively(nodeVo, aggregationNode,prevNode, mapNodes, results);
                 }
 
 
