@@ -52,7 +52,7 @@ import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
 const formCode = route.query?.formCode ?? '';
-const hasChooseApprove = route.query?.hasChooseApprove ??false;
+const hasChooseApprove = route.query?.hasChooseApprove ??'false';
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
@@ -155,8 +155,8 @@ const handleValidate = () => {
         if (!valid) {
             return Promise.reject(false);
         }  
-        else if(hasChooseApprove){  
-            if (proxy.isArrayEmpty(form.approversValid)) { 
+        else if(hasChooseApprove == 'true'){    
+            if (!form.approversValid || form.approversValid == false) {  
                 proxy.$modal.msgError('请选择自选审批人'); 
                 return Promise.reject(false);
             }  
