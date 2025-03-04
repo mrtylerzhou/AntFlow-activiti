@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'; 
+import { ref,watch } from 'vue'; 
 const emits = defineEmits(['update:value']);
 const props = defineProps({
     value: {
