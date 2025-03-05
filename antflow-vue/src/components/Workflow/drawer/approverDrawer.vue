@@ -188,7 +188,16 @@ let checkApprovalPageBtns = ref([])
 let checkedHRBP = ref('')
 let approvalPageBtns = ref([])
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
-let approvalBtnSubOption  =ref(1)
+let approvalBtnSubOption =  ref(1)
+
+
+// computed(() => {
+//     if(approverConfig.value?.property.afterSignUpWay == 1){
+//         return 3;//审批完之后，会回到本节点的审批人再次审批
+//     }else {
+//         return approverConfig.value?.property.signUpType;
+//     }
+// })
 let formItems = ref([])
 let activeName = ref('approverStep')
 let approverStepShow = ref(true)
@@ -197,7 +206,7 @@ let approverConfig1 = computed(() => store.approverConfig1)
 let approverDrawer = computed(() => store.approverDrawer) 
 let visible = computed({
     get() {
-        handleTabClick({ paneName: "approverStep" })
+        handleTabClick({ paneName: "approverStep" }) 
         return approverDrawer.value
     },
     set() {
@@ -224,8 +233,13 @@ watch(approverConfig, (val) => {
     approvalPageBtns.value = val.buttons?.approvalPage; 
     if (val.nodeProperty == 6) {
         checkedHRBP.value = val.property.hrbpConfType
+    }  
+    if(approverConfig.value?.property?.afterSignUpWay == 1){
+        approvalBtnSubOption.value = 3;//审批完之后，会回到本节点的审批人再次审批
+    }else {
+        approvalBtnSubOption.value = approverConfig.value?.property?.signUpType;
     }
-}) 
+}, { deep: true }) 
 /**处理HRBP选项 */
 watch(checkedHRBP, (val) => {
     if (approverConfig.value.setType != 6) {
@@ -282,7 +296,7 @@ const handleCheckedButtonsChange = (val) => {
 }
  
 /**处理加批按钮 子操作 */
-const handleApprovalBtnSubOption = (val) => { 
+const handleApprovalBtnSubOption = (val) => {  
     //val加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
     approverConfig.value.property.afterSignUpWay = val && val == 3 ? 1 : 2;
     approverConfig.value.property.signUpType = val && val == 3 ? 1 : val;  
@@ -303,7 +317,6 @@ const changePermVal = (data) => {
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
-    //console.log('approverConfig1.value==========', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,
