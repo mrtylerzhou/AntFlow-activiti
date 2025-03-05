@@ -50,11 +50,11 @@ let visible = computed({
 /**预览 */
 const preview = async (param) => {
     let queryParams = ref({
-        "formCode": param.formCode,
-        "processNumber": param.processNumber,
-        "type": 2,
-        "isOutSideAccessProc": param.isOutSideAccess || false,
-        "isLowCodeFlow": param.isLowCodeFlow || false
+        formCode: param.formCode,
+        processNumber: param.processNumber,
+        type: 2,
+        isOutSideAccessProc: param.isOutSideAccess || false,
+        isLowCodeFlow: param.isLowCodeFlow || false
     });
     proxy.$modal.loading();
     await getViewBusinessProcess(queryParams.value).then(async (response) => {

@@ -1425,6 +1425,25 @@ CREATE TABLE `t_biz_ucar_refuel` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
 
+-- ----------------------------
+-- Table structure for t_biz_refund
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_refund`;
+CREATE TABLE `t_biz_refund`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `refund_user_id` int(11) NOT NULL,
+  `refund_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `refund_type` int(11) NOT NULL default 1,
+  `refund_date` timestamp NOT NULL,
+  `refund_money` double NOT NULL default 0,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` timestamp default current_timestamp,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
 create table t_bpmn_conf_lf_formdata
 (
 	id bigint auto_increment,
