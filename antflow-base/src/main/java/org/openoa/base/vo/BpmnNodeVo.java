@@ -38,6 +38,7 @@ public class BpmnNodeVo  implements Serializable {
      * node type 1 for start node 2 for gateway 3 for condition 4 for approver
      */
     private Integer nodeType;
+    private Boolean isParallel;
     /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table

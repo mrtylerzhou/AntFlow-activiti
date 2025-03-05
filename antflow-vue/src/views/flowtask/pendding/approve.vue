@@ -46,7 +46,7 @@
             @change="sureDialogBtn" />
         <!-- 审批对话框 -->
         <el-dialog :title="approveDialogTitle" v-model="openApproveDialog" width="550px" append-to-body>
-            <el-form :model="approveForm" :rules="rules" ref="approveFormRef" label-width="130px"
+            <el-form :model="approveForm" :rules="rules" ref="approveFormRef" label-width="130px" label-position="top"
                 style="margin: 0 20px;">
                 <el-row>
                     <el-col :span="24">
@@ -364,26 +364,27 @@ handleTabClick({ paneName: "baseTab" });
 }
 
 .approve {
-    width: 100%;
-    height: 100%;
-    background: #fff;
+    width: 100%; 
+    background: #f5f5f7;
     position: relative;
     padding: 10px 50px;
     box-sizing: border-box;
+    height: calc(74vh) !important;
+    overflow: auto;
 }
 
 .my-col {
     border: 1px solid #ebeef5;
     padding: 10px 20px 10px 20px;
     margin: 5px;
+    background-color: #fff;
 }
 
 .my-form {
     max-width: 600px;
     min-height: 100px;
     margin: auto;
-}
-
+} 
 .el-timeline {
     --el-timeline-node-size-normal: 25px !important;
     --el-timeline-node-size-large: 25px !important;

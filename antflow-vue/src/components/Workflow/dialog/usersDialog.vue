@@ -3,7 +3,7 @@
     <div style="min-height: 250px !important;">
       <el-row style="padding-left: -5px;padding-right: -5px;">
         <el-col :span="24" class="my-col">
-          <el-form ref="formRef" :model="form" :rules="rules" class="my-form">
+          <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="my-form">
             <el-form-item label="选择人员" prop="selectList">
               <!-- <el-select v-if="isMultiple"  v-model="form.selectList" :multiple="true" :multiple-limit="2" filterable remote
                 reserve-keyword placeholder="请输入关键字查询" remote-show-suffix :remote-method="remoteMethod"
