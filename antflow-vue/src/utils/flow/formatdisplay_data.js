@@ -22,7 +22,7 @@ export class FormatDisplayUtils {
    * @param { Object } nodeData - 源节点数据
    * @returns Object
    */
-  static createNodeDisplay(nodeData) {
+  static createNodeDisplay(nodeData) { 
     if (!nodeData) return;
     if (isEmptyArray(nodeData)) return;
     let displayObj = {
@@ -39,6 +39,7 @@ export class FormatDisplayUtils {
       isLowCodeFlow: nodeData.isLowCodeFlow,
       lfFormData: nodeData.lfFormData,
       lfFormDataId: nodeData.lfFormDataId,
+      property: nodeData.property,
       remark: nodeData.remark,
       isDel: 0,
       directorMaxLevel: 3,

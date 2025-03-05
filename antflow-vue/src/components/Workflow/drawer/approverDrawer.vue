@@ -164,12 +164,12 @@
     </el-drawer>
 </template>
 <script setup>
-import { ref, watch, computed } from 'vue'
-import $func from '@/utils/flow/index'
-import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/flow/const'
-import { useStore } from '@/store/modules/workflow'
-import employeesDialog from '../dialog/employeesDialog.vue'
-import roleDialog from '../dialog/roleDialog.vue'
+import { ref, watch, computed } from 'vue';
+import $func from '@/utils/flow/index';
+import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/flow/const';
+import { useStore } from '@/store/modules/workflow';
+import employeesDialog from '../dialog/employeesDialog.vue';
+import roleDialog from '../dialog/roleDialog.vue';
 import FormPermConf from "../config/FormPermConf.vue";
 const { proxy } = getCurrentInstance();
 let store = useStore()
@@ -179,31 +179,23 @@ let props = defineProps({
         default: 0
     }
 });
-let approverConfig = ref({})
-let approverVisible = ref(false)
-let approverRoleVisible = ref(false)
-let checkedRoleList = ref([])
-let checkedList = ref([])
-let checkApprovalPageBtns = ref([])
-let checkedHRBP = ref('')
-let approvalPageBtns = ref([])
-let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1)
-let approvalBtnSubOption =  ref(1)
-
-
-// computed(() => {
-//     if(approverConfig.value?.property.afterSignUpWay == 1){
-//         return 3;//审批完之后，会回到本节点的审批人再次审批
-//     }else {
-//         return approverConfig.value?.property.signUpType;
-//     }
-// })
-let formItems = ref([])
-let activeName = ref('approverStep')
-let approverStepShow = ref(true)
-let formStepShow = ref(false)
-let approverConfig1 = computed(() => store.approverConfig1)
-let approverDrawer = computed(() => store.approverDrawer) 
+let approverConfig = ref({});
+let approverVisible = ref(false);
+let approverRoleVisible = ref(false);
+let checkedRoleList = ref([]);
+let checkedList = ref([]);
+let checkApprovalPageBtns = ref([]);
+let checkedHRBP = ref('');
+let approvalPageBtns = ref([]);
+let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
+let approvalBtnSubOption =  ref(1);
+ 
+let formItems = ref([]);
+let activeName = ref('approverStep');
+let approverStepShow = ref(true);
+let formStepShow = ref(false);
+let approverConfig1 = computed(() => store.approverConfig1);
+let approverDrawer = computed(() => store.approverDrawer) ;
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" }) 
@@ -212,7 +204,7 @@ let visible = computed({
     set() {
         closeDrawer()
     }
-})
+});
 /**页面加载监听事件 */
 watch(approverConfig1, (val) => {  
     if (val.value.nodeType == 7) {//并行审批
@@ -226,7 +218,7 @@ watch(approverConfig1, (val) => {
         formItems.value = val.value.lfFieldControlVOs || []; 
         checkApprovalPageBtns.value = val.value.buttons?.approvalPage; 
     }  
-})
+});
   
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => { 
@@ -239,7 +231,7 @@ watch(approverConfig, (val) => {
     }else {
         approvalBtnSubOption.value = approverConfig.value?.property?.signUpType;
     }
-}, { deep: true }) 
+}, { deep: true });
 /**处理HRBP选项 */
 watch(checkedHRBP, (val) => {
     if (approverConfig.value.setType != 6) {
@@ -250,7 +242,7 @@ watch(checkedHRBP, (val) => {
     if (labelName) {
         approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }];
     }
-})
+});
 /**选择审批人类型更改事件 */
 const changeType = (val) => { 
     approverConfig.value.nodeApproveList = [];

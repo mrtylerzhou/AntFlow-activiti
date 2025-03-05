@@ -3,8 +3,8 @@
   <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px !important" :before-close="handleClose"
     append-to-body>
     <el-form :model="qform" ref="queryRef" :inline="true">
-      <el-form-item label="用户名称" prop="userName">
-        <el-input v-model="qform.userName" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
+      <el-form-item label="用户名称" prop="description">
+        <el-input v-model="qform.description" placeholder="请输入关键字" clearable style="width: 150px" size="default"
           @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
@@ -38,14 +38,14 @@
     <template #footer>
       <div class="dialog-footer">
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-          :layout="layoutSize" @pagination="getList" />
+          :layout="layoutSize" @pagination="getPageList" />
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { getUsers } from "@/api/mock";
+import { getUserPageList } from "@/api/mock";
 import { ref } from "vue";
 const { proxy } = getCurrentInstance();
 const props = defineProps({
@@ -79,7 +79,7 @@ const selectUserId = ref(null);
 const multiSelectUser = ref([]);
 let visibleDialog = computed({
   get() {
-    getList();
+    getPageList();
     return props.visible;
   },
   set() {
@@ -88,7 +88,9 @@ let visibleDialog = computed({
 });
 
 const queryParams = reactive({
-  qform: {},
+  qform: {
+    description: null,
+  },
   pageDto: {
     page: 1,
     pageSize: 10
@@ -104,9 +106,9 @@ const canSelectable = (row) => {
   return !props.checkedData || !props.checkedData.approversList.some((item) => item.id === row.userId);
 }
 // 查询表数据
-const getList = async () => {
+const getPageList = async () => {
   loading.value = true;
-  await getUsers().then((res) => {
+  await getUserPageList(pageDto.value,qform.value).then((res) => {
     loading.value = false;
     userList.value = res.data.map((item) => {
       return {
@@ -124,7 +126,7 @@ const getList = async () => {
 /** 搜索按钮操作 */
 async function handleQuery() {
   pageDto.page = 1;
-  await getList();
+  await getPageList();
 }
 /** 点击单框选中数据 */
 function clickedRadio(id) {
@@ -181,8 +183,9 @@ const handleClose = () => {
 };
 /** 重置按钮操作 */
 function resetQuery() {
-  qform = {};
-  proxy.resetForm("queryRef");
+  qform.value = {
+    description: null,
+  }; 
   handleQuery();
 }
 </script>

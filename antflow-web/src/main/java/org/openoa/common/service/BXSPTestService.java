@@ -1,12 +1,19 @@
 package org.openoa.common.service;
 
-import org.apache.commons.lang3.RandomUtils;
+import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.base.vo.ThirdPartyAccountApplyVo;
+import org.openoa.entity.BizRefund;
+import org.openoa.mapper.BizRefundMapper;
+import org.openoa.vo.BizRefundVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * @Classname BXSPTestService
@@ -15,47 +22,73 @@ import org.openoa.base.vo.ThirdPartyAccountApplyVo;
  */
 @ActivitiServiceAnno(svcName = "BXSP_WMA",desc = "报销审批测试")
 //formAdaptor
-public class BXSPTestService implements FormOperationAdaptor<ThirdPartyAccountApplyVo>, ActivitiService {
+public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, ActivitiService {
+
+    @Autowired
+    private BizRefundMapper bizRefundMapper;
 
     @Override
-    public BpmnStartConditionsVo previewSetCondition(ThirdPartyAccountApplyVo vo) {
-        return BpmnStartConditionsVo.builder().build();
+    public BpmnStartConditionsVo previewSetCondition(BizRefundVo vo) {
+        String userId =  vo.getStartUserId();
+        return BpmnStartConditionsVo.builder()
+                .startUserId(userId).build();
     }
 
     @Override
-    public ThirdPartyAccountApplyVo initData(ThirdPartyAccountApplyVo vo) {
-        return new ThirdPartyAccountApplyVo();
+    public BizRefundVo initData(BizRefundVo vo) {
+        return null;
     }
 
     @Override
-    public BpmnStartConditionsVo launchParameters(ThirdPartyAccountApplyVo vo) {
-        return BpmnStartConditionsVo.builder().startUserId("1").build();
+    public BpmnStartConditionsVo launchParameters(BizRefundVo vo) {
+        String userId =  vo.getStartUserId();
+        return BpmnStartConditionsVo.builder()
+                .startUserId(userId).build();
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(ThirdPartyAccountApplyVo vo) {
-        return new ThirdPartyAccountApplyVo();
-    }
-
-    @Override
-    public ThirdPartyAccountApplyVo submitData(ThirdPartyAccountApplyVo vo) {
-        ThirdPartyAccountApplyVo thirdPartyAccountApplyVo = new ThirdPartyAccountApplyVo();
-        thirdPartyAccountApplyVo.setBusinessId(String.valueOf(RandomUtils.nextLong()));
-        return thirdPartyAccountApplyVo;
-    }
-
-    @Override
-    public ThirdPartyAccountApplyVo consentData(ThirdPartyAccountApplyVo vo) {
+    public BizRefundVo queryData(BizRefundVo vo) {
+        BizRefund refund = bizRefundMapper.selectById(vo.getBusinessId());
+        BeanUtils.copyProperties(refund,vo);
         return vo;
     }
 
     @Override
-    public void backToModifyData(ThirdPartyAccountApplyVo vo) {
+    public BizRefundVo submitData(BizRefundVo vo) {
+        BizRefund entity=new BizRefund();
+        BeanUtils.copyProperties(vo,entity);
+        entity.setCreateTime(new Date());
+        entity.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+        entity.setRefundUserId(Integer.parseInt(vo.getStartUserId()));
+        entity.setRefundUserName(SecurityUtils.getLogInEmpNameSafe());
+
+        bizRefundMapper.insert(entity);
+        vo.setBusinessId(entity.getId().toString());
+        vo.setProcessTitle("报销申请");
+        vo.setProcessDigest(vo.getRemark());
+        vo.setEntityName(BizRefund.class.getSimpleName());
+        return vo;
+    }
+
+    @Override
+    public BizRefundVo consentData(BizRefundVo vo) {
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            BizRefund entity = new BizRefund();
+            BeanUtils.copyProperties(vo,entity);
+            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            entity.setId(id);
+            bizRefundMapper.updateById(entity);
+        }
+        return vo;
+    }
+
+    @Override
+    public void backToModifyData(BizRefundVo vo) {
 
     }
 
     @Override
-    public void cancellationData(ThirdPartyAccountApplyVo vo) {
+    public void cancellationData(BizRefundVo vo) {
 
     }
 

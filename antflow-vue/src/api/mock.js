@@ -114,7 +114,7 @@ export function getSignatureData() {
 }
 
  /**
- * 获取用户信息
+ * 获取全部用户信息
  * @param {*} data 
  * @returns 
  */
@@ -125,7 +125,22 @@ export function getUsers(data) {
   }
   return http.get(`${baseApiUrl}/user/getUser`, { headers })
 }
-
+ /**
+ * 获取用户分页信息
+ * @param {*} data 
+ * @returns 
+ */
+ export function getUserPageList(pageDto,qVO) {
+  let headers = {
+    "Userid": '1',
+    "Username": '%E5%BC%A0%E4%B8%89'
+  }
+  let data = {
+    "pageDto": pageDto,
+    "taskMgmtVO": qVO
+  } 
+  return http.post(`${baseApiUrl}/user/getUserPageList`,data, { headers })
+}
 /**
  * 三方接入 获取数据根据url
  * @returns 

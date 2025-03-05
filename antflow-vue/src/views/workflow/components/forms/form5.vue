@@ -1,13 +1,22 @@
 <template>
     <div class="form-container">
-        <el-form ref="ruleFormRef" :model="form" :rules="rules">
+        <el-form ref="ruleFormRef" :model="form" :rules="rules"
+            style="max-width: 600px;min-height: 100px; margin: auto;">
             <el-row :class="{ disableClss: props.isPreview }">
+                <el-col :span="12">
+                    <el-form-item label="报销姓名" prop="RefundUserName">
+                        <el-input v-model="form.RefundUserName"  style="width: 220px;"  placeholder="请输入报销人姓名" />
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="报销日期" prop="RefundDate">
+                        <el-date-picker v-model="form.RefundDate" type="datetime"
+                            placeholder="请选择报销日期" format="YYYY/MM/DD HH:mm" />
+                    </el-form-item>
+                </el-col>
                 <el-col :span="24">
-                    <el-form-item label="申请账户类型" prop="accountType">
-                        <el-select v-model="form.accountType" placeholder="请选择账户类型" :style="{ width: '100%' }">
-                            <el-option v-for="(item, index) in accountTypeOptions" :key="index" :label="item.label"
-                                :value="item.value"></el-option>
-                        </el-select>
+                    <el-form-item label="报销金额" prop="RefundMoney">
+                        <el-input-number v-model="form.RefundMoney" :min="1" :max="10000" :style="{ width: '100%' }"/>
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -17,44 +26,24 @@
                             :style="{ width: '100%' }"></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
+                <el-col :span="24" v-if="!props.isPreview">
                     <el-form-item>
                         <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
-                </el-col>
+                </el-col> 
             </el-row>
         </el-form>
-
-        <div>
-            <span class="optional_approver_title"><el-icon style="color: orange"><Avatar /></el-icon>自选审批人</span>
-            <div class="optional_approver_content">
-                <el-form ref="approverRef" :model="form" :rules="rules"  label-position="top">
-                    <el-row>
-                        <el-col :span="24">
-                            <el-form-item label="张三审批" prop="accountType">
-                                <el-button type="success" size="large" icon="Plus" circle />
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="24">
-                            <el-form-item label="李四审批" prop="remark">
-                                <el-button type="success" size="large" icon="Plus" circle />
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="24">
-                            <el-form-item label="王五审批" prop="remark">
-                                <el-button type="success" size="large" icon="Plus" circle />
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-            </div>
-        </div>
+        <TagUserSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue'
-const { proxy } = getCurrentInstance()
+import { ref, reactive, getCurrentInstance } from 'vue';
+import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+const { proxy } = getCurrentInstance();
+const route = useRoute();
+const formCode = route.query?.formCode ?? '';
+const hasChooseApprove = route.query?.hasChooseApprove??'false';
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
@@ -70,38 +59,47 @@ let props = defineProps({
         default: true,
     }
 });
-
+  
 const ruleFormRef = ref(null)
-let accountTypeOptions = [{
-    "label": "腾讯云",
-    "value": 1
-}, {
-    "label": "百度云",
-    "value": 2
-}, {
-    "label": "阿里云",
-    "value": 3
-}];
+ 
 /**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
-    accountType: props.previewData?.accountType ?? '',
-    remark: props.previewData?.remark ?? ''
+    RefundType:1,
+    RefundUserName: props.previewData?.refundUserName??'',
+    RefundDate: props.previewData?.refundDate??'',
+    RefundMoney: props.previewData?.refundMoney??'',
+    remark:props.previewData?.remark??''
 })
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
         required: true,
         message: '请输入备注说明',
-        trigger: 'blur'
+        trigger: ['blur', 'change'],
     }],
-    accountType: [{
+    RefundUserName: [{
         required: true,
-        message: '请选择账户类型',
-        trigger: 'change'
+        message: '请输入报销人姓名',
+        trigger: ['blur', 'change'],
     }],
-};
+    RefundDate: [{
+        required: true,
+        message: '请选择报销时间',
+        trigger: ['blur', 'change'],
+    }],
+    RefundMoney: [{
+        required: true,
+        message: '请输入报销金额',
+        trigger: ['blur', 'change'],
+    }],
+}; 
 /**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
 
+/**自选审批人 */
+const chooseApprovers = (data) => {
+    form.approversList = data.approvers; 
+    form.approversValid = data.nodeVaild;
+}
 const getFromData = () => {
     return new Promise((resolve, reject) => {
         try {
@@ -111,7 +109,6 @@ const getFromData = () => {
         }
     });
 }
-
 const handleSubmit = () => {
     handleValidate().then((isValid) => {
         if (isValid) {
@@ -119,11 +116,19 @@ const handleSubmit = () => {
         }
     });
 }
-
-const handleValidate = () => {
+const handleValidate = () => {  
     return proxy.$refs['ruleFormRef'].validate((valid) => {
         if (!valid) {
-            return false;
+            return Promise.reject(false);
+        }  
+        else if(hasChooseApprove == 'true'){    
+            if (!form.approversValid || form.approversValid == false) {  
+                proxy.$modal.msgError('请选择自选审批人'); 
+                return Promise.reject(false);
+            }  
+        }
+        else{
+            return Promise.resolve(true);
         }
     });
 }
@@ -136,36 +141,14 @@ defineExpose({
 .disableClss {
     pointer-events: none;
 }
-
 .form-container {
     background: white !important;
     padding: 30px;
-    max-width: 750px;
-    min-height: 95%;
+    max-width:750px;
+    min-height:  58vh;
     left: 0;
     bottom: 0;
     right: 0;
     margin: auto;
-} 
-.optional_approver_title {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    display: inline-block;
-    padding: 5px;
-    width: 700px;
-    font-weight: 500;
-    background-color: var(--el-border-color);
-}
-
-.optional_approver_content {
-    padding: 20px 20px 0;
-    border-bottom: 1px solid #f2f2f2;
-    min-height: 260px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    border: 1px solid var(--el-border-color);
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    width: 700px;
 }
 </style>
