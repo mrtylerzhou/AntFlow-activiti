@@ -24,7 +24,7 @@
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
-                        <span class="iconfont"></span>
+                        <svg-icon icon-class="addbtn" class="iconfont"/>  
                     </button>
                 </template>
             </el-popover>
@@ -141,7 +141,7 @@ const addType = (type)=> {
             margin-bottom: 5px;
             background: #fff;
             border: 1px solid #e2e2e2;
-            border-radius: 50%;
+            border-radius: 10%;
             transition: all .3s cubic-bezier(.645, .045, .355, 1);
             .iconfont {
                 margin-top: 13px;

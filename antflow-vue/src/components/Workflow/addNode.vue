@@ -30,7 +30,7 @@
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
-                        <span class="iconfont"></span>
+                        <svg-icon icon-class="addbtn" class="iconfont"/>  
                     </button>
                 </template>
             </el-popover>
@@ -70,20 +70,7 @@ const addType = (type)=> {
 }
 </script>
 <style scoped lang="scss">  
-@import "@/assets/styles/flow/workflow.scss";
-.el-icon {
-    --color: inherit;
-    align-items: center;
-    display: inline-flex;
-    height: 1em;
-    justify-content: center;
-    line-height: 1em;
-    position: relative;
-    width: 1em;
-    fill: currentColor;
-    color: var(--color);
-    font-size: inherit;
-}
+@import "@/assets/styles/flow/workflow.scss"; 
 .add-node-btn-box {
     width: 240px;
     display: -webkit-inline-box;
@@ -152,7 +139,7 @@ const addType = (type)=> {
         cursor: pointer;
         text-align: center;
         flex: 1;
-        color: #191f25!important;
+        color: #191f25 !important;
         .item-wrapper {
             user-select: none;
             display: inline-block;
@@ -161,7 +148,7 @@ const addType = (type)=> {
             margin-bottom: 5px;
             background: #fff;
             border: 1px solid #e2e2e2;
-            border-radius: 50%;
+            border-radius: 10%;
             transition: all .3s cubic-bezier(.645, .045, .355, 1);
             .iconfont {
                 margin-top: 13px;
