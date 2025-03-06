@@ -43,7 +43,7 @@ export class NodeUtils {
       lfFieldControlVOs: [],
       buttons: {
         startPage: [1],
-        approvalPage: [3, 4],
+        approvalPage: [3, 4,18,21],
         viewPage: [0],
       },
       nodeApproveList: [],
@@ -164,7 +164,7 @@ export class NodeUtils {
           params: null,
           buttons: {
             startPage: [],
-            approvalPage: [2],
+            approvalPage: [],
             viewPage: null,
           },
           templateVos: null,
@@ -255,7 +255,7 @@ export class NodeUtils {
       },
       buttons: {
         startPage: [1],
-        approvalPage: [3, 4],
+        approvalPage:[3, 4,18,21],
         viewPage: [0]
       },
       error: true,
