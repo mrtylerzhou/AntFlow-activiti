@@ -128,21 +128,21 @@ export const bizFormMaps = new Map([
 /**审批按钮颜色显示 */
 export let approveButtonColor = {
   0: 'info',
-  1: 'primary',//提交
-  2: 'primary',//同意
+  1: 'primary',//
+  2: 'primary',//
   3: 'primary',//同意
   4: 'danger',//拒绝
-  5: 'danger',//作废
-  6: 'danger',//终止
+  5: 'danger',//
+  6: 'danger',//
   7: 'primary',//
-  8: 'danger',//打回修改
+  8: 'danger',//
   10: 'warning',//承办
-  13: 'primary',//添加审批人
-  18: 'warning',//加批
-  19: 'success',//加批
-  99: 'success',//处理中
+  13: 'primary',//
+  18: 'warning',//打回修改
+  19: 'success',//加批 
   21: 'primary',//转办
   23: 'warning',//驳回
+  99: 'success',//处理中
   100: 'info'
 };
   
