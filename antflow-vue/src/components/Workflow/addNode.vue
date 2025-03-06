@@ -5,28 +5,25 @@
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item approver" @click="addType(4)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="approve" class="iconfont"/>  
                         </div>
                         <p>审批人</p>
                     </a>
                     <a class="add-node-popover-item approver" @click="addType(7)">
-                        <div class="item-wrapper" style="padding-top: 15px;">
-                            <span style="color:#c45656;">
-                                <svg width="50" height="50"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-                                    <path fill="currentColor" d="m679.872 348.8-301.76 188.608a127.808 127.808 0 0 1 5.12 52.16l279.936 104.96a128 128 0 1 1-22.464 59.904l-279.872-104.96a128 128 0 1 1-16.64-166.272l301.696-188.608a128 128 0 1 1 33.92 54.272z"></path></svg>
-                            </span>
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="parallel-approve" class="iconfont"/>                       
                         </div>
                         <p>并行审批</p>
                     </a>
                     <a class="add-node-popover-item notifier" @click="addType(6)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="copy-user" class="iconfont"/>  
                         </div>
                         <p>抄送人</p>
                     </a>
                     <a class="add-node-popover-item condition" @click="addType(2)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="condition" class="iconfont"/>  
                         </div>
                         <p>条件分支</p>
                     </a>
@@ -159,16 +156,17 @@ const addType = (type)=> {
         .item-wrapper {
             user-select: none;
             display: inline-block;
-            width: 80px;
-            height: 80px;
+            width: 65px;
+            height: 65px;
             margin-bottom: 5px;
             background: #fff;
             border: 1px solid #e2e2e2;
             border-radius: 50%;
             transition: all .3s cubic-bezier(.645, .045, .355, 1);
             .iconfont {
+                margin-top: 13px;
                 font-size: 35px;
-                line-height: 80px
+                line-height: 65px
             }
         }
         &.approver{

@@ -12,7 +12,8 @@
             <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
                 <template v-else>
-                    <span class="iconfont">{{nodeConfig.nodeType == 4?'':''}}</span>
+                    <svg-icon icon-class="approve" class="iconfont" v-if="nodeConfig.nodeType == 4"/>  
+                    <svg-icon icon-class="copy-user"  class="iconfont" v-if="nodeConfig.nodeType == 6"/>   
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
                         :placeholder="defaultText" />
@@ -88,7 +89,7 @@
                         <div class="condition-node-box">
                             <div class="node-wrap-box" :class="isTried && item.error ? 'error active' : ''">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
-                                    <span class="iconfont"></span>
+                                    <svg-icon icon-class="approve" class="iconfont"/>  
                                     <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
                                         @blur="blurEvent(index)" 
                                         @focus="$event.currentTarget.select()" 
