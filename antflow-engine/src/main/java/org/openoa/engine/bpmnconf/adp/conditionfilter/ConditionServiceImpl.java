@@ -2,11 +2,15 @@ package org.openoa.engine.bpmnconf.adp.conditionfilter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.interf.ConditionService;
+import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.engine.bpmnconf.confentity.BpmDynamicConditionChoosen;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.engine.bpmnconf.mapper.BpmDynamicConditionChoosenMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,9 +23,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class ConditionServiceImpl implements ConditionService {
+    @Autowired
+    private BpmDynamicConditionChoosenMapper dynamicConditionChoosenMapper;
 
     @Override
-    public boolean checkMatchCondition(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean checkMatchCondition(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+        String nodeId=bpmnNodeVo.getNodeId();
         List<Integer> conditionParamTypeList = conditionsConf.getConditionParamTypes();
         if (CollectionUtils.isEmpty(conditionParamTypeList)) {
             return false;
@@ -49,6 +56,12 @@ public class ConditionServiceImpl implements ConditionService {
                 break;
             }
 
+        }
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsDynamicCondition())){
+            BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
+            dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
+            dynamicConditionChoosen.setNodeId(bpmnNodeVo.getNodeId());
+            dynamicConditionChoosenMapper.insert(dynamicConditionChoosen);
         }
         return result;
     }

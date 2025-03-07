@@ -1,6 +1,7 @@
 package org.openoa.base.interf;
 
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
+import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 
 /**
@@ -16,5 +17,5 @@ public interface ConditionService {
      * @param bpmnStartConditionsVo
      * @return
      */
-    boolean checkMatchCondition(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo);
+    boolean checkMatchCondition(BpmnNodeVo nodeVo, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo);
 }

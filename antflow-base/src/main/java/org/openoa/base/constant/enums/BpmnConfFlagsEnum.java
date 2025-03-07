@@ -12,6 +12,7 @@ public enum BpmnConfFlagsEnum {
     NOTHING(0,"不存在"),
     HAS_NODE_LABELS(0b1,"包含节点标签(任意节点包含标签)"),
     HAS_STARTUSER_CHOOSE_MODULES(0b10,"是否包含发起人自选模块"),
+    HAS_DYNAMIC_CONDITIONS(0b100,"是否包含动态条件"),
     ;
     private final Integer code;
     private final String desc;

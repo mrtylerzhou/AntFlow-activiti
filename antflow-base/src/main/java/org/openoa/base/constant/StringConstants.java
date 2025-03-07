@@ -37,4 +37,5 @@ public class StringConstants {
 
     public static final String TENANT_USER="tenantUser";
     public static final String LOWCODE_FLOW_DICT_TYPE="lowcodeflow";
+    public static final String DYNAMIC_CONDITION_NODE="dynamiccondition";
 }

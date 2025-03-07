@@ -123,6 +123,13 @@ public class BpmnNode {
 
     @TableField("node_froms")
     private String nodeFroms;
+    //0 for no and 1 for yes
+    @TableField("is_dynamicCondition")
+    private Boolean isDynamicCondition;
+
+
+
+
     @TableField(exist = false)
     private Integer isOutSideProcess;
     @TableField(exist = false)

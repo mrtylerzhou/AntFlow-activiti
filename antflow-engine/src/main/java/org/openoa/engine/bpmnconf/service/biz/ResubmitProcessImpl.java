@@ -1,12 +1,16 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
+import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
@@ -20,6 +24,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -74,13 +79,23 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             }
         }
         TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer;
-
-        if(1==2){
-            if(tasks.size()==1){
-                bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(),bpmBusinessProcess,vo, this::executeTaskCompletion);
-                return;
-            }
+        String formKey = task.getFormKey();
+        //实际上存的是label信息
+        if(!StringUtils.isEmpty(formKey)){
+            NodeExtraInfoDTO extraInfoDTO= JSON.parseObject(formKey,NodeExtraInfoDTO.class);
+            List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
+           if(!CollectionUtils.isEmpty(nodeLabelVOS)){
+               for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
+                   if(StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())){
+                       if(tasks.size()==1){//只有当前节点到最后一个审批人了才执行迁移
+                           bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(),bpmBusinessProcess,vo, this::executeTaskCompletion);
+                           return;
+                       }
+                   }
+               }
+           }
         }
+
         if (ObjectUtils.isEmpty(task)) {
             throw new JiMuBizException("当前流程代办已审批！");
         }
