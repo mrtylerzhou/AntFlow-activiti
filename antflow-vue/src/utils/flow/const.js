@@ -53,7 +53,7 @@ export class approvalButtonConf {
   static undertake = 10;//承办
   static terminate = 12;//终止
   static forward = 15;//转发
-  static repulse = 18;//打回
+  static repulse = 18;//退回
   static addApproval = 19;//加批
   static transfer = 21;//转办  
 
@@ -63,13 +63,19 @@ export class approvalButtonConf {
     2: '重新提交',//
     3: '同意',//拒绝
     4: '不同意',//拒绝 
+    6: '退回上节点修改',//退回上节点修改
     8: '打印',//打印
     10: '承办',//承办
+    11: '变更处理人',//变更处理人
     12: '终止',//终止
+    13: '添加审批人',//添加审批人
     15: '转发',//转发
-    18: '打回修改',//打回
+    18: '退回',//退回修改
     19: '加批',//加批 
+    20: '加批',//扫码帮助 
     21: '转办',//转办
+    22: '自选审批人',//自选审批人
+    23: '退回任意节点',//退回任意节点
   }
 }
 /**
@@ -90,8 +96,8 @@ export let approvalPageButtons = [
   },
   { 
     value: approvalButtonConf.repulse, 
-    label: '打回',
-    description: '打回到发起人，发起人重新提交后，流程重新开始'
+    label: '退回',
+    description: '退回到(发起人或任意节点)，流程重新开始或者回到当前审批人'
   },
 
   { 
@@ -138,7 +144,7 @@ export let approveButtonColor = {
   8: 'danger',//
   10: 'warning',//承办
   13: 'primary',//
-  18: 'warning',//打回修改
+  18: 'warning',//退回
   19: 'success',//加批 
   21: 'primary',//转办
   23: 'warning',//驳回

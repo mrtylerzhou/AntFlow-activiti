@@ -51,7 +51,7 @@
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
-               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)">审批</el-button>
+               <el-button link type="primary" icon="Edit" @click="handleApproveBtn(scope.row)">审批</el-button>
             </template>
          </el-table-column>
       </el-table>
@@ -109,7 +109,7 @@ function handleQuery() {
    getList();
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {  
+function handleApproveBtn(row) {  
    const params = {
       formCode: row.processKey,
       processNumber: row.processNumber,

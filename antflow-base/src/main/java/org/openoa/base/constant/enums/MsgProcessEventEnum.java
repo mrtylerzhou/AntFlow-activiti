@@ -20,7 +20,7 @@ public enum MsgProcessEventEnum {
     PROCESS_CHANGE_DEALER(11, "变更处理人"),
     PROCESS_ABORT(12, "终止"),
     PROCESS_FORWARD(15, "转发"),
-    BUTTON_BACK_TO_MODIFY(18, "打回修改"),
+    BUTTON_BACK_TO_MODIFY(18, "退回修改"),
     PROCESS_JP(19, "加批"),
     PROCESS_FINISH(20, "流程完成"),
     HISTORY_SYNC(100, "同步历史数据"),

@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Optional;
 
 /**
- * 流程提交,同意,撤销,打回,完成等触发发送消息事件
+ * 流程提交,同意,撤销,退回,完成等触发发送消息事件
  *
  * @Author tylerzhou
  * Date on 2021/8/19
