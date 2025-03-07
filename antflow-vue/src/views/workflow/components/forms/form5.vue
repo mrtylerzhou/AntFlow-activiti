@@ -67,7 +67,7 @@ const form = reactive({
     RefundType:1,
     RefundUserName: props.previewData?.refundUserName??'',
     RefundDate: props.previewData?.refundDate??'',
-    RefundMoney: props.previewData?.refundMoney??'',
+    RefundMoney: props.previewData?.refundMoney??0,
     remark:props.previewData?.remark??''
 })
 /**表单字段验证，根据实际业务表单修改*/

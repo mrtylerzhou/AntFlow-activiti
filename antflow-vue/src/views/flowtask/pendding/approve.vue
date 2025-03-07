@@ -107,18 +107,20 @@ let approveSubData = reactive({
     lfFields: null, //低代码表单字段
 });
 
-onMounted(async() => { 
-   setPreviewDrawerConfig({
-      formCode: formCode,
-      processNumber: processNumber,
-      taskId: taskId,
-      isOutSideAccess: isOutSideAccess,
-      isLowCodeFlow: isLowCodeFlow,
-   }); 
+onMounted(async () => {
+    setPreviewDrawerConfig({
+        formCode: formCode,
+        processNumber: processNumber,
+        taskId: taskId,
+        isOutSideAccess: isOutSideAccess,
+        isLowCodeFlow: isLowCodeFlow,
+    });
     approvalButtons.value = approvalPageButtons.filter((c) => {
         return c.type == 'default';
     });
-    await preview();
+    await nextTick(async () => {
+        await preview();
+    });
 });
 watch(approvalButtons, (val) => {
     reSubmit.value = val.some(c => c.value == approvalButtonConf.resubmit);
@@ -162,11 +164,11 @@ const clickApproveSubmit = async (btnType) => {
 const approveSubmit = async (param) => { 
     approveSubData.approvalComment = param.remark;
     approveSubData.operationType = handleClickType.value;
-    if (handleClickType.value == approvalButtonConf.resubmit) {
-        await componentFormRef.value.handleValidate().then(async (isValid) => {
+    if (handleClickType.value == approvalButtonConf.resubmit) { 
+        await componentFormRef.value.handleValidate().then(async (isValid) => { 
             if (isValid) {
-                await componentFormRef.value.getFromData().then((data) => {
-                    if (isLowCodeFlow && isLowCodeFlow == true) {
+                await componentFormRef.value.getFromData().then((data) => { 
+                    if (isLowCodeFlow && isLowCodeFlow == 'true') {
                         approveSubData.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);

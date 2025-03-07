@@ -132,7 +132,7 @@ let statusColor = {
     "PURCHASE_WMA": 'bought',
     "UCARREFUEl_WMA": 'trip',
     "LFTEST_WMA": 'zhushou',
-    "BXSP_WMA": 'time_00',
+    "BXSP_WMA": 'seal',
 };
 
 onMounted(async () => {
