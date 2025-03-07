@@ -330,15 +330,14 @@ const approveProcess = async (param) => {
     width: 100%;
     background: #f5f5f7;
     position: relative;
-    padding: 10px 50px;
+    padding: 10px;
     box-sizing: border-box;
     height: calc(74vh) !important;
     overflow: auto;
 }
 
 .my-col {
-    border: 1px solid #ebeef5;
-    padding: 10px 20px 10px 20px;
+    border: 1px solid #ebeef5; 
     margin: 5px;
     background-color: #fff;
 }
