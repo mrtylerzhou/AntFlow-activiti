@@ -103,16 +103,17 @@
 }
 
 .el-dialog__header {
-  padding: 0 0 0 20px !important;
-  line-height: 50px !important;
-  height: 50px !important;
+  padding: 0 0 0 15px !important;
+  line-height: 45px !important;
+  height: 45px !important;
   background: #fff !important;
   border-bottom: 1px solid #f0f0f0 !important;
   margin-bottom: 16px !important;
+  font-weight: 900;
 }
 
 .el-dialog__header .el-dialog__title {
   font-size: 16px !important;
-  line-height: 50px !important;
+  line-height: 45px !important;
   color: #333333 !important;
 }
