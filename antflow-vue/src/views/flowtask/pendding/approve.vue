@@ -331,7 +331,7 @@ const approveProcess = async (param) => {
     position: relative;
     padding: 10px;
     box-sizing: border-box;
-    height: calc(74vh) !important;
+    height: calc(78vh) !important;
     overflow: auto;
 }
 

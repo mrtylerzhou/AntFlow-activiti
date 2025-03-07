@@ -174,7 +174,7 @@ defineExpose({
     background: white !important;
     padding: 30px;
     max-width: 750px;
-    min-height: 78vh;
+    min-height: 70vh;
     left: 0;
     bottom: 0;
     right: 0;
