@@ -70,9 +70,9 @@
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" v-if="chooseNodeVisible">
-                        <el-form-item label="审批节点" prop="backToNodeKey"> 
-                            <el-input v-model="repulseForm.backToNodeKey" placeholder="请选择审批节点">
+                    <el-col :span="19" v-if="chooseNodeVisible">
+                        <el-form-item label="审批节点" prop="backToNodeKey">  
+                            <el-input v-model="repulseForm.backToNodeKey" placeholder="请选择审批节点"> 
                                 <template #append>
                                     <el-button @click="handleChooseNode">
                                         <el-icon><Search /></el-icon>
@@ -92,8 +92,8 @@
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button type="primary" @click="clickSubmit(repulseFormRef)">确 定</el-button>
                     <el-button @click="openVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="clickSubmit(repulseFormRef)">确 定</el-button>       
                 </div>
             </template>
         </el-dialog>
@@ -172,16 +172,4 @@ const clickSubmit = (repulseFormRef) => {
 const handleChooseNode = () => {
     openFlowNodeVisible.value = true;
 }
-</script>
-<style scoped>
-.zoom{ 
-    position: absolute !important;
-    top: 80px !important;
-    right: 30px !important;
-}
-.el-dialog {
-    width: 820px !important;
-    border: 1px solid #DDE1E5 !important;
-    border-radius: 3px !important;
-}
-</style>
+</script> 

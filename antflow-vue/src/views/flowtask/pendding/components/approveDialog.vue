@@ -16,8 +16,8 @@
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button type="primary" @click="clickSubmit(approveFormRef)">确 定</el-button>
-                    <el-button @click="emits('update:visible', false)">取 消</el-button>
+                    <el-button @click="openVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="clickSubmit(approveFormRef)">确 定</el-button>  
                 </div>
             </template>
         </el-dialog>
@@ -61,8 +61,8 @@ const clickSubmit = (approveFormRef) => {
     if (!approveFormRef) return;
     approveFormRef.validate(async (valid) => {
         if (valid) {
-            openVisible = false; 
-            emits('clickConfirm', approveForm)
+            emits('update:visible', false);
+            emits('clickConfirm', approveForm);
         }
     });
 }

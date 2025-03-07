@@ -21,8 +21,8 @@
       <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" :multiple="isMultiple" v-model:checkedData="form.selectList" @change="saveUserDialog" />
     </div>
     <template #footer> 
-      <el-button type="primary" @click="saveDialog">确 定</el-button>
       <el-button @click="$emit('update:visible', false)">取 消</el-button>
+      <el-button type="primary" @click="saveDialog">确 定</el-button>
     </template>
   </el-dialog>
 </template>
