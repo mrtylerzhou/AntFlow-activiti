@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
@@ -35,15 +36,11 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmVerifyInfoServiceImpl bpmVerifyInfoService;
 
     public void migrateAndJumpToCurrent(String currentTaskDefKey, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
-        BusinessDataVo submitVo=new BusinessDataVo();
-        submitVo.setAccountType(1);
-        submitVo.setFormCode("DSFZH_WMA");
-        submitVo.setOperationType(1);
-        submitVo.setIsLowCodeFlow(0);
-        submitVo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        submitVo.setProcessNumber(bpmBusinessProcess.getBusinessNumber());
+
+        BusinessDataVo submitVo= SerializationUtils.clone(vo);
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
+        submitVo.setBpmnCode(bpmBusinessProcess.getVersion());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
