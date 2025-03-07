@@ -4,24 +4,24 @@
       <span class="task-title-text">流程详情预览</span>
     </div>
     <div>
-      <el-tabs v-model="tabPosition" class="demo-tabs">
+      <el-tabs v-model="activeTab" class="demo-tabs">
         <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
         <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
         <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
       </el-tabs>
-      <div v-if="tabPosition === 'flowForm'" class="item">
+      <div v-if="activeTab === 'flowForm'" class="item">
         <div v-if="processConfig">
           <BasicSetting ref="basicSetting" :basicData="processConfig"/>
         </div>
       </div>
-      <div v-if="tabPosition === 'formRender'" class="item">
+      <div v-if="activeTab === 'formRender'" class="item">
         <div v-if="processConfig" class="component">
           <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
                      :isPreview="true">
           </component>
         </div>
       </div>
-      <div v-if="tabPosition === 'flow'" class="item">
+      <div v-if="activeTab === 'flow'" class="item">
         <div v-if="nodeConfig" class="flow">
           <Process ref="processDesign" :processData="nodeConfig"/>
         </div>
@@ -41,7 +41,7 @@ import {loadDIYComponent, loadLFComponent} from '@/views/workflow/components/com
 
 const {proxy} = getCurrentInstance();
 const route = useRoute();
-const tabPosition = ref('flowForm')
+const activeTab = ref('flowForm')
 let processConfig = ref(null)
 let lfFormDataConfig = ref(null)
 let nodeConfig = ref(null)

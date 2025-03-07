@@ -4,27 +4,7 @@
       <el-row style="padding-left: -5px;padding-right: -5px;">
         <el-col :span="24" class="my-col">
           <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="my-form">
-            <el-form-item label="选择人员" prop="selectList">
-              <!-- <el-select v-if="isMultiple"  v-model="form.selectList" :multiple="true" :multiple-limit="2" filterable remote
-                reserve-keyword placeholder="请输入关键字查询" remote-show-suffix :remote-method="remoteMethod"
-                :loading="loading" style="width: 240px">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                  <span style="float: left">{{ item.label }}</span>
-                  <span style="float: right; font-size: 13px;">
-                    {{ item.value }}
-                  </span>
-                </el-option>
-              </el-select>
-              <el-select v-if="!isMultiple" v-model="form.selectList"  :multiple-limit="2" filterable remote
-                reserve-keyword placeholder="请输入关键字查询" remote-show-suffix :remote-method="remoteMethod"
-                :loading="loading" style="width: 240px">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                  <span style="float: left">{{ item.label }}</span>
-                  <span style="float: right; font-size: 13px;">
-                    {{ item.value }}
-                  </span>
-                </el-option>
-              </el-select> -->
+            <el-form-item label="选择人员" prop="selectList"> 
               <TagUserSelect v-model:value="form.selectList">
                   <template #append> 
                       <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
@@ -40,9 +20,9 @@
       </el-row>
       <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" :multiple="isMultiple" v-model:checkedData="form.selectList" @change="saveUserDialog" />
     </div>
-    <template #footer>
-      <el-button @click="$emit('update:visible', false)">取 消</el-button>
+    <template #footer> 
       <el-button type="primary" @click="saveDialog">确 定</el-button>
+      <el-button @click="$emit('update:visible', false)">取 消</el-button>
     </template>
   </el-dialog>
 </template>
@@ -72,10 +52,7 @@ let form = ref({
   selectList: [],
   remark: ''
 })
-let list = ref([])
-let options = ref([])
-let loading = ref(false)
-
+let list = ref([]) 
 let userDialogVisible= ref(false); 
 
 let emits = defineEmits(['update:visible', 'change'])
@@ -128,25 +105,7 @@ const getUserList = async () => {
         }
     });
 }
-/**
- * 远程查询人员
- * @param query 
- */
-const remoteMethod = (query) => {
-  if (query) {
-    loading.value = true
-    setTimeout(() => {
-      loading.value = false
-      options.value = list.value.filter((item) => {
-        return item.label.toLowerCase().includes(query.toLowerCase())
-      })
-    }, 200)
-  } else {
-    options.value = list.value.filter((item) => {
-      return item.label.toLowerCase().includes(query.toLowerCase())
-    })
-  }
-}
+
 /**
  * 保存
  */

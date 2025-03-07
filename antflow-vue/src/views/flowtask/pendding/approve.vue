@@ -4,9 +4,9 @@
             <el-tag type="primary">{{ formCode }}</el-tag>
             <el-tag type="success" style="margin-left: 5px;">{{ processNumber }}</el-tag>
         </div>
-        <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
+        <el-tabs v-model="activeName" class="set-tabs">
             <el-tab-pane label="表单信息" name="baseTab">
-                <div class="approve">
+                <div class="approve" v-if="activeName === 'baseTab'">
                     <el-row style="padding-left: -5px;padding-right: -5px;">
                         <el-col :span="24" class="my-col">
                             <div v-for="btn in approvalButtons" style="float: left;">
@@ -31,98 +31,72 @@
                 </div>
             </el-tab-pane>
             <el-tab-pane label="审批记录" name="flowStep">
-                <div v-if="flowStepShow">
+                <div v-if="activeName === 'flowStep'">
                     <FlowStepTable />
                 </div>
             </el-tab-pane>
             <el-tab-pane label="流程预览" name="flowReview">
-                <div v-if="flowReviewShow">
+                <div v-if="activeName === 'flowReview'">
                     <ReviewWarp />
                 </div>
             </el-tab-pane>
-        </el-tabs>
+        </el-tabs> 
+        <users-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle" @change="sureDialogBtn" />
+        <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
+        <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
         <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
-        <employees-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
-            @change="sureDialogBtn" />
-        <!-- 审批对话框 -->
-        <el-dialog :title="approveDialogTitle" v-model="openApproveDialog" width="550px" append-to-body>
-            <el-form :model="approveForm" :rules="rules" ref="approveFormRef" label-width="130px" label-position="top"
-                style="margin: 0 20px;">
-                <el-row>
-                    <el-col :span="24">
-                        <el-form-item label="备注/说明" prop="remark">
-                            <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入审批备注"
-                                :maxlength="100" show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
-                                :style="{ width: '100%' }"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <template #footer>
-                <div class="dialog-footer">
-                    <el-button type="primary" @click="approveSubmit(approveFormRef)">确 定</el-button>
-                    <el-button @click="openApproveDialog = false">取 消</el-button>
-                </div>
-            </template>
-        </el-dialog>
     </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { ElMessageBox } from 'element-plus'
+import { ref, watch } from 'vue';
+import { ElMessageBox } from 'element-plus';
 import cache from '@/plugins/cache';
-import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
-import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
-import employeesDialog from '@/components/Workflow/dialog/usersDialog.vue'
-import { approveButtonColor, approvalPageButtons, approvalButtonConf } from "@/utils/flow/const"
-import { getViewBusinessProcess, processOperation } from "@/api/workflow"
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
-const { proxy } = getCurrentInstance()
+import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
+import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
+import usersDialog from './components/usersDialog.vue';
+import approveDialog from './components/approveDialog.vue';
+import repulseDialog from './components/repulseDialog.vue';
+import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/flow/const';
+import { getViewBusinessProcess, processOperation } from '@/api/workflow';
+import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const route = useRoute();
-const formCode = route.query?.formCode
-const processNumber = route.query?.processNumber
+const { proxy } = getCurrentInstance();
+import { useStore } from '@/store/modules/workflow';
+let store = useStore();
+let { setPreviewDrawerConfig } = store; 
+const formCode = route.query?.formCode;
+const processNumber = route.query?.processNumber;
 const isOutSideAccess = route.query?.isOutSideAccess || false;
 const isLowCodeFlow = route.query?.isLowCodeFlow || false;
-const taskId = route.query?.taskId
-const activeName = ref('baseTab')
+const taskId = route.query?.taskId;
+
+const activeName = ref('baseTab');
+let baseTabShow = ref(true); 
 
 let openApproveDialog = ref(false);
 let approveDialogTitle = ref("审批");
-
-let baseTabShow = ref(true);
-let flowStepShow = ref(false);
-let flowReviewShow = ref(false);
-
+let dialogVisible = ref(false);
+let dialogTitle = ref('');
+let repulseDialogVisible = ref(false);
+ 
 let componentData = ref(null);
 let componentLoaded = ref(false);
 let loadedComponent = ref(null);
 let isPreview = ref(true);
 let reSubmit = ref(false);
 let approvalButtons = ref([]);
-const approveFormRef = ref(null);
-const approveForm = reactive({
-    remark: ''
-});
+ 
 let formData = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
-let dialogVisible = ref(false);
-let dialogTitle = ref('');
+
 let isMultiple = ref(false);//false 转办，true 加批
 
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
-
-let rules = {
-    remark: [{
-        required: true,
-        message: '请输入备注',
-        trigger: 'blur'
-    }]
-};
-
+ 
 let approveSubData = reactive({
     taskId: taskId,
     processNumber: processNumber,
@@ -133,10 +107,18 @@ let approveSubData = reactive({
     lfFields: null, //低代码表单字段
 });
 
-onMounted(() => {
+onMounted(async() => { 
+   setPreviewDrawerConfig({
+      formCode: formCode,
+      processNumber: processNumber,
+      taskId: taskId,
+      isOutSideAccess: isOutSideAccess,
+      isLowCodeFlow: isLowCodeFlow,
+   }); 
     approvalButtons.value = approvalPageButtons.filter((c) => {
         return c.type == 'default';
     });
+    await preview();
 });
 watch(approvalButtons, (val) => {
     reSubmit.value = val.some(c => c.value == approvalButtonConf.resubmit);
@@ -146,7 +128,6 @@ watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
 })
-
 
 /**点击页面审批操作按钮 */
 const clickApproveSubmit = async (btnType) => {
@@ -161,9 +142,11 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.agree:
         case approvalButtonConf.noAgree:
         case approvalButtonConf.resubmit:
-        case approvalButtonConf.repulse:
             openApproveDialog.value = true;
-            approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
+            approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType]; 
+            break;
+        case approvalButtonConf.repulse:
+            repulseDialogVisible.value = true;
             break;
         case approvalButtonConf.undertake:
             approveUndertakeSubmit();
@@ -176,31 +159,29 @@ const clickApproveSubmit = async (btnType) => {
  * @param param 
  * @param type 
  */
-const approveSubmit = async (param) => {
-    if (!param) return;
-    param.validate(async (valid) => {
-        if (valid) {
-            approveSubData.approvalComment = approveForm.remark;
-            approveSubData.operationType = handleClickType.value; 
-            if (handleClickType.value == approvalButtonConf.resubmit) {
-                await componentFormRef.value.handleValidate().then(async (isValid) => {
-                    if (isValid) {
-                        await componentFormRef.value.getFromData().then((data) => {                     
-                            if (isLowCodeFlow && isLowCodeFlow == true) {
-                                approveSubData.lfFields = JSON.parse(data); //低代码表单字段
-                            } else {
-                                let componentFormData = JSON.parse(data);
-                                Object.assign(approveSubData, componentFormData); 
-                            }
-                        })
-                      
+const approveSubmit = async (param) => { 
+    approveSubData.approvalComment = param.remark;
+    approveSubData.operationType = handleClickType.value;
+    if (handleClickType.value == approvalButtonConf.resubmit) {
+        await componentFormRef.value.handleValidate().then(async (isValid) => {
+            if (isValid) {
+                await componentFormRef.value.getFromData().then((data) => {
+                    if (isLowCodeFlow && isLowCodeFlow == true) {
+                        approveSubData.lfFields = JSON.parse(data); //低代码表单字段
+                    } else {
+                        let componentFormData = JSON.parse(data);
+                        Object.assign(approveSubData, componentFormData);
                     }
-                });
-            };
-            //console.log('approveSubData==========', JSON.stringify(approveSubData));
-            await approveProcess(approveSubData);//业务处理
-        }
-    })
+                }); 
+            }
+        });
+    };
+    if (handleClickType.value == approvalButtonConf.repulse) {
+        approveSubData.backToModifyType = param.backToModifyType;
+        approveSubData.backToNodeKey = param.backToNodeKey;
+    }
+    //console.log('approveSubData==========', JSON.stringify(approveSubData));
+    await approveProcess(approveSubData);//业务处理
 }
 /**
  * 承办操作确定
@@ -227,7 +208,7 @@ const approveUndertakeSubmit = async () => {
 /**
  * 表单预览
  */
-const preview = () => {
+const preview =async () => {
     let queryParams = ref({
         formCode: formCode,
         processNumber: processNumber,
@@ -236,10 +217,9 @@ const preview = () => {
         isLowCodeFlow: isLowCodeFlow
     });
     proxy.$modal.loading();
-    getViewBusinessProcess(queryParams.value).then(async (response) => {
+    await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
             if (isOutSideAccess && isOutSideAccess == 'true') {//外部表单接入
-
                 formData.value = response.data.formData;
             }
             else if (isLowCodeFlow && isLowCodeFlow == 'true') {//低代码表单
@@ -304,7 +284,7 @@ const sureDialogBtn = async (data) => {
         data.selectList.unshift({
             id: cache.session.get('userId'),
             name: cache.session.get('userName'),
-        })
+        });
         approveSubData.userInfos = data.selectList;
     } else {
         approveSubData.signUpUsers = data.selectList;
@@ -334,24 +314,7 @@ const approveProcess = async (param) => {
         proxy.$modal.closeLoading();
     }).catch(() => { });
 }
-const handleTabClick = async (tab, event) => {
-    activeName.value = tab.paneName;
-    if (tab.paneName == 'baseTab') {
-        preview();
-        baseTabShow.value = true;
-        flowStepShow.value = false;
-        flowReviewShow.value = false;
-    } else if (tab.paneName == 'flowStep') {
-        baseTabShow.value = false;
-        flowStepShow.value = true;
-        flowReviewShow.value = false;
-    } else if (tab.paneName == 'flowReview') {
-        baseTabShow.value = false;
-        flowStepShow.value = false;
-        flowReviewShow.value = true;
-    }
-};
-handleTabClick({ paneName: "baseTab" });
+ 
 </script>
 <style lang="scss" scoped>
 .component {
@@ -364,7 +327,7 @@ handleTabClick({ paneName: "baseTab" });
 }
 
 .approve {
-    width: 100%; 
+    width: 100%;
     background: #f5f5f7;
     position: relative;
     padding: 10px 50px;
@@ -384,7 +347,8 @@ handleTabClick({ paneName: "baseTab" });
     max-width: 600px;
     min-height: 100px;
     margin: auto;
-} 
+}
+
 .el-timeline {
     --el-timeline-node-size-normal: 25px !important;
     --el-timeline-node-size-large: 25px !important;
