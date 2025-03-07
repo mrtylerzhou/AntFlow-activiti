@@ -40,8 +40,9 @@
                     <ReviewWarp />
                 </div>
             </el-tab-pane>
-        </el-tabs> 
-        <users-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle" @change="sureDialogBtn" />
+        </el-tabs>
+        <users-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
+            @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
         <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
@@ -64,7 +65,7 @@ const route = useRoute();
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
-let { setPreviewDrawerConfig } = store; 
+let { setPreviewDrawerConfig } = store;
 const formCode = route.query?.formCode;
 const processNumber = route.query?.processNumber;
 const isOutSideAccess = route.query?.isOutSideAccess || false;
@@ -72,21 +73,21 @@ const isLowCodeFlow = route.query?.isLowCodeFlow || false;
 const taskId = route.query?.taskId;
 
 const activeName = ref('baseTab');
-let baseTabShow = ref(true); 
+let baseTabShow = ref(true);
 
 let openApproveDialog = ref(false);
 let approveDialogTitle = ref("审批");
 let dialogVisible = ref(false);
 let dialogTitle = ref('');
 let repulseDialogVisible = ref(false);
- 
+
 let componentData = ref(null);
 let componentLoaded = ref(false);
 let loadedComponent = ref(null);
 let isPreview = ref(true);
 let reSubmit = ref(false);
 let approvalButtons = ref([]);
- 
+
 let formData = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
@@ -96,7 +97,7 @@ let isMultiple = ref(false);//false 转办，true 加批
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
- 
+
 let approveSubData = reactive({
     taskId: taskId,
     processNumber: processNumber,
@@ -107,6 +108,10 @@ let approveSubData = reactive({
     lfFields: null, //低代码表单字段
 });
 
+watch(handleClickType, (val) => {
+    dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
+    isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
+});
 onMounted(async () => {
     setPreviewDrawerConfig({
         formCode: formCode,
@@ -118,20 +123,11 @@ onMounted(async () => {
     approvalButtons.value = approvalPageButtons.filter((c) => {
         return c.type == 'default';
     });
-    await nextTick(async () => {
-        await preview();
-    });
+    await preview();
 });
-watch(approvalButtons, (val) => {
-    reSubmit.value = val.some(c => c.value == approvalButtonConf.resubmit);
-    isPreview.value = !val.some(c => c.value == approvalButtonConf.resubmit);
-})
-watch(handleClickType, (val) => {
-    dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
-    isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
-})
-
-/**点击页面审批操作按钮 */
+/**
+ * 点击页面审批操作按钮
+ */
 const clickApproveSubmit = async (btnType) => {
     //console.log('btnType========',JSON.stringify(btnType))     
     handleClickType.value = btnType;
@@ -145,7 +141,7 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.noAgree:
         case approvalButtonConf.resubmit:
             openApproveDialog.value = true;
-            approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType]; 
+            approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
             break;
         case approvalButtonConf.repulse:
             repulseDialogVisible.value = true;
@@ -155,26 +151,25 @@ const clickApproveSubmit = async (btnType) => {
             break;
     }
 }
-
 /**
  * 审批操作确定
  * @param param 
  * @param type 
  */
-const approveSubmit = async (param) => { 
+const approveSubmit = async (param) => {
     approveSubData.approvalComment = param.remark;
     approveSubData.operationType = handleClickType.value;
-    if (handleClickType.value == approvalButtonConf.resubmit) { 
-        await componentFormRef.value.handleValidate().then(async (isValid) => { 
+    if (handleClickType.value == approvalButtonConf.resubmit) {
+        await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
-                await componentFormRef.value.getFromData().then((data) => { 
+                await componentFormRef.value.getFromData().then((data) => {
                     if (isLowCodeFlow && isLowCodeFlow == 'true') {
                         approveSubData.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
                         Object.assign(approveSubData, componentFormData);
                     }
-                }); 
+                });
             }
         });
     };
@@ -210,7 +205,7 @@ const approveUndertakeSubmit = async () => {
 /**
  * 表单预览
  */
-const preview =async () => {
+const preview = async () => {
     let queryParams = ref({
         formCode: formCode,
         processNumber: processNumber,
@@ -221,6 +216,18 @@ const preview =async () => {
     proxy.$modal.loading();
     await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
+            //显示审批按钮
+            let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
+            if (Array.isArray(auditButtons) && auditButtons.length > 0) {
+                approvalButtons.value = auditButtons.map(c => {
+                    return { value: c.buttonType, label: c.name };
+                }).sort(function (a, b) {
+                    return a.value - b.value
+                });
+                approvalButtons.value = uniqueByMap(approvalButtons.value);
+            }
+            reSubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
+            isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             if (isOutSideAccess && isOutSideAccess == 'true') {//外部表单接入
                 formData.value = response.data.formData;
             }
@@ -231,18 +238,9 @@ const preview =async () => {
                 loadedComponent.value = await loadLFComponent();
                 componentLoaded.value = true;
             } else {//自定义表单
-                loadedComponent.value = await loadDIYComponent(formCode);
                 componentData.value = response.data;
+                loadedComponent.value = await loadDIYComponent(formCode); 
                 componentLoaded.value = true;
-            }
-            let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
-            if (Array.isArray(auditButtons) && auditButtons.length > 0) {
-                approvalButtons.value = auditButtons.map(c => {
-                    return { value: c.buttonType, label: c.name };
-                }).sort(function (a, b) {
-                    return a.value - b.value
-                });
-                approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
         } else {
             proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
@@ -315,8 +313,7 @@ const approveProcess = async (param) => {
         }
         proxy.$modal.closeLoading();
     }).catch(() => { });
-}
- 
+} 
 </script>
 <style lang="scss" scoped>
 .component {
@@ -339,7 +336,7 @@ const approveProcess = async (param) => {
 }
 
 .my-col {
-    border: 1px solid #ebeef5; 
+    border: 1px solid #ebeef5;
     margin: 5px;
     background-color: #fff;
 }
@@ -365,5 +362,5 @@ const approveProcess = async (param) => {
 
 .el-timeline-item__wrapper {
     top: 0px !important;
-}
+} 
 </style>
