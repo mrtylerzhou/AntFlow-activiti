@@ -49,10 +49,15 @@
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="审批人" prop="sender">
-                            <el-select v-model="form.sender" filterable placeholder="请选择当前审批人" style="width: 220px">
+                            <TagUserSelect v-model:value="userSelectedList"  style="width: 220px">
+                                <template #append> 
+                                    <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
+                                </template>
+                            </TagUserSelect>   
+                            <!-- <el-select v-model="form.sender" filterable placeholder="请选择当前审批人" style="width: 220px">
                                 <el-option v-for="item in userOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
-                            </el-select>
+                            </el-select> -->
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -123,17 +128,19 @@
                     <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
-        </el-table>
-
+        </el-table> 
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
+        <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" v-model:checkedData="userSelectedList" @change="saveUserDialog" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow";
-import { approveList } from '@/utils/flow/const'
+import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
+import selectUser from '@/components/BizSelects/userListDialog.vue';
+import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow.js";
+import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false);
@@ -145,7 +152,16 @@ let formCodeOptions = ref([]);
 let userOptions = ref([]);
 const tabPosition = ref('oneflow');
 const data = reactive({
-    form: {},
+    form: {
+        id: undefined,
+        powerId: undefined,
+        sender: undefined,
+        name: undefined,
+        receiverId: undefined,
+        receiverName: undefined,
+        beginTime: undefined,
+        endTime: undefined,
+    },
     pageDto: {
         page: 1,
         pageSize: 10
@@ -159,6 +175,9 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
 
+let userDialogVisible= ref(false);
+let userSelectedList = ref([]);//{id:1,name:'张三'},{id:2,name:'李四'}
+
 const disabledBeginDate = (time) => {
     return time.getTime() > new Date(form?.endTime ?? "");
 }
@@ -170,7 +189,15 @@ watch(() => form.value.receiverId, (newVal, oldVal) => {
     if (newVal) {
         form.value.receiverName = getReceiverLabel(newVal);
     }
+    //console.log('form.sender========',JSON.stringify(form.value));
 })
+
+watch(() => userSelectedList.value, (newVal) => {
+    if (Array.from(newVal) && newVal.length > 0) {
+        form.value.sender = newVal[0].id;
+    }  
+})
+   
 const getReceiverLabel = (value) => {
     let obj = userOptions.value.filter(item => item.value == value)[0];
     return obj.label;
@@ -178,7 +205,7 @@ const getReceiverLabel = (value) => {
 
 /** 重置操作表单 */
 function reset() {
-    form.value = {
+   form.value = {
         id: undefined,
         powerId: undefined,
         sender: undefined,
@@ -192,8 +219,8 @@ function reset() {
 };
 onMounted(async () => {
     await initFromCode();
-    getList();
-    getUserList();
+    await getList();
+    await getUserList();
 })
 const initFromCode = async () => {
     await getDIYFromCodeData().then((res) => {
@@ -202,20 +229,23 @@ const initFromCode = async () => {
         }
     });
 }
-const getUserList = () => {
-    const keys = Object.keys(approveList);
-    for (let t of keys) {
-        userOptions.value.push({
-            label: approveList[t],
-            value: t
-        });
-    }
+const getUserList = async () => { 
+    await getUsers().then(res => {
+        if (res.code == 200) {
+            userOptions.value = res.data.map(item => {
+                return {
+                    label: item.name,
+                    value: item.id
+                }
+            });
+        }
+    });
 }
 
 /** 查询岗位列表 */
-function getList() {
+async function getList () {
     loading.value = true;
-    getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
+    await getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
         entrustList.value = response.data;
         total.value = response.pagination.totalCount;
         loading.value = false;
@@ -297,4 +327,8 @@ function handleDelete(row) {
     proxy.$modal.msgError("演示环境不允许删除操作！");
 }
 
+
+const saveUserDialog = (data) => {
+  userSelectedList.value = data;  
+}
 </script>

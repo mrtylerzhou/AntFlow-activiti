@@ -17,7 +17,7 @@ public enum EventTypeEnum {
     PROCESS_CONSENT(4, "同意操作", true, ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode(), 4, Lists.newArrayList()),
     PROCESS_DISAGREE(5, "不同意操作", true, ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE.getCode(), 4, Collections.singletonList(APPLICANT.getCode())),
     PROCESS_ADDAPPROVER(6, "加批操作", true, ProcessOperationEnum.BUTTON_TYPE_JP.getCode(), 4, Lists.newArrayList()),
-    PROCESS_BACK_TO_MODIFY(7, "打回修改操作", true, ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY.getCode(), 4, Lists.newArrayList()),
+    PROCESS_BACK_TO_MODIFY(7, "退回修改操作", true, ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY.getCode(), 4, Lists.newArrayList()),
     PROCESS_FORWARD(8, "转发操作", false, ProcessOperationEnum.BUTTON_TYPE_FORWARD.getCode(), 0, Collections.singletonList(FORWARDED_APPROVER.getCode())),
     PROCESS_END(9, "流程结束", false, 0, 0, Collections.singletonList(APPLICANT.getCode())),
     ;

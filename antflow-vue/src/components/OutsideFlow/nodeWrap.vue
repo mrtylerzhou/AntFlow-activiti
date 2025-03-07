@@ -10,7 +10,8 @@
         <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
           <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
           <template v-else>
-            <span class="iconfont">{{nodeConfig.nodeType == 4?'':''}}</span>
+            <svg-icon icon-class="approve" class="iconfont" v-if="nodeConfig.nodeType == 4"/>  
+            <svg-icon icon-class="copy-user"  class="iconfont" v-if="nodeConfig.nodeType == 6"/>   
             <input
               v-if="isInput"
               type="text"

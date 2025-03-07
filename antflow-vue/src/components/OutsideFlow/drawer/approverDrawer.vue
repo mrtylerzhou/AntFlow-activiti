@@ -200,7 +200,7 @@ const handleCheckedButtonsChange = (val) => {
         approverConfig.value.isSignUp = 0;
     }
 }
-/**选择审批页面 打回后是否回到审批人 */
+/**选择审批页面 退回后是否回到审批人 */
 const handleAfterSignUpWay = (val) => {
     const isTure = approverConfig.value.hasOwnProperty("property");
     if (isTure) {

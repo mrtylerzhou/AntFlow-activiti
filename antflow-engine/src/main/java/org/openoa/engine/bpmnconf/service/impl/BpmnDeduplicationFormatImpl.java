@@ -166,6 +166,9 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
      */
     private void singlePlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo, List<String> approverList) {
 
+        if(bpmnNodeVo.isDeduplicationExclude()){
+            return;
+        }
         //to check whether it has already been deduplicated,if so,then skip to process it
         if (bpmnNodeVo.getParams().getIsNodeDeduplication() == 1) {
             return;
@@ -194,6 +197,9 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
     private void multiPlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo, List<String> approverList, Boolean flag) {
 
 
+        if(bpmnNodeVo.isDeduplicationExclude()){
+            return;
+        }
         if (bpmnNodeVo.getParams().getIsNodeDeduplication() == 1) {
             return;
         }

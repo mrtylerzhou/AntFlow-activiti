@@ -62,6 +62,17 @@
         group by  u.id
         order by  u.id
     </select>
+
+    <select id="selectUserPageList" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select  u.id, u.user_name as name from t_user u
+        <where>
+            <if test="vo.description !=null and vo.description !=''">
+                u.user_name like CONCAT("%",#{vo.description},"%")
+            </if>
+        </where>
+        order by  u.id desc
+    </select>
+
     <select id="getLeaderByLeventDepartment" resultType="org.openoa.base.vo.BaseIdTranStruVo">
         <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getLeaderByLeventDepartment">
 

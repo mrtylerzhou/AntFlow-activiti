@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
@@ -57,6 +58,8 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     private BpmVariableMapper bpmVariableMapper;
     @Autowired
     private BpmnNodeMapper bpmnNodeMapper;
+    @Autowired
+    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
 
     public void addVerifyInfo(String businessId, String remark, Integer businessType, String taskName, Integer verifyStatuss) {
         BpmVerifyInfo verifyInfo = new BpmVerifyInfo();
@@ -246,10 +249,23 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         String elementId = tasks.get(0).getElementId();
         List<String> bpmnNodeIds =  bpmVariableMapper.getNodeIdsByeElementId(processNumber,elementId);
 
+
+
+        if(CollectionUtils.isEmpty(bpmnNodeIds)){
+            HistoricTaskInstance prevTask = processConstants.getPrevTask(elementId, procInstId);
+            if(prevTask!=null){
+                String taskDefinitionKey = prevTask.getTaskDefinitionKey();
+               bpmnNodeIds = bpmVariableSignUpService.getBaseMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
+
+            }
+        }
+        if(CollectionUtils.isEmpty(bpmnNodeIds)){
+            return "";
+        }
         QueryWrapper<BpmnNode> wrapper = new QueryWrapper<>();
         wrapper.in("id", bpmnNodeIds);
-        List<BpmnNode> bpmnNodes = bpmnNodeMapper.selectList(wrapper);
-        if (bpmnNodes.isEmpty()){
+        List<BpmnNode> bpmnNodes =bpmnNodeMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(bpmnNodes)){
             return "";
         }
         List<String> nodeCollect = bpmnNodes

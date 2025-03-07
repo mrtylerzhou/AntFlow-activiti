@@ -4,8 +4,9 @@
  * 通用js方法封装处理
  * Copyright (c) 2024 Antflow
  */
-export const isArrayEmpty = (data) => Array.isArray(data) ? data.length === 0 : false;
 export const isObjEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
+export const isArrayEmpty = (data) => Array.isArray(data) ? data.length === 0 : isObjEmpty(data);
+
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {

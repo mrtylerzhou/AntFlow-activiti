@@ -119,12 +119,16 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         ProcessorFactory.executePreWriteProcessors(bpmnConfVo);
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
+        boolean hasStartUserChooseModules=false;
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
                 throw new JiMuBizException("apporver node has no property,can not be saved！");
             }
 
+            if(NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty())){
+                hasStartUserChooseModules=true;
+            }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
 
@@ -178,6 +182,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
         }
         ProcessorFactory.executePostProcessors(bpmnConfVo);
+        Integer extraFlags = bpmnConfVo.getExtraFlags();
+        if(hasStartUserChooseModules){
+            Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.getCode());
+            bpmnConfVo.setExtraFlags(binariedOr);
+        }
         if (bpmnConfVo.getExtraFlags()!=null) {
             BpmnConf postConf=new BpmnConf();
             postConf.setId(confId);

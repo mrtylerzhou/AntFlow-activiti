@@ -12,7 +12,7 @@ CREATE TABLE if not exists `t_bpmn_conf`
     `is_out_side_process` int(11)                      DEFAULT '0' COMMENT 'is it a third party process',
     `is_lowcode_flow` tinyint default 0 null comment '是否是低代码审批流0,否,1是',
     `business_party_id`   int(11)                      DEFAULT NULL COMMENT 'its belong to business party',
-     `extra_flags`         int                                           null,
+    `extra_flags`         int                                           null,
     `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`              tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:in use,1:delete',
     `create_user`         varchar(32)                  DEFAULT '' COMMENT 'as its name says',
@@ -42,6 +42,7 @@ CREATE TABLE if not exists `t_bpmn_node`
     `node_display_name` varchar(50)                  DEFAULT '' COMMENT 'node display name shown in web or app',
     `annotation`        varchar(255)                 DEFAULT NULL COMMENT 'annotation on this conf',
     `is_deduplication`  int(11)             NOT NULL DEFAULT '0' COMMENT 'whether this node should be deduplicated,0:No,1:Yes',
+    `deduplicationExclude` tinyint             default 0                 null comment '0 for no,default value,and 1 for yes',
     `is_sign_up`        int(11)             NOT NULL DEFAULT '0' COMMENT 'whether this node can be sign up,0:No,1:Yes',
     `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`            tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:No,1:yes',
@@ -1424,6 +1425,25 @@ CREATE TABLE `t_biz_ucar_refuel` (
 `update_time` datetime DEFAULT NULL COMMENT '更新日期',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
+
+-- ----------------------------
+-- Table structure for t_biz_refund
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_refund`;
+CREATE TABLE `t_biz_refund`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `refund_user_id` int(11) NOT NULL,
+  `refund_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `refund_type` int(11) NOT NULL default 1,
+  `refund_date` timestamp NOT NULL,
+  `refund_money` double NOT NULL default 0,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` timestamp default current_timestamp,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 create table t_bpmn_conf_lf_formdata
 (

@@ -132,7 +132,7 @@ let statusColor = {
     "PURCHASE_WMA": 'bought',
     "UCARREFUEl_WMA": 'trip',
     "LFTEST_WMA": 'zhushou',
-    "BXSP_WMA": 'time_00',
+    "BXSP_WMA": 'seal',
 };
 
 onMounted(async () => {
@@ -152,6 +152,7 @@ async  function getDIYFormCodeList(){
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
+                    hasChooseApprove:c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
                     IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
@@ -171,6 +172,7 @@ async  function getLFFormCodePageList(){
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
+                    hasChooseApprove:c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
                     IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
@@ -183,7 +185,8 @@ async  function getLFFormCodePageList(){
 function handleStart(row) {
     const params = {
         formType: row.formType,
-        formCode: row.formCode
+        formCode: row.formCode,
+        hasChooseApprove: row.hasChooseApprove
     };
     const obj = { path: '/bizentry/index', query: params };
     proxy.$tab.openPage(obj);

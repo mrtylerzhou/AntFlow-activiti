@@ -6,7 +6,7 @@
 -->
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : 'active')">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>

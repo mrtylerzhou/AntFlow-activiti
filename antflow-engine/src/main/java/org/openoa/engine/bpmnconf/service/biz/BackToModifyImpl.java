@@ -124,7 +124,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 backToNodeKey=variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 break;
             default:
-                throw new JiMuBizException("未支持的打回类型!");
+                throw new JiMuBizException("未支持的退回类型!");
         }
         //save verify info
         verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
