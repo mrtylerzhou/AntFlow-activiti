@@ -449,7 +449,7 @@ public class BpmnConfCommonServiceImpl {
             while (true) {
                 if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())) {
                     BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nowNode, nodeList);
-                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList);
+                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList,new HashSet<>());
 
                     nowNode = map.get(aggregationNode.getParams().getNodeTo());
                     lastNode=aggregationNode;
@@ -483,7 +483,9 @@ public class BpmnConfCommonServiceImpl {
 
     }
 
-    private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode,BpmnNodeVo itsPrevNode, BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results) {
+    private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode, BpmnNodeVo itsPrevNode,
+                                                 BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results,
+                                                 Set<String> alreadyProcessNodeIds) {
 
         String aggregationNodeNodeId = itsAggregationNode.getNodeId();
         List<String> nodeTos = outerMostParallelGatewayNode.getNodeTo();
@@ -491,34 +493,41 @@ public class BpmnConfCommonServiceImpl {
         itsAggregationNode.setNodeFrom(outerMostParallelGatewayNode.getNodeId());
         results.add(outerMostParallelGatewayNode);
         results.add(itsAggregationNode);
+        alreadyProcessNodeIds.add(outerMostParallelGatewayNode.getNodeId());
+        alreadyProcessNodeIds.add(itsAggregationNode.getNodeId());
         for (String nodeTo : nodeTos) {
-            BpmnNodeVo prevNode=outerMostParallelGatewayNode;
+            BpmnNodeVo prevNode = outerMostParallelGatewayNode;
             BpmnNodeVo currentNodeVo = mapNodes.get(nodeTo);
 
-            for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo!=null&&!nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
+            for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo != null && !nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
+                if(alreadyProcessNodeIds.contains(nodeVo.getNodeId())){
+                    continue;
+                }
+
                 if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nodeVo.getNodeType())) {
                     BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nodeVo, mapNodes.values());
-                    treatParallelGateWayRecursively(nodeVo, aggregationNode,prevNode, mapNodes, results);
+                    treatParallelGateWayRecursively(nodeVo, prevNode,aggregationNode, mapNodes, results, alreadyProcessNodeIds);
                 }
 
-
-                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nodeVo.getParams().getParamType())) {
-                        nodeVo.getParams().setAssigneeList(Collections.singletonList(nodeVo.getParams().getAssignee()));
-                    }
-                    nodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(nodeVo.getNodeProperty()));
-                    if (StringUtils.isBlank(nodeVo.getParams().getNodeTo())) {
-                        nodeVo.setNodeFrom(prevNode.getNodeId());
-                        results.add(nodeVo);
-                        break;
-                    }
-                    if (results.size() > mapNodes.values().size()) {
-                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
-                        throw new JiMuBizException("999", "nodeId数据错误");
-                    }
+                if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nodeVo.getParams().getParamType())) {
+                    nodeVo.getParams().setAssigneeList(Collections.singletonList(nodeVo.getParams().getAssignee()));
+                }
+                nodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(nodeVo.getNodeProperty()));
+                if (StringUtils.isBlank(nodeVo.getParams().getNodeTo())) {
                     nodeVo.setNodeFrom(prevNode.getNodeId());
                     results.add(nodeVo);
-                    prevNode = nodeVo;
+                    alreadyProcessNodeIds.add(nodeVo.getNodeId());
+                    break;
                 }
+                if (results.size() > mapNodes.values().size()) {
+                    log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
+                    throw new JiMuBizException("999", "nodeId数据错误");
+                }
+                nodeVo.setNodeFrom(prevNode.getNodeId());
+                results.add(nodeVo);
+                alreadyProcessNodeIds.add(nodeVo.getNodeId());
+                prevNode = nodeVo;
+            }
         }
     }
 
