@@ -498,11 +498,31 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
 
         Map<Long, List<BpmnNodeLabel>> finalBpmnNodeLabelsVoMap = bpmnNodeLabelsVoMap;
-        return bpmnNodeList
-                .stream()
-                .map(o -> getBpmnNodeVo(o, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap,bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap))
-                .collect(Collectors.toList());
+        List<BpmnNodeVo> bpmnNodeVoList = new ArrayList<>(bpmnNodeList.size());
+        for (BpmnNode bpmnNode : bpmnNodeList) {
+            BpmnNodeVo bpmnNodeVo = getBpmnNodeVo(bpmnNode, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
+                    bpmnTemplateVoMap, bpmnApproveRemindVoMap, bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap);
+            bpmnNodeVoList.add(bpmnNodeVo);
+            //动态条件节点是网关节点,找到网关节点的上一级节点,然后打上标签,流程执行过程中如果有相应标签,则执行动态条件判断
+            if(Boolean.TRUE.equals(bpmnNodeVo.getIsDynamicCondition())){
+                BpmnNode prevNode= bpmnNodeList.stream().
+                        filter(o ->bpmnNodeVo.getNodeFrom().equals(o.getNodeId())).findFirst().orElse(null);
+
+                if(prevNode!=null){
+                    List<BpmnNodeLabelVO> labelList = prevNode.getLabelList();
+                    if(CollectionUtils.isEmpty(labelList)){
+                        labelList = new ArrayList<>();
+                        labelList.add(NodeLabelConstants.dynamicCondition);
+                        prevNode.setLabelList(labelList);
+                    }else{
+                        prevNode.getLabelList().add(NodeLabelConstants.dynamicCondition);
+                    }
+                }else{
+                    log.warn("can not find prev node for node:%s");
+                }
+            }
+        }
+        return bpmnNodeVoList;
 
     }
 

@@ -27,7 +27,8 @@ public class ConditionServiceImpl implements ConditionService {
     private BpmDynamicConditionChoosenMapper dynamicConditionChoosenMapper;
 
     @Override
-    public boolean checkMatchCondition(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean checkMatchCondition(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfBaseVo conditionsConf
+            , BpmnStartConditionsVo bpmnStartConditionsVo,boolean isDynamicConditionGateway) {
         String nodeId=bpmnNodeVo.getNodeId();
         List<Integer> conditionParamTypeList = conditionsConf.getConditionParamTypes();
         if (CollectionUtils.isEmpty(conditionParamTypeList)) {
@@ -57,7 +58,10 @@ public class ConditionServiceImpl implements ConditionService {
             }
 
         }
-        if(Boolean.TRUE.equals(bpmnNodeVo.getIsDynamicCondition())){
+        if(Boolean.TRUE.equals(bpmnStartConditionsVo.getIsMigration())){
+
+        }
+        if(isDynamicConditionGateway){
             BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
             dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
             dynamicConditionChoosen.setNodeId(bpmnNodeVo.getNodeId());

@@ -34,7 +34,7 @@ import static org.openoa.base.constant.enums.ProcessSubmitStateEnum.PROCESS_SIGN
 import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 
 /**
- *@Author JimuOffice
+ * @Author JimuOffice
  * @Description submit/approve
  * @Date 2022-04-28 15:55
  * @Param
@@ -74,40 +74,43 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())).findFirst().orElse(null);
         } else {
             task = tasks.get(0);
-            if(StringUtils.isEmpty(task.getAssigneeName())){
+            if (StringUtils.isEmpty(task.getAssigneeName())) {
                 task.setAssigneeName(SecurityUtils.getLogInEmpNameSafe());
             }
         }
-        TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer;
+        if (ObjectUtils.isEmpty(task)) {
+            throw new JiMuBizException("当前流程代办已审批或不存在！");
+        }
         String formKey = task.getFormKey();
         //实际上存的是label信息
-        if(!StringUtils.isEmpty(formKey)){
-            NodeExtraInfoDTO extraInfoDTO= JSON.parseObject(formKey,NodeExtraInfoDTO.class);
+        if (!StringUtils.isEmpty(formKey)) {
+            NodeExtraInfoDTO extraInfoDTO = JSON.parseObject(formKey, NodeExtraInfoDTO.class);
             List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
-           if(!CollectionUtils.isEmpty(nodeLabelVOS)){
-               for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
-                   if(StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())){
-                       if(tasks.size()==1){//只有当前节点到最后一个审批人了才执行迁移
-                           bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(),bpmBusinessProcess,vo, this::executeTaskCompletion);
-                           return;
-                       }
-                   }
-               }
-           }
+            if (!CollectionUtils.isEmpty(nodeLabelVOS)) {
+                for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
+                    if (StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())) {
+                        if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
+                            bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(), bpmBusinessProcess, vo, this::executeTaskCompletion);
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
         if (ObjectUtils.isEmpty(task)) {
             throw new JiMuBizException("当前流程代办已审批！");
         }
 
-        executeTaskCompletion(vo,task,bpmBusinessProcess);
+        executeTaskCompletion(vo, task, bpmBusinessProcess);
     }
-    private void executeTaskCompletion(BusinessDataVo vo,Task task,BpmBusinessProcess bpmBusinessProcess){
+
+    private void executeTaskCompletion(BusinessDataVo vo, Task task, BpmBusinessProcess bpmBusinessProcess) {
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         BusinessDataVo businessDataVo = vo;
-        if(!vo.getIsOutSideAccessProc()){
-            businessDataVo= formFactory.getFormAdaptor(vo).consentData(vo);
+        if (!vo.getIsOutSideAccessProc()) {
+            businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         }
 
         //save process verify info
@@ -124,7 +127,6 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 .verifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "同意" : vo.getApprovalComment())
                 .processCode(vo.getProcessNumber())
                 .build();
-
 
 
         //if process digest is not empty then update process digest
@@ -157,7 +159,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP
         );
-        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  BUTTON_TYPE_RESUBMIT,
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), BUTTON_TYPE_RESUBMIT,
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP);
     }

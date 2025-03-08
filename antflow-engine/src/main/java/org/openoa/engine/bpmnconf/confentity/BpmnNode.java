@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * bpmn node
@@ -136,5 +138,6 @@ public class BpmnNode {
     private Integer isLowCodeFlow;
     @TableField(exist = false)
     private Integer extraFlags;
-
+    @TableField(exist = false)
+    private List<BpmnNodeLabelVO> labelList;
 }

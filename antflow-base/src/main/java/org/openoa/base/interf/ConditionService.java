@@ -17,5 +17,5 @@ public interface ConditionService {
      * @param bpmnStartConditionsVo
      * @return
      */
-    boolean checkMatchCondition(BpmnNodeVo nodeVo, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo);
+    boolean checkMatchCondition(BpmnNodeVo nodeVo, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,boolean isDynamicConditionGateway);
 }

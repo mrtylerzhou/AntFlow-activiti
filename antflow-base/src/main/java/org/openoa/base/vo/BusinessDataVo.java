@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.MsgProcessEventEnum;
 import org.openoa.base.dto.PageDto;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessDataVo extends PageDto {
+public class BusinessDataVo extends PageDto implements Serializable {
     /**
      * process number
      */
