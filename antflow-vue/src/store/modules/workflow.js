@@ -16,6 +16,7 @@
     previewDrawer: false,
     instanceViewConfig1: {},
     lowCodeFormField: {},
+    approveChooseFlowNode: {},
   }),
   actions: {
     setUserId(payload) {
@@ -60,5 +61,8 @@
     setLowCodeFormField(payload) {
       this.lowCodeFormField = payload
     }, 
+    setApproveChooseFlowNodeConfig(payload) {
+      this.approveChooseFlowNode = payload
+    }
   }
 })

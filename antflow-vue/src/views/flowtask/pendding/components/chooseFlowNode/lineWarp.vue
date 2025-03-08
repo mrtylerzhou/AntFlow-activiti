@@ -1,12 +1,12 @@
 <!--
- * @Date: 2022-09-21 14:41:53
+ * @Date: 2025-03-08 15:20
  * @LastEditors: LDH 574427343@qq.com
- * @LastEditTime: 2023-05-24 15:20:24
- * @FilePath: /src/components/Workflow/Preview/lineWarp.vue
+ * @LastEditTime: 2025-03-08 15:20
+ * @FilePath: /src/views/flowtask/pendding/components/chooseFlowNode/lineWarp.vue
 -->
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node not-allowed' : '')" :data-node-key="nodeConfig.nodeId" @click="handleChecked(nodeConfig)">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
@@ -25,7 +25,7 @@
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
                         <div class="condition-node-box">
-                            <div class="node-wrap-box">
+                            <div class="node-wrap-box" :data-node-key="item.nodeId" @click="handleChecked(item)">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
                                     <span class="iconfont"></span>
                                     <span class="editable-title">{{ item.nodeName }}</span>
@@ -56,14 +56,47 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup> 
-import { bgColors } from '@/utils/flow/const' 
+import { watch } from 'vue';
+import { bgColors } from '@/utils/flow/const'  
+import { useStore } from '@/store/modules/workflow';   
+let store = useStore();
+let { setApproveChooseFlowNodeConfig } = store;
 let props = defineProps({
     nodeConfig: {
         type: Object,
         default: () => ({}),
     }
-});  
+});   
+
+watch(() => props.nodeConfig, (val) => { 
+    //console.log("props.nodeConfig======val========",JSON.stringify(val)); 
+    const elementList = document.getElementsByClassName("node-wrap-box"); 
+    for(let element of  elementList) {
+        element.classList.remove("checked-node"); 
+    }
+},{deep: true, immediate: true});
+
+const handleChecked = (item)=>{ 
+    const elementList = document.getElementsByClassName("node-wrap-box");  
+    for(let element of  elementList) { 
+        const customNodeKey= element.getAttribute('data-node-key');   
+        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) { 
+            console.log("customNodeKey",customNodeKey)
+            element.classList.toggle("checked-node");
+        }else{
+            element.classList.remove("checked-node");
+        }
+    } 
+    setApproveChooseFlowNodeConfig({ 
+        visible: false,
+        nodeId: item.nodeId, 
+        nodeName: item.nodeName, 
+        nodeDisplayName:  item.nodeDisplayName, 
+    });
+}
+ 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
+// active
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/workflow.scss"; 
@@ -82,11 +115,11 @@ let props = defineProps({
 .line-through {
     text-decoration: line-through
 }
-.testtt { 
-    width: 2px; 
-    border-style: solid;
-    border-width: 8px 6px 4px;
-    border-color: #cacaca transparent transparent;
-    background: #f5f5f7;
+.checked-node {   
+    border: 5px solid #13ce66;    
+}
+
+.not-allowed{
+    cursor: not-allowed;
 }
 </style>

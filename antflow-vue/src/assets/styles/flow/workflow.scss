@@ -877,7 +877,8 @@
 
  .start-node.node-wrap-box .content .text {
      display: block;
-     white-space: nowrap
+     white-space: nowrap;
+     cursor: not-allowed;
  }
 
  .node-wrap-box:before {
@@ -896,7 +897,8 @@
  }
 
  .node-wrap-box.start-node:before {
-     content: none
+     content: none;
+     cursor: not-allowed;
  }
 
  .top-left-cover-line {

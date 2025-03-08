@@ -45,7 +45,7 @@
                                 </el-radio-button>
                                 <el-radio-button value="4">
                                     任意节点
-                                    <el-popover placement="top-start" title="【下一个节点】" :width="200"
+                                    <el-popover placement="top-start" title="【回到下一节点】" :width="200"
                                         :visible="openVisible && tipsVisible4" effect="dark"
                                         content="退回历史任意审批节点,提交后回到下一个节点">
                                         <template #reference>
@@ -106,7 +106,10 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
+import ReviewWarp from './chooseFlowNode/reviewWarp.vue';
+import { useStore } from '@/store/modules/workflow';   
+let store = useStore();
+let { setApproveChooseFlowNodeConfig } = store;
 let props = defineProps({
     visible: {
         type: Boolean,
@@ -114,7 +117,18 @@ let props = defineProps({
     }
 });
 const emits = defineEmits(['update:visible', 'clickConfirm']);
-let openFlowNodeVisible = ref(false);
+//let openFlowNodeVisible = ref(false);
+ 
+let openFlowNodeVisible = computed({
+    get() {
+        return store.approveChooseFlowNode.visible
+    },
+    set(val) {
+        console.log('store.approveChooseFlowNode====', JSON.stringify(store.approveChooseFlowNode))
+        repulseForm.backToNodeKey = store.approveChooseFlowNode.nodeId;
+    }
+})
+
 let openVisible = computed({
     get() {
         return props.visible
@@ -169,7 +183,13 @@ const clickSubmit = (repulseFormRef) => {
     });
 } 
 
-const handleChooseNode = () => {
-    openFlowNodeVisible.value = true;
+const handleChooseNode = () => { 
+    setApproveChooseFlowNodeConfig({
+        visible: true,
+        nodeId: '',
+        nodeName: '',
+        nodeDisplayName: '' 
+    });
 }
+
 </script> 
