@@ -80,12 +80,22 @@ onMounted(() => {
         if(customNodeKey == props.nodeConfig.currentNodeId){
             element.classList.toggle("not-allowed"); 
             element.classList.toggle("active"); 
+            continue;
         } 
     }
 }); 
 
 const handleChecked = (item)=>{  
     const elementList = document.getElementsByClassName("node-wrap-box");  
+    if(props.nodeConfig.afterNodeIds.indexOf(item.nodeId) >-1){ 
+            return;
+    }
+    if(props.nodeConfig.currentNodeId == item.nodeId){ 
+            return;
+    }
+    if('Gb2' == item.nodeId){ 
+        return;
+    } 
     for(let element of  elementList) {  
         const customNodeKey= element.getAttribute('data-node-key');    
         if(element.classList.contains('not-allowed')) {   
@@ -95,7 +105,7 @@ const handleChecked = (item)=>{
             element.classList.toggle("checked-node");
         }else{
             element.classList.remove("checked-node");
-            return;
+            continue;
         }
     } 
     setApproveChooseFlowNodeConfig({ 
