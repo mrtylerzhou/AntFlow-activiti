@@ -35,6 +35,7 @@ export class FormatUtils {
   static createNewNode(node) { 
     if (isEmpty(node)) return null;
     let newNode = {
+      Id: node.id,
       nodeId: node.nodeId,
       nodeType: node.nodeType,
       nodeName: node.nodeName,
