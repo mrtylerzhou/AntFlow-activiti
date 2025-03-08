@@ -71,14 +71,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="19" v-if="chooseNodeVisible">
-                        <el-form-item label="审批节点" prop="backToNodeKey">  
-                            <el-input v-model="repulseForm.backToNodeKey" placeholder="请选择审批节点"> 
-                                <template #append>
-                                    <el-button @click="handleChooseNode">
-                                        <el-icon><Search /></el-icon>
-                                    </el-button>
+                        <el-form-item label="审批节点" prop="backToNodeKey">    
+                            <TagFlowNodeSelect v-model:value="repulseForm.backToNodeKey" :flowNode="checkedFlowNode">
+                                <template #append> 
+                                    <el-button class="append-add" type="default" icon="Search" @click="handleChooseNode" />
                                 </template>
-                            </el-input>
+                            </TagFlowNodeSelect>   
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -107,6 +105,7 @@
 <script setup>
 import { ref } from 'vue';
 import ReviewWarp from './chooseFlowNode/reviewWarp.vue';
+import TagFlowNodeSelect from './TagFlowNodeSelect/index.vue';
 import { useStore } from '@/store/modules/workflow';   
 let store = useStore();
 let { setApproveChooseFlowNodeConfig } = store;
@@ -117,15 +116,15 @@ let props = defineProps({
     }
 });
 const emits = defineEmits(['update:visible', 'clickConfirm']);
-//let openFlowNodeVisible = ref(false);
+let checkedFlowNode = ref(null);
  
 let openFlowNodeVisible = computed({
     get() {
         return store.approveChooseFlowNode.visible
     },
-    set(val) {
-        console.log('store.approveChooseFlowNode====', JSON.stringify(store.approveChooseFlowNode))
+    set() { 
         repulseForm.backToNodeKey = store.approveChooseFlowNode.nodeId;
+        checkedFlowNode.value = store.approveChooseFlowNode;
     }
 })
 
@@ -133,7 +132,7 @@ let openVisible = computed({
     get() {
         return props.visible
     },
-    set(val) {
+    set(val) { 
         emits('update:visible', val)
     }
 })

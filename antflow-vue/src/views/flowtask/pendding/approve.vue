@@ -181,7 +181,7 @@ const approveSubmit = async (param) => {
         approveSubData.backToModifyType = param.backToModifyType;
         approveSubData.backToNodeKey = param.backToNodeKey;
     }
-    //console.log('approveSubData==========', JSON.stringify(approveSubData));
+    console.log('approveSubData==========', JSON.stringify(approveSubData));
     await approveProcess(approveSubData);//业务处理
 }
 /**
@@ -197,14 +197,15 @@ const approveUndertakeSubmit = async () => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        let resData = await processOperation(approveSubData);
-        if (resData.code == 200) {
-            proxy.$modal.msgSuccess("承办成功");
-            handleTabClick({ paneName: "baseTab" });
-        } else {
-            proxy.$modal.msgError("承办失败:" + resData.errMsg);
-        }
-    }).catch(() => { });
+        await processOperation(approveSubData).then((resData) => {
+                if (resData.code == 200) {
+                    proxy.$modal.msgSuccess("承办成功");
+                    handleTabClick({ paneName: "baseTab" });
+                } else {
+                    proxy.$modal.msgError("承办失败:" + resData.errMsg);
+                }
+        })     
+    });
 }
 /**
  * 表单预览
@@ -308,13 +309,14 @@ const approveProcess = async (param) => {
     }).then(async () => {
         dialogVisible.value = false;
         proxy.$modal.loading();
-        let resData = await processOperation(param);
-        if (resData.code == 200) {
-            proxy.$modal.msgSuccess("审批成功");
-            close();
-        } else {
-            proxy.$modal.msgError("审批失败:" + resData.errMsg);
-        }
+        await processOperation(param).then((res) => {
+            if (res.code == 200) {
+                proxy.$modal.msgSuccess("审批成功");
+                close();
+            } else {
+                proxy.$modal.msgError("审批失败:" + res.errMsg);
+            }
+        }); 
         proxy.$modal.closeLoading();
     }).catch(() => { });
 } 

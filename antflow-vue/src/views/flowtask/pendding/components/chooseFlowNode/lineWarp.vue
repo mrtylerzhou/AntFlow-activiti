@@ -68,8 +68,7 @@ let props = defineProps({
     }
 });   
 
-watch(() => props.nodeConfig, (val) => { 
-    //console.log("props.nodeConfig======val========",JSON.stringify(val)); 
+watch(() => props.nodeConfig, (val) => {  
     const elementList = document.getElementsByClassName("node-wrap-box"); 
     for(let element of  elementList) {
         element.classList.remove("checked-node"); 
@@ -80,8 +79,7 @@ const handleChecked = (item)=>{
     const elementList = document.getElementsByClassName("node-wrap-box");  
     for(let element of  elementList) { 
         const customNodeKey= element.getAttribute('data-node-key');   
-        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) { 
-            console.log("customNodeKey",customNodeKey)
+        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) {  
             element.classList.toggle("checked-node");
         }else{
             element.classList.remove("checked-node");
@@ -93,8 +91,7 @@ const handleChecked = (item)=>{
         nodeName: item.nodeName, 
         nodeDisplayName:  item.nodeDisplayName, 
     });
-}
- 
+} 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 // active
 </script>
