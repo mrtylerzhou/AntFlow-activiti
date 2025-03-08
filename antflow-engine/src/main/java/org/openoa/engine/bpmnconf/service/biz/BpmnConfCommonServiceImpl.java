@@ -7,11 +7,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.BpmnUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -25,10 +27,8 @@ import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnDeduplicationFormat;
-import org.openoa.engine.bpmnconf.service.impl.BpmnDeduplicationFormatImpl;
+import org.openoa.engine.bpmnconf.confentity.BpmnNode;
+import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +48,8 @@ public class BpmnConfCommonServiceImpl {
 
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
+    @Autowired
+    private BpmnNodeServiceImpl nodeService;
 
     @Autowired
     private FormFactory formFactory;
@@ -116,7 +118,7 @@ public class BpmnConfCommonServiceImpl {
 
         //to query the process's config information
         BpmnConfVo bpmnConfVo = bpmnConfService.detail(bpmnCode);
-
+        bpmnStartConditions.setPreview(false);
 
         // format process's floating direction,set assignees,assignees deduplication and remove some nodes on conditions
         BpmnConfVo confVo = getBpmnConfVo(bpmnStartConditions, bpmnConfVo);
@@ -387,6 +389,7 @@ public class BpmnConfCommonServiceImpl {
 
         BeanUtils.copyProperties(bpmnStartConditionsExtendVo, bpmnStartConditionsVo, StrUtils.getNullPropertyNames(bpmnStartConditionsExtendVo));
         bpmnStartConditionsVo.setApproversList(dataVo.getApproversList());
+        bpmnStartConditionsVo.setPreview(true);
         BpmnConfVo bpmnConfVo = getBpmnConfVo(bpmnStartConditionsVo, detail);
         PreviewNode previewNode = new PreviewNode();
         previewNode.setBpmnName(detail.getBpmnName());
@@ -399,6 +402,43 @@ public class BpmnConfCommonServiceImpl {
 
         return previewNode;
 
+    }
+    public boolean migrationCheckConditionsChange(BusinessDataVo vo) {
+        BpmnConf bpmnConf = this.bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+                .eq("bpmn_code", vo.getBpmnCode()));
+        if(bpmnConf==null){
+            throw new JiMuBizException("未找到对应的 bpmnConf 记录");
+        }
+        BpmnConfVo bpmnConfVo = new BpmnConfVo();
+        BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
+        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(vo);
+        BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
+        bpmnStartConditionsVo.setPreview(true);
+        bpmnStartConditionsVo.setProcessNum(vo.getProcessNumber());
+        List<BpmnNode> bpmnNodes = nodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
+                .eq("conf_id", bpmnConf.getId())
+                .eq("is_del", 0));
+        // 将查询到的 bpmnNodes 转换为 bpmnNodeVo 列表
+        List<BpmnNodeVo> bpmnNodeVoList = bpmnNodes.stream()
+            .map(bpmnNode -> {
+                BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
+                BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
+                return bpmnNodeVo;
+            })
+            .collect(Collectors.toList());
+        bpmnConfVo.setNodes(bpmnNodeVoList);
+        try {
+            bpmnStartFormatFactory.formatBpmnConf(bpmnConfVo,bpmnStartConditionsVo);
+        }catch (Exception ex){
+            if(ex instanceof JiMuBizException){
+                String code = ((JiMuBizException) ex).getCode();
+                if(StringConstants.CONDITION_CHANGED.equals(code)){
+                    return true;
+                }
+                throw ex;
+            }
+        }
+        return false;
     }
 
     /**

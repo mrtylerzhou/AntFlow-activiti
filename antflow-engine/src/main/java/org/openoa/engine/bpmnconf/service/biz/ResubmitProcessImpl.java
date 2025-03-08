@@ -58,6 +58,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
     @Autowired
     private BpmnProcessMigrationServiceImpl bpmnProcessMigrationService;
+    @Autowired
+    private BpmnConfCommonServiceImpl bpmnConfCommonService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -90,8 +92,11 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
                     if (StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())) {
                         if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
-                            bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(), bpmBusinessProcess, vo, this::executeTaskCompletion);
-                            return;
+                            boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);
+                           if(conditionsChanged){
+                               bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(), bpmBusinessProcess, vo, this::executeTaskCompletion);
+                               return;
+                           }
                         }
                     }
                 }
