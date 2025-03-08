@@ -18,9 +18,13 @@
                         </el-col>
                         <el-col :span="24" class="my-col" v-if="baseTabShow">
                             <div v-if="componentLoaded" class="component">
-                                <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
-                                    :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
-                                    :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview" :reSubmit="reSubmit">
+                                <component ref="componentFormRef" :is="loadedComponent" 
+                                    :previewData="componentData"  
+                                    :isPreview="isPreview" 
+                                    :reSubmit="reSubmit"
+                                    :lfFormData="lfFormDataConfig" 
+                                    :lfFieldsData="lfFieldsConfig"
+                                    :lfFieldPerm="lfFieldControlVOs">
                                 </component>
                             </div>
                             <div v-else-if="isOutSideAccess == 'true'">
