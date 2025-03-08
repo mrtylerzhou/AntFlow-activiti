@@ -178,10 +178,10 @@ const approveSubmit = async (param) => {
         });
     };
     if (handleClickType.value == approvalButtonConf.repulse) {
-        approveSubData.backToModifyType = param.backToModifyType;
-        approveSubData.backToNodeKey = param.backToNodeKey;
+        approveSubData.backToModifyType = Number(param.backToModifyType);
+        approveSubData.backToNodeId = param.backToNodeId;
     }
-    console.log('approveSubData==========', JSON.stringify(approveSubData));
+    //console.log('approveSubData==========', JSON.stringify(approveSubData));
     await approveProcess(approveSubData);//业务处理
 }
 /**
@@ -294,8 +294,8 @@ const sureDialogBtn = async (data) => {
     } else {
         approveSubData.signUpUsers = data.selectList;
     }
-    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
-    await approveProcess(approveSubData);
+    console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    //await approveProcess(approveSubData);
 }
 /**
  * 审批

@@ -87,7 +87,7 @@ const handleChecked = (item)=>{
     } 
     setApproveChooseFlowNodeConfig({ 
         visible: false,
-        nodeId: String(item.Id), 
+        nodeId: item.Id, 
         nodeName: item.nodeName, 
         nodeDisplayName:  item.nodeDisplayName, 
     });

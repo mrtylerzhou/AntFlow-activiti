@@ -15,8 +15,8 @@ const { proxy } = getCurrentInstance();
 const emits = defineEmits(['update:value']);
 const props = defineProps({
     value: {
-        type: String,
-        default: ''
+        type: Number,
+        default: undefined
     },
     flowNode: {
         type: Object,
@@ -30,13 +30,13 @@ const onDeleteTag = (tag) => {
     emits('update:value', null);
 };
 watch(() => props.flowNode, newValue => {  
-    if (!proxy.isObjEmpty(newValue) && !proxy.isObjEmpty(newValue.nodeId)) {
+    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) {
         selectValue.value = newValue;
     }
 });
 
 watch(() => props.value, newValue => {
-    if (!proxy.isObjEmpty(newValue) && !proxy.isObjEmpty(newValue.nodeId)) {
+    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) {
         selectValue.value = props.flowNode;
     }else {
         selectValue.value = null;

@@ -8,7 +8,7 @@
                     <el-col :span="24">
                         <el-form-item label="退回类型" prop="backToModifyType">
                             <el-radio-group v-model="repulseForm.backToModifyType">
-                                <el-radio-button value="1">
+                                <el-radio-button value=1>
                                     上一节点
                                     <el-popover placement="top-start" :width="200"
                                         :visible="openVisible && tipsVisible1" effect="dark" content="退回上一个审批节点">
@@ -19,7 +19,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value="2">
+                                <el-radio-button value=2>
                                     发起人
                                     <el-popover placement="top-start" title="【重新流转】" :width="200"
                                         :visible="openVisible && tipsVisible2" effect="dark"
@@ -31,7 +31,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value="3">
+                                <el-radio-button value=3>
                                     发起人
                                     <el-popover placement="top-start" title="【回到当前节点】" :width="200"
                                         :visible="openVisible && tipsVisible3" effect="dark"
@@ -43,7 +43,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value="4">
+                                <el-radio-button value=4>
                                     任意节点
                                     <el-popover placement="top-start" title="【回到下一节点】" :width="200"
                                         :visible="openVisible && tipsVisible4" effect="dark"
@@ -55,7 +55,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value="5">
+                                <el-radio-button value=5>
                                     任意节点
                                     <el-popover placement="top-start" :width="200" title="【回到当前节点】"
                                         :visible="openVisible && tipsVisible5" effect="dark"
@@ -71,8 +71,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="19" v-if="chooseNodeVisible">
-                        <el-form-item label="审批节点" prop="backToNodeKey">    
-                            <TagFlowNodeSelect v-model:value="repulseForm.backToNodeKey" :flowNode="checkedFlowNode">
+                        <el-form-item label="审批节点" prop="backToNodeId">    
+                            <TagFlowNodeSelect v-model:value="repulseForm.backToNodeId" :flowNode="checkedFlowNode">
                                 <template #append> 
                                     <el-button class="append-add" type="default" icon="Search" @click="handleChooseNode" />
                                 </template>
@@ -117,13 +117,18 @@ let props = defineProps({
 });
 const emits = defineEmits(['update:visible', 'clickConfirm']);
 let checkedFlowNode = ref(null);
- 
+const repulseFormRef = ref(null);
+const repulseForm = reactive({
+    backToModifyType: 3,
+    backToNodeId: undefined,
+    remark: ''
+});
 let openFlowNodeVisible = computed({
     get() {
         return store.approveChooseFlowNode.visible
     },
     set() { 
-        repulseForm.backToNodeKey = store.approveChooseFlowNode.nodeId;
+        repulseForm.backToNodeId = store.approveChooseFlowNode.nodeId;
         checkedFlowNode.value = store.approveChooseFlowNode;
     }
 })
@@ -147,12 +152,7 @@ const tipsVisible2 = computed(() => repulseForm.backToModifyType == 2);
 const tipsVisible3 = computed(() => repulseForm.backToModifyType == 3);
 const tipsVisible4 = computed(() => repulseForm.backToModifyType == 4);
 const tipsVisible5 = computed(() => repulseForm.backToModifyType == 5);
-const repulseFormRef = ref(null);
-const repulseForm = reactive({
-    backToModifyType: 3,
-    backToNodeKey: '',
-    remark: ''
-});
+
 
 let rules = {
     backToModifyType: [{
@@ -160,7 +160,7 @@ let rules = {
         message: '请选择退回类型',
         trigger: 'blur'
     }],
-    backToNodeKey: [{
+    backToNodeId: [{
         required: true,
         message: '请选择审批节点',
         trigger: 'blur'
@@ -185,7 +185,7 @@ const clickSubmit = (repulseFormRef) => {
 const handleChooseNode = () => { 
     setApproveChooseFlowNodeConfig({
         visible: true,
-        nodeId: '',
+        nodeId: undefined,
         nodeName: '',
         nodeDisplayName: '' 
     });
