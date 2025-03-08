@@ -179,7 +179,7 @@ const approveSubmit = async (param) => {
     };
     if (handleClickType.value == approvalButtonConf.repulse) {
         approveSubData.backToModifyType = Number(param.backToModifyType);
-        approveSubData.backToNodeId = param.backToNodeId;
+        approveSubData.backToNodeId = Number(param.backToNodeId);
     }
     //console.log('approveSubData==========', JSON.stringify(approveSubData));
     await approveProcess(approveSubData);//业务处理

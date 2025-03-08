@@ -95,10 +95,8 @@
                 </div>
             </template>
         </el-dialog>
-        <el-dialog title="选择审批流程" v-model="openFlowNodeVisible" append-to-body>
-            <div>
-                <ReviewWarp />
-            </div>
+        <el-dialog title="选择审批流程" v-model="openFlowNodeVisible" :before-close="handleFlowNodeClose" append-to-body>
+            <ReviewWarp />
         </el-dialog>
     </div>
 </template>
@@ -120,15 +118,16 @@ let checkedFlowNode = ref(null);
 const repulseFormRef = ref(null);
 const repulseForm = reactive({
     backToModifyType: 3,
-    backToNodeId: undefined,
+    backToNodeId:'',
     remark: ''
 });
+
 let openFlowNodeVisible = computed({
     get() {
         return store.approveChooseFlowNode.visible
     },
     set() { 
-        repulseForm.backToNodeId = store.approveChooseFlowNode.nodeId;
+        repulseForm.backToNodeId = store.approveChooseFlowNode.nodeId; 
         checkedFlowNode.value = store.approveChooseFlowNode;
     }
 })
@@ -184,10 +183,12 @@ const clickSubmit = (repulseFormRef) => {
 
 const handleChooseNode = () => { 
     setApproveChooseFlowNodeConfig({
-        visible: true,
-        nodeId: undefined,
-        nodeName: '',
-        nodeDisplayName: '' 
+        visible: true
+    });
+}
+const handleFlowNodeClose = () => {  
+    setApproveChooseFlowNodeConfig({
+        visible: false
     });
 }
 

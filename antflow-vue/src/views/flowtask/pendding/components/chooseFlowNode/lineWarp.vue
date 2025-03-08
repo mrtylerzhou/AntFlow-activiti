@@ -56,7 +56,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup> 
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 import { bgColors } from '@/utils/flow/const'  
 import { useStore } from '@/store/modules/workflow';   
 let store = useStore();
@@ -75,6 +75,7 @@ onMounted(() => {
         element.classList.remove("checked-node");
         if(props.nodeConfig.afterNodeIds.indexOf(customNodeKey) >-1){
             element.classList.toggle("not-allowed"); 
+            continue;
         }
         if(customNodeKey == props.nodeConfig.currentNodeId){
             element.classList.toggle("not-allowed"); 
@@ -85,12 +86,12 @@ onMounted(() => {
 
 const handleChecked = (item)=>{  
     const elementList = document.getElementsByClassName("node-wrap-box");  
-    for(let element of  elementList) { 
-        const customNodeKey= element.getAttribute('data-node-key');   
+    for(let element of  elementList) {  
+        const customNodeKey= element.getAttribute('data-node-key');    
         if(element.classList.contains('not-allowed')) {   
-            return;
-        }
-        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) {   
+            continue;
+        } 
+        if(customNodeKey == item.nodeId) {   
             element.classList.toggle("checked-node");
         }else{
             element.classList.remove("checked-node");
@@ -99,7 +100,7 @@ const handleChecked = (item)=>{
     } 
     setApproveChooseFlowNodeConfig({ 
         visible: false,
-        nodeId: item.Id, 
+        nodeId: String(item.Id), 
         nodeName: item.nodeName, 
         nodeDisplayName:  item.nodeDisplayName, 
     });
@@ -134,5 +135,7 @@ const handleChecked = (item)=>{
 
 .not-allowed{
     cursor: not-allowed;
+    opacity: 0.9;
+    background-color: #cacaca;
 }
 </style>

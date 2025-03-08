@@ -63,8 +63,7 @@ let props = defineProps({
         default: () => ({}),
     }
 });  
-onMounted(() => {
-    console.log("props.nodeConfig.currentNodeId==============",JSON.stringify(props.nodeConfig.currentNodeId)) 
+onMounted(() => { 
     const elementList = document.getElementsByClassName("node-wrap-box"); 
     for(let element of  elementList) {
         const customNodeKey= element.getAttribute('data-node-key');     

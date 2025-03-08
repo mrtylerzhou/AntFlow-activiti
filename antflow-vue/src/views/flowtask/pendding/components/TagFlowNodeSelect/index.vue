@@ -12,11 +12,11 @@
 <script setup>
 import { ref,watch } from 'vue'; 
 const { proxy } = getCurrentInstance();
-const emits = defineEmits(['update:value']);
+const emits = defineEmits(['update:value','update:flowNode']);
 const props = defineProps({
     value: {
-        type: Number,
-        default: undefined
+        type: String,
+        default: '',
     },
     flowNode: {
         type: Object,
@@ -29,13 +29,13 @@ const selectValue = ref(null);
 const onDeleteTag = (tag) => { 
     emits('update:value', null);
 };
-watch(() => props.flowNode, newValue => {  
-    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) {
+watch(() => props.flowNode, newValue => {   
+    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) { 
         selectValue.value = newValue;
     }
 });
 
-watch(() => props.value, newValue => {
+watch(() => props.value, newValue => { 
     if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) {
         selectValue.value = props.flowNode;
     }else {
