@@ -15,4 +15,6 @@ public class BpmDynamicConditionChoosen {
     private String processNumber;
     @TableField("node_id")
     private String nodeId;
+    @TableField("node_from")
+    private String nodeFrom;
 }

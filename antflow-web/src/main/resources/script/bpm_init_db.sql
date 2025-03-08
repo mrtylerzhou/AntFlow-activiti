@@ -1658,6 +1658,7 @@ create table t_bpm_dynamic_condition_choosen
 	id bigint auto_increment,
 	process_number varchar(255) null comment '流程编号',
 	node_id varchar(100) null comment '被选中条件节点的id',
+	nodeFrom       varchar(100) null
 	constraint t_bpm_dynamic_condition_choosen_pk
 		primary key (id)
 )

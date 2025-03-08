@@ -62,10 +62,16 @@ public class ConditionServiceImpl implements ConditionService {
             }
 
         }
+        //关于默认条件,默认条件不记在表内,
+        //1.如果之前是默认条件,本次不是默认,则迁移预校验会查不到,也能说明条件发生了变化,没问题.如果两次都是默认条件,则说明条件没有变化,没问题
+        //2.如果之前不是默认条件,本次变成了默认条件,库里也会查不到,说明条件发生了变化,没问题
+        //3.如果前后都是默认条件,则库里没记录,会跳过,也没问题
+        //4.如果前后都不是默认条件,则正常逻辑,看看库里前后是否一样,不一样则说明发生了变化
         //迁移预校验
         if(Boolean.TRUE.equals(bpmnStartConditionsVo.getIsMigration())&&Boolean.TRUE.equals(bpmnStartConditionsVo.isPreview()&&isDynamicConditionGateway)){
             LambdaQueryWrapper<BpmDynamicConditionChoosen> qryWrapper = Wrappers.<BpmDynamicConditionChoosen>lambdaQuery()
-                    .eq(BpmDynamicConditionChoosen::getProcessNumber, bpmnStartConditionsVo.getProcessNum());
+                    .eq(BpmDynamicConditionChoosen::getProcessNumber, bpmnStartConditionsVo.getProcessNum())
+                    .eq(BpmDynamicConditionChoosen::getNodeFrom, bpmnNodeVo.getNodeFrom());
             List<BpmDynamicConditionChoosen> conditionChoosens = dynamicConditionChoosenMapper.selectList(qryWrapper);
             if(!CollectionUtils.isEmpty(conditionChoosens)){
                 List<String> nodeIdsEverUsed = conditionChoosens.stream().map(BpmDynamicConditionChoosen::getNodeId).collect(Collectors.toList());
@@ -85,6 +91,7 @@ public class ConditionServiceImpl implements ConditionService {
             BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
             dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
             dynamicConditionChoosen.setNodeId(bpmnNodeVo.getNodeId());
+            dynamicConditionChoosen.setNodeFrom(bpmnNodeVo.getNodeFrom());
             dynamicConditionChoosenMapper.insert(dynamicConditionChoosen);
         }
         return result;
