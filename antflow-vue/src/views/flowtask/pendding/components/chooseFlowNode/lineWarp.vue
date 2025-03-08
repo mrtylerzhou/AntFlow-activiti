@@ -56,7 +56,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup> 
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { bgColors } from '@/utils/flow/const'  
 import { useStore } from '@/store/modules/workflow';   
 let store = useStore();
@@ -67,22 +67,34 @@ let props = defineProps({
         default: () => ({}),
     }
 });   
-
-watch(() => props.nodeConfig, (val) => {  
+  
+onMounted(() => {
     const elementList = document.getElementsByClassName("node-wrap-box"); 
     for(let element of  elementList) {
-        element.classList.remove("checked-node"); 
+        const customNodeKey= element.getAttribute('data-node-key');      
+        element.classList.remove("checked-node");
+        if(props.nodeConfig.afterNodeIds.indexOf(customNodeKey) >-1){
+            element.classList.toggle("not-allowed"); 
+        }
+        if(customNodeKey == props.nodeConfig.currentNodeId){
+            element.classList.toggle("not-allowed"); 
+            element.classList.toggle("active"); 
+        } 
     }
-},{deep: true, immediate: true});
+}); 
 
-const handleChecked = (item)=>{ 
+const handleChecked = (item)=>{  
     const elementList = document.getElementsByClassName("node-wrap-box");  
     for(let element of  elementList) { 
         const customNodeKey= element.getAttribute('data-node-key');   
-        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) {  
+        if(element.classList.contains('not-allowed')) {   
+            return;
+        }
+        if(customNodeKey == item.nodeId && !element.classList.contains('not-allowed')) {   
             element.classList.toggle("checked-node");
         }else{
             element.classList.remove("checked-node");
+            return;
         }
     } 
     setApproveChooseFlowNodeConfig({ 
@@ -114,6 +126,10 @@ const handleChecked = (item)=>{
 }
 .checked-node {   
     border: 5px solid #13ce66;    
+}
+
+.current-node {   
+    border: 5px solid #1890ff;    
 }
 
 .not-allowed{

@@ -56,7 +56,7 @@ const getFlowPreviewList = async (objData) => {
     proxy.$modal.loading();
     let resData = await getFlowPreview(param);
     proxy.$modal.closeLoading();
-    let formatData = FormatUtils.formatSettings(resData.data);
+    let formatData = FormatUtils.formatSettings(resData.data);   
     nodeConfig.value = formatData; 
 }
 onMounted(async () => { 

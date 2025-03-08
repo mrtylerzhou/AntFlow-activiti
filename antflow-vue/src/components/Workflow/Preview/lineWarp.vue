@@ -6,7 +6,7 @@
 -->
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')" :data-node-key="nodeConfig.nodeId">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
@@ -25,7 +25,7 @@
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
                         <div class="condition-node-box">
-                            <div class="node-wrap-box">
+                            <div class="node-wrap-box" :data-node-key="item.nodeId">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
                                     <span class="iconfont"></span>
                                     <span class="editable-title">{{ item.nodeName }}</span>
@@ -63,6 +63,17 @@ let props = defineProps({
         default: () => ({}),
     }
 });  
+onMounted(() => {
+    console.log("props.nodeConfig.currentNodeId==============",JSON.stringify(props.nodeConfig.currentNodeId)) 
+    const elementList = document.getElementsByClassName("node-wrap-box"); 
+    for(let element of  elementList) {
+        const customNodeKey= element.getAttribute('data-node-key');     
+        if(customNodeKey == props.nodeConfig.currentNodeId){ 
+            element.classList.toggle("current-node"); 
+        } 
+    }
+}); 
+
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
 <style scoped lang="scss">
@@ -88,5 +99,8 @@ let props = defineProps({
     border-width: 8px 6px 4px;
     border-color: #cacaca transparent transparent;
     background: #f5f5f7;
+}
+.current-node {   
+    border: 3px solid #1890ff;    
 }
 </style>

@@ -22,7 +22,10 @@ export class FormatUtils {
     let nodeList = [];
     if (!param || isEmptyArray(param.bpmnNodeList)) return nodeList;
     for (let node of param.bpmnNodeList) {
-      nodeList.push(this.createNewNode(node));
+      node.currentNodeId = param.currentNodeId;
+      node.beforeNodeIds = param.beforeNodeIds;
+      node.afterNodeIds = param.afterNodeIds;
+      nodeList.push(this.createNewNode(node)); 
     }
     return this.depthConverterNodes(nodeList);
   }
@@ -45,6 +48,9 @@ export class FormatUtils {
       params : node.params,
       isNodeDeduplication: node.isDeduplication,
       parallelChildNode:0,
+      currentNodeId : node.currentNodeId,
+      beforeNodeIds: node.beforeNodeIds,
+      afterNodeIds: node.afterNodeIds,
     };
     return newNode;
   }
