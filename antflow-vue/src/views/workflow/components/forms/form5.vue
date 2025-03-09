@@ -26,7 +26,7 @@
                             :style="{ width: '100%' }"></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="24" v-if="!props.isPreview">
+                <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
                     <el-form-item>
                         <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
@@ -60,14 +60,14 @@ let props = defineProps({
     }
 });
   
-const ruleFormRef = ref(null)
- 
+const ruleFormRef = ref(null);
+
 /**定义表单字段和预览，根据实际业务表单修改*/
 const form = reactive({
     RefundType:1,
     RefundUserName: props.previewData?.refundUserName??'',
     RefundDate: props.previewData?.refundDate??'',
-    RefundMoney: props.previewData?.refundMoney??'',
+    RefundMoney: props.previewData?.refundMoney??0,
     remark:props.previewData?.remark??''
 })
 /**表单字段验证，根据实际业务表单修改*/

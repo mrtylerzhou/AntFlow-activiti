@@ -1,21 +1,26 @@
 <template>
     <div v-if="canShowComponent">
-        <span class="optional-approver-title">
-            <el-icon style="color: orange">
-                <Avatar />
-            </el-icon>自选审批人</span>
-        <div class="optional-approver-content">
-            <p v-for="node in approvaNodeList" :key="node.id" class="optional-node-title">
-                {{ node.nodeName }}
-                <div style="display: block;">
-                    <el-tag v-for="item in node.approversList" :key="item.id" style="margin: 0 3px;" size="large" closable
-                        effect="light" @close="onDeleteTag(node,item)">
-                        {{ item.name }}
-                    </el-tag>
-                    <el-button type="success" size="default" icon="Plus" circle @click="openUserDialog(node)" v-show="canShowaddButton(node)"/>
+        <el-row>
+            <el-col :span="24">
+                <span class="optional-approver-title">
+                    <el-icon style="color: orange">
+                        <Avatar />
+                    </el-icon>自选审批人</span>
+                <div class="optional-approver-content">
+                    <p v-for="node in approvaNodeList" :key="node.id" class="optional-node-title">
+                        {{ node.nodeName }}
+                    <div style="display: block;">
+                        <el-tag v-for="item in node.approversList" :key="item.id" style="margin: 0 3px;" size="large"
+                            closable effect="light" @close="onDeleteTag(node, item)">
+                            {{ item.name }}
+                        </el-tag>
+                        <el-button type="success" size="default" icon="Plus" circle @click="openUserDialog(node)"
+                            v-show="canShowaddButton(node)" />
+                    </div>
+                    </p>
                 </div>
-            </p>
-        </div>
+            </el-col>
+        </el-row>
         <chooseApproveUser v-model:visible="userDialogVisible" v-model:checkedData="selectApproveNode" :multiple="true"
             :multiplelimit="multiplelimit" @change="saveUserDialog" />
     </div>
@@ -112,7 +117,7 @@ const formatReturnData = (nodeArr) => {
     border-top-right-radius: 5px;
     display: inline-block;
     padding: 5px;
-    width: 700px;
+    width: 100%;
     font-weight: 900;
     font-size: 14px;
     background-color: var(--el-border-color);
@@ -128,7 +133,7 @@ const formatReturnData = (nodeArr) => {
     border: 1px solid var(--el-border-color);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    width: 700px;
+    width: 100%;
 }
 
 .optional-node-title {

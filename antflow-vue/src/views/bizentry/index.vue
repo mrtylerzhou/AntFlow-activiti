@@ -8,11 +8,9 @@
                     </template>
                     <div style="height: calc(100vh - 178px);padding-top: 15px;padding-bottom: 15px;overflow: auto; background-color: #f5f5f7;">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
-                            :isPreview="false" @handleBizBtn="handleSubmit">
+                            :isPreview="false" :reSubmit="false" @handleBizBtn="handleSubmit">
                         </component> 
-                    </div>
-
-
+                    </div> 
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">

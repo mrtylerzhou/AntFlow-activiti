@@ -644,18 +644,21 @@
 
 
  .zoom {
+    position: absolute !important;
+    top: 130px !important;
+    right: 30px !important;
     display: flex;
-    position: fixed;
+    // position: fixed;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
     justify-content: space-between;
-    height: 40px;
-    /*width: 125px;*/
-    right: 40px;
-    margin-top: 30px;
+    // height: 40px;
+    // /*width: 125px;*/
+    // right: 40px;
+    // margin-top: 30px;
     z-index: 10
 }
 
@@ -874,7 +877,8 @@
 
  .start-node.node-wrap-box .content .text {
      display: block;
-     white-space: nowrap
+     white-space: nowrap;
+     cursor: not-allowed;
  }
 
  .node-wrap-box:before {
@@ -893,7 +897,8 @@
  }
 
  .node-wrap-box.start-node:before {
-     content: none
+     content: none;
+     cursor: not-allowed;
  }
 
  .top-left-cover-line {

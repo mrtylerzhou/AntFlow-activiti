@@ -33,6 +33,7 @@ import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -393,12 +394,38 @@ public class BpmnConfCommonServiceImpl {
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
 
-        previewNode.setCurrentNodeIds(bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber()));
+        String currentNodeIdStr= bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber());
+        previewNode.setCurrentNodeId(currentNodeIdStr);
 
+        List<String> currentNodeIds = Lists.newArrayList(currentNodeIdStr.split(","));
+        List<BpmnNodeVo> bpmnNodeList = previewNode.getBpmnNodeList();
+        Map<String, BpmnNodeVo> bpmnNodeVoMap = bpmnNodeList.stream().collect(Collectors.toMap(BpmnNodeVo::getNodeId, b -> b, (v1, v2) -> v1));
+        List<String> nodeToResults=new ArrayList<>();
+        processNodeToRecursively(currentNodeIds,bpmnNodeVoMap,nodeToResults);
+        previewNode.setAfterNodeIds(nodeToResults);
+        List<String> nodeFromResults=new ArrayList<>();
+        Set<String> allNodeIds = bpmnNodeVoMap.keySet();
+        allNodeIds.stream().filter(o -> !nodeToResults.contains(o)&&!currentNodeIds.contains(o)).forEach(nodeFromResults::add);
+        previewNode.setBeforeNodeIds(nodeFromResults);
         return previewNode;
 
     }
 
+    private void processNodeToRecursively(List<String>currentNodeIds, Map<String, BpmnNodeVo> bpmnNodeVoMap, List<String> results){
+        if(currentNodeIds.isEmpty()){
+            return;
+        }
+        for (String currentNodeId : currentNodeIds) {
+            BpmnNodeVo bpmnNodeVo = bpmnNodeVoMap.get(currentNodeId);
+            if (bpmnNodeVo != null) {
+                List<String> nodeTo = bpmnNodeVo.getNodeTo();
+                if(!CollectionUtils.isEmpty(nodeTo)){
+                    results.addAll(nodeTo);
+                    processNodeToRecursively(nodeTo,bpmnNodeVoMap,results);
+                }
+            }
+        }
+    }
     /**
      * set node from information
      *
@@ -447,7 +474,7 @@ public class BpmnConfCommonServiceImpl {
             while (true) {
                 if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())) {
                     BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nowNode, nodeList);
-                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList);
+                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList,new HashSet<>());
 
                     nowNode = map.get(aggregationNode.getParams().getNodeTo());
                     lastNode=aggregationNode;
@@ -481,7 +508,9 @@ public class BpmnConfCommonServiceImpl {
 
     }
 
-    private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode,BpmnNodeVo itsPrevNode, BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results) {
+    private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode, BpmnNodeVo itsPrevNode,
+                                                 BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results,
+                                                 Set<String> alreadyProcessNodeIds) {
 
         String aggregationNodeNodeId = itsAggregationNode.getNodeId();
         List<String> nodeTos = outerMostParallelGatewayNode.getNodeTo();
@@ -489,34 +518,41 @@ public class BpmnConfCommonServiceImpl {
         itsAggregationNode.setNodeFrom(outerMostParallelGatewayNode.getNodeId());
         results.add(outerMostParallelGatewayNode);
         results.add(itsAggregationNode);
+        alreadyProcessNodeIds.add(outerMostParallelGatewayNode.getNodeId());
+        alreadyProcessNodeIds.add(itsAggregationNode.getNodeId());
         for (String nodeTo : nodeTos) {
-            BpmnNodeVo prevNode=outerMostParallelGatewayNode;
+            BpmnNodeVo prevNode = outerMostParallelGatewayNode;
             BpmnNodeVo currentNodeVo = mapNodes.get(nodeTo);
 
-            for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo!=null&&!nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
-                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(currentNodeVo.getNodeType())) {
-                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(currentNodeVo, mapNodes.values());
-                    treatParallelGateWayRecursively(currentNodeVo, aggregationNode,prevNode, mapNodes, results);
+            for (BpmnNodeVo nodeVo = currentNodeVo; nodeVo != null && !nodeVo.getNodeId().equals(aggregationNodeNodeId); nodeVo = mapNodes.get(nodeVo.getParams().getNodeTo())) {
+                if(alreadyProcessNodeIds.contains(nodeVo.getNodeId())){
+                    continue;
                 }
 
+                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nodeVo.getNodeType())) {
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nodeVo, mapNodes.values());
+                    treatParallelGateWayRecursively(nodeVo, prevNode,aggregationNode, mapNodes, results, alreadyProcessNodeIds);
+                }
 
-                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nodeVo.getParams().getParamType())) {
-                        nodeVo.getParams().setAssigneeList(Collections.singletonList(nodeVo.getParams().getAssignee()));
-                    }
-                    nodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(nodeVo.getNodeProperty()));
-                    if (StringUtils.isBlank(nodeVo.getParams().getNodeTo())) {
-                        nodeVo.setNodeFrom(prevNode.getNodeId());
-                        results.add(nodeVo);
-                        break;
-                    }
-                    if (results.size() > mapNodes.values().size()) {
-                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
-                        throw new JiMuBizException("999", "nodeId数据错误");
-                    }
+                if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nodeVo.getParams().getParamType())) {
+                    nodeVo.getParams().setAssigneeList(Collections.singletonList(nodeVo.getParams().getAssignee()));
+                }
+                nodeVo.setNodePropertyName(NodePropertyEnum.getDescByCode(nodeVo.getNodeProperty()));
+                if (StringUtils.isBlank(nodeVo.getParams().getNodeTo())) {
                     nodeVo.setNodeFrom(prevNode.getNodeId());
                     results.add(nodeVo);
-                    prevNode = nodeVo;
+                    alreadyProcessNodeIds.add(nodeVo.getNodeId());
+                    break;
                 }
+                if (results.size() > mapNodes.values().size()) {
+                    log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
+                    throw new JiMuBizException("999", "nodeId数据错误");
+                }
+                nodeVo.setNodeFrom(prevNode.getNodeId());
+                results.add(nodeVo);
+                alreadyProcessNodeIds.add(nodeVo.getNodeId());
+                prevNode = nodeVo;
+            }
         }
     }
 
