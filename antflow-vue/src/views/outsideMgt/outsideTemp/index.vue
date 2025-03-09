@@ -28,7 +28,7 @@
 
      <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-           <el-button type="primary" plain icon="Edit" @click="handleAdd">流程设计</el-button>
+           <el-button type="primary" icon="Edit" @click="handleAdd">流程设计</el-button>
         </el-col> 
      </el-row>
 

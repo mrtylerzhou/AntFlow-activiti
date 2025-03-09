@@ -17,7 +17,7 @@
    
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd">新增项目</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd">新增项目</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -45,7 +45,7 @@
 
     <!-- 添加或修改委托对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;">
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;" label-position="top">
         <el-row>
           <el-col :span="24">
             <el-form-item prop="businessPartyMark">
