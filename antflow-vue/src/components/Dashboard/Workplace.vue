@@ -6,8 +6,8 @@
                     <span>可用流程(DIY)</span>
                 </div>
             </template>
-            <el-row :gutter="10">
-                <el-col :md="6" v-for="(item, index) in worlflowList">
+            <el-row :gutter="5">
+                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in worlflowList">
                     <el-card shadow="always" class="card-col" @click="handleStart(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -41,8 +41,8 @@
                     </span>
                 </div>
             </template>
-            <el-row :gutter="10">
-                <el-col :md="6" v-for="(item, index) in lfFlowList">
+            <el-row :gutter="5">
+                <el-col :lg="6" :md="8"  :sm="12" :xs="24"  v-for="(item, index) in lfFlowList">
                     <el-card shadow="always" class="card-col" @click="handleStart(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -76,8 +76,8 @@
                     </span>
                 </div>
             </template>
-            <el-row :gutter="10">
-                <el-col :md="6" v-for="(item, index) in outsideflowList">
+            <el-row :gutter="5">
+                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in outsideflowList">
                     <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
                         <div slot="title">
                             <div class="card-icon">
