@@ -88,8 +88,9 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+      
         </div>
       </template>
     </el-dialog>
@@ -116,7 +117,12 @@ const data = reactive({
   },
   vo: {},
   rules: {
-    businessPartyMark: [{ required: true, message: '请输入项目标识', trigger: 'blur' }],
+    businessPartyMark: [{
+            required: true,
+            pattern: /^[A-Z]{4,10}$/,
+            message: '请输入项目唯一标识(只能是大写字母,4-10位长度)',
+            trigger: ['blur', 'change']
+        }],
     name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
