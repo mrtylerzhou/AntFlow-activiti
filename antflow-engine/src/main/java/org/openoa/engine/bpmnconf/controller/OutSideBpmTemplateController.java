@@ -34,27 +34,16 @@ public class OutSideBpmTemplateController {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.listPage(page, vo));
     }
     /**
-     * query template conf list by businessPartyMarkId and applicationId
+     * query template conf list by  applicationId
      *
-     * @param businessPartyId
      * @param applicationId
      * @return
      */
-    @GetMapping("/conditionTemplate/selectListByTemp/{businessPartyId}/{applicationId}")
-    public Result selectConditionListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
-        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMark(businessPartyId, applicationId));
+    @GetMapping("/conditionTemplate/selectListByTemp/{applicationId}")
+    public Result selectConditionListByAppId(@PathVariable("applicationId") Integer applicationId) {
+        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectConditionListByAppId(applicationId));
     }
-    /**
-     * query template conf list by businessPartyId and formcode
-     *
-     * @param businessPartyId
-     * @param formCode
-     * @return
-     */
-    @GetMapping("/conditionTemplate/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formCode}")
-    public Result selectListByPartyMarkIdAndFormCode(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("formCode") String formCode) {
-        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMarkAndFormCode(businessPartyId, formCode));
-    }
+
     /**
      * query a specified template conf's detail info
      *
@@ -101,9 +90,9 @@ public class OutSideBpmTemplateController {
         return Result.newSuccessResult(outSideBpmApproveTemplateService.listPage(page, vo));
     }
 
-    @GetMapping("/approveTemplate/selectListByTemp/{businessPartyId}/{applicationId}")
-    public Result selectApproveListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
-        return Result.newSuccessResult(outSideBpmApproveTemplateService.selectListByTemp(businessPartyId, applicationId));
+    @GetMapping("/approveTemplate/selectListByTemp/{applicationId}")
+    public Result selectApproveListByPartMarkIdAndAppId(@PathVariable("applicationId") Integer applicationId) {
+        return Result.newSuccessResult(outSideBpmApproveTemplateService.selectListByTemp(applicationId));
     }
     /**
      * edit approve template conf

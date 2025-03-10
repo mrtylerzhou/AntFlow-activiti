@@ -46,10 +46,9 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
         return PageUtils.getResultAndPage(page);
     }
 
-    public List<OutSideBpmApproveTemplateVo> selectListByTemp(Long businessPartyMarkId, Integer applicationId) {
+    public List<OutSideBpmApproveTemplateVo> selectListByTemp(Integer applicationId) {
         List<OutSideBpmApproveTemplate> templates = this.list(new QueryWrapper<OutSideBpmApproveTemplate>()
                 .eq("is_del", 0)
-                .eq("business_party_id",businessPartyMarkId)
                 .eq("application_id", applicationId));
 
         if (!CollectionUtils.isEmpty(templates)) {

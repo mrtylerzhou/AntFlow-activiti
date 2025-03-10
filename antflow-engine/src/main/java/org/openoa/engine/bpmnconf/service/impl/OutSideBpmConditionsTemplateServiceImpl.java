@@ -21,6 +21,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmConditionsTemplateMapper;
+import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
@@ -217,53 +218,36 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
 
     }
 
+
+
     /**
-     * query condition template list by business party mark id and application id
-     *
-     * @param businessPartyMarkId
-     * @param applicationId
+     * query condition template list by appId
+     * @param appId
      * @return
      */
-    public List<OutSideBpmConditionsTemplateVo> selectListByPartMark(Long businessPartyMarkId, Integer applicationId) {
+    public List<OutSideBpmConditionsTemplateVo> selectConditionListByAppId(Integer appId) {
 
-        List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates = this.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
+        List<OutSideBpmConditionsTemplate> list = this.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
                 .eq("is_del", 0)
-                .eq("business_party_id",businessPartyMarkId)
-                .eq("application_id", applicationId));
+                .eq("application_id", appId));
 
-        if (!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)) {
-            return outSideBpmConditionsTemplates
+        if (!CollectionUtils.isEmpty(list)) {
+            return list
                     .stream()
                     .map(o -> OutSideBpmConditionsTemplateVo
                             .builder()
                             .id(o.getId())
+                            .applicationId(o.getApplicationId())
+                            .businessPartyId(o.getBusinessPartyId())
                             .templateMark(o.getTemplateMark())
                             .templateName(o.getTemplateName())
                             .remark(o.getRemark())
                             .createTime(o.getCreateTime())
                             .build())
                     .collect(Collectors.toList());
+
         }
         return Collections.EMPTY_LIST;
-    }
-
-    /**
-     * query condition template list by business party mark Id and formCode
-     * @param businessPartyId
-     * @param formCode
-     * @return
-     */
-    public List<OutSideBpmConditionsTemplateVo> selectListByPartMarkAndFormCode(Long businessPartyId, String formCode) {
-
-        BpmProcessAppApplication application = Optional.ofNullable(bpmProcessAppApplicationService.getBaseMapper()
-                .selectOne(new QueryWrapper<BpmProcessAppApplication>()
-                        .eq("process_key", formCode)
-                )).orElse(new BpmProcessAppApplication());
-
-        if (application.getId()==null) {
-            throw new JiMuBizException("formCode 无效");
-        }
-       return selectListByPartMark(businessPartyId,application.getId());
     }
     /**
      * query details by id
