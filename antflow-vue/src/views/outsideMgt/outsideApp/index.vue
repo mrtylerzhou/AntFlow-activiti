@@ -23,31 +23,32 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="项目标识" align="center" prop="businessCode" />
-      <el-table-column label="项目名称" align="center" prop="businessName" />
-      <el-table-column align="center" prop="processKey">
+      <el-table-column type="selection" align="center" width="35"/>
+      <el-table-column label="项目标识" align="center" prop="businessCode" width="150"/>
+      <el-table-column label="项目名称" align="center" prop="businessName" width="220"/>
+      <el-table-column align="center" prop="processKey" width="280">
         <template #header>
           <span>
-            业务表单标识
+            业务标识
             <el-tooltip content="唯一标识即：FormCode" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="业务表单名称" align="center" prop="title" />
-      <el-table-column label="业务表单类型" align="center" prop="applyTypeName" />
-      <el-table-column label="创建时间" align="center" prop="createTime">
+      <el-table-column label="业务名称" align="center" prop="name" width="220"/>
+      <el-table-column label="业务类型" align="center" prop="applyTypeName" width="120"/>
+      <el-table-column label="创建时间" align="center" prop="createTime" width="150">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="280" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template #default="scope"> 
           <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button link type="primary" icon="View" @click="viewConditionList(scope.row)">条件</el-button>
           <el-button link type="primary" icon="View" @click="viewApproveList(scope.row)">审批人</el-button>
+          <el-button link type="primary" icon="Promotion" @click="handleFlowDesign(scope.row)">设计流程</el-button>
           <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
@@ -135,7 +136,7 @@ import { getApplicationsPageList, addApplication, getApplicationDetail, getParty
 import conditionForm from "./condition/form.vue"; 
 import conditionTemplateList from "./condition/list.vue";
 import approveForm from "./approve/form.vue";
-import approveTemplateList from "./approve/list.vue";
+import approveTemplateList from "./approve/list.vue"; 
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
@@ -265,8 +266,6 @@ function handleEdit(row) {
   });
   proxy.$modal.closeLoading();
 }
-
-
 /** 取消操作表单 */
 function cancel() {
   open.value = false;
@@ -303,4 +302,17 @@ function viewConditionList(row) {
 function viewApproveList(row) {
   proxy.$refs["approveListRef"].show(row.businessPartyId, row.id);
 }
+
+function handleFlowDesign(row) { 
+  const param ={ 
+     bizid: row.businessPartyId,
+     bizname: encodeURIComponent(row.businessName),
+     bizcode: row.businessCode,
+     appid: row.id,
+     fc: row.processKey,
+     fcname: encodeURIComponent(row.name),
+  };
+  const obj = {path: "/outsideMgt/outsideDesign",query:param};
+  proxy.$tab.openPage(obj); 
+} 
 </script>

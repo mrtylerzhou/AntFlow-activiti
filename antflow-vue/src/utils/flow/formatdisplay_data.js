@@ -34,6 +34,8 @@ export class FormatDisplayUtils {
       appId: nodeData.appId,
       isOutSideProcess: nodeData.isOutSideProcess,
       businessPartyId: nodeData.businessPartyId,
+      businessPartyName: nodeData.businessPartyName,
+      businessPartyMark: nodeData.businessPartyMark,
       deduplicationType: nodeData.deduplicationType, //2去重,1不去重
       effectiveStatus: nodeData.effectiveStatus == 1 ? true : false,
       isLowCodeFlow: nodeData.isLowCodeFlow,

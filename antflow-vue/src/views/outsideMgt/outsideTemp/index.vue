@@ -24,22 +24,10 @@
            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
-     </el-form>
-
-     <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-           <el-button type="primary" icon="Edit" @click="handleAdd">流程设计</el-button>
-        </el-col> 
-     </el-row>
-
-     <el-table v-loading="loading" :data="configList">
-      <el-table-column label="业务方名称" align="center" prop="businessPartyId">
-           <template #default="item">
-              {{ getPartyMarkName(item.row.businessPartyId) }}
-           </template>
-        </el-table-column>
-        <el-table-column label="模板类型" align="center" prop="formCode" />
-        <el-table-column label="模板名称" align="center" prop="formCodeName">
+     </el-form>  
+     <el-table v-loading="loading" :data="configList"> 
+        <el-table-column label="业务标识" align="center" prop="formCode" />
+        <el-table-column label="业务名称" align="center" prop="formCodeName">
            <template #default="item">
               {{ getFromCodeName(item.row.formCode) }}
            </template>
@@ -79,14 +67,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { ElMessage } from 'element-plus';
+import { ref, onMounted } from "vue"; 
 import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/workflow";
-import { getApplicationsPageList , getBusinessPartyList } from "@/api/outsideApi";
-const router = useRouter();
+import { getApplicationsPageList } from "@/api/outsideApi"; 
 const { proxy } = getCurrentInstance();
-let formCodeOptions = ref([]);
-let partyMarkOptions = ref([]);
+let formCodeOptions = ref([]); 
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
@@ -118,24 +103,14 @@ const initFromCode = async () => {
      if (res.code == 200) {
         formCodeOptions.value = res.data.data;
      }
-  });
-
-  await getBusinessPartyList().then((res) => {
-     if (res.code == 200) {
-      partyMarkOptions.value = res.data.data;
-     }
-  });
+  }); 
 }
 /**获取三方注册应用名称 */
 const getFromCodeName = (formCode) => { 
  const result= formCodeOptions.value.filter(item => item.processKey == formCode)[0]; 
  return result?.title;
 }
-/**获取业务方名称 */
-const getPartyMarkName = (id) => { 
- const result= partyMarkOptions.value.filter(item => item.id == id)[0]; 
- return result?.name;
-}
+ 
 /** 查询列表 */
 function getList() {
   loading.value = true;
@@ -159,9 +134,9 @@ const effectiveById = async (data) => {
    await getEffectiveBpmn(data).then(async (res) => {
        if (res.code == 200) {
            getList();
-           ElMessage.success("操作成功");
+           proxy.$modal.msgSuccess("操作成功"); 
        } else {
-           ElMessage.error("操作失败");
+         proxy.$modal.msgSuccess("操作失败"); 
        }
    });
 
@@ -171,10 +146,7 @@ function handleQuery() {
   pageDto.value.page = 1;
   getList();
 }
-
-function handleAdd() {
-  router.push({ path: "/outsideMgt/outsideDesign"});
-} 
+ 
 /** 重置按钮操作 */
 function resetQuery() {
   taskMgmtVO.value = {
