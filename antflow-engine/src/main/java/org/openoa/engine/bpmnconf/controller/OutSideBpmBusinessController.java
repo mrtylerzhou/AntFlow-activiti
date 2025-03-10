@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Tag(name = "第三方业务方管理")
@@ -30,7 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/outSideBpm")
 @Validated
-public class OutSideBpmBusinessPartyController {
+public class OutSideBpmBusinessController {
 
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;

@@ -218,8 +218,6 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
 
     }
 
-
-
     /**
      * query condition template list by appId
      * @param appId

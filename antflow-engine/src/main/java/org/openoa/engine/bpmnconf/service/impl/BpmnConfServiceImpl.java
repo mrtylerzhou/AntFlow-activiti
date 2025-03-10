@@ -15,6 +15,7 @@ import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
@@ -86,6 +87,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private BpmnNodeLfFormdataFieldControlServiceImpl nodeLfFormdataFieldControlService;
     @Autowired
     private BpmNodeLabelsServiceImpl nodeLabelsService;
+    @Autowired
+    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
+    @Autowired
+    private TaskMgmtServiceImpl TaskMgmtService;
+
 
     @Transactional
     public void edit(BpmnConfVo bpmnConfVo) {
@@ -848,8 +854,6 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         }else{
             confInDb=new BpmnConf();
         }
-
-
         this.updateById(BpmnConf
                 .builder()
                 .id(Long.parseLong(id.toString()))
@@ -882,23 +886,36 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
     public ResultAndPage<BpmnConfVo> selectPage(PageDto pageDto, BpmnConfVo vo) {
         //use mybatus plus's paging plugin,mbatis plus is very popular in China even all over the world
         Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
-
-
-
         List<BpmnConfVo> bpmnConfVos = this.getBaseMapper().selectPageList(page, vo);
-
         if (bpmnConfVos==null) {
             return PageUtils.getResultAndPage(page);
         }
-
-
-
+        if (vo.getIsOutSideProcess() == 1){
+            List<BpmProcessAppApplication> bizAppList = bpmProcessAppApplicationService.selectApplicationList();
+            Map<String, String>  bizAppMap= bizAppList
+                    .stream()
+                    .collect(Collectors.toMap(p->p.getProcessKey(),p->p.getTitle()));
+            for (BpmnConfVo record : bpmnConfVos) {
+                if (record.getIsOutSideProcess() == 1){
+                    record.setFormCodeDisplayName(bizAppMap.get(record.getFormCode()));
+                }
+            }
+        }
+        if (vo.getIsOutSideProcess() == 0){
+            List<DIYProcessInfoDTO> diyFormCodeList = TaskMgmtService.viewProcessInfo(null);
+            Map<String, String>  diyFormCodes= diyFormCodeList
+                    .stream()
+                    .collect(Collectors.toMap(p->p.getKey(),p->p.getValue()));
+            for (BpmnConfVo record : bpmnConfVos) {
+                if (record.getIsLowCodeFlow() == 0 && record.getIsOutSideProcess() == 0){
+                    record.setFormCodeDisplayName(diyFormCodes.get(record.getFormCode()));
+                }
+            }
+        }
         page.setRecords(bpmnConfVos
                 .stream()
                 .peek(o -> o.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(o.getDeduplicationType())))
                 .collect(Collectors.toList()));
-
-
         return PageUtils.getResultAndPage(page);
     }
 
@@ -909,9 +926,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
      * @return
      */
     private String formatOutSideFormCode(BpmnConfVo bpmnConfVo) {
-
         String formCode = bpmnConfVo.getFormCode();
-
         return formCode.substring(formCode.indexOf(linkMark) + 1);
     }
 }

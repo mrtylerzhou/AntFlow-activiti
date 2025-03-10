@@ -268,28 +268,6 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         BpmProcessAppApplication processApplicationType = bpmProcessAppApplicationMapper.selectById(id);
         processApplicationType.setIsDel(1);
         bpmProcessAppApplicationMapper.updateById(processApplicationType);
-        /*List<BpmProcessApplicationType> applicationType = bpmProcessApplicationTypeService.getProcessApplicationType(BpmProcessApplicationTypeVo.builder()
-                .applicationId(id)
-                .build());
-        for (BpmProcessApplicationType type : applicationType) {
-            Wrapper<BpmProcessApplicationType> wrapper = new EntityWrapper<BpmProcessApplicationType>().eq("is_del", 0).eq("category_id", type.getId());
-            Integer countTotal = bpmProcessApplicationTypeMapper.selectCount(wrapper);
-            List<BpmProcessApplicationType> processApplicationTypes = bpmProcessApplicationTypeMapper.selectList(wrapper);
-            Integer sort=0;
-            if(CheckUtil.checkObj(processApplicationTypes)){
-                sort=processApplicationTypes.get(0).getSort();
-            }
-            List<BpmProcessApplicationType> list = bpmProcessApplicationTypeMapper.selectList(wrapper.gt("sort", sort));
-            //修改当前常用功能排序
-            if (sort < countTotal) {
-                int countChanged = 0;
-                for (BpmProcessApplicationType o : list) {
-                    o.setSort(o.getSort() - 1);
-                    countChanged += bpmProcessApplicationTypeMapper.updateById(o);
-                }
-                return countChanged == countTotal - sort;
-            }
-        }*/
         return true;
     }
     /**
@@ -719,5 +697,8 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
 
     public List<BpmProcessAppApplicationVo> selectAllByPartMarkId(Integer partyMarkId) {
         return bpmProcessAppApplicationMapper.selectAllByPartMarkId(partyMarkId);
+    }
+    public List<BpmProcessAppApplication> selectApplicationList() {
+       return bpmProcessAppApplicationMapper.selectList(null);
     }
 }
