@@ -76,14 +76,7 @@ export function getApplicationsPageList(page,vo) {
   }
   return http.get(`${baseUrl}/outSideBpm/businessParty/applicationsPageList`,data, { headers })
 }
-/** 查询应用列表 根据业务方partyMark */
-export function getThirdPartyApplications(partyMark) { 
-  return http.get(`${baseUrl}/outSideBpm/businessParty/getThirdPartyApplications/${partyMark}`, { headers })
-}
-/** 查询应用列表 根据业务方ID */
-export function getApplicationsByPartyMarkId(partyMarkId) {  
-  return http.get(`${baseUrl}/outSideBpm/businessParty/getApplicationsByPartyMarkId/${partyMarkId}`, { headers })
-}
+ 
 /**
  * 添加业务方应用
  * @param {*} data 
@@ -115,9 +108,7 @@ export function getPartyMarkByIdBpmConf(businessPartyMark) {
 export function getPartyMarkKV() {
   return http.get(`${baseUrl}/outSideBpm/businessParty/getPartyMarkKV`, { headers })
 }
- 
-
-
+  
 /** 应用关联条件模板 * /
 
 /**
@@ -125,25 +116,10 @@ export function getPartyMarkKV() {
  * @param {*} param 
  * @returns 
  */
-export function getConditionTemplatelist(businessPartyId,applicationId) {  
-  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByTemp/${businessPartyId}/${applicationId}`, { headers })
-} 
-/**
- * 获取条件模板列表
- * @param {*} param 
- * @returns 
- */
-export function getTemplateByPartyMarkIdAndFormCode(businessPartyId,formCode) {  
-  if(!businessPartyId || !formCode) {
-    return Promise.resolve({
-      "code": 999,
-      "msg": "",
-      "data": []
-    })
-  }
-  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByPartyMarkIdAndFormCode/${businessPartyId}/${formCode}`, { headers })
-} 
- 
+export function getConditionTemplatelist(applicationId) {  
+  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByTemp/${applicationId}`, { headers })
+}  
+
 /**
  * 添加条件模板 
  * @param {*} param 
@@ -169,8 +145,8 @@ export function getApproveTemplatePageList(page,vo) {
  * @param {*} param 
  * @returns 
  */
-export function getApproveTemplatelist(businessPartyId,applicationId) {  
-  return http.get(`${baseUrl}/outSideBpm/approveTemplate/selectListByTemp/${businessPartyId}/${applicationId}`, { headers })
+export function getApproveTemplatelist(applicationId) {  
+  return http.get(`${baseUrl}/outSideBpm/approveTemplate/selectListByTemp/${applicationId}`, { headers })
 } 
 /**
  * 审批人模板详情

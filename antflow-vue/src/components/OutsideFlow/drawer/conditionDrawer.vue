@@ -54,7 +54,7 @@
 import { ref, watch, computed } from 'vue'
 import $func from '@/utils/flow/index'
 import { useStore } from '@/store/modules/outsideflow'
-import { getTemplateByPartyMarkIdAndFormCode } from '@/api/outsideApi'
+import { getConditionTemplatelist } from '@/api/outsideApi'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
@@ -84,7 +84,7 @@ watch(conditionsConfig1, async (val) => {
 
 watch(conditionConfig, async (newVal, oldVal) => { 
     if (Array.isArray(newVal.conditionList) && newVal.conditionList.length == 0) {
-        let { code, data } = await getTemplateByPartyMarkIdAndFormCode(basideFormConfig.value.partyMarkId, basideFormConfig.value.formCode);
+        let { code, data } = await getConditionTemplatelist(basideFormConfig.value.appdId);
         if (code == 200) {
             const conditionMaps = data.map(item => { return { key: item.templateMark, value: item.name } }) 
             conditionConfig.value.conditionList = [NodeUtils.createOutsideConditionNode(JSON.stringify(conditionMaps))]

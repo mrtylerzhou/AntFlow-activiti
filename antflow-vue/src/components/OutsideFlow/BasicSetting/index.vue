@@ -46,7 +46,10 @@
 
 <script setup>
 import { ref, reactive, onMounted, getCurrentInstance } from "vue";
+import { getApproveTemplatelist } from "@/api/outsideApi";
 import { NodeUtils } from "@/utils/flow/nodeUtils"; 
+import { useStore } from "@/store/modules/outsideflow";
+let store = useStore();
 const { query } = useRoute();
 const { proxy } = getCurrentInstance();
 const emit = defineEmits(["nextChange"]); 
@@ -109,6 +112,17 @@ onMounted(async () => {
   }
 }); 
 
+watch(() => form.appId, (newVal) => { 
+  getApproveTemplatelist(newVal).then(response => { 
+    store.setBasideFormConfig({ 
+          appdId: newVal,
+          formCode: form.formCode,
+          configList: response.data, 
+        });
+  }).catch(() => {
+    console.log(`获取${formCode}审批模板配置信息失败`);
+  });
+});
 
 // 给父级页面提供得获取本页数据得方法
 const getData = () => {

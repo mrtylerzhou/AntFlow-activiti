@@ -40,7 +40,7 @@ let applicationId = ref(0);
 /** 查询接入业务方列表 */
 function getList() {
   loading.value = true;
-  getApproveTemplatelist(businessPartyId.value, applicationId.value).then(response => {
+  getApproveTemplatelist(applicationId.value).then(response => {
     list.value = response.data;
     loading.value = false;
   }).catch(() => {

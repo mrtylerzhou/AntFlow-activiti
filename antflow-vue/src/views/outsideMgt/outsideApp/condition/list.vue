@@ -57,7 +57,7 @@
   /** 查询接入业务方列表 */
   function getList() {
     loading.value = true;
-    getConditionTemplatelist(businessPartyId.value,applicationId.value).then(response => {
+    getConditionTemplatelist(applicationId.value).then(response => {
       list.value = response.data; 
       loading.value = false;
     }).catch(() => {

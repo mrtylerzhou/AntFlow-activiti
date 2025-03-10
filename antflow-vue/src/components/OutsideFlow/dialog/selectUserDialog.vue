@@ -86,6 +86,7 @@ const queryParams = reactive({
 
 let visibleDialog = computed({
   get() {
+    getList();
     return props.visible;
   },
   set() {
@@ -93,16 +94,7 @@ let visibleDialog = computed({
   },
 });
 let list = computed(() => props.data);
-
-watch(() => props.visible,
-  (newVal) => {
-    if (newVal) {
-      getList();
-    }
-  },
-  { deep: true, immediate: true }
-);
-
+ 
 watch(list, (newVal) => {
   checkedUsersList.value = newVal.map((item) => {
     return {
@@ -114,14 +106,13 @@ watch(list, (newVal) => {
   { deep: true, immediate: true }
 );
 // 查询表数据
-function getList() {
-  if (!store.basideFormConfig || !store.basideFormConfig.userRequestUri) {
+function getList() {  
+  if (!store.basideFormConfig || proxy.isArrayEmpty(store.basideFormConfig.configList)) {
     return;
-  }
-  //console.log('store.basideFormConfig.userRequestUri=====',JSON.stringify(store.basideFormConfig.userRequestUri))
+  } 
+  let userConfig = store.basideFormConfig.configList.find((item) => item.approveTypeId == 1);   
   loading.value = true;
-  getDynamicsList(store.basideFormConfig.userRequestUri).then((res) => {
-    //console.log('store.basideFormConfig.userRequestUri==res========',JSON.stringify(res))
+  getDynamicsList(userConfig.apiUrl).then((res) => { 
     loading.value = false;
     userList.value = res.data.map((item) => {
       return {
@@ -177,7 +168,6 @@ let saveDialog = () => {
   emits("change", checkedList);
 };
 
-getList();
 /**
  * 关闭弹窗
  */
