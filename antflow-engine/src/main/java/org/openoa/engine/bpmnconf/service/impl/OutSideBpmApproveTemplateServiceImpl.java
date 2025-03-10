@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
@@ -89,6 +90,15 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
      * @param vo
      */
     public void edit(OutSideBpmApproveTemplateVo vo) {
+
+        QueryWrapper<OutSideBpmApproveTemplate> templates = new QueryWrapper<OutSideBpmApproveTemplate>()
+                .eq("is_del", 0)
+                .eq("application_id", vo.getApplicationId())
+                .eq("approve_type_id", vo.getApproveTypeId());
+        long existCount = this.count(templates);
+        if (existCount > 0) {
+            throw new JiMuBizException(vo.getApproveTypeName() + "审批模板已存在");
+        }
         OutSideBpmApproveTemplate templateEntity = this.getById(vo.getId());
         if (templateEntity != null) {
             BeanUtils.copyProperties(vo, templateEntity);
