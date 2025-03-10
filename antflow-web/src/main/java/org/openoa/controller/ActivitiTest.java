@@ -19,6 +19,8 @@ import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
+import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -83,6 +85,8 @@ public class ActivitiTest {
     private MailUtils mailUtils;
     @Autowired
     private TaskMgmtServiceImpl taskMgmtService;
+    @Autowired
+    private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -219,6 +223,14 @@ public class ActivitiTest {
     public Result changeFutureAssignee(String executionId,String variableName,String assignees){
         List<String> assigneeList = Arrays.asList(assignees.split(","));
         taskMgmtService.changeFutureAssignees(executionId,variableName,assigneeList);
+        return Result.success();
+    }
+    @RequestMapping("/moveto")
+    public Result moveTo(String taskDefKey,String processNumber) throws Exception{
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        String procInstId = bpmBusinessProcess.getProcInstId();
+        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
+        taskFlowControlService.moveTo(taskDefKey);
         return Result.success();
     }
 }
