@@ -29,7 +29,7 @@ public class OutSideBpmTemplateController {
      * @param vo
      * @return
      */
-    @GetMapping("/ConditionTemplate/listPage")
+    @GetMapping("/conditionTemplate/listPage")
     public Result listPage(PageDto page, OutSideBpmConditionsTemplateVo vo) {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.listPage(page, vo));
     }
@@ -40,8 +40,8 @@ public class OutSideBpmTemplateController {
      * @param applicationId
      * @return
      */
-    @GetMapping("/ConditionTemplate/selectListByPartMarkIdAndAppId/{businessPartyId}/{applicationId}")
-    public Result selectListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
+    @GetMapping("/conditionTemplate/selectListByTemp/{businessPartyId}/{applicationId}")
+    public Result selectConditionListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMark(businessPartyId, applicationId));
     }
     /**
@@ -51,7 +51,7 @@ public class OutSideBpmTemplateController {
      * @param formCode
      * @return
      */
-    @GetMapping("/ConditionTemplate/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formCode}")
+    @GetMapping("/conditionTemplate/selectListByPartyMarkIdAndFormCode/{businessPartyId}/{formCode}")
     public Result selectListByPartyMarkIdAndFormCode(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("formCode") String formCode) {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectListByPartMarkAndFormCode(businessPartyId, formCode));
     }
@@ -61,7 +61,7 @@ public class OutSideBpmTemplateController {
      * @param id
      * @return
      */
-    @GetMapping("/ConditionTemplate/detail/{id}")
+    @GetMapping("/conditionTemplate/detail/{id}")
     public Result detail(@PathVariable("id") Integer id) {
         return Result.newSuccessResult(outSideBpmConditionsTemplateService.detail(id));
     }
@@ -72,7 +72,7 @@ public class OutSideBpmTemplateController {
      * @param vo
      * @return
      */
-    @PostMapping("/ConditionTemplate/edit")
+    @PostMapping("/conditionTemplate/edit")
     public Result edit(@RequestBody OutSideBpmConditionsTemplateVo vo) {
         outSideBpmConditionsTemplateService.edit(vo);
         return Result.success();
@@ -84,7 +84,7 @@ public class OutSideBpmTemplateController {
      * @param id
      * @return
      */
-    @GetMapping("/ConditionTemplate/delete/{id}")
+    @GetMapping("/conditionTemplate/delete/{id}")
     public Result delete(@PathVariable("id") Integer id) {
         outSideBpmConditionsTemplateService.delete(id);
         return Result.newSuccessResult(null);
@@ -99,6 +99,11 @@ public class OutSideBpmTemplateController {
     @GetMapping("/approveTemplate/listPage")
     public Result approveTemplateListPage(PageDto page, OutSideBpmApproveTemplateVo vo) {
         return Result.newSuccessResult(outSideBpmApproveTemplateService.listPage(page, vo));
+    }
+
+    @GetMapping("/approveTemplate/selectListByTemp/{businessPartyId}/{applicationId}")
+    public Result selectApproveListByPartMarkIdAndAppId(@PathVariable("businessPartyId") Long businessPartyId,@PathVariable("applicationId") Integer applicationId) {
+        return Result.newSuccessResult(outSideBpmApproveTemplateService.selectListByTemp(businessPartyId, applicationId));
     }
     /**
      * edit approve template conf

@@ -53,7 +53,7 @@ public class OutSideBpmApproveTemplate {
      * api_client_id
      */
     @TableField("api_client_id")
-    private Integer apiClientId;
+    private String apiClientId;
     /**
      * api_client_secret
      */

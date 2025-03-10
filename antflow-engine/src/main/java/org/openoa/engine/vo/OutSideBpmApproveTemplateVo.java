@@ -48,7 +48,7 @@ public class OutSideBpmApproveTemplateVo implements Serializable {
     /**
      * api_client_id
      */
-    private Integer apiClientId;
+    private String apiClientId;
     /**
      * api_client_secret
      */

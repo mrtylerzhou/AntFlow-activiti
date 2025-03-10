@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
@@ -9,12 +10,14 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmApproveTemplateMapper;
 import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
+import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * third party process service-conditions template configuration table service implementation
@@ -43,6 +46,31 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
         return PageUtils.getResultAndPage(page);
     }
 
+    public List<OutSideBpmApproveTemplateVo> selectListByTemp(Long businessPartyMarkId, Integer applicationId) {
+        List<OutSideBpmApproveTemplate> templates = this.list(new QueryWrapper<OutSideBpmApproveTemplate>()
+                .eq("is_del", 0)
+                .eq("business_party_id",businessPartyMarkId)
+                .eq("application_id", applicationId));
+
+        if (!CollectionUtils.isEmpty(templates)) {
+            return templates
+                    .stream()
+                    .map(o -> OutSideBpmApproveTemplateVo
+                            .builder()
+                            .id(o.getId())
+                            .approveTypeId(o.getApproveTypeId())
+                            .approveTypeName(o.getApproveTypeName())
+                            .apiClientId(o.getApiClientId())
+                            .apiClientSecret(o.getApiClientSecret())
+                            .apiToken(o.getApiToken())
+                            .apiUrl(o.getApiUrl())
+                            .remark(o.getRemark())
+                            .createTime(o.getCreateTime())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return Collections.EMPTY_LIST;
+    }
     /**
      * query details by id
      *
