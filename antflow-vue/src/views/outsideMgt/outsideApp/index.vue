@@ -23,9 +23,9 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" align="center" width="35"/>
-      <el-table-column label="项目标识" align="center" prop="businessCode" width="150"/>
-      <el-table-column label="项目名称" align="center" prop="businessName" width="220"/>
+      <el-table-column type="selection" align="center" width="35" />
+      <el-table-column label="项目标识" align="center" prop="businessCode" width="150" />
+      <el-table-column label="项目名称" align="center" prop="businessName" width="220" />
       <el-table-column align="center" prop="processKey" width="280">
         <template #header>
           <span>
@@ -36,15 +36,15 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="业务名称" align="center" prop="name" width="220"/>
-      <el-table-column label="业务类型" align="center" prop="applyTypeName" width="120"/>
+      <el-table-column label="业务名称" align="center" prop="name" width="220" />
+      <el-table-column label="业务类型" align="center" prop="applyTypeName" width="120" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="150">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope"> 
+        <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button link type="primary" icon="View" @click="viewConditionList(scope.row)">条件</el-button>
           <el-button link type="primary" icon="View" @click="viewApproveList(scope.row)">审批人</el-button>
@@ -126,17 +126,23 @@
     <conditionForm v-model:visible="conditionTempVisible" v-model:bizformData="bizAppForm" />
     <approveForm v-model:visible="approveTempVisible" v-model:bizformData="bizAppForm" />
     <conditionTemplateList ref="conditionListRef" v-model:visible="conditionListVisible" />
-    <approveTemplateList ref="approveListRef" v-model:visible="approveListVisible" /> 
+    <approveTemplateList ref="approveListRef" v-model:visible="approveListVisible" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV } from "@/api/outsideApi";
-import conditionForm from "./condition/form.vue"; 
+import { 
+  getApplicationsPageList, 
+  addApplication, 
+  getApplicationDetail, 
+  getPartyMarkKV, 
+  getConditionTemplatelist, 
+  getApproveTemplatelist } from "@/api/outsideApi";
+import conditionForm from "./condition/form.vue";
 import conditionTemplateList from "./condition/list.vue";
 import approveForm from "./approve/form.vue";
-import approveTemplateList from "./approve/list.vue"; 
+import approveTemplateList from "./approve/list.vue";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
@@ -182,12 +188,12 @@ let bizAppForm = reactive({
 });
 
 onMounted(async () => {
-   getList();
-   getPartyMarkList();
+  getList();
+  getPartyMarkList();
 })
 
 /** 获取业务方标识 */
-function getPartyMarkList() { 
+function getPartyMarkList() {
   getPartyMarkKV().then(response => {
     partyMarkOptions.value = response.data;
   });
@@ -303,16 +309,52 @@ function viewApproveList(row) {
   proxy.$refs["approveListRef"].show(row.businessPartyId, row.id);
 }
 
-function handleFlowDesign(row) { 
-  const param ={ 
-     bizid: row.businessPartyId,
-     bizname: encodeURIComponent(row.businessName),
-     bizcode: row.businessCode,
-     appid: row.id,
-     fc: row.processKey,
-     fcname: encodeURIComponent(row.name),
+async function handleFlowDesign(row) {
+  proxy.$modal.loading();
+  const resultCheckApprove =await checkApproveConfig(row);
+  const resultCheckCondition =await checkConditionConfig(row); 
+  if(!resultCheckApprove){
+    proxy.$modal.closeLoading();
+    proxy.$modal.msgError("请先设置审批人");
+    return;
+  }
+  if(!resultCheckCondition){
+    proxy.$modal.closeLoading();
+    proxy.$modal.msgError("至少设置一个条件");
+    return;
+  }  
+  const param = {
+    bizid: row.businessPartyId,
+    bizname: encodeURIComponent(row.businessName),
+    bizcode: row.businessCode,
+    appid: row.id,
+    fc: row.processKey,
+    fcname: encodeURIComponent(row.name),
   };
-  const obj = {path: "/outsideMgt/outsideDesign",query:param};
-  proxy.$tab.openPage(obj); 
+  proxy.$modal.closeLoading();
+  const obj = { path: "/outsideMgt/outsideDesign", query: param };
+  proxy.$tab.openPage(obj);
+}  
+const checkApproveConfig =async (row)=> {
+ return await getApproveTemplatelist(row.id).then(response => {
+    if(response.code == 200){ 
+      return response.data.length > 0
+    }else{
+      return false;
+    }
+  }).catch(err => {
+    return false;
+  });
 } 
+const checkConditionConfig =async (row)=> {
+  return await getConditionTemplatelist(row.id).then(response => {
+    if(response.code == 200){
+      return response.data.length > 0
+    }else{
+      return false;
+    }
+  }).catch(err => {
+    return false;
+  });
+}
 </script>

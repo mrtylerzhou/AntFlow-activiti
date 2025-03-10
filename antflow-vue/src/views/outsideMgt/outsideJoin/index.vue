@@ -110,7 +110,9 @@ const open = ref(false);
 const title = ref("");
 
 const data = reactive({
-  form: {},
+  form: {
+    accessType: '0'
+  },
   page: {
     page: 1,
     pageSize: 10
@@ -154,8 +156,7 @@ function getList() {
   });
 }
 /** 新增接入项目 */
-function handleAdd() {
-  // proxy.$modal.msgError("演示环境不允许操作！");return;
+function handleAdd() { 
   reset();
   title.value = "添加项目";
   open.value = true;
@@ -192,9 +193,10 @@ function handleEdit(row) {
     proxy.$modal.msgError("演示数据不允许修改操作！");
     return;
   }
+  open.value = true;
   getBusinessPartyDetail(id).then(response => {
     form.value = response.data; 
-    form.value.type = form.value.type.toString();
+    form.value.accessType = form.value.accessType.toString();
     open.value = true;
     title.value = "编辑项目"; 
   });
@@ -217,7 +219,7 @@ function reset() {
     id: undefined,
     businessPartyMark: undefined,
     name: undefined,
-    type: '2',
+    accessType: '0',
     remark: undefined
   };
   proxy.resetForm("queryRef");
