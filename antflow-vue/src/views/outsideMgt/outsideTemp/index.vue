@@ -27,11 +27,7 @@
      </el-form>  
      <el-table v-loading="loading" :data="configList"> 
         <el-table-column label="业务标识" align="center" prop="formCode" />
-        <el-table-column label="业务名称" align="center" prop="formCodeName">
-           <template #default="item">
-              {{ getFromCodeName(item.row.formCode) }}
-           </template>
-        </el-table-column>
+        <el-table-column label="业务名称" align="center" prop="formCodeDisplayName"/> 
         <el-table-column label="流程编号" align="center" prop="bpmnCode" />
         <el-table-column label="流程名称" align="center" prop="bpmnName" />
         <el-table-column label="是否去重" align="center" prop="deduplicationType">
@@ -68,10 +64,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue"; 
-import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/workflow";
-import { getApplicationsPageList } from "@/api/outsideApi"; 
-const { proxy } = getCurrentInstance();
-let formCodeOptions = ref([]); 
+import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/workflow"; 
+const { proxy } = getCurrentInstance(); 
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
@@ -94,23 +88,9 @@ const data = reactive({
   }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
-onMounted(async() => {
-  await initFromCode();
+onMounted(async() => { 
   getList(); 
-})
-const initFromCode = async () => {
- await getApplicationsPageList().then((res) => {
-     if (res.code == 200) {
-        formCodeOptions.value = res.data.data;
-     }
-  }); 
-}
-/**获取三方注册应用名称 */
-const getFromCodeName = (formCode) => { 
- const result= formCodeOptions.value.filter(item => item.processKey == formCode)[0]; 
- return result?.title;
-}
- 
+}) 
 /** 查询列表 */
 function getList() {
   loading.value = true;
