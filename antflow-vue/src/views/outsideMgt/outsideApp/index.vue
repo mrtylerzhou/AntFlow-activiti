@@ -12,15 +12,14 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary"  icon="Plus" @click="handleAdd">注册业务表单</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd">注册业务表单</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning"  icon="Setting" :disabled="single"
-          @click="openApproveTemplate = true">设置审批人</el-button>
+        <el-button type="warning" icon="Setting" :disabled="single" @click="approveTempVisible = true">设置审批人</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success"  icon="Setting" :disabled="single"
-          @click="addConditionsTemplate">设置条件</el-button>
+        <el-button type="success" icon="Setting" :disabled="single"
+          @click="conditionTempVisible = true">设置条件</el-button>
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
@@ -47,7 +46,8 @@
       <el-table-column label="操作" width="280" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button link type="primary" icon="View" @click="handleTemplateList(scope.row)">查看条件</el-button>
+          <el-button link type="primary" icon="View" @click="viewConditionList(scope.row)">条件</el-button>
+          <el-button link type="primary" icon="View" @click="viewApproveList(scope.row)">审批人</el-button>
           <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
@@ -60,7 +60,6 @@
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" label-position="top"
         style="margin: 0 20px;">
-
         <el-row>
           <el-col :span="24">
             <el-form-item label="业务方" prop="businessCode">
@@ -123,56 +122,73 @@
         </div>
       </template>
     </el-dialog>
- 
-    <TemplateList ref="templateListRef" :visible="templateListVisible" />
+    <conditionForm v-model:visible="conditionTempVisible" v-model:bizformData="bizAppForm" />
+    <approveForm v-model:visible="approveTempVisible" v-model:bizformData="bizAppForm" />
+    <conditionTemplateList ref="conditionListRef" v-model:visible="conditionListVisible" />
+    <approveTemplateList ref="approveListRef" v-model:visible="approveListVisible" /> 
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { getApplicationsPageList, addApplication, getApplicationDetail, getPartyMarkKV } from "@/api/outsideApi";
-import TemplateList from "./template.vue";
-import { getDynamicsList } from "@/api/mock";
+import conditionForm from "./condition/form.vue"; 
+import conditionTemplateList from "./condition/list.vue";
+import approveForm from "./approve/form.vue";
+import approveTemplateList from "./approve/list.vue";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
 const open = ref(false);
-const openTemplate = ref(false);
-const openApproveTemplate = ref(false);
+const conditionTempVisible = ref(false);
+const approveTempVisible = ref(false);
+
 const title = ref("");
-const appIds = ref([]);
 const single = ref(true);
 const multiple = ref(true);
-const businessPartyName = ref("");
-const applicationName = ref("");
-const processKey = ref("");
 
 let partyMarkOptions = ref([]);
-let templateListVisible = ref(false)
+let conditionListVisible = ref(false);
+let approveListVisible = ref(false);
 const data = reactive({
-  form: {}, 
+  form: {
+    title: undefined,
+    businessCode: undefined,
+    applyType: '2',
+    isSon: '1',
+  },
   page: {
     page: 1,
     pageSize: 10
   },
-  vo: {} 
+  vo: {
+    title: undefined
+  },
+  rules: {
+    businessCode: [{ required: true, message: '请选择业务方', trigger: 'blur' }],
+    title: [{ required: true, message: '请填写业务表单名称', trigger: 'blur' }],
+  }
 });
-const { page, vo, form } = toRefs(data);
+const { page, vo, form, rules } = toRefs(data);
+
+let bizAppForm = reactive({
+  businessPartyId: undefined,
+  applicationId: undefined,
+  businessPartyName: undefined,
+  applicationName: undefined,
+});
 
 onMounted(async () => {
-  getList();
-  getListAA();
+   getList();
+   getPartyMarkList();
 })
 
-
-function getListAA() {
-  loading.value = true;
+/** 获取业务方标识 */
+function getPartyMarkList() { 
   getPartyMarkKV().then(response => {
     partyMarkOptions.value = response.data;
-  }).catch(() => {
-
   });
 }
 
@@ -190,13 +206,12 @@ function getList() {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  appIds.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-
-  processKey.value = selection.map(item => item.processKey);
-  businessPartyName.value = selection.map(item => item.businessName);
-  applicationName.value = selection.map(item => item.name);
+  bizAppForm.businessPartyId = selection.map(item => item.businessPartyId) ?? [0];
+  bizAppForm.applicationId = selection.map(item => item.id) ?? [0];
+  bizAppForm.businessPartyName = selection.map(item => item.businessName) ?? [0];
+  bizAppForm.applicationName = selection.map(item => item.name) ?? [0];
 }
 
 /** 新增接入业务方 */
@@ -209,6 +224,7 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs["formRef"].validate(valid => {
     if (valid) {
+      proxy.$modal.loading();
       if (form.value.id != undefined) {
         addApplication(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
@@ -226,6 +242,7 @@ function submitForm() {
           getList();
         });
       }
+      proxy.$modal.closeLoading();
     }
   });
 }
@@ -238,6 +255,7 @@ function handleEdit(row) {
     proxy.$modal.msgError("演示数据不允许修改操作！");
     return;
   }
+  proxy.$modal.loading();
   getApplicationDetail(id).then(response => {
     form.value = response.data;
     form.value.applyType = form.value.applyType.toString();
@@ -245,23 +263,7 @@ function handleEdit(row) {
     open.value = true;
     title.value = "编辑业务表单";
   });
-}
-
-/** 删除按钮操作 */
-function handleDelete(row) {
-  proxy.$modal.msgError("演示环境不允许删除操作！");
-}
-
-/** 添加条件模板 */
-function addConditionsTemplate(row) {
-  reset();
-  const appId = row.id || appIds.value[0];
-  templateForm.value.applicationId = appId;
-  templateForm.value.businessPartyName = businessPartyName.value[0];
-  templateForm.value.applicationName = applicationName.value[0];
-  templateForm.value.applicationFormCode = processKey.value[0];
-  openTemplate.value = true;
-  //console.log(JSON.stringify(templateForm.value)); 
+  proxy.$modal.closeLoading();
 }
 
 
@@ -270,91 +272,35 @@ function cancel() {
   open.value = false;
   reset();
 }
-
-
-
-function handleTemplateList(row) {
-
-  proxy.$refs["templateListRef"].show(row.businessPartyId, row.id);
-}
-
-function handleCheckUserUrl() {
-  let url = form.value.userRequestUri;
-  if (!url) {
-    proxy.$modal.msgError("审批人模板URL不能为空");
-    return;
-  }
-  else {
-    const regex = /^https?:\/\//;
-    if (!regex.test(url)) {
-      proxy.$modal.msgError("请输入正确审批人模板URL");
-      return;
-    }
-    getDynamicsList(url).then((res) => {
-      proxy.$modal.msgSuccess("审批人模板URL链接成功");
-    }).catch((res) => {
-      proxy.$modal.msgError("请输入正确审批人模板URL");
-    });
-  }
-}
-function handleCheckRoleUrl() {
-  let url = form.value.roleRequestUri;
-  if (!url) {
-    proxy.$modal.msgError("角色模板URL不能为空");
-    return;
-  }
-  else {
-    const regex = /^https?:\/\//;
-    if (!regex.test(url)) {
-      proxy.$modal.msgError("请输入正确角色模板URL");
-      return;
-    }
-    getDynamicsList(url).then((res) => {
-      proxy.$modal.msgSuccess("角色模板URL链接成功");
-    }).catch((res) => {
-      proxy.$modal.msgError("请输入正确角色模板URL");
-    });
-  }
-}
-/** 重置操作表单 */
 function reset() {
   form.value = {
-    id: undefined,
-    businessCode: undefined,
     title: undefined,
+    businessCode: undefined,
     applyType: '2',
-    isSon: '2',
-    applicationUrl: undefined,
-    pcIcon: undefined,
-    effectiveSource: undefined,
-    userRequestUri: undefined,
-    roleRequestUri: undefined,
-    remark: undefined
+    isSon: '1',
   };
-  templateForm.value = {
-    businessPartyName: undefined,
-    applicationName: undefined,
-    businessPartyId: undefined,
-    applicationId: undefined,
-    applicationFormCode: undefined,
-    templateMark: undefined,
-    name: undefined,
-    remark: undefined
-  };
-  proxy.resetForm("queryRef");
-};
-
-/** 搜索按钮操作 */
-function handleQuery() {
-  page.value.page = 1;
-  getList();
 }
-
 /** 重置按钮操作 */
 function resetQuery() {
   vo.value = {};
   proxy.resetForm("queryRef");
   handleQuery();
 }
-
+/** 搜索按钮操作 */
+function handleQuery() {
+  page.value.page = 1;
+  getList();
+}
+/** 删除按钮操作 */
+function handleDelete(row) {
+  proxy.$modal.msgError("演示环境不允许删除操作！");
+}
+/** 查看条件列表 */
+function viewConditionList(row) {
+  proxy.$refs["conditionListRef"].show(row.businessPartyId, row.id);
+}
+/** 查看条件列表 */
+function viewApproveList(row) {
+  proxy.$refs["approveListRef"].show(row.businessPartyId, row.id);
+}
 </script>

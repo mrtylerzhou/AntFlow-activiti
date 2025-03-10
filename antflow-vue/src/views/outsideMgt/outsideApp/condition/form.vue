@@ -1,6 +1,6 @@
 <template> 
     <!-- 添加条件模板对话框 -->
-    <el-dialog title="添加条件" v-model="openTemplate" width="550px" append-to-body>
+    <el-dialog title="添加条件" v-model="dialogVisible" width="550px" append-to-body>
       <el-form :model="templateForm" :rules="templateRules" ref="conditionTemplateRef" label-width="130px"
         label-position="top" style="margin: 0 20px;">
         <el-row>
@@ -41,17 +41,42 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitTemplateForm">确 定</el-button>
-          <el-button @click="cancelTemplate">取 消</el-button>
+          <el-button type="primary" @click="submitConditionTempForm">确 定</el-button>
+          <el-button @click="closeDialog">取 消</el-button>
         </div>
       </template>
     </el-dialog>
 
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
-import { getApproveTemplateDetail,setConditionTemplate } from "@/api/outsideApi";
-let openTemplate = ref(false);
+import { ref,watch} from "vue";
+import { setConditionTemplate } from "@/api/outsideApi";
+const { proxy } = getCurrentInstance();
+let props = defineProps({
+   visible: {
+        type: Boolean,
+        default:false,
+    },
+    bizformData: {
+        type: Object,
+        default: () => {},
+    }
+});
+
+let dialogVisible = computed({
+  get() {
+    return props.visible
+  },
+  set() {
+    closeDialog()
+  }
+})
+const emits = defineEmits(["update:visible"]);
+
+watch(() => props.bizformData, (val) => {
+    templateForm.value = val;  
+}, { deep: true});
+
 const data = reactive({
   templateForm: {},  
   templateRules: {
@@ -62,21 +87,34 @@ const data = reactive({
   }
 });
 const { templateForm, templateRules } = toRefs(data);
-
+ 
 /** 提交条件模板表单 */
-function submitTemplateForm() {
+function submitConditionTempForm() {
   proxy.$refs["conditionTemplateRef"].validate(valid => {
     if (valid) {
-      setConditionTemplate(templateForm.value).then(response => {
-        proxy.$modal.msgSuccess("添加成功");
-        openTemplate.value = false;
+      proxy.$modal.loading();
+      setConditionTemplate(templateForm.value).then(res => {
+        if(res && res.code == 200){
+          proxy.$modal.msgSuccess("添加成功");
+          emits("update:visible", false);
+        }else{
+          proxy.$modal.msgError("添加失败" + res.message);
+        } 
+      }).catch(err => {
+         console.log(err);
       });
+      proxy.$modal.closeLoading();
     }
   });
 }
 /** 取消操作添加条件模板表单 */
-function cancelTemplate() {
-  openTemplate.value = false;
+function closeDialog() {  
+  emits("update:visible", false);
   reset();
 }
+/** 重置操作表单 */
+function reset() {
+  templateForm.value = {}; 
+}
+
 </script>

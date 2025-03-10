@@ -125,8 +125,8 @@ export function getPartyMarkKV() {
  * @param {*} param 
  * @returns 
  */
-export function getTemplatelistPage(businessPartyId,applicationId) {  
-  return http.get(`${baseUrl}/outSideBpm/ConditionTemplate/selectListByPartMarkIdAndAppId/${businessPartyId}/${applicationId}`, { headers })
+export function getConditionTemplatelist(businessPartyId,applicationId) {  
+  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByTemp/${businessPartyId}/${applicationId}`, { headers })
 } 
 /**
  * 获取条件模板列表
@@ -141,7 +141,7 @@ export function getTemplateByPartyMarkIdAndFormCode(businessPartyId,formCode) {
       "data": []
     })
   }
-  return http.get(`${baseUrl}/outSideBpm/ConditionTemplate/selectListByPartyMarkIdAndFormCode/${businessPartyId}/${formCode}`, { headers })
+  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByPartyMarkIdAndFormCode/${businessPartyId}/${formCode}`, { headers })
 } 
  
 /**
@@ -150,7 +150,7 @@ export function getTemplateByPartyMarkIdAndFormCode(businessPartyId,formCode) {
  * @returns 
  */
 export function setConditionTemplate(data) { 
-  return http.post(`${baseUrl}/outSideBpm/ConditionTemplate/edit`, data, { headers })
+  return http.post(`${baseUrl}/outSideBpm/conditionTemplate/edit`, data, { headers })
 } 
 /**
  * 审批人模板列表
@@ -163,6 +163,14 @@ export function getApproveTemplatePageList(page,vo) {
     "vo": vo
   }
   return http.post(`${baseUrl}/outSideBpm/approveTemplate/listPage`, data, { headers })
+} 
+/**
+ * 获取审批人列表
+ * @param {*} param 
+ * @returns 
+ */
+export function getApproveTemplatelist(businessPartyId,applicationId) {  
+  return http.get(`${baseUrl}/outSideBpm/approveTemplate/selectListByTemp/${businessPartyId}/${applicationId}`, { headers })
 } 
 /**
  * 审批人模板详情
