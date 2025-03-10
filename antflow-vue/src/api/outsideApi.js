@@ -5,13 +5,13 @@
  * @FilePath: src\api\outsideApi.js
  * 三方接入模块 相关接口
  */
-import http from '@/utils/axios';
-import cache from '@/plugins/cache';
-let baseUrl = import.meta.env.VITE_APP_BASE_API
+import http from "@/utils/axios";
+import cache from "@/plugins/cache";
+let baseUrl = import.meta.env.VITE_APP_BASE_API;
 const headers = {
-  "Userid": cache.session.get('userId'),
-  "Username": cache.session.get('userName')
-} 
+  Userid: cache.session.get("userId"),
+  Username: cache.session.get("userName"),
+};
 
 /** 三方接入模块 流程设计 * / 
  
@@ -21,94 +21,116 @@ const headers = {
  * @returns 
  */
 export function getApiWorkFlowData(data) {
-  return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers })
+  return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers });
 }
- 
+
 /**
  * 设置审批数据
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
  */
 export function setApiWorkFlowData(data) {
-  return http.post(`${baseUrl}/bpmnConf/edit`, data, { headers })
+  return http.post(`${baseUrl}/bpmnConf/edit`, data, { headers });
 }
 
 /**
  * 获取接入业务方列表
  * @param { page } 分页
  * @param { vo } 条件
- * @returns 
+ * @returns
  */
-export function getBusinessPartyList(page,vo) {
+export function getBusinessPartyList(page, vo) {
   let data = {
-    "page": page,
-    "vo": vo
-  }
-  return http.get(`${baseUrl}/outSideBpm/businessParty/listPage`,data, { headers })
+    page: page,
+    vo: vo,
+  };
+  return http.get(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
+    headers,
+  });
 }
 /**
  * 获取接入业务方详情
- * @param { Number } id 
- * @returns 
+ * @param { Number } id
+ * @returns
  */
 export function getBusinessPartyDetail(id) {
-  return http.get(`${baseUrl}/outSideBpm/businessParty/detail/${id}`, { headers })
+  return http.get(`${baseUrl}/outSideBpm/businessParty/detail/${id}`, {
+    headers,
+  });
 }
 
 /**
  * 编辑接入业务方
- * @param {*} param 
- * @returns 
+ * @param {*} param
+ * @returns
  */
-export function setBusinessParty(data) { 
-  return http.post(`${baseUrl}/outSideBpm/businessParty/edit`, data, { headers })
-} 
+export function setBusinessParty(data) {
+  return http.post(`${baseUrl}/outSideBpm/businessParty/edit`, data, {
+    headers,
+  });
+}
 /**
  * 获取业务方应用列表
- * @param {*} page 
- * @param {*} vo 
- * @returns 
+ * @param {*} page
+ * @param {*} vo
+ * @returns
  */
-export function getApplicationsPageList(page,vo) {
+export function getApplicationsPageList(page, vo) {
   let data = {
-    "page": page,
-    "vo": vo
-  }
-  return http.get(`${baseUrl}/outSideBpm/businessParty/applicationsPageList`,data, { headers })
+    page: page,
+    vo: vo,
+  };
+  return http.get(
+    `${baseUrl}/outSideBpm/businessParty/applicationsPageList`,
+    data,
+    { headers }
+  );
 }
- 
+
 /**
  * 添加业务方应用
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
  */
 export function addApplication(data) {
-  return http.post(`${baseUrl}/outSideBpm/businessParty/addBpmProcessAppApplication`, data, { headers })
-} 
+  return http.post(
+    `${baseUrl}/outSideBpm/businessParty/addBpmProcessAppApplication`,
+    data,
+    { headers }
+  );
+}
 /**
  * 获取注册应用详情
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
  */
 export function getApplicationDetail(id) {
-  return http.get(`${baseUrl}/outSideBpm/businessParty/applicationDetail/${id}`, { headers })
-} 
+  return http.get(
+    `${baseUrl}/outSideBpm/businessParty/applicationDetail/${id}`,
+    { headers }
+  );
+}
 /**
  * 获取可用接入业务方的标识
- * @param { String } businessPartyMark 
- * @returns 
+ * @param { String } businessPartyMark
+ * @returns
  */
 export function getPartyMarkByIdBpmConf(businessPartyMark) {
-  return http.get(`${baseUrl}/outSideBpm/businessParty/getPartyMarkByIdBpmConf/${businessPartyMark}`, { headers })
+  return http.get(
+    `${baseUrl}/outSideBpm/businessParty/getPartyMarkByIdBpmConf/${businessPartyMark}`,
+    { headers }
+  );
 }
 /**
- * 获取业务方k-v 
- * @returns 
+ * 获取业务方k-v
+ * @returns
  */
 export function getPartyMarkKV() {
-  return http.get(`${baseUrl}/outSideBpm/businessParty/getPartyMarkKV`, { headers })
+  return http.get(`${baseUrl}/outSideBpm/businessParty/getPartyMarkKV`, {
+    headers,
+  });
 }
-  
+
 /** 应用关联条件模板 * /
 
 /**
@@ -116,55 +138,68 @@ export function getPartyMarkKV() {
  * @param {*} param 
  * @returns 
  */
-export function getConditionTemplatelist(applicationId) {  
-  return http.get(`${baseUrl}/outSideBpm/conditionTemplate/selectListByTemp/${applicationId}`, { headers })
-}  
+export function getConditionTemplatelist(applicationId) {
+  return http.get(
+    `${baseUrl}/outSideBpm/conditionTemplate/selectListByTemp/${applicationId}`,
+    { headers }
+  );
+}
 
 /**
- * 添加条件模板 
- * @param {*} param 
- * @returns 
+ * 添加条件模板
+ * @param {*} param
+ * @returns
  */
-export function setConditionTemplate(data) { 
-  return http.post(`${baseUrl}/outSideBpm/conditionTemplate/edit`, data, { headers })
-} 
+export function setConditionTemplate(data) {
+  return http.post(`${baseUrl}/outSideBpm/conditionTemplate/edit`, data, {
+    headers,
+  });
+}
 /**
  * 审批人模板列表
- * @param {*} param 
- * @returns 
+ * @param {*} param
+ * @returns
  */
-export function getApproveTemplatePageList(page,vo) { 
+export function getApproveTemplatePageList(page, vo) {
   let data = {
-    "page": page,
-    "vo": vo
-  }
-  return http.post(`${baseUrl}/outSideBpm/approveTemplate/listPage`, data, { headers })
-} 
+    page: page,
+    vo: vo,
+  };
+  return http.post(`${baseUrl}/outSideBpm/approveTemplate/listPage`, data, {
+    headers,
+  });
+}
 /**
  * 获取审批人列表
- * @param {*} param 
- * @returns 
+ * @param {*} param
+ * @returns
  */
-export function getApproveTemplatelist(applicationId) {  
-  return http.get(`${baseUrl}/outSideBpm/approveTemplate/selectListByTemp/${applicationId}`, { headers })
-} 
+export function getApproveTemplatelist(applicationId) {
+  return http.get(
+    `${baseUrl}/outSideBpm/approveTemplate/selectListByTemp/${applicationId}`,
+    { headers }
+  );
+}
 /**
  * 审批人模板详情
- * @param {*} param 
- * @returns 
+ * @param {*} param
+ * @returns
  */
-export function getApproveTemplateDetail(id) {  
-  return http.post(`${baseUrl}/outSideBpm/approveTemplate/detail/${id}`,  { headers })
-} 
+export function getApproveTemplateDetail(id) {
+  return http.post(`${baseUrl}/outSideBpm/approveTemplate/detail/${id}`, {
+    headers,
+  });
+}
 /**
  * 添加审批人模板
- * @param {*} param 
- * @returns 
+ * @param {*} param
+ * @returns
  */
-export function setApproveTemplate(data) { 
-  return http.post(`${baseUrl}/outSideBpm/approveTemplate/edit`, data, { headers })
-} 
-
+export function setApproveTemplate(data) {
+  return http.post(`${baseUrl}/outSideBpm/approveTemplate/edit`, data, {
+    headers,
+  });
+}
 
 /** 三方业务发起 * /
 
@@ -173,7 +208,6 @@ export function setApproveTemplate(data) {
  * @param {*} data 
  * @returns 
  */
- export function processSubmit(data) {
-  return http.post(`${baseUrl}/outSide/processSubmit`, data, { headers })
-} 
-
+export function processSubmit(data) { 
+  return http.post(`${baseUrl}/outSide/processSubmit`, data, { headers });
+}

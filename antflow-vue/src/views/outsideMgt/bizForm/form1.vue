@@ -1,8 +1,9 @@
 <template>
     <div>
-        <el-form ref="ruleFormRef" :model="form" :rules="rules" label-position="top" style="max-width: 600px;min-height: 100px; margin: 50px auto;"> 
+        <el-form ref="ruleFormRef" :model="form" :rules="rules" label-position="top"
+            style="max-width: 600px;min-height: 100px; margin: 50px auto;">
             <div style="margin-bottom: 20px;">
-                <el-text class="mx-1" size="large" type="danger">*发起测试：模拟外部系统表单，接入本流程引擎</el-text> 
+                <el-text class="mx-1" size="large" type="danger">*发起测试：模拟外部系统表单，接入本流程引擎</el-text>
             </div>
             <el-row>
                 <el-col :span="24">
@@ -10,7 +11,7 @@
                         <el-input v-model="form.userName" placeholder="请输入人员名称" :style="{ width: '100%' }" />
                     </el-form-item>
                 </el-col>
-        
+
                 <el-col :span="24">
                     <el-form-item label="申请账户类型" prop="accountType">
                         <el-select v-model="form.accountType" placeholder="请选择账户类型" :style="{ width: '100%' }">
@@ -37,11 +38,11 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive, getCurrentInstance } from 'vue' 
-import { processSubmit} from "@/api/outsideApi";
+import { ref, watch, reactive, getCurrentInstance } from 'vue'
+import { processSubmit } from "@/api/outsideApi";
 import { formToHTMLString } from '@/utils/index'
-const { proxy } = getCurrentInstance() 
-  
+const { proxy } = getCurrentInstance()
+
 const ruleFormRef = ref(null)
 let accountTypeOptions = [{
     "label": "腾讯云",
@@ -56,7 +57,7 @@ let accountTypeOptions = [{
 const form = reactive({
     userName: '张三',
     accountType: 1,
-    remark:'外部系统业务表单接入测试'
+    remark: '外部系统业务表单接入测试'
 })
 
 let rules = {
@@ -84,32 +85,30 @@ const getFromData = () => {
     return JSON.stringify(form);
 }
 const handleSubmit = () => {
-  const form = document.querySelector('form'); 
-  const htmlString = formToHTMLString(form);
-  let param =  {
-        formCode:"adbgxx", 
-        businessPartyMark:"kbgschool",
-        templateMark:"id2",
-        outSideType:2,
-        userId:"1",
-        formDataPc:htmlString
-        }
-     proxy.$refs['ruleFormRef'].validate((valid) => {
+    const form = document.querySelector('form');
+    const htmlString = formToHTMLString(form);
+    let param = {
+        formCode: "adbgxx",
+        templateMark: "id2",
+        userId: "1",
+        formDataPc: htmlString
+    }
+    proxy.$refs['ruleFormRef'].validate((valid) => {
         if (valid) {
-            proxy.$modal.loading(); 
+            proxy.$modal.loading();
             processSubmit(param).then(res => {
                 proxy.$modal.closeLoading();
                 if (res.code == 200) {
                     proxy.$message.success('提交成功');
                 } else {
-                    console.log('res======',JSON.stringify(res))
+                    console.log('res======', JSON.stringify(res))
                     proxy.$message.error(res.errMsg);
                 }
-            }).catch((err) => {  
-                    proxy.$modal.closeLoading(); 
+            }).catch((err) => {
+                proxy.$modal.closeLoading();
             });
         }
-    }); 
+    });
 }
 
 const handleValidate = () => {

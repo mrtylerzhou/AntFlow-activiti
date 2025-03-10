@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 
 
 /**
@@ -77,22 +78,12 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
     public OutSideBpmAccessRespVo accessBusinessStart(OutSideBpmAccessBusinessVo vo) {
 
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = this.getBaseMapper().selectById(vo.getId());
-
         if (outSideBpmAccessBusiness!=null) {
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.updateById(outSideBpmAccessBusiness);
         } else {
-
-
-            //query business party by business party mark
-            OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
-                    .eq("business_party_mark", vo.getBusinessPartyMark()));
-
-            if(outSideBpmBusinessParty==null){
-                throw new JiMuBizException("业务方信息不存在!");
-            }
             String formCode = vo.getFormCode();
             Wrapper<BpmnConf> qryWrapper=new QueryWrapper<BpmnConf>()
                     .eq("form_code",formCode)
@@ -110,63 +101,36 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 outSideBpmAccessBusiness.setTemplateMark(templateMarksJoin);
             }
             //set business party's id
-            outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
+            outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmAccessBusiness.getBusinessPartyId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setCreateTime(new Date());
             outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.save(outSideBpmAccessBusiness);
         }
-
-
-
         //set form code,business,etc
         BusinessDataVo businessDataVo = new BusinessDataVo();
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
         businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
-        businessDataVo.setOutSideType(vo.getOutSideType());
+        businessDataVo.setOutSideType(BPMN_FLOW_TYPE_OUTSIDE);
         businessDataVo.setApproversList(vo.getApproversList());
-
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
             throw new JiMuBizException("发起人用户名为空，无法发起流程！");
         }
-//        Employee employee = getEmployeeByUserId(vo.getUserId());
-//
-//        if (employee==null) {
-//            throw new JiMuBizException("发起人不合法，无法发起流程");
-//        }
 
         //set start user id
         businessDataVo.setStartUserId(SecurityUtils.getLogInEmpIdSafe());
         businessDataVo.setStartUserName(SecurityUtils.getLogInEmpNameSafe());
 
-        //set approval
-//        if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-////            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-////            if(approvalEmployee!=null){
-////                String id = approvalEmployee.getId();
-////                if(!StringUtils.isEmpty(id)){
-////                    businessDataVo.setEmplId(id);
-////                }
-////            }
-//
-//            businessDataVo.setEmpId(vo.getUserId());
-//            businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
-//
-//        }
         businessDataVo.setEmpId(SecurityUtils.getLogInEmpIdSafe());
         businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
-
         //set embed nodes
         businessDataVo.setEmbedNodes(reSetEmbedNodes(vo.getEmbedNodes()));
-        //not implemented at the moment
-        //businessDataVo.setOutSideLevelNodes(reFormatOutsideLevelNodes(vo.getOutSideLevelNodes()));
         //call common service to start the process
         processApprovalService.buttonsOperationTransactional(businessDataVo);
-
         //query inserted data
         OutSideBpmAccessBusiness outSideBpmAccessBusinessResult = this.getBaseMapper().selectById(outSideBpmAccessBusiness.getId());
 
