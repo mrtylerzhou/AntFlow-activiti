@@ -175,7 +175,10 @@ const data = reactive({
   },
   rules: {
     businessCode: [{ required: true, message: '请选择业务方', trigger: 'blur' }],
-    title: [{ required: true, message: '请填写业务表单名称', trigger: 'blur' }],
+    title: [
+      { required: true, message: '请填写业务表单名称', trigger: 'blur' },
+      { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
+    ],
   }
 });
 const { page, vo, form, rules } = toRefs(data);
@@ -234,22 +237,24 @@ function submitForm() {
       proxy.$modal.loading();
       if (form.value.id != undefined) {
         addApplication(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
           open.value = false;
+          proxy.$modal.closeLoading();
+          proxy.$modal.msgSuccess("修改成功"); 
           getList();
         });
       } else {
         addApplication(form.value).then(response => {
+          proxy.$modal.closeLoading();
           if (response.code != 200) {
             proxy.$modal.msgError("注册失败");
             return;
           }
-          proxy.$modal.msgSuccess("注册成功");
           open.value = false;
+          proxy.$modal.msgSuccess("注册成功");        
           getList();
         });
       }
-      proxy.$modal.closeLoading();
+     
     }
   });
 }

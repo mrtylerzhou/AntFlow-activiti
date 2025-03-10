@@ -121,11 +121,14 @@ const data = reactive({
   rules: {
     businessPartyMark: [{
             required: true,
-            pattern: /^[A-Z]{4,10}$/,
-            message: '请输入项目唯一标识(只能是大写字母,4-10位长度)',
+            pattern: /^[a-zA-Z]{4,10}$/,
+            message: '请输入项目唯一标识(只能是大小写字母,4-10位长度)',
             trigger: ['blur', 'change']
         }],
-    name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+    name: [
+      { required: true, message: '请输入项目名称', trigger: 'blur' },
+      { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
+    ],
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
