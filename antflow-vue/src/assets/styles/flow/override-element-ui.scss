@@ -19,7 +19,7 @@
 .demo-drawer__content {
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
+    height: calc(-61px + 100vh) !important;
 }
 
 .drawer_content {

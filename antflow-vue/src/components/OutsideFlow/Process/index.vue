@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div>
         <section class="antflow-design" ref="antflowDesignRef">
             <div class="zoom">
                 <div class="zoom-out" @click="zoomOut" title="缩小"></div>
