@@ -36,6 +36,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
 
     /**
      * query to check whether the previous operation is submit or disagree
+     *
      * @param processInstanceId
      * @return
      */
@@ -82,7 +83,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
     public void processComplete(Task task) {
         BpmProcessNodeSubmit processNodeSubmit = this.findBpmProcessNodeSubmit(task.getProcessInstanceId());
         String restoreNodeKey = "";
-        Map<String,Object> varMap=new HashMap<>();
+        Map<String, Object> varMap = new HashMap<>();
         //varMap.put(StringConstants.TASK_ASSIGNEE_NAME,SecurityUtils.getLogInEmpName());
         if (!ObjectUtils.isEmpty(processNodeSubmit)) {
             this.addProcessNode(BpmProcessNodeSubmit.builder()
@@ -94,22 +95,22 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     .build());
 
             PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
-            if(nextElement!=null){
+            if (nextElement != null) {
                 String type = (String) nextElement.getProperty("type");
-                if ("parallelGateway".equals(type)){
-                    if(nextElement.getOutgoingTransitions().size()>1){
+                if ("parallelGateway".equals(type)) {
+                    if (nextElement.getOutgoingTransitions().size() > 1) {
                         restoreNodeKey = "";
-                    }else{
+                    } else {
                         restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
                     }
+                }
             }
-
             if (processNodeSubmit.getState().equals(0)) {
-               if(!StringUtils.isEmpty(restoreNodeKey)){
-                   processJump.commitProcess(task.getId(), varMap, restoreNodeKey);
-               }else{
-                   taskService.complete(task.getId(),varMap);
-               }
+                if (!StringUtils.isEmpty(restoreNodeKey)) {
+                    processJump.commitProcess(task.getId(), varMap, restoreNodeKey);
+                } else {
+                    taskService.complete(task.getId(), varMap);
+                }
             } else {
                 // node disagree type（1：back to previous node submit next node 2：back to initiator submit next node
                 // 3. back to initiator submit next node 4. back to history node submit next node 5. back to history node submit back node
@@ -124,13 +125,14 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                         processJump.commitProcess(task.getId(), varMap, processNodeSubmit.getNodeKey());
                         break;
                     default:
-                        taskService.complete(task.getId(),varMap);
+                        taskService.complete(task.getId(), varMap);
                         break;
                 }
             }
         } else {
-            taskService.complete(task.getId(),varMap);
+            taskService.complete(task.getId(), varMap);
         }
     }
 }
-}
+
+

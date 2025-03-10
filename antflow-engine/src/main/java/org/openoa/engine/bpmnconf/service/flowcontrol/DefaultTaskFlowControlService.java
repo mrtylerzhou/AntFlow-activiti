@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.activiti.engine.ProcessEngine;
@@ -66,25 +67,27 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	 * @throws Exception
 	 */
 	@Override
-	public void moveTo(String targetTaskDefinitionKey) throws Exception
+	public List<String> moveTo(String targetTaskDefinitionKey) throws Exception
 	{
 		List<Task> currentTasks = getCurrentTasks();
-		moveTo(currentTasks, targetTaskDefinitionKey);
+		return moveTo(currentTasks, targetTaskDefinitionKey);
 	}
 
 	@Override
-	public void moveTo(String currentTaskId, String targetTaskDefinitionKey) throws Exception
+	public List<String> moveTo(String currentTaskId, String targetTaskDefinitionKey) throws Exception
 	{
-		moveTo(getTaskById(currentTaskId), targetTaskDefinitionKey);
+		return moveTo(getTaskById(currentTaskId), targetTaskDefinitionKey);
 	}
 
-	private void moveTo(List<Task> currentTaskEntitys, ActivityImpl activity)
+	private List<String> moveTo(List<Task> currentTaskEntitys, ActivityImpl activity)
 	{
 		executeCommand(new StartActivityCmd(currentTaskEntitys.get(0).getExecutionId(), activity));
+		List<String> taskDefKeys=new ArrayList<>();
 		for (Task currentTaskEntity : currentTaskEntitys) {
 			executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
+			taskDefKeys.add(currentTaskEntity.getTaskDefinitionKey());
 		}
-
+	return taskDefKeys;
 	}
 
 	/**
@@ -96,12 +99,12 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	 * @throws Exception
 	 */
 	@Override
-	public void moveTo(List<Task> currentTaskEntitys, String targetTaskDefinitionKey) throws Exception
+	public List<String> moveTo(List<Task> currentTaskEntitys, String targetTaskDefinitionKey) throws Exception
 	{
 		ActivityImpl activity = ProcessDefinitionUtils.getActivity(_processEngine,
 			currentTaskEntitys.get(0).getProcessDefinitionId(), targetTaskDefinitionKey);
 
-		moveTo(currentTaskEntitys, activity);
+		return moveTo(currentTaskEntitys, activity);
 	}
 
 }

@@ -20,6 +20,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
+import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * back to modify
@@ -78,6 +80,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private ActivitiAdditionalInfoServiceImpl additionalInfoService;
     @Autowired
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
+    @Autowired
+    private TaskMgmtMapper taskMgmtMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -172,7 +176,11 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
         TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
         try {
-            taskFlowControlService.moveTo(backToNodeKey);
+            List<String> strings = taskFlowControlService.moveTo(backToNodeKey);
+            if(strings.size()>1){
+               strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
+                taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

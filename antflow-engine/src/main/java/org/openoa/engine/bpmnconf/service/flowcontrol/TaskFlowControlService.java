@@ -11,9 +11,9 @@ public interface TaskFlowControlService
 {
 
 
-	void moveTo(String targetTaskDefinitionKey) throws Exception;
+	List<String> moveTo(String targetTaskDefinitionKey) throws Exception;
 
-	void moveTo(String currentTaskId, String targetTaskDefinitionKey) throws Exception;
+	List<String> moveTo(String currentTaskId, String targetTaskDefinitionKey) throws Exception;
 
-	void moveTo(List<Task> currentTaskEntitys, String targetTaskDefinitionKey) throws Exception;
+	List<String> moveTo(List<Task> currentTaskEntitys, String targetTaskDefinitionKey) throws Exception;
 }
