@@ -95,7 +95,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         if(CollectionUtils.isEmpty(taskList)){
             throw new JiMuBizException("未获取到当前流程信息!,流程编号:"+bpmBusinessProcess.getProcessinessKey());
         }
-        Task taskData = taskList.stream().filter(a->SecurityUtils.getLogInEmpIdStr().equals(a.getAssignee())).findFirst().orElse(null);
+        Task taskData = taskList.stream().filter(a->a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
 
         if (taskData==null) {
             throw new JiMuBizException("当前流程已审批！");
@@ -178,7 +178,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         try {
             List<String> strings = taskFlowControlService.moveTo(backToNodeKey);
             if(strings.size()>1){
-               strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
+                strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
                 taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
             }
         } catch (Exception e) {
