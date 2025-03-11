@@ -59,8 +59,8 @@
                     </el-card>
                 </el-col>
                 <el-col :md="24">
-                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
-                        v-model:limit="pageDto.pageSize" @pagination="getLFFormCodePageList" />
+                    <pagination v-show="lfTotal > 0" :total="lfTotal" v-model:page="lfPageDto.page"
+                        v-model:limit="lfPageDto.pageSize" @pagination="getLFFormCodePageList" />
                 </el-col>
             </el-row>
 
@@ -77,7 +77,7 @@
                 </div>
             </template>
             <el-row :gutter="5">
-                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in outsideflowList">
+                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
                     <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -86,11 +86,16 @@
                                 </el-avatar>
                             </div>
                             <div class="card-title">
+                                <a>【{{ substringHidden(item.formCode) }}】</a>
                                 <a>{{ item.title }}</a>
                                 <p>{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
+                </el-col>
+                <el-col :md="24">
+                    <pagination v-show="outsideTotal > 0" :total="outsideTotal" v-model:page="outsidePage.page"
+                        v-model:limit="outsidePage.pageSize" @pagination="getOutSideFormCodeList" />
                 </el-col>
             </el-row>
         </el-card>
@@ -101,31 +106,32 @@
 import { ref, onMounted, getCurrentInstance } from 'vue'
 import { getDIYFromCodeData } from "@/api/workflow"
 import { getLFActiveFormCodePageList } from "@/api/lowcodeApi"
+import { getOutSideFormCodePageList } from "@/api/outsideApi"
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);
-const total = ref(0);
+let outsideFlowList = ref([]);
+const lfTotal = ref(0);
+const outsideTotal = ref(0);
 const data = reactive({ 
-    pageDto: {
+    lfPageDto: {
         page: 1,
         pageSize: 12
     },
-    taskMgmtVO: {
+    lfVO: {
         processState:1,
+        description: undefined
+    },
+    outsidePage: {
+        page: 1,
+        pageSize: 12
+    },
+    outsideVO: { 
         description: undefined
     }  
 });
-const { pageDto, taskMgmtVO } = toRefs(data);
-function handleFlow(row) {
-    proxy.$modal.msgSuccess("演示环境努力开发中！");
-}
-const outsideflowList = [
-    {
-        title: "第三方流程",
-        description: "接入测试",
-        IconUrl: getAssetsFile("jiejing")
-    }
-];
+const { lfPageDto, lfVO,outsidePage,outsideVO } = toRefs(data);
+
 let statusColor = {
     "LEAVE_WMA": 'leave',
     "DSFZH_WMA": 'hire',
@@ -138,8 +144,9 @@ let statusColor = {
 onMounted(async () => {
     proxy.$modal.loading();
     await getDIYFormCodeList();
-    await getLFFormCodePageList();
     proxy.$modal.closeLoading();
+    await getLFFormCodePageList(); 
+    await getOutSideFormCodeList(); 
 })
 /**
  * 获取自定义表单FormCode List
@@ -165,7 +172,7 @@ async  function getDIYFormCodeList(){
  * 获取低代码表单FormCode Page List
  */
 async  function getLFFormCodePageList(){ 
-    await getLFActiveFormCodePageList(pageDto.value,taskMgmtVO.value).then((res) => {
+    await getLFActiveFormCodePageList(lfPageDto.value,lfVO.value).then((res) => {
         if (res.code == 200) {
             const totalData = res.data.map(c => {
                 return {
@@ -178,10 +185,34 @@ async  function getLFFormCodePageList(){
                 }
             });
             lfFlowList.value = totalData;  
-            total.value = res.pagination.totalCount;
+            lfTotal.value = res.pagination.totalCount; 
         }
     });
 }
+
+/**
+ * 获取三方接入FormCode Page List
+ */
+async function getOutSideFormCodeList() { 
+    await getOutSideFormCodePageList(outsidePage.value,outsideVO.value).then((res) => {
+        if (res.code == 200) { 
+            const totalData = res.data.map(c => {
+                return {
+                    formCode: c.formCode,
+                    title: c.bpmnName,
+                    formType: 'outside',
+                    applicationId: c.applicationId,
+                    hasChooseApprove:false,
+                    description:c.bpmnName + c.remark + '流程办理',
+                    IconUrl: getAssetsFile("jiejing")
+                }
+            }); 
+            outsideFlowList.value = totalData;   
+            outsideTotal.value = res.pagination.totalCount; 
+        }
+    });
+}
+
 function handleStart(row) {
     const params = {
         formType: row.formType,
@@ -191,14 +222,23 @@ function handleStart(row) {
     const obj = { path: '/bizentry/index', query: params };
     proxy.$tab.openPage(obj);
 }
-function handleOutSide(row) {
-    proxy.$tab.openPage("/outsideMgt/bizForm", "三方接入表单");
-    return;
+function handleOutSide(row) { 
+    const params = {
+        ft: row.formType,
+        fc: row.formCode,
+        appid: row.applicationId,
+        ha: row.hasChooseApprove,
+        fcname:  encodeURIComponent(row.title) 
+    };
+    const obj = { path: '/outsideMgt/bizForm', query: params };
+    proxy.$tab.openPage(obj);
 }
 function getAssetsFile(pathUrl) {
     return new URL(`../../assets/images/work/${pathUrl}.png`, import.meta.url).href;
 }
-
+function handleFlow(row) {
+    proxy.$modal.msgSuccess("演示环境努力开发中！");
+}
 </script>
 <style lang="scss" scoped>
 .card-col {

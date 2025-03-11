@@ -14,7 +14,23 @@ const headers = {
 };
 
 /** 三方接入模块 流程设计 * / 
- 
+ * 
+ /**
+ * 获取OutSide FormCode Page List 模板列表使用
+ * @param { page } 分页
+ * @param { vo } 条件
+ * @returns
+ */
+export function getOutSideFormCodePageList(page, vo) {
+  let data = {
+    "pageDto": page,
+    "entity": vo
+  };
+  return http.post(`${baseUrl}/outSide/getOutSideFormCodePageList`, data, {
+    headers,
+  });
+}
+
 /**
  * 获取审批数据
  * @param {*} data 

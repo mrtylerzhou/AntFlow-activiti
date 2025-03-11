@@ -11,17 +11,18 @@
              :lfFieldPerm="lfFieldControlVOs" 
              :isPreview="isPreview"></component>
         </div>
-        <div v-if="viewConfig.isOutSideAccess">
-            <p v-if="formData" v-html="formData"></p>
+        <div v-if="viewConfig.isOutSideAccess"> 
+            <outsideFormRender v-if="formData" :formData="formData"></outsideFormRender>
         </div> 
     </div>
 </template>
 <script setup>
-import { ref,computed } from 'vue' 
-import { getViewBusinessProcess } from "@/api/workflow" 
-import { useStore } from '@/store/modules/workflow' 
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
-const { proxy } = getCurrentInstance()
+import { ref,computed } from 'vue'; 
+import { getViewBusinessProcess } from "@/api/workflow"; 
+import { useStore } from '@/store/modules/workflow'; 
+import outsideFormRender from "./outsideFormRender.vue";
+import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+const { proxy } = getCurrentInstance();
 let store = useStore()
 let viewConfig = computed(() => store.instanceViewConfig1)
 let props = defineProps({
@@ -61,7 +62,7 @@ const preview = async (param) => {
         if (response.code == 200) {
             const responseData = response.data;  
             if (responseData.isOutSideAccessProc && responseData.isOutSideAccessProc) {//外部接入 
-                formData.value = responseData.formData;
+                formData.value = responseData.formData;           
             }
             else if (responseData.isLowCodeFlow && responseData.isLowCodeFlow == '1') {//低代码表单
                 lfFormDataConfig.value = responseData.lfFormData;
