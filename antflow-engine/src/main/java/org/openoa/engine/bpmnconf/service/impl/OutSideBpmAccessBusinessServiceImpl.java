@@ -3,16 +3,19 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.DateUtil;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.Employee;
@@ -142,6 +145,21 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .processRecord(getProcessRecord(outSideBpmAccessBusinessResult.getProcessNumber()))
                 .build();
 
+    }
+    /**
+     * 获取OutSide FormCode Page List 模板列表使用
+     * @param pageDto
+     * @param vo
+     * @return
+     */
+    public ResultAndPage<BpmnConfVo> selectOutSideFormCodePageList(PageDto pageDto, BpmnConfVo vo) {
+        Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectOutSideFormCodeList(page, vo);
+        if (bpmnConfVos==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        page.setRecords(bpmnConfVos);
+        return PageUtils.getResultAndPage(page);
     }
 
     /**

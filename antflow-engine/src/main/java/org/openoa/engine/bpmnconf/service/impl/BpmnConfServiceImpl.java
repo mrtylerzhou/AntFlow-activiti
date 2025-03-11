@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,8 +19,6 @@ import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeLabelsMapper;
-import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
@@ -29,7 +26,6 @@ import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
