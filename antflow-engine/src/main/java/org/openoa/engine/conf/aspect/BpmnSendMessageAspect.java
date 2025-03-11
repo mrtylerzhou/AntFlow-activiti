@@ -78,7 +78,7 @@ public class BpmnSendMessageAspect {
             businessDataVo.setIsOutSideAccessProc(true);
         }
         //query business party info
-        Integer businessPartyId = bpmnConf.getBusinessPartyId();
+        Long businessPartyId = bpmnConf.getBusinessPartyId();
         OutSideBpmBusinessParty outSideBpmBusinessParty=null;
         if(businessPartyId!=null){
             outSideBpmBusinessParty= outSideBpmBusinessPartyService.getById(bpmnConf.getBusinessPartyId());

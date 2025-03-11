@@ -101,7 +101,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 outSideBpmAccessBusiness.setTemplateMark(templateMarksJoin);
             }
             //set business party's id
-            outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmAccessBusiness.getBusinessPartyId());
+            outSideBpmAccessBusiness.setBusinessPartyId(effectiveConfByFormCode.getBusinessPartyId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setCreateTime(new Date());
             outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());

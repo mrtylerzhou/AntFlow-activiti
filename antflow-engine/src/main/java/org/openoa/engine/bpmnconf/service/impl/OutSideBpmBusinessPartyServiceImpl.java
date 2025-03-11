@@ -224,7 +224,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
      * @param id
      * @return
      */
-    public String getBusinessPartyMarkById(Integer id) {
+    public String getBusinessPartyMarkById(Long id) {
         return outSideBpmBusinessPartyMapper.getBusinessPartyMarkById(id);
     }
 

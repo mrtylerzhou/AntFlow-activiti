@@ -32,7 +32,7 @@ public interface OutSideBpmBusinessPartyMapper extends BaseMapper<OutSideBpmBusi
      * @param id
      * @return
      */
-    String getBusinessPartyMarkById(@Param("id") Integer id);
+    String getBusinessPartyMarkById(@Param("id") Long id);
 
     /**
      * check whether the data exists

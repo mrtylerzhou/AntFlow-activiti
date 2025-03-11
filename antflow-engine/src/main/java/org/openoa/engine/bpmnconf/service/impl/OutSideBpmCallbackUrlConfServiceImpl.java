@@ -209,7 +209,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
      * @param businessPartyId
      * @return
      */
-    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Integer businessPartyId) {
+    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
 
         OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmCallbackUrlConf>()
                 .eq("business_party_id", businessPartyId)

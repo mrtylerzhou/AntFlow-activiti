@@ -65,7 +65,7 @@ public class BpmnConfVo {
     /**
      * process's business party
      */
-    private Integer businessPartyId;
+    private Long businessPartyId;
 
     private Integer extraFlags;
     /**
