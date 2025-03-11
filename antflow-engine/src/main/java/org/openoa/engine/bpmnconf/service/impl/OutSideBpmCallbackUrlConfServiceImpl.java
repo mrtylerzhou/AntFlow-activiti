@@ -215,9 +215,9 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
                 .eq("business_party_id", businessPartyId)
                 .eq("status", 1));
 
-        if (outSideBpmCallbackUrlConf==null) {
-            throw new JiMuBizException("流程回调URL未配置，方法执行失败");
-        }
+//        if (outSideBpmCallbackUrlConf==null) {
+//            throw new JiMuBizException("流程回调URL未配置，方法执行失败");
+//        }
 
         return outSideBpmCallbackUrlConf;
     }

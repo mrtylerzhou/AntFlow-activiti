@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
+
 
 /**
  * set message aspect
@@ -241,7 +243,7 @@ public class BpmnSendMessageAspect {
         if (bpmnConf.getIsOutSideProcess() == 1
                 && !businessDataVo.getIsOutSideChecked()) {
 
-            businessDataVo.setOutSideType(outSideBpmBusinessParty.getType());
+            businessDataVo.setOutSideType(BPMN_FLOW_TYPE_OUTSIDE);
 
             ProcessOperationAdaptor bean = adaptorFactory.getProcessOperation(businessDataVo);
 
@@ -251,11 +253,11 @@ public class BpmnSendMessageAspect {
 
 
             //query and set process flow callback url
-            OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
+            //OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
 
 
             //set bpm flow callback url
-            businessDataVo.setBpmFlowCallbackUrl(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl());
+            //businessDataVo.setBpmFlowCallbackUrl(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl());
 
 
             businessDataVo.setIsOutSideChecked(true);
