@@ -143,7 +143,7 @@ function submitApproveTempForm() {
           proxy.$modal.msgSuccess("添加成功");
           emits("update:visible", false);
         } else {
-          proxy.$modal.msgError("添加失败" + res.message);
+          proxy.$modal.msgError("添加失败" + res.errMsg);
         }
       }).catch(err => {
         console.log(err);
