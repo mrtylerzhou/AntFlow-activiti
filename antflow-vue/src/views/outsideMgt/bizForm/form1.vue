@@ -52,8 +52,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, watch } from 'vue'
 import { processSubmit } from "@/api/outsideApi";
-import { getConditionTemplatelist } from "@/api/outsideApi";
-import { formToHTMLString } from '@/utils/index'
+import { getConditionTemplatelist } from "@/api/outsideApi"; 
 const { proxy } = getCurrentInstance()
 const { query } = useRoute();
 import cache from '@/plugins/cache';
@@ -127,9 +126,7 @@ watch(templateConditionList,val => {
 const getFromData = () => {
     return JSON.stringify(form);
 }
-const handleSubmit = () => {
-    const form = document.querySelector('form');
-    const htmlString = formToHTMLString(form);
+const handleSubmit = () => { 
     let param = {
         formCode: query.fc,
         templateMarks: templateMarks.value,
