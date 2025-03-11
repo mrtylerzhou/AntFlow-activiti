@@ -141,6 +141,8 @@ const handleSubmit = () => {
                 proxy.$modal.closeLoading();
                 if (res.code == 200) {
                     proxy.$message.success('提交成功');
+                    const obj = { path: "/flowtask/mytask" };
+                    proxy.$tab.openPage(obj);
                 } else {
                     console.log('res======', JSON.stringify(res))
                     proxy.$message.error(res.errMsg);
