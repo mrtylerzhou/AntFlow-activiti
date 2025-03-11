@@ -114,9 +114,11 @@
         a.deduplication_type AS deduplicationType,
         a.effective_status AS effectiveStatus,
         a.business_party_id AS businessPartyId,
+        b.id AS applicationId,
         a.update_time AS updateTime,
         a.remark AS remark
         FROM t_bpmn_conf a
+        left join bpm_process_app_application b on a.form_code = b.process_key
         WHERE a.is_del = 0
         and a.effective_status = 1
         and a.is_out_side_process = 1
