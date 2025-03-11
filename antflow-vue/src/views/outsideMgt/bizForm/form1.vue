@@ -3,7 +3,7 @@
         <div>
             <el-row :gutter="10">
                 <el-col :span="24" class="mb20">
-                    <el-alert title="*发起测试：模拟外部系统表单，接入本流程引擎" type="error" center effect="dark" :closable="false" />
+                    <el-alert title="*发起测试：模拟外部系统表单，接入本流程引擎" type="warning" center effect="dark" :closable="false" />
                 </el-col>
                 <el-col :span="12" class="mb20">
                     <el-tag type="success" effect="dark" class="mr10">{{ formCodeTitle }}</el-tag>

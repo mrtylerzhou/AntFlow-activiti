@@ -28,7 +28,7 @@
                                 </component>
                             </div>
                             <div v-else-if="isOutSideAccess == 'true'">
-                                <p v-if="formData" v-html="formData"></p>
+                                <outsideFormRender v-if="formData" :formData="formData"></outsideFormRender>
                             </div>
                         </el-col>
                     </el-row>
@@ -59,6 +59,7 @@ import { ElMessageBox } from 'element-plus';
 import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
+import outsideFormRender from "@/views/workflow/components/outsideFormRender.vue";
 import usersDialog from './components/usersDialog.vue';
 import approveDialog from './components/approveDialog.vue';
 import repulseDialog from './components/repulseDialog.vue';
