@@ -95,7 +95,7 @@ watch(conditionConfig, async (newVal, oldVal) => {
     } else {
         conditionsIsExist.value = true
     }
-}, { deep: true, immediate: true })
+}, { deep: true})
 
 const saveCondition = () => {
     closeDrawer()

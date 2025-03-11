@@ -34,6 +34,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
 
 
@@ -307,10 +308,6 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             //query business party's info
             OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getById(bpmnConf.getBusinessPartyId());
 
-            //format outside form code and reset value
-            String formCode = formatOutSideFormCode(bpmnConfVo);
-            bpmnConfVo.setFormCode(formCode);
-
             //set business party's name
             bpmnConfVo.setBusinessPartyName(outSideBpmBusinessParty.getName());
 
@@ -318,10 +315,10 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnConfVo.setBusinessPartyMark(outSideBpmBusinessParty.getBusinessPartyMark());
 
             //set business party's business type
-            bpmnConfVo.setType(outSideBpmBusinessParty.getType());
+            bpmnConfVo.setType(BPMN_FLOW_TYPE_OUTSIDE);
 
             //query business application url
-            BpmProcessAppApplicationVo applicationUrl = applicationService.getApplicationUrl(outSideBpmBusinessParty.getBusinessPartyMark(), formCode);
+            BpmProcessAppApplicationVo applicationUrl = applicationService.getApplicationUrl(outSideBpmBusinessParty.getBusinessPartyMark(), bpmnConfVo.getFormCode());
 
 
             //set view url,submit url and condition url
