@@ -90,24 +90,24 @@ public abstract class ProcessDefinitionUtils
 		// 如果同一父执行实例下有多个子执行实例，则说明当前任务处于并行网关
 		return siblingExecutions.size();
 	}
-	public static ActivityImpl findClosestParallelGateway(String taskId) {
+	public static ActivityImpl findClosestStartParallelGateway(String procInstId) {
 		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
 		TaskService taskService = processEngine.getTaskService();
 		RepositoryService repositoryService = processEngine.getRepositoryService();
 
 		// 获取当前任务
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-		if (task == null) {
+		List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
+		if(CollectionUtils.isEmpty(tasks)){
 			return null;
 		}
 
 		// 获取流程定义
 		ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity)
 				((RepositoryServiceImpl) repositoryService)
-						.getDeployedProcessDefinition(task.getProcessDefinitionId());
+						.getDeployedProcessDefinition(tasks.get(0).getProcessDefinitionId());
 
 		// 获取当前任务节点
-		ActivityImpl activity = processDefinition.findActivity(task.getTaskDefinitionKey());
+		ActivityImpl activity = processDefinition.findActivity(tasks.get(0).getTaskDefinitionKey());
 
 		// 递归向上查找，直到找到并行网关
 		return findParallelGatewayRecursively(activity);
@@ -133,5 +133,47 @@ public abstract class ProcessDefinitionUtils
 		return null;
 	}
 
+	public static ActivityImpl findJoinParallelGatewayRecursively(ActivityImpl startGateway) {
+		if (startGateway == null) {
+			return null;
+		}
+
+		List<PvmTransition> outgoingTransitions = startGateway.getOutgoingTransitions();
+		for (PvmTransition transition : outgoingTransitions) {
+			ActivityImpl target = (ActivityImpl) transition.getDestination();
+			if ("parallelGateway".equals(target.getProperty("type"))) {
+				return target; // 找到对应的汇聚网关
+			}
+			// 继续向下查找
+			ActivityImpl gateway = findJoinParallelGatewayRecursively(target);
+			if (gateway != null) {
+				return gateway;
+			}
+		}
+		return null;
+	}
+	public static void findUserTasksBetweenGatewaysRecursively(ActivityImpl startGateway, ActivityImpl joinGateway, List<ActivityImpl> userTasks) {
+		if (startGateway == null || joinGateway == null) {
+			return;
+		}
+
+		List<PvmTransition> outgoingTransitions = startGateway.getOutgoingTransitions();
+		for (PvmTransition transition : outgoingTransitions) {
+			ActivityImpl nextActivity = (ActivityImpl) transition.getDestination();
+
+			// 遇到汇聚网关，停止遍历
+			if (nextActivity.equals(joinGateway)) {
+				break;
+			}
+
+			// 如果是用户任务，则加入列表
+			if ("userTask".equals(nextActivity.getProperty("type"))) {
+				userTasks.add(nextActivity);
+			}
+
+			// 继续遍历下一个节点
+			findUserTasksBetweenGatewaysRecursively(nextActivity, joinGateway, userTasks);
+		}
+	}
 
 }
