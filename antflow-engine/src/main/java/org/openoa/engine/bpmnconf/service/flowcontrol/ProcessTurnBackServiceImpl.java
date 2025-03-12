@@ -15,8 +15,10 @@ import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.openoa.base.exception.JiMuBizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,17 +53,17 @@ public class ProcessTurnBackServiceImpl {
                 .processInstanceId(currTask.getProcessInstanceId())
                 .singleResult();
         if (instance == null) {
-            throw new RuntimeException("流程已结束");
+            throw new JiMuBizException("未找到当前流程实例");
         }
         // 取得流程定义
         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                 .getDeployedProcessDefinition(currTask
                         .getProcessDefinitionId());
         if (definition == null) {
-            throw new RuntimeException("流程定义未找到");
+            throw new JiMuBizException("流程定义未找到");
         }
         // 取得上一步活动
-        ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+        ActivityImpl currActivity = definition
                 .findActivity(currTask.getTaskDefinitionKey());
         List<ActivityImpl> rtnList = new ArrayList<>();
         List<ActivityImpl> tempList = new ArrayList<>();
@@ -71,7 +73,7 @@ public class ProcessTurnBackServiceImpl {
                 rtnList,
                 tempList
         );
-        if (activities == null || activities.size() <= 0) throw new RuntimeException("没有可以选择的驳回节点!");
+        if (CollectionUtils.isEmpty(activities)) throw new JiMuBizException("没有可以选择的驳回节点!");
         List<Task> list = taskService.createTaskQuery().processInstanceId(instance.getId()).list();
         for (Task task : list) {
             if (!task.getId().equals(taskId)) {
@@ -152,20 +154,33 @@ public class ProcessTurnBackServiceImpl {
                                 Map<String, Object> variables) throws Exception {
         // 当前节点
         ActivityImpl currActivity = findActivitiImpl(taskId, null);
+
+        // 获取流程实例
+        ProcessInstance instance = findProcessInstanceByTaskId(taskId);
+
+        // 获取目标活动节点
+        ActivityImpl targetActivity = findActivitiImpl(taskId, activityId);
+        // 如果目标节点是并行网关，则找到对应的起始网关
+        if ("parallelGateway".equals(targetActivity.getProperty("type"))) {
+            String startGatewayId = findParallelGatewayId(targetActivity);
+            if (startGatewayId != null) {
+                targetActivity = findActivitiImpl(taskId, startGatewayId);
+            }
+        }
+
         // 清空当前流向
         List<PvmTransition> oriPvmTransitionList = clearTransition(currActivity);
 
         // 创建新流向
         TransitionImpl newTransition = currActivity.createOutgoingTransition();
-        // 目标节点
-        ActivityImpl pointActivity = findActivitiImpl(taskId, activityId);
+
         // 设置新流向的目标节点
-        newTransition.setDestination(pointActivity);
+        newTransition.setDestination(targetActivity);
 
         // 执行转向任务
         taskService.complete(taskId, variables);
         // 删除目标节点新流入
-        pointActivity.getIncomingTransitions().remove(newTransition);
+        targetActivity.getIncomingTransitions().remove(newTransition);
 
         // 还原以前流向
         restoreTransition(currActivity, oriPvmTransitionList);
@@ -418,7 +433,7 @@ public class ProcessTurnBackServiceImpl {
         TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(
                 taskId).singleResult();
         if (task == null) {
-            throw new Exception("任务实例未找到!");
+            throw new JiMuBizException("任务实例未找到!");
         }
         return task;
     }
@@ -438,7 +453,7 @@ public class ProcessTurnBackServiceImpl {
                         findTaskById(taskId).getProcessInstanceId())
                 .singleResult();
         if (processInstance == null) {
-            throw new Exception("流程实例未找到!");
+            throw new JiMuBizException("流程实例未找到!");
         }
         return processInstance;
     }
