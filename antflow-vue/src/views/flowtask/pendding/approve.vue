@@ -295,8 +295,8 @@ const sureDialogBtn = async (data) => {
     } else {
         approveSubData.signUpUsers = data.selectList;
     }
-    console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
-    //await approveProcess(approveSubData);
+    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    await approveProcess(approveSubData);
 }
 /**
  * 审批
