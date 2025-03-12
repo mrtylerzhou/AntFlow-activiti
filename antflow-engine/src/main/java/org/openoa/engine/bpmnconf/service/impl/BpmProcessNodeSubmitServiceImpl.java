@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.PvmActivity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeSubmitMapper;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.engine.bpmnconf.util.ProcessDefinitionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -81,6 +83,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
      * @param task
      */
     public void processComplete(Task task) {
+
         BpmProcessNodeSubmit processNodeSubmit = this.findBpmProcessNodeSubmit(task.getProcessInstanceId());
         String restoreNodeKey = "";
         Map<String, Object> varMap = new HashMap<>();

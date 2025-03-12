@@ -1,14 +1,15 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.RuntimeServiceImpl;
 import org.activiti.engine.impl.interceptor.Command;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
@@ -36,6 +37,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				.processInstanceId(_processInstanceId).singleResult().getProcessDefinitionId();
 
 		_processDefinition = ProcessDefinitionUtils.getProcessDefinition(_processEngine, processDefId);
+
 	}
 
 
@@ -67,26 +69,36 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	 * @throws Exception
 	 */
 	@Override
-	public List<String> moveTo(String targetTaskDefinitionKey) throws Exception
+	public List<String> moveTo(String currentTaskDefKey,String targetTaskDefinitionKey) throws Exception
 	{
 		List<Task> currentTasks = getCurrentTasks();
-		return moveTo(currentTasks, targetTaskDefinitionKey);
+		return moveTo(currentTasks,currentTaskDefKey, targetTaskDefinitionKey);
 	}
 
-	@Override
-	public List<String> moveTo(String currentTaskId, String targetTaskDefinitionKey) throws Exception
-	{
-		return moveTo(getTaskById(currentTaskId), targetTaskDefinitionKey);
-	}
 
-	private List<String> moveTo(List<Task> currentTaskEntitys, ActivityImpl activity)
+
+	private List<String> moveTo(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
 	{
-		executeCommand(new StartActivityCmd(currentTaskEntitys.get(0).getExecutionId(), activity));
+
 		List<String> taskDefKeys=new ArrayList<>();
+		List<String> allTaskDefKeys=new ArrayList<>();
+		Set<String> alreadyProcessed=new HashSet<>();
 		for (Task currentTaskEntity : currentTaskEntitys) {
+			allTaskDefKeys.add(currentTaskEntity.getTaskDefinitionKey());
+			if(!currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
+				taskDefKeys.add(currentTaskEntity.getTaskDefinitionKey());
+			}
 			executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
-			taskDefKeys.add(currentTaskEntity.getTaskDefinitionKey());
+			if(alreadyProcessed.contains(currentTaskEntity.getTaskDefinitionKey())){
+				continue;
+			}
+			alreadyProcessed.add(currentTaskEntity.getTaskDefinitionKey());
+			executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity));
 		}
+		if(allTaskDefKeys.size()>1&&allTaskDefKeys.stream().distinct().distinct().distinct().count()==1){
+			executeCommand(new StartActivityCmd(currentTaskEntitys.get(1).getExecutionId(), activity));
+		}
+
 	return taskDefKeys;
 	}
 
@@ -99,12 +111,12 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	 * @throws Exception
 	 */
 	@Override
-	public List<String> moveTo(List<Task> currentTaskEntitys, String targetTaskDefinitionKey) throws Exception
+	public List<String> moveTo(List<Task> currentTaskEntitys,String currentTaskDefKey, String targetTaskDefinitionKey) throws Exception
 	{
 		ActivityImpl activity = ProcessDefinitionUtils.getActivity(_processEngine,
 			currentTaskEntitys.get(0).getProcessDefinitionId(), targetTaskDefinitionKey);
 
-		return moveTo(currentTaskEntitys, activity);
+		return moveTo(currentTaskEntitys,currentTaskDefKey, activity);
 	}
 
 }

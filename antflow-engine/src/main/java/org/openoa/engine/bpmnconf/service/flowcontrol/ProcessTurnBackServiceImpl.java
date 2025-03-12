@@ -16,6 +16,7 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.engine.bpmnconf.util.ProcessDefinitionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -75,15 +76,100 @@ public class ProcessTurnBackServiceImpl {
         );
         if (CollectionUtils.isEmpty(activities)) throw new JiMuBizException("没有可以选择的驳回节点!");
         List<Task> list = taskService.createTaskQuery().processInstanceId(instance.getId()).list();
-        for (Task task : list) {
+       /* for (Task task : list) {
             if (!task.getId().equals(taskId)) {
                 task.setAssignee("排除标记");
                 commitProcess(task.getId(), null, endActivityId);
             }
         }
-        turnTransition(taskId, activities.get(0).getId(), null);
+        turnTransition(taskId, activities.get(0).getId(), null);*/
+
+    }
+    public void jumpTransAction(String taskId, String endActivityId) throws Exception {
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        if (currTask == null) {
+            throw new RuntimeException("未找到当前任务");
+        }
+
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(currTask.getProcessInstanceId())
+                .singleResult();
+
+        if (instance == null) {
+            throw new RuntimeException("未找到当前流程实例");
+        }
+
+        // **1. 终止所有并行任务**
+        cancelAllParallelTasks(instance.getId(), currTask.getTaskDefinitionKey());
+
+        // **2. 删除所有已完成任务**
+        deleteCompletedTasks(instance.getId(), currTask.getTaskDefinitionKey());
+
+        // **3. 让所有任务回退**
+        jumpAllParallelTasks(instance, endActivityId);
+    }
+    private void cancelAllParallelTasks(String processInstanceId, String taskDefinitionKey) {
+        List<Task> activeTasks = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .list();
+
+        for (Task task : activeTasks) {
+            taskService.setAssignee(task.getId(), null); // **取消当前审批人，避免权限问题**
+            taskService.complete(task.getId()); // **让任务完成**
+        }
+    }
+    private void deleteCompletedTasks(String processInstanceId, String taskDefinitionKey) {
+        List<HistoricTaskInstance> finishedTasks = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .finished()
+                .list();
+        Integer currentTaskParallelism = ProcessDefinitionUtils.currentTaskParallelism(taskDefinitionKey);
+        for (HistoricTaskInstance task : finishedTasks) {
+            historyService
+                    .deleteHistoricTaskInstance(task.getId());
+        }
     }
 
+
+    private void jumpAllParallelTasks(ProcessInstance instance, String targetActivityId) throws Exception {
+        List<Task> parallelTasks = taskService.createTaskQuery()
+                .processInstanceId(instance.getId())
+                .list();
+
+        for (Task task : parallelTasks) {
+            jumpToActivity(task.getId(), targetActivityId);
+        }
+    }
+    private void jumpToActivity(String taskId, String targetActivityId) throws Exception {
+        ActivityImpl targetActivity = findActivitiImpl(taskId, targetActivityId);
+
+        // **获取当前任务**
+        TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(taskId).singleResult();
+
+        // **获取当前任务的活动**
+        ActivityImpl currActivity = findActivitiImpl(taskId, null);
+
+        // **清除原始流向**
+        List<PvmTransition> originalTransitions = clearTransition(currActivity);
+
+        // **创建新流向**
+        TransitionImpl newTransition = currActivity.createOutgoingTransition();
+        newTransition.setDestination(targetActivity);
+
+        // **强制完成当前任务**
+        taskService.complete(taskId);
+
+        // **删除新创建的流向**
+        targetActivity.getIncomingTransitions().remove(newTransition);
+
+        // **恢复原始流向**
+        restoreTransition(currActivity, originalTransitions);
+    }
     /**
      * @param taskId     当前任务ID
      * @param variables  流程变量

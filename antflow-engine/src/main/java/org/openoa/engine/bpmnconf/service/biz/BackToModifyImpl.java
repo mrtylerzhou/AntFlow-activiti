@@ -1,14 +1,13 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
-import org.activiti.engine.impl.RuntimeServiceImpl;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
+import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
@@ -21,9 +20,8 @@ import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
-import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
+import org.openoa.engine.bpmnconf.service.flowcontrol.ProcessTurnBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
@@ -31,7 +29,6 @@ import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,14 +36,13 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * back to modify
  */
+@Slf4j
 @Component
 public class BackToModifyImpl implements ProcessOperationAdaptor {
 
@@ -82,6 +78,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
+    @Autowired
+    private ProcessTurnBackServiceImpl processTurnBackService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -101,12 +99,18 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             throw new JiMuBizException("当前流程已审批！");
         }
 
+        List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
+
         String restoreNodeKey;
         String backToNodeKey;
 
         Integer backToModifyType = vo.getBackToModifyType();
         if(backToModifyType==null){
             backToModifyType=ProcessDisagreeTypeEnum.THREE_DISAGREE.getCode();
+        }
+
+        if(taskDefKeys.size()>1&&backToModifyType==ProcessDisagreeTypeEnum.FIVE_DISAGREE.getCode()){
+            backToModifyType=ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode();
         }
         ProcessDisagreeTypeEnum processDisagreeTypeEnum=ProcessDisagreeTypeEnum.getByCode(backToModifyType);
         switch (processDisagreeTypeEnum){
@@ -173,17 +177,24 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                    .build());
        }
 
-
-        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
         try {
-            List<String> strings = taskFlowControlService.moveTo(backToNodeKey);
-            if(strings.size()>1){
-                strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
-                taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
-            }
+            processTurnBackService.jumpTransAction(taskData.getId(), backToNodeKey);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("流程流转出错了",e);
+            throw new JiMuBizException("流程流转出错了");
         }
+
+          /* TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
+           try {
+               List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(),backToNodeKey).stream().distinct().collect(Collectors.toList());
+               if(strings.size()>1){
+                   strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
+                   taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
+               }
+           } catch (Exception e) {
+               throw new RuntimeException(e);
+           }*/
+
         //parallel tasks reject
        /* for (Task task : taskList) {
             Map<String,Object> varMap=new HashMap<>();
