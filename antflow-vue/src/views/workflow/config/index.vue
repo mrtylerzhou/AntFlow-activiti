@@ -36,11 +36,11 @@
       </el-row>
 
       <el-table v-loading="loading" :data="configList">
-         <el-table-column label="模板类型" align="center" prop="formCode" />
-         <el-table-column label="模板名称" align="center" prop="formCodeDisplayName" /> 
+         <el-table-column label="类型标识" align="center" prop="formCode" />
+         <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" /> 
          <el-table-column label="流程编号" align="center" prop="bpmnCode" />
          <el-table-column label="流程名称" align="center" prop="bpmnName" />
-         <el-table-column label="流程类型" align="center" prop="isLowCodeFlow">
+         <el-table-column label="流程分类" align="center" prop="isLowCodeFlow">
             <template #default="item">
                <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器" placement="top">
                   <el-tag type="warning" round>DIY</el-tag>

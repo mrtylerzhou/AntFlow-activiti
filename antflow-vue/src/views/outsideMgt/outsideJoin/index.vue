@@ -25,7 +25,7 @@
     <el-table v-loading="loading" :data="list">
       <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible" :show-overflow-tooltip="true" />
       <el-table-column label="项目名字" align="center" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-      <el-table-column label="审批流类型" align="center" prop="accessTypeName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
+      <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" >
         <template #default="scope">
@@ -70,7 +70,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="审批流类型" prop="accessType">
+            <el-form-item label="接入类型" prop="accessType">
               <el-radio-group v-model="form.accessType">
                 <el-radio value="1" :disabled=true>嵌入式</el-radio>
                 <el-radio value="0">调入式</el-radio>
@@ -142,7 +142,7 @@ onMounted(async () => {
 const columns = ref([
   { key: 0, label: `项目标识`, visible: true },
   { key: 1, label: `项目名字`, visible: true },
-  { key: 2, label: `审批流类型`, visible: true },
+  { key: 2, label: `接入类型`, visible: true },
   { key: 3, label: `备注`, visible: true }, 
   { key: 4, label: `创建时间`, visible: true }
 ]);
