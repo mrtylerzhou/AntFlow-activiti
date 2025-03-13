@@ -2,9 +2,11 @@ package org.openoa.engine.bpmnconf.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.el.FixedValue;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -54,7 +56,7 @@ public abstract class ProcessDefinitionUtils
 				activity.getProperty("name")));
 	}
 
-	//0,非并行网关，大于0的数字代表是并行网关,数字的值是它的并行度
+	//0,非并行,大于零的为并行
 	public static Integer currentTaskParallelism(String taskId) {
 		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
 		TaskService taskService = processEngine.getTaskService();
@@ -90,6 +92,49 @@ public abstract class ProcessDefinitionUtils
 		// 如果同一父执行实例下有多个子执行实例，则说明当前任务处于并行网关
 		return siblingExecutions.size();
 	}
+
+	public static boolean isUserTaskParallel(String procInstId,String taskDefKey){
+		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		HistoryService historyService = processEngine.getHistoryService();
+		List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+				.processInstanceId(procInstId)
+				.taskDefinitionKey(taskDefKey)
+				.list();
+		if(CollectionUtils.isEmpty(historicTaskInstances)){
+			return false;
+		}
+		String executionId = historicTaskInstances.get(0).getExecutionId();
+		// 获取当前任务的执行实例
+		ExecutionEntity execution = (ExecutionEntity) runtimeService.createExecutionQuery()
+				.executionId(executionId)
+				.singleResult();
+
+		if (execution == null) {
+			return false;
+		}
+
+		// 判断 IS_CONCURRENT_ 是否为 1
+		return execution.isConcurrent();
+	}
+	public static boolean isUserTaskParallel(Task specifiedTask) {
+		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+
+
+		// 获取当前任务的执行实例
+		ExecutionEntity execution = (ExecutionEntity) runtimeService.createExecutionQuery()
+				.executionId(specifiedTask.getExecutionId())
+				.singleResult();
+
+		if (execution == null) {
+			return false;
+		}
+
+		// 判断 IS_CONCURRENT_ 是否为 1
+		return execution.isConcurrent();
+	}
+
 	public static ActivityImpl findClosestStartParallelGateway(String procInstId) {
 		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
 		TaskService taskService = processEngine.getTaskService();

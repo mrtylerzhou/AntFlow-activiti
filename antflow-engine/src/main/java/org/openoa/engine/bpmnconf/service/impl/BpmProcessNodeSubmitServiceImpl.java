@@ -97,7 +97,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     .createUser(task.getAssignee())
                     .build());
 
-            PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
+           /* PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
             if (nextElement != null) {
                 String type = (String) nextElement.getProperty("type");
                 if ("parallelGateway".equals(type)) {
@@ -107,7 +107,7 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                         restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
                     }
                 }
-            }
+            }*/
             if (processNodeSubmit.getState().equals(0)) {
                 if (!StringUtils.isEmpty(restoreNodeKey)) {
                     processJump.commitProcess(task.getId(), varMap, restoreNodeKey);

@@ -36,55 +36,7 @@ public class ProcessTurnBackServiceImpl {
     private RepositoryService repositoryService;
     @Autowired
     private TaskService taskService;
-    /**
-     *
-     * @param taskId 任务id
-     * @param endActivityId 结束节点的activitiyId
-     * @throws Exception
-     */
-    public void turnBackNew(String taskId, String endActivityId) throws Exception {
-        Map<String, Object> variables;
-        // 取得当前任务
-        HistoricTaskInstance currTask = historyService
-                .createHistoricTaskInstanceQuery().taskId(taskId)
-                .singleResult();
-        // 取得流程实例
-        ProcessInstance instance = runtimeService
-                .createProcessInstanceQuery()
-                .processInstanceId(currTask.getProcessInstanceId())
-                .singleResult();
-        if (instance == null) {
-            throw new JiMuBizException("未找到当前流程实例");
-        }
-        // 取得流程定义
-        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                .getDeployedProcessDefinition(currTask
-                        .getProcessDefinitionId());
-        if (definition == null) {
-            throw new JiMuBizException("流程定义未找到");
-        }
-        // 取得上一步活动
-        ActivityImpl currActivity = definition
-                .findActivity(currTask.getTaskDefinitionKey());
-        List<ActivityImpl> rtnList = new ArrayList<>();
-        List<ActivityImpl> tempList = new ArrayList<>();
-        List<ActivityImpl> activities = iteratorBackActivity(
-                taskId,
-                currActivity,
-                rtnList,
-                tempList
-        );
-        if (CollectionUtils.isEmpty(activities)) throw new JiMuBizException("没有可以选择的驳回节点!");
-        List<Task> list = taskService.createTaskQuery().processInstanceId(instance.getId()).list();
-       /* for (Task task : list) {
-            if (!task.getId().equals(taskId)) {
-                task.setAssignee("排除标记");
-                commitProcess(task.getId(), null, endActivityId);
-            }
-        }
-        turnTransition(taskId, activities.get(0).getId(), null);*/
 
-    }
     public void jumpTransAction(String taskId, String endActivityId) throws Exception {
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery()
                 .taskId(taskId)
@@ -106,33 +58,53 @@ public class ProcessTurnBackServiceImpl {
         cancelAllParallelTasks(instance.getId(), currTask.getTaskDefinitionKey());
 
         // **2. 删除所有已完成任务**
-        deleteCompletedTasks(instance.getId(), currTask.getTaskDefinitionKey());
-
+        //deleteCompletedTasks(instance.getId(), currTask);
         // **3. 让所有任务回退**
         jumpAllParallelTasks(instance, endActivityId);
+
     }
     private void cancelAllParallelTasks(String processInstanceId, String taskDefinitionKey) {
         List<Task> activeTasks = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
-                .taskDefinitionKey(taskDefinitionKey)
                 .list();
 
         for (Task task : activeTasks) {
-            taskService.setAssignee(task.getId(), null); // **取消当前审批人，避免权限问题**
+            taskService.setAssignee(task.getId(), "自动跳过"); // **取消当前审批人，避免权限问题**
             taskService.complete(task.getId()); // **让任务完成**
         }
     }
-    private void deleteCompletedTasks(String processInstanceId, String taskDefinitionKey) {
+    private void deleteCompletedTasks(String processInstanceId, HistoricTaskInstance historicTaskInstance) {
         List<HistoricTaskInstance> finishedTasks = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(processInstanceId)
-                .taskDefinitionKey(taskDefinitionKey)
+                .taskDefinitionKey(historicTaskInstance.getTaskDefinitionKey())
                 .finished()
                 .list();
-        Integer currentTaskParallelism = ProcessDefinitionUtils.currentTaskParallelism(taskDefinitionKey);
-        for (HistoricTaskInstance task : finishedTasks) {
-            historyService
-                    .deleteHistoricTaskInstance(task.getId());
+        List<ActivityImpl> allUserTasks=new ArrayList<>();
+        ActivityImpl closestStartParallelGateway = ProcessDefinitionUtils.findClosestStartParallelGateway(historicTaskInstance.getProcessInstanceId());
+        if(closestStartParallelGateway!=null){
+            ActivityImpl joinParallelGateway = ProcessDefinitionUtils.findJoinParallelGatewayRecursively(closestStartParallelGateway);
+            ProcessDefinitionUtils.findUserTasksBetweenGatewaysRecursively(closestStartParallelGateway,joinParallelGateway,allUserTasks);
         }
+        if(!CollectionUtils.isEmpty(allUserTasks)){
+            for (ActivityImpl activityImpl : allUserTasks) {
+                List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .taskDefinitionKey(activityImpl.getId())
+                        .list();
+                if(!CollectionUtils.isEmpty(historicTaskInstances)){
+                    for (HistoricTaskInstance historicActivityInstance : historicTaskInstances) {
+                        historyService
+                                .deleteHistoricTaskInstance(historicActivityInstance.getId());
+                    }
+                }
+            }
+        }else{
+            for (HistoricTaskInstance task : finishedTasks) {
+                historyService
+                        .deleteHistoricTaskInstance(task.getId());
+            }
+        }
+
     }
 
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
+import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.task.TaskInfo;
@@ -22,6 +23,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.ProcessTurnBackServiceImpl;
+import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
@@ -29,6 +31,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.util.ProcessDefinitionUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -176,24 +179,30 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                    .createUser(vo.getStartUserId())
                    .build());
        }
+        boolean userTaskParallel = ProcessDefinitionUtils.isUserTaskParallel(taskData.getProcessInstanceId(), backToNodeKey);
+        if((taskDefKeys.size()>1||ProcessDefinitionUtils.isUserTaskParallel(taskData))&&userTaskParallel){
 
-        try {
-            processTurnBackService.jumpTransAction(taskData.getId(), backToNodeKey);
-        } catch (Exception e) {
-            log.error("流程流转出错了",e);
-            throw new JiMuBizException("流程流转出错了");
+            try {
+                processTurnBackService.jumpTransAction(taskData.getId(), backToNodeKey);
+            } catch (Exception e) {
+                log.error("流程回退出错了!",e);
+                throw new JiMuBizException("流程回退出错了!");
+            }
+        }else{
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
+            try {
+                List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(),backToNodeKey).stream().distinct().collect(Collectors.toList());
+                if(strings.size()>1){
+                    strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
+                    taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
+                }
+            } catch (Exception e) {
+                log.error("流程回退出错了!",e);
+                throw new JiMuBizException("流程回退出错了!");
+            }
         }
 
-          /* TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
-           try {
-               List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(),backToNodeKey).stream().distinct().collect(Collectors.toList());
-               if(strings.size()>1){
-                   strings= strings.stream().filter(a->!a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
-                   taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(),strings);
-               }
-           } catch (Exception e) {
-               throw new RuntimeException(e);
-           }*/
+
 
         //parallel tasks reject
        /* for (Task task : taskList) {

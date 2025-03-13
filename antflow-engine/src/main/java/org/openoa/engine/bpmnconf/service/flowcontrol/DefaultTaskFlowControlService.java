@@ -77,7 +77,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 
 
 
-	private List<String> moveTo(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
+	private List<String> moveTov1(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
 	{
 
 		List<String> taskDefKeys=new ArrayList<>();
@@ -101,6 +101,21 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 
 	return taskDefKeys;
 	}
+	private List<String> moveTov2(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
+	{
+
+		for (Task currentTaskEntity : currentTaskEntitys) {
+
+			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
+
+				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
+				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity));
+			}
+
+		}
+
+		return new ArrayList<>();
+	}
 
 	/**
 	 * 
@@ -116,7 +131,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		ActivityImpl activity = ProcessDefinitionUtils.getActivity(_processEngine,
 			currentTaskEntitys.get(0).getProcessDefinitionId(), targetTaskDefinitionKey);
 
-		return moveTo(currentTaskEntitys,currentTaskDefKey, activity);
+		return moveTov2(currentTaskEntitys,currentTaskDefKey, activity);
 	}
 
 }
