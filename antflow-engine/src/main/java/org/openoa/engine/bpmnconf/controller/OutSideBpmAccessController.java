@@ -1,9 +1,14 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.slf4j.Slf4j;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.ConfDetailRequestDto;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
@@ -35,6 +40,18 @@ public class OutSideBpmAccessController {
     @PostMapping("/processSubmit")
     public Result<OutSideBpmAccessRespVo>  accessBusinessStart(@RequestBody OutSideBpmAccessBusinessVo vo) {
         return Result.newSuccessResult(outSideBpmAccessBusinessService.accessBusinessStart(vo));
+    }
+
+    /**
+     * 获取OutSide FormCode Page List 模板列表使用
+     * @param dto
+     * @return
+     */
+    @PostMapping("/getOutSideFormCodePageList")
+    public ResultAndPage<BpmnConfVo> listPage(@Parameter @RequestBody ConfDetailRequestDto dto) {
+        PageDto page = dto.getPageDto();
+        BpmnConfVo vo = dto.getEntity();
+        return outSideBpmAccessBusinessService.selectOutSideFormCodePageList(page, vo);
     }
 
     /**

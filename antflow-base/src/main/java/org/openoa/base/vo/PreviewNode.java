@@ -41,5 +41,9 @@ public class PreviewNode{
     //deduplication type name
     private String deduplicationTypeName;
     //当前流程节点ElementId
-    private String currentNodeIds;
+    private String currentNodeId;
+    //当前流程之前的节点ElementId
+    private  List<String>  beforeNodeIds;
+    //当前流程之后的节点ElementId
+    private  List<String>  afterNodeIds;
 }

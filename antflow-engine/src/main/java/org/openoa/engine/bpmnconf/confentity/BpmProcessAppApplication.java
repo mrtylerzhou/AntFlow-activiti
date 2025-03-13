@@ -135,16 +135,4 @@ public class BpmProcessAppApplication{
      * source
      */
     private String source;
-
-    /**
-     *  get user info
-     */
-    @TableField( "user_request_uri")
-    private String userRequestUri;
-
-    /**
-     *  get role info
-     */
-    @TableField( "role_request_uri")
-    private String roleRequestUri;
 }

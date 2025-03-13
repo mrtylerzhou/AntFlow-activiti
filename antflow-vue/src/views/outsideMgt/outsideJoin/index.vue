@@ -17,7 +17,7 @@
    
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd">新增项目</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAdd">新增项目</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
@@ -25,7 +25,7 @@
     <el-table v-loading="loading" :data="list">
       <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible" :show-overflow-tooltip="true" />
       <el-table-column label="项目名字" align="center" prop="name" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-      <el-table-column label="审批流类型" align="center" prop="accessTypeName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
+      <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" >
         <template #default="scope">
@@ -45,7 +45,7 @@
 
     <!-- 添加或修改委托对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;">
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;" label-position="top">
         <el-row>
           <el-col :span="24">
             <el-form-item prop="businessPartyMark">
@@ -70,7 +70,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="审批流类型" prop="accessType">
+            <el-form-item label="接入类型" prop="accessType">
               <el-radio-group v-model="form.accessType">
                 <el-radio value="1" :disabled=true>嵌入式</el-radio>
                 <el-radio value="0">调入式</el-radio>
@@ -88,8 +88,9 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+      
         </div>
       </template>
     </el-dialog>
@@ -109,15 +110,25 @@ const open = ref(false);
 const title = ref("");
 
 const data = reactive({
-  form: {},
+  form: {
+    accessType: '0'
+  },
   page: {
     page: 1,
     pageSize: 10
   },
   vo: {},
   rules: {
-    businessPartyMark: [{ required: true, message: '请输入项目标识', trigger: 'blur' }],
-    name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+    businessPartyMark: [{
+            required: true,
+            pattern: /^[a-zA-Z]{4,10}$/,
+            message: '请输入项目唯一标识(只能是大小写字母,4-10位长度)',
+            trigger: ['blur', 'change']
+        }],
+    name: [
+      { required: true, message: '请输入项目名称', trigger: 'blur' },
+      { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
+    ],
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
@@ -131,7 +142,7 @@ onMounted(async () => {
 const columns = ref([
   { key: 0, label: `项目标识`, visible: true },
   { key: 1, label: `项目名字`, visible: true },
-  { key: 2, label: `审批流类型`, visible: true },
+  { key: 2, label: `接入类型`, visible: true },
   { key: 3, label: `备注`, visible: true }, 
   { key: 4, label: `创建时间`, visible: true }
 ]);
@@ -148,8 +159,7 @@ function getList() {
   });
 }
 /** 新增接入项目 */
-function handleAdd() {
-  // proxy.$modal.msgError("演示环境不允许操作！");return;
+function handleAdd() { 
   reset();
   title.value = "添加项目";
   open.value = true;
@@ -186,9 +196,10 @@ function handleEdit(row) {
     proxy.$modal.msgError("演示数据不允许修改操作！");
     return;
   }
+  open.value = true;
   getBusinessPartyDetail(id).then(response => {
     form.value = response.data; 
-    form.value.type = form.value.type.toString();
+    form.value.accessType = form.value.accessType.toString();
     open.value = true;
     title.value = "编辑项目"; 
   });
@@ -211,7 +222,7 @@ function reset() {
     id: undefined,
     businessPartyMark: undefined,
     name: undefined,
-    type: '2',
+    accessType: '0',
     remark: undefined
   };
   proxy.resetForm("queryRef");

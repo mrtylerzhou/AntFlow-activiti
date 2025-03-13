@@ -113,7 +113,7 @@
             <el-button @click="closeDrawer">取 消</el-button>
         </div>
     </el-drawer>
-    <selectUser v-model:visible="approverVisible" :data="userSelectedList" @change="sureApprover" />
+    <selectUser v-if="approverVisible" v-model:visible="approverVisible" :data="userSelectedList" @change="sureApprover" />
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'

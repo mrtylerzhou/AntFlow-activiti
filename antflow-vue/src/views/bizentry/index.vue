@@ -86,6 +86,11 @@ const handleClick = async (tab, event) => {
         } else {
             const _formData = await formRef.value.getFromData();
             if (isLFFlow && isLFFlow == true) {
+                let  lfFormdata = JSON.parse(_formData);
+                previewConf.value.approversList = lfFormdata.approversList;
+                previewConf.value.approversValid = lfFormdata.approversValid;
+                delete lfFormdata.approversList;
+                delete lfFormdata.approversValid; 
                 previewConf.value.lfFields = JSON.parse(_formData);
             } else {
                 previewConf.value = JSON.parse(_formData);
@@ -117,7 +122,13 @@ const startTest = (param) => {
         bizFrom.formCode = flowCode || '';
         bizFrom.operationType = 1;//operationType 1发起 3 审批 
         bizFrom.isLowCodeFlow = true;
-        bizFrom.lfFields = JSON.parse(param);
+
+        let  lfFormdata = JSON.parse(param);
+        bizFrom.approversList = lfFormdata.approversList;
+        bizFrom.approversValid = lfFormdata.approversValid;
+        delete lfFormdata.approversList;
+        delete lfFormdata.approversValid; 
+        bizFrom.lfFields = lfFormdata; 
     }
     proxy.$modal.loading();
     processOperation(bizFrom).then((res) => {

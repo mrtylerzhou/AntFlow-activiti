@@ -991,10 +991,7 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     state            tinyint  default 1                 null,
     sort             int                                null,
     source           varchar(255)                       null,
-    user_request_uri varchar(255)                       null comment 'get user info',
-    role_request_uri varchar(255)                       null comment 'get role info'
-)
-    comment 'BPM Process Application Table';
+)comment 'BPM Process Application Table';
 
 
 CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
@@ -1118,10 +1115,36 @@ CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
     is_del                tinyint     default 0 comment '0 for normal,1 for delete',
     create_time           timestamp DEFAULT CURRENT_TIMESTAMP comment 'as its name says',
     update_time           timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'as its name says'
-)
-    comment 'business party callback url conf';
+) comment 'business party callback url conf';
 
+-- ----------------------------
+-- Table structure for t_out_side_bpm_approve_template
+-- ----------------------------
+DROP TABLE IF EXISTS `t_out_side_bpm_approve_template`;
+CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_approve_template` (
+     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
+     `business_party_id` BIGINT NULL COMMENT '业务方项目 Id',
+	 `application_id` INT NULL COMMENT '项目下业务表单 id',
+	 `approve_type_id` INT NULL COMMENT '审批人类型 id',
+     `approve_type_name` VARCHAR(50) NULL COMMENT '审批人类型名称',
+     `api_client_id` VARCHAR(50) NULL COMMENT 'api_client_id',
+     `api_client_secret` VARCHAR(50) NULL COMMENT 'api_client_secret',
+	 `api_token` VARCHAR(50) NULL COMMENT 'api_token',
+	 `api_url` VARCHAR(50) NULL COMMENT 'api_url',
+     `remark` varchar(255) NULL COMMENT 'remark',
+     `is_del` TINYINT default  0 COMMENT '0 for normal, 1 for delete',
+     `create_user` VARCHAR(50) NULL COMMENT 'as its name says',
+     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
+     `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
+     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
+     `create_user_id` varchar(64) NULL COMMENT 'as its name says',
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='outside access process,approve template config';
 
+-- ----------------------------
+-- Table structure for t_out_side_bpm_conditions_template
+-- ----------------------------
+DROP TABLE IF EXISTS `t_out_side_bpm_conditions_template`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_conditions_template` (
      `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
      `business_party_id` BIGINT NULL COMMENT 'business party Id',

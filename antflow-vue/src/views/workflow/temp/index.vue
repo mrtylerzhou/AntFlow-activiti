@@ -3,7 +3,7 @@
      
        
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClickTab">            
-            <el-tab-pane label="模板类型(LF)" name="LFTab"> 
+            <el-tab-pane label="流程分类(LF)" name="LFTab"> 
                 <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
                   <el-form-item label="关键字" prop="description">
                         <el-input v-model="taskMgmtVO.description" placeholder="请输入关键字" clearable style="width: 200px"
@@ -17,13 +17,13 @@
                 </el-form>
                 <el-row :gutter="10" class="mb8"> 
                     <el-col :span="1.5">
-                        <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">模板类型(LF)</el-button>
+                        <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">流程分类(LF)</el-button>
                     </el-col>
                     <right-toolbar v-model:showSearch="showSearch" @queryTable="getLFPageList" :columns="columns"></right-toolbar>
                 </el-row>
 
                 <el-table v-loading="loading" :data="LFPageList">
-                    <el-table-column label="模板标识" align="center" prop="key" v-if="columns[0].visible" :show-overflow-tooltip="true" >                   
+                    <el-table-column label="类型标识" align="center" prop="key" v-if="columns[0].visible" :show-overflow-tooltip="true" >                   
                         <template #default="item">  
                             <el-tooltip class="box-item" effect="dark" placement="right" >
                                 <template #content>
@@ -33,9 +33,9 @@
                             </el-tooltip> 
                          </template>
                     </el-table-column>
-                    <el-table-column label="模板名称" align="center" prop="value" v-if="columns[1].visible"
+                    <el-table-column label="类型名称" align="center" prop="value" v-if="columns[1].visible"
                         :show-overflow-tooltip="true" />
-                    <el-table-column label="模板类型" align="center" prop="type" v-if="columns[2].visible"
+                    <el-table-column label="流程分类" align="center" prop="type" v-if="columns[2].visible"
                         :show-overflow-tooltip="true">
                         <template #default="item">
                             <el-tag v-if="item.row.type === 'LF'" type="success">{{ item.row.type }}</el-tag>
@@ -61,19 +61,19 @@
                 <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
             </el-tab-pane>
 
-            <el-tab-pane label="模板类型(DIY)" name="DIYTab"> 
+            <el-tab-pane label="流程分类(DIY)" name="DIYTab"> 
                 <el-row :gutter="10" class="mb8">
                     <el-col :span="1.5">
-                        <el-button type="primary" plain icon="CirclePlus" @click="handleDIYTemp">模板类型(DIY)</el-button>
+                        <el-button type="primary" plain icon="CirclePlus" @click="handleDIYTemp">流程分类(DIY)</el-button>
                     </el-col> 
                     <right-toolbar v-model:showSearch="showSearch" @queryTable="getDIYList" :columns="columns"></right-toolbar>
                 </el-row>
                 <el-table v-loading="loading" :data="DIYList">
-                    <el-table-column label="模板标识" align="center" prop="key" v-if="columns[0].visible"
+                    <el-table-column label="类型标识" align="center" prop="key" v-if="columns[0].visible"
                         :show-overflow-tooltip="true" />
-                    <el-table-column label="模板名称" align="center" prop="value" v-if="columns[1].visible"
+                    <el-table-column label="类型名称" align="center" prop="value" v-if="columns[1].visible"
                         :show-overflow-tooltip="true" />
-                    <el-table-column label="模板类型" align="center" prop="type" v-if="columns[2].visible"
+                    <el-table-column label="流程分类" align="center" prop="type" v-if="columns[2].visible"
                         :show-overflow-tooltip="true">
                         <template #default="item">
                             <el-tag v-if="item.row.type === 'LF'" type="success">{{ item.row.type }}</el-tag>
@@ -98,21 +98,21 @@
                 </el-table>
             </el-tab-pane>
         </el-tabs> 
-        <!-- 添加模板类型 -->
+        <!-- 添加类型标识 -->
         <el-dialog :title="title" v-model="openForm" append-to-body>
             <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;">
 
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="模板标识" prop="key">
-                            <el-input v-model="form.key" placeholder="请输入模板唯一标识" />
+                        <el-form-item label="类型标识" prop="key">
+                            <el-input v-model="form.key" placeholder="请输入类型唯一标识" />
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="模板名称" prop="value">
-                            <el-input v-model="form.value" placeholder="请输入模板名称" />
+                        <el-form-item label="类型名称" prop="value">
+                            <el-input v-model="form.value" placeholder="请输入类型名称" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -180,13 +180,13 @@ const data = reactive({
         key: [{
             required: true,
             pattern: /^[A-Z]{4,10}$/,
-            message: '请输入模板唯一标识(只能是大写字母,4-10位长度)',
+            message: '请输入类型唯一标识(只能是大写字母,4-10位长度)',
             trigger: ['blur', 'change']
         }],
         value: [{
             required: true,
             pattern: /^[\u4e00-\u9fa5]{4,10}$/,
-            message: '请输入模板名称(必须包含汉字,4-10位长度)',
+            message: '请输入类型名称(必须包含汉字,4-10位长度)',
             trigger: ['blur', 'change']
         }],
     }
@@ -195,9 +195,9 @@ const { vo,pageDto, taskMgmtVO, form,rules } = toRefs(data);
 
 // 列显隐信息
 const columns = ref([
-    { key: 0, label: `模板标识`, visible: true },
-    { key: 1, label: `模板名称`, visible: true },
-    { key: 2, label: `模板类型`, visible: true },
+    { key: 0, label: `类型标识`, visible: true },
+    { key: 1, label: `类型名称`, visible: true },
+    { key: 2, label: `流程分类`, visible: true },
     { key: 3, label: `备注`, visible: true },
     { key: 4, label: `创建时间`, visible: true }
 ]);
@@ -236,7 +236,7 @@ function handleDIYTemp() {
 /** 添加低代码业务表单FromCode */
 function createLFTemp() {
     reset();
-    title.value = "添加模板";
+    title.value = "添加类型";
     openForm.value = true;  
  
 }

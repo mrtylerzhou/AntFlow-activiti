@@ -34,7 +34,7 @@
   
   <script setup>
   import { ref } from "vue";
-  import { getTemplatelistPage } from "@/api/outsideApi";
+  import { getConditionTemplatelist } from "@/api/outsideApi";
   const { proxy } = getCurrentInstance();
  
   const list = ref([]);
@@ -57,7 +57,7 @@
   /** 查询接入业务方列表 */
   function getList() {
     loading.value = true;
-    getTemplatelistPage(businessPartyId.value,applicationId.value).then(response => {
+    getConditionTemplatelist(applicationId.value).then(response => {
       list.value = response.data; 
       loading.value = false;
     }).catch(() => {

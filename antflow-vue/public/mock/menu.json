@@ -129,7 +129,7 @@
                     "hidden": false,
                     "component": "workflow/temp/index",
                     "meta": {
-                        "title": "流程模板",
+                        "title": "流程类型",
                         "icon": "",
                         "noCache": false,
                         "link": null

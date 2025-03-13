@@ -36,16 +36,11 @@
       </el-row>
 
       <el-table v-loading="loading" :data="configList">
-         <el-table-column label="模板类型" align="center" prop="formCode" />
-         <el-table-column label="模板名称" align="center" prop="formCodeDisplayName">
-            <template #default="item">
-               <span v-if="item.row.formCodeDisplayName" >{{ item.row.formCodeDisplayName }}</span>
-               <span v-else>{{ getFromCodeName(item.row.formCode) }}</span> 
-            </template>
-         </el-table-column>
+         <el-table-column label="类型标识" align="center" prop="formCode" />
+         <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" /> 
          <el-table-column label="流程编号" align="center" prop="bpmnCode" />
          <el-table-column label="流程名称" align="center" prop="bpmnName" />
-         <el-table-column label="流程类型" align="center" prop="isLowCodeFlow">
+         <el-table-column label="流程分类" align="center" prop="isLowCodeFlow">
             <template #default="item">
                <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器" placement="top">
                   <el-tag type="warning" round>DIY</el-tag>
@@ -90,10 +85,9 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { getBpmnConflistPage, getEffectiveBpmn, getDIYFromCodeData } from "@/api/workflow";
+import { getBpmnConflistPage, getEffectiveBpmn } from "@/api/workflow";
 const router = useRouter();
-const { proxy } = getCurrentInstance();
-let formCodeOptions = ref([]);
+const { proxy } = getCurrentInstance(); 
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
@@ -119,22 +113,10 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 onMounted(async () => {
-   loading.value = true;
-   await initDIYFromCodes();
+   loading.value = true; 
    await getList();
    loading.value = false;
-})
-const initDIYFromCodes = async () => {
-   await getDIYFromCodeData().then((res) => {
-      if (res.code == 200) {
-         formCodeOptions.value = res.data;
-      }
-   });
-}
-const getFromCodeName = (formCode) => {
-   const result = formCodeOptions.value.filter(item => item.key == formCode)[0];
-   return result?.value;
-}
+}) 
 /** 查询列表 */
 const getList = async () => {
    await getBpmnConflistPage(pageDto.value, taskMgmtVO.value).then(response => {

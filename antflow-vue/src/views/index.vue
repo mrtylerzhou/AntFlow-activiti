@@ -14,10 +14,10 @@
               <span>流程后台管理框架</span>
             </div>
           </template>
-          <div class="body"> 
+          <div class="body">
             <p>
             <h3>
-              AntFlow是一款采用Springboot+Mybatis+activiti+vue3等主流前后端技术开发的仿钉钉workflow工作流引擎，结合中国式办公特点深度定制，可以作为钉钉工作流的开源替代。致力解决传统activiti/flowable流程图必须由专业程序员绘制，学习曲线陡峭，上手难、排查问题难、维护成本高等问题,是企业审批流&saas化工作流部署不二选择!如果喜欢请给颗
+              AntFlow是一款采用Springboot+Mybatis+activiti+vue3等主流前后端技术开发的仿钉钉workflow工作流引擎，结合中国式办公特点深度定制，可以作为钉钉工作流的开源替代。致力解决传统activiti/flowable流程图必须由专业程序员绘制，学习曲线陡峭，上手难、排查问题难、维护成本高等问题,是企业审批流&saas化工作流部署不二选择!如果喜欢请给颗星星！
             </h3>
             </p>
             <p>
@@ -35,7 +35,7 @@
                 @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%8D%95.md')">操作手册【自定义表单】</el-button>
             </p>
           </div>
-        </el-card> 
+        </el-card>
       </el-col>
 
       <el-col :sm="24" :lg="12" style="margin-bottom: 5px;">

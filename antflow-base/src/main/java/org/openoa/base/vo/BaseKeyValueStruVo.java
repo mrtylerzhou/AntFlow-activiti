@@ -21,4 +21,8 @@ public class BaseKeyValueStruVo {
     private String type;
     private String remark;
     private Date createTime;
+    /**
+     * 是否包含发起人自选模块,否为不包含,true为包含
+     */
+    private Boolean hasStarUserChooseModule=false;
 }

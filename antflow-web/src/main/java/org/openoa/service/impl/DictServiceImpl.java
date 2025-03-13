@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
@@ -13,13 +14,16 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.entity.DictData;
 import org.openoa.mapper.DicDataMapper;
 import org.openoa.mapper.DictMainMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +39,8 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     private DictMainMapper dictMainMapper;
     @Autowired
     private DicDataMapper dicDataMapper;
-
+    @Autowired
+    private BpmnConfServiceImpl bpmnConfService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return
@@ -133,6 +138,23 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                             .remark(item.getRemark())
                             .build()
             );
+        }
+        List<String> formCodes = results.stream().map(BaseKeyValueStruVo::getKey).collect(Collectors.toList());
+        LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
+                .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
+                .in(BpmnConf::getFormCode, formCodes)
+                .eq(BpmnConf::getEffectiveStatus, 1)
+                .isNotNull(BpmnConf::getExtraFlags);
+        List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
+        if(!CollectionUtils.isEmpty(bpmnConfs)){
+            Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+            for (BaseKeyValueStruVo lfDto : results) {
+                Integer flags = formCode2Flags.get(lfDto.getKey());
+                if(flags!=null){
+                    boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
+                    lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
+                }
+            }
         }
         page.setRecords(results);
         return PageUtils.getResultAndPage(page);

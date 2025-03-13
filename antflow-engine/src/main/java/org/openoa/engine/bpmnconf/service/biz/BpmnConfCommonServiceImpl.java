@@ -33,6 +33,7 @@ import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -398,8 +399,19 @@ public class BpmnConfCommonServiceImpl {
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
 
-        previewNode.setCurrentNodeIds(bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber()));
+        String currentNodeIdStr= bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber());
+        previewNode.setCurrentNodeId(currentNodeIdStr);
 
+        List<String> currentNodeIds = Lists.newArrayList(currentNodeIdStr.split(","));
+        List<BpmnNodeVo> bpmnNodeList = previewNode.getBpmnNodeList();
+        Map<String, BpmnNodeVo> bpmnNodeVoMap = bpmnNodeList.stream().collect(Collectors.toMap(BpmnNodeVo::getNodeId, b -> b, (v1, v2) -> v1));
+        List<String> nodeToResults=new ArrayList<>();
+        processNodeToRecursively(currentNodeIds,bpmnNodeVoMap,nodeToResults);
+        previewNode.setAfterNodeIds(nodeToResults);
+        List<String> nodeFromResults=new ArrayList<>();
+        Set<String> allNodeIds = bpmnNodeVoMap.keySet();
+        allNodeIds.stream().filter(o -> !nodeToResults.contains(o)&&!currentNodeIds.contains(o)).forEach(nodeFromResults::add);
+        previewNode.setBeforeNodeIds(nodeFromResults);
         return previewNode;
 
     }
@@ -441,6 +453,21 @@ public class BpmnConfCommonServiceImpl {
         return false;
     }
 
+    private void processNodeToRecursively(List<String>currentNodeIds, Map<String, BpmnNodeVo> bpmnNodeVoMap, List<String> results){
+        if(currentNodeIds.isEmpty()){
+            return;
+        }
+        for (String currentNodeId : currentNodeIds) {
+            BpmnNodeVo bpmnNodeVo = bpmnNodeVoMap.get(currentNodeId);
+            if (bpmnNodeVo != null) {
+                List<String> nodeTo = bpmnNodeVo.getNodeTo();
+                if(!CollectionUtils.isEmpty(nodeTo)){
+                    results.addAll(nodeTo);
+                    processNodeToRecursively(nodeTo,bpmnNodeVoMap,results);
+                }
+            }
+        }
+    }
     /**
      * set node from information
      *

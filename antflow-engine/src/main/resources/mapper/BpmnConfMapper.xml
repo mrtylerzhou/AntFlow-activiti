@@ -105,4 +105,23 @@
         and b.business_party_mark=#{bpmnConfVo.businessPartyMark}
         ORDER BY a.create_time DESC
     </select>
+
+    <select id="selectOutSideFormCodeList" resultType="org.openoa.base.vo.BpmnConfVo">
+        SELECT a.id AS id,
+        a.bpmn_code AS bpmnCode,
+        a.form_code AS formCode,
+        a.bpmn_name AS bpmnName,
+        a.deduplication_type AS deduplicationType,
+        a.effective_status AS effectiveStatus,
+        a.business_party_id AS businessPartyId,
+        b.id AS applicationId,
+        a.update_time AS updateTime,
+        a.remark AS remark
+        FROM t_bpmn_conf a
+        left join bpm_process_app_application b on a.form_code = b.process_key
+        WHERE a.is_del = 0
+        and a.effective_status = 1
+        and a.is_out_side_process = 1
+        ORDER BY a.create_time DESC
+    </select>
 </mapper>
