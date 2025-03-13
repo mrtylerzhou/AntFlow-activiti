@@ -54,8 +54,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { ElMessageBox } from 'element-plus';
+import { ref, watch } from 'vue'; 
 import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
@@ -193,7 +192,7 @@ const approveSubmit = async (param) => {
 const approveUndertakeSubmit = async () => {
     approveSubData.approvalComment = "承办";
     approveSubData.operationType = handleClickType.value;
-    ElMessageBox.confirm('确定完成操作吗？', '提示', {
+    proxy.$modal.confirm('确定完成操作吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -303,7 +302,7 @@ const sureDialogBtn = async (data) => {
  * @param param 
  */
 const approveProcess = async (param) => {
-    ElMessageBox.confirm('确定完成操作吗？', '提示', {
+    proxy.$modal.confirm('确定完成操作吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
