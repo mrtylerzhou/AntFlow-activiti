@@ -117,7 +117,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_STOP,
                 ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
                 ProcessOperationEnum.BUTTON_TYPE_ABANDON);
-        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_STOP, ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
                 ProcessOperationEnum.BUTTON_TYPE_ABANDON);
     }
 }
