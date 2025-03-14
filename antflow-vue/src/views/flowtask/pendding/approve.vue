@@ -198,13 +198,17 @@ const approveUndertakeSubmit = async () => {
         type: 'warning'
     }).then(async () => {
         await processOperation(approveSubData).then((resData) => {
-                if (resData.code == 200) {
-                    proxy.$modal.msgSuccess("承办成功");
-                    handleTabClick({ paneName: "baseTab" });
-                } else {
-                    proxy.$modal.msgError("承办失败:" + resData.errMsg);
-                }
-        })     
+            if (resData.code == 200) {
+                proxy.$modal.msgSuccess("承办成功");
+
+            } else {
+                proxy.$modal.msgError("承办失败:" + resData.errMsg);
+            }
+
+        }).then(() => {
+            console.log('刷新当前页签 ==========');
+            handleTabClick({ paneName: "baseTab" });
+        });     
     });
 }
 /**
@@ -320,6 +324,13 @@ const approveProcess = async (param) => {
         proxy.$modal.closeLoading();
     }).catch(() => { });
 } 
+
+const handleTabClick = async (tab, event) => {
+    activeName.value = tab.paneName;
+    if (tab.paneName == 'baseTab') { 
+        preview(); 
+    }
+};
 </script>
 <style lang="scss" scoped>
 .component {

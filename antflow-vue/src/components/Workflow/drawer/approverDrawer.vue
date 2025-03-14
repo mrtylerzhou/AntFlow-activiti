@@ -138,7 +138,14 @@
                                     多个会签人员，同步进行审批
                                 </span>
                             </el-radio>
+
                             <el-radio :value="3" class="auth-btn" border>
+                                【或签】
+                                <span class="opt-description">
+                                    只需一名审批人同意或拒绝即可
+                                </span>
+                            </el-radio> 
+                            <el-radio :value="9" class="auth-btn" border>
                                 【回到加批人】
                                 <span class="opt-description">
                                     只能是顺序会签，加批人审批完之后，会回到本节点的审批人再次审批
@@ -207,7 +214,7 @@ let visible = computed({
 });
 /**页面加载监听事件 */
 watch(approverConfig1, (val) => {  
-    if (val.value.nodeType == 7) {//并行审批
+    if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
         let currParallel = val.value.parallelNodes[val.value.index]
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || []; 
@@ -223,11 +230,11 @@ watch(approverConfig1, (val) => {
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => { 
     approvalPageBtns.value = val.buttons?.approvalPage; 
-    if (val.nodeProperty == 6) {
+    if (val.nodeProperty == 6) {//nodeProperty == 6 指 HRBP
         checkedHRBP.value = val.property.hrbpConfType
     }  
     if(approverConfig.value?.property?.afterSignUpWay == 1){
-        approvalBtnSubOption.value = 3;//审批完之后，会回到本节点的审批人再次审批
+        approvalBtnSubOption.value = 9;//审批完之后，会回到本节点的审批人再次审批
     }else {
         approvalBtnSubOption.value = approverConfig.value?.property?.signUpType;
     }
@@ -289,9 +296,11 @@ const handleCheckedButtonsChange = (val) => {
  
 /**处理加批按钮 子操作 */
 const handleApprovalBtnSubOption = (val) => {  
-    //val加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
-    approverConfig.value.property.afterSignUpWay = val && val == 3 ? 1 : 2;
-    approverConfig.value.property.signUpType = val && val == 3 ? 1 : val;  
+    //signType 指的是当前节点审批方式 1:会签，2:或签，3:顺序会签
+    //signUpType 指的是加批审批操作 1:顺序会签，2:会签，3:或签 
+    //val加批类型 1:顺序会签，2:会签，3:或签 特别 9指: 回到加批人，则afterSignUpWay赋值为1，signUpType赋值为1
+    approverConfig.value.property.afterSignUpWay = val && val == 9 ? 1 : 2;
+    approverConfig.value.property.signUpType = val && val == 9 ? 1 : val;  
 }
 const handleTabClick = (tab, event) => {
     activeName.value = tab.paneName;
