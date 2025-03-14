@@ -1,15 +1,12 @@
 <template>
-  <el-dialog :title="title" v-model="visibleDialog" style="width: 680px !important; " append-to-body  class="promoter_person">
+  <el-dialog :title="title" v-model="visibleDialog" style="width: 680px !important; " append-to-body
+    class="promoter_person">
     <div style="min-height: 250px !important;">
       <el-row style="padding-left: -5px;padding-right: -5px;">
         <el-col :span="24" class="my-col">
           <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="my-form">
-            <el-form-item label="选择人员" prop="selectList"> 
-              <TagUserSelect v-model:value="form.selectList">
-                  <template #append> 
-                      <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
-                  </template>
-              </TagUserSelect>   
+            <el-form-item label="选择人员" prop="selectList">
+              <TagUserSelect v-model:list="form.selectList" :multiple="isMultiple" placeholder="请选择人员" />
             </el-form-item>
             <el-form-item label="备注/说明" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :maxlength="100" show-word-limit
@@ -18,9 +15,8 @@
           </el-form>
         </el-col>
       </el-row>
-      <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" :multiple="isMultiple" v-model:checkedData="form.selectList" @change="saveUserDialog" />
     </div>
-    <template #footer> 
+    <template #footer>
       <el-button @click="$emit('update:visible', false)">取 消</el-button>
       <el-button type="primary" @click="saveDialog">确 定</el-button>
     </template>
@@ -28,10 +24,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref,getCurrentInstance } from 'vue';
+import { computed, onMounted, ref, getCurrentInstance } from 'vue';
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-import selectUser from '@/components/BizSelects/userListDialog.vue';
-import { getUsers } from "@/api/mock.js"; 
+import { getUsers } from "@/api/mock.js";
 const { proxy } = getCurrentInstance()
 let props = defineProps({
   visible: {
@@ -52,13 +47,10 @@ let form = ref({
   selectList: [],
   remark: ''
 })
-let list = ref([]) 
-let userDialogVisible= ref(false); 
-
+let list = ref([])
 let emits = defineEmits(['update:visible', 'change'])
 let visibleDialog = computed({
   get() {
-    reset();
     return props.visible
   },
   set() {
@@ -67,50 +59,32 @@ let visibleDialog = computed({
 });
 
 let rules = {
-  selectList: [{
-    required: true,
-    message: '请选择人员',
-    trigger: 'change'
-  }],
-  remark: [{
-    required: true,
-    message: '请输入备注',
-    trigger: 'blur'
-  }]
+  selectList: [{ required: true, message: '请选择人员', trigger: 'change' }],
+  remark: [{ required: true, message: '请输入备注', trigger: 'blur' }]
 };
-const saveUserDialog = (data) => {
-  form.value.selectList = data;
-}
-/**
- * 关闭弹窗
- */
-const closeDialog = () => {
-  emits('update:visible', false)
-}
-reset();
-onMounted(async() => {
+onMounted(async () => {
   reset();
   await getUserList();
 });
 
-const getUserList = async () => { 
-    await getUsers().then(res => {
-        if (res.code == 200) {
-          list.value = res.data.map(item => {
-                return {
-                    label: item.name,
-                    value: item.id
-                }
-            });
+const getUserList = async () => {
+  await getUsers().then(res => {
+    if (res.code == 200) {
+      list.value = res.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
         }
-    });
+      });
+    }
+  });
 }
 
 /**
  * 保存
  */
 let saveDialog = () => {
-  let resFrom={};
+  let resFrom = {};
   proxy.$refs['formRef'].validate((valid) => {
     if (valid) {
       if (!props.isMultiple) {
@@ -122,12 +96,16 @@ let saveDialog = () => {
         resFrom.selectList = form.value.selectList;
       }
       resFrom.remark = form.value.remark
-      //console.log('resFrom.value==========', JSON.stringify(resFrom))
       emits('change', resFrom)
     }
   });
 }
-
+/**
+ * 关闭弹窗
+ */
+const closeDialog = () => {
+  emits('update:visible', false)
+}
 /** 重置操作表单 */
 function reset() {
   form.value = {

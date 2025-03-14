@@ -29,9 +29,7 @@
 <script setup>
 import { ref } from 'vue';
 import { getStartUserChooseModules } from '@/api/workflow';
-import chooseApproveUser from '@/components/BizSelects/chooseApproveDialog.vue';
-//import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue"; 
-// <TagUserSelect ref="tagUserSelectRef" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+import chooseApproveUser from '@/components/BizSelects/chooseApproveDialog.vue'; 
 const emits = defineEmits(['chooseApprove']);
 const props = defineProps({
     formCode: {

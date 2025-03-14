@@ -45,7 +45,7 @@
                 </div>
             </el-tab-pane>
         </el-tabs>
-        <users-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
+        <transfer-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
@@ -59,7 +59,7 @@ import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import outsideFormRender from "@/views/workflow/components/outsideFormRender.vue";
-import usersDialog from './components/usersDialog.vue';
+import transferDialog from './components/transferDialog.vue';
 import approveDialog from './components/approveDialog.vue';
 import repulseDialog from './components/repulseDialog.vue';
 import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/flow/const';

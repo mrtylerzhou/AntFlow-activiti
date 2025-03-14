@@ -4,15 +4,14 @@
     </v-form-render>
     <el-button v-if="!isPreview && !props.reSubmit" type="primary" @click="submitForm">提交</el-button>
     <div style="margin-top: 20px;">
-      <TagUserSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue';
-import { ElMessage } from 'element-plus';
-import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import { ref, reactive, getCurrentInstance } from 'vue'; 
+import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true;
 const { proxy } = getCurrentInstance();
@@ -127,12 +126,11 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
 }
 advanceHandleFormData();
 const submitForm = () => {
-  vFormRef.value.getFormData().then(res => {
-    // Form Validation OK
-    console.log("Form Validation===", JSON.stringify(res))
+  vFormRef.value.getFormData().then(res => { 
+    //console.log("Form Validation===", JSON.stringify(res))
     proxy.$emit("handleBizBtn", JSON.stringify(res))
   }).catch(error => {
-    ElMessage.error(error)
+    proxy.$modal.msgError(error);
   })
 }
 const handleValidate = () => {

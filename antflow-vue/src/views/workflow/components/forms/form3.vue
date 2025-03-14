@@ -28,13 +28,13 @@
                 </el-col>
             </el-row>
         </el-form>
-        <TagUserSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue';  
-import TagUserSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
 const formCode = route.query?.formCode ?? ''; 

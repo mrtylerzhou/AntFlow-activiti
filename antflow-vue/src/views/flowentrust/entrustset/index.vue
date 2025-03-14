@@ -49,15 +49,7 @@
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="审批人" prop="sender">
-                            <TagUserSelect v-model:value="userSelectedList"  style="width: 220px">
-                                <template #append> 
-                                    <el-button class="append-add" type="default" icon="Plus" @click="userDialogVisible = true" />
-                                </template>
-                            </TagUserSelect>   
-                            <!-- <el-select v-model="form.sender" filterable placeholder="请选择当前审批人" style="width: 220px">
-                                <el-option v-for="item in userOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
-                            </el-select> -->
+                            <TagUserSelect v-model:list="userSelectedList" placeholder="请选择审批人" style="width: 220px;" /> 
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -131,14 +123,14 @@
         </el-table> 
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
-        <selectUser ref="selectUserRef" v-model:visible="userDialogVisible" v-model:checkedData="userSelectedList" @change="saveUserDialog" />
+       
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-import selectUser from '@/components/BizSelects/userListDialog.vue';
+
 import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow.js";
 import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance();
@@ -168,15 +160,23 @@ const data = reactive({
     },
     taskMgmtVO: {},
     rules: {
-        powerId: [{ required: true, message: '请选择流程模板类型', trigger: 'change' }],
-        sender: [{ required: true, message: '请选择当前审批人', trigger: 'change' }],
-        receiverId: [{ required: true, message: '请选择委托人', trigger: 'change' }]
+        powerId: [{ required: true, message: '请选择流程模板类型', trigger: ['change','blur']  }],
+        sender: [{ required: true, message: '请选择当前审批人', trigger: ['change','blur'] }],
+        receiverId: [{ required: true, message: '请选择委托人', trigger: ['change','blur']  }]
     }
 });
 const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
 
-let userDialogVisible= ref(false);
+
 let userSelectedList = ref([]);//{id:1,name:'张三'},{id:2,name:'李四'}
+
+watch(() => userSelectedList.value, (newVal) => { 
+    if (!proxy.isArrayEmpty(newVal)) {
+        form.value.sender = newVal[0].id; 
+    }else{
+        form.value.sender = undefined;
+    }  
+}, { deep: true});
 
 const disabledBeginDate = (time) => {
     return time.getTime() > new Date(form?.endTime ?? "");
@@ -188,16 +188,9 @@ const disabledEndDate = (time) => {
 watch(() => form.value.receiverId, (newVal, oldVal) => {
     if (newVal) {
         form.value.receiverName = getReceiverLabel(newVal);
-    }
-    //console.log('form.sender========',JSON.stringify(form.value));
-})
-
-watch(() => userSelectedList.value, (newVal) => {
-    if (Array.from(newVal) && newVal.length > 0) {
-        form.value.sender = newVal[0].id;
     }  
-})
-   
+}, { deep: true});
+
 const getReceiverLabel = (value) => {
     let obj = userOptions.value.filter(item => item.value == value)[0];
     return obj.label;
@@ -205,19 +198,11 @@ const getReceiverLabel = (value) => {
 
 /** 重置操作表单 */
 function reset() {
-   form.value = {
-        id: undefined,
-        powerId: undefined,
-        sender: undefined,
-        name: undefined,
-        receiverId: undefined,
-        receiverName: undefined,
-        beginTime: undefined,
-        endTime: undefined,
-    };
-    //proxy.resetForm("userRef");
+   form.value = {};
+   userSelectedList.value=[]; 
 };
-onMounted(async () => {
+onMounted(async () => { 
+    reset();
     await initFromCode();
     await getList();
     await getUserList();
@@ -242,7 +227,7 @@ const getUserList = async () => {
     });
 }
 
-/** 查询岗位列表 */
+/** 查询列表 */
 async function getList () {
     loading.value = true;
     await getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
@@ -289,7 +274,7 @@ function submitForm() {
             });
         }
     }
-    proxy.$refs["formRef"].validate(valid => {
+    proxy.$refs["formRef"].validate(valid => { 
         if (valid) {
             if (form.value.id != undefined) {
                 setEntrust(form.value).then(response => {
@@ -308,6 +293,8 @@ function submitForm() {
                     getList();
                 });
             }
+        }else{
+            return false;
         }
     });
 }
@@ -325,10 +312,6 @@ function resetQuery() {
 /** 删除按钮操作 */
 function handleDelete(row) {
     proxy.$modal.msgError("演示环境不允许删除操作！");
-}
+} 
 
-
-const saveUserDialog = (data) => {
-  userSelectedList.value = data;  
-}
 </script>

@@ -17,8 +17,7 @@
       </el-form-item>
     </el-form>
     <el-radio-group class="radio-table" v-model="selectUserId" @change="clickedRadio">
-      <el-table row-key="userId" :data="userList" v-loading="loading" height="350px"
-        @selection-change="handleSelectionChange">
+      <el-table row-key="userId" :data="userList" v-loading="loading" height="350px" @selection-change="handleSelectionChange">
         <el-table-column v-if="multiple" align="center" type="selection" width="50px" :selectable="canSelectable" />
         <el-table-column v-else align="center" width="50px">
           <template v-slot="scope">
@@ -78,8 +77,7 @@ const selectUserId = ref(null);
 // 多选下选中的用户列表
 const multiSelectUser = ref([]);
 let visibleDialog = computed({
-  get() {
-    getPageList();
+  get() {  
     return props.visible;
   },
   set() {
@@ -97,12 +95,21 @@ const queryParams = reactive({
   },
 });
 const { pageDto, qform } = toRefs(queryParams);  
-const canCommit = computed(() => { 
-  return props.multiple ? multiSelectUser.value.length > 0 && multiSelectUser.value.length <= props.multiplelimit: (selectUserId.value != null && selectUserId.value !== '');
+const canCommit = computed(() => {   
+  return props.multiple ? !proxy.isArrayEmpty(multiSelectUser.value) && multiSelectUser.value.length <= props.multiplelimit: !proxy.isObjEmpty(selectUserId.value);
 });
 const canSelectable = (row) => {
-  return !props.checkedData.some((item) => item.id === row.userId);
+  return !props.checkedData?.some((item) => item.id === row.userId);
 }
+onMounted(() => { 
+  multiSelectUser.value = props.checkedData;    
+  if (!proxy.isArrayEmpty(props.checkedData) && !props.multiple) {
+    selectUserId.value =  props.checkedData[0].id;
+  }else{
+    selectUserId.value = null;
+  }
+  getPageList();
+});
 // 查询表数据
 const getPageList = async () => {
   loading.value = true;
