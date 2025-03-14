@@ -191,7 +191,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
                 if(taskVo.getVerifyUserId().equals(actual)){
                     String actualVerifyUserName = taskVo.getVerifyUserName();
                     String originalName = flowrunEntrust.getOriginalName();
-                    taskVo.setVerifyUserName(actualVerifyUserName+" 代 "+originalName+" 审批");
+                    taskVo.setVerifyUserName(actualVerifyUserName+" 代 "+originalName+" 审批 ");
                 }
             }
             sort++;
