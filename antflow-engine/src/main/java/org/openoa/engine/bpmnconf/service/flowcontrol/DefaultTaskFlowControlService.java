@@ -114,15 +114,12 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
 				String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
-				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 				List<BaseIdTranStruVo> assigneeByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
-				for (BaseIdTranStruVo baseIdTranStruVo : assigneeByElementId) {
-					String variableVal = baseIdTranStruVo.getId();
-					int index = variableName.indexOf("List");
-					String newVarName=variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
-					executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
-				}
-
+				String variableVal = assigneeByElementId.get(0).getId();
+				int index = variableName.indexOf("List");
+				String newVarName=variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
+				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
 			}
 
 		}
