@@ -34,7 +34,7 @@
 
     <select id="isMoreNode"
             resultType="org.openoa.common.entity.BpmVariableMultiplayer">
-        SELECT a.*
+        SELECT a.*,c.undertake_status AS undertakeStatus
         FROM t_bpm_variable_multiplayer a
                  LEFT JOIN t_bpm_variable b ON a.`variable_id` = b.`id`
                  LEFT JOIN `t_bpm_variable_multiplayer_personnel` c ON a.id =
@@ -42,7 +42,7 @@
         WHERE a.`element_id` =
               #{elementId}
           AND b.`process_num` = #{processNum}
-          AND c.undertake_status = 0
+
     </select>
     <select id="getAssigneeByElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
         select  tbvs.assignee as id,tbvs.assignee_name as name from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id

@@ -51,6 +51,17 @@ public class BpmVariableSignUpServiceImpl extends ServiceImpl<BpmVariableSignUpM
         return count > 0;
     }
 
+    public List<BpmVariableSignUp> getSignUpList(String processNumber) {
+        if (Strings.isNullOrEmpty(processNumber)) {
+            return null;
+        }
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
+                .eq("process_num", processNumber)
+                .eq("is_del", 0));
+
+        return this.getBaseMapper().selectList(new QueryWrapper<BpmVariableSignUp>()
+                .eq("variable_id", bpmVariable.getId()));
+    }
     /**
      * to check whether the node has more than one assignees
      *
