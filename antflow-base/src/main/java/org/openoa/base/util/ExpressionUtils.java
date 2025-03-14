@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.base.util;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

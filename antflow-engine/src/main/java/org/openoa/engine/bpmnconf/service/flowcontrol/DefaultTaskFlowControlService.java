@@ -5,18 +5,15 @@ import java.util.*;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.RuntimeServiceImpl;
 import org.activiti.engine.impl.interceptor.Command;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
-import org.openoa.engine.bpmnconf.util.ProcessDefinitionUtils;
-import org.springframework.stereotype.Service;
+import org.openoa.base.util.ProcessDefinitionUtils;
 
 public class DefaultTaskFlowControlService implements TaskFlowControlService
 {
