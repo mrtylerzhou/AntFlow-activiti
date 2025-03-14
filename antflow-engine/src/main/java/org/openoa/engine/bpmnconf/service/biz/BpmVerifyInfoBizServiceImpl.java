@@ -183,16 +183,15 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setVerifyStatusName("处理中");
             bpmVerifyInfoVos.add(taskVo);
 
-            BpmFlowrunEntrust flowrunEntrust = bpmFlowrunEntrustService.getOne(
-                    Wrappers.
-                            <BpmFlowrunEntrust>lambdaQuery()
-                            .eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()));
-            if(flowrunEntrust!=null){
+            List<BpmFlowrunEntrust> flowrunEntrustList = bpmFlowrunEntrustService.list(
+                    Wrappers.<BpmFlowrunEntrust>lambdaQuery().eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()).orderByDesc(BpmFlowrunEntrust::getId));
+            if(!CollectionUtils.isEmpty(flowrunEntrustList)){
+                BpmFlowrunEntrust flowrunEntrust = flowrunEntrustList.get(0);
                 String actual = flowrunEntrust.getActual();
                 if(taskVo.getVerifyUserId().equals(actual)){
                     String actualVerifyUserName = taskVo.getVerifyUserName();
                     String originalName = flowrunEntrust.getOriginalName();
-                    taskVo.setVerifyUserName(actualVerifyUserName+"代"+originalName+"审批");
+                    taskVo.setVerifyUserName(actualVerifyUserName+" 代 "+originalName+" 审批");
                 }
             }
             sort++;
