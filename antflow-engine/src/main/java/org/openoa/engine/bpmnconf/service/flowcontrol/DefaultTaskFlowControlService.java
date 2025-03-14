@@ -11,6 +11,8 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
 import org.openoa.engine.bpmnconf.util.ProcessDefinitionUtils;
@@ -25,13 +27,16 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	ProcessEngine _processEngine;
 
 	private String _processInstanceId;
+	private final BpmVariableMultiplayerServiceImpl _bpmVariableMultiplayerService;
+
 
 	public DefaultTaskFlowControlService(
-			ProcessEngine processEngine, String processId)
+			ProcessEngine processEngine, String processId, BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService)
 	{
 
 		_processEngine = processEngine;
 		_processInstanceId = processId;
+		this._bpmVariableMultiplayerService = bpmVariableMultiplayerService;
 
 		String processDefId = _processEngine.getRuntimeService().createProcessInstanceQuery()
 				.processInstanceId(_processInstanceId).singleResult().getProcessDefinitionId();
@@ -93,10 +98,10 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				continue;
 			}
 			alreadyProcessed.add(currentTaskEntity.getTaskDefinitionKey());
-			executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity));
+			executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,"todo","todo"));
 		}
 		if(allTaskDefKeys.size()>1&&allTaskDefKeys.stream().distinct().distinct().distinct().count()==1){
-			executeCommand(new StartActivityCmd(currentTaskEntitys.get(1).getExecutionId(), activity));
+			executeCommand(new StartActivityCmd(currentTaskEntitys.get(1).getExecutionId(), activity,"todo","todo"));
 		}
 
 	return taskDefKeys;
@@ -104,12 +109,20 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	private List<String> moveTov2(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
 	{
 
+		String processNumber = currentTaskEntitys.get(0).getProcessDefinitionId().split(":")[0];
 		for (Task currentTaskEntity : currentTaskEntitys) {
 
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
-
+				String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
-				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity));
+				List<BaseIdTranStruVo> assigneeByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
+				for (BaseIdTranStruVo baseIdTranStruVo : assigneeByElementId) {
+					String variableVal = baseIdTranStruVo.getId();
+					int index = variableName.indexOf("List");
+					String newVarName=variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+					executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
+				}
+
 			}
 
 		}

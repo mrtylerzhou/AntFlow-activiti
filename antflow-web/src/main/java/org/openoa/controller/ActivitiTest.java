@@ -229,7 +229,7 @@ public class ActivitiTest {
     public Result moveTo(String taskDefKey,String processNumber) throws Exception{
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         String procInstId = bpmBusinessProcess.getProcInstId();
-        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
+
 
         return Result.success();
     }

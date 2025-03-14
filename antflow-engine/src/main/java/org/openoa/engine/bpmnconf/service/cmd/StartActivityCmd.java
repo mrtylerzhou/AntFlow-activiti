@@ -13,11 +13,15 @@ public class StartActivityCmd implements Command<Void>
 	private ActivityImpl _activity;
 
 	private String _executionId;
+	private final String variableName;
+	private final String variableValue;
 
-	public StartActivityCmd(String executionId, ActivityImpl activity)
+	public StartActivityCmd(String executionId, ActivityImpl activity,String variableName,String variableValue)
 	{
 		_activity = activity;
 		_executionId = executionId;
+		this.variableName = variableName;
+		this.variableValue = variableValue;
 	}
 
 	@Override
@@ -28,10 +32,7 @@ public class StartActivityCmd implements Command<Void>
 			String.format("executing activity: %s", _activity.getId()));
 		ExecutionEntity execution = commandContext.getExecutionEntityManager().findExecutionById(_executionId);
 
-		execution.setVariable("personnel2s", "2");
-		execution.setVariable("personnel3s", "2");
-		execution.setVariable("personnel4s", "2");
-		execution.setVariable("personnel5s", "2");
+		execution.setVariable(variableName, variableValue);
 		execution.setActivity(_activity);
 
 		execution.performOperation(AtomicOperation.ACTIVITY_START);

@@ -8,6 +8,7 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
+import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
@@ -22,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -97,17 +99,21 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     .createUser(task.getAssignee())
                     .build());
 
-           /* PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
+            PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
             if (nextElement != null) {
                 String type = (String) nextElement.getProperty("type");
                 if ("parallelGateway".equals(type)) {
-                    if (nextElement.getOutgoingTransitions().size() > 1) {
-                        restoreNodeKey = "";
-                    } else {
-                        restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
+                    List<Task> tasks = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
+                    List<String> currentTaskDefKeys = tasks.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
+                    if(currentTaskDefKeys.size()<=1){
+                        if (nextElement.getOutgoingTransitions().size() > 1) {
+                            restoreNodeKey = "";
+                        } else {
+                            restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
+                        }
                     }
                 }
-            }*/
+            }
             if (processNodeSubmit.getState().equals(0)) {
                 if (!StringUtils.isEmpty(restoreNodeKey)) {
                     processJump.commitProcess(task.getId(), varMap, restoreNodeKey);

@@ -10,6 +10,7 @@ import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
@@ -83,6 +84,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
     private ProcessTurnBackServiceImpl processTurnBackService;
+    @Autowired
+    private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -189,7 +192,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 throw new JiMuBizException("流程回退出错了!");
             }
         }else{
-            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId(),bpmVariableMultiplayerService);
             try {
                 List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(),backToNodeKey).stream().distinct().collect(Collectors.toList());
                 if(strings.size()>1){
