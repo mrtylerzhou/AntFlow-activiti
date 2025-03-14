@@ -37,7 +37,7 @@
     <template #footer>
       <div class="dialog-footer">
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-          :layout="layoutSize" @pagination="getUserPageList" />
+          :layout="layoutSize" @pagination="getPageList" />
       </div>
     </template>
   </el-dialog>
@@ -69,7 +69,7 @@ const props = defineProps({
 const emits = defineEmits(["update:visible", "update:checkedData", "change"]);
 const loading = ref(false);
 const userList = ref([]);
-const total = ref(23);
+const total = ref(0);
 const layoutSize = 'total, prev, pager, next';
 
 // 单选下选中的用户
@@ -87,7 +87,7 @@ let visibleDialog = computed({
 
 const queryParams = reactive({
   qform: {
-    description: null,
+    description: undefined,
   },
   pageDto: {
     page: 1,
@@ -115,6 +115,8 @@ const getPageList = async () => {
   loading.value = true;
   await getUserPageList(pageDto.value,qform.value).then((res) => {
     loading.value = false;
+    total.value = res.pagination.totalCount;
+    pageDto.value.page = res.pagination.page;
     userList.value = res.data.map((item) => {
       return {
         userId: Number(item.id),
