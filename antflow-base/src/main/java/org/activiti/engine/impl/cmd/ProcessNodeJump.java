@@ -126,7 +126,7 @@ public class ProcessNodeJump {
             taskService.complete(taskId, variables);
         } else {
             try {
-                turnTransitionV2(taskId, activityId, variables);
+                turnTransition(taskId, activityId, variables);
             } catch (Exception e) {
                 e.printStackTrace();
             }
