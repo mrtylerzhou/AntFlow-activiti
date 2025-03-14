@@ -29,7 +29,7 @@
 <script setup>
 import { ref } from 'vue';
 import { getStartUserChooseModules } from '@/api/workflow';
-import chooseApproveUser from '@/components/BizSelects/chooseApproveDialog.vue'; 
+import chooseApproveUser from './chooseApproveDialog.vue';
 const emits = defineEmits(['chooseApprove']);
 const props = defineProps({
     formCode: {
@@ -45,7 +45,7 @@ let selectApproveNode = ref([]);//
 const canShowComponent = computed(() => {
     return approvaNodeList.value.length > 0;
 });
- 
+
 onMounted(async () => {
     await getStartUserChooseModules(props.formCode).then(res => {
         if (Array.isArray(res.data) && res.data.length > 0) {
@@ -71,41 +71,41 @@ const openUserDialog = (node) => {
 }
 
 /**保存人员选择弹框 */
-const saveUserDialog = (nodeData) => { 
+const saveUserDialog = (nodeData) => {
     approvaNodeList.value.forEach(node => {
         if (node.id === nodeData.id) {
             node.approversList = nodeData.approversList;
         }
-    }); 
+    });
     emits('chooseApprove', formatReturnData(approvaNodeList.value));
 }
 /**删除选中人员 */
-const onDeleteTag = (node,tag) => {
-    node.approversList =  node.approversList.filter(item => {
+const onDeleteTag = (node, tag) => {
+    node.approversList = node.approversList.filter(item => {
         return item.id !== tag.id;
     });
     emits('chooseApprove', formatReturnData(approvaNodeList.value));
 };
 
 /**格式化返回数据 */
-const formatReturnData = (nodeArr) => { 
+const formatReturnData = (nodeArr) => {
     let returnData = {
-        approvers:{},
-        nodeVaild:false
+        approvers: {},
+        nodeVaild: false
     };
     let nodesGroup = {};
-    for (let t of nodeArr) { 
-      if (nodesGroup.hasOwnProperty(t.id)) {
-        nodesGroup[t.id].push(...t.approversList);
-      } else {
-        if (t.approversList.length > 0) {
-            nodesGroup[t.id] = t.approversList;
+    for (let t of nodeArr) {
+        if (nodesGroup.hasOwnProperty(t.id)) {
+            nodesGroup[t.id].push(...t.approversList);
+        } else {
+            if (t.approversList.length > 0) {
+                nodesGroup[t.id] = t.approversList;
+            }
         }
-      }
     }
     //console.log('nodesGroup==keys======',JSON.stringify(Object.keys(nodesGroup)));
     returnData.approvers = nodesGroup;
-    returnData.nodeVaild = Object.keys(nodesGroup).length == approvaNodeList.value.length; 
+    returnData.nodeVaild = Object.keys(nodesGroup).length == approvaNodeList.value.length;
     return returnData;
 } 
 </script>
