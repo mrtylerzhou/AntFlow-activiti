@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * bpmn node
@@ -123,11 +125,19 @@ public class BpmnNode {
 
     @TableField("node_froms")
     private String nodeFroms;
+    //0 for no and 1 for yes
+    @TableField("is_dynamicCondition")
+    private Boolean isDynamicCondition;
+
+
+
+
     @TableField(exist = false)
     private Integer isOutSideProcess;
     @TableField(exist = false)
     private Integer isLowCodeFlow;
     @TableField(exist = false)
     private Integer extraFlags;
-
+    @TableField(exist = false)
+    private List<BpmnNodeLabelVO> labelList;
 }

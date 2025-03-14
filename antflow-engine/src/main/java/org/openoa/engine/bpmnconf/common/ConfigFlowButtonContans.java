@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
@@ -7,22 +8,28 @@ import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.util.FilterUtil;
+import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.ProcessActionButtonVo;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableButton;
 import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.openoa.common.constant.enus.ElementPropertyEnum.ELEMENT_PROPERTY_SIGN_UP_PARALLEL_OR;
 
 /**
  *@Author JimuOffice
@@ -42,6 +49,8 @@ public class ConfigFlowButtonContans {
     private BpmVariableViewPageButtonServiceImpl bpmVariableViewPageButtonService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
+    @Autowired
+    private BpmVariableSignUpServiceImpl variableSignUpService;
 
     /**get pc buttons
      * @param elementId  elementId
@@ -197,7 +206,22 @@ public class ConfigFlowButtonContans {
      */
     public boolean isMoreNode(String processNum, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
+        if(list==null){
+            List<BpmVariableSignUp> signUpList = variableSignUpService.getSignUpList(processNum);
+            if(!CollectionUtils.isEmpty(signUpList)){
+                List<String> subElementStrs = signUpList.stream().map(BpmVariableSignUp::getSubElements).collect(Collectors.toList());
+                for (String subElementStr : subElementStrs) {
+                    List<BpmnConfCommonElementVo> bpmnConfCommonElementVos = JSON.parseArray(subElementStr, BpmnConfCommonElementVo.class);
+                    if(!CollectionUtils.isEmpty(bpmnConfCommonElementVos)){
+                        BpmnConfCommonElementVo bpmnConfCommonElementVo = bpmnConfCommonElementVos.get(0);
+                        if(elementId.equals(bpmnConfCommonElementVo.getElementId())&&ELEMENT_PROPERTY_SIGN_UP_PARALLEL_OR.getCode().equals(bpmnConfCommonElementVo.getElementProperty())){
+                            return true;
+                        }
+                    }
 
+                }
+            }
+        }
         // if it is more node and is or sign,and does not  undertaked,and has more than one,return undertake button
         return list != null && list.size() > 1 && list.get(0).getSignType() == 2;
     }

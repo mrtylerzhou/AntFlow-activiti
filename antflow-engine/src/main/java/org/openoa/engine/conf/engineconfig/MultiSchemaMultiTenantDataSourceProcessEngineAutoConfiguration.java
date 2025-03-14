@@ -7,6 +7,7 @@ import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.SpringTransactionContextFactory;
+import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -64,12 +65,14 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         // 告诉 Activiti 使用外部事务管理器
         configuration.setTransactionsExternallyManaged(true);
         configuration.setAsyncExecutor(springAsyncExecutor);
+        configuration.setJobExecutorActivate(false);
         configuration.setActivityFontName("宋体");
         configuration.setAnnotationFontName("宋体");
         configuration.setLabelFontName("宋体");
         // 配置事务上下文工厂
         TransactionContextFactory transactionContextFactory = new SpringTransactionContextFactory(transactionManager);
         configuration.setTransactionContextFactory(transactionContextFactory);
+        configuration.setTransactionFactory(new SpringManagedTransactionFactory());
         Collection<String> allTenants = tenantInfoHolder.getAllTenants();
         for (String currentTenant : allTenants) {
             DataSource dataSource = tenantInfoHolder.getDataSource(currentTenant);

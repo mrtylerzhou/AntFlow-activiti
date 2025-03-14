@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -296,4 +297,6 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
      */
     public Map<String, Object> findTaskById(@Param("taskId") String taskId);
     public String findProcDefIdByInstId(String procInstId);
+
+    void deleteExecutionsByProcinstIdAndTaskDefKeys(@Param("procInstId")String procInstId,@Param("taskDefKeys") List<String> taskdefkeys);
 }

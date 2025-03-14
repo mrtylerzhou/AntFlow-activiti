@@ -1,6 +1,8 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -74,13 +76,27 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
     }
 
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
-        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(SecurityUtils.getLogInEmpIdStr(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(verifyInfo.getVerifyUserId(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
         if(entrustByTaskId!=null){
             verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
         }
         this.getBaseMapper().insert(verifyInfo);
     }
 
+    public Map<String,BpmVerifyInfo> getByProcInstIdAndTaskDefKey(String processNumber,String taskDefKey){
+        if(StringUtils.isBlank(processNumber)){
+            throw  new JiMuBizException("流程编号不存在!");
+        }
+       if(StringUtils.isEmpty(taskDefKey)){
+           return null;
+       }
+        LambdaQueryWrapper<BpmVerifyInfo> qryWrapper = Wrappers.<BpmVerifyInfo>lambdaQuery()
+                .eq(BpmVerifyInfo::getProcessCode, processNumber)
+                .eq(BpmVerifyInfo::getTaskDefKey, taskDefKey);
+        List<BpmVerifyInfo> verifyInfos = this.list(qryWrapper);
+        Map<String, BpmVerifyInfo> verifyInfoMap = verifyInfos.stream().collect(Collectors.toMap(a -> a.getTaskDefKey() + a.getVerifyUserId(), b -> b, (v1, v2) -> v1));
+        return verifyInfoMap;
+    }
     /***
      * add verify info
      * @param businessId business id
