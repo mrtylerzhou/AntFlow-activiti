@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.controller;
 
-import io.swagger.v3.oas.annotations.Parameter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
@@ -39,7 +39,7 @@ public class LowCodeFlowController {
      * @return
      */
     @PostMapping("/getLFFormCodePageList")
-    public ResultAndPage<BaseKeyValueStruVo> getLFFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
+    public ResultAndPage<BaseKeyValueStruVo> getLFFormCodePageList( @RequestBody DetailRequestDto requestDto){
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
         return lowCodeFlowBizService.selectLFFormCodePageList(pageDto,taskMgmtVO);
@@ -50,7 +50,7 @@ public class LowCodeFlowController {
      * @return
      */
     @PostMapping("/getLFActiveFormCodePageList")
-    public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList(@Parameter @RequestBody DetailRequestDto requestDto){
+    public ResultAndPage<BaseKeyValueStruVo> getLFActiveFormCodePageList( @RequestBody DetailRequestDto requestDto){
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
         return lowCodeFlowBizService.selectLFActiveFormCodePageList(pageDto,taskMgmtVO);

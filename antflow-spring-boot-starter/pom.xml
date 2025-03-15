@@ -39,7 +39,7 @@
         <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>31.0.1-jre</guava.version>
-        <knife4j-openapi3.version>4.5.0</knife4j-openapi3.version>
+
     </properties>
 <dependencies>
     <dependency>
@@ -242,11 +242,7 @@
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
     </dependency>
-    <dependency>
-        <groupId>com.github.xiaoymin</groupId>
-        <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-        <version>${knife4j-openapi3.version}</version>
-    </dependency>
+
 </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.controller;
 
 
 import com.google.common.base.Strings;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Tag(name = "第三方业务方管理")
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSideBpm")

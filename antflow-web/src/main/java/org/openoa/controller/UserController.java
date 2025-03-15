@@ -2,7 +2,7 @@ package org.openoa.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import io.swagger.v3.oas.annotations.Parameter;
+
 import org.activiti.engine.impl.cfg.multitenant.TenantInfoHolder;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +79,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/getUserPageList")
-    public ResultAndPage<BaseIdTranStruVo> getUserPageList(@Parameter @RequestBody DetailRequestDto requestDto){
+    public ResultAndPage<BaseIdTranStruVo> getUserPageList( @RequestBody DetailRequestDto requestDto){
         PageDto pageDto = requestDto.getPageDto();
         Page<BaseIdTranStruVo> page = PageUtils.getPageByPageDto(pageDto);
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
