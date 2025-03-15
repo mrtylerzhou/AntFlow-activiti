@@ -991,7 +991,7 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null,
+    source           varchar(255)                       null
 )comment 'BPM Process Application Table';
 
 
@@ -1682,7 +1682,7 @@ create table t_bpm_dynamic_condition_choosen
 	id bigint auto_increment,
 	process_number varchar(255) null comment '流程编号',
 	node_id varchar(100) null comment '被选中条件节点的id',
-	nodeFrom       varchar(100) null
+	nodeFrom       varchar(100) null,
 	constraint t_bpm_dynamic_condition_choosen_pk
 		primary key (id)
 )
