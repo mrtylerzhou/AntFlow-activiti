@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
 

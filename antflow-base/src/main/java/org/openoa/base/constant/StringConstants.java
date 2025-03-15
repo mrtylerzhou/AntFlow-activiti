@@ -37,6 +37,7 @@ public class StringConstants {
 
     public static final String TENANT_USER="tenantUser";
     public static final String LOWCODE_FLOW_DICT_TYPE="lowcodeflow";
-    public static final String DYNAMIC_CONDITION_NODE="dynamiccondition";
+    public static final String DYNAMIC_CONDITION_NODE="af_syslabel_dynamiccondition";
+    public static final String COPY_NODE="af_syslabel_copynode";
     public static final String CONDITION_CHANGED="condition_changed";
 }

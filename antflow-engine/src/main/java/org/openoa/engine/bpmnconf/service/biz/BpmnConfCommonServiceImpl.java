@@ -7,11 +7,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.ProxyClient;
 import org.openoa.base.constant.StringConstants;
-import org.openoa.base.constant.enums.ButtonTypeEnum;
-import org.openoa.base.constant.enums.DeduplicationTypeEnum;
-import org.openoa.base.constant.enums.NodePropertyEnum;
-import org.openoa.base.constant.enums.NodeTypeEnum;
+import org.openoa.base.constant.enums.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.BpmnUtils;
@@ -25,6 +23,7 @@ import org.openoa.common.adaptor.bpmnelementadp.BpmnOptionalDuplicatesImpl;
 import org.openoa.common.formatter.BpmnPersonnelFormat;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.BpmnNode;
@@ -64,6 +63,8 @@ public class BpmnConfCommonServiceImpl {
     private BpmVariableServiceImpl bpmnVariableService;
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
+    @Autowired
+    private BpmProcessForwardServiceImpl processForwardService;
     /**
      * query conf by formCode
      *
@@ -666,6 +667,29 @@ public class BpmnConfCommonServiceImpl {
 
         //4、format the nodes by pipelines
         bpmnRemoveConfFormatFactory.removeBpmnConf(bpmnConfVo,bpmnStartConditions);
+        if(BpmnConfFlagsEnum.hasFlag(bpmnConfVo.getExtraFlags(),BpmnConfFlagsEnum.HAS_COPY)){
+            for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
+                //copy nodes have already removed,and its forwarded list assigned to its next node
+                if (!NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(node.getNodeType())&&!CollectionUtils.isEmpty(node.getEmpToForwardList())) {
+                    List<BaseIdTranStruVo> empToForwardList = node.getEmpToForwardList();
+                    List<BpmProcessForward> processForwardList=new ArrayList<>(node.getEmpToForwardList().size());
+                    for (BaseIdTranStruVo baseIdTranStruVo : empToForwardList) {
+                        BpmProcessForward bpmProcessForward = BpmProcessForward.builder()
+                                .createTime(new Date())
+                                .createUserId(SecurityUtils.getLogInEmpId())
+                                .forwardUserId(baseIdTranStruVo.getId())
+                                .ForwardUserName(baseIdTranStruVo.getName())
+                                .processNumber(bpmnStartConditions.getProcessNum())
+                                .nodeId(String.valueOf(node.getId()))
+                                .isDel(1)//it is invalid at first,then set it to be valid
+                                //at this moment,we can not get procInstId,update it later
+                                .build();
+                        processForwardList.add(bpmProcessForward);
+                    }
+                    processForwardService.saveBatch(processForwardList);
+                }
+            }
+        }
         return bpmnConfVo;
     }
 

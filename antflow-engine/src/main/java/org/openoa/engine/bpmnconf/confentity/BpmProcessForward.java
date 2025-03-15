@@ -69,5 +69,7 @@ public class BpmProcessForward {
      */
     @TableField("process_number")
     private String processNumber;
+    @TableField("node_id")
+    private String nodeId;
 
 }
