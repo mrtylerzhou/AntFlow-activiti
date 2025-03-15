@@ -10,7 +10,7 @@
                             <el-radio-group v-model="repulseForm.backToModifyType">
                                 <el-radio-button value=1>
                                     上一节点
-                                    <el-popover placement="top-start" :width="200"
+                                    <el-popover placement="top-start" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible1" effect="dark" content="退回上一个审批节点">
                                         <template #reference>
                                             <el-icon>
@@ -21,7 +21,7 @@
                                 </el-radio-button>
                                 <el-radio-button value=2>
                                     发起人
-                                    <el-popover placement="top-start" title="【重新流转】" :width="200"
+                                    <el-popover placement="top-start" title="【重新流转】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible2" effect="dark"
                                         content="退回到发起人，发起人重新提交后流程重新开始流转">
                                         <template #reference>
@@ -33,7 +33,7 @@
                                 </el-radio-button>
                                 <el-radio-button value=3>
                                     发起人
-                                    <el-popover placement="top-start" title="【回到当前节点】" :width="200"
+                                    <el-popover placement="top-start" title="【回到当前节点】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible3" effect="dark"
                                         content="退回到发起人，发起人重新提交后流程回到当前审批人">
                                         <template #reference>
@@ -45,7 +45,7 @@
                                 </el-radio-button>
                                 <el-radio-button value=4>
                                     任意节点
-                                    <el-popover placement="top-start" title="【回到下一节点】" :width="200"
+                                    <el-popover placement="top-start" title="【回到下一节点】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible4" effect="dark"
                                         content="退回历史任意审批节点,提交后回到下一个节点">
                                         <template #reference>
@@ -57,7 +57,7 @@
                                 </el-radio-button>
                                 <el-radio-button value=5>
                                     任意节点
-                                    <el-popover placement="top-start" :width="200" title="【回到当前节点】"
+                                    <el-popover placement="top-start" :width="200" title="【回到当前节点】" aria-hidden="true"
                                         :visible="openVisible && tipsVisible5" effect="dark"
                                         content="退回历史任意审批节点，提交后回到当前审批人">
                                         <template #reference>
