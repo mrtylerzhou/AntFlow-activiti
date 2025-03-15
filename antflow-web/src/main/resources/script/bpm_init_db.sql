@@ -338,6 +338,7 @@ CREATE TABLE if not exists `bpm_process_forward`
     `forward_user_id`    varchar(50)            DEFAULT NULL COMMENT 'forwarded user id',
     `Forward_user_name`  varchar(50)           DEFAULT NULL COMMENT 'forwarded user name',
     `processInstance_Id` varchar(64)           DEFAULT NULL COMMENT 'process instance id',
+     `node_id`            varchar(64)                            null,
     `create_time`        timestamp             not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user_id`     varchar(50)            DEFAULT NULL COMMENT 'as its name says',
     `task_id`            varchar(50)           DEFAULT NULL COMMENT 'taskid',

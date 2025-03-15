@@ -113,8 +113,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
 
             String procInstId=processInstance.getId();
             String processNumber=bpmBusinessProcess.getBusinessNumber();
-            List<String> empToForwardList = bpmnStartConditions.getEmpToForwardList();
-            processForwardService.addProcessForwardBatch(procInstId,processNumber,empToForwardList);
+
 
         }
 

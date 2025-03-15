@@ -37,6 +37,7 @@ public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
             if (bpmnStartConditions.getEmpToForwardList() == null) {
                 bpmnStartConditions.setEmpToForwardList(new ArrayList<>());
             }
+            vo.setEmpToForwardList(vo.getProperty().getEmplList());
             bpmnStartConditions.getEmpToForwardList().addAll(vo.getProperty().getEmplIds());
         }
         return Lists.newArrayList(supplier);

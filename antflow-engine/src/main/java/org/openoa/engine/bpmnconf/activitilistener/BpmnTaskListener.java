@@ -2,13 +2,17 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.el.FixedValue;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.weaver.ast.Var;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.exception.JiMuBizException;
@@ -19,17 +23,21 @@ import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.BpmnNode;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
 import org.openoa.engine.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -66,6 +74,10 @@ public class BpmnTaskListener implements TaskListener {
     private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
     @Resource
     private NodeAdditionalInfoServiceImpl nodeAdditionalInfoService;
+    @Resource
+    private BpmVariableMapper bpmVariableMapper;
+    @Resource
+    private BpmProcessForwardServiceImpl bpmProcessForwardService;
 
 
     @Override
@@ -107,6 +119,27 @@ public class BpmnTaskListener implements TaskListener {
             String expressionText = extraInfo.getExpressionText();
             if(!StringUtils.isEmpty(expressionText)){
                 delegateTask.setFormKey(expressionText);
+                NodeExtraInfoDTO extraInfoDTO = JSON.parseObject(expressionText, NodeExtraInfoDTO.class);
+                List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
+                if (!CollectionUtils.isEmpty(nodeLabelVOS)) {
+                    for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
+                        if (StringConstants.COPY_NODE.equals(nodeLabelVO.getLabelValue())) {
+                            String processInstanceId = delegateTask.getProcessInstanceId();
+                            String elementId=delegateTask.getTaskDefinitionKey();
+                            List<String> nodeIdsByeElementId = bpmVariableMapper.getNodeIdsByeElementId(processNumber, elementId);
+                            if(!CollectionUtils.isEmpty(nodeIdsByeElementId)){
+                                String nodeId = nodeIdsByeElementId.get(0);
+                                LambdaQueryWrapper<BpmProcessForward> qryWrapper = Wrappers.<BpmProcessForward>lambdaQuery()
+                                        .eq(BpmProcessForward::getProcessNumber, processNumber)
+                                        .eq(BpmProcessForward::getNodeId, nodeId);
+                                BpmProcessForward processForward=new BpmProcessForward();
+                                processForward.setProcessInstanceId(processInstanceId);
+                                processForward.setIsDel(0);//recover the default state,so that the forward record can be visible
+                                bpmProcessForwardService.update(processForward, qryWrapper);
+                            }
+                        }
+                    }
+                }
             }
         }
         boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);

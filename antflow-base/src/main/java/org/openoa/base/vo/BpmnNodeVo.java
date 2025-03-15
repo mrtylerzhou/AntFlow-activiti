@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
@@ -155,7 +156,10 @@ public class BpmnNodeVo  implements Serializable {
     private Integer isOutSideProcess;
     private Integer isLowCodeFlow;
     private List<LFFieldControlVO> lfFieldControlVOs;
-
+    /**
+     * forwarded emp list
+     */
+    private List<BaseIdTranStruVo> empToForwardList=new ArrayList<>();
     /**
      * 0 for no and 1 for yes
      */
@@ -173,6 +177,14 @@ public class BpmnNodeVo  implements Serializable {
         this.nodeFroms=nodeFroms;
         if(!ObjectUtils.isEmpty(nodeFroms)){
             this.prevId= Arrays.asList(nodeFroms.split(","));
+        }
+    }
+    public void updateLabelListPossible(BpmnNodeLabelVO labelVO){
+        if(!CollectionUtils.isEmpty(this.labelList)){
+            this.labelList.add(labelVO);
+        }else{
+            this.labelList=new ArrayList<>();
+            this.labelList.add(labelVO);
         }
     }
 }
