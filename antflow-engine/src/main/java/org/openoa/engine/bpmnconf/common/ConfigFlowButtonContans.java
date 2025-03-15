@@ -2,6 +2,9 @@ package org.openoa.engine.bpmnconf.common;
 
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
@@ -51,6 +54,8 @@ public class ConfigFlowButtonContans {
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
     private BpmVariableSignUpServiceImpl variableSignUpService;
+    @Autowired
+    private TaskService taskService;
 
     /**get pc buttons
      * @param elementId  elementId
@@ -114,9 +119,9 @@ public class ConfigFlowButtonContans {
                 toViewButtons.add(change);
             }
 
-
+            String procInstId=Optional.ofNullable(bpmBusinessProcess).map(BpmBusinessProcess::getProcInstId).orElse("");
             //when is more node,if yes then add undertake button
-            if (isMoreNode(processNum, elementId)) {
+            if (isMoreNode(processNum,procInstId, elementId)) {
                 // add undertake button
                 ProcessActionButtonVo undertake = ProcessActionButtonVo.builder()
                         .buttonType(ButtonTypeEnum.BUTTON_TYPE_UNDERTAKE.getCode())
@@ -204,7 +209,7 @@ public class ConfigFlowButtonContans {
      * @param elementId
      * @return
      */
-    public boolean isMoreNode(String processNum, String elementId) {
+    public boolean isMoreNode(String processNum,String procInstId, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
         if(list==null){
             List<BpmVariableSignUp> signUpList = variableSignUpService.getSignUpList(processNum);
@@ -214,8 +219,9 @@ public class ConfigFlowButtonContans {
                     List<BpmnConfCommonElementVo> bpmnConfCommonElementVos = JSON.parseArray(subElementStr, BpmnConfCommonElementVo.class);
                     if(!CollectionUtils.isEmpty(bpmnConfCommonElementVos)){
                         BpmnConfCommonElementVo bpmnConfCommonElementVo = bpmnConfCommonElementVos.get(0);
-                        if(elementId.equals(bpmnConfCommonElementVo.getElementId())&&ELEMENT_PROPERTY_SIGN_UP_PARALLEL_OR.getCode().equals(bpmnConfCommonElementVo.getElementProperty())){
-                            return true;
+                        if(bpmnConfCommonElementVo.getElementId().equals(elementId)&&ELEMENT_PROPERTY_SIGN_UP_PARALLEL_OR.getCode().equals(bpmnConfCommonElementVo.getElementProperty())){
+                            List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).taskDefinitionKey(elementId).list();
+                            return tasks.size()>1;
                         }
                     }
 
