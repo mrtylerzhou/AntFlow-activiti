@@ -51,6 +51,7 @@ let list = ref([])
 let emits = defineEmits(['update:visible', 'change'])
 let visibleDialog = computed({
   get() {
+    reset();
     return props.visible
   },
   set() {

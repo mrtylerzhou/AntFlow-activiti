@@ -61,7 +61,7 @@
                <el-tag>{{ item.row.effectiveStatus == 1 ? '活跃' : '不活跃' }}</el-tag>
             </template>
          </el-table-column>
-
+         <el-table-column label="描述说明" align="center" prop="remark"  width="180" :show-overflow-tooltip="true" /> 
          <el-table-column label="修改时间" align="center" prop="updateTime" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.updateTime) }}</span>
