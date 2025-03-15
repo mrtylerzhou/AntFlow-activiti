@@ -23,7 +23,6 @@ import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
-import org.openoa.engine.bpmnconf.service.flowcontrol.ProcessTurnBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
@@ -88,8 +87,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
     private RuntimeService runtimeService;
-    @Autowired
-    private ProcessTurnBackServiceImpl processTurnBackService;
+
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
