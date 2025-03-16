@@ -73,10 +73,11 @@ public class ConditionServiceImpl implements ConditionService {
                     .eq(BpmDynamicConditionChoosen::getProcessNumber, bpmnStartConditionsVo.getProcessNum())
                     .eq(BpmDynamicConditionChoosen::getNodeFrom, bpmnNodeVo.getNodeFrom());
             List<BpmDynamicConditionChoosen> conditionChoosens = dynamicConditionChoosenMapper.selectList(qryWrapper);
-            if(!CollectionUtils.isEmpty(conditionChoosens)){
+
                 List<String> nodeIdsEverUsed = conditionChoosens.stream().map(BpmDynamicConditionChoosen::getNodeId).collect(Collectors.toList());
-                //如果当前节点没有使用过,说明条件发生了变化(如果使用过则一定在库里有相同记录),则抛出异常
-                if(!nodeIdsEverUsed.contains(nodeId)){
+                //如果当前节点没有使用过(曾经是false或者默认),现在变成了true,或者使用过(曾经是true),现在变成了false(或者默认),都说明说明条件发生了变化(如果使用过则一定在库里有相同记录),则抛出异常
+                if((!nodeIdsEverUsed.contains(nodeId)&&result)
+                        ||(nodeIdsEverUsed.contains(nodeId)&&!result)){
                     dynamicConditionChoosenMapper.delete(qryWrapper);
                     BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
                     dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
@@ -84,10 +85,11 @@ public class ConditionServiceImpl implements ConditionService {
                     dynamicConditionChoosenMapper.insert(dynamicConditionChoosen);
                     throw new JiMuBizException(StringConstants.CONDITION_CHANGED,"流程条件发生改变");
                 }
+
             }
-        }
+
         //如果是动态条件,将条件记录下来,后面比对是否发生了变化
-        if(isDynamicConditionGateway&&!Boolean.TRUE.equals(bpmnStartConditionsVo.isPreview())){
+        if(isDynamicConditionGateway&&!Boolean.TRUE.equals(bpmnStartConditionsVo.isPreview())&&result){
             BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
             dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
             dynamicConditionChoosen.setNodeId(bpmnNodeVo.getNodeId());

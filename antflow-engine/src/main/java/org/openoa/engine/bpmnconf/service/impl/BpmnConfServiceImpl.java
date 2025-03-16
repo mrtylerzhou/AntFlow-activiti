@@ -14,6 +14,7 @@ import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
@@ -88,6 +89,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
     @Autowired
     private TaskMgmtServiceImpl TaskMgmtService;
+    @Autowired
+    private NodeAdditionalInfoServiceImpl nodeAdditionalInfoService;
 
 
     @Transactional
@@ -167,7 +170,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
             bpmnNodeVo.setId(bpmnNodeId);
             bpmnNodeVo.setConfId(confId);
-            BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = getBpmnNodeAdpConfEnum(bpmnNodeVo);
+            BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
             if (ObjectUtils.isEmpty(bpmnNodeAdpConfEnum)) {
@@ -182,7 +185,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnApproveRemindService.editBpmnApproveRemind(bpmnNodeVo);
 
             //get node adaptor
-            BpmnNodeAdaptor bpmnNodeAdaptor = getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
+            BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
 
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
@@ -473,7 +476,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<Long> idList = bpmnNodeList.stream().map(BpmnNode::getId).collect(Collectors.toList());
 
 
-        Map<Long, List<String>> bpmnNodeToMap = getBpmnNodeToMap(idList);
+        Map<Long, List<String>> bpmnNodeToMap = nodeAdditionalInfoService.getBpmnNodeToMap(idList);
 
 
         Map<Long, List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap = getBpmnNodeButtonConfMap(idList);
@@ -678,7 +681,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         bpmnNodeVo.setApproveRemindVo(bpmnApproveRemindVoMap.get(bpmnNode.getId()));
 
 
-        BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = getBpmnNodeAdpConfEnum(bpmnNodeVo);
+        BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
 
         if (ObjectUtils.isEmpty(bpmnNodeAdpConfEnum)) {
@@ -719,33 +722,6 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         return adaptorFactory.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
     }
 
-    /**
-     * get adaptor config enum
-     *
-     * @param bpmnNodeVo
-     * @return
-     */
-    private BpmnNodeAdpConfEnum getBpmnNodeAdpConfEnum(BpmnNodeVo bpmnNodeVo) {
-
-        BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum;
-
-
-        NodeTypeEnum nodeTypeEnumByCode = NodeTypeEnum.getNodeTypeEnumByCode(bpmnNodeVo.getNodeType());
-
-        if (!ObjectUtils.isEmpty(nodeTypeEnumByCode)) {
-            if (NODE_TYPE_APPROVER.equals(nodeTypeEnumByCode)) {
-                NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getNodePropertyEnumByCode(bpmnNodeVo.getNodeProperty());
-                bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodePropertyEnum);
-            } else {
-                bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodeTypeEnumByCode);
-            }
-        } else {
-
-            NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getNodePropertyEnumByCode(bpmnNodeVo.getNodeProperty());
-            bpmnNodeAdpConfEnum = BpmnNodeAdpConfEnum.getBpmnNodeAdpConfEnumByEnum(nodePropertyEnum);
-        }
-        return bpmnNodeAdpConfEnum;
-    }
 
     /**
      * set buttons
@@ -814,20 +790,6 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
     }
 
 
-    private Map<Long, List<String>> getBpmnNodeToMap(List<Long> idList) {
-        return bpmnNodeToService.getBaseMapper().selectList(
-                new QueryWrapper<BpmnNodeTo>()
-                        .in("bpmn_node_id", idList)
-                        .eq("is_del", 0))
-                .stream()
-                .collect(Collectors.toMap(
-                        BpmnNodeTo::getBpmnNodeId,
-                        v -> Lists.newArrayList(Collections.singletonList(v.getNodeTo())),
-                        (a, b) -> {
-                            a.addAll(b);
-                            return a;
-                        }));
-    }
     private void setFieldControlVOs(BpmnNode bpmnNode,Map<Long,List<BpmnNodeLfFormdataFieldControl>> fieldControlMap,BpmnNodeVo nodeVo){
         boolean isLowFlow=Objects.equals(bpmnNode.getIsLowCodeFlow(),1);
         if(!isLowFlow){

@@ -21,8 +21,10 @@ import org.openoa.common.adaptor.bpmnelementadp.BpmnNodeFormatImpl;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnOptionalDuplicatesAdaptor;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnOptionalDuplicatesImpl;
 import org.openoa.common.formatter.BpmnPersonnelFormat;
+import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
+import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
@@ -65,6 +67,8 @@ public class BpmnConfCommonServiceImpl {
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     @Autowired
     private BpmProcessForwardServiceImpl processForwardService;
+    @Autowired
+    private NodeAdditionalInfoServiceImpl nodeAdditionalInfoService;
     /**
      * query conf by formCode
      *
@@ -428,14 +432,24 @@ public class BpmnConfCommonServiceImpl {
         BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
         bpmnStartConditionsVo.setPreview(true);
         bpmnStartConditionsVo.setProcessNum(vo.getProcessNumber());
+        bpmnStartConditionsVo.setIsMigration(true);
         List<BpmnNode> bpmnNodes = nodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
                 .eq("conf_id", bpmnConf.getId())
                 .eq("is_del", 0));
+        Map<Long, List<String>> bpmnNodeToMap = nodeAdditionalInfoService.getBpmnNodeToMap(bpmnNodes.stream().map(BpmnNode::getId).collect(Collectors.toList()));
         // 将查询到的 bpmnNodes 转换为 bpmnNodeVo 列表
         List<BpmnNodeVo> bpmnNodeVoList = bpmnNodes.stream()
             .map(bpmnNode -> {
                 BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
                 BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
+                List<String> nodeToIds = bpmnNodeToMap.get(bpmnNode.getId());
+                bpmnNodeVo.setNodeTo(nodeToIds);
+                BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo));
+                if(bpmnNodeAdaptor==null){
+                    return bpmnNodeVo;
+                }
+                //use adaptor to format nodevo
+                bpmnNodeAdaptor.formatToBpmnNodeVo(bpmnNodeVo);
                 return bpmnNodeVo;
             })
             .collect(Collectors.toList());
