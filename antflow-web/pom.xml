@@ -5,7 +5,7 @@
     <parent>
         <artifactId>antflow</artifactId>
        <groupId>io.github.mrtylerzhou</groupId>
-       <version>0.80.0</version>
+       <version>0.81.0</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -25,18 +25,18 @@
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-base</artifactId>
-       <version>0.80.0</version>
+       <version>0.81.0</version>
     </dependency>
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-common</artifactId>
-       <version>0.80.0</version>
+       <version>0.81.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
        <groupId>io.github.mrtylerzhou</groupId>
         <artifactId>antflow-engine</artifactId>
-       <version>0.80.0</version>
+       <version>0.81.0</version>
         <scope>compile</scope>
     </dependency>
     <dependency>
@@ -44,11 +44,6 @@
         <artifactId>lombok</artifactId>
         <version>1.18.30</version>
         <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>com.github.xiaoymin</groupId>
-        <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-        <version>4.5.0</version>
     </dependency>
 </dependencies>
     <build>

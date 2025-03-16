@@ -1,15 +1,18 @@
 package org.openoa.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.RuntimeServiceImpl;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +22,8 @@ import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
+import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.factory.TagParser;
@@ -52,10 +57,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -231,6 +233,22 @@ public class ActivitiTest {
         String procInstId = bpmBusinessProcess.getProcInstId();
 
 
+        return Result.success();
+    }
+    @RequestMapping("/addsign")
+    public Result addSign(String taskId,String varname,String userId){
+        Map<String,Object> variables=new HashMap<>();
+        variables.put(varname, Lists.newArrayList(8,9,10));
+        MultiCharacterInstanceSequentialSign multiCharacterInstanceSequentialSign = new MultiCharacterInstanceSequentialSign(taskId, variables);
+        ((RuntimeServiceImpl) ProcessEngines.getDefaultProcessEngine().getRuntimeService()).getCommandExecutor().execute(multiCharacterInstanceSequentialSign);
+        return Result.success();
+    }
+    @RequestMapping("/addsign2")
+    public Result addSign2(String taskId,String varname){
+        Map<String,Object> variables=new HashMap<>();
+        variables.put(varname, Lists.newArrayList(8,9,10));
+        MultiCharacterInstanceParallelSign parallelSign=new MultiCharacterInstanceParallelSign(taskId, variables);
+        ((RuntimeServiceImpl) ProcessEngines.getDefaultProcessEngine().getRuntimeService()).getCommandExecutor().execute(parallelSign);
         return Result.success();
     }
 }

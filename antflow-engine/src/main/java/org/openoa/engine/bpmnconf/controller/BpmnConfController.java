@@ -1,8 +1,7 @@
 package org.openoa.engine.bpmnconf.controller;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.*;
@@ -31,7 +30,7 @@ import java.util.Map;
  * @Date 2022-02-19 16:21
  * @Created by AntOffice
  */
-@Tag(name = "工作流配置管理", description = "")
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/bpmnConf")
@@ -60,13 +59,13 @@ public class BpmnConfController {
     }
 
     @PostMapping("/edit")
-    public Result edit(@Parameter @RequestBody BpmnConfVo bpmnConfVo) {
+    public Result edit( @RequestBody BpmnConfVo bpmnConfVo) {
         bpmnConfService.edit(bpmnConfVo);
         return Result.newSuccessResult("ok");
     }
 
     @PostMapping("/listPage")
-    public Result<ResultAndPage<BpmnConfVo>> listPage(@Parameter @RequestBody ConfDetailRequestDto dto) {
+    public Result<ResultAndPage<BpmnConfVo>> listPage( @RequestBody ConfDetailRequestDto dto) {
         PageDto page = dto.getPageDto();
         BpmnConfVo vo = dto.getEntity();
         return Result.newSuccessResult(bpmnConfService.selectPage(page, vo));
@@ -76,7 +75,7 @@ public class BpmnConfController {
      * admin's preview
      */
     @PostMapping("/preview")
-    public Result preview(@Parameter @RequestBody String params) {
+    public Result preview( @RequestBody String params) {
         bpmVerifyInfoBizService.getVerifyInfoList("DSFZH_WMA_21");
         return Result.newSuccessResult(bpmnConfCommonService.previewNode(params));
     }
@@ -85,7 +84,7 @@ public class BpmnConfController {
      * start page preview
      */
     @PostMapping("/startPagePreviewNode")
-    public Result<PreviewNode> startPagePreviewNode(@Parameter @RequestBody String params) {
+    public Result<PreviewNode> startPagePreviewNode( @RequestBody String params) {
         JSONObject jsonObject = JSONObject.parseObject(params);
         Boolean isStartPreview = jsonObject.getBoolean("isStartPreview");
 
@@ -98,17 +97,17 @@ public class BpmnConfController {
     }
 
     @GetMapping("/getBpmVerifyInfoVos")
-    public Result<List<BpmVerifyInfoVo>> getBpmVerifyInfoVos(@Parameter @RequestParam("processNumber") String processNumber) {
+    public Result<List<BpmVerifyInfoVo>> getBpmVerifyInfoVos( @RequestParam("processNumber") String processNumber) {
         return Result.newSuccessResult(bpmVerifyInfoBizService.getBpmVerifyInfoVos(processNumber, false));
     }
 
     @PostMapping("/process/viewBusinessProcess")
-    public Result<BusinessDataVo> viewBusinessProcess(@Parameter @RequestBody String values, @Parameter String formCode) {
+    public Result<BusinessDataVo> viewBusinessProcess( @RequestBody String values,  String formCode) {
         return Result.newSuccessResult(processApprovalService.getBusinessInfo(values, formCode));
     }
 
     @PostMapping("/process/buttonsOperation")
-    public Result buttonsOperation(@Parameter @RequestBody String values, @Parameter String formCode) {
+    public Result buttonsOperation( @RequestBody String values, String formCode) {
         BusinessDataVo resultData = processApprovalService.buttonsOperation(values, formCode);
         return Result.newSuccessResult(resultData);
     }
@@ -120,18 +119,18 @@ public class BpmnConfController {
      * @return
      */
     @GetMapping("/effectiveBpmn/{id}")
-    public Result effectiveBpmn(@Parameter @PathVariable("id") Integer id) {
+    public Result effectiveBpmn(@PathVariable("id") Integer id) {
         bpmnConfService.effectiveBpmnConf(id);
         return Result.newSuccessResult(null);
     }
 
     @RequestMapping("/detail/{id}")
-    public Result<BpmnConfVo> detail(@Parameter @PathVariable("id") Integer id) {
+    public Result<BpmnConfVo> detail( @PathVariable("id") Integer id) {
         return Result.newSuccessResult(bpmnConfService.detail(id));
     }
 
     @RequestMapping("/process/listPage/{type}")
-    public ResultAndPage<TaskMgmtVO> viewPcProcessList(@Parameter @RequestBody DetailRequestDto requestDto, @Parameter @PathVariable("type") Integer type) throws JiMuBizException {
+    public ResultAndPage<TaskMgmtVO> viewPcProcessList( @RequestBody DetailRequestDto requestDto, @PathVariable("type") Integer type) throws JiMuBizException {
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
         taskMgmtVO.setType(type);
