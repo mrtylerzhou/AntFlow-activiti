@@ -95,7 +95,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 String containerType = lfWidget.getType();
                 VariantFormContainerTypeEnum containerTypeEnum = VariantFormContainerTypeEnum.getByTypeName(containerType);
                 if(containerTypeEnum==null){
-                    throw new JiMuBizException("未定义container类型!");
+                    continue; //未定义低代码表单字段类型，直接跳过
                 }
                 if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)){
                     List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();
