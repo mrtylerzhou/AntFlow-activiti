@@ -1,5 +1,6 @@
 package org.openoa.engine.conf.engineconfig;
 
+import com.google.common.collect.Lists;
 import org.activiti.engine.impl.cfg.TransactionContextFactory;
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.multitenant.TenantAwareDataSource;
@@ -8,6 +9,7 @@ import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.SpringTransactionContextFactory;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
+import org.openoa.engine.bpmnconf.activitilistener.GlobalEventListener;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -69,6 +71,7 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         configuration.setActivityFontName("宋体");
         configuration.setAnnotationFontName("宋体");
         configuration.setLabelFontName("宋体");
+        configuration.setEventListeners(Lists.newArrayList(new GlobalEventListener()));
         // 配置事务上下文工厂
         TransactionContextFactory transactionContextFactory = new SpringTransactionContextFactory(transactionManager);
         configuration.setTransactionContextFactory(transactionContextFactory);
