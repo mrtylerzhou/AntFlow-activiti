@@ -11,9 +11,9 @@
              :lfFieldPerm="lfFieldControlVOs" 
              :isPreview="isPreview"></component>
         </div>
-        <div v-if="viewConfig.isOutSideAccess"> 
+        <!-- <div v-if="viewConfig.isOutSideAccess"> 
             <outsideFormRender v-if="formData" :formData="formData"></outsideFormRender>
-        </div> 
+        </div>  -->
     </div>
 </template>
 <script setup>
@@ -50,6 +50,7 @@ let visible = computed({
  
 /**预览 */
 const preview = async (param) => {
+    console.log("preview=========param=============", JSON.stringify(param));
     let queryParams = ref({
         formCode: param.formCode,
         processNumber: param.processNumber,
@@ -62,7 +63,12 @@ const preview = async (param) => {
         if (response.code == 200) {
             const responseData = response.data;  
             if (responseData.isOutSideAccessProc && responseData.isOutSideAccessProc) {//外部接入 
-                formData.value = responseData.formData;           
+                //formData.value = responseData.formData;           
+                lfFormDataConfig.value = responseData.lfFormData;
+                lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
+                lfFieldControlVOs.value =  JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
+                loadedComponent.value = await loadLFComponent(param.formCode); 
+                componentLoaded.value = true
             }
             else if (responseData.isLowCodeFlow && responseData.isLowCodeFlow == '1') {//低代码表单
                 lfFormDataConfig.value = responseData.lfFormData;

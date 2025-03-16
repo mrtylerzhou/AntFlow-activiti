@@ -230,7 +230,7 @@ function handleOutSide(row) {
         ha: row.hasChooseApprove,
         fcname:  encodeURIComponent(row.title) 
     };
-    const obj = { path: '/outsideMgt/bizForm', query: params };
+    const obj = { path: '/outsideMgt/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function getAssetsFile(pathUrl) {

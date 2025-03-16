@@ -50,9 +50,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, watch } from 'vue'
-import { processSubmit } from "@/api/outsideApi";
-import { getConditionTemplatelist } from "@/api/outsideApi"; 
+import { ref, reactive, getCurrentInstance, watch } from 'vue' 
+import { getConditionTemplatelist,processSubmit } from "@/api/outsideApi"; 
 const { proxy } = getCurrentInstance()
 const { query } = useRoute();
 import cache from '@/plugins/cache';

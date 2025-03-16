@@ -238,7 +238,12 @@ const preview = async () => {
             reSubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             if (isOutSideAccess && isOutSideAccess == 'true') {//外部表单接入
-                formData.value = response.data.formData;
+                //formData.value = response.data.formData;
+                lfFormDataConfig.value = response.data.lfFormData;
+                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
+                lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
+                loadedComponent.value = await loadLFComponent();
+                componentLoaded.value = true;
             }
             else if (isLowCodeFlow && isLowCodeFlow == 'true') {//低代码表单
                 lfFormDataConfig.value = response.data.lfFormData;

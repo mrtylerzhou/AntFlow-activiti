@@ -327,6 +327,18 @@
                         "noCache": false,
                         "link": null
                     }
+                },
+                {
+                    "name": "outsideEntry",
+                    "path": "index",
+                    "hidden": true,
+                    "component": "outsideMgt/bizForm/index",
+                    "meta": {
+                        "title": "业务方表单发起测试",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
                 }
             ]
         }
