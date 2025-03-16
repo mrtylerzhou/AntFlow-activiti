@@ -123,7 +123,8 @@ public class BpmnExecutionListener implements ExecutionListener {
             BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
             //回调通知业务方流程已完成
-            thirdPartyCallBackService.doCallback(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl(), PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
+            thirdPartyCallBackService.doCallback(Optional.ofNullable(outSideBpmCallbackUrlConf).map(OutSideBpmCallbackUrlConf::getBpmFlowCallbackUrl).orElse(""),
+                    PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
 
         } else {
             BusinessDataVo businessDataVo=new BusinessDataVo();
