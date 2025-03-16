@@ -75,18 +75,19 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @param
      * @return
      */
-    public boolean updateBusinessProcess(BpmBusinessProcess bpmBusinessProcess) {
+    public BpmBusinessProcess updateBusinessProcess(BpmBusinessProcess bpmBusinessProcess) {
         QueryWrapper<BpmBusinessProcess> wrapper = new QueryWrapper<>();
 
         wrapper.eq("BUSINESS_NUMBER", bpmBusinessProcess.getBusinessNumber());
-        mapper.selectList(wrapper).forEach(o -> {
+        List<BpmBusinessProcess> bpmBusinessProcesses = mapper.selectList(wrapper);
+        bpmBusinessProcesses.forEach(o -> {
             o.setProcessState(bpmBusinessProcess.getProcessState());
             if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
                 o.setDescription(bpmBusinessProcess.getDescription());
             }
             mapper.updateById(o);
         });
-        return true;
+        return bpmBusinessProcesses.get(0);
     }
 
     /**

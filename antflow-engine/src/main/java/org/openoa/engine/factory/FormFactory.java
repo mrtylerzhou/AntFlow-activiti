@@ -71,7 +71,7 @@ public class FormFactory implements ApplicationContextAware {
             if(!CollectionUtils.isEmpty(bpmAccessBusinesses)){
                 vo.setFormData(bpmAccessBusinesses.get(0).getFormDataPc());
             }
-            return vo;
+
         }
         if(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1){
             formCode=StringConstants.LOWFLOW_FORM_CODE;

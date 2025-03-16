@@ -207,6 +207,7 @@
         LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
         LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
         where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0 and f.is_del=0
+        order by f.create_time desc
         ) s WHERE  1=1
     </sql>
     <select id="viewPcForwardList" resultType="org.openoa.base.vo.TaskMgmtVO">

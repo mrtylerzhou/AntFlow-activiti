@@ -127,6 +127,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         int hasStartUserChooseModules=0;
         int hasCopy=0;
+        int hasLastNodeCopy=0;
+
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
@@ -189,11 +191,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
+            if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())&&CollectionUtils.isEmpty(bpmnNodeVo.getNodeTo())){
+                hasLastNodeCopy=BpmnConfFlagsEnum.HAS_LAST_NODE_COPY.getCode();
+            }
 
         }
         ProcessorFactory.executePostProcessors(bpmnConfVo);
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        Integer currentFlags=hasStartUserChooseModules|hasCopy;
+        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy;
         if(currentFlags!=null&&currentFlags>0){
             Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, currentFlags);
             bpmnConfVo.setExtraFlags(binariedOr);

@@ -10,6 +10,7 @@ import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
@@ -20,11 +21,13 @@ import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
+import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +54,8 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;
+    @Autowired
+    private FormFactory formFactory;
 
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
@@ -64,10 +69,11 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         if (!bpmBusinessProcessService.checkProcessData(processNum)) {
             throw new JiMuBizException("流程已发起！");
         }
-
-
+        String originalBusinessId=businessDataVo.getBusinessId();
+        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
+        formAdapter.submitData(businessDataVo);
         //query outside access business info
-        OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(businessDataVo.getBusinessId());
+        OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(originalBusinessId);
         //new start conditions vo
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
         //调整以后,这里存储的实际上是逗号分割的字符串
@@ -156,7 +162,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //fill info
         outSideBpmAccessBusinessService.updateById(OutSideBpmAccessBusiness
                 .builder()
-                .id(Long.parseLong(businessDataVo.getBusinessId()))
+                .id(Long.parseLong(originalBusinessId))
                 .processNumber(processNum)
                 .bpmnConfId(Optional.ofNullable(businessDataVo.getBpmnConfVo()).orElse(new BpmnConfVo()).getId())
                 .build());
