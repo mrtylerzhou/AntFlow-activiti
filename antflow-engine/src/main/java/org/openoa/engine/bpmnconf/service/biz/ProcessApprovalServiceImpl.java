@@ -224,7 +224,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
         BusinessDataVo businessDataVo = null;
-        if(!vo.getIsOutSideAccessProc()){
+        if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
             FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
             businessDataVo=formAdaptor.queryData(vo);
         }else{

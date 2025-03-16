@@ -27,6 +27,7 @@ import org.openoa.engine.bpmnconf.mapper.OutSideBpmAccessBusinessMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ButtonOperationServiceImpl;
+import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
 import org.openoa.engine.vo.OutSideBpmAccessRespVo;
@@ -113,11 +114,16 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
         }
         //set form code,business,etc
         BusinessDataVo businessDataVo = new BusinessDataVo();
+        if(vo.getIsLowCodeFlow()!=null&&Boolean.TRUE.equals(vo.getIsLowCodeFlow())){
+            businessDataVo=new UDLFApplyVo();
+            ((UDLFApplyVo)businessDataVo).setLfFields(vo.getLfFields());
+        }
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
         businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
         businessDataVo.setOutSideType(BPMN_FLOW_TYPE_OUTSIDE);
         businessDataVo.setApproversList(vo.getApproversList());
+        businessDataVo.setIsLowCodeFlow(Boolean.TRUE.equals(vo.getIsLowCodeFlow())?1:0);
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
