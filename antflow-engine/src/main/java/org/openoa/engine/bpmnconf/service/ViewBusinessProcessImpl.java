@@ -13,7 +13,6 @@ import org.openoa.engine.bpmnconf.common.ConfigFlowButtonContans;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.factory.FormFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -23,7 +22,7 @@ import java.util.Map;
 
 import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
-import static org.openoa.base.constant.enums.ProcessStateEnum.CRMCEL_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 
 @Service
@@ -56,7 +55,7 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
         // checking process right,and set some information that from business table
         businessDataVo.setProcessRecordInfo(businessContans.processInfo(bpmBusinessProcess));
         businessDataVo.setProcessKey(bpmBusinessProcess.getBusinessNumber());
-        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(CRMCEL_STATE.getCode()));
+        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(REJECT_STATE.getCode()));
 
         boolean flag = businessDataVo.getProcessRecordInfo().getStartUserId().equals(SecurityUtils.getLogInEmpIdStr());
 

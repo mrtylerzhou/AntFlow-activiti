@@ -19,7 +19,7 @@
 .demo-drawer__content {
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
+    height: calc(-61px + 100vh) !important;
 }
 
 .drawer_content {
@@ -49,16 +49,17 @@
 }
 
 .el-dialog__header {
-    padding: 0 0 0 20px !important;
-    line-height: 50px !important;
-    height: 50px !important;
+    padding: 0 0 0 15px !important;
+    line-height: 45px !important;
+    height: 45px !important;
     background: #fff !important;
     border-bottom: 1px solid #F2F2F2 !important;
+    font-weight: 900;
 }
 
 .el-dialog__header .el-dialog__title {
     font-size: 16px !important;
-    line-height: 50px !important;
+    line-height: 45px !important;
     color: #333333 !important;
 }
 

@@ -65,6 +65,8 @@ public class BpmVerifyInfo {
      */
     @TableField("task_id")
     private String taskId;
+    @TableField("task_def_key")
+    private String taskDefKey;
     /**
      * business type
      */

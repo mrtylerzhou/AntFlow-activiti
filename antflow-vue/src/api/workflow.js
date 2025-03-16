@@ -20,20 +20,15 @@ const headers = {
 export function getApiWorkFlowData(data) {
   return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers })
 }
+
 /**
- * 获取FromCode 
+ * 获取DIY FromCode 
  * @returns 
  */
-export function getFromCodeData() {
-  return http.get(`${baseUrl}/bpmnBusiness/listFormInfo`, { headers })
+export function getDIYFromCodeData() {
+  return http.get(`${baseUrl}/bpmnBusiness/getDIYFormCodeList`, { headers })
 }
-/**
- * 获取所有FromCode 包括（DIY和LF）
- * @returns 
- */
-export function getAllFormCodes() {
-  return http.get(`${baseUrl}/bpmnBusiness/allFormCodes`, { headers })
-}
+
 /**
  * 设置/添加审批流程配置详情
  * @param {*} data 
@@ -136,7 +131,7 @@ export function getBpmnConflistPage(pageDto, taskMgmtVO) {
 /**
  * 审批,发起审批
  * @param {*} data 
- * operationType 1 发起 3 审批
+ * operationType 1 发起 2 重新提交 3 审批
  * @returns 
  */
 export function processOperation(data) {
@@ -231,4 +226,12 @@ export function entrustDetail(id) {
 */
 export function setEntrust(data) {
   return http.post(`${baseUrl}/bpmnBusiness/editEntrust`, data, { headers })
+}
+/**
+ * 获取流程自选审批人节点
+ * @param {*} formCode 
+ * @returns 
+ */
+export function getStartUserChooseModules(formCode) {
+  return http.get(`${baseUrl}/bpmnBusiness/getStartUserChooseModules?formCode=${formCode}`, { headers })
 }

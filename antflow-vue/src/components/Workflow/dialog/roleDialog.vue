@@ -8,7 +8,7 @@
    <el-dialog title="选择角色" v-model="visibleDialog" style="width: 680px !important;"  append-to-body class="promoter_person">
       <div class="person_body clear">
           <div class="person_tree l">
-              <input type="text" placeholder="搜索角色" v-model="searchVal" @input="getDebounceData($event,2)">
+              <input type="text" placeholder="搜索角色" v-model="searchVal">
               <selectBox :list="list" />
           </div>
           <selectResult :total="total" @del="delList" :list="resList"/>
@@ -24,7 +24,7 @@ import selectBox from '../selectBox.vue';
 import selectResult from '../selectResult.vue';
 import { computed, watch, ref } from 'vue'
 import $func from '@/utils/flow/index.js'
-import { roles, getDebounceData, getRoleList, searchVal } from './common'
+import { roles, getRoleList, searchVal } from './common'
 let props = defineProps({
   visible: {
     type: Boolean,
@@ -76,7 +76,7 @@ watch(() => props.visible, (val) => {
 let total = computed(() => checkedRoleList.value.length)
 const saveDialog = () => {
   let checkedList = checkedRoleList.value.map(item => ({
-    type: 2,
+    type: 4,
     targetId: item.roleId,
     name: item.roleName
   }))

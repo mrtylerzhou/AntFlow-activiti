@@ -1,13 +1,9 @@
 import { createApp } from 'vue'
-
 import Cookies from 'js-cookie'
-
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import locale from 'element-plus/es/locale/lang/zh-cn'
-
-import '@/assets/styles/index.scss' // global css
- 
+import '@/assets/styles/index.scss' // global css 
 import VForm3 from  '@/./lib/vForm/designer.umd.js'
 import './lib/vForm/designer.style.css'
 
@@ -27,7 +23,17 @@ import elementIcons from '@/components/SvgIcon/svgicon'
 
 import './permission' // permission control
  
-import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, selectDictLabels } from '@/utils/ruoyi'
+import {
+  parseTime,
+  substringHidden,
+  isArrayEmpty,
+  isObjEmpty,
+  resetForm,
+  addDateRange,
+  handleTree,
+  selectDictLabel,
+  selectDictLabels,
+} from "@/utils/ruoyi";
 
 // 分页组件
 import Pagination from '@/components/Pagination'
@@ -54,6 +60,9 @@ const app = createApp(App)
 // 全局方法挂载 
 app.config.globalProperties.download = download
 app.config.globalProperties.parseTime = parseTime
+app.config.globalProperties.isArrayEmpty = isArrayEmpty
+app.config.globalProperties.isObjEmpty = isObjEmpty
+app.config.globalProperties.substringHidden = substringHidden
 app.config.globalProperties.resetForm = resetForm
 app.config.globalProperties.handleTree = handleTree
 app.config.globalProperties.addDateRange = addDateRange

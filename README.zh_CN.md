@@ -9,6 +9,8 @@
 
 >如果这个项目让你有所收获，记得 Star 关注哦，这对我是非常不错的鼓励与支持。
 
+> antflow不会卖文档,文档是开源的一部分.目前核心开发者都是兼职做开源,还要上班.功能都是加班做出来的,文档目前只有一些基本的,不是很全,后面会慢慢补齐.有问题可以群里问或者提issue.我们有一个活跃的社区,您的问题会被重视的
+
 # Antflow 简介
 AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
 -  在线预览(**设计器**) &nbsp;[预览入口](http://117.72.70.166/ant-flow/dist/#/)
@@ -24,7 +26,8 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 
 # Antflow核心技术栈
 
-* Java8-21 (main分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
+* Java8-21 (master分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
+* 温馨提示：java8版本 需要使用JDK-8.0.382.5 以上版本,如需要JDK文件可以加入QQ群下载
 * Activiti（fork了activiti5源码，并进行了魔改，⚠⚠用户请使用antflow源码中提供的sql进行建表，不要使用activiti自动创建表功能）
 * Spring Boot 2.7.17
 * MybatisPlus 3.5.1
@@ -65,7 +68,7 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 # 快速开始
 
 ## 前端运行
-
+### Nodejs V16.20.0 及以上版本
 ```
 # gitee克隆项目
 git clone https://gitee.com/tylerzhou/Antflow.git 
@@ -86,7 +89,7 @@ npm run dev
 
 ## 后端运行
 1. 项目下载 git clone https://gitee.com/tylerzhou/Antflow.git
-2. 打开 **antflow-web模块**下resources目录下的**resources**目录,修改数据库连接信息,新建一个名为**antflow**的数据库
+2. 打开 **antflow-web模块**下resources目录下的**application-dev.properties**文件,修改数据库连接信息,新建一个名为**antflow**的数据库
 3. 打开里面**antflow-web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
 4. 启动项目,如果一切顺利,这时候后端就启动起来了  
 

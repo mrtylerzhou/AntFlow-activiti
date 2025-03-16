@@ -1,9 +1,11 @@
 package org.openoa.base.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.TaskMgmtVO;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,6 +33,8 @@ public interface UserMapper {
     BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
+
+    List<BaseIdTranStruVo> selectUserPageList(Page page, @Param("vo") TaskMgmtVO taskMgmtVO);
 
     BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
 }

@@ -9,9 +9,7 @@
         <span class="drawer-title">选择发起人</span>  
         <div class="demo-drawer__content"> 
             <div class="promoter_content drawer_content">
-
                 <span style="font-size: small;color: red;">*发起人 默认全部，预览环境不支持修改，可以联系管理员</span>
-
                 <!-- <p>{{ $func.arrToStr(flowPermission) || '所有人' }}</p>
                 <el-button type="primary" @click="addPromoter">添加/修改发起人</el-button> -->
             </div>

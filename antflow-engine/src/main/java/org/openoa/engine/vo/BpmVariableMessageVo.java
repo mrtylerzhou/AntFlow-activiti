@@ -31,7 +31,7 @@ public class BpmVariableMessageVo implements Serializable {
      */
     private String elementId;
     /**
-     * 1-in node message；2-out of node message
+     * 1-out of node message；2-in node message
      */
     private Integer messageType;
     /**

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessForwardMapper;
@@ -103,7 +104,9 @@ public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardM
             return;
         }
         for (Task next : list) {
-            map.put(next.getProcessInstanceId(), next);
+            if(!StringUtils.isEmpty(next.getProcessInstanceId())){
+                map.put(next.getProcessInstanceId(), next);
+            }
         }
         taskMap.putAll(map);
     }

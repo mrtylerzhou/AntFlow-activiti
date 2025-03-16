@@ -88,14 +88,14 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 formdataField.setBpmnConfId(confId);
                 formdataField.setFormDataId(formDataId);
                 formdataField.setFieldType(lfOption.getFieldType());
-                formdataField.setFieldId(lfWidget.getId());
+                formdataField.setFieldId(lfOption.getName());
                 formdataField.setFieldName(lfOption.getLabel());
                 result.add(formdataField);
             }else{//走到这里一定是容器类型
                 String containerType = lfWidget.getType();
                 VariantFormContainerTypeEnum containerTypeEnum = VariantFormContainerTypeEnum.getByTypeName(containerType);
                 if(containerTypeEnum==null){
-                    throw new JiMuBizException("未定义container类型!");
+                    continue; //未定义低代码表单字段类型，直接跳过
                 }
                 if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)){
                     List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();

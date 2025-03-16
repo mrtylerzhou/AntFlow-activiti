@@ -3,16 +3,19 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.DateUtil;
+import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.Employee;
@@ -35,6 +38,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 
 
 /**
@@ -77,22 +81,12 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
     public OutSideBpmAccessRespVo accessBusinessStart(OutSideBpmAccessBusinessVo vo) {
 
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = this.getBaseMapper().selectById(vo.getId());
-
         if (outSideBpmAccessBusiness!=null) {
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
             outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpId());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.updateById(outSideBpmAccessBusiness);
         } else {
-
-
-            //query business party by business party mark
-            OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmBusinessParty>()
-                    .eq("business_party_mark", vo.getBusinessPartyMark()));
-
-            if(outSideBpmBusinessParty==null){
-                throw new JiMuBizException("业务方信息不存在!");
-            }
             String formCode = vo.getFormCode();
             Wrapper<BpmnConf> qryWrapper=new QueryWrapper<BpmnConf>()
                     .eq("form_code",formCode)
@@ -105,63 +99,41 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             vo.setBpmnConfId(effectiveConfByFormCode.getId());
             outSideBpmAccessBusiness = new OutSideBpmAccessBusiness();
             BeanUtils.copyProperties(vo, outSideBpmAccessBusiness);
+            if(!CollectionUtils.isEmpty(vo.getTemplateMarks())){
+                String templateMarksJoin = String.join(",", vo.getTemplateMarks());
+                outSideBpmAccessBusiness.setTemplateMark(templateMarksJoin);
+            }
             //set business party's id
-            outSideBpmAccessBusiness.setBusinessPartyId(outSideBpmBusinessParty.getId());
+            outSideBpmAccessBusiness.setBusinessPartyId(effectiveConfByFormCode.getBusinessPartyId());
             outSideBpmAccessBusiness.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setCreateTime(new Date());
             outSideBpmAccessBusiness.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
             outSideBpmAccessBusiness.setUpdateTime(new Date());
             this.save(outSideBpmAccessBusiness);
         }
-
-
-
         //set form code,business,etc
         BusinessDataVo businessDataVo = new BusinessDataVo();
         businessDataVo.setFormCode(vo.getFormCode());
         businessDataVo.setOperationType(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode());
         businessDataVo.setBusinessId(outSideBpmAccessBusiness.getId().toString());
-        businessDataVo.setOutSideType(vo.getOutSideType());
-
+        businessDataVo.setOutSideType(BPMN_FLOW_TYPE_OUTSIDE);
+        businessDataVo.setApproversList(vo.getApproversList());
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
             throw new JiMuBizException("发起人用户名为空，无法发起流程！");
         }
-//        Employee employee = getEmployeeByUserId(vo.getUserId());
-//
-//        if (employee==null) {
-//            throw new JiMuBizException("发起人不合法，无法发起流程");
-//        }
 
         //set start user id
         businessDataVo.setStartUserId(SecurityUtils.getLogInEmpIdSafe());
         businessDataVo.setStartUserName(SecurityUtils.getLogInEmpNameSafe());
 
-        //set approval
-//        if (!StringUtil.isEmpty(vo.getApprovalUsername())) {
-////            Employee approvalEmployee = getEmployeeByUserId(vo.getApprovalUsername());
-////            if(approvalEmployee!=null){
-////                String id = approvalEmployee.getId();
-////                if(!StringUtils.isEmpty(id)){
-////                    businessDataVo.setEmplId(id);
-////                }
-////            }
-//
-//            businessDataVo.setEmpId(vo.getUserId());
-//            businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
-//
-//        }
         businessDataVo.setEmpId(SecurityUtils.getLogInEmpIdSafe());
         businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
-
         //set embed nodes
         businessDataVo.setEmbedNodes(reSetEmbedNodes(vo.getEmbedNodes()));
-        //not implemented at the moment
-        //businessDataVo.setOutSideLevelNodes(reFormatOutsideLevelNodes(vo.getOutSideLevelNodes()));
         //call common service to start the process
         processApprovalService.buttonsOperationTransactional(businessDataVo);
-
         //query inserted data
         OutSideBpmAccessBusiness outSideBpmAccessBusinessResult = this.getBaseMapper().selectById(outSideBpmAccessBusiness.getId());
 
@@ -173,6 +145,21 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .processRecord(getProcessRecord(outSideBpmAccessBusinessResult.getProcessNumber()))
                 .build();
 
+    }
+    /**
+     * 获取OutSide FormCode Page List 模板列表使用
+     * @param pageDto
+     * @param vo
+     * @return
+     */
+    public ResultAndPage<BpmnConfVo> selectOutSideFormCodePageList(PageDto pageDto, BpmnConfVo vo) {
+        Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectOutSideFormCodeList(page, vo);
+        if (bpmnConfVos==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        page.setRecords(bpmnConfVos);
+        return PageUtils.getResultAndPage(page);
     }
 
     /**
@@ -264,15 +251,15 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
             throw new JiMuBizException("发起人不合法，无法预览流程");
         }
         //query condition template
-        OutSideBpmConditionsTemplate outSideBpmConditionsTemplate=null;
-        if(!StringUtils.isEmpty(vo.getTemplateMark())){
-            outSideBpmConditionsTemplate= outSideBpmConditionsTemplateService.getOne(new QueryWrapper<OutSideBpmConditionsTemplate>()
+        List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates=null;
+        if(!CollectionUtils.isEmpty(vo.getTemplateMarks())){
+            outSideBpmConditionsTemplates= outSideBpmConditionsTemplateService.list(new QueryWrapper<OutSideBpmConditionsTemplate>()
                     .eq("is_del", 0)
                     .eq("business_party_id", outSideBpmBusinessParty.getId())
-                    .eq("template_mark", vo.getTemplateMark()));
+                    .in("template_mark", vo.getTemplateMarks()));
 
 
-            if (outSideBpmConditionsTemplate==null) {
+            if (outSideBpmConditionsTemplates==null) {
                 throw new JiMuBizException("模板信息不合法，无法预览流程");
             }
         }
@@ -284,11 +271,14 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                 .formCode(vo.getFormCode())
                 .startUserId(employee.getId())
                 .startUserName(employee.getUsername())
-                .templateMark(vo.getTemplateMark())
+                .templateMarks(vo.getTemplateMarks())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
-        if(outSideBpmConditionsTemplate!=null&&outSideBpmConditionsTemplate.getId()!=null){
-            dataVo.setTemplateMarkId(outSideBpmConditionsTemplate.getId().intValue());
+
+        if(!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)){
+            List<Integer> templateIds = outSideBpmConditionsTemplates.stream().filter(a -> a.getId() != null).map(a->a.getId().intValue()).collect(Collectors.toList());
+
+            dataVo.setTemplateMarkIds(templateIds);
         }
 
         PreviewNode previewNode = bpmnConfCommonService.startPagePreviewNode(JSON.toJSONString(dataVo));

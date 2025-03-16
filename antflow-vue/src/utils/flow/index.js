@@ -1,4 +1,6 @@
 import { parseTime } from '@/utils/ruoyi'
+const isEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
+const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true
 function All() {}
 All.prototype = {
     timer: "",
@@ -43,9 +45,10 @@ All.prototype = {
             return arr.map(item => { return item.name }).toString()
         }
     },
-    toggleClass(arr, elem, key = 'id') {//判断数组中是否包含某个元素 
+    toggleClass(arr, elem, key = 'id') {//判断数组中是否包含某个元素  
+        if(isEmptyArray(arr)) return false;
         if(arr && arr.length > 0) { 
-            return arr.some(item => { return item[key] == elem[key] });
+            return arr.some(item => { return  !isEmpty(item) && item[key] == elem[key] });
         }
     },
     toChecked(arr, elem, key = 'id') { 
@@ -60,8 +63,8 @@ All.prototype = {
             }
         });
         arr.splice(includesIndex, 1);
-    },
-    setApproverStr(nodeConfig) {
+    }, 
+    setApproverStr(nodeConfig) {  
         if(!nodeConfig) return; 
         if (nodeConfig.setType == 5) {
             if (nodeConfig.nodeApproveList.length == 1) {
@@ -76,11 +79,11 @@ All.prototype = {
                 }
             }
         } else if (nodeConfig.setType == 3) {
-            let level = nodeConfig.directorLevel == 1 ? '直接主管' : '第' + nodeConfig.directorLevel + '级主管'
-            if (nodeConfig.signType == 1) {
-                return level
-            } else if (nodeConfig.signType == 2) {
+            let level = nodeConfig.directorLevel == 1 ? '直接主管' : '第' + nodeConfig.directorLevel + '级主管' 
+            if (nodeConfig.signType == 2) {
                 return level + "会签"
+            }else{
+                return level
             }
         }else if (nodeConfig.setType == 4) {
             if (nodeConfig.nodeApproveList.length > 0) {
@@ -98,8 +101,12 @@ All.prototype = {
             return "发起人自己"
         }  else if (nodeConfig.setType == 13) { 
             return "直属领导"
-        }  
-    },
+        }  else if (nodeConfig.setType == 7) { 
+            return "由发起人自选审批人"
+        }else {
+            return ""
+        }
+    }, 
     dealStr(str, obj) {
         if(!obj) return; 
         let arr = [];
@@ -113,15 +120,24 @@ All.prototype = {
         }
         return arr.join("或")
     },  
-
+    // index 为Number
     getLabelStr(index, obj) {  
-        if(!obj) return; 
+        if(!obj) return;  
         let ret = obj[index-1];
         if (ret) {
             return ret.value;
         }
         return '';
     },  
+     // index 为string
+     getOutSideConditionLabelStr(index, obj) {   
+        if(!obj) return;   
+        let ret = obj.filter(c=>c.key == index).map(x => x.value); 
+        if (ret && ret.length > 0) {
+            return ret;
+        }
+        return '';
+    },   
     conditionStr(nodeConfig, index) { 
         var { conditionList, nodeApproveList } = nodeConfig.conditionNodes[index];   
         if (conditionList.length == 0) { 
@@ -158,14 +174,18 @@ All.prototype = {
                         }
                     }             
                 }
-                else if (fieldTypeName == "select") {
+                else if (fieldTypeName == "select") { 
                     if (!fixedDownBoxValue) {
                         str += nodeConfig.conditionNodes[index].nodeDisplayName + "     "
-                    }else { 
+                    }else {  
                         if (zdy1) {
-                            str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                            if(!isNaN(Number(zdy1))){
+                                    str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                            }else {
+                                str += showName + '：' + this.getOutSideConditionLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 " 
+                            } 
                         }
-                    }              
+                    }        
                 }
                 else if (fieldTypeName == "date") {
                     if (zdy1) { 

@@ -49,10 +49,7 @@
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="审批人" prop="sender">
-                            <el-select v-model="form.sender" filterable placeholder="请选择当前审批人" style="width: 220px">
-                                <el-option v-for="item in userOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
-                            </el-select>
+                            <TagUserSelect v-model:list="userSelectedList" placeholder="请选择审批人" style="width: 220px;" /> 
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -123,17 +120,19 @@
                     <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
-        </el-table>
-
+        </el-table> 
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
+       
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { getEntrustListPage, entrustDetail, setEntrust, getFromCodeData } from "@/api/workflow";
-import { approveList } from '@/utils/flow/const'
+import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
+
+import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow.js";
+import { getUsers } from "@/api/mock.js"; 
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false);
@@ -145,19 +144,39 @@ let formCodeOptions = ref([]);
 let userOptions = ref([]);
 const tabPosition = ref('oneflow');
 const data = reactive({
-    form: {},
+    form: {
+        id: undefined,
+        powerId: undefined,
+        sender: undefined,
+        name: undefined,
+        receiverId: undefined,
+        receiverName: undefined,
+        beginTime: undefined,
+        endTime: undefined,
+    },
     pageDto: {
         page: 1,
         pageSize: 10
     },
     taskMgmtVO: {},
     rules: {
-        powerId: [{ required: true, message: '请选择流程模板类型', trigger: 'change' }],
-        sender: [{ required: true, message: '请选择当前审批人', trigger: 'change' }],
-        receiverId: [{ required: true, message: '请选择委托人', trigger: 'change' }]
+        powerId: [{ required: true, message: '请选择流程模板类型', trigger: ['change','blur']  }],
+        sender: [{ required: true, message: '请选择当前审批人', trigger: ['change','blur'] }],
+        receiverId: [{ required: true, message: '请选择委托人', trigger: ['change','blur']  }]
     }
 });
 const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
+
+
+let userSelectedList = ref([]);//{id:1,name:'张三'},{id:2,name:'李四'}
+
+watch(() => userSelectedList.value, (newVal) => { 
+    if (!proxy.isArrayEmpty(newVal)) {
+        form.value.sender = newVal[0].id; 
+    }else{
+        form.value.sender = undefined;
+    }  
+}, { deep: true});
 
 const disabledBeginDate = (time) => {
     return time.getTime() > new Date(form?.endTime ?? "");
@@ -169,8 +188,9 @@ const disabledEndDate = (time) => {
 watch(() => form.value.receiverId, (newVal, oldVal) => {
     if (newVal) {
         form.value.receiverName = getReceiverLabel(newVal);
-    }
-})
+    }  
+}, { deep: true});
+
 const getReceiverLabel = (value) => {
     let obj = userOptions.value.filter(item => item.value == value)[0];
     return obj.label;
@@ -178,44 +198,39 @@ const getReceiverLabel = (value) => {
 
 /** 重置操作表单 */
 function reset() {
-    form.value = {
-        id: undefined,
-        powerId: undefined,
-        sender: undefined,
-        name: undefined,
-        receiverId: undefined,
-        receiverName: undefined,
-        beginTime: undefined,
-        endTime: undefined,
-    };
-    //proxy.resetForm("userRef");
+   form.value = {};
+   userSelectedList.value=[]; 
 };
-onMounted(async () => {
+onMounted(async () => { 
+    reset();
     await initFromCode();
-    getList();
-    getUserList();
+    await getList();
+    await getUserList();
 })
 const initFromCode = async () => {
-    await getFromCodeData().then((res) => {
+    await getDIYFromCodeData().then((res) => {
         if (res.code == 200) {
             formCodeOptions.value = res.data;
         }
     });
 }
-const getUserList = () => {
-    const keys = Object.keys(approveList);
-    for (let t of keys) {
-        userOptions.value.push({
-            label: approveList[t],
-            value: t
-        });
-    }
+const getUserList = async () => { 
+    await getUsers().then(res => {
+        if (res.code == 200) {
+            userOptions.value = res.data.map(item => {
+                return {
+                    label: item.name,
+                    value: item.id
+                }
+            });
+        }
+    });
 }
 
-/** 查询岗位列表 */
-function getList() {
+/** 查询列表 */
+async function getList () {
     loading.value = true;
-    getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
+    await getEntrustListPage(pageDto.value, taskMgmtVO.value).then(response => {
         entrustList.value = response.data;
         total.value = response.pagination.totalCount;
         loading.value = false;
@@ -259,7 +274,7 @@ function submitForm() {
             });
         }
     }
-    proxy.$refs["formRef"].validate(valid => {
+    proxy.$refs["formRef"].validate(valid => { 
         if (valid) {
             if (form.value.id != undefined) {
                 setEntrust(form.value).then(response => {
@@ -278,6 +293,8 @@ function submitForm() {
                     getList();
                 });
             }
+        }else{
+            return false;
         }
     });
 }
@@ -295,6 +312,6 @@ function resetQuery() {
 /** 删除按钮操作 */
 function handleDelete(row) {
     proxy.$modal.msgError("演示环境不允许删除操作！");
-}
+} 
 
 </script>

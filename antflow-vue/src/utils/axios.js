@@ -4,8 +4,6 @@
  * @LastEditTime: 2022-09-21 14:37:02
  * @FilePath: /ant-flow/src/plugins/axios.js
  */
-"use strict";
-
 import axios from "axios";   
 import useUserStore from '@/store/modules/user'
 import cache from '@/plugins/cache';
@@ -20,11 +18,10 @@ let config = {
   }
 };
 
-const _axios = axios.create(config);
-
+const _axios = axios.create(config); 
 _axios.interceptors.request.use(
   function (config) {
-    config.headers = config.headers || {};   
+    config.headers = config.headers || {};      
     return config;
   },
   function (error) { 
@@ -33,27 +30,17 @@ _axios.interceptors.request.use(
 );
  
 _axios.interceptors.response.use(
-  function (response) {  
-
-    let Userid= cache.session.get('userId')
-    let Username = cache.session.get('userName') 
-    if (!Userid || !Username) {
+  function (response) {     
+    let Userid= cache.session.get('userId');
+    let Username = cache.session.get('userName'); 
+    if ((!Userid || !Username) && !response.config.url.includes('/user/getUser')) {
       useUserStore().logOut().then(() => {
-        location.href = '/admin/';//index
-      })
+        location.href = import.meta.env.VITE_HOME_PATH;//index
+      });
     } 
     return response.data;
   },
   function (error) { 
-    //console.log('res=======error=========',JSON.stringify(error))
-    // let { message,status,code,name } = error;
-    // if (status == 500) {
-    //   
-    // }
-    
-    // useUserStore().logOut().then(() => {
-    //   location.href = '/low/';//index
-    // })
     return Promise.reject(error);
   }
 );

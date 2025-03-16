@@ -23,7 +23,6 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.constant.enums.ProcessTypeEnum;
@@ -193,7 +192,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 record.setTaskState(ProcessStateEnum.getDescByCode(record.getProcessState()));
 
                 if (type.equals(ProcessTypeEnum.ENTRUST_TYPE.getCode())) {
-                    // to check whether the forwared record can process in batch
+                    // to check whether the forwarded record can process in batch
                     record.setIsForward(processForwardService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
@@ -242,7 +241,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         // checking process right,and set some information that from business table
         businessDataVo.setProcessRecordInfo(businessContans.processInfo(bpmBusinessProcess));
         businessDataVo.setProcessKey(bpmBusinessProcess.getBusinessNumber());
-        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(CRMCEL_STATE.getCode()));
+        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(REJECT_STATE.getCode()));
 
         boolean flag = businessDataVo.getProcessRecordInfo().getStartUserId().equals(SecurityUtils.getLogInEmpIdStr());
 

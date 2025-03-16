@@ -88,22 +88,12 @@ public class LFMainField {
             String fieldId = fieldId2ValueEntry.getKey();
             BpmnConfLfFormdataField fieldConfig = fieldConfigMap.get(fieldId);
             if(fieldConfig==null){
-                throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
+                continue;
+                //throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
             Object value = fieldId2ValueEntry.getValue();
-            if(value instanceof Iterable){
-                Iterable iterableValue = (Iterable) value;
-                Iterator iterator = iterableValue.iterator();
-                int sort=0;
-                while (iterator.hasNext()){
-                    Object actualValue=iterator.next();
-                    LFMainField mainField = buildMainField(actualValue, mainId, sort, fieldConfig);
-                    mainFields.add(mainField);
-                }
-            }else{
-                LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
-                mainFields.add(mainField);
-            }
+            LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
+            mainFields.add(mainField);
         }
         return mainFields;
     }
@@ -127,8 +117,8 @@ public class LFMainField {
                 mainField.setFieldValue(fieldValueStr);
                 break;
             case NUMBER:
-                Double fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Double.parseDouble(fieldValueStr) : null;
-                mainField.setFieldValueNumber(fieldValueNumber);
+                Integer fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Integer.parseInt(fieldValueStr) : null;
+                mainField.setFieldValue(String.valueOf(fieldValueNumber));
                 break;
             case DATE:
             case DATE_TIME:
@@ -137,6 +127,10 @@ public class LFMainField {
                 break;
             case TEXT:
                 mainField.setFieldValueText(fieldValueStr);
+                break;
+            case BOOLEAN:
+                mainField.setFieldValue(String.valueOf(fieldValueStr));
+                break;
         }
         mainField.setSort(sort);
         return mainField;

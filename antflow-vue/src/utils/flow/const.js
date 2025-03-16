@@ -5,50 +5,26 @@
  * @FilePath: /src/utils/flow/const.js
  */
 
-export let bgColors = ["192,192,192", '87, 106, 149', '255，97，0', '65，105，225', '255, 148, 62', '50, 150, 250', '50, 150, 250'] // '灰色, 蓝色, 橙色, 黄色, 黄色'
-export let placeholderList = ["发起人", "审核人", "抄送人"];
-export let nodeTypeList = ["未知", "发起人", "网关", "条件", "审核人", "抄送人", "抄送人"];
-
+export let bgColors = ["192,192,192", '87, 106, 149', '255，97，0', '65，105，225', '255, 148, 62', '50, 150, 250', '50, 150, 250']; // '灰色, 蓝色, 橙色, 黄色, 黄色'
+export let placeholderList = ['','发起人', '', '条件','审核人','','抄送人','审核人'];
+export let nodeTypeList = ["未知", "发起人", "网关", "条件", "审核人", "未知", "抄送人", "并行审批"];
+export let signTypeObj = {
+  1: '会签', 
+  2: '或签',//
+  3: '顺序会签',//拒绝
+}; 
 export let setTypes = [
-  //{ value: 4, label: '指定角色' },  
   { value: 5, label: '指定人员' }, 
-  //{ value: 6, label: 'HRBP' },
-  //{ value: 13, label: '直属领导' },
+  { value: 4, label: '指定角色' },   
+  { value: 6, label: 'HRBP' },
+  { value: 13, label: '直属领导' },
   // { value: 2, label: '层层审批' },
-  // { value: 3, label: '指定层级审批' },
+  { value: 3, label: '指定层级审批' },
   // { value: 8, label: '关联业务表' },
-  // { value: 12, label: '发起人自己' }, 
+  { value: 12, label: '发起人自己' }, 
+  { value: 7, label: '发起人自选审批人' },
   // { value: 14, label: '指定部门' },
-]
-export const nodeConf = {
-  nodeType: {
-    start : 1,//发起人
-    getway : 2,//'网关'
-    condition : 3,//'条件'
-    approve: 4,//'审核人'
-    copy: 6//'抄送人'
-  },
-  approveType: {
-      role: 4,//'指定角色'
-      user: 5,//'指定人员' 
-      hrbp: 6,//'HRBP'
-      leader: 13,//'直属领导'
-      // layer: 2,//'层层审批'
-      // level: 3,//'指定层级审批'
-      // business: 8,//'关联业务表'
-      // self: 12,//'发起人自己' 
-      // department: 14,//'指定部门'
-  }
-}
-export let typeCodes = [
-  { value: 2, type: 1 },
-  { value: 3, type: 3 },
-  { value: 4, type: 4 },
-  { value: 5, type: 5 },
-  { value: 12, type: 2 },
-  { value: 13, type: 13 },
-]
-
+] 
 export let hrbpOptions = [
   { value: 1, label: 'HRBP' },
   { value: 2, label: 'HRBP Leader' },
@@ -66,7 +42,7 @@ export let opt1s = [
   { value: '<', label: '<' },
   { value: '≤', label: '≤' },
 ]
-
+  /**审批按钮lable-value */
 export class approvalButtonConf {
   static preview =0;//预览
   static submit =1;//提交
@@ -74,27 +50,37 @@ export class approvalButtonConf {
   static agree = 3;//同意
   static noAgree = 4;//拒绝
   static print = 8;//打印
+  static undertake = 10;//承办
   static terminate = 12;//终止
   static forward = 15;//转发
-  static repulse = 18;//打回
+  static repulse = 18;//退回
   static addApproval = 19;//加批
-  static transfer = 21;//转办 
+  static transfer = 21;//转办  
 
   static buttonsObj={
     0: '预览',
     1: '提交',//提交
     2: '重新提交',//
     3: '同意',//拒绝
-    4: '拒绝',//拒绝 
+    4: '不同意',//拒绝 
+    6: '退回上节点修改',//退回上节点修改
     8: '打印',//打印
+    10: '承办',//承办
+    11: '变更处理人',//变更处理人
     12: '终止',//终止
+    13: '添加审批人',//添加审批人
     15: '转发',//转发
-    18: '打回',//打回
+    18: '退回',//退回修改
     19: '加批',//加批 
+    20: '加批',//扫码帮助 
     21: '转办',//转办
+    22: '自选审批人',//自选审批人
+    23: '退回任意节点',//退回任意节点
   }
 }
-
+/**
+ * 流程设计审批按钮显示
+ */
 export let approvalPageButtons = [
   { 
     value: approvalButtonConf.agree, 
@@ -110,8 +96,8 @@ export let approvalPageButtons = [
   },
   { 
     value: approvalButtonConf.repulse, 
-    label: '打回',
-    description: '打回到发起人，发起人重新提交后，流程重新开始'
+    label: '退回',
+    description: '退回到(发起人或任意节点)，流程重新开始或者回到当前审批人'
   },
 
   { 
@@ -134,71 +120,43 @@ export let viewPageButtons = [
   { value: approvalButtonConf.print, label: '打印' },
   { value: approvalButtonConf.forward, label: '转发' }
 ]
-
+/**
+ * 自定义表单路径与FormCode映射
+ */
 export const bizFormMaps = new Map([
   ['DSFZH_WMA', '/forms/form1.vue'],
   ['LEAVE_WMA', '/forms/form2.vue'],
   ['UCARREFUEl_WMA', '/forms/form3.vue'],
-  ['PURCHASE_WMA', '/forms/form4.vue'] 
+  ['PURCHASE_WMA', '/forms/form4.vue'], 
+  ['BXSP_WMA', '/forms/form5.vue']
 ]);
 
-export let statusColor = {
+/**审批按钮颜色显示 */
+export let approveButtonColor = {
   0: 'info',
-  1: 'primary',//提交
-  2: 'primary',//同意
-  3: 'danger',//拒绝
-  4: 'danger',//撤回
-  5: 'danger',//作废
-  6: 'danger',//终止
+  1: 'primary',//
+  2: 'primary',//
+  3: 'primary',//同意
+  4: 'danger',//拒绝
+  5: 'danger',//
+  6: 'danger',//
   7: 'primary',//
-  8: 'danger',//打回修改
+  8: 'danger',//
   10: 'warning',//承办
-  13: 'primary',//添加审批人
-  19: 'success',//加批
+  13: 'primary',//
+  18: 'warning',//退回
+  19: 'success',//加批 
+  21: 'primary',//转办
+  23: 'warning',//驳回
   99: 'success',//处理中
-  21: 'success',//转办
   100: 'info'
 };
-
-export let pageButtonsColor = {
-  0: 'primary',
-  1: 'primary',//提交
-  2: 'success',//重新提交
-  3: 'primary',//同意
-  4: 'danger',//不同意
-  8: 'success',//打印
-  10: 'warning',//承办
-  12: 'danger',//终止
-  15: 'primary',//转发
-  18: 'warning',//打回修改
-  13: 'primary',//添加审批人
-  19: 'success',//加批
-  21: 'primary',//转办 
-};
-
-export let approveList = {
-  1: '张三',
-  2: '李四',
-  3: '王五',
-  4: '菜六',
-  5: '牛七',
-  6: '马八',
-  7: '李九',
-  8: '周十',
-  9: '肖十一',
-  10: '令狐冲',
-  11: '风清扬',
-  12: '刘正风',
-  13: '岳不群',
-  14: '宁中则',
-  15: '桃谷六仙',
-  16: '不介和尚',
-  17: '丁一师太',
-  18: '依林师妹',
-  19: '邱灵珊',
-  20: '任盈盈'
-};
-//控件对应后端api的判断类型
+  
+/**
+ * 1、控件对应后端api的判断类型
+ * 2、用于条件节点 对接 流程引擎中 条件判断
+ * 3、与后端约定的值
+ */
 export const condition_columnTypeMap = new Map([
   ['input', '10000'],//"int/fload/double/string" input
   ['input-number', '10001'],//"Double" 
@@ -211,29 +169,36 @@ export const condition_columnTypeMap = new Map([
   ['data-range', '10002'],
   ['date', '10002']
 ]);
-//控件是否显示
+ 
+/**
+ * 1、控件是在条件节点 选择条件时候否显示
+ * 2、对应后端数据解析 与后端约定的值
+ * Mapping: 1-string 2-int 3-date 4-time 5-text/长字符串 6-boolean 7-二进制/byte
+ */
 export const condition_filedTypeMap = new Map([
-  ['input', '4'],//"String" 
-  ['input-number', '1'],//"Double" 
-  ['select', '2'],//"String" select
-  ['checkbox', '3'],//"String" checkbox
-  //['radio', '1'],
-  ['switch', '1'],
+  ['input', '1'],//"String" 
+  ['input-number', '4'],//"time" 
+  ['select', '2'],//"int" select
+  ['checkbox', '1'],//"String" checkbox
+  //['radio', '2'], //  int radio
+  ['switch', '6'], // boolean switch
   ['time', '1'],
-  //['time-range', '1'],
-  //['data-range', '1'],
+  // ['time-range', '1'],
+  // ['data-range', '1'],
   ['date', '1']
 ]);
-//判断控件的值的类型
+/**
+ * 判断控件的值的类型 
+ */
 export const condition_filedValueTypeMap = new Map([
   ['input', 'String'],//"Double" 
-  ['input-number', 'Double'],//"Double" 
-  ['select', 'String'],//"String" select
-  ['checkbox', 'String'],//"String" checkbox
-  ['radio', 'Double'],
-  ['switch', 'Double'],
-  ['time', 'Double'],
-  ['time-range', 'Double'],
-  ['data-range', 'Double'],
-  ['date', 'Double']
+  ['input-number', 'String'],//"Double" 
+  ['select', 'Int'],//"Int" select
+  ['checkbox', 'String'],//checkbox 对应 VForm 是Array
+  ['radio', 'Int'],
+  ['switch', 'Boolean'],
+  ['time', 'String'],
+  ['time-range', 'String'],
+  ['data-range', 'String'],
+  ['date', 'String']
 ]);

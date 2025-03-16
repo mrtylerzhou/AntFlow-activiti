@@ -11,6 +11,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -34,7 +35,7 @@ public class ButtonOperationServiceImpl{
     private IAdaptorFactory adaptorFactory;
     @Autowired
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BusinessDataVo buttonsOperationTransactional(BusinessDataVo vo) {
 
         //Do button operations

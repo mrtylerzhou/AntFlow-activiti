@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * this service should be redesigned
  */
-@Service
+@Service("afUserService")
 public class UserServiceImpl{
     @Autowired
     UserMapper userMapper;

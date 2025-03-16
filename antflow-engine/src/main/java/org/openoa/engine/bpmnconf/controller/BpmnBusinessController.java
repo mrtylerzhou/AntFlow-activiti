@@ -1,22 +1,27 @@
 package org.openoa.engine.bpmnconf.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Results;
+import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.entity.CommonError;
 import org.openoa.base.entity.Result;
-import org.openoa.base.interf.ActivitiService;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
+import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.bpmnconf.confentity.BpmnNode;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.engine.vo.PsPreCheckVO;
+import org.openoa.engine.vo.PsPreRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,56 +34,27 @@ import java.util.stream.Collectors;
  * @Version 1.0
  */
 @Slf4j
-@Tag(name="工作流业务管理",description = "")
+
 @RestController
 @RequestMapping(value = "/bpmnBusiness")
 public class BpmnBusinessController {
 
-    @Autowired(required = false)
-    Map<String, FormOperationAdaptor> formOperationAdaptorMap;
-
+    @Autowired
+    private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private UserEntrustServiceImpl userEntrustService;
-    @Autowired(required = false)
-    private LowCodeFlowBizService lowCodeFlowBizService;
-
-    @Operation(summary ="" )
-    @RequestMapping("/listFormCodes")
-    public Result listFormCodes(String desc){
-        List<String> formCodes = baseFormInfo(desc).stream().map(a -> a.getKey()).collect(Collectors.toList());
-        return Result.newSuccessResult(formCodes);
-    }
+    @Autowired
+    private BpmnNodeMapper bpmnNodeMapper;
     /**
-     * get processes's basic form code and desc information
+     * 获取自定义表单DIY FormCode List
      * @param desc
      * @return
      */
-    @GetMapping("/listFormInfo")
-    public Result listFormInfo(String desc){
-
-        return Result.newSuccessResult(baseFormInfo(desc));
+    @GetMapping("/getDIYFormCodeList")
+    public Result getDIYFormCodeList(String desc){
+        List<DIYProcessInfoDTO> diyProcessInfoDTOS = taskMgmtService.viewProcessInfo(desc);
+        return Result.newSuccessResult(diyProcessInfoDTOS);
     }
-    /**
-     * get all form code and desc information
-     * @return
-     */
-    @GetMapping("/allFormCodes")
-    public Result allFormCodes(){
-        return Result.newSuccessResult(allFormInfo());
-    }
-    @GetMapping("/listNodeProperties")
-    public Result listPersonnelProperties(){
-        Collection<BpmnNodeAdaptor> beans = SpringBeanUtils.getBeans(BpmnNodeAdaptor.class);
-        List<PersonnelRuleVO> personnelRuleVOS=new ArrayList<>();
-        for (BpmnNodeAdaptor bean : beans) {
-            PersonnelRuleVO personnelRuleVO = bean.formaFieldAttributeInfoVO();
-           if(personnelRuleVO!=null){
-               personnelRuleVOS.add(personnelRuleVO);
-           }
-        }
-        return Result.newSuccessResult(personnelRuleVOS);
-    }
-
     /**
      * 获取委托列表
      * @param requestDto
@@ -92,20 +68,32 @@ public class BpmnBusinessController {
         Entrust vo = new Entrust();
         return userEntrustService.getEntrustPageList(pageDto,vo,type);
     }
-
     /**
      * 获取委托详情
      * @param id
      * @return
      */
 
-    @Operation(summary ="获取委托详情")
     @GetMapping("/entrustDetail/{id}")
     public Result entrustDetail(@PathVariable("id") Integer id){
         UserEntrust detail = userEntrustService.getEntrustDetail(id);
         return Result.newSuccessResult(detail);
     }
 
+    @GetMapping("/getStartUserChooseModules")
+    public Result getStartUserChooseModules(String formCode){
+        if(StringUtils.isEmpty(formCode)){
+           throw new JiMuBizException("参数formCode不能为空!");
+        }
+        List<BpmnNode> nodesByFormCodeAndProperty = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
+        List<BpmnNodeVo> nodeVos = nodesByFormCodeAndProperty.stream().map(a -> {
+            BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
+            bpmnNodeVo.setId(a.getId());
+            bpmnNodeVo.setNodeName(a.getNodeName());
+            return bpmnNodeVo;
+        }).collect(Collectors.toList());
+        return Result.newSuccessResult(nodeVos);
+    }
     /**
      * 编辑委托
      * @param dataVo
@@ -117,46 +105,5 @@ public class BpmnBusinessController {
         return Result.newSuccessResult("ok");
     }
 
-    private List<BaseKeyValueStruVo> baseFormInfo(String desc){
-        List<BaseKeyValueStruVo> results=new ArrayList<>();
-        for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
-            String key=stringFormOperationAdaptorEntry.getKey();
-            ActivitiServiceAnno annotation = stringFormOperationAdaptorEntry.getValue().getClass().getAnnotation(ActivitiServiceAnno.class);
-            if (StringUtils.isEmpty(annotation.desc())){
-                continue;
-            }
-            if(!StringUtils.isEmpty(desc)){
-                if(annotation.desc().contains(desc)){
-                    results.add(
-                            BaseKeyValueStruVo
-                                    .builder()
-                                    .key(key)
-                                    .value(annotation.desc())
-                                    .type("DIY")
-                                    .build()
-                    );
-                }
-            }
-            else{
-                results.add(
-                        BaseKeyValueStruVo
-                                .builder()
-                                .key(key)
-                                .value(annotation.desc())
-                                .type("DIY")
-                                .build()
-                );
-            }
-        }
-        return results;
-    }
 
-    private List<BaseKeyValueStruVo> allFormInfo(){
-        List<BaseKeyValueStruVo> results= baseFormInfo("");
-        List<BaseKeyValueStruVo> lfFormCodes= lowCodeFlowBizService.getLFActiveFormCodes();
-        if (lfFormCodes != null){
-            results.addAll(lfFormCodes);
-        }
-        return results;
-    }
 }

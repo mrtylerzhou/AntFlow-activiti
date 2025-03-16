@@ -192,7 +192,7 @@
         SELECT 9 UNION ALL
         SELECT 10
         ) AS numbers
-        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
-        ) AND  <![CDATA[ td2.level<#{assignLevelGrade} ]]>)tmp order by level desc  limit 1
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{startUserId})
+        ) AND  <![CDATA[ td2.level<=#{assignLevelGrade} ]]>)tmp order by level desc  limit 1
     </sql>
 </mapper>

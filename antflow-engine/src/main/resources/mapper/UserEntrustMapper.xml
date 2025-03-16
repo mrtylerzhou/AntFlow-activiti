@@ -44,6 +44,7 @@
                  left join t_user_entrust t
                            on s.processKey = substring_index(t.power_id, ":", 1) and t.sender = #{userId}
         group by s.processKey
+        order by t.create_time desc
     </select>
 
     <select id="getEntrustListNew" parameterType="map" resultType="org.openoa.base.vo.Entrust">
@@ -77,6 +78,7 @@
         <if test="userId != null and  userId !=''">
             and (t.sender = #{userId} or t.receiver_id = #{userId})
         </if>
+        order by t.create_time desc
     </select>
 
 </mapper>

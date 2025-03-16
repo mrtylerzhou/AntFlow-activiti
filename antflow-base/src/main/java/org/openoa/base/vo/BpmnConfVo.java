@@ -41,6 +41,10 @@ public class BpmnConfVo {
      */
     private String formCode;
     /**
+     * formCode
+     */
+    private String formCodeDisplayName;
+    /**
      * appId
      */
     private Integer appId;
@@ -61,8 +65,15 @@ public class BpmnConfVo {
     /**
      * process's business party
      */
-    private Integer businessPartyId;
+    private Long businessPartyId;
 
+    /**
+     * process's business party
+     */
+    private Integer applicationId;
+
+
+    private Integer extraFlags;
     /**
      */
     private String remark;

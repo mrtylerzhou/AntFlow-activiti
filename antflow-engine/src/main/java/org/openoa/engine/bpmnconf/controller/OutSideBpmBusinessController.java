@@ -2,12 +2,11 @@ package org.openoa.engine.bpmnconf.controller;
 
 
 import com.google.common.base.Strings;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
@@ -22,15 +21,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
-@Tag(name = "第三方业务方管理")
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSideBpm")
 @Validated
-public class OutSideBpmBusinessPartyController {
+public class OutSideBpmBusinessController {
 
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
@@ -72,17 +70,6 @@ public class OutSideBpmBusinessPartyController {
             page.setOrderColumn("id");
         }
         return Result.newSuccessResult(outSideBpmBusinessPartyService.applicationsPageList(page, vo));
-    }
-
-    @GetMapping("/businessParty/getThirdPartyApplications/{businessPartyMark}")
-    public Result<List<BpmProcessAppApplicationVo>> getThirdPartyApplications(@PathVariable String businessPartyMark){
-        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.findThirdPartyApplications(businessPartyMark);
-        return Result.newSuccessResult(thirdPartyApplications);
-    }
-    @GetMapping("/businessParty/getApplicationsByPartyMarkId/{partyMarkId}")
-    public Result<List<BpmProcessAppApplicationVo>> getApplicationsByPartyMarkId(@PathVariable Integer partyMarkId){
-        List<BpmProcessAppApplicationVo> thirdPartyApplications = outSideBpmBusinessPartyService.getApplicationsByPartyMarkId(partyMarkId);
-        return Result.newSuccessResult(thirdPartyApplications);
     }
     /**
      * add application  business party

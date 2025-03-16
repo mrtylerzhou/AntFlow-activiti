@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmApproveTemplateMapper">
+
+
+    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate">
+        <id column="id" property="id"/>
+        <result column="business_party_id" property="businessPartyId"/>
+        <result column="application_id" property="applicationId"/>
+        <result column="approve_type_id" property="approveTypeId"/>
+        <result column="approve_type_name" property="approveTypeName"/>
+        <result column="api_client_id" property="apiClientId"/>
+        <result column="api_client_secret" property="apiClientSecret"/>
+        <result column="api_token" property="apiToken"/>
+        <result column="api_url" property="apiUrl"/>
+        <result column="remark" property="remark"/>
+        <result column="is_del" property="isDel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id,
+        business_party_id AS businessPartyId,
+        application_id AS applicationId,
+        approve_type_id AS approveTypeId,
+        approve_type_name AS approveTypeName,
+        api_client_id AS apiClientId,
+        api_client_secret AS apiClientSecret,
+        api_token AS apiToken,
+        api_url AS apiUrl,
+        remark,
+        is_del AS isDel,
+        create_user AS createUser,
+        create_time AS createTime,
+        update_user AS updateUser,
+        update_time AS updateTime
+    </sql>
+
+    <select id="selectPageList" parameterType="org.openoa.engine.vo.OutSideBpmApproveTemplateVo"  resultType="org.openoa.engine.vo.OutSideBpmApproveTemplateVo">
+        SELECT
+        a.id AS id,
+        a.business_party_id AS businessPartyId,
+        a.application_id AS applicationId,
+        a.approve_type_id AS approveTypeId,
+        a.approve_type_name AS approveTypeName,
+        a.api_client_id AS apiClientId,
+        a.api_client_secret AS apiClientSecret,
+        a.api_token AS apiToken,
+        a.api_url AS apiUrl,
+        a.remark,
+        a.is_del AS isDel,
+        a.create_user_id AS createUserId,
+        a.create_user AS createUser,
+        a.create_time AS createTime
+        FROM t_out_side_bpm_approve_template a
+        WHERE a.is_del = 0
+
+        <if test="approveTypeName != null and approveTypeName != ''">
+            AND a.approve_type_name LIKE CONCAT('%',#{approveTypeName},'%')
+        </if>
+        order by a.create_time desc
+    </select>
+
+</mapper>

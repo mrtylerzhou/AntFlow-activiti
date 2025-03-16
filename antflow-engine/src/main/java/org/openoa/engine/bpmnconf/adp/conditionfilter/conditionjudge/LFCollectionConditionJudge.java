@@ -15,6 +15,7 @@ import java.util.function.BiPredicate;
 public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+        //a是数据库里存的集合,b是用户传过来的集合(或者单个值),遍历a,b,如果b在a里,则返回true
         BiPredicate<Object,Object> predicate=(a,b)->{
           if(!(a instanceof Iterable)){
               throw new JiMuBizException("value from db is not iterable");
@@ -24,8 +25,19 @@ public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
             int sort=0;
             while (iterator.hasNext()){
                 Object actualValue=iterator.next();
-                if(actualValue.toString().equals(b.toString())){
-                    return true ;
+                if (b instanceof Iterable) {
+                    Iterable iterableB = (Iterable) b;
+                    Iterator iteratorB = iterableB.iterator();
+                    while (iteratorB.hasNext()) {
+                        Object bValue = iteratorB.next();
+                        if (actualValue.toString().equals(bValue.toString())) {
+                            return true;
+                        }
+                    }
+                } else {
+                    if (actualValue.toString().equals(b.toString())) {
+                        return true;
+                    }
                 }
             }
             return false;

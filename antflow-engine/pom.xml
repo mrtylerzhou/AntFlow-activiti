@@ -5,7 +5,7 @@
 
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-engine</artifactId>
-    <version>0.56.0</version>
+    <version>0.81.0</version>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -15,23 +15,19 @@
         <spring-boot.version>2.7.17</spring-boot.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-            <version>4.5.0</version>
-        </dependency>
+
 
 
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-base</artifactId>
-           <version>0.56.0</version>
+           <version>0.81.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
            <groupId>io.github.mrtylerzhou</groupId>
             <artifactId>antflow-common</artifactId>
-           <version>0.50.0</version>
+           <version>0.81.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -127,7 +123,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

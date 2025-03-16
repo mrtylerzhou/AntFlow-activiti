@@ -33,6 +33,7 @@
         a.create_time AS createTime
         FROM t_out_side_bpm_business_party a
         WHERE a.is_del = 0
+        order by a.create_time desc
     </select>
 
     <select id="getBusinessPartyMarkById" resultType="java.lang.String">

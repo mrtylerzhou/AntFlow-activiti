@@ -1,30 +1,36 @@
 <template>
     <div class="add-node-btn-box">
         <div class="add-node-btn">
-            <el-popover placement="right-start" v-model="visible" width="auto">
+            <el-popover placement="right-start" v-model="visible" aria-hidden="true" width="auto">
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item approver" @click="addType(4)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="approve" class="iconfont"/>  
                         </div>
                         <p>审批人</p>
                     </a>
+                    <a class="add-node-popover-item approver" @click="addType(7)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="parallel-approve" class="iconfont"/>                       
+                        </div>
+                        <p>并行审批</p>
+                    </a>
                     <a class="add-node-popover-item notifier" @click="addType(6)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="copy-user" class="iconfont"/>  
                         </div>
                         <p>抄送人</p>
                     </a>
                     <a class="add-node-popover-item condition" @click="addType(2)">
                         <div class="item-wrapper">
-                            <span class="iconfont"></span>
+                            <svg-icon icon-class="condition" class="iconfont"/>  
                         </div>
                         <p>条件分支</p>
                     </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
-                        <span class="iconfont"></span>
+                        <svg-icon icon-class="addbtn" class="iconfont"/>  
                     </button>
                 </template>
             </el-popover>
@@ -53,6 +59,9 @@ const addType = (type)=> {
             _dataNode = NodeUtils.createCopyNode();  
             _dataNode.childNode = props.childNodeP;  
         }
+        else if (type == 7) {
+            _dataNode = NodeUtils.createParallelWayNode(props.childNodeP);   
+        }
         emits("update:childNodeP", _dataNode)
     } else { 
         let gatewayNode= NodeUtils.createGatewayNode(props.childNodeP); 
@@ -61,7 +70,7 @@ const addType = (type)=> {
 }
 </script>
 <style scoped lang="scss">  
-@import "@/assets/styles/flow/workflow.scss";
+@import "@/assets/styles/flow/workflow.scss"; 
 .add-node-btn-box {
     width: 240px;
     display: -webkit-inline-box;
@@ -130,20 +139,21 @@ const addType = (type)=> {
         cursor: pointer;
         text-align: center;
         flex: 1;
-        color: #191f25!important;
+        color: #191f25 !important;
         .item-wrapper {
             user-select: none;
             display: inline-block;
-            width: 80px;
-            height: 80px;
+            width: 65px;
+            height: 65px;
             margin-bottom: 5px;
             background: #fff;
             border: 1px solid #e2e2e2;
-            border-radius: 50%;
+            border-radius: 10%;
             transition: all .3s cubic-bezier(.645, .045, .355, 1);
             .iconfont {
+                margin-top: 13px;
                 font-size: 35px;
-                line-height: 80px
+                line-height: 65px
             }
         }
         &.approver{

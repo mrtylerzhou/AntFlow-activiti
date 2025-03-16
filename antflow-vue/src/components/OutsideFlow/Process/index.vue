@@ -1,12 +1,14 @@
 <template>
-    <div class="app-container">
-        <section class="dingflow-design">
+    <div>
+        <section class="antflow-design" ref="antflowDesignRef">
             <div class="zoom">
-                <div class="zoom-out" :class="nowVal == 50 && 'disabled'" @click="zoomSize(1)"></div>
+                <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
-                <div class="zoom-in" :class="nowVal == 300 && 'disabled'" @click="zoomSize(2)"></div>
+                <div class="zoom-in" @click="zoomIn" title="放大"></div>
+                <!--刷新图标代码-->
+                <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
             </div>
-            <div class="box-scale" :style="`transform: scale(${nowVal / 100});`">
+            <div class="box-scale" ref="boxScaleRef">
                 <outsideNodeWrap v-model:nodeConfig="nodeConfig" />
                 <div class="end-node">
                     <div class="end-node-circle"></div>
@@ -33,7 +35,7 @@ import approverDrawer from "@/components/OutsideFlow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/OutsideFlow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/OutsideFlow/drawer/conditionDrawer.vue"; 
 import outsideNodeWrap from "@/components/OutsideFlow/nodeWrap.vue";
-const { proxy } = getCurrentInstance();
+import {wheelZoomFunc, zoomInit,resetImage} from "@/utils/zoom.js"; 
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
 let props = defineProps({
@@ -42,13 +44,17 @@ let props = defineProps({
         default: () => (null),
     }
 });
-
+const antflowDesignRef = ref(null);
+const boxScaleRef = ref(null);
 let tipList = ref([]);
 let tipVisible = ref(false);
 let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
-onMounted(async () => {
+onMounted(async () => { 
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
+        nowVal.value = val
+    })
     if (props.processData) {
         nodeConfig.value = props.processData;
     }
@@ -102,20 +108,19 @@ const reErr = ({ childNode }) => {
     }
 };
 
-const zoomSize = (type) => {
-    if (type == 1) {
-        if (nowVal.value == 50) {
-            return;
-        }
-        nowVal.value -= 10;
-    } else {
-        if (nowVal.value == 300) {
-            return;
-        }
-        nowVal.value += 10;
-    }
-};
+/** 页面放大 */
+function zoomIn() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})
+}
 
+/** 页面缩小 */
+function zoomOut() {
+  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
+}
+/** 还原缩放比例 */
+function zoomReset() {
+  resetImage()
+}
 const getJson = () => {
     setIsTried(true);
     tipList.value = []; 
@@ -164,47 +169,5 @@ defineExpose({
 .clearfix {
     zoom: 1
 }
-
-.zoom {
-    display: flex;
-    position: fixed;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    height: 40px;
-    width: 125px;
-    right: 40px;
-    margin-top: 30px;
-    z-index: 10
-}
-
-.zoom .zoom-in,
-.zoom .zoom-out {
-    width: 30px;
-    height: 30px;
-    background: #fff;
-    color: #c1c1cd;
-    cursor: pointer;
-    background-size: 100%;
-    background-repeat: no-repeat
-}
-
-.zoom .zoom-out {
-    background-image: url(https://gw.alicdn.com/tfs/TB1s0qhBHGYBuNjy0FoXXciBFXa-90-90.png)
-}
-
-.zoom .zoom-out.disabled {
-    opacity: .5
-}
-
-.zoom .zoom-in {
-    background-image: url(https://gw.alicdn.com/tfs/TB1UIgJBTtYBeNjy1XdXXXXyVXa-90-90.png)
-}
-
-.zoom .zoom-in.disabled {
-    opacity: .5
-}
+ 
 </style>

@@ -10,9 +10,10 @@
                 </el-form-item> -->
 
             <el-form-item label="模板类型" prop="formCode">
-                <el-select v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
-                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value"
-                        :value="item.key"></el-option>
+                <el-select filterable v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
+                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value" :value="item.key">
+                        <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
+                    </el-option>
                 </el-select>
             </el-form-item>
 
@@ -48,7 +49,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch,getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getFromCodeData,getAllFormCodes } from "@/api/workflow";
+import { getDIYFromCodeData } from "@/api/workflow";
 import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
@@ -110,15 +111,12 @@ onMounted(async () => {
         getDIYFromCodeList();
     } else if (props.flowType == 'LF') {
         getLFFromCodeList();
-    }
-    else {
-        getAllFormCodeList();
-    }
+    } 
 });
 /**获取全部DIY FromCode */
 const getDIYFromCodeList = async()=> {
    loading.value = true;
-   await getFromCodeData().then((res) => {
+   await getDIYFromCodeData().then((res) => {
     loading.value = false;
         if (res.code == 200) { 
             formCodeOptions.value = res.data;
@@ -135,17 +133,7 @@ const getLFFromCodeList = async()=> {
         }
    });
 }
-/**获取全部FromCode (LF和DIY)*/
-const getAllFormCodeList = async()=> {
-   loading.value = true;
-   await getAllFormCodes().then((res) => {
-    loading.value = false;
-        if (res.code == 200) { 
-            formCodeOptions.value = res.data;
-        }
-   });
-}
-
+  
 let rules = {
     formCode: [{
         required: true,
@@ -185,8 +173,8 @@ defineExpose({
 .form-container {
     background: white !important;
     padding: 30px;
-    max-width: 600px;
-    min-height: 520px;
+    max-width: 750px;
+    min-height: 70vh;
     left: 0;
     bottom: 0;
     right: 0;

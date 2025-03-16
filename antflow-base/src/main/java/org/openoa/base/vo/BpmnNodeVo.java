@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
@@ -38,6 +39,8 @@ public class BpmnNodeVo  implements Serializable {
      * node type 1 for start node 2 for gateway 3 for condition 4 for approver
      */
     private Integer nodeType;
+    private Boolean isParallel;
+    private Boolean isDynamicCondition;
     /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
@@ -153,11 +156,15 @@ public class BpmnNodeVo  implements Serializable {
     private Integer isOutSideProcess;
     private Integer isLowCodeFlow;
     private List<LFFieldControlVO> lfFieldControlVOs;
-
+    /**
+     * forwarded emp list
+     */
+    private List<BaseIdTranStruVo> empToForwardList=new ArrayList<>();
     /**
      * 0 for no and 1 for yes
      */
     private List<BpmnNodeVo> fromNodes;
+    private List<BpmnNodeLabelVO> labelList;
     private String elementId;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
@@ -170,6 +177,14 @@ public class BpmnNodeVo  implements Serializable {
         this.nodeFroms=nodeFroms;
         if(!ObjectUtils.isEmpty(nodeFroms)){
             this.prevId= Arrays.asList(nodeFroms.split(","));
+        }
+    }
+    public void updateLabelListPossible(BpmnNodeLabelVO labelVO){
+        if(!CollectionUtils.isEmpty(this.labelList)){
+            this.labelList.add(labelVO);
+        }else{
+            this.labelList=new ArrayList<>();
+            this.labelList.add(labelVO);
         }
     }
 }

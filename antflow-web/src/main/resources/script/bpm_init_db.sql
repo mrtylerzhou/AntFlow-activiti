@@ -12,6 +12,7 @@ CREATE TABLE if not exists `t_bpmn_conf`
     `is_out_side_process` int(11)                      DEFAULT '0' COMMENT 'is it a third party process',
     `is_lowcode_flow` tinyint default 0 null comment '是否是低代码审批流0,否,1是',
     `business_party_id`   int(11)                      DEFAULT NULL COMMENT 'its belong to business party',
+    `extra_flags`         int                                           null,
     `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`              tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:in use,1:delete',
     `create_user`         varchar(32)                  DEFAULT '' COMMENT 'as its name says',
@@ -41,6 +42,8 @@ CREATE TABLE if not exists `t_bpmn_node`
     `node_display_name` varchar(50)                  DEFAULT '' COMMENT 'node display name shown in web or app',
     `annotation`        varchar(255)                 DEFAULT NULL COMMENT 'annotation on this conf',
     `is_deduplication`  int(11)             NOT NULL DEFAULT '0' COMMENT 'whether this node should be deduplicated,0:No,1:Yes',
+    `deduplicationExclude` tinyint             default 0                 null comment '0 for no,default value,and 1 for yes',
+    `is_dynamicCondition` tinyint default 0 not null comment '是否是动态条件节点,0,否,1是',
     `is_sign_up`        int(11)             NOT NULL DEFAULT '0' COMMENT 'whether this node can be sign up,0:No,1:Yes',
     `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`            tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:No,1:yes',
@@ -335,6 +338,7 @@ CREATE TABLE if not exists `bpm_process_forward`
     `forward_user_id`    varchar(50)            DEFAULT NULL COMMENT 'forwarded user id',
     `Forward_user_name`  varchar(50)           DEFAULT NULL COMMENT 'forwarded user name',
     `processInstance_Id` varchar(64)           DEFAULT NULL COMMENT 'process instance id',
+     `node_id`            varchar(64)                            null,
     `create_time`        timestamp             not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user_id`     varchar(50)            DEFAULT NULL COMMENT 'as its name says',
     `task_id`            varchar(50)           DEFAULT NULL COMMENT 'taskid',
@@ -647,6 +651,7 @@ CREATE TABLE if not exists `bpm_verify_info`
     `verify_date`      timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `task_name`        varchar(64)         DEFAULT NULL COMMENT 'tsk name',
     `task_id`          varchar(64)         DEFAULT NULL COMMENT 'task id',
+    `task_def_key`     varchar(255)                        null,
     `business_type`    int(1)              DEFAULT NULL COMMENT 'business type',
     `business_id`      varchar(128)        DEFAULT NULL COMMENT 'business id',
     `original_id`      varchar(64)          DEFAULT NULL COMMENT 'orig approver name',
@@ -986,11 +991,8 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null,
-    user_request_uri varchar(255)                       null comment 'get user info',
-    role_request_uri varchar(255)                       null comment 'get role info'
-)
-    comment 'BPM Process Application Table';
+    source           varchar(255)                       null
+)comment 'BPM Process Application Table';
 
 
 CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
@@ -1114,10 +1116,36 @@ CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
     is_del                tinyint     default 0 comment '0 for normal,1 for delete',
     create_time           timestamp DEFAULT CURRENT_TIMESTAMP comment 'as its name says',
     update_time           timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'as its name says'
-)
-    comment 'business party callback url conf';
+) comment 'business party callback url conf';
 
+-- ----------------------------
+-- Table structure for t_out_side_bpm_approve_template
+-- ----------------------------
+DROP TABLE IF EXISTS `t_out_side_bpm_approve_template`;
+CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_approve_template` (
+     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
+     `business_party_id` BIGINT NULL COMMENT '业务方项目 Id',
+	 `application_id` INT NULL COMMENT '项目下业务表单 id',
+	 `approve_type_id` INT NULL COMMENT '审批人类型 id',
+     `approve_type_name` VARCHAR(50) NULL COMMENT '审批人类型名称',
+     `api_client_id` VARCHAR(50) NULL COMMENT 'api_client_id',
+     `api_client_secret` VARCHAR(50) NULL COMMENT 'api_client_secret',
+	 `api_token` VARCHAR(50) NULL COMMENT 'api_token',
+	 `api_url` VARCHAR(50) NULL COMMENT 'api_url',
+     `remark` varchar(255) NULL COMMENT 'remark',
+     `is_del` TINYINT default  0 COMMENT '0 for normal, 1 for delete',
+     `create_user` VARCHAR(50) NULL COMMENT 'as its name says',
+     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
+     `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
+     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
+     `create_user_id` varchar(64) NULL COMMENT 'as its name says',
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='outside access process,approve template config';
 
+-- ----------------------------
+-- Table structure for t_out_side_bpm_conditions_template
+-- ----------------------------
+DROP TABLE IF EXISTS `t_out_side_bpm_conditions_template`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_conditions_template` (
      `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
      `business_party_id` BIGINT NULL COMMENT 'business party Id',
@@ -1377,14 +1405,14 @@ CREATE TABLE `t_biz_leavetime`  (
   `leave_user_id` int(11) NOT NULL,
   `leave_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `leave_type` int(11) NOT NULL,
-  `begin_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
-  `end_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `begin_time` datetime NULL,
+  `end_time` datetime NULL,
   `leavehour` double NOT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `create_time` timestamp default current_timestamp,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1396,14 +1424,14 @@ CREATE TABLE `t_biz_purchase`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `purchase_user_id` int(11) NOT NULL,
   `purchase_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `purchase_type` int(11) NOT NULL,
-  `purchase_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
-  `plan_procurement_total_money` double NOT NULL,
+  `purchase_type` int(11) NOT NULL default 1,
+  `purchase_time` timestamp default current_timestamp,
+  `plan_procurement_total_money` double NOT NULL default 0,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `create_time` datetime(0) NOT NULL ON UPDATE CURRENT_TIMESTAMP(0),
+  `create_time` timestamp default current_timestamp,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1422,6 +1450,25 @@ CREATE TABLE `t_biz_ucar_refuel` (
 `update_time` datetime DEFAULT NULL COMMENT '更新日期',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='加油表';
+
+-- ----------------------------
+-- Table structure for t_biz_refund
+-- ----------------------------
+DROP TABLE IF EXISTS `t_biz_refund`;
+CREATE TABLE `t_biz_refund`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `refund_user_id` int(11) NOT NULL,
+  `refund_user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `refund_type` int(11) NOT NULL default 1,
+  `refund_date` timestamp NOT NULL,
+  `refund_money` double NOT NULL default 0,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_time` timestamp default current_timestamp,
+  `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 create table t_bpmn_conf_lf_formdata
 (
@@ -1474,7 +1521,6 @@ create table if not exists t_bpmn_node_lf_formdata_field_control
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
-⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
 -- 此表为路由表,通过lf.main.table.count控制,默认为2个,索引从0开始,需要自己手动创建
 -- ----------------------------
 create table t_lf_main
@@ -1492,7 +1538,6 @@ create table t_lf_main
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 comment '低代码表单主表';
 
 -- ----------------------------
-⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠
 -- 此表为路由表,通过lf.field.table.count控制,默认为10个,索引从0开始,需要自己手动创建
 -- ----------------------------
 create table t_lf_main_field
@@ -1547,9 +1592,9 @@ create table t_dict_data
     is_default  char         default 'N'               null comment '是否默认（Y是 N否）',
     is_del      tinyint      default 0                 not null,
     create_user varchar(255)                           null,
-    create_time timestamp    default CURRENT_TIMESTAMP not null,
+    create_time timestamp    default CURRENT_TIMESTAMP,
     update_user varchar(255)                           null,
-    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    update_time timestamp    default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
     remark      varchar(500)                           null comment '备注'
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
@@ -1567,9 +1612,9 @@ CREATE TABLE `t_bpmn_conf_lf_formdata`  (
   `formdata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `is_del` tinyint(4) NOT NULL DEFAULT 0,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -1591,10 +1636,56 @@ CREATE TABLE `t_bpmn_conf_lf_formdata_field`  (
   `is_condition` tinyint(4) NULL DEFAULT 0 COMMENT '是否是流程条件,0否,1是',
   `is_del` tinyint(4) NOT NULL DEFAULT 0,
   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   `update_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
+  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '低代码配置字段明细表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- ----------------------------
+-- Table structure for t_user_role
+-- ----------------------------
+DROP TABLE IF EXISTS `t_user_role`;
+CREATE TABLE `t_user_role`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NULL DEFAULT NULL COMMENT ' user id ',
+  `role_id` int(11) NULL DEFAULT NULL COMMENT 'role id',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+create table t_bpmn_node_labels
+(
+	id bigint auto_increment,
+	nodeid bigint null,
+	label_name varchar(50) null,
+	label_value varchar(64) null comment 'a user defined tag',
+	remark            varchar(255)        default ''                not null comment '备注',
+    is_del            tinyint(1) unsigned default 0                 not null comment '0:正常,1:删除',
+    create_user       varchar(32)         default ''                null comment '创建人（邮箱前缀）',
+    create_time       timestamp           default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_user       varchar(32)         default ''                null comment '更新人（邮箱前缀）',
+    update_time       timestamp           default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+	constraint t_bpmn_node_labels_pk
+		primary key (id)
+)
+comment 'process node labels,to store additional custom information';
+create index indx_node_id
+	on t_bpmn_node_labels (nodeid);
+
+create table t_bpm_dynamic_condition_choosen
+(
+	id bigint auto_increment,
+	process_number varchar(255) null comment '流程编号',
+	node_id varchar(100) null comment '被选中条件节点的id',
+	nodeFrom       varchar(100) null,
+	constraint t_bpm_dynamic_condition_choosen_pk
+		primary key (id)
+)
+comment '流程动态条件选择条件记录表';
+create index indx_process_number
+    on t_bpm_dynamic_condition_choosen (process_number);

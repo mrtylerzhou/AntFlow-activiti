@@ -1,4 +1,4 @@
-package org.openoa.engine.conf.mvc;
+package org.openoa.common.config.mvc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;

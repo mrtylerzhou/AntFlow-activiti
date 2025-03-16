@@ -183,16 +183,15 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setVerifyStatusName("处理中");
             bpmVerifyInfoVos.add(taskVo);
 
-            BpmFlowrunEntrust flowrunEntrust = bpmFlowrunEntrustService.getOne(
-                    Wrappers.
-                            <BpmFlowrunEntrust>lambdaQuery()
-                            .eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()));
-            if(flowrunEntrust!=null){
+            List<BpmFlowrunEntrust> flowrunEntrustList = bpmFlowrunEntrustService.list(
+                    Wrappers.<BpmFlowrunEntrust>lambdaQuery().eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()).orderByDesc(BpmFlowrunEntrust::getId));
+            if(!CollectionUtils.isEmpty(flowrunEntrustList)){
+                BpmFlowrunEntrust flowrunEntrust = flowrunEntrustList.get(0);
                 String actual = flowrunEntrust.getActual();
                 if(taskVo.getVerifyUserId().equals(actual)){
                     String actualVerifyUserName = taskVo.getVerifyUserName();
-                    String actualName = flowrunEntrust.getActualName();
-                    taskVo.setVerifyUserName(actualVerifyUserName+"代"+actualName+"审批");
+                    String originalName = flowrunEntrust.getOriginalName();
+                    taskVo.setVerifyUserName(actualVerifyUserName+" 代 "+originalName+" 审批 ");
                 }
             }
             sort++;
@@ -221,12 +220,12 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         Integer processState = bpmBusinessProcess.getProcessState();
 
         Integer endVerifyStatus = 100;
-        if (processState != CRMCEL_STATE.getCode() || processState != END_STATE.getCode()) {
+        if (processState != REJECT_STATE.getCode() || processState != END_STATE.getCode()) {
             if (!finishFlag) {
                 //追加流程记录
                 addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
             }
-            if (processState == COMLETE_STATE.getCode()) {
+            if (processState == HANDLING_STATE.getCode()) {
                 endVerifyStatus = 0;
             }
         }
@@ -261,7 +260,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         List<ActivityImpl> collect = activitiList.stream().filter(a -> a.getId().equals(taskVo.getElementId())).collect(Collectors.toList());
 
-        if (collect.size() > 0) {
+        if (!collect.isEmpty()) {
 
             ActivityImpl activity = collect.get(0);
             Map<String, Object> properties = activity.getProperties();
@@ -340,7 +339,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         return signUpNodeCollectionNameMap;
     }
-
+    /**
+     * 根据processNumber 获取当前审批节点的ElementId
+     * @param processNumber
+     * @return
+     */
+    public  String  findCurrentNodeIds(String processNumber) {
+      return  service.findCurrentNodeIds(processNumber);
+    }
     /**
      * do append verify info
      *

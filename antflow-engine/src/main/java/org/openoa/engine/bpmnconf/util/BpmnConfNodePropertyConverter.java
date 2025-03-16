@@ -1,10 +1,11 @@
 package org.openoa.engine.bpmnconf.util;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.base.Joiner;
-import com.sun.org.apache.bcel.internal.generic.INEG;
 import jodd.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.DateUtil;
@@ -16,7 +17,6 @@ import org.openoa.base.exception.JiMuBizException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -81,8 +81,14 @@ public class BpmnConfNodePropertyConverter {
                         values.add(parsedObject);
                     }
                 }
+                Object valueOrWrapper=null;
+                if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                    Map<String,Object> wrapperResult=new HashMap<>();
+                    wrapperResult.put(fieldName,values);
+                    valueOrWrapper=wrapperResult;
+                }
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                ReflectionUtils.setField(field, result, values);
+                ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
             }else{
                 String zdy1 = newModel.getZdy1();
 
@@ -134,7 +140,6 @@ public class BpmnConfNodePropertyConverter {
             }
 
         }
-        newModels.forEach(a->a.setFixedDownBoxValue(null));
         String extJson = JSON.toJSONString(newModels);
         result.setExtJson(extJson);
         result.setConditionParamTypes(conditionTypes);
@@ -158,11 +163,42 @@ public class BpmnConfNodePropertyConverter {
             if(fieldType==1){
 
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                List<?> objects = (List<?>) ReflectionUtils.getField(field, baseVo);
+                Map<String,Collection<?>> wrappedValues=null;
+                List objects =new ArrayList();
+                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)) {
+                    //低代码多值条件是固定的,{"key":["a","b"]
+                  wrappedValues =(Map<String,Collection<?>>)ReflectionUtils.getField(field, baseVo);
+                    Collection<Collection<?>> values = wrappedValues.values();
+                    for (Collection<?> value : values) {
+                       objects.addAll(value);
+                    }
+                }else{
+                    objects = (List<?>) ReflectionUtils.getField(field, baseVo);
+                }
                 String join = Joiner.on(",").join(objects);
                 vueVo.setZdy1(join);
-                Field extField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
-                List<BaseIdTranStruVo> extFields = (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
+                Field extField = null;
+                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                    extField=field;
+                }else{
+                    extField= FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
+                }
+
+
+                List<BaseIdTranStruVo> extFields = null;
+                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                    String extJson = baseVo.getExtJson();
+                   if(!StringUtils.isEmpty(extJson)){
+                       JSONArray jsonArray = JSON.parseArray(extJson);
+                       JSONObject jsonObject = jsonArray.getJSONObject(0);
+                       Object fixedDownBoxValue = jsonObject.get("fixedDownBoxValue");
+                       if(fixedDownBoxValue!=null){
+                            vueVo.setFixedDownBoxValue(fixedDownBoxValue.toString());
+                       }
+                   }
+                }else{
+                    extFields= (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
+                }
                 if(CollectionUtils.isEmpty(extFields)){
                     continue;
                 }

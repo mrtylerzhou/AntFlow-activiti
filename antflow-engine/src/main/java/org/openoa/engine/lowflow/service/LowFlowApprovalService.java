@@ -1,9 +1,12 @@
 package org.openoa.engine.lowflow.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
@@ -26,6 +29,7 @@ import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -127,9 +131,17 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 switch (fieldTypeEnum){
                     case STRING:
                       actualValue=field.getFieldValue();
+                      if(actualValue!=null){
+                          String actualValueString = actualValue.toString();
+                          if(actualValueString.startsWith("{")){
+                              actualValue=JSON.parseObject(actualValueString);
+                          }else if(actualValueString.startsWith("[")){
+                              actualValue=JSON.parseArray(actualValueString);
+                          }
+                      }
                         break;
                     case NUMBER:
-                       actualValue=field.getFieldValueNumber();
+                       actualValue=Integer.parseInt(field.getFieldValue());;
                         break;
                     case DATE:
                        actualValue=DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
@@ -139,6 +151,10 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                         break;
                     case TEXT:
                        actualValue=field.getFieldValueText();
+                       break;
+                    case BOOLEAN:
+                        actualValue=Boolean.parseBoolean(field.getFieldValue());
+                        break;
                 }
                 if(valueLen==1){
                     fieldVoMap.put(fieldName,actualValue);
@@ -196,6 +212,30 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public UDLFApplyVo consentData(UDLFApplyVo vo) {
+        if (!vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+            return vo;
+        }
+        Map<String, Object> lfFields = vo.getLfFields();
+        if(CollectionUtils.isEmpty(lfFields)){
+            throw new JiMuBizException("form data does not contains any field");
+        }
+        LFMain lfMain = mainService.getById(vo.getBusinessId());
+        if(lfMain==null){
+            log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
+            throw new JiMuBizException("can not get lowcode form data by specified id");
+        }
+        Long mainId = lfMain.getId();
+        String formCode = vo.getFormCode();
+        Long confId = vo.getBpmnConfVo().getId();
+        List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
+        if(CollectionUtils.isEmpty(lfMainFields)){
+            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
+        }
+        for (LFMainField field : lfMainFields){
+            String f_value = lfFields.get(field.getFieldId()).toString();
+            field.setFieldValue(f_value);
+            mainFieldService.updateById(field);
+        }
         return vo;
     }
 

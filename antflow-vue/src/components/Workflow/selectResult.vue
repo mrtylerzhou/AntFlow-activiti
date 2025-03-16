@@ -53,18 +53,16 @@ let emits = defineEmits(['del'])
 <style scoped lang="scss">  
 @import "@/assets/styles/flow/dialog.scss";
 .select-result {
-  width: 276px;
+  width: 320px;
   height: 100%;
-  font-size: 12px;
-
+  font-size: 12px; 
+  margin-left: 0px;
   ul {
     height: 460px;
-    overflow-y: auto;
-
+    overflow-y: auto; 
     li {
       margin: 11px 26px 13px 19px;
-      line-height: 17px;
-
+      line-height: 17px; 
       span {
         vertical-align: middle;
       }

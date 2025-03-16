@@ -22,7 +22,7 @@
         ORDER BY s.runTime DESC
     </select>
     <select id="isOperational" resultType="java.lang.Integer">
-        select  count(*) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
+        select  count(1) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
     </select>
     <select id="doneTodayProcess" resultType="java.lang.Integer">
         SELECT count(distinct h.PROC_INST_ID_)
@@ -206,7 +206,7 @@
         act_hi_procinst h
         LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
         LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
-        where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0
+        where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0 and f.is_del=0
         ) s WHERE  1=1
     </sql>
     <select id="viewPcForwardList" resultType="org.openoa.base.vo.TaskMgmtVO">

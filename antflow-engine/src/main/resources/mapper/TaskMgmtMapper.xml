@@ -412,6 +412,12 @@
         from act_hi_actinst
         WHERE PROC_INST_ID_ = #{processInstanceId}
     </delete>
+    <delete id="deleteExecutionsByProcinstIdAndTaskDefKeys">
+        delete  from act_ru_execution where PROC_INST_ID_=#{procInstId} and ACT_ID_ in
+        <foreach collection="taskDefKeys" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 
     <!--query whether current process resource is exist-->
     <select id="findProcessModel" resultType="java.lang.Integer">
@@ -502,5 +508,8 @@
         select t.ASSIGNEE_ assignee, t.TASK_DEF_KEY_ taskKey
         from act_ru_task t
         where t.id_ = #{taskId}
+    </select>
+    <select id="findProcDefIdByInstId" resultType="java.lang.String">
+        select PROC_DEF_ID_ from act_hi_procinst where PROC_INST_ID_=#{procInstId}
     </select>
 </mapper>

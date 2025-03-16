@@ -1,24 +1,29 @@
 <template>
-  <div style="max-width: 720px;left: 0;right: 0;margin: auto;">
+  <div class="form-container">
     <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
     </v-form-render>
-    <el-button v-if="!isPreview" type="primary" @click="submitForm">提交</el-button>
+    <el-button v-if="!isPreview && !props.reSubmit" type="primary" @click="submitForm">提交</el-button>
+    <div style="margin-top: 20px;">
+      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, reactive, getCurrentInstance } from 'vue'; 
+import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true;
-
-const { proxy } = getCurrentInstance()
+const { proxy } = getCurrentInstance();
+const route = useRoute();
+const formCode = route.query?.formCode ?? '';
+const hasChooseApprove = route.query?.hasChooseApprove ?? 'false';
 let props = defineProps({
-  lfFormData: {
+  lfFormData: {//业务表单字段
     type: String,
     default: "{}",
   },
-  lfFieldsData: {
+  lfFieldsData: {//字段权限控制
     type: String,
     default: "{}",
   },
@@ -26,7 +31,11 @@ let props = defineProps({
     type: String,
     default: "[]",
   },
-  isPreview: {
+  reSubmit: {//是否重新提交
+    type: Boolean,
+    default: false,
+  },
+  isPreview: {//是否预览
     type: Boolean,
     default: true,
   }
@@ -46,12 +55,12 @@ const advanceHandleFormData = () => {
       }
     }
     traverseFieldWidgetsList(formJson.widgetList, handlerFieldType);
-  } 
+  }
   if (!isEmpty(props.lfFieldPerm)) {
     handleFormPerm();
   } else {
-    if (props.isPreview) {
-      let handlerFn = (fieldOpt) => {
+    if (props.isPreview && !props.reSubmit) {
+      let handlerFn = (fieldOpt) => { //控制元素是否可编辑
         fieldOpt.readonly = true;
         fieldOpt.hidden = false;
       }
@@ -64,7 +73,7 @@ const handleFormPerm = () => {
   if (isEmpty(props.lfFieldPerm)) return;
   if (isEmptyArray(lfFieldPermData)) return;
   let handlerFn = (fieldOpt) => {
-    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == fieldOpt.name; }); 
+    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == fieldOpt.name; });
     if (info) {
       if (info.perm == 'R') {
         fieldOpt.readonly = true;
@@ -73,19 +82,19 @@ const handleFormPerm = () => {
         fieldOpt.readonly = false;
         fieldOpt.hidden = false;
       } else if (info.perm == 'H') {
-        if(fieldOpt.fieldTypeName == 'input' || fieldOpt.fieldTypeName == 'textarea'){
+        if (fieldOpt.fieldTypeName == 'input' || fieldOpt.fieldTypeName == 'textarea') {
           formData[fieldOpt.name] = '******';
-        }  
+        }
         fieldOpt.readonly = true;
         fieldOpt.hidden = false;
       } else {
         fieldOpt.readonly = true;
         fieldOpt.hidden = false;
       }
-    } 
+    }
   };
   traverseFieldWidgetsList(formJson.widgetList, handlerFn);
-} 
+}
 /**递归处理表单中所有字段 */
 const traverseFieldWidgetsList = function (widgetList, handler) {
   if (!widgetList) {
@@ -117,19 +126,29 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
 }
 advanceHandleFormData();
 const submitForm = () => {
-  vFormRef.value.getFormData().then(formData => {
-    // Form Validation OK
-    console.log("Form Validation===", JSON.stringify(formData))
-    proxy.$emit("handleBizBtn", JSON.stringify(formData))
+  vFormRef.value.getFormData().then(res => { 
+    //console.log("Form Validation===", JSON.stringify(res))
+    proxy.$emit("handleBizBtn", JSON.stringify(res))
   }).catch(error => {
-    ElMessage.error(error)
+    proxy.$modal.msgError(error);
   })
 }
 const handleValidate = () => {
   return new Promise((resolve, reject) => {
     try {
       vFormRef.value.validateForm((isValid) => {
-        resolve(isValid);
+        if (!isValid) {
+          reject(false);
+        }
+        else {
+          if (hasChooseApprove == 'true' && (!formData.approversValid || formData.approversValid == false)) {
+            proxy.$modal.msgError('请选择自选审批人');
+            reject(false);
+          }
+          else {
+            resolve(isValid);
+          }
+        }
       });
     } catch (error) {
       reject(false);
@@ -140,8 +159,14 @@ const handleValidate = () => {
 const getFromData = () => {
   return new Promise((resolve, reject) => {
     try {
-      vFormRef.value.getFormData().then(formData => {
-        resolve(JSON.stringify(formData));
+      vFormRef.value.getFormData().then(res => {
+        if(hasChooseApprove == 'true'){
+          Object.assign(res, {
+            approversList: formData.approversList,
+            approversValid: formData.approversValid
+          });
+        }
+        resolve(JSON.stringify(res));
       }).catch(err => {
         reject("");
       })
@@ -150,8 +175,26 @@ const getFromData = () => {
     }
   });
 }
+/**自选审批人 */
+const chooseApprovers = (data) => {
+  formData.approversList = data.approvers;
+  formData.approversValid = data.nodeVaild;
+}
+
 defineExpose({
   handleValidate,
   getFromData
 })
 </script>
+<style scoped lang="scss">
+.form-container {
+  background: white !important;
+  padding: 10px;
+  max-width: 750px;
+  min-height: 95%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+}
+</style>
