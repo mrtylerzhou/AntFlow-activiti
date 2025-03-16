@@ -160,6 +160,8 @@ public class BpmnNodeVo  implements Serializable {
      * forwarded emp list
      */
     private List<BaseIdTranStruVo> empToForwardList=new ArrayList<>();
+    //antflow实现通知的原理是下个节点,如果是最后一个审批人节点没有下个节点了,需要特殊处理
+    private boolean lastNodeForward;
     /**
      * 0 for no and 1 for yes
      */

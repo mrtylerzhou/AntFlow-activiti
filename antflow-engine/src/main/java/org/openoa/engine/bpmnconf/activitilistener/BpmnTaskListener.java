@@ -126,6 +126,10 @@ public class BpmnTaskListener implements TaskListener {
                         if (StringConstants.COPY_NODE.equals(nodeLabelVO.getLabelValue())) {
                             String processInstanceId = delegateTask.getProcessInstanceId();
                             String elementId=delegateTask.getTaskDefinitionKey();
+                            //如果是最后一个节点通知,在BpmnExecutionListener里面处理,这里跳过,减少数据库查询
+                            if(StringConstants.LASTNODE_COPY.equals(elementId)){
+                                continue;
+                            }
                             List<String> nodeIdsByeElementId = bpmVariableMapper.getNodeIdsByeElementId(processNumber, elementId);
                             if(!CollectionUtils.isEmpty(nodeIdsByeElementId)){
                                 String nodeId = nodeIdsByeElementId.get(0);

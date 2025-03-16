@@ -1,11 +1,15 @@
 package org.openoa.engine.bpmnconf.activitilistener;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -13,12 +17,14 @@ import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
@@ -62,6 +68,8 @@ public class BpmnExecutionListener implements ExecutionListener {
     private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
     @Resource
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
+    @Resource
+    private BpmProcessForwardServiceImpl bpmProcessForwardService;
 
 
     @Override
@@ -132,11 +140,20 @@ public class BpmnExecutionListener implements ExecutionListener {
         }
 
         //execute the process finish method and update status
-        bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
                 .businessNumber(processNumber)
                 .processState(ProcessStateEnum.HANDLED_STATE.getCode())
                 .build());
 
+        if (BpmnConfFlagsEnum.hasFlag(bpmnConf.getExtraFlags(), BpmnConfFlagsEnum.HAS_LAST_NODE_COPY)) {
+            LambdaQueryWrapper<BpmProcessForward> qryWrapper = Wrappers.<BpmProcessForward>lambdaQuery()
+                    .eq(BpmProcessForward::getProcessNumber, processNumber)
+                    .eq(BpmProcessForward::getNodeId, StringConstants.LASTNODE_COPY);
+            BpmProcessForward processForward=new BpmProcessForward();
+            processForward.setProcessInstanceId(bpmBusinessProcess.getProcInstId());
+            processForward.setIsDel(0);//recover the default state,so that the forward record can be visible
+            bpmProcessForwardService.update(processForward, qryWrapper);
+        }
         BpmVariableMessageVo bpmVariableMessageVo = BpmVariableMessageVo
                 .builder()
                 .processNumber(processNumber)

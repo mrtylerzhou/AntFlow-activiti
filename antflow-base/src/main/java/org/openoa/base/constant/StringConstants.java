@@ -40,4 +40,5 @@ public class StringConstants {
     public static final String DYNAMIC_CONDITION_NODE="af_syslabel_dynamiccondition";
     public static final String COPY_NODE="af_syslabel_copynode";
     public static final String CONDITION_CHANGED="condition_changed";
+    public static final String LASTNODE_COPY="af_syslabel_lastnode_copy";
 }

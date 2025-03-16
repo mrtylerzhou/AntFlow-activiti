@@ -687,6 +687,7 @@ public class BpmnConfCommonServiceImpl {
                 if (!NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(node.getNodeType())&&!CollectionUtils.isEmpty(node.getEmpToForwardList())) {
                     List<BaseIdTranStruVo> empToForwardList = node.getEmpToForwardList();
                     List<BpmProcessForward> processForwardList=new ArrayList<>(node.getEmpToForwardList().size());
+                    boolean lastNodeForward = node.isLastNodeForward();
                     for (BaseIdTranStruVo baseIdTranStruVo : empToForwardList) {
                         BpmProcessForward bpmProcessForward = BpmProcessForward.builder()
                                 .createTime(new Date())
@@ -698,6 +699,9 @@ public class BpmnConfCommonServiceImpl {
                                 .isDel(1)//it is invalid at first,then set it to be valid
                                 //at this moment,we can not get procInstId,update it later
                                 .build();
+                        if(lastNodeForward){
+                            bpmProcessForward.setNodeId(StringConstants.LASTNODE_COPY);
+                        }
                         processForwardList.add(bpmProcessForward);
                     }
                     processForwardService.saveBatch(processForwardList);
