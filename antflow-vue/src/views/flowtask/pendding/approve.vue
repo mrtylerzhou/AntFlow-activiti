@@ -292,7 +292,7 @@ const sureDialogBtn = async (data) => {
     if (!isMultiple.value) {
         data.selectList.unshift({
             id: cache.session.get('userId'),
-            name: cache.session.get('userName'),
+            name: decodeURIComponent(cache.session.get('userName')),
         });
         approveSubData.userInfos = data.selectList;
     } else {

@@ -238,7 +238,7 @@
         {
             "name": "http://117.72.70.166:7001/doc.html",
             "path": "http://117.72.70.166:7001/doc.html",
-            "hidden": false,
+            "hidden": true,
             "component": "Layout",
             "meta": {
                 "title": "接口文档",
