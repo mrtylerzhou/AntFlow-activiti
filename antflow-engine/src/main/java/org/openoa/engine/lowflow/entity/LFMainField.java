@@ -88,7 +88,8 @@ public class LFMainField {
             String fieldId = fieldId2ValueEntry.getKey();
             BpmnConfLfFormdataField fieldConfig = fieldConfigMap.get(fieldId);
             if(fieldConfig==null){
-                throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
+                continue;
+                //throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
             Object value = fieldId2ValueEntry.getValue();
             LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
