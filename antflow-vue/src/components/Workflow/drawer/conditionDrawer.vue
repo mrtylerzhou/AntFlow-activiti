@@ -225,7 +225,7 @@ const removeStrEle = (item, key) => {
 const addCondition = async () => {
     conditionList.value = [];
     conditionVisible.value = true;
-    conditions.value = routePath.indexOf('lf-design') > 0 ? await loadLFFormCondition() : await loadDIYFormCondition();
+    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
     if (conditionConfig.value.conditionList) {
         for (var i = 0; i < conditionConfig.value.conditionList.length; i++) {
             var { formId, columnId } = conditionConfig.value.conditionList[i];

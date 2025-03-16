@@ -317,7 +317,7 @@ function viewApproveList(row) {
 async function handleFlowDesign(row) {
   proxy.$modal.loading();
   const resultCheckApprove =await checkApproveConfig(row);
-  const resultCheckCondition =await checkConditionConfig(row); 
+  const resultCheckCondition = true;//await checkConditionConfig(row); 
   if(!resultCheckApprove){
     proxy.$modal.closeLoading();
     proxy.$modal.msgError("请先设置审批人");
