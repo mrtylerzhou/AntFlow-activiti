@@ -227,3 +227,11 @@ export function setApproveTemplate(data) {
 export function processSubmit(data) { 
   return http.post(`${baseUrl}/outSide/processSubmit`, data, { headers });
 }
+/**
+ * 回调地址配置
+ * @param {*} data
+ * @returns
+ */
+export function callbackUrlConf(data) { 
+  return http.post(`${baseUrl}/outSideBpm/callbackUrlConf/edit`, data, { headers });
+}

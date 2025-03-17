@@ -78,11 +78,7 @@
 
 </template>
 
-<script setup>
-import variables from '@/assets/styles/variables.module.scss'
-import axios from 'axios'
-import { ElLoading, ElMessage } from 'element-plus'
-import { useDynamicTitle } from '@/utils/dynamicTitle'
+<script setup> 
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
@@ -96,7 +92,7 @@ const showSettings = ref(false);
 const theme = ref(settingsStore.theme);
 const sideTheme = ref(settingsStore.sideTheme);
 const storeSettings = computed(() => settingsStore);
-const predefineColors = ref(["#409EFF", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"]);
+const predefineColors = ref(["#1890ff", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"]);
 
 /** 是否需要topnav */
 function topNavChange(val) {

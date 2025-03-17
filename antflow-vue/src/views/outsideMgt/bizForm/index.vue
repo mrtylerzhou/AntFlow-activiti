@@ -1,12 +1,12 @@
 <template>
     <div class="app-container">
-        <div class="box">
+        <div class="card-box">
             <el-tabs class="demo-tabs" v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane name="createFrom">
                     <template #label>
                         填写表单
                     </template>
-                    <div style="height: calc(100vh - 178px);padding-top: 15px;padding-bottom: 15px;overflow: auto; background-color: #f5f5f7;">
+                    <div class="component">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
                             :isPreview="false" :reSubmit="false" @handleBizBtn="handleSubmit">
                         </component> 
@@ -57,7 +57,7 @@ const adapFlowType = async () => {
         componentLoaded.value = lfFormData.value ? true : false;
     } else {
         loadedComponent.value = await loadDIYComponent(flowCode)
-            .catch((err) => { console.log('err=======', err); proxy.$modal.msgError(err); componentLoaded.value = false; });
+            .catch((err) => { console.log('err=', err); proxy.$modal.msgError(err); componentLoaded.value = false; });
         componentLoaded.value = true;
     }
 }
@@ -116,9 +116,7 @@ const startTest = (param) => {
     bizFrom.formCode = flowCode || '';
     bizFrom.operationType = 1;//operationType 1发起 3 审批 
     bizFrom.isLowCodeFlow = true;
-    bizFrom.lfFields = null;
-    bizFrom.userId= cache.session.get('userId');
-    console.log('bizFrom',bizFrom);
+    bizFrom.lfFields = null;  
     if (isLFFlow && isLFFlow == true) {
         bizFrom = {};
         bizFrom.formCode = flowCode || '';
@@ -132,6 +130,7 @@ const startTest = (param) => {
         delete lfFormdata.approversValid; 
         bizFrom.lfFields = lfFormdata; 
     }
+    bizFrom.userId= cache.session.get('userId');
     proxy.$modal.loading();
     processSubmit(bizFrom).then((res) => {
         if (res.code == 200) {
@@ -156,5 +155,11 @@ function close() {
     font-size: 16px;
     color: #383838;
 }
-
+.component{
+    height: calc(100vh - 178px);
+    padding-top: 15px;
+    padding-bottom: 15px;
+    overflow: auto; 
+    background-color: #f5f5f7;
+}
 </style>

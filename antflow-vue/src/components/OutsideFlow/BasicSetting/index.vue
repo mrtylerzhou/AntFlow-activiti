@@ -7,24 +7,24 @@
       <el-form-item label="项目名称" prop="businessPartyName">
         <el-input v-model="form.businessPartyName" :disabled="true" :style="{ width: '100%' }" />   
       </el-form-item>
-      <el-form-item label="业务标识" prop="formCode">
+      <el-form-item label="应用标识" prop="formCode">
         <template #label>
           <span>
-            <el-tooltip content="注：项目管理中业务表单标识" placement="top">
+            <el-tooltip content="注：项目管理中应用标识" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
-            业务类型
+            应用标识
           </span>
         </template>
         <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" /> 
       </el-form-item>
-      <el-form-item label="流程名称" prop="bpmnName">
+      <el-form-item label="应用名称" prop="bpmnName">
         <template #label>
           <span>
-            <el-tooltip content="注：项目管理中业务表单名称" placement="top">
+            <el-tooltip content="注：项目管理中应用名称" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
-            流程名称
+            应用名称
           </span>
         </template>
         <el-input v-model="form.bpmnName" :disabled="true" :style="{ width: '100%' }" />

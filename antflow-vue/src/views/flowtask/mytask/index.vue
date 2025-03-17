@@ -1,65 +1,68 @@
 <template>
    <div class="app-container">
-      <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
-         <el-form-item label="流程编号" prop="processNumber">
-            <el-input v-model="taskMgmtVO.processNumber" placeholder="请输入关键字" clearable style="width: 200px"
-               @keyup.enter="handleQuery" />
-         </el-form-item>
-         <el-form-item label="流程描述" prop="description">
-            <el-input v-model="taskMgmtVO.description" placeholder="请输入关键字" clearable style="width: 200px"
-               @keyup.enter="handleQuery" />
-         </el-form-item>
+      <div class="query-box">
+         <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
+            <el-form-item label="流程编号" prop="processNumber">
+               <el-input v-model="taskMgmtVO.processNumber" placeholder="请输入关键字" clearable style="width: 200px"
+                  @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="流程描述" prop="description">
+               <el-input v-model="taskMgmtVO.description" placeholder="请输入关键字" clearable style="width: 200px"
+                  @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+         </el-form>
+         <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+               <el-button type="success" plain icon="Promotion" @click="handleStartflow">发起请求</el-button>
+            </el-col>
+         </el-row>
+      </div>
+      <div class="table-box">
+         <el-table v-loading="loading" :data="dataList">
+            <el-table-column label="模板类型" align="center" prop="processKey">
+               <template #default="item"> {{ substringHidden(item.row.processKey) }}
+                  <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
+                     <el-tag type="warning" round>OUT</el-tag>
+                  </el-tooltip>
+               </template>
+            </el-table-column>
+            <el-table-column label="流程编号" align="center" prop="processNumber" :show-overflow-tooltip="true">
+               <template #default="item">
+                  {{ substringHidden(item.row.processNumber) }}
+               </template>
+            </el-table-column>
 
-         <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-         </el-form-item>
-      </el-form>
-      <el-row :gutter="10" class="mb8">
-         <el-col :span="1.5">
-            <el-button type="success" plain icon="Promotion" @click="handleStartflow">发起请求</el-button>
-         </el-col>
-      </el-row>
-      <el-table v-loading="loading" :data="dataList">
-         <el-table-column label="模板类型" align="center" prop="processKey" >
-            <template #default="item"> {{ substringHidden(item.row.processKey) }}
-               <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
-                  <el-tag type="warning" round>OUT</el-tag>
-               </el-tooltip>
-            </template>
-         </el-table-column>
-         <el-table-column label="流程编号" align="center" prop="processNumber" :show-overflow-tooltip="true" >
-            <template #default="item">
-               {{ substringHidden(item.row.processNumber) }}
-            </template>
-         </el-table-column>
+            <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
+            <el-table-column label="状态" align="center" prop="effectiveStatus" :show-overflow-tooltip="true">
+               <template #default="item">
+                  <el-tag>{{ item.row.taskState }}</el-tag>
+               </template>
+            </el-table-column>
+            <el-table-column label="创建时间" align="center" prop="createTime">
+               <template #default="scope">
+                  <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+               </template>
+            </el-table-column>
+            <el-table-column label="更新时间" align="center" prop="runTime">
+               <template #default="scope">
+                  <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+               </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+               <template #default="scope">
+                  <el-button link type="primary" icon="View" @click="handlePreview(scope.row)">查看</el-button>
+               </template>
+            </el-table-column>
+         </el-table>
 
-         <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
-         <el-table-column label="状态" align="center" prop="effectiveStatus" :show-overflow-tooltip="true" >
-            <template #default="item">
-               <el-tag>{{ item.row.taskState }}</el-tag>
-            </template>
-         </el-table-column>
-         <el-table-column label="创建时间" align="center" prop="createTime">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
-            </template>
-         </el-table-column>
-         <el-table-column label="更新时间" align="center" prop="runTime">
-            <template #default="scope">
-               <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
-            </template>
-         </el-table-column>
-         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template #default="scope">
-               <el-button link type="primary" icon="View" @click="handlePreview(scope.row)">查看</el-button>
-            </template>
-         </el-table-column>
-      </el-table>
-
-      <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-         @pagination="getList" />
-      <previewDrawer v-if="visible" />
+         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+            @pagination="getList" />
+         <previewDrawer v-if="visible" />
+      </div>
    </div>
 
 </template>

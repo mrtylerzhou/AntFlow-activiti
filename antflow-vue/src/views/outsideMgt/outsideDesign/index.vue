@@ -1,8 +1,11 @@
 <template>
     <div class="app-container">
         <div class="fd-nav">
-            <div class="fd-nav-left">
-                <div class="fd-nav-title">{{ title }}</div>
+            <div class="fd-nav-left"> 
+                <div class="fd-nav-title">
+                    <el-icon><HomeFilled /></el-icon>
+                    {{ title }}
+                </div>
             </div>
 
             <div class="fd-nav-center">
@@ -15,6 +18,9 @@
                 </div>
             </div>
             <div class="fd-nav-right">
+                <button type="button" class="fd-btn button-publish" @click="previewJson">
+                    <span>预览json</span>
+                </button>
                 <button type="button" class="fd-btn button-publish" @click="publish">
                     <span>发 布</span>
                 </button>
@@ -45,10 +51,11 @@ import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { NodeUtils } from '@/utils/flow/nodeUtils';
 import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
 const { proxy } = getCurrentInstance()
-const route = useRoute();
+const { query } = useRoute();
 const basicSetting = ref(null);
 const formDesign = ref(null);
 const processDesign = ref(null);
+let lfFormDataConfig= ref(null);
 let activeStep = ref("basicSetting");
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
@@ -63,22 +70,22 @@ const changeSteps = (item) => {
 let processConfig = ref(null);
 let nodeConfig = ref(null);
 let title = ref(''); 
-
+let viewJson = ref(false);
+let jsonTitle = ref('');
 onMounted(async () => {
     let mockjson = {};
-    proxy.$modal.loading();
-    if (route.query.id && route.query.id != 0) {
-        mockjson = await getApiWorkFlowData({ id: route.query.id });
+    proxy.$modal.loading(); 
+    if (query.id && query.id != 0) {
+        mockjson = await getApiWorkFlowData({ id: query.id });
     } else {
         mockjson = NodeUtils.createStartNode();
     }
-    let data = FormatDisplayUtils.getToTree(mockjson.data);
-    // console.log("old===data=nodes==========", JSON.stringify(data.nodes)); 
+    let data = FormatDisplayUtils.getToTree(mockjson.data); 
     proxy.$modal.closeLoading();
     processConfig.value = data;
-    title.value = data?.bpmnName;
+    title.value = proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(query.bizname):data?.bpmnName; 
     nodeConfig.value = data?.nodeConfig;
-    lfFormDataConfig.value = data?.lfFormData;
+    lfFormDataConfig.value = data?.lfFormData??'';
 });
 
 
@@ -121,19 +128,20 @@ const publish = () => {
             }
         });
 };
-
+const previewJson = () => {
+   viewJson.value = true;
+   jsonTitle.value = "预览JSON";
+}
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
-
+@import "@/assets/styles/flow/workflow.scss"; 
 .app-container {
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 84px);
+    min-height: calc(100vh - 115px);
     padding-top: 15px;
     overflow: auto;
-}
-
+} 
 .step-tab {
     display: flex;
     justify-content: center;

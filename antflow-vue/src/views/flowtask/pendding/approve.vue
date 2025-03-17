@@ -1,50 +1,45 @@
 <template>
     <div class="app-container">
-        <div class="flex gap-2">
-            <el-tag type="primary">{{ formCode }}</el-tag>
-            <el-tag type="success" style="margin-left: 5px;">{{ processNumber }}</el-tag>
+        <div class="card-box" style="padding-top: 10px;">
+            <div class="flex gap-2">
+                <el-tag type="primary">{{ formCode }}</el-tag>
+                <el-tag type="success" style="margin-left: 5px;">{{ processNumber }}</el-tag>
+            </div>
+            <el-tabs v-model="activeName" class="set-tabs">
+                <el-tab-pane label="表单信息" name="baseTab">
+                    <div class="approve" v-if="activeName === 'baseTab'">
+                        <el-row style="padding-left: -5px;padding-right: -5px;">
+                            <el-col :span="24" class="my-col">
+                                <div v-for="btn in approvalButtons" style="float: left;">
+                                    <el-button style="margin: 5px;" v-if="btn.label"
+                                        :type="approveButtonColor[btn.value]" @click="clickApproveSubmit(btn.value)">
+                                        {{ btn.label }}
+                                    </el-button>
+                                </div>
+                            </el-col>
+                            <el-col :span="24" class="my-col" v-if="baseTabShow">
+                                <div v-if="componentLoaded" class="component">
+                                    <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
+                                        :isPreview="isPreview" :reSubmit="reSubmit" :lfFormData="lfFormDataConfig"
+                                        :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
+                                    </component>
+                                </div> 
+                            </el-col>
+                        </el-row>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="审批记录" name="flowStep">
+                    <div v-if="activeName === 'flowStep'">
+                        <FlowStepTable />
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="流程预览" name="flowReview">
+                    <div v-if="activeName === 'flowReview'">
+                        <ReviewWarp />
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
         </div>
-        <el-tabs v-model="activeName" class="set-tabs">
-            <el-tab-pane label="表单信息" name="baseTab">
-                <div class="approve" v-if="activeName === 'baseTab'">
-                    <el-row style="padding-left: -5px;padding-right: -5px;">
-                        <el-col :span="24" class="my-col">
-                            <div v-for="btn in approvalButtons" style="float: left;">
-                                <el-button style="margin: 5px;" v-if="btn.label" :type="approveButtonColor[btn.value]"
-                                    @click="clickApproveSubmit(btn.value)">
-                                    {{ btn.label }}
-                                </el-button>
-                            </div>
-                        </el-col>
-                        <el-col :span="24" class="my-col" v-if="baseTabShow">
-                            <div v-if="componentLoaded" class="component">
-                                <component ref="componentFormRef" :is="loadedComponent" 
-                                    :previewData="componentData"  
-                                    :isPreview="isPreview" 
-                                    :reSubmit="reSubmit"
-                                    :lfFormData="lfFormDataConfig" 
-                                    :lfFieldsData="lfFieldsConfig"
-                                    :lfFieldPerm="lfFieldControlVOs">
-                                </component>
-                            </div>
-                            <div v-else-if="isOutSideAccess == 'true'">
-                                <outsideFormRender v-if="formData" :formData="formData"></outsideFormRender>
-                            </div>
-                        </el-col>
-                    </el-row>
-                </div>
-            </el-tab-pane>
-            <el-tab-pane label="审批记录" name="flowStep">
-                <div v-if="activeName === 'flowStep'">
-                    <FlowStepTable />
-                </div>
-            </el-tab-pane>
-            <el-tab-pane label="流程预览" name="flowReview">
-                <div v-if="activeName === 'flowReview'">
-                    <ReviewWarp />
-                </div>
-            </el-tab-pane>
-        </el-tabs>
         <transfer-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
@@ -54,53 +49,46 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'; 
+import { ref, watch } from 'vue';
 import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
-import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
-import outsideFormRender from "@/views/workflow/components/outsideFormRender.vue";
+import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue'; 
 import transferDialog from './components/transferDialog.vue';
 import approveDialog from './components/approveDialog.vue';
 import repulseDialog from './components/repulseDialog.vue';
 import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/flow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
-const route = useRoute();
+const { query } = useRoute();
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
 let { setPreviewDrawerConfig } = store;
-const formCode = route.query?.formCode;
-const processNumber = route.query?.processNumber;
-const isOutSideAccess = route.query?.isOutSideAccess || false;
-const isLowCodeFlow = route.query?.isLowCodeFlow || false;
-const taskId = route.query?.taskId;
+const formCode = query?.formCode;
+const processNumber = query?.processNumber;
+const isOutSideAccess = query?.isOutSideAccess;
+const isLowCodeFlow = query?.isLowCodeFlow
+const taskId = query?.taskId;
 
 const activeName = ref('baseTab');
-let baseTabShow = ref(true);
-
+let baseTabShow = ref(true); 
 let openApproveDialog = ref(false);
+let repulseDialogVisible = ref(false);
 let approveDialogTitle = ref("审批");
 let dialogVisible = ref(false);
 let dialogTitle = ref('');
-let repulseDialogVisible = ref(false);
-
+let isMultiple = ref(false);//false 转办，true 加批
+let approvalButtons = ref([]);
+let isPreview = ref(true);
+let reSubmit = ref(false); 
+let loadedComponent = ref(null);
 let componentData = ref(null);
 let componentLoaded = ref(false);
-let loadedComponent = ref(null);
-let isPreview = ref(true);
-let reSubmit = ref(false);
-let approvalButtons = ref([]);
-
-let formData = ref(null);
-const componentFormRef = ref(null);
-const handleClickType = ref(null);
-
-let isMultiple = ref(false);//false 转办，true 加批
-
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+const componentFormRef = ref(null);
+const handleClickType = ref(null);
 
 let approveSubData = reactive({
     taskId: taskId,
@@ -177,7 +165,7 @@ const approveSubmit = async (param) => {
             }
         });
     };
-    if (handleClickType.value == approvalButtonConf.repulse) {
+    if (handleClickType.value == approvalButtonConf.repulse) {//退回操作
         approveSubData.backToModifyType = Number(param.backToModifyType);
         approveSubData.backToNodeId = Number(param.backToNodeId);
     }
@@ -206,9 +194,8 @@ const approveUndertakeSubmit = async () => {
             }
 
         }).then(() => {
-            console.log('刷新当前页签 ==========');
             handleTabClick({ paneName: "baseTab" });
-        });     
+        });
     });
 }
 /**
@@ -222,7 +209,7 @@ const preview = async () => {
         isOutSideAccessProc: isOutSideAccess,
         isLowCodeFlow: isLowCodeFlow
     });
-    proxy.$modal.loading();
+    proxy.$modal.loading(); 
     await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
             //显示审批按钮
@@ -237,23 +224,21 @@ const preview = async () => {
             }
             reSubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
-            if (isOutSideAccess && isOutSideAccess == 'true') {//外部表单接入
-                //formData.value = response.data.formData;
+ 
+console.log('isOutSideAccess=11111===',typeof isOutSideAccess);
+console.log('isLowCodeFlow==1111===',typeof isLowCodeFlow);
+console.log('isOutSideAccess==22222==',isOutSideAccess == 'true');
+console.log('isLowCodeFlow===22222==',isLowCodeFlow == 'true');
+            if (isLowCodeFlow == 'true' || isOutSideAccess == 'true') {//低代码表单 和 外部表单接入
                 lfFormDataConfig.value = response.data.lfFormData;
                 lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                 lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
                 loadedComponent.value = await loadLFComponent();
                 componentLoaded.value = true;
-            }
-            else if (isLowCodeFlow && isLowCodeFlow == 'true') {//低代码表单
-                lfFormDataConfig.value = response.data.lfFormData;
-                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
-                lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
-                loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;
+                console.log('lfFormDataConfig.value=11111===',JSON.stringify(lfFormDataConfig.value));
             } else {//自定义表单
                 componentData.value = response.data;
-                loadedComponent.value = await loadDIYComponent(formCode); 
+                loadedComponent.value = await loadDIYComponent(formCode);
                 componentLoaded.value = true;
             }
         } else {
@@ -325,15 +310,15 @@ const approveProcess = async (param) => {
             } else {
                 proxy.$modal.msgError("审批失败:" + res.errMsg);
             }
-        }); 
+        });
         proxy.$modal.closeLoading();
     }).catch(() => { });
-} 
+}
 
 const handleTabClick = async (tab, event) => {
     activeName.value = tab.paneName;
-    if (tab.paneName == 'baseTab') { 
-        preview(); 
+    if (tab.paneName == 'baseTab') {
+        preview();
     }
 };
 </script>
@@ -384,5 +369,5 @@ const handleTabClick = async (tab, event) => {
 
 .el-timeline-item__wrapper {
     top: 0px !important;
-} 
+}
 </style>

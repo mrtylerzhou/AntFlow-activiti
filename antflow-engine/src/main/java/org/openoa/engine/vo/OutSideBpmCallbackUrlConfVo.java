@@ -124,7 +124,10 @@ public class OutSideBpmCallbackUrlConfVo implements Serializable {
      * bpmn name
      */
     private String bpmnName;
-
+    /**
+     * form Code
+     */
+    private String formCode;
 
     //===============>>seartch conditions<<===================
 

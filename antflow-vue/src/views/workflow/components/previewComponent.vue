@@ -11,16 +11,12 @@
              :lfFieldPerm="lfFieldControlVOs" 
              :isPreview="isPreview"></component>
         </div>
-        <!-- <div v-if="viewConfig.isOutSideAccess"> 
-            <outsideFormRender v-if="formData" :formData="formData"></outsideFormRender>
-        </div>  -->
     </div>
 </template>
 <script setup>
 import { ref,computed } from 'vue'; 
 import { getViewBusinessProcess } from "@/api/workflow"; 
 import { useStore } from '@/store/modules/workflow'; 
-import outsideFormRender from "./outsideFormRender.vue";
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 let store = useStore()
@@ -35,7 +31,6 @@ let props = defineProps({
 let loadFaild = ref(false);
 let componentData = ref(null);
 let componentLoaded = ref(false);
-let formData = ref(null);
 let loadedComponent = ref(null); 
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
@@ -50,7 +45,6 @@ let visible = computed({
  
 /**预览 */
 const preview = async (param) => {
-    console.log("preview=========param=============", JSON.stringify(param));
     let queryParams = ref({
         formCode: param.formCode,
         processNumber: param.processNumber,
@@ -62,25 +56,16 @@ const preview = async (param) => {
     await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
             const responseData = response.data;  
-            if (responseData.isOutSideAccessProc && responseData.isOutSideAccessProc) {//外部接入 
-                //formData.value = responseData.formData;           
+            componentLoaded.value = true
+            if (responseData.isLowCodeFlow || responseData.isOutSideAccessProc) {//低代码表单 和 三方接入
                 lfFormDataConfig.value = responseData.lfFormData;
                 lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
                 lfFieldControlVOs.value =  JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
-                loadedComponent.value = await loadLFComponent(param.formCode); 
-                componentLoaded.value = true
-            }
-            else if (responseData.isLowCodeFlow && responseData.isLowCodeFlow == '1') {//低代码表单
-                lfFormDataConfig.value = responseData.lfFormData;
-                lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
-                lfFieldControlVOs.value =  JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
-                loadedComponent.value = await loadLFComponent(param.formCode); 
-                componentLoaded.value = true
+                loadedComponent.value = await loadLFComponent(param.formCode);  
             }
             else {//自定义开发表单
                 loadedComponent.value = await loadDIYComponent(param.formCode).catch((err) => { proxy.$modal.msgError(err); });
-                componentData.value = responseData;
-                componentLoaded.value = true
+                componentData.value = responseData; 
             }
         } else {
             loadFaild.value = true

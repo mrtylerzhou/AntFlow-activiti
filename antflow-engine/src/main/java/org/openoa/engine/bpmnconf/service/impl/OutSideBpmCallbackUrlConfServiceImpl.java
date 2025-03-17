@@ -194,6 +194,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
             BeanUtils.copyProperties(vo, outSideBpmCallbackUrlConf);
             GenericEmployee loginedEmployee = new GenericEmployee();
             //todo
+            outSideBpmCallbackUrlConf.setStatus(1);
             outSideBpmCallbackUrlConf.setCreateTime(new Date());
             outSideBpmCallbackUrlConf.setCreateUser(SecurityUtils.getLogInEmpName());
             outSideBpmCallbackUrlConf.setUpdateTime(new Date());
