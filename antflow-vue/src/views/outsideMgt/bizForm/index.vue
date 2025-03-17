@@ -116,8 +116,7 @@ const startTest = (param) => {
     bizFrom.formCode = flowCode || '';
     bizFrom.operationType = 1;//operationType 1发起 3 审批 
     bizFrom.isLowCodeFlow = true;
-    bizFrom.lfFields = null;
-    bizFrom.userId= cache.session.get('userId');
+    bizFrom.lfFields = null; 
     console.log('bizFrom',bizFrom);
     if (isLFFlow && isLFFlow == true) {
         bizFrom = {};
@@ -132,6 +131,7 @@ const startTest = (param) => {
         delete lfFormdata.approversValid; 
         bizFrom.lfFields = lfFormdata; 
     }
+    bizFrom.userId= cache.session.get('userId');
     proxy.$modal.loading();
     processSubmit(bizFrom).then((res) => {
         if (res.code == 200) {

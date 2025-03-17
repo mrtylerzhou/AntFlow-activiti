@@ -177,7 +177,7 @@ const approveSubmit = async (param) => {
             }
         });
     };
-    if (handleClickType.value == approvalButtonConf.repulse) {
+    if (handleClickType.value == approvalButtonConf.repulse) {//退回操作
         approveSubData.backToModifyType = Number(param.backToModifyType);
         approveSubData.backToNodeId = Number(param.backToNodeId);
     }
