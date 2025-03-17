@@ -6,7 +6,7 @@
 -->
 <template>
     <el-row :gutter="20">
-        <el-col ::lg="6" :md="8"  :sm="12" :xs="24">
+        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
             <div class="ve-card ve_card1" @click="handleTodo()">
                 <el-icon>
                     <bell />
