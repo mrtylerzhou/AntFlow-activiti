@@ -53,10 +53,10 @@
                         </el-table-column>
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="ZoomIn"
+                                <el-button link type="success" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
                                 <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                                <el-button link type="primary" icon="Delete"
+                                <el-button link type="danger" icon="Delete"
                                     @click="handleDelete(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -102,7 +102,7 @@
                                 <el-button link type="primary" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
                                 <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                                <el-button link type="primary" icon="Delete"
+                                <el-button link type="danger" icon="Delete"
                                     @click="handleDelete(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>

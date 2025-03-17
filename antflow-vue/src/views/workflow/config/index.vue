@@ -75,7 +75,7 @@
                   <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
                   <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
                   <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button>
-                  <el-button link type="primary" @click="handleDelete(scope.row)">删除</el-button>
+                  <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button>
                </template>
             </el-table-column>
          </el-table>
