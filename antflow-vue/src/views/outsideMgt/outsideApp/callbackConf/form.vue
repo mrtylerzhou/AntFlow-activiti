@@ -1,6 +1,6 @@
 <template>
   <!-- 添加审批人模板对话框 -->
-  <el-dialog title="审批人配置" v-model="dialogVisible" width="550px" append-to-body>
+  <el-dialog title="设置流程回调" v-model="dialogVisible" width="550px" append-to-body>
     <el-form :model="form" :rules="rules" ref="callbackConfRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">

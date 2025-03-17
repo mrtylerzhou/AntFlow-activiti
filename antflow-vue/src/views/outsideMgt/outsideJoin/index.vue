@@ -27,7 +27,7 @@
       <el-table v-loading="loading" :data="list">
         <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="项目名字" align="center" prop="name" v-if="columns[1].visible"
+        <el-table-column label="项目名称" align="center" prop="name" v-if="columns[1].visible"
           :show-overflow-tooltip="true" />
         <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible"
           :show-overflow-tooltip="true" />
@@ -38,8 +38,9 @@
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="220" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
+            <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)">新增APP</el-button>
             <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -99,23 +100,25 @@
 
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> 
+    <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import appForm from "../outsideApp/form.vue";
 import { getBusinessPartyList, setBusinessParty, getBusinessPartyDetail } from "@/api/outsideApi";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
-const total = ref(0);
-
+const total = ref(0); 
 const open = ref(false);
-const title = ref("");
-
+let openAddApp = ref(false);
+const title = ref(""); 
 const data = reactive({
+  appData: {},
   form: {
     accessType: '0'
   },
@@ -138,7 +141,7 @@ const data = reactive({
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
-const { page, vo, form, rules } = toRefs(data);
+const { page, vo, form, rules,appData } = toRefs(data);
 
 onMounted(async () => {
   getList();
@@ -209,6 +212,17 @@ function handleEdit(row) {
     open.value = true;
     title.value = "编辑项目";
   });
+}
+/**
+ * 新增应用
+ * @param row 
+ */
+function handleAddApp(row) { 
+  appData.value.applyType = '2';
+  appData.value.isSon = '1';
+  appData.value.businessName = row.name;
+  appData.value.businessCode = row.businessPartyMark; 
+  openAddApp.value = true;
 }
 
 /** 删除按钮操作 */

@@ -24,8 +24,8 @@
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
-            <el-table-column label="业务标识" align="center" prop="formCode" />
-            <el-table-column label="业务名称" align="center" prop="formCodeDisplayName" />
+            <el-table-column label="应用标识" align="center" prop="formCode" />
+            <el-table-column label="应用名称" align="center" prop="formCodeDisplayName" />
             <el-table-column label="流程编号" align="center" prop="bpmnCode" />
             <el-table-column label="流程名称" align="center" prop="bpmnName" />
             <el-table-column label="是否去重" align="center" prop="deduplicationType">
