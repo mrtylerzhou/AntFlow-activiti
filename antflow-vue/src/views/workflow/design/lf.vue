@@ -2,9 +2,13 @@
     <div class="app-container">
         <div class="fd-nav">
             <div class="fd-nav-left"> 
-                <div class="fd-nav-title">{{ title }}</div>
-            </div>
-
+                <div class="fd-nav-title">  
+                    <el-icon>
+                        <HomeFilled />
+                    </el-icon>
+                    {{ title }}
+                </div>
+            </div> 
             <div class="fd-nav-center">
                 <div class="step-tab">
                     <div v-for="(item, index) in steps" :key="index" class="step"
@@ -145,7 +149,7 @@ const previewJson = () => {
 .app-container{
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 85px); 
+    min-height: calc(100vh - 115px); 
     padding-top: 15px;
     overflow: auto;
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClickTab">
+        <el-tabs v-model="activeName" class="card-box" @tab-click="handleClickTab">
             <el-tab-pane label="流程分类(LF)" name="LFTab">
                 <div class="query-box">
                     <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">

@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <div class="box">
+        <div class="card-box">
             <el-tabs class="demo-tabs" v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane name="createFrom">
                     <template #label>
