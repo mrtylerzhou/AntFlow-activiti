@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container home">
+    <div class="app-container home" aria-hidden="true">
         <Workplace />
     </div>
 </template>

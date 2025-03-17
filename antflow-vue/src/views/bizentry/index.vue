@@ -6,7 +6,7 @@
                     <template #label>
                         填写表单
                     </template>
-                    <div style="height: calc(100vh - 178px);padding-top: 15px;padding-bottom: 15px;overflow: auto; background-color: #f5f5f7;">
+                    <div class="component">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
                             :isPreview="false" :reSubmit="false" @handleBizBtn="handleSubmit">
                         </component> 
@@ -18,9 +18,9 @@
                         <ReviewWarp v-model:previewConf="previewConf" />
                     </div>
                 </el-tab-pane>
-            </el-tabs>
-            <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+            </el-tabs>            
         </div>
+        <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
     </div>
 </template>
 
@@ -154,5 +154,11 @@ function close() {
     font-size: 16px;
     color: #383838;
 }
-
+.component{
+    height: calc(100vh - 178px);
+    padding-top: 15px;
+    padding-bottom: 15px;
+    overflow: auto; 
+    background-color: #f5f5f7;
+}
 </style>
