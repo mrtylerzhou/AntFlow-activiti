@@ -61,11 +61,9 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
-
-    <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-      @pagination="getList" />
-
+      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+        @pagination="getList" />
+    </div> 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" label-position="top"

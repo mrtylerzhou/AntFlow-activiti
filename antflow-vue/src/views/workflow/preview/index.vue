@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container home">
+  <div class="app-container">
     <div class="task-title">
       <span class="task-title-text">流程详情预览</span>
     </div>

@@ -91,7 +91,7 @@
 }
 
 .el-table {
-  height: calc(60vh);
+  height: calc(65vh);
 
   .el-table__header-wrapper, .el-table__fixed-header-wrapper {
     th {
@@ -122,14 +122,7 @@
   margin: 8px 10px 25px 10px;
   padding-bottom: 5px
 }
-
-/** 表格布局 **/
-.pagination-container {
-  position: relative;
-  height: 40px;
-  padding-bottom: 10px !important;
-}
-
+ 
 .el-dialog .pagination-container {
   position: static !important;
 }
