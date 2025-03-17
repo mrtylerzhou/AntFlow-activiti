@@ -87,7 +87,7 @@ const getPreviewData = async () => {
 .dotDanger {
     height: 15px;
     width: 15px;
-    background-color: #f56c6c;
+    background-color: #ff4949;
     border-radius: 50%;
     display: inline-block;
 }
@@ -95,7 +95,7 @@ const getPreviewData = async () => {
 .dotSuccess {
     height: 15px;
     width: 15px;
-    background-color: #67c23a;
+    background-color: #13ce66;
     border-radius: 50%;
     display: inline-block;
 }
