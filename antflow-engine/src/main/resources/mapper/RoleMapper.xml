@@ -3,13 +3,28 @@
 <mapper namespace="org.openoa.base.mapper.RoleMapper">
 
     <select id="queryRoleByIds" resultType="org.openoa.base.entity.Role">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryRoleByIds">
-            <property name="roleIds" value="#{roleIds}"/>
-        </include>
+        select id,role_name as roleName from t_role
+        <where>
+            <if test="roleIds != null and roleIds.size() > 0">
+                id in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
     <select id="queryUserByRoleIds" resultType="org.openoa.base.entity.User">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByRoleIds">
-        </include>
+        select tu.id,tu.user_name as userName
+        from t_user tu
+        left join t_user_role tur on tu.id = tur.user_id
+        <where>
+            <if test="roleIds != null and roleIds.size() > 0">
+                tur.role_id in
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">

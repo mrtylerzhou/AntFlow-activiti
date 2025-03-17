@@ -2,11 +2,10 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.collect.Lists;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
 @Component
 public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
