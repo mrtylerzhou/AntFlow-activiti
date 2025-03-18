@@ -121,11 +121,11 @@ All.prototype = {
         return arr.join("或")
     },  
     // index 为Number
-    getLabelStr(index, obj) {  
+    getLabelStr(index, obj) {   
         if(!obj) return;  
-        let ret = obj[index-1];
+        let ret = obj.filter(c=>c.key == index).map(x => x.value); 
         if (ret) {
-            return ret.value;
+            return ret;
         }
         return '';
     },  
@@ -174,11 +174,11 @@ All.prototype = {
                         }
                     }             
                 }
-                else if (fieldTypeName == "select") { 
+                else if (fieldTypeName == "select") {  
                     if (!fixedDownBoxValue) {
                         str += nodeConfig.conditionNodes[index].nodeDisplayName + "     "
                     }else {  
-                        if (zdy1) {
+                        if (zdy1) { 
                             if(!isNaN(Number(zdy1))){
                                     str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
                             }else {
