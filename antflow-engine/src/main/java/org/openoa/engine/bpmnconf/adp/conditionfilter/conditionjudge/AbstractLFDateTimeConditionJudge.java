@@ -22,7 +22,7 @@ public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditi
                 BigDecimal dateFromDbBig=new BigDecimal(dateFromDb.getTime());
                 BigDecimal dateFromUserBig=new BigDecimal(dateFromUser.getTime());
                 Integer numberOperator = conditionsConf.getNumberOperator();
-                return super.compareJudge(dateFromDbBig,dateFromUserBig,numberOperator);
+                return super.compareJudge(dateFromDbBig,null,dateFromUserBig,numberOperator);
             } catch (ParseException e) {
                 log.error("date parse exception while condition judging");
                 throw new RuntimeException(e);

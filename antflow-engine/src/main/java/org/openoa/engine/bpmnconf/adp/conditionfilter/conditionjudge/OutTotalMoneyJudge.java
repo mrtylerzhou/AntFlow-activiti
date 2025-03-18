@@ -28,6 +28,6 @@ public class OutTotalMoneyJudge extends AbstractComparableJudge {
 
         //operator type
         Integer theOperatorType = conditionsConf.getNumberOperator();
-        return super.compareJudge(outTotalMoney,total,theOperatorType);
+        return super.compareJudge(outTotalMoney,null,total,theOperatorType);
     }
 }

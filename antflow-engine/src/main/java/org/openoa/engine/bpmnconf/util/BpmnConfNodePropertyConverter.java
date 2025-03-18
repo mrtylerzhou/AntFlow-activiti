@@ -91,9 +91,11 @@ public class BpmnConfNodePropertyConverter {
                 ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
             }else{
                 String zdy1 = newModel.getZdy1();
+                String zdy2=newModel.getZdy2();
 
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 String opt1 = newModel.getOpt1();
+                String opt2=newModel.getOpt2();
                 Integer optType = newModel.getOptType();
                 if(optType!=null){
                     JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
@@ -105,6 +107,10 @@ public class BpmnConfNodePropertyConverter {
                 }
                 if(String.class.isAssignableFrom(fieldCls)){
                     Object valueOrWrapper=null;
+                    //处理多值first<b<second这种类型
+                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                       zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                    }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                         Map<String,Object> wrapperResult=new HashMap<>();
                         wrapperResult.put(fieldName,zdy1);

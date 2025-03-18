@@ -1,8 +1,11 @@
 package org.openoa.base.constant.enums;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.exception.JiMuBizException;
+
+import java.util.List;
 
 
 /**
@@ -16,7 +19,12 @@ public enum JudgeOperatorEnum {
     GT(2,">"),
     LTE(3,"<="),
     LT(4,"<"),
-    EQ(5,"=")
+    EQ(5,"="),
+    GT1LT2(6,"first<a<second"),
+    GTE1LT2(7,"first<=a<second"),
+    GET1LE2(8,"first<a<=second"),
+    GTE1LTE2(9,"first<=a<=second"),
+
     ;
     private final Integer code;
     private final String symbol;
@@ -44,5 +52,8 @@ public enum JudgeOperatorEnum {
             }
         }
         throw new JiMuBizException("操作符类型未定义");
+    }
+    public static List<Integer> binaryOperator(){
+        return Lists.newArrayList(6,7,8,9);
     }
 }
