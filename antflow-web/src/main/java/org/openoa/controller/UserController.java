@@ -13,23 +13,21 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.interf.anno.IgnoreLog;
 import org.openoa.base.mapper.RoleMapper;
 import org.openoa.base.mapper.UserMapper;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 @IgnoreLog
 @RequestMapping("/user")
 @RestController
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
     @Autowired
     private UserMapper userMapper;
     @Autowired

@@ -11,7 +11,7 @@ import org.activiti.engine.delegate.event.impl.ActivitiActivityEventImpl;
  * 使用的时候,请确保明白各种事件的含义及触发时机
  */
 @Slf4j
-public class GlobalEventListener implements ActivitiEventListener {
+public class BpmnGlobalEventListener implements ActivitiEventListener {
     public void onEvent(ActivitiEvent event) {
         String s="s";
         switch (event.getType()) {

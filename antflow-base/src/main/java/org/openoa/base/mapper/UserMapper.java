@@ -37,4 +37,5 @@ public interface UserMapper {
     List<BaseIdTranStruVo> selectUserPageList(Page page, @Param("vo") TaskMgmtVO taskMgmtVO);
 
     BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
+
 }
