@@ -359,7 +359,13 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
-            bpmnConfVo.getNodes().forEach(node -> node.setFormCode(bpmnConfVo.getFormCode()));
+            bpmnConfVo.getNodes().forEach(node -> {
+                node.setFormCode(bpmnConfVo.getFormCode());
+                if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                    aggregationNode.setAggregationNode(true);
+                }
+            });
         }
         //set viewpage buttons
         setViewPageButton(bpmnConfVo);
