@@ -107,13 +107,14 @@ All.prototype = {
             return ""
         }
     }, 
-    dealStr(str, obj) {
+    getCheckboxStr(str, obj) {
+        console.log(str, obj);
         if(!obj) return; 
         let arr = [];
         let list = str.split(","); 
         for (var elem in obj) { 
-            list.map(item => { 
-                if ((item - 1)== elem) { 
+            list.map(item => {  
+                if (item == obj[elem].key) { 
                     arr.push(obj[elem].value)
                 }
             })
@@ -121,7 +122,7 @@ All.prototype = {
         return arr.join("或")
     },  
     // index 为Number
-    getLabelStr(index, obj) {   
+    getSelectStr(index, obj) {   
         if(!obj) return;  
         let ret = obj.filter(c=>c.key == index).map(x => x.value); 
         if (ret) {
@@ -170,7 +171,7 @@ All.prototype = {
                         str += nodeConfig.conditionNodes[index].nodeDisplayName + "     "
                     }else {
                         if (zdy1) {
-                            str += showName + '属于：' + this.dealStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                            str += showName + '属于：' + this.getCheckboxStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
                         }
                     }             
                 }
@@ -180,7 +181,7 @@ All.prototype = {
                     }else {  
                         if (zdy1) { 
                             if(!isNaN(Number(zdy1))){
-                                    str += showName + '：' + this.getLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
+                                    str += showName + '：' + this.getSelectStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 "
                             }else {
                                 str += showName + '：' + this.getOutSideConditionLabelStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 " 
                             } 
