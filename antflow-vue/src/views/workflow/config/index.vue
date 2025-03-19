@@ -52,24 +52,24 @@
                   </el-tooltip>
                </template>
             </el-table-column>
-            <el-table-column label="是否去重" align="center" prop="deduplicationType">
+            <el-table-column label="是否去重" align="center" prop="deduplicationType" width="80">
                <template #default="item">
                   {{ item.row.deduplicationType == 1 ? '否' : '是' }}
                </template>
             </el-table-column>
 
-            <el-table-column label="状态" align="center" prop="effectiveStatus">
+            <el-table-column label="状态" align="center" prop="effectiveStatus" width="70">
                <template #default="item">
                   <el-tag>{{ item.row.effectiveStatus == 1 ? '活跃' : '不活跃' }}</el-tag>
                </template>
             </el-table-column>
-            <el-table-column label="描述说明" align="center" prop="remark" width="180" :show-overflow-tooltip="true" />
-            <el-table-column label="修改时间" align="center" prop="updateTime" width="180">
+            <el-table-column label="描述说明" align="center" prop="remark" width="160" :show-overflow-tooltip="true" />
+            <el-table-column label="修改时间" align="center" prop="updateTime" width="160">
                <template #default="scope">
-                  <span>{{ parseTime(scope.row.updateTime) }}</span>
+                  <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="操作" width="220" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
                   <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
                   <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>

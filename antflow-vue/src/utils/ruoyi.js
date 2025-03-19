@@ -4,7 +4,7 @@
  * 通用js方法封装处理
  * Copyright (c) 2024 Antflow
  */
-export const isObjEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
+export const isObjEmpty = (data) =>data === null || data === undefined || data == "" || data == {} || data == "{}" || data == "[]" || data == "null";
 export const isArrayEmpty = (data) => Array.isArray(data) ? data.length === 0 : isObjEmpty(data);
 
 // 日期格式化
