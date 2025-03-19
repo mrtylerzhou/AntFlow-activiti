@@ -45,7 +45,7 @@
                                     :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
                                     <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                        }}
+                                    }}
                                     </option>
                                 </select>
                                 <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
@@ -58,7 +58,7 @@
                                     :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
                                     <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                        }}
+                                    }}
                                     </option>
                                 </select>
                                 <el-time-picker v-if="item.optType != 6" v-model="item.zdy1" arrow-control
@@ -80,15 +80,15 @@
                                 <a :class="$func.toggleStrClass(item, item1.key) && 'active'"
                                     @click="toStrChecked(item, item1.key)"
                                     v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)" :key="index1">{{
-                                    item1.value }}</a>
+                                        item1.value }}</a>
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'select'">
                             <p class="check_box" v-if="item.fixedDownBoxValue">
                                 <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
                                     :multiple="item.multiple" :multiple-limit="item.multipleLimit">
-                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
-                                        :key="itemOpt.key" :label="itemOpt.value" :value="itemOpt.key" />
+                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
+                                        :label="itemOpt.value" :value="itemOpt.key" />
                                 </el-select>
                             </p>
                         </div>
@@ -98,7 +98,7 @@
                                     :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
                                     <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                        }}
+                                    }}
                                     </option>
                                 </select>
                                 <input v-if="item.optType != 6" type="text" :placeholder="'请输入' + item.showName"
@@ -113,7 +113,7 @@
                                 </select>
                                 <span class="ellipsis"
                                     style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
-                                    item.showName }}</span>
+                                        item.showName }}</span>
                                 <select style="width:60px;" class="ml_10" v-model="item.opt2">
                                     <option v-for="({ value, label }) in opt1s" :value="value" :key="value">{{ label }}
                                     </option>
@@ -163,7 +163,7 @@ import { useStore } from '@/store/modules/workflow'
 import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/flow/const'
 import $func from '@/utils/flow/index'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getConditions } from '@/api/mock' 
+import { getConditions } from '@/api/mock'
 const route = useRoute();
 const routePath = route.path || '';
 let store = useStore()
@@ -177,7 +177,7 @@ let priorityLevel = ref('')
 let conditions = ref([])//添加条件弹框显示
 let conditionList = ref([])//添加条件弹框显示>是否选中
 let checkedList = ref([])
- 
+
 let tableId = computed(() => store.tableId)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 let conditionDrawer = computed(() => store.conditionDrawer)
@@ -191,12 +191,21 @@ let visible = computed({
         closeDrawer()
     }
 })
-watch(conditionsConfig1, (val) => {    
-    console.log("conditionsConfig1.value===66666==",JSON.stringify(val.value));
+watch(conditionsConfig1, (val) => {
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
-}, { deep: true })
+    for (let itemConf of originalConfigData.value.conditionList) {
+        if (itemConf.fieldTypeName == 'select' && itemConf.multiple) {//多选
+            if (!Array.isArray(itemConf.zdy1) && itemConf.zdy1.includes('[')) {
+                itemConf.zdy1 = JSON.parse(itemConf.zdy1)
+            }
+        }
+        if (itemConf.fieldTypeName == 'select' && !itemConf.multiple) {//单选
+            itemConf.zdy1 = parseInt(itemConf.zdy1)
+        }
+    }
+})
 
 const changeOptType = (item) => {
     if (item.optType == 1) {
@@ -216,7 +225,7 @@ const toStrChecked = (item, key) => {
         removeStrEle(item, key);
     }
 }
-const removeStrEle = (item, key) => { 
+const removeStrEle = (item, key) => {
     let a = item.zdy1 ? item.zdy1.split(",") : []
     var includesIndex;
     a.map((item, index) => {
@@ -264,14 +273,14 @@ const loadLFFormCondition = () => {
                 if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
                     let optionGroup = [];
                     if (item.optionItems) {
-                        optionGroup = item.optionItems.map(c => { 
+                        optionGroup = item.optionItems.map(c => {
                             let convertValue = parseInt(c.value);
-                            if (!isNaN(convertValue)) { 
+                            if (!isNaN(convertValue)) {
                                 return { key: convertValue, value: c.label }
                             }
                         });
-                        optionGroup = optionGroup.filter(c=>c);
-                    } 
+                        optionGroup = optionGroup.filter(c => c);
+                    }
                     return {
                         formId: index + 1,
                         columnId: condition_columnTypeMap.get(item.fieldTypeName),
@@ -297,11 +306,11 @@ const loadLFFormCondition = () => {
 /**选择条件后确认 */
 const sureCondition = () => {
     for (var i = 0; i < conditionList.value.length; i++) {
-        var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName,multiple,multipleLimit, fixedDownBoxValue } = conditionList.value[i];
+        var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue } = conditionList.value[i];
         if ($func.toggleClass(originalConfigData.value.conditionList, conditionList.value[i], "formId")) {
             continue;
         }
-        const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName,multiple,multipleLimit, fixedDownBoxValue);
+        const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue);
         if (columnId == 0) {
             originalConfigData.value.nodeApproveList = [];
             originalConfigData.value.conditionList.push({ formId: formId, columnId: columnId, type: 1, showName: '发起人' });
@@ -329,7 +338,7 @@ const saveCondition = () => {
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
         conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
-    } 
+    }
     setConditionsConfig({
         value: conditionsConfig.value,
         flag: true,
@@ -339,7 +348,7 @@ const saveCondition = () => {
 const addConditionRole = () => {
     conditionRoleVisible.value = true;
     checkedList.value = originalConfigData.value.nodeApproveList
-} 
+}
 const closeDrawer = (val) => {
     setCondition(false)
 }
@@ -359,8 +368,10 @@ const closeDrawer = (val) => {
         border: 1px solid rgba(217, 217, 217, 1);
         font-size: 12px;
     }
+
     .condition_content {
         padding: 20px 20px 0;
+
         p.tip {
             margin: 20px 0;
             width: 610px;
@@ -371,6 +382,7 @@ const closeDrawer = (val) => {
             color: #46a6fe;
             font-size: 14px;
         }
+
         ul {
             max-height: 500px;
             overflow-y: scroll;
@@ -382,7 +394,7 @@ const closeDrawer = (val) => {
                 &>span {
                     float: left;
                     margin-right: 5px;
-                    width: 70px;
+                    width: 110px;
                     line-height: 65px;
                     text-align: right;
                     color: #0857a1;
@@ -397,15 +409,18 @@ const closeDrawer = (val) => {
                         margin-bottom: 10px;
                     }
                 }
+
                 &:not(:last-child)>div>p {
                     margin-bottom: 20px;
                 }
-                &>a { 
+
+                &>a {
                     margin-left: 10px;
                     margin-top: 20px;
                     color: #46a6fe;
                     font-size: 14px;
                 }
+
                 select,
                 input {
                     width: 100%;
@@ -414,13 +429,16 @@ const closeDrawer = (val) => {
                     border-radius: 4px;
                     border: 1px solid rgba(217, 217, 217, 1);
                 }
+
                 select+input {
                     width: 260px;
                 }
+
                 select {
                     margin-right: 10px;
                     width: 100px;
                 }
+
                 p.selected_list {
                     padding-left: 10px;
                     border-radius: 4px;
@@ -428,11 +446,13 @@ const closeDrawer = (val) => {
                     border: 1px solid rgba(217, 217, 217, 1);
                     word-break: break-word;
                 }
+
                 p.check_box {
                     line-height: 32px;
                 }
             }
         }
+
         .el-button {
             margin-bottom: 20px;
         }
