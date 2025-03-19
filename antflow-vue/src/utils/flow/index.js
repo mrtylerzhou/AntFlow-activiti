@@ -97,8 +97,7 @@ All.prototype = {
       return "";
     }
   },
-  getCheckboxStr(str, obj) {
-    console.log(str, obj);
+  getCheckboxStr(str, obj) { 
     if (!obj) return;
     let arr = [];
     let list = str.split(",");

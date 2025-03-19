@@ -192,7 +192,7 @@ let visible = computed({
     }
 })
 watch(conditionsConfig1, (val) => {    
-    console.log("conditionsConfig1.value===66666==");
+    console.log("conditionsConfig1.value===66666==",JSON.stringify(val.value));
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
