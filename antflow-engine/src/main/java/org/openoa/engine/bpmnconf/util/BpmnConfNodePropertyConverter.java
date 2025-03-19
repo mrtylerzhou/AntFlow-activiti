@@ -44,12 +44,20 @@ public class BpmnConfNodePropertyConverter {
         result.setIsDefault(propertysVo.getIsDefault());
         result.setSort(propertysVo.getSort());
         List<Integer> conditionTypes=new ArrayList<>(newModels.size());
+        Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
         for (BpmnNodeConditionsConfVueVo newModel : newModels) {
             String columnId = newModel.getColumnId();
             if(columnId==null){
                 throw new JiMuBizException("each and every node must have a columnId value");
             }
+
             int columnIdInt = Integer.parseInt(columnId);
+            //select控件多选特殊处理 columnId =10000 改为 10004
+            if (strEnumCode == columnIdInt){
+                if (newModel.getMultiple() != null && newModel.getMultiple()){
+                    columnIdInt =  ConditionTypeEnum.CONDITION_TYPE_LF_COLLECTION_CONDITION.getCode();
+                }
+            }
             ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
             if(enumByCode==null){
                 throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));

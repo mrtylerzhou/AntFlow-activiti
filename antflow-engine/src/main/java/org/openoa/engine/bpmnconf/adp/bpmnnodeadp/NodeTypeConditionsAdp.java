@@ -146,10 +146,9 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                 if(vueVo==null){
                     throw new JiMuBizException("logic error!");
                 }
-                String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
-                extField.setFixedDownBoxValue(fixedDownBoxValue);
+                //String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
             }
-
+            extField.setFixedDownBoxValue(extField.getFixedDownBoxValue());
         }
         bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
         bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());

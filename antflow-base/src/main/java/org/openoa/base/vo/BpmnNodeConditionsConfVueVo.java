@@ -22,6 +22,8 @@ public class BpmnNodeConditionsConfVueVo {
     private String columnDbname;
     private String columnType;
     private String fieldTypeName;
+    private Boolean multiple;
+    private Integer multipleLimit;
     private String fixedDownBoxValue;
 
 }
