@@ -223,19 +223,13 @@ const preview = async () => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
             reSubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
-            isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
- 
-console.log('isOutSideAccess=11111===',typeof isOutSideAccess);
-console.log('isLowCodeFlow==1111===',typeof isLowCodeFlow);
-console.log('isOutSideAccess==22222==',isOutSideAccess == 'true');
-console.log('isLowCodeFlow===22222==',isLowCodeFlow == 'true');
+            isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit); 
             if (isLowCodeFlow == 'true' || isOutSideAccess == 'true') {//低代码表单 和 外部表单接入
                 lfFormDataConfig.value = response.data.lfFormData;
                 lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                 lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
                 loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;
-                console.log('lfFormDataConfig.value=11111===',JSON.stringify(lfFormDataConfig.value));
+                componentLoaded.value = true;  
             } else {//自定义表单
                 componentData.value = response.data;
                 loadedComponent.value = await loadDIYComponent(formCode);

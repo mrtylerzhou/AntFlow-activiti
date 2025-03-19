@@ -111,7 +111,7 @@ All.prototype = {
     }
     return arr.join("或");
   },
-  // index 为Number
+  // select 为单选
   getSelectStr(index, obj) {
     if (!obj) return;
     let ret = obj.filter((c) => c.key == index).map((x) => x.value);
@@ -120,14 +120,11 @@ All.prototype = {
     }
     return "";
   },
-  // index 为string
-  getOutSideConditionLabelStr(index, obj) {
-    if (!obj) return;
-    let ret = obj.filter((c) => c.key == index).map((x) => x.value);
-    if (ret && ret.length > 0) {
-      return ret;
-    }
-    return "";
+  // select 为多选
+  getMultipleSelectStr(keys, obj) {
+    if (!obj || isEmptyArray(keys)) return;
+    let ret = obj.filter((c) => keys.includes(c.key)).map((x) => x.value); 
+    return ret;
   },
   conditionStr(nodeConfig, index) {
     var { conditionList, nodeApproveList } = nodeConfig.conditionNodes[index];
@@ -141,8 +138,6 @@ All.prototype = {
       for (var i = 0; i < conditionList.length; i++) {
         var {
           columnId,
-          columnType,
-          showType,
           showName,
           optType,
           zdy1,
@@ -188,22 +183,11 @@ All.prototype = {
           if (!fixedDownBoxValue) {
             str += nodeConfig.conditionNodes[index].nodeDisplayName + "     ";
           } else {
-            if (zdy1) {
+            if (zdy1) { 
               if (!isNaN(Number(zdy1))) {
-                str +=
-                  showName +
-                  "：" +
-                  this.getSelectStr(zdy1, JSON.parse(fixedDownBoxValue)) +
-                  " 并且 ";
-              } else {
-                str +=
-                  showName +
-                  "：" +
-                  this.getOutSideConditionLabelStr(
-                    zdy1,
-                    JSON.parse(fixedDownBoxValue)
-                  ) +
-                  " 并且 ";
+                str += showName + "：" + this.getSelectStr(zdy1, JSON.parse(fixedDownBoxValue)) + " 并且 ";
+              } else { 
+                str += showName + "：" +  this.getMultipleSelectStr(zdy1, JSON.parse(fixedDownBoxValue) ) + " 并且 ";
               }
             }
           }

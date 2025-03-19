@@ -10,6 +10,8 @@
       "columnName": "accountType",
       "columnType": "String", 
       "fieldTypeName": "checkbox",  
+      "multiple": false,
+      "multipleLimit": 0,
       "fixedDownBoxValue":"[{\"key\":1,\"value\":\"百度云\"},{\"key\":2,\"value\":\"腾讯云\"},{\"key\":3,\"value\":\"中通云\"}]"
     },
     {
@@ -20,7 +22,9 @@
       "columnName": "leaveHour",
       "columnType": "Double",
       "fieldTypeName": "input-number",  
-      "fixedDownBoxValue": ""
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue": "" 
     },
     {
       "formId": "3",
@@ -30,7 +34,9 @@
       "columnName": "planProcurementTotalMoney",
       "columnType": "Double",
       "fieldTypeName": "input-number",  
-      "fixedDownBoxValue": ""
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue": "" 
     },
     {
       "formId": "4",
@@ -40,7 +46,9 @@
       "columnName": "outTotalMoney",
       "columnType": "Double",
       "fieldTypeName": "input-number",  
-      "fixedDownBoxValue": ""
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue": "" 
     },
     {
       "formId": "5",
@@ -50,7 +58,9 @@
       "columnName": "jobLevelType",
       "columnType": "String",     
       "fieldTypeName": "checkbox",  
-      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"CEO\"},{\"key\":2,\"value\":\"CFO\"},{\"key\":3,\"value\":\"总监\"}]"
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"CEO\"},{\"key\":2,\"value\":\"CFO\"},{\"key\":3,\"value\":\"总监\"}]" 
     }, 
     {
       "formId": "6",
@@ -60,7 +70,9 @@
       "columnName": "purchaseType",
       "columnType": "String", 
       "fieldTypeName": "select", 
-      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"台式机\"},{\"key\":2,\"value\":\"笔记本\"},{\"key\":3,\"value\":\"一体机\"}]"
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"台式机\"},{\"key\":2,\"value\":\"笔记本\"},{\"key\":3,\"value\":\"一体机\"}]" 
     }, 
     {
       "formId": "7",
@@ -72,7 +84,9 @@
       "columnDbname":"select54760",
       "columnType":"String",
       "fieldTypeName": "select", 
-      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"select 1\"},{\"key\":2,\"value\":\"select 2\"},{\"key\":3,\"value\":\"select 3\"}]"
+      "multiple": false,
+      "multipleLimit": 0,
+      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"select 1\"},{\"key\":2,\"value\":\"select 2\"},{\"key\":3,\"value\":\"select 3\"}]" 
     }
   ]
 }

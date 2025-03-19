@@ -11,7 +11,7 @@
         <span class="drawer-title">条件设置</span>
         <template #header="{ titleId, titleClass }">
             <h3 :id="titleId" :class="titleClass">条件设置</h3>
-            <select v-model="conditionConfig.priorityLevel" class="priority_level">
+            <select v-model="originalConfigData.priorityLevel" class="priority_level">
                 <option v-for="item in conditionsConfig.conditionNodes.length" :value="item" :key="item">优先级{{ item }}
                 </option>
             </select>
@@ -20,17 +20,17 @@
             <div class="condition_content drawer_content">
                 <p class="tip">当审批单同时满足以下条件时进入此流程</p>
                 <ul>
-                    <li v-for="(item, index) in conditionConfig.conditionList" :key="index">
+                    <li v-for="(item, index) in originalConfigData.conditionList" :key="index">
                         <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
                         <div v-if="item.type == 1">
-                            <p :class="conditionConfig.nodeApproveList.length > 0 ? 'selected_list' : ''"
+                            <p :class="originalConfigData.nodeApproveList.length > 0 ? 'selected_list' : ''"
                                 @click.self="addConditionRole" style="cursor:text">
-                                <span v-for="(item1, index1) in conditionConfig.nodeApproveList" :key="index1">
+                                <span v-for="(item1, index1) in originalConfigData.nodeApproveList" :key="index1">
                                     {{ item1.name }}<img src="@/assets/images/add-close1.png"
-                                        @click="$func.removeEle(conditionConfig.nodeApproveList, item1, 'targetId')">
+                                        @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
                                 </span>
                                 <input type="text" placeholder="请选择具体人员/角色/部门"
-                                    v-if="conditionConfig.nodeApproveList.length == 0" @click="addConditionRole">
+                                    v-if="originalConfigData.nodeApproveList.length == 0" @click="addConditionRole">
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'input'">
@@ -41,9 +41,11 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'date'">
                             <p>
-                                <select v-model="item.optType" :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
+                                <select v-model="item.optType"
+                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label }}
+                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
+                                        }}
                                     </option>
                                 </select>
                                 <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
@@ -52,9 +54,11 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'time'">
                             <p>
-                                <select v-model="item.optType" :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
+                                <select v-model="item.optType"
+                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label }}
+                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
+                                        }}
                                     </option>
                                 </select>
                                 <el-time-picker v-if="item.optType != 6" v-model="item.zdy1" arrow-control
@@ -75,23 +79,26 @@
                             <p class="check_box">
                                 <a :class="$func.toggleStrClass(item, item1.key) && 'active'"
                                     @click="toStrChecked(item, item1.key)"
-                                    v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)"
-                                    :key="index1">{{ item1.value }}</a>
+                                    v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)" :key="index1">{{
+                                    item1.value }}</a>
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'select'">
                             <p class="check_box">
-                                <select style="width:300px;" v-model="item.zdy1">
-                                    <option v-for="({ key, value }) in JSON.parse(item.fixedDownBoxValue)" :value="key"
-                                        :key="key">{{ value }}</option>
-                                </select>
+                                <el-select style="width:300px;" :placeholder="'请选择' + item.showName" v-model="item.zdy1"
+                                    :multiple="item.multiple" :multiple-limit="item.multipleLimit">
+                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
+                                        :key="itemOpt.key" :label="itemOpt.value" :value="itemOpt.key" />
+                                </el-select>
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'input-number'">
                             <p>
-                                <select v-model="item.optType" :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
+                                <select v-model="item.optType"
+                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
                                     @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label }}
+                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
+                                        }}
                                     </option>
                                 </select>
                                 <input v-if="item.optType != 6" type="text" :placeholder="'请输入' + item.showName"
@@ -105,7 +112,8 @@
                                     </option>
                                 </select>
                                 <span class="ellipsis"
-                                    style="display:inline-block;width:60px;vertical-align: text-bottom;">{{ item.showName }}</span>
+                                    style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
+                                    item.showName }}</span>
                                 <select style="width:60px;" class="ml_10" v-model="item.opt2">
                                     <option v-for="({ value, label }) in opt1s" :value="value" :key="value">{{ label }}
                                     </option>
@@ -120,9 +128,9 @@
                             </p>
                         </div>
                         <a v-if="item.type == 1"
-                            @click="conditionConfig.nodeApproveList = []; $func.removeEle(conditionConfig.conditionList, item, 'formId')">删除</a>
+                            @click="originalConfigData.nodeApproveList = []; $func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
                         <a v-if="item.type == 2"
-                            @click="$func.removeEle(conditionConfig.conditionList, item, 'formId')">删除</a>
+                            @click="$func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
                     </li>
                 </ul>
                 <el-button type="primary" @click="addCondition">添加条件</el-button>
@@ -141,7 +149,7 @@
                         <el-button type="primary" @click="sureCondition">确 定</el-button>
                     </template>
                 </el-dialog>
-            </div> 
+            </div>
             <div class="demo-drawer__footer clear">
                 <el-button type="primary" @click="saveCondition">确 定</el-button>
                 <el-button @click="closeDrawer">取 消</el-button>
@@ -158,19 +166,18 @@ import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getConditions } from '@/api/mock' 
 const route = useRoute();
 const routePath = route.path || '';
-let conditionVisible = ref(false)
-let conditionsConfig = ref({
-    conditionNodes: [],
-})
-let conditionConfig = ref({})
-let PriorityLevel = ref('')
-let conditions = ref([])
-let conditionList = ref([])
-let checkedList = ref([])
-let conditionRoleVisible = ref(false)
-
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
+
+let conditionVisible = ref(false)
+let conditionRoleVisible = ref(false)
+let conditionsConfig = ref(null)
+let originalConfigData = ref({})
+let priorityLevel = ref('')
+let conditions = ref([])//添加条件弹框显示
+let conditionList = ref([])//添加条件弹框显示>是否选中
+let checkedList = ref([])
+ 
 let tableId = computed(() => store.tableId)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 let conditionDrawer = computed(() => store.conditionDrawer)
@@ -186,11 +193,9 @@ let visible = computed({
 })
 watch(conditionsConfig1, (val) => {
     conditionsConfig.value = val.value;
-    PriorityLevel.value = val.priorityLevel
-    conditionConfig.value = val.priorityLevel
-        ? conditionsConfig.value.conditionNodes[val?.priorityLevel - 1]
-        : { nodeApproveList: [], conditionList: [] }
-})
+    priorityLevel.value = val.priorityLevel
+    originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
+}, { deep: true })
 
 const changeOptType = (item) => {
     if (item.optType == 1) {
@@ -226,9 +231,9 @@ const addCondition = async () => {
     conditionList.value = [];
     conditionVisible.value = true;
     conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-    if (conditionConfig.value.conditionList) {
-        for (var i = 0; i < conditionConfig.value.conditionList.length; i++) {
-            var { formId, columnId } = conditionConfig.value.conditionList[i];
+    if (originalConfigData.value.conditionList) {
+        for (var i = 0; i < originalConfigData.value.conditionList.length; i++) {
+            var { formId, columnId } = originalConfigData.value.conditionList[i];
             if (columnId == 0) {
                 conditionList.value.push({ formId: formId, columnId: 0 })
             } else {
@@ -256,12 +261,16 @@ const loadLFFormCondition = () => {
         if (lowCodeFormFields.hasOwnProperty("formFields")) {
             conditionArr = lowCodeFormFields.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
                 if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
-                    let optionGroup = {};
+                    let optionGroup = [];
                     if (item.optionItems) {
-                        optionGroup = item.optionItems.map(c => {
-                            return { key: c.value, value: c.label }
-                        })
-                    }
+                        optionGroup = item.optionItems.map(c => { 
+                            let convertValue = parseInt(c.value);
+                            if (!isNaN(convertValue)) { 
+                                return { key: convertValue, value: c.label }
+                            }
+                        });
+                        optionGroup = optionGroup.filter(c=>c);
+                    } 
                     return {
                         formId: index + 1,
                         columnId: condition_columnTypeMap.get(item.fieldTypeName),
@@ -270,6 +279,8 @@ const loadLFFormCondition = () => {
                         columnName: item.name,
                         columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
                         fieldTypeName: item.fieldTypeName,
+                        multiple: item.multiple,
+                        multipleLimit: item.multipleLimit,
                         fixedDownBoxValue: JSON.stringify(optionGroup)
                     }
                 }
@@ -285,32 +296,32 @@ const loadLFFormCondition = () => {
 /**选择条件后确认 */
 const sureCondition = () => {
     for (var i = 0; i < conditionList.value.length; i++) {
-        var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, fixedDownBoxValue } = conditionList.value[i];
-        if ($func.toggleClass(conditionConfig.value.conditionList, conditionList.value[i], "formId")) {
+        var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName,multiple,multipleLimit, fixedDownBoxValue } = conditionList.value[i];
+        if ($func.toggleClass(originalConfigData.value.conditionList, conditionList.value[i], "formId")) {
             continue;
         }
-        const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName, fixedDownBoxValue);
+        const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName,multiple,multipleLimit, fixedDownBoxValue);
         if (columnId == 0) {
-            conditionConfig.value.nodeApproveList = [];
-            conditionConfig.value.conditionList.push({ formId: formId, columnId: columnId, type: 1, showName: '发起人' });
+            originalConfigData.value.nodeApproveList = [];
+            originalConfigData.value.conditionList.push({ formId: formId, columnId: columnId, type: 1, showName: '发起人' });
         } else {
-            conditionConfig.value.conditionList.push(judgeObj)
+            originalConfigData.value.conditionList.push(judgeObj)
         }
     }
-    for (let i = conditionConfig.value.conditionList.length - 1; i >= 0; i--) {
-        if (!$func.toggleClass(conditionList.value, conditionConfig.value.conditionList[i], "formId")) {
-            conditionConfig.value.conditionList.splice(i, 1);
+    for (let i = originalConfigData.value.conditionList.length - 1; i >= 0; i--) {
+        if (!$func.toggleClass(conditionList.value, originalConfigData.value.conditionList[i], "formId")) {
+            originalConfigData.value.conditionList.splice(i, 1);
         }
     }
-    conditionConfig.value.conditionList.sort(function (a, b) { return a.columnId - b.columnId; });
+    originalConfigData.value.conditionList.sort(function (a, b) { return a.columnId - b.columnId; });
     conditionVisible.value = false;
 }
 /**条件抽屉的确认 */
 const saveCondition = () => {
     //console.log("conditionsConfig.value.conditionNodes=====",JSON.stringify(conditionsConfig.value.conditionNodes));
     closeDrawer()
-    var a = conditionsConfig.value.conditionNodes.splice(PriorityLevel.value - 1, 1)//截取旧下标
-    conditionsConfig.value.conditionNodes.splice(conditionConfig.value.priorityLevel - 1, 0, a[0])//填充新下标
+    var a = conditionsConfig.value.conditionNodes.splice(priorityLevel.value - 1, 1)//截取旧下标
+    conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
     conditionsConfig.value.conditionNodes.map((item, index) => {
         item.priorityLevel = index + 1
     });
@@ -326,7 +337,7 @@ const saveCondition = () => {
 }
 const addConditionRole = () => {
     conditionRoleVisible.value = true;
-    checkedList.value = conditionConfig.value.nodeApproveList
+    checkedList.value = originalConfigData.value.nodeApproveList
 } 
 const closeDrawer = (val) => {
     setCondition(false)
