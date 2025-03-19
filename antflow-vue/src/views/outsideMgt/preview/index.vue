@@ -41,7 +41,7 @@
 import { ref, onMounted } from 'vue'
 import { getApiWorkFlowData } from "@/api/outsideApi"
 import BasicSetting from "@/components/OutsideFlow/BasicSetting/index.vue"
-import Process from "@/components/OutsideFlow/Process/index.vue"
+import Process from "@/components/Workflow/Process/index.vue"
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data'
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 const { proxy } = getCurrentInstance()
