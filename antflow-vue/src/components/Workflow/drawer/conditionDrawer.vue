@@ -85,7 +85,7 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'select'">
                             <p class="check_box">
-                                <el-select style="width:300px;" :placeholder="'请选择' + item.showName" v-model="item.zdy1"
+                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
                                     :multiple="item.multiple" :multiple-limit="item.multipleLimit">
                                     <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
                                         :key="itemOpt.key" :label="itemOpt.value" :value="itemOpt.key" />
