@@ -73,20 +73,6 @@
       "multiple": false,
       "multipleLimit": 0,
       "fixedDownBoxValue":"[{\"key\":1,\"value\":\"台式机\"},{\"key\":2,\"value\":\"笔记本\"},{\"key\":3,\"value\":\"一体机\"}]" 
-    }, 
-    {
-      "formId": "7",
-      "columnId":12,
-      "showType":"2",
-      "type":2,
-      "showName":"职位",
-      "zdy1":1,
-      "columnDbname":"select54760",
-      "columnType":"String",
-      "fieldTypeName": "select", 
-      "multiple": false,
-      "multipleLimit": 0,
-      "fixedDownBoxValue":"[{\"key\":1,\"value\":\"select 1\"},{\"key\":2,\"value\":\"select 2\"},{\"key\":3,\"value\":\"select 3\"}]" 
     }
   ]
 }

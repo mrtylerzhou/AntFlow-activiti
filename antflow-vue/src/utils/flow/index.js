@@ -32,14 +32,14 @@ All.prototype = {
     var isIncludes = this.toggleClass(arr, elem, key);
     !isIncludes ? arr.push(elem) : this.removeEle(arr, elem, key);
   },
-  removeEle(arr, elem, key = "id") {
+  removeEle(arr, elem, key = "id") { 
     var includesIndex;
     arr.map((item, index) => {
       if (item[key] == elem[key]) {
         includesIndex = index;
       }
     });
-    arr.splice(includesIndex, 1);
+    arr.splice(includesIndex, 1); 
   },
   setApproverStr(nodeConfig) {
     if (!nodeConfig) return;
@@ -121,7 +121,10 @@ All.prototype = {
     return "";
   },
   // select 为多选
-  getMultipleSelectStr(keys, obj) {
+  getMultipleSelectStr(keys, obj) { 
+    if (!Array.isArray(keys) && keys.includes('[')) {
+      keys = JSON.parse(keys); 
+    } 
     if (!obj || isEmptyArray(keys)) return;
     let ret = obj.filter((c) => keys.includes(c.key)).map((x) => x.value); 
     return ret;

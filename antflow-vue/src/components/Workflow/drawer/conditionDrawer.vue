@@ -20,7 +20,7 @@
             <div class="condition_content drawer_content">
                 <p class="tip">当审批单同时满足以下条件时进入此流程</p>
                 <ul>
-                    <li v-for="(item, index) in originalConfigData.conditionList" :key="index">
+                    <li v-for="(item, index) in originalConfigData.conditionList" :key="index" style="float: left;">
                         <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
                         <div v-if="item.type == 1">
                             <p :class="originalConfigData.nodeApproveList.length > 0 ? 'selected_list' : ''"
@@ -84,7 +84,7 @@
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'select'">
-                            <p class="check_box">
+                            <p class="check_box" v-if="item.fixedDownBoxValue">
                                 <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
                                     :multiple="item.multiple" :multiple-limit="item.multipleLimit">
                                     <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
@@ -191,7 +191,8 @@ let visible = computed({
         closeDrawer()
     }
 })
-watch(conditionsConfig1, (val) => {
+watch(conditionsConfig1, (val) => {    
+    console.log("conditionsConfig1.value===66666==");
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
@@ -215,7 +216,7 @@ const toStrChecked = (item, key) => {
         removeStrEle(item, key);
     }
 }
-const removeStrEle = (item, key) => {
+const removeStrEle = (item, key) => { 
     let a = item.zdy1 ? item.zdy1.split(",") : []
     var includesIndex;
     a.map((item, index) => {
@@ -328,7 +329,7 @@ const saveCondition = () => {
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
         conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
-    }
+    } 
     setConditionsConfig({
         value: conditionsConfig.value,
         flag: true,
@@ -358,10 +359,8 @@ const closeDrawer = (val) => {
         border: 1px solid rgba(217, 217, 217, 1);
         font-size: 12px;
     }
-
     .condition_content {
         padding: 20px 20px 0;
-
         p.tip {
             margin: 20px 0;
             width: 610px;
@@ -372,7 +371,6 @@ const closeDrawer = (val) => {
             color: #46a6fe;
             font-size: 14px;
         }
-
         ul {
             max-height: 500px;
             overflow-y: scroll;
@@ -399,19 +397,15 @@ const closeDrawer = (val) => {
                         margin-bottom: 10px;
                     }
                 }
-
                 &:not(:last-child)>div>p {
                     margin-bottom: 20px;
                 }
-
-                &>a {
-                    float: right;
-                    margin-right: 10px;
+                &>a { 
+                    margin-left: 10px;
                     margin-top: 20px;
                     color: #46a6fe;
                     font-size: 14px;
                 }
-
                 select,
                 input {
                     width: 100%;
@@ -420,16 +414,13 @@ const closeDrawer = (val) => {
                     border-radius: 4px;
                     border: 1px solid rgba(217, 217, 217, 1);
                 }
-
                 select+input {
                     width: 260px;
                 }
-
                 select {
                     margin-right: 10px;
                     width: 100px;
                 }
-
                 p.selected_list {
                     padding-left: 10px;
                     border-radius: 4px;
@@ -437,13 +428,11 @@ const closeDrawer = (val) => {
                     border: 1px solid rgba(217, 217, 217, 1);
                     word-break: break-word;
                 }
-
                 p.check_box {
                     line-height: 32px;
                 }
             }
         }
-
         .el-button {
             margin-bottom: 20px;
         }
