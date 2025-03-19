@@ -189,7 +189,7 @@ export class NodeUtils {
   * @param {*} fixedDownBoxValue 条件选项
   * @returns 
   */
-  static createJudgeNode(formId, columnId,type ,showName,showType,  columnName, columnType,fieldTypeName, fixedDownBoxValue) {
+  static createJudgeNode(formId, columnId,type ,showName,showType,  columnName, columnType,fieldTypeName,multiple,multipleLimit, fixedDownBoxValue) {
     let judgeNode = {
       formId: formId,                    
       columnId: columnId,
@@ -204,6 +204,8 @@ export class NodeUtils {
       columnDbname: columnName,
       columnType: columnType,
       fieldTypeName: fieldTypeName,
+      multiple: multiple,
+      multipleLimit:multipleLimit,
       fixedDownBoxValue: fixedDownBoxValue
     }
     return judgeNode;

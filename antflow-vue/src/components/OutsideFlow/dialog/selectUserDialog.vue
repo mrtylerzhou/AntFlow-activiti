@@ -102,9 +102,7 @@ watch(list, (newVal) => {
       userName: item.name,
     };
   });
-},
-  { deep: true, immediate: true }
-);
+},{ deep: true });
 // 查询表数据
 function getList() {  
   if (!store.basideFormConfig || proxy.isArrayEmpty(store.basideFormConfig.configList)) {

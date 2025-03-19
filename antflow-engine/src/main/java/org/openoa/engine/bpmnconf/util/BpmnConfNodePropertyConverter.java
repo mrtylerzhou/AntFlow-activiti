@@ -44,12 +44,20 @@ public class BpmnConfNodePropertyConverter {
         result.setIsDefault(propertysVo.getIsDefault());
         result.setSort(propertysVo.getSort());
         List<Integer> conditionTypes=new ArrayList<>(newModels.size());
+        Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
         for (BpmnNodeConditionsConfVueVo newModel : newModels) {
             String columnId = newModel.getColumnId();
             if(columnId==null){
                 throw new JiMuBizException("each and every node must have a columnId value");
             }
+
             int columnIdInt = Integer.parseInt(columnId);
+            //select控件多选特殊处理 columnId =10000 改为 10004
+            if (strEnumCode == columnIdInt){
+                if (newModel.getMultiple() != null && newModel.getMultiple()){
+                    columnIdInt =  ConditionTypeEnum.CONDITION_TYPE_LF_COLLECTION_CONDITION.getCode();
+                }
+            }
             ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
             if(enumByCode==null){
                 throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
@@ -59,9 +67,9 @@ public class BpmnConfNodePropertyConverter {
             String columnDbname = newModel.getColumnDbname();
             if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
                 //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
-               if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
-                   throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
-               }
+                if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
+                    throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+                }
             }
             Integer fieldType = enumByCode.getFieldType();
             Class<?> fieldCls = enumByCode.getFieldCls();
@@ -70,17 +78,17 @@ public class BpmnConfNodePropertyConverter {
                 List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
                 String zdy1 = newModel.getZdy1();
                 String[] keys = zdy1.split(",");
-                List<Object> values=new ArrayList<>(keys.length);
-
-                for (int i = 0; i < keys.length; i++) {
-                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.get(i);
+                List<String> keysList = Arrays.asList(keys);
+                List<Object> values = new ArrayList<>(keys.length);
+                keysList.forEach(key->{
+                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.stream().filter(x->x.getKey().equals(key)).findFirst().get();
                     if(fieldCls.equals(String.class)){
                         values.add(baseKeyValueStruVo.getKey());
                     }else{
                         Object parsedObject = JSON.parseObject(baseKeyValueStruVo.getKey(), fieldCls);
                         values.add(parsedObject);
                     }
-                }
+                });
                 Object valueOrWrapper=null;
                 if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                     Map<String,Object> wrapperResult=new HashMap<>();
@@ -133,7 +141,7 @@ public class BpmnConfNodePropertyConverter {
                             throw new RuntimeException(e);
                         }
                     }else{
-                       actualValue= JSON.parseObject(zdy1,fieldCls);
+                        actualValue= JSON.parseObject(zdy1,fieldCls);
                     }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                         Map<String,Object> wrapperResult=new HashMap<>();
@@ -173,10 +181,10 @@ public class BpmnConfNodePropertyConverter {
                 List objects =new ArrayList();
                 if (ConditionTypeEnum.isLowCodeFlow(enumByCode)) {
                     //低代码多值条件是固定的,{"key":["a","b"]
-                  wrappedValues =(Map<String,Collection<?>>)ReflectionUtils.getField(field, baseVo);
+                    wrappedValues =(Map<String,Collection<?>>)ReflectionUtils.getField(field, baseVo);
                     Collection<Collection<?>> values = wrappedValues.values();
                     for (Collection<?> value : values) {
-                       objects.addAll(value);
+                        objects.addAll(value);
                     }
                 }else{
                     objects = (List<?>) ReflectionUtils.getField(field, baseVo);
@@ -194,14 +202,14 @@ public class BpmnConfNodePropertyConverter {
                 List<BaseIdTranStruVo> extFields = null;
                 if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                     String extJson = baseVo.getExtJson();
-                   if(!StringUtils.isEmpty(extJson)){
-                       JSONArray jsonArray = JSON.parseArray(extJson);
-                       JSONObject jsonObject = jsonArray.getJSONObject(0);
-                       Object fixedDownBoxValue = jsonObject.get("fixedDownBoxValue");
-                       if(fixedDownBoxValue!=null){
+                    if(!StringUtils.isEmpty(extJson)){
+                        JSONArray jsonArray = JSON.parseArray(extJson);
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        Object fixedDownBoxValue = jsonObject.get("fixedDownBoxValue");
+                        if(fixedDownBoxValue!=null){
                             vueVo.setFixedDownBoxValue(fixedDownBoxValue.toString());
-                       }
-                   }
+                        }
+                    }
                 }else{
                     extFields= (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
                 }

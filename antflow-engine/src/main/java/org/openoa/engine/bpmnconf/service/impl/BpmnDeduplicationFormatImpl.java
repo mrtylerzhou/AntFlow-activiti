@@ -1,15 +1,19 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.alibaba.druid.sql.ast.statement.SQLIfStatement;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
-import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
-import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.util.BpmnUtils;
+import org.openoa.base.vo.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.security.cert.TrustAnchor;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @ description: deduplication
@@ -56,7 +60,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //deduplication on single node
             if (bpmnNodeVo.getParams().getParamType().equals(1)) {
 
-                singlePlayerNodeDeduplication(bpmnNodeVo, new ArrayList<>(Collections.singletonList(initiator)));
+                singlePlayerNodeDeduplication(bpmnNodeVo,new HashSet<>(), new ArrayList<>(Collections.singletonList(initiator)));
                 nodeVoList.add(bpmnNodeVo);
                 continue;
             }
@@ -64,7 +68,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //deduplication on multiplayer node
             if (bpmnNodeVo.getParams().getParamType().equals(2)) {
                 //multi assignee node deduplication
-                multiPlayerNodeDeduplication(bpmnNodeVo, new ArrayList<>(Collections.singletonList(initiator)), false);
+                multiPlayerNodeDeduplication(bpmnNodeVo, new HashSet<>(),new ArrayList<>(Collections.singletonList(initiator)), false);
                 nodeVoList.add(bpmnNodeVo);
             }
 
@@ -82,7 +86,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
             if (bpmnNode.getParams().getParamType().equals(1)) {
 
-                singlePlayerNodeDeduplication(bpmnNode, approverList);
+                singlePlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList);
                 continue;
             }
 
@@ -91,7 +95,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
                 Collections.reverse(bpmnNode.getParams().getAssigneeList());
 
-                multiPlayerNodeDeduplication(bpmnNode, approverList, true);
+                multiPlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList, true);
 
                 Collections.reverse(bpmnNode.getParams().getAssigneeList());
             }
@@ -133,40 +137,84 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
         BpmnNodeVo bpmnNodeVo = mapNodes.get(startNodeId);
 
-
-        while (!ObjectUtils.isEmpty(bpmnNodeVo.getParams().getNodeTo())) {
-
-
-            bpmnNodeVo = mapNodes.get(bpmnNodeVo.getParams().getNodeTo());
-
-
-            if (bpmnNodeVo.getParams().getParamType().equals(1)) {
-
-                singlePlayerNodeDeduplication(bpmnNodeVo, approverList);
-                continue;
-            }
-
-
-            if (bpmnNodeVo.getParams().getParamType().equals(2)) {
-
-                multiPlayerNodeDeduplication(bpmnNodeVo, approverList, true);
-            }
-
-        }
+        // 使用递归处理并行网关
+        processNodeRecursively(bpmnNodeVo,new HashSet<>(), mapNodes, approverList);
 
         return bpmnConfVo;
 
     }
+    /**
+     * 递归处理节点，如果是并行网关，则递归处理所有出口节点
+     *
+     * @param bpmnNodeVo 当前处理的节点
+     * @param mapNodes   节点映射表
+     * @param approverList 已处理的审批人列表
+     */
+    private void processNodeRecursively(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNodes, Map<String, BpmnNodeVo> mapNodes, List<String> approverList) {
 
+        String nextId=null;
+        do {
+
+
+            if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(bpmnNodeVo.getNodeType())){
+                List<String> parallelNodeToIds = bpmnNodeVo.getNodeTo();
+                for (String parallelNodeToId : parallelNodeToIds) {
+                    BpmnNodeVo parallelNodeTo = mapNodes.get(parallelNodeToId);
+                    if (parallelNodeTo != null) {
+                        processNodeRecursively(parallelNodeTo,alreadyProcessedNodes, mapNodes, approverList);
+                    }
+                }
+
+            }
+
+
+            // 处理单节点去重
+            if (bpmnNodeVo.getParams().getParamType()!=null&&bpmnNodeVo.getParams().getParamType().equals(1)) {
+                singlePlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList);
+            }else if (bpmnNodeVo.getParams().getParamType()!=null&&bpmnNodeVo.getParams().getParamType().equals(2)) {
+                multiPlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList, true);
+            }
+
+            String nodeTo = getNodeTo(bpmnNodeVo);
+
+            if (Strings.isNullOrEmpty(nodeTo)) {
+                return;
+            }
+            bpmnNodeVo= getNextNodeVo(mapNodes.values(), nodeTo);
+            nextId=bpmnNodeVo.getNodeId();
+        }while (!StringUtils.isEmpty(nextId));
+
+    }
+    /**
+     * get next node
+     *
+     * @param nodes
+     * @param nodeTo
+     * @return
+     */
+    private BpmnNodeVo getNextNodeVo(Collection<BpmnNodeVo> nodes, String nodeTo) {
+        List<BpmnNodeVo> nextNodeVo = nodes
+                .stream()
+                .filter(o -> o.getNodeId().equals(nodeTo))
+                .collect(Collectors.toList());
+
+        if (ObjectUtils.isEmpty(nextNodeVo)) {
+            throw new JiMuBizException("未找到下一节点流程发起失败");
+        }
+        return nextNodeVo.get(0);
+    }
+    private String getNodeTo(BpmnNodeVo nodeVo) {
+        return Optional.ofNullable(nodeVo.getParams()).map(BpmnNodeParamsVo::getNodeTo).orElse(null);
+    }
     /**
      * single node deduplication
      *
      * @param bpmnNodeVo
      * @param approverList
      */
-    private void singlePlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo, List<String> approverList) {
+    private void singlePlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList) {
 
-        if(bpmnNodeVo.isDeduplicationExclude()){
+        if(bpmnNodeVo.isDeduplicationExclude()||alreadyProcessedNods.contains(bpmnNodeVo.getNodeId())){
             return;
         }
         //to check whether it has already been deduplicated,if so,then skip to process it
@@ -184,7 +232,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //if it is not duplicated,then add it in to the approverlist
             approverList.add(assignee.getAssignee());
         }
-
+        alreadyProcessedNods.add(bpmnNodeVo.getNodeId());
     }
 
     /**
@@ -194,10 +242,10 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
      * @param approverList alredy iterated approver list
      * @param flag         true forward,false backward
      */
-    private void multiPlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo, List<String> approverList, Boolean flag) {
+    private void multiPlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList, Boolean flag) {
 
 
-        if(bpmnNodeVo.isDeduplicationExclude()){
+        if(bpmnNodeVo.isDeduplicationExclude()||alreadyProcessedNods.contains(bpmnNodeVo.getNodeId())){
             return;
         }
         if (bpmnNodeVo.getParams().getIsNodeDeduplication() == 1) {
@@ -231,7 +279,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
         }
         bpmnNodeVo.getParams().setIsNodeDeduplication(isNodeDeduplication);
-
+        alreadyProcessedNods.add(bpmnNodeVo.getNodeId());
     }
 
 }

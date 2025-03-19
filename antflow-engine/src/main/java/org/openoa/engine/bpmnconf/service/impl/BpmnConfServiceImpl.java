@@ -359,7 +359,17 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
-            bpmnConfVo.getNodes().forEach(node -> node.setFormCode(bpmnConfVo.getFormCode()));
+            bpmnConfVo.getNodes().forEach(node -> {
+                node.setFormCode(bpmnConfVo.getFormCode());
+                if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                    if(aggregationNode==null){
+                        throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                    }
+                    aggregationNode.setAggregationNode(true);
+                    aggregationNode.setDeduplicationExclude(true);
+                }
+            });
         }
         //set viewpage buttons
         setViewPageButton(bpmnConfVo);
