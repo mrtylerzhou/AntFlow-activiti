@@ -66,21 +66,11 @@ public class BpmnConfNodePropertyConverter {
             Integer fieldType = enumByCode.getFieldType();
             Class<?> fieldCls = enumByCode.getFieldCls();
             if(fieldType==1){//list
-                String fixedDownBoxValue = newModel.getFixedDownBoxValue();
-                List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
                 String zdy1 = newModel.getZdy1();
                 String[] keys = zdy1.split(",");
                 List<Object> values=new ArrayList<>(keys.length);
 
-                for (int i = 0; i < keys.length; i++) {
-                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.get(i);
-                    if(fieldCls.equals(String.class)){
-                        values.add(baseKeyValueStruVo.getKey());
-                    }else{
-                        Object parsedObject = JSON.parseObject(baseKeyValueStruVo.getKey(), fieldCls);
-                        values.add(parsedObject);
-                    }
-                }
+                values.addAll(Arrays.asList(keys));
                 Object valueOrWrapper=null;
                 if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                     Map<String,Object> wrapperResult=new HashMap<>();
