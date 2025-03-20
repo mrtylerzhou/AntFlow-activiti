@@ -103,6 +103,7 @@ const handleTodayCreate = () => {
     &:hover {
         box-shadow: 3px 3px 6px 1px rgba(0, 0, 0, 0.2);
         background: #fff;
+        border: 2px solid #1890ff;
     }
     i {
         font-size: 90px;

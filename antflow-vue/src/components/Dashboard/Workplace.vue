@@ -50,10 +50,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -85,10 +84,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -274,7 +272,7 @@ function handleFlow(row) {
     }
 
     p {
-        width: 95px;
+        width: 150px;
         font-size: 12px;
         font-weight: 300;
         overflow: hidden;
