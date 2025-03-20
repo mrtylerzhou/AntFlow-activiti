@@ -38,6 +38,7 @@ public class ConditionServiceImpl implements ConditionService {
         if (CollectionUtils.isEmpty(conditionParamTypeList)) {
             return false;
         }
+        conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
         boolean result = true;
         for (Integer integer : conditionParamTypeList) {
             ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);

@@ -23,7 +23,7 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
         if (ObjectUtils.isEmpty(lfConditionsFromUser)) {
             throw new JiMuBizException("the process has no no code form,please contact the administrator");
         }
-        boolean isMatch=false;
+        boolean isMatch=true;
         //operator type
         for (Map.Entry<String, Object> stringObjectEntry : lfConditionsFromDb.entrySet()) {
             String key = stringObjectEntry.getKey();
@@ -35,7 +35,10 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
             if(valueFromDb==null){
                 throw new JiMuBizException(Strings.lenientFormat("condition field from db %s can not be null",key));
             }
-            isMatch= predicate.test(valueFromDb,valueFromUser);
+            isMatch = predicate.test(valueFromDb, valueFromUser);
+            if(!isMatch){
+                return false;
+            }
         }
         return  isMatch;
     }

@@ -45,6 +45,8 @@ public class BpmnConfNodePropertyConverter {
         result.setSort(propertysVo.getSort());
         List<Integer> conditionTypes=new ArrayList<>(newModels.size());
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
+        Map<String,Object> wrapperResult=new HashMap<>();
+        boolean isLowCodeFlow = false;
         for (BpmnNodeConditionsConfVueVo newModel : newModels) {
             String columnId = newModel.getColumnId();
             if(columnId==null){
@@ -91,8 +93,7 @@ public class BpmnConfNodePropertyConverter {
                 });
                 Object valueOrWrapper=null;
                 if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                    Map<String,Object> wrapperResult=new HashMap<>();
-                    wrapperResult.put(fieldName,values);
+                    wrapperResult.put(columnDbname,values);
                     valueOrWrapper=wrapperResult;
                 }
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
@@ -120,8 +121,7 @@ public class BpmnConfNodePropertyConverter {
                        zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                     }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        Map<String,Object> wrapperResult=new HashMap<>();
-                        wrapperResult.put(fieldName,zdy1);
+                        wrapperResult.put(columnDbname,zdy1);
                         valueOrWrapper=wrapperResult;
                     }
                     ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
@@ -137,15 +137,20 @@ public class BpmnConfNodePropertyConverter {
                         zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                     }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        Map<String,Object> wrapperResult=new HashMap<>();
-                        wrapperResult.put(fieldName,actualValue);
+                        isLowCodeFlow=true;
+                        wrapperResult.put(columnDbname,actualValue);
                         valueOrWrapper=wrapperResult;
+                    }else {
+                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                     }
-                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                 }
 
             }
 
+        }
+        if(isLowCodeFlow){
+            Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
+            ReflectionUtils.setField(field, result, wrapperResult);
         }
         String extJson = JSON.toJSONString(newModels);
         result.setExtJson(extJson);
