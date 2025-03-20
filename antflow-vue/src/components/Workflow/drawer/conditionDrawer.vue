@@ -49,7 +49,7 @@
                                     </option>
                                 </select>
                                 <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
-                                    :placeholder="'请选择' + item.showName" format="YYYY/MM/DD" />
+                                    :placeholder="'请选择' + item.showName" format="YYYY-MM-DD" />
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'time'">
@@ -62,7 +62,7 @@
                                     </option>
                                 </select>
                                 <el-time-picker v-if="item.optType != 6" v-model="item.zdy1" arrow-control
-                                    :placeholder="'请选择' + item.showName" />
+                                    :placeholder="'请选择' + item.showName"/>
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'switch'">
@@ -83,14 +83,22 @@
                                         item1.value }}</a>
                             </p>
                         </div>
-                        <div v-else-if="item.fieldTypeName == 'select'">
+                        <div v-else-if="item.fieldTypeName == 'select' && item.multiple">  
                             <p class="check_box" v-if="item.fixedDownBoxValue">
                                 <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
-                                    :multiple="item.multiple" :multiple-limit="item.multipleLimit">
+                                    :multiple-limit="item.multipleLimit">
                                     <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
                                         :label="itemOpt.value" :value="itemOpt.key" />
                                 </el-select>
                             </p>
+                        </div>
+                        <div v-else-if="item.fieldTypeName == 'select' && !item.multiple"> 
+                            <p class="check_box" v-if="item.fixedDownBoxValue">
+                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1">
+                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
+                                        :label="itemOpt.value" :value="itemOpt.key" />
+                                </el-select>
+                            </p> 
                         </div>
                         <div v-else-if="item.fieldTypeName == 'input-number'">
                             <p>
@@ -164,6 +172,7 @@ import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, c
 import $func from '@/utils/flow/index'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getConditions } from '@/api/mock'
+const { proxy } = getCurrentInstance();
 const route = useRoute();
 const routePath = route.path || '';
 let store = useStore()
@@ -191,7 +200,7 @@ let visible = computed({
         closeDrawer()
     }
 })
-watch(conditionsConfig1, (val) => {
+watch(conditionsConfig1, (val) => { 
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
@@ -204,9 +213,14 @@ watch(conditionsConfig1, (val) => {
         if (itemConf.fieldTypeName == 'select' && !itemConf.multiple) {//单选
             itemConf.zdy1 = parseInt(itemConf.zdy1)
         }
+        if (itemConf.fieldTypeName == 'date') {//日期控件
+            itemConf.zdy1 = proxy.parseTime(itemConf.zdy1, '{y}-{m}-{d} {h}:{i}:{s}') 
+        }
+        if (itemConf.fieldTypeName == 'time') {//时间控件
+            itemConf.zdy1 = proxy.parseTime(itemConf.zdy1, '{y}-{m}-{d} {h}:{i}:{s}')  
+        }
     }
-})
-
+});
 const changeOptType = (item) => {
     if (item.optType == 1) {
         item.zdy1 = null;
@@ -236,22 +250,7 @@ const removeStrEle = (item, key) => {
     a.splice(includesIndex, 1);
     item.zdy1 = a.toString()
 }
-/**添加条件 */
-const addCondition = async () => {
-    conditionList.value = [];
-    conditionVisible.value = true;
-    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-    if (originalConfigData.value.conditionList) {
-        for (var i = 0; i < originalConfigData.value.conditionList.length; i++) {
-            var { formId, columnId } = originalConfigData.value.conditionList[i];
-            if (columnId == 0) {
-                conditionList.value.push({ formId: formId, columnId: 0 })
-            } else {
-                conditionList.value.push(conditions.value.filter(item => { return item.formId == formId; })[0])
-            }
-        }
-    }
-}
+
 /**过滤空值 */
 const nullableFilter = (elm) => {
     return (elm != null && elm !== false && elm !== "");
@@ -302,9 +301,24 @@ const loadLFFormCondition = () => {
         reject([]);
     });
 };
-
+/**添加条件 */
+const addCondition = async () => {
+    conditionList.value = [];
+    conditionVisible.value = true;
+    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
+    if (originalConfigData.value.conditionList) {
+        for (var i = 0; i < originalConfigData.value.conditionList.length; i++) {
+            var { formId, columnId } = originalConfigData.value.conditionList[i];
+            if (columnId == 0) {
+                conditionList.value.push({ formId: formId, columnId: 0 })
+            } else {
+                conditionList.value.push(conditions.value.filter(item => { return item.formId == formId; })[0])
+            }
+        }
+    }
+}
 /**选择条件后确认 */
-const sureCondition = () => {
+const sureCondition = () => { 
     for (var i = 0; i < conditionList.value.length; i++) {
         var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue } = conditionList.value[i];
         if ($func.toggleClass(originalConfigData.value.conditionList, conditionList.value[i], "formId")) {
@@ -322,7 +336,7 @@ const sureCondition = () => {
         if (!$func.toggleClass(conditionList.value, originalConfigData.value.conditionList[i], "formId")) {
             originalConfigData.value.conditionList.splice(i, 1);
         }
-    }
+    } 
     originalConfigData.value.conditionList.sort(function (a, b) { return a.columnId - b.columnId; });
     conditionVisible.value = false;
 }
