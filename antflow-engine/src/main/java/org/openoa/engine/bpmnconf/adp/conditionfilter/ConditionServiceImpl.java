@@ -54,12 +54,10 @@ public class ConditionServiceImpl implements ConditionService {
                 }
             } catch (JiMuBizException e) {
                 log.info("condiiton judge business exception:" + e.getMessage());
-                result = false;
-                break;
+                throw e;
             } catch (Exception e) {
                 log.error("conditionJudgeClass instantiate failure", e);
-                result = false;
-                break;
+                throw  e;
             }
 
         }
