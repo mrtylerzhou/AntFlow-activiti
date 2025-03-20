@@ -128,20 +128,13 @@ public class BpmnConfNodePropertyConverter {
                 }else{
                     Object valueOrWrapper=null;
                     Object actualValue=null;
-                    if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_CONDITION){
-                        try {
-                            actualValue= DateUtil.SDF_DATE_PATTERN.parse(zdy1);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }else if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_TIME_CONDITION){
-                        try {
-                            actualValue=DateUtil.SDF_DATETIME_PATTERN.parse(zdy1);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }else{
-                        actualValue= JSON.parseObject(zdy1,fieldCls);
+                    Object zdy2Value=null;
+                    actualValue= JSON.parseObject(zdy1,fieldCls);
+                    if (!StringUtils.isEmpty(zdy2)){
+                        zdy2Value=JSON.parseObject(zdy2,fieldCls);
+                    }
+                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                        zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                     }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                         Map<String,Object> wrapperResult=new HashMap<>();

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.engine.bpmnconf.service.biz.TripleConsumer;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 

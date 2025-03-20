@@ -254,7 +254,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                             .createTime(new Date())
                             .build());
                     //if condition value doest not a collection and doest not a string type,it must have an operator
-                    if(conditionTypeEnum.getFieldType()==2&&!String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
+                    if(conditionTypeEnum.getFieldType()==2&&String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
                         Integer numberOperator = bpmnNodeConditionsConfBaseVo.getNumberOperator();
                         bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
                                 .builder()

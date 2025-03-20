@@ -17,12 +17,18 @@ public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditi
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
         BiPredicate<Object,Object> predicate=(a,b)->{
             try {
-                Date dateFromDb =(Date) a;
+                String[] split = a.toString().split(",");
+                Date dateFromDb1 =currentDateFormatter().parse(split[0]);
+                Date dateFromDb2 = null;
+                if(split.length>1){
+                    dateFromDb2=currentDateFormatter().parse(split[1]);
+                }
                 Date dateFromUser = currentDateFormatter().parse(b.toString());
-                BigDecimal dateFromDbBig=new BigDecimal(dateFromDb.getTime());
+                BigDecimal dateFromDbBig1=new BigDecimal(dateFromDb1.getTime());
+                BigDecimal dateFromDbBig2=dateFromDb2==null?null:new BigDecimal(dateFromDb2.getTime());
                 BigDecimal dateFromUserBig=new BigDecimal(dateFromUser.getTime());
                 Integer numberOperator = conditionsConf.getNumberOperator();
-                return super.compareJudge(dateFromDbBig,null,dateFromUserBig,numberOperator);
+                return super.compareJudge(dateFromDbBig1,dateFromDbBig2,dateFromUserBig,numberOperator);
             } catch (ParseException e) {
                 log.error("date parse exception while condition judging");
                 throw new RuntimeException(e);
