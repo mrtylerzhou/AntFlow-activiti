@@ -250,6 +250,9 @@ const loadDIYFormCondition = () => {
 const loadLFFormCondition = () => {
     return new Promise((resolve, reject) => {
         let conditionArr = [];
+        if (!lowCodeFormFields.hasOwnProperty("formFields")) {
+            resolve(conditionArr);
+        }
         conditionArr = lowCodeFormFields.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
             if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
                 let optionGroup = [];

@@ -37,7 +37,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { getApiWorkFlowData } from "@/api/workflow";
-import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
+import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';

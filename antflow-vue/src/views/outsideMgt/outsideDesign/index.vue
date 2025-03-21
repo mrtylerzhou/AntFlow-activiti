@@ -42,7 +42,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import BasicSetting from "@/components/OutsideFlow/BasicSetting/index.vue";
+import BasicSetting from "@/components/Workflow/outsideSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";

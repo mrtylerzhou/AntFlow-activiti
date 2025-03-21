@@ -5,7 +5,7 @@
       <el-divider />
       <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
         <el-tab-pane label="表单信息" name="baseTab">
-          <div v-if="baseTabShow"> 
+          <div v-if="baseTabShow"  aria-hidden="true"> 
             <previewComponent :isPreview="true" />  
             <!-- <i class="pin-top-right-corner pin-pass"></i> -->
           </div> 
