@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="app-container" aria-hidden="true">
         <div class="fd-nav">
             <div class="fd-nav-left"> 
                 <div class="fd-nav-title">  

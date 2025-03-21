@@ -332,7 +332,6 @@ const closeDrawer = () => {
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
-
 .el-drawer__header {
     margin-bottom: 5px !important;
 }
@@ -340,6 +339,8 @@ const closeDrawer = () => {
 .selected_list {
     margin-bottom: 20px;
     line-height: 40px;
+    max-height: 180px;
+    overflow-y: auto;
 }
 
 .selected_list span {
@@ -446,5 +447,5 @@ const closeDrawer = () => {
     margin-top: 6px;
     width: 95%;
     height: 45px;
-}
+} 
 </style>

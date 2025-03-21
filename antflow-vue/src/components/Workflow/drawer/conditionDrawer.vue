@@ -42,6 +42,7 @@
                         <div v-else-if="item.fieldTypeName == 'date'">
                             <p>
                                 <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
                                     v-model="item.optType">
                                     <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
                                         :value="itemOpt.value" />
@@ -53,6 +54,7 @@
                         <div v-else-if="item.fieldTypeName == 'time'">
                             <p>
                                 <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
                                     v-model="item.optType">
                                     <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
                                         :value="itemOpt.value" />
@@ -99,6 +101,7 @@
                         <div v-else-if="item.fieldTypeName == 'input-number'">
                             <p>
                                 <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
                                     v-model="item.optType">
                                     <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
                                         :value="itemOpt.value" />
@@ -165,9 +168,9 @@ import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, c
 import $func from '@/utils/flow/index'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getConditions } from '@/api/mock'
-const { proxy } = getCurrentInstance();
-const route = useRoute();
-const routePath = route.path || '';
+const { proxy } = getCurrentInstance()
+const route = useRoute()
+const routePath = route.path || ''
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
 let conditionVisible = ref(false)
@@ -401,7 +404,7 @@ const convertConditionNodeValue = (data) => {
         }
 
         ul {
-            max-height: 500px;
+            max-height:calc(68vh);
             overflow-y: scroll;
             margin-bottom: 20px;
 
