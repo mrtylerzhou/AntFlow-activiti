@@ -10,6 +10,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
+import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsConf;
@@ -86,7 +87,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                     .stream()
                     .map(BpmnNodeConditionsParamConf::getConditionParamType)
                     .collect(Collectors.toList())));
-            Map<String,Object> wrappedValue=new HashMap<>();
+            Map<String,Object> wrappedValue=null;
             boolean isLowCodeFlow=false;
             for (BpmnNodeConditionsParamConf nodeConditionsParamConf : nodeConditionsParamConfs) {
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum
@@ -96,6 +97,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                 }
 
                 String conditionParamJsom = nodeConditionsParamConf.getConditionParamJsom();
+                Integer operator = nodeConditionsParamConf.getOperator();
 
                 if (!ObjectUtils.isEmpty(conditionParamJsom)) {
                     if (conditionTypeEnum.getFieldType().equals(1)) {//列表
@@ -103,6 +105,9 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
 
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
                             String columnDbname = name2confVueMap.get(nodeConditionsParamConf.getConditionParamName()).getColumnDbname();
+                            if(wrappedValue==null){
+                                wrappedValue=new LinkedHashMap<>();
+                            }
                             wrappedValue.put(columnDbname,objects);
                         }
                         Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
@@ -119,6 +124,9 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
                             isLowCodeFlow=true;
                             String columnDbname = name2confVueMap.get(nodeConditionsParamConf.getConditionParamName()).getColumnDbname();
+                            if(wrappedValue==null){
+                                wrappedValue=new LinkedHashMap<>();
+                            }
                             wrappedValue.put(columnDbname,object);
                         }else{
                             Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
@@ -130,11 +138,13 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                 //set response
                 BpmnNodeConditionsAdaptor bean = SpringBeanUtils.getBean(conditionTypeEnum.getCls());
                 bean.setConditionsResps(bpmnNodeConditionsConfBaseVo);
+                bpmnNodeConditionsConfBaseVo.getNumberOperatorList().add(operator);
             }
             if(isLowCodeFlow){
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
                 ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo,  wrappedValue);
             }
+
         }
 
         //set property
@@ -244,18 +254,20 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                             ObjectUtils.isEmpty(JSON.parseArray(conditionParamJson, conditionTypeEnum.getFieldCls()))) {
                         continue;
                     }
+                    Integer numberOperator= extField.getOptType();
+
                     bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
                             .builder()
                             .bpmnNodeConditionsId(nodeConditionsId)
                             .conditionParamType(conditionTypeEnum.getCode())
                             .conditionParamName(extField.getColumnDbname())
                             .conditionParamJsom(conditionParamJson)
+                            .operator(numberOperator)
                             .createUser(SecurityUtils.getLogInEmpNameSafe())
                             .createTime(new Date())
                             .build());
                     //if condition value doest not a collection and doest not a string type,it must have an operator
                     if(conditionTypeEnum.getFieldType()==2&&!String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
-                        Integer numberOperator = bpmnNodeConditionsConfBaseVo.getNumberOperator();
                         bpmnNodeConditionsParamConfService.getBaseMapper().insert(BpmnNodeConditionsParamConf
                                 .builder()
                                 .bpmnNodeConditionsId(nodeConditionsId)

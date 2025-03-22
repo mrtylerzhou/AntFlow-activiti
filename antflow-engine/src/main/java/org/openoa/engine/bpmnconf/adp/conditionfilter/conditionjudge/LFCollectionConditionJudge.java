@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.engine.bpmnconf.service.TriplePredict;
 import org.openoa.engine.lowflow.entity.LFMainField;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,9 @@ import java.util.function.BiPredicate;
 @Slf4j
 public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         //a是数据库里存的集合,b是用户传过来的集合(或者单个值),遍历a,b,如果b在a里,则返回true
-        BiPredicate<Object,Object> predicate=(a,b)->{
+        TriplePredict<Object,Object,Integer> predicate=(a, b,c)->{
           if(!(a instanceof Iterable)){
               throw new JiMuBizException("value from db is not iterable");
           }
@@ -42,6 +43,6 @@ public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
             }
             return false;
         };
-        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate);
+        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate,index);
     }
 }

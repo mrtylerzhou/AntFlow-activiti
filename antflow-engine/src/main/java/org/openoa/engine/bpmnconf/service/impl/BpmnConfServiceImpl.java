@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
+import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_CONDITIONS;
 
 
 /**
@@ -359,17 +360,32 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
-            bpmnConfVo.getNodes().forEach(node -> {
-                node.setFormCode(bpmnConfVo.getFormCode());
-                if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
-                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
-                    if(aggregationNode==null){
-                        throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+            Map<String,BpmnNodeVo>id2NodeMap=null;
+            for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
+                    node.setFormCode(bpmnConfVo.getFormCode());
+                    if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
+                        BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                        if(aggregationNode==null){
+                            throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                        }
+                        aggregationNode.setAggregationNode(true);
+                        aggregationNode.setDeduplicationExclude(true);
                     }
-                    aggregationNode.setAggregationNode(true);
-                    aggregationNode.setDeduplicationExclude(true);
-                }
-            });
+                   /* if(NODE_TYPE_CONDITIONS.getCode().equals(node.getNodeType())&&node.getNodeTo().size()>1){
+                        String nodeFrom = node.getNodeFrom();
+                        if(id2NodeMap==null){
+                            id2NodeMap=bpmnConfVo.getNodes().stream().collect(Collectors.toMap(BpmnNodeVo::getNodeId, o -> o,(k1,k2)->k1));
+                        }
+                        BpmnNodeVo gatewayNode = id2NodeMap.get(nodeFrom);
+                        gatewayNode.setIsParallel(true);
+                        BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                        if(aggregationNode==null){
+                            throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                        }
+                        aggregationNode.setAggregationNode(true);
+                        aggregationNode.setDeduplicationExclude(true);
+                    }*/
+            }
         }
         //set viewpage buttons
         setViewPageButton(bpmnConfVo);

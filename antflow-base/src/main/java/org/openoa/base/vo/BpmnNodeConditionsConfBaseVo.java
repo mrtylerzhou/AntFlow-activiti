@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +79,7 @@ public class BpmnNodeConditionsConfBaseVo {
      * number operator
      */
     private Integer numberOperator;
+    private List<Integer> numberOperatorList=new ArrayList<>();
     private String extJson;
 
     //===============>>third paryt process<<===================

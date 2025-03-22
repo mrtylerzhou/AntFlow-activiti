@@ -40,6 +40,7 @@ public class ConditionServiceImpl implements ConditionService {
         }
         conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
         boolean result = true;
+        int index=0;
         for (Integer integer : conditionParamTypeList) {
             ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
             if (conditionTypeEnum == null) {
@@ -48,7 +49,7 @@ public class ConditionServiceImpl implements ConditionService {
                 break;
             }
             try {
-                if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo)) {
+                if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index)) {
                     result = false;
                     break;
                 }
@@ -59,6 +60,7 @@ public class ConditionServiceImpl implements ConditionService {
                 log.error("conditionJudgeClass instantiate failure", e);
                 throw  e;
             }
+            index++;
 
         }
         //关于默认条件,默认条件不记在表内,
