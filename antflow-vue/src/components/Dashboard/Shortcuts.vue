@@ -137,9 +137,9 @@ const handleTodayCreate = () => {
     }
 }
 .ve_card3 {
-    background: #ffba00;
+    background: #FE7300;
     &:hover {
-        color: #ffba00;
+        color: #FE7300;
     }
 }
 .ve_card4 {

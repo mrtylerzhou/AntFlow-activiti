@@ -136,7 +136,7 @@ export let approveButtonColor = {
   0: 'info',
   1: 'primary',//
   2: 'primary',//
-  3: 'primary',//同意
+  3: 'success',//同意
   4: 'danger',//拒绝
   5: 'danger',//
   6: 'danger',//
