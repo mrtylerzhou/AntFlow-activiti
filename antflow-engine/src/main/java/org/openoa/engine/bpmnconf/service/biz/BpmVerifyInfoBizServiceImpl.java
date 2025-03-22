@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -364,41 +365,52 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             Long variableId) {
 
         //get the netxt pvm activity element
-        PvmActivity nextElement = activitiAdditionalInfoService.getNextElement(elementId, activitiList);
+        List<PvmActivity> nextElements = activitiAdditionalInfoService.getNextElementList(elementId, activitiList);
 
-        if (ObjectUtils.isEmpty(nextElement)) {
+        if (CollectionUtils.isEmpty(nextElements)) {
             return;
         }
-
-        //get next node's approvers
-        List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(nextElement.getId());
         List<String> empIds = new ArrayList<>();
 
         List<String> emplNames = Lists.newArrayList();
-        if (!ObjectUtils.isEmpty(baseIdTranStruVos)) {
-            for (BaseIdTranStruVo empBaseInfo : baseIdTranStruVos) {
-                String emplIdStr=empBaseInfo.getId();
-                String name = empBaseInfo.getName();
-                empIds.add(emplIdStr);
-                emplNames.add(name);
+
+        for (PvmActivity nextElement : nextElements) {
+            //get next node's approvers
+            List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(nextElement.getId());
+            if (!ObjectUtils.isEmpty(baseIdTranStruVos)) {
+                for (BaseIdTranStruVo empBaseInfo : baseIdTranStruVos) {
+                    String emplIdStr=empBaseInfo.getId();
+                    String name = empBaseInfo.getName();
+                    empIds.add(emplIdStr);
+                    emplNames.add(name);
+                }
             }
         }
 
         //then assemble them
         String verifyUserName="";
-        if (!ObjectUtils.isEmpty(emplNames)) {
+        if (!CollectionUtils.isEmpty(emplNames)) {
             verifyUserName = StringUtils.join(emplNames, ",");
         } else {
 
             //If can not get the approvers info,then get it from activity engine
-            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElement.getId(), signUpNodeCollectionNameMap, variableInstanceMap,variableId);
+            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElements.get(0).getId(), signUpNodeCollectionNameMap, variableInstanceMap,variableId);
+        }
+        StringBuilder nameSb=new StringBuilder();
+        StringBuilder elementIdSb=new StringBuilder();
+        for (int i = 0; i < nextElements.size(); i++) {
+            PvmActivity currElement = nextElements.get(i);
+            if(i!=nextElements.size()-1){
+                nameSb.append(currElement.getProperty("name")).append("||");
+                elementIdSb.append(currElement.getId()).append(",");
+            }else{
+                nameSb.append(currElement.getProperty("name"));
+                elementIdSb.append(currElement.getId());
+
+            }
         }
 
-        String taskName = Optional.ofNullable(nextElement.getProperty("name")).map(String::valueOf).orElse(StringUtils.EMPTY);
-
-        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(nextElement.getId()).taskName(taskName).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
-
-
+        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(elementIdSb.toString()).taskName(nameSb.toString()).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
         //add to verify infos
         if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
             bpmVerifyInfoVos.add(bpmVerifyInfoVo);
@@ -406,11 +418,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
 
-        //get next node's next node,if it still exist,then treat it recursively
-        PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
-        if (!ObjectUtils.isEmpty(nextNextElement)) {
-            doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
+        for (PvmActivity nextElement : nextElements) {
+            //get next node's next node,if it still exist,then treat it recursively
+            PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
+            if (!ObjectUtils.isEmpty(nextNextElement)) {
+                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
+            }
         }
+
     }
 
     /**
