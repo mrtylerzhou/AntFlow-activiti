@@ -210,7 +210,15 @@ export class FormatUtils {
           for (let itemNode of conditionList) {
             function internalTraverse(info) {
               if (!info) return;
-              if (info.nodeType == 7) return;
+              if (info.nodeType == 7) {
+                let condition_parallelNodes = nodesGroup[info.nodeId];
+                if (isEmptyArray(condition_parallelNodes)) return;            
+                let condition_parallelWayChild = condition_parallelNodes.find((c) => {//并行聚合节点
+                  return !info.nodeTo.includes(c.nodeId);
+                });                
+                condition_parallelWayChild.nodeTo = [comNode.nodeId];
+                return; 
+              };
               if (!nodesGroup[info.nodeId]) {
                 info.nodeTo = [comNode.nodeId];
               } else {
