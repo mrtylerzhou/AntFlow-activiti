@@ -210,6 +210,7 @@ export class FormatUtils {
           for (let itemNode of conditionList) {
             function internalTraverse(info) {
               if (!info) return;
+              if (info.nodeType == 7) return;
               if (!nodesGroup[info.nodeId]) {
                 info.nodeTo = [comNode.nodeId];
               } else {
