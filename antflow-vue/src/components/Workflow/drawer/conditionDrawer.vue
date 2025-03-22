@@ -41,27 +41,25 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'date'">
                             <p>
-                                <select v-model="item.optType"
-                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
-                                    @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                    }}
-                                    </option>
-                                </select>
+                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
+                                    v-model="item.optType">
+                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
+                                        :value="itemOpt.value" />
+                                </el-select>
                                 <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
-                                    :placeholder="'请选择' + item.showName" format="YYYY/MM/DD" />
+                                    :placeholder="'请选择' + item.showName" format="YYYY-MM-DD" />
                             </p>
                         </div>
                         <div v-else-if="item.fieldTypeName == 'time'">
                             <p>
-                                <select v-model="item.optType"
-                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
-                                    @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                    }}
-                                    </option>
-                                </select>
-                                <el-time-picker v-if="item.optType != 6" v-model="item.zdy1" arrow-control
+                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
+                                    v-model="item.optType">
+                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
+                                        :value="itemOpt.value" />
+                                </el-select>
+                                <el-time-picker v-if="item.optType != 6" v-model="item.zdy1"
                                     :placeholder="'请选择' + item.showName" />
                             </p>
                         </div>
@@ -83,10 +81,18 @@
                                         item1.value }}</a>
                             </p>
                         </div>
-                        <div v-else-if="item.fieldTypeName == 'select'">
+                        <div v-else-if="item.fieldTypeName == 'select' && item.multiple">
                             <p class="check_box" v-if="item.fixedDownBoxValue">
                                 <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
-                                    :multiple="item.multiple" :multiple-limit="item.multipleLimit">
+                                    :multiple-limit="item.multipleLimit">
+                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
+                                        :label="itemOpt.value" :value="itemOpt.key" />
+                                </el-select>
+                            </p>
+                        </div>
+                        <div v-else-if="item.fieldTypeName == 'select' && !item.multiple">
+                            <p class="check_box" v-if="item.fixedDownBoxValue">
+                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1">
                                     <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
                                         :label="itemOpt.value" :value="itemOpt.key" />
                                 </el-select>
@@ -94,31 +100,29 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'input-number'">
                             <p>
-                                <select v-model="item.optType"
-                                    :style="'width:' + (item.optType == 6 ? 370 : 100) + 'px'"
-                                    @change="changeOptType(item)">
-                                    <option v-for="({ value, label }) in optTypes" :value="value" :key="value">{{ label
-                                    }}
-                                    </option>
-                                </select>
-                                <input v-if="item.optType != 6" type="text" :placeholder="'请输入' + item.showName"
-                                    v-enter-number="2" v-model="item.zdy1">
+                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
+                                    @change="changeOptType(item)"
+                                    v-model="item.optType">
+                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
+                                        :value="itemOpt.value" />
+                                </el-select>
+                                <input v-if="item.optType != 6" style="width:250px;" type="text"
+                                    :placeholder="'请输入' + item.showName" v-model="item.zdy1">
                             </p>
                             <p v-if="item.optType == 6">
-                                <input type="text" style="width:75px;" class="mr_10" v-enter-number="2"
-                                    v-model="item.zdy1">
-                                <select style="width:60px;" v-model="item.opt1">
-                                    <option v-for="({ value, label }) in opt1s" :value="value" :key="value">{{ label }}
-                                    </option>
-                                </select>
+                                <input type="text" style="width:75px;" class="mr_10" v-model="item.zdy1">
+                                <el-select style="width:60px;" v-model="item.opt1">
+                                    <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
+                                        :value="itemOpt.value" />
+                                </el-select>
                                 <span class="ellipsis"
                                     style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
-                                        item.showName }}</span>
-                                <select style="width:60px;" class="ml_10" v-model="item.opt2">
-                                    <option v-for="({ value, label }) in opt1s" :value="value" :key="value">{{ label }}
-                                    </option>
-                                </select>
-                                <input type="text" style="width:75px;" v-enter-number="2" v-model="item.zdy2">
+                                    item.showName }}</span>
+                                <el-select style="width:60px;" class="ml_10" v-model="item.opt1">
+                                    <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
+                                        :value="itemOpt.value" />
+                                </el-select>
+                                <input type="text" style="width:75px;" v-model="item.zdy2">
                             </p>
                         </div>
                         <div v-else>
@@ -164,11 +168,11 @@ import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, c
 import $func from '@/utils/flow/index'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getConditions } from '@/api/mock'
-const route = useRoute();
-const routePath = route.path || '';
+const { proxy } = getCurrentInstance()
+const route = useRoute()
+const routePath = route.path || ''
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
-
 let conditionVisible = ref(false)
 let conditionRoleVisible = ref(false)
 let conditionsConfig = ref(null)
@@ -177,7 +181,6 @@ let priorityLevel = ref('')
 let conditions = ref([])//添加条件弹框显示
 let conditionList = ref([])//添加条件弹框显示>是否选中
 let checkedList = ref([])
-
 let tableId = computed(() => store.tableId)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 let conditionDrawer = computed(() => store.conditionDrawer)
@@ -195,18 +198,10 @@ watch(conditionsConfig1, (val) => {
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [] }
-    for (let itemConf of originalConfigData.value.conditionList) {
-        if (itemConf.fieldTypeName == 'select' && itemConf.multiple) {//多选
-            if (!Array.isArray(itemConf.zdy1) && itemConf.zdy1.includes('[')) {
-                itemConf.zdy1 = JSON.parse(itemConf.zdy1)
-            }
-        }
-        if (itemConf.fieldTypeName == 'select' && !itemConf.multiple) {//单选
-            itemConf.zdy1 = parseInt(itemConf.zdy1)
-        }
-    }
-})
+    convertConditionNodeValue(originalConfigData.value.conditionList);
+});
 
+/**值类型条件改变 */
 const changeOptType = (item) => {
     if (item.optType == 1) {
         item.zdy1 = null;
@@ -215,6 +210,7 @@ const changeOptType = (item) => {
         item.zdy2 = null;
     }
 }
+/**checkbox控件选中效果 */
 const toStrChecked = (item, key) => {
     let a = item.zdy1 ? item.zdy1.split(",") : []
     var isIncludes = $func.toggleStrClass(item, key);
@@ -225,6 +221,7 @@ const toStrChecked = (item, key) => {
         removeStrEle(item, key);
     }
 }
+/**删除数组元素 */
 const removeStrEle = (item, key) => {
     let a = item.zdy1 ? item.zdy1.split(",") : []
     var includesIndex;
@@ -236,22 +233,7 @@ const removeStrEle = (item, key) => {
     a.splice(includesIndex, 1);
     item.zdy1 = a.toString()
 }
-/**添加条件 */
-const addCondition = async () => {
-    conditionList.value = [];
-    conditionVisible.value = true;
-    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-    if (originalConfigData.value.conditionList) {
-        for (var i = 0; i < originalConfigData.value.conditionList.length; i++) {
-            var { formId, columnId } = originalConfigData.value.conditionList[i];
-            if (columnId == 0) {
-                conditionList.value.push({ formId: formId, columnId: 0 })
-            } else {
-                conditionList.value.push(conditions.value.filter(item => { return item.formId == formId; })[0])
-            }
-        }
-    }
-}
+
 /**过滤空值 */
 const nullableFilter = (elm) => {
     return (elm != null && elm !== false && elm !== "");
@@ -268,41 +250,56 @@ const loadDIYFormCondition = () => {
 const loadLFFormCondition = () => {
     return new Promise((resolve, reject) => {
         let conditionArr = [];
-        if (lowCodeFormFields.hasOwnProperty("formFields")) {
-            conditionArr = lowCodeFormFields.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
-                if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
-                    let optionGroup = [];
-                    if (item.optionItems) {
-                        optionGroup = item.optionItems.map(c => {
-                            let convertValue = parseInt(c.value);
-                            if (!isNaN(convertValue)) {
-                                return { key: convertValue, value: c.label }
-                            }
-                        });
-                        optionGroup = optionGroup.filter(c => c);
-                    }
-                    return {
-                        formId: index + 1,
-                        columnId: condition_columnTypeMap.get(item.fieldTypeName),
-                        showType: condition_filedTypeMap.get(item.fieldTypeName),
-                        showName: item.label,
-                        columnName: item.name,
-                        columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
-                        fieldTypeName: item.fieldTypeName,
-                        multiple: item.multiple,
-                        multipleLimit: item.multipleLimit,
-                        fixedDownBoxValue: JSON.stringify(optionGroup)
-                    }
-                }
-            })
-            conditionArr = conditionArr.filter(nullableFilter);
-            //console.log("conditionArr============",JSON.stringify(conditionArr.filter(nullableFilter)));
+        if (!lowCodeFormFields.hasOwnProperty("formFields")) {
+            resolve(conditionArr);
         }
+        conditionArr = lowCodeFormFields.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
+            if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
+                let optionGroup = [];
+                if (item.optionItems) {
+                    optionGroup = item.optionItems.map(c => {
+                        let convertValue = parseInt(c.value);
+                        if (!isNaN(convertValue)) {
+                            return { key: convertValue, value: c.label }
+                        }
+                    });
+                    optionGroup = optionGroup.filter(c => c);
+                }
+                return {
+                    formId: index + 1,
+                    columnId: condition_columnTypeMap.get(item.fieldTypeName),
+                    showType: condition_filedTypeMap.get(item.fieldTypeName),
+                    showName: item.label,
+                    columnName: item.name,
+                    columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
+                    fieldTypeName: item.fieldTypeName,
+                    multiple: item.multiple,
+                    multipleLimit: item.multipleLimit,
+                    fixedDownBoxValue: JSON.stringify(optionGroup)
+                }
+            }
+        })
+        conditionArr = conditionArr.filter(nullableFilter);
         resolve(conditionArr);
         reject([]);
     });
 };
-
+/**添加条件 */
+const addCondition = async () => {
+    conditionList.value = [];
+    conditionVisible.value = true;
+    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
+    if (originalConfigData.value.conditionList) {
+        for (var i = 0; i < originalConfigData.value.conditionList.length; i++) {
+            var { formId, columnId } = originalConfigData.value.conditionList[i];
+            if (columnId == 0) {
+                conditionList.value.push({ formId: formId, columnId: 0 })
+            } else {
+                conditionList.value.push(conditions.value.filter(item => { return item.formId == formId; })[0])
+            }
+        }
+    }
+}
 /**选择条件后确认 */
 const sureCondition = () => {
     for (var i = 0; i < conditionList.value.length; i++) {
@@ -333,7 +330,8 @@ const saveCondition = () => {
     var a = conditionsConfig.value.conditionNodes.splice(priorityLevel.value - 1, 1)//截取旧下标
     conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
     conditionsConfig.value.conditionNodes.map((item, index) => {
-        item.priorityLevel = index + 1
+        item.priorityLevel = index + 1,
+            convertConditionNodeValue(item.conditionList)
     });
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
@@ -345,12 +343,37 @@ const saveCondition = () => {
         id: conditionsConfig1.value.id
     })
 }
+/**添加条件角色 */
 const addConditionRole = () => {
     conditionRoleVisible.value = true;
     checkedList.value = originalConfigData.value.nodeApproveList
 }
+/**关闭抽屉 */
 const closeDrawer = (val) => {
     setCondition(false)
+}
+/**格式化控件值 */
+const convertConditionNodeValue = (data) => {
+    if (!data || proxy.isArrayEmpty(data)) return;
+    for (let item of data) {
+        if (item.fieldTypeName == 'radio') {//单选radio
+            item.zdy1 = parseInt(item.zdy1)
+        }
+        if (item.fieldTypeName == 'select' && item.multiple) {//select多选
+            if (!Array.isArray(item.zdy1) && item.zdy1.includes('[')) {
+                item.zdy1 = JSON.parse(item.zdy1)
+            }
+        }
+        if (item.fieldTypeName == 'select' && !item.multiple) {//select单选
+            item.zdy1 = parseInt(item.zdy1)
+        }
+        if (item.fieldTypeName == 'date') {//日期控件
+            item.zdy1 = proxy.parseTime(item.zdy1, '{y}-{m}-{d} {h}:{i}:{s}')
+        }
+        if (item.fieldTypeName == 'time') {//时间控件
+            item.zdy1 = proxy.parseTime(item.zdy1, '{y}-{m}-{d} {h}:{i}:{s}')
+        }
+    }
 }
 </script>
 <style scoped lang="scss">
@@ -384,7 +407,7 @@ const closeDrawer = (val) => {
         }
 
         ul {
-            max-height: 500px;
+            max-height:calc(68vh);
             overflow-y: scroll;
             margin-bottom: 20px;
 

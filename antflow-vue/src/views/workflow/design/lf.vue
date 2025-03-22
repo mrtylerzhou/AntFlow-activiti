@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="app-container" aria-hidden="true">
         <div class="fd-nav">
             <div class="fd-nav-left"> 
                 <div class="fd-nav-title">  
@@ -47,7 +47,7 @@ import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
 import { FormatUtils } from '@/utils/flow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { NodeUtils } from '@/utils/flow/nodeUtils';
-import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
+import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue"; 
 import DynamicForm from "@/components/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";

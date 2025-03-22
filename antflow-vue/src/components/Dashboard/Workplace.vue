@@ -50,10 +50,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -73,6 +72,12 @@
                         <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
                             <el-icon><question-filled /></el-icon>
                         </el-tooltip> 
+                        <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
+                            <a href="http://117.72.70.166/ruoyi/#/hr/leavetime" target="_blank">
+                                <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
+                            </a>
+                        </el-tooltip> 
+                   
                     </span>
                 </div>
             </template>
@@ -85,10 +90,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -274,7 +278,7 @@ function handleFlow(row) {
     }
 
     p {
-        width: 95px;
+        width: 150px;
         font-size: 12px;
         font-weight: 300;
         overflow: hidden;

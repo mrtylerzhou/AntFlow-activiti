@@ -4,35 +4,39 @@
     append-to-body>
     <el-row :gutter="10">
       <el-col :span="16">
-        <div>
-          <el-form :model="queryParams" ref="queryRef" :inline="true">
-            <el-form-item label="用户名称" prop="userName">
-              <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 150px"
-                size="default" @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" size="default" @click="handleQuery">搜索</el-button>
-            </el-form-item>
-          </el-form>
-          <el-table ref="refTable" :data="userList" v-loading="loading" border height="350px">
-            <el-table-column label="操作" width="55" align="center" class-name="small-padding fixed-width">
-              <template #default="scope">
-                <el-button link type="primary" size="default" icon="CirclePlus" @click="handleSelectUser(scope.row)" />
-              </template>
-            </el-table-column>
-            <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
-            <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" />
-            <el-table-column label="状态" align="center" prop="status">
-              <template #default="scope">
-                <el-tag size="default">
-                  {{ scope.row.status === "0" ? "正常" : "停用" }}</el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div style="margin: 10px 0">
-            <el-pagination v-show="total > 0" size="default" background layout="prev, pager, next" :total="total" />
-          </div>
-        </div>
+        <el-row>
+          <el-col :span="24">
+            <el-form :model="qform" ref="queryRef" :inline="true">
+              <el-form-item label="用户名称" prop="userName">
+                <el-input v-model="qform.userName" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
+                  @keyup.enter="handleQuery" />
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" size="default" @click="handleQuery">搜索</el-button>
+              </el-form-item>
+            </el-form>
+            <el-table ref="refTable" :data="userList" v-loading="loading" border height="350px">
+              <el-table-column label="操作" width="55" align="center" class-name="small-padding fixed-width">
+                <template #default="scope">
+                  <el-button link type="primary" size="default" icon="CirclePlus"
+                    @click="handleSelectUser(scope.row)" />
+                </template>
+              </el-table-column>
+              <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
+              <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" />
+              <el-table-column label="状态" align="center" prop="status">
+                <template #default="scope">
+                  <el-tag size="default">
+                    {{ scope.row.status === "0" ? "正常" : "停用" }}</el-tag>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="24">
+            <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+              :layout="layoutSize" @pagination="getPageList" />
+          </el-col>
+        </el-row>
       </el-col>
       <el-col :span="8">
         <p class="tip">已选中列表</p>
@@ -45,6 +49,7 @@
           <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
         </el-table>
       </el-col>
+
     </el-row>
     <template #footer>
       <div class="dialog-footer">
@@ -56,10 +61,8 @@
 </template>
 
 <script setup name="selectUserDialog">
-import { watch } from "vue";
-import { getDynamicsList } from "@/api/mock";
-import { useStore } from "@/store/modules/outsideflow";
-let store = useStore();
+import { onMounted, watch } from "vue";
+import { getUserPageList } from "@/api/mock"; 
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -73,28 +76,32 @@ const props = defineProps({
 const { proxy } = getCurrentInstance();
 let emits = defineEmits(["update:visible", "change"]);
 const loading = ref(false);
+const layoutSize = 'total, prev, pager, next';
 const userList = ref([]);
 const total = ref(0);
-let checkedUsersList = ref([]);
-
+let checkedUsersList = ref([]); 
 const queryParams = reactive({
-  pageNum: 1,
-  pageSize: 10,
-  userName: undefined,
-  phonenumber: undefined,
+  qform: {
+    userName: undefined 
+  },
+  pageDto: {
+    page: 1,
+    pageSize: 10
+  },
 });
-
+const { pageDto, qform } = toRefs(queryParams);  
 let visibleDialog = computed({
-  get() {
-    getList();
+  get() {  
+    if(props.visible){
+      getPageList(); 
+    }
     return props.visible;
   },
   set() {
     closeDialog();
   },
 });
-let list = computed(() => props.data);
- 
+let list = computed(() => props.data); 
 watch(list, (newVal) => {
   checkedUsersList.value = newVal.map((item) => {
     return {
@@ -103,32 +110,33 @@ watch(list, (newVal) => {
     };
   });
 },{ deep: true });
-// 查询表数据
-function getList() {  
-  if (!store.basideFormConfig || proxy.isArrayEmpty(store.basideFormConfig.configList)) {
-    return;
-  } 
-  let userConfig = store.basideFormConfig.configList.find((item) => item.approveTypeId == 1);   
-  loading.value = true;
-  getDynamicsList(userConfig.apiUrl).then((res) => { 
+onMounted(() => {
+  getPageList();
+});
+// 用户数据
+const getPageList =  () => {
+  loading.value = true; 
+  getUserPageList(pageDto.value,qform.value).then((res) => {
     loading.value = false;
+    total.value = res.pagination.totalCount;
+    pageDto.value.page = res.pagination.page;
     userList.value = res.data.map((item) => {
       return {
-        userId: item.id,
+        userId: Number(item.id),
         userName: item.name,
         email: "574427343@qq.com",
         status: 1,
       };
     });
   }).catch((res) => {
-    proxy.$modal.msgError("[应用管理]配置的审批人模板URL不正确，未能成功获取数据");
+    proxy.$modal.msgError("获取用户列表失败" + res.message);
   });
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.pageNum = 1;
-  getList();
+  pageDto.value.page = 1;
+  getPageList();
 }
 
 /** 选择授权用户操作 */
@@ -180,7 +188,8 @@ const handleClose = () => {
 </script>
 <style lang="css" scoped>
 .tip {
-  padding: 8px 16px;
+  font-weight: 700;
+  padding: 2px 13px;
   background-color: rgb(197.7, 225.9, 255);
   border-left: 5px solid #1890ff;
 }
