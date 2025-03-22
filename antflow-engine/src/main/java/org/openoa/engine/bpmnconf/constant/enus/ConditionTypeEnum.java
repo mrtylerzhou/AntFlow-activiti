@@ -7,6 +7,8 @@ import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+
+import static org.openoa.base.constant.StringConstants.EXPRESSION_FIELD_NAME;
 import static org.openoa.base.constant.StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME;
 
 import java.util.Date;
@@ -52,6 +54,10 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateTimeConditionJudge.class),
     CONDITION_TYPE_LF_COLLECTION_CONDITION(10004,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
+
+
+    CONDITION_TYPE_JUEL_EXPRESSION(20000,"JUEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, JuelExpressionConditionJudge.class)
     ;
 static{
     lowFlowCodes=  Lists.newArrayList(

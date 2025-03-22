@@ -114,4 +114,5 @@ public class BpmnNodeConditionsConfBaseVo {
      * node code flow conditions
      */
     private Map<String,Object> lfConditions;
+    private String expression;
 }

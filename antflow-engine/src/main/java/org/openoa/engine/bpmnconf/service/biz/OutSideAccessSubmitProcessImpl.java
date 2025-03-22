@@ -124,6 +124,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         bpmnStartConditionsVo.setOutSideLevelNodes(businessDataVo.getOutSideLevelNodes());
 
         bpmnStartConditionsVo.setIsOutSideAccessProc(true);
+        bpmnStartConditionsVo.setBusinessDataVo(businessDataVo);
 
         //set process title
         String processTitlePrefix;

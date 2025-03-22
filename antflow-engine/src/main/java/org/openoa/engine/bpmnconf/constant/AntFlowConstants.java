@@ -87,4 +87,5 @@ public class AntFlowConstants {
     public final static String LEADER = "leader";
     public static final String NUM_OPERATOR="numberOperator";
     public static final String DRAWING_FINT="宋体";
+    public static final String SCRIPT_CONTEXT="it";
 }

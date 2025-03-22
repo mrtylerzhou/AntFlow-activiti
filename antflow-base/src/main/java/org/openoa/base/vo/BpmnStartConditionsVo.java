@@ -153,4 +153,6 @@ public class BpmnStartConditionsVo {
     private Map<String,Object> lfConditions;
     private  Boolean isMigration;
     private boolean isPreview;
+    private BusinessDataVo businessDataVo;
+    private boolean isLowCodeFlow;
 }

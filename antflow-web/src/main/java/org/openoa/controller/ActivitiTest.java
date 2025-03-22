@@ -1,5 +1,7 @@
 package org.openoa.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
@@ -38,6 +41,7 @@ import org.openoa.engine.factory.AutoParseProxyFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.entity.Result;
 import org.openoa.base.interf.ActivitiService;
+import org.openoa.engine.utils.JuelEvaluator;
 import org.openoa.entity.Student;
 import org.openoa.mapper.PersonMapper;
 import org.openoa.mapper.StudentMapper;
@@ -250,5 +254,17 @@ public class ActivitiTest {
         MultiCharacterInstanceParallelSign parallelSign=new MultiCharacterInstanceParallelSign(taskId, variables);
         ((RuntimeServiceImpl) ProcessEngines.getDefaultProcessEngine().getRuntimeService()).getCommandExecutor().execute(parallelSign);
         return Result.success();
+    }
+    @RequestMapping("evalExpression")
+    public Result evalExpression(@RequestBody String expression){
+        JSONObject jsonObject = JSON.parseObject(expression);
+        String exp = jsonObject.getString("el");
+        BpmnStartConditionsVo vo=new BpmnStartConditionsVo();
+        BusinessDataVo dataVo=new BusinessDataVo();
+        dataVo.setBpmnCode("test");
+        dataVo.setOperationType(2);
+        vo.setBusinessDataVo(dataVo);
+        boolean evaluate = JuelEvaluator.evaluate(exp, vo);
+        return Result.newSuccessResult(evaluate);
     }
 }
