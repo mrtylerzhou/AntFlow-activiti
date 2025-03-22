@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @Service
 @Slf4j
-public class JobLevelJudge extends ConditionJudge {
+public class JobLevelJudge implements ConditionJudge {
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         BaseIdTranStruVo voFromDb = conditionsConf.getJobLevelVo();

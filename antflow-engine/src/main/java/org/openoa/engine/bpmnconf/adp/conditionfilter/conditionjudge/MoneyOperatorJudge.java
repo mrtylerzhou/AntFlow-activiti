@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class MoneyOperatorJudge extends ConditionJudge {
+public class MoneyOperatorJudge implements ConditionJudge {
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         return true;

@@ -15,7 +15,7 @@ import org.springframework.util.ObjectUtils;
  */
 @Service
 @Slf4j
-public class PurchaseTypeJudge extends ConditionJudge {
+public class PurchaseTypeJudge implements ConditionJudge {
 
     @Override
     public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {

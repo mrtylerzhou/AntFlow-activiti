@@ -267,4 +267,16 @@ public class ActivitiTest {
         boolean evaluate = JuelEvaluator.evaluate(exp, vo);
         return Result.newSuccessResult(evaluate);
     }
+    @RequestMapping("evalSpelExpression")
+    public Result evalSpelExpression(@RequestBody String expression){
+        JSONObject jsonObject = JSON.parseObject(expression);
+        String exp = jsonObject.getString("el");
+        BpmnStartConditionsVo vo=new BpmnStartConditionsVo();
+        BusinessDataVo dataVo=new BusinessDataVo();
+        dataVo.setBpmnCode("test");
+        dataVo.setOperationType(2);
+        vo.setBusinessDataVo(dataVo);
+        boolean evaluate = JuelEvaluator.evaluate(exp, vo);
+        return Result.newSuccessResult(evaluate);
+    }
 }

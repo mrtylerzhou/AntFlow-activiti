@@ -57,7 +57,9 @@ public enum ConditionTypeEnum {
 
 
     CONDITION_TYPE_JUEL_EXPRESSION(20000,"JUEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
-            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, JuelExpressionConditionJudge.class)
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, JuelExpressionConditionJudge.class),
+    CONDITION_TYPE_SPEL_EXPRESSION(20001,"SpEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, SpelExpressionConditionJudge.class),
     ;
 static{
     lowFlowCodes=  Lists.newArrayList(

@@ -190,4 +190,31 @@ public class BpmnNodeVo  implements Serializable {
             this.labelList.add(labelVO);
         }
     }
+    @Override
+    public String toString(){
+        return "BpmnNodeVo{" +
+                "id=" + id +
+                ", confId=" + confId +
+                ", nodeId='" + nodeId + '\'' +
+                ", nodeType=" + nodeType +
+                ", nodeName='" + nodeName + '\'' +
+                ", nodeDisplayName='" + nodeDisplayName + '\'' +
+                ", nodePropertyName='" + nodePropertyName + '\'' +
+                ", isDynamicCondition=" + isDynamicCondition +
+                ", nodeProperty=" + nodeProperty +
+                ", aggregationNode=" + aggregationNode +
+                ", nodeFrom='" + nodeFrom + '\'' +
+                ", nodeFroms='" + nodeFroms + '\'' +
+                ", batchStatus=" + batchStatus +
+                ", isParallel=" + isParallel +
+                ", approvalStandard=" + approvalStandard +
+                ", annotation='" + annotation + '\'' +
+                ", isDeduplication=" + isDeduplication +
+                ", deduplicationExclude=" + deduplicationExclude +
+                ", isSignUp=" + isSignUp +
+                ", orderedNodeType=" + orderedNodeType +
+                ", remark='" + remark + '\'' +
+                ", isDel=" + isDel;
+
+         }
 }
