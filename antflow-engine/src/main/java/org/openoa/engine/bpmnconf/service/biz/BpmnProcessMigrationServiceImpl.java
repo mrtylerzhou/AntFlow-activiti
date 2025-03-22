@@ -37,7 +37,7 @@ public class BpmnProcessMigrationServiceImpl {
 
     public void migrateAndJumpToCurrent(String currentTaskDefKey, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
 
-        BusinessDataVo submitVo= SerializationUtils.clone(vo);
+        BusinessDataVo submitVo= JSON.to(BusinessDataVo.class,vo);
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
         submitVo.setBpmnCode(bpmBusinessProcess.getVersion());

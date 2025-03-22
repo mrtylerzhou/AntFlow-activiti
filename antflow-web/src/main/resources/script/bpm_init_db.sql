@@ -1689,3 +1689,6 @@ create table t_bpm_dynamic_condition_choosen
 comment '流程动态条件选择条件记录表';
 create index indx_process_number
     on t_bpm_dynamic_condition_choosen (process_number);
+
+alter table t_bpmn_node_conditions_param_conf
+	add operator int null after condition_param_jsom;

@@ -38,7 +38,9 @@ public class ConditionServiceImpl implements ConditionService {
         if (CollectionUtils.isEmpty(conditionParamTypeList)) {
             return false;
         }
+        conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
         boolean result = true;
+        int index=0;
         for (Integer integer : conditionParamTypeList) {
             ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
             if (conditionTypeEnum == null) {
@@ -47,19 +49,18 @@ public class ConditionServiceImpl implements ConditionService {
                 break;
             }
             try {
-                if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo)) {
+                if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index)) {
                     result = false;
                     break;
                 }
             } catch (JiMuBizException e) {
                 log.info("condiiton judge business exception:" + e.getMessage());
-                result = false;
-                break;
+                throw e;
             } catch (Exception e) {
                 log.error("conditionJudgeClass instantiate failure", e);
-                result = false;
-                break;
+                throw  e;
             }
+            index++;
 
         }
         //关于默认条件,默认条件不记在表内,

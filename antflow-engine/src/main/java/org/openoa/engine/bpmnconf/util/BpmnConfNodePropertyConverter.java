@@ -45,6 +45,8 @@ public class BpmnConfNodePropertyConverter {
         result.setSort(propertysVo.getSort());
         List<Integer> conditionTypes=new ArrayList<>(newModels.size());
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
+        Map<String,Object> wrapperResult=new HashMap<>();
+        boolean isLowCodeFlow = false;
         for (BpmnNodeConditionsConfVueVo newModel : newModels) {
             String columnId = newModel.getColumnId();
             if(columnId==null){
@@ -91,17 +93,18 @@ public class BpmnConfNodePropertyConverter {
                 });
                 Object valueOrWrapper=null;
                 if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                    Map<String,Object> wrapperResult=new HashMap<>();
-                    wrapperResult.put(fieldName,values);
+                    wrapperResult.put(columnDbname,values);
                     valueOrWrapper=wrapperResult;
                 }
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
             }else{
                 String zdy1 = newModel.getZdy1();
+                String zdy2=newModel.getZdy2();
 
                 Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
                 String opt1 = newModel.getOpt1();
+                String opt2=newModel.getOpt2();
                 Integer optType = newModel.getOptType();
                 if(optType!=null){
                     JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
@@ -113,40 +116,41 @@ public class BpmnConfNodePropertyConverter {
                 }
                 if(String.class.isAssignableFrom(fieldCls)){
                     Object valueOrWrapper=null;
+                    //处理多值first<b<second这种类型
+                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                       zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                    }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        Map<String,Object> wrapperResult=new HashMap<>();
-                        wrapperResult.put(fieldName,zdy1);
+                        wrapperResult.put(columnDbname,zdy1);
                         valueOrWrapper=wrapperResult;
                     }
                     ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                 }else{
                     Object valueOrWrapper=null;
                     Object actualValue=null;
-                    if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_CONDITION){
-                        try {
-                            actualValue= DateUtil.SDF_DATE_PATTERN.parse(zdy1);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }else if(enumByCode==ConditionTypeEnum.CONDITION_TYPE_LF_DATE_TIME_CONDITION){
-                        try {
-                            actualValue=DateUtil.SDF_DATETIME_PATTERN.parse(zdy1);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }else{
-                        actualValue= JSON.parseObject(zdy1,fieldCls);
+                    Object zdy2Value=null;
+                    actualValue= JSON.parseObject(zdy1,fieldCls);
+                    if (!StringUtils.isEmpty(zdy2)){
+                        zdy2Value=JSON.parseObject(zdy2,fieldCls);
+                    }
+                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                        zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                     }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        Map<String,Object> wrapperResult=new HashMap<>();
-                        wrapperResult.put(fieldName,actualValue);
+                        isLowCodeFlow=true;
+                        wrapperResult.put(columnDbname,actualValue);
                         valueOrWrapper=wrapperResult;
+                    }else {
+                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                     }
-                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                 }
 
             }
 
+        }
+        if(isLowCodeFlow){
+            Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
+            ReflectionUtils.setField(field, result, wrapperResult);
         }
         String extJson = JSON.toJSONString(newModels);
         result.setExtJson(extJson);

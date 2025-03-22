@@ -9,6 +9,6 @@ import org.openoa.base.vo.BpmnStartConditionsVo;
  */
 public abstract class ConditionJudge {
 
-    public abstract boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo);
+    public abstract boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index);
 
 }

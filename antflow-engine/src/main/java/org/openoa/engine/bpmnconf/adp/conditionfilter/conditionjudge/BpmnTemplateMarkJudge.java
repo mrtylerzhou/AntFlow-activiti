@@ -16,7 +16,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 public class BpmnTemplateMarkJudge extends ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         if (!CollectionUtils.isEmpty(conditionsConf.getTemplateMarks()) &&
                 CollectionUtils.containsAny(conditionsConf.getTemplateMarks(),bpmnStartConditionsVo.getTemplateMarkIds())
         ) {

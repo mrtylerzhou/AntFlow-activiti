@@ -23,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 public class JobLevelJudge extends ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         BaseIdTranStruVo voFromDb = conditionsConf.getJobLevelVo();
         BaseIdTranStruVo voFromUser = bpmnStartConditionsVo.getJobLevelVo();
         if (ObjectUtils.isEmpty(voFromDb)) {
