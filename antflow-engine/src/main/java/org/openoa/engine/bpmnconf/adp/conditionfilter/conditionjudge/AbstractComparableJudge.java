@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * @Date 2024/6/22 20:22
  * @Version 0.5
  */
-public abstract class AbstractComparableJudge extends ConditionJudge {
+public abstract class AbstractComparableJudge implements ConditionJudge {
     protected boolean compareJudge(BigDecimal confTotal, BigDecimal confTotal2, BigDecimal actual, Integer operator) {
         if (confTotal == null) {
             throw new JiMuBizException("operator left is null");

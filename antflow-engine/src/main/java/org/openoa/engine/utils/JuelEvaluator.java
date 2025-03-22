@@ -9,7 +9,7 @@ import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 
 import java.util.Map;
 
-public class JuelEvaluator {
+public class JuelEvaluator{
     public static boolean evaluate(String expression, BpmnStartConditionsVo startConditionsVo) {
         BusinessDataVo businessDataVo = startConditionsVo.getBusinessDataVo();
         ExpressionFactory expressionFactory = SpringBeanUtils.getBean(ExpressionFactory.class);
