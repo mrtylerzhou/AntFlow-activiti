@@ -355,7 +355,7 @@ public class BpmnConfCommonServiceImpl {
         vo.setIsStartPagePreview(isStartPagePreview);
 
         BpmnStartConditionsExtendVo bpmnStartConditionsExtendVo = new BpmnStartConditionsExtendVo();
-
+        bpmnStartConditionsExtendVo.setLowCodeFlow(true);
         //set start user information
         String startUserId;
         if (isStartPagePreview) {
@@ -373,7 +373,7 @@ public class BpmnConfCommonServiceImpl {
             }
         }
         if (!ObjectUtils.isEmpty(startUserId)) {
-            bpmnStartConditionsExtendVo.setStartUserId(startUserId.toString());
+            bpmnStartConditionsExtendVo.setStartUserId(startUserId);
             //todo set startcondition
         }
 
