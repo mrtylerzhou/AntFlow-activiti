@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <div class="card-box" style="padding-top: 10px;">
+        <div class="card-box" style="padding-top: 10px;background-color: #fff;">
             <div class="flex gap-2">
                 <el-tag type="primary">{{ formCode }}</el-tag>
                 <el-tag type="success" style="margin-left: 5px;">{{ processNumber }}</el-tag>
@@ -9,7 +9,7 @@
                 <el-tab-pane label="表单信息" name="baseTab">
                     <div class="approve" v-if="activeName === 'baseTab'">
                         <el-row style="padding-left: -5px;padding-right: -5px;">
-                            <el-col :span="24" class="my-col">
+                            <el-col :span="24" style="border-bottom: 2px solid #dcdfe6;background-color: #fff; position: fixed;left:245px;right: 50px;z-index: 999;">
                                 <div v-for="btn in approvalButtons" style="float: left;">
                                     <el-button style="margin: 5px;" v-if="btn.label"
                                         :type="approveButtonColor[btn.value]" @click="clickApproveSubmit(btn.value)">
@@ -327,19 +327,17 @@ const handleTabClick = async (tab, event) => {
 }
 
 .approve {
-    width: 100%;
-    background: #f5f5f7;
+    width: 100%; 
     position: relative;
-    padding: 10px;
+    padding: 0px 10px 10px 10px;
     box-sizing: border-box;
     height: calc(78vh) !important;
     overflow: auto;
 }
 
 .my-col {
-    border: 1px solid #ebeef5;
-    margin: 5px;
-    background-color: #fff;
+    border: 1px solid #ebeef5; 
+    margin-top: 44px;
 }
 
 .my-form {
