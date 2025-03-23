@@ -10,13 +10,12 @@
                <el-input v-model="taskMgmtVO.bpmnName" placeholder="请输入关键字" clearable style="width: 200px"
                   @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="状态" prop="effectiveStatus">
+            <!-- <el-form-item label="状态" prop="effectiveStatus">
                <el-select v-model="taskMgmtVO.effectiveStatus" placeholder="状态" clearable style="width: 240px">
                   <el-option label="禁用" value="0" />
                   <el-option label="启动" value="1" />
                </el-select>
-            </el-form-item>
-
+            </el-form-item> --> 
             <el-form-item>
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -64,18 +63,19 @@
                </template>
             </el-table-column>
             <el-table-column label="描述说明" align="center" prop="remark" width="160" :show-overflow-tooltip="true" />
-            <el-table-column label="修改时间" align="center" prop="updateTime" width="160">
+            <el-table-column label="创建时间" align="center" prop="updateTime" width="160">
                <template #default="scope">
                   <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
             <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
-                  <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
+                  <!-- <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
                   <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
                   <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
-                  <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button>
-                  <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button>
+                  <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> -->
+                  <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button> 
+                  <!-- <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button> -->
                </template>
             </el-table-column>
          </el-table>
@@ -102,15 +102,11 @@ const data = reactive({
       pageSize: 10
    },
    taskMgmtVO: {
-      effectiveStatus: undefined,
+      effectiveStatus: 1,
       isOutSideProcess: 0,
       isLowCodeFlow: undefined,
       bpmnCode: undefined,
       bpmnName: undefined
-   },
-   rules: {
-      bpmnCode: [{ required: true, message: "流程编号不能为空", trigger: "blur" }],
-      bpmnName: [{ required: true, message: "流程名称不能为空", trigger: "blur" }],
    }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
@@ -146,6 +142,14 @@ const handleCopy = (row) => {
    }
    proxy.$tab.openPage(obj);
 }
+
+const handleVersion = async (row) => {
+   const params = {
+      formCode: row.formCode
+   };
+   let obj = { path: "flow-version", query: params };
+   proxy.$tab.openPage(obj);
+}
 /**
  * 启动流程
  * @param data
@@ -159,7 +163,6 @@ const effectiveById = async (data) => {
          proxy.$modal.msgError("操作失败");
       }
    });
-
 }
 /** 搜索按钮操作 */
 function handleQuery() {
