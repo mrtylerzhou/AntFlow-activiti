@@ -83,7 +83,7 @@
                         </div>
                         <div v-else-if="item.fieldTypeName == 'select' && item.multiple">
                             <p class="check_box" v-if="item.fixedDownBoxValue">
-                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
+                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1" multiple
                                     :multiple-limit="item.multipleLimit">
                                     <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
                                         :label="itemOpt.value" :value="itemOpt.key" />
@@ -264,7 +264,7 @@ const loadLFFormCondition = () => {
                         }
                     });
                     optionGroup = optionGroup.filter(c => c);
-                }
+                } 
                 return {
                     formId: index + 1,
                     columnId: condition_columnTypeMap.get(item.fieldTypeName),
@@ -355,12 +355,12 @@ const closeDrawer = (val) => {
 /**格式化控件值 */
 const convertConditionNodeValue = (data) => {
     if (!data || proxy.isArrayEmpty(data)) return;
-    for (let item of data) {
+    for (let item of data) { 
         if (item.fieldTypeName == 'radio') {//单选radio
             item.zdy1 = parseInt(item.zdy1)
         }
         if (item.fieldTypeName == 'select' && item.multiple) {//select多选
-            if (!Array.isArray(item.zdy1) && item.zdy1.includes('[')) {
+            if (Array.isArray(item.zdy1) && item.zdy1.includes('[')) {
                 item.zdy1 = JSON.parse(item.zdy1)
             }
         }
