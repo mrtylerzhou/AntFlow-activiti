@@ -50,7 +50,6 @@ import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 import { getWorkFlowData } from '@/api/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
-
 const basicSetting = ref(null);
 const processDesign = ref(null);
 let activeStep = ref("basicSetting"); // 激活的步骤面板
@@ -79,12 +78,10 @@ onMounted(async () => {
     } else {
         mockjson = NodeUtils.createStartNode();
     }
-    let data = FormatDisplayUtils.getToTree(mockjson.data);
-    // console.log("old===data=nodes==========", JSON.stringify(data.nodes));
-    // console.log("old===data=nodeConfig==============", JSON.stringify(data.nodeConfig));
+    let data = FormatDisplayUtils.getToTree(mockjson.data); 
     proxy.$modal.closeLoading();
     processConfig.value = data;
-    title.value = data?.bpmnName;
+    title.value =  proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(route.query.fcname??''):data?.bpmnName;  
     nodeConfig.value = data?.nodeConfig;
 });
 

@@ -7,8 +7,8 @@
         <el-row>
           <el-col :span="24">
             <el-form :model="qform" ref="queryRef" :inline="true">
-              <el-form-item label="用户名称" prop="userName">
-                <el-input v-model="qform.userName" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
+              <el-form-item label="用户名称" prop="description">
+                <el-input v-model="qform.description" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
                   @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item>
@@ -82,7 +82,7 @@ const total = ref(0);
 let checkedUsersList = ref([]); 
 const queryParams = reactive({
   qform: {
-    userName: undefined 
+    description: undefined 
   },
   pageDto: {
     page: 1,

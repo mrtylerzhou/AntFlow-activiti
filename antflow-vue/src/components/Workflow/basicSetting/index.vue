@@ -9,24 +9,20 @@
                     </el-select>
                 </el-form-item> -->
 
-            <el-form-item label="模板类型" prop="formCode">
+            <!--  <el-form-item label="模板类型" prop="formCode">
                 <el-select filterable v-model="form.formCode" placeholder="请选择模板类型" :style="{ width: '100%' }">
                     <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value" :value="item.key">
                         <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
                     </el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
 
-            <el-form-item label="流程名称" prop="bpmnName">
-                <template #label>
-                    <span>
-                        <el-tooltip content="同【模板类型】名称一致，不需手动输入" placement="top">
-                        <el-icon><question-filled /></el-icon>
-                        </el-tooltip>
-                        流程名称
-                    </span>
-                </template>
-                <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly/>
+
+            <el-form-item label="类型标识" prop="formCode">
+                <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" />
+            </el-form-item>  
+            <el-form-item label="流程名称" prop="bpmnName"> 
+                <el-input v-model="form.bpmnName" :disabled="true" :style="{ width: '100%' }" readonly />
             </el-form-item>
 
             <el-form-item label="审批人去重" prop="deduplicationType">
@@ -47,10 +43,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch,getCurrentInstance } from 'vue'
+import { ref, reactive, onMounted, watch, getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getDIYFromCodeData } from "@/api/workflow";
 import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
+const { query } = useRoute();
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
 let loading = ref(false);
@@ -78,7 +75,7 @@ let duplicateOptions = [{
     "value": 3
 }];
 
-let formCodeOptions = ref([]); 
+let formCodeOptions = ref([]);
 const form = reactive({
     bpmnName: '',
     bpmnCode: generatorID,
@@ -88,52 +85,44 @@ const form = reactive({
     effectiveStatus: false,
     deduplicationType: 1
 })
-watch(() => form.formCode,(val) => {
-    if (val) { 
-        formCodeOptions.value.forEach(item => {
-            if (item.key == val) {
-                form.bpmnName = item.value;
-            }
-        })
-    }
-});
- 
+
 onMounted(async () => {
     //console.log('basicData=====props=======',JSON.stringify(props.basicData))
-    if (props.basicData) {
+    if (!proxy.isObjEmpty(props.basicData) && !proxy.isObjEmpty(props.basicData.formCode)) {
         form.bpmnName = props.basicData.bpmnName;
         form.bpmnCode = props.basicData.bpmnCode;
         form.formCode = props.basicData.formCode;
         form.remark = props.basicData.remark;
         form.deduplicationType = props.basicData.deduplicationType;
-    }  
-    if (props.flowType == 'DIY') {
-        getDIYFromCodeList();
-    } else if (props.flowType == 'LF') {
-        getLFFromCodeList();
-    } 
+    }
+    else {
+        form.bpmnCode = generatorID; 
+        form.formCode = query.fc;
+        form.bpmnName = decodeURIComponent(query.fcname??''); 
+    }
 });
+
 /**获取全部DIY FromCode */
-const getDIYFromCodeList = async()=> {
-   loading.value = true;
-   await getDIYFromCodeData().then((res) => {
-    loading.value = false;
-        if (res.code == 200) { 
+const getDIYFromCodeList = async () => {
+    loading.value = true;
+    await getDIYFromCodeData().then((res) => {
+        loading.value = false;
+        if (res.code == 200) {
             formCodeOptions.value = res.data;
         }
-   });
+    });
 }
 /**获取全部LF FromCode */
-const getLFFromCodeList = async()=> {
-   loading.value = true;
-   await getLowCodeFlowFormCodes().then((res) => {
-    loading.value = false;
-        if (res.code == 200) { 
+const getLFFromCodeList = async () => {
+    loading.value = true;
+    await getLowCodeFlowFormCodes().then((res) => {
+        loading.value = false;
+        if (res.code == 200) {
             formCodeOptions.value = res.data;
         }
-   });
+    });
 }
-  
+
 let rules = {
     formCode: [{
         required: true,
@@ -158,7 +147,7 @@ const getData = () => {
         proxy.$refs['ruleFormRef'].validate((valid, fields) => {
             if (!valid) {
                 emit('nextChange', { label: "基础设置", key: "basicSetting" })
-                reject({valid:false});
+                reject({ valid: false });
             }
             form.effectiveStatus = form.effectiveStatus ? 1 : 0;
             resolve({ formData: form })  // TODO 提交表单

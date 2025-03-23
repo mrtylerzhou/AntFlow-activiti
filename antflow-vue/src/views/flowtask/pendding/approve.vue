@@ -9,7 +9,7 @@
                 <el-tab-pane label="表单信息" name="baseTab">
                     <div class="approve" v-if="activeName === 'baseTab'">
                         <el-row style="padding-left: -5px;padding-right: -5px;">
-                            <el-col :span="24" style="border-bottom: 2px solid #dcdfe6;background-color: #fff; position: fixed;left:245px;right: 50px;z-index: 999;">
+                            <el-col :span="24" style="border-bottom: 2px solid #dcdfe6;background-color: #fff;">
                                 <div v-for="btn in approvalButtons" style="float: left;">
                                     <el-button style="margin: 5px;" v-if="btn.label"
                                         :type="approveButtonColor[btn.value]" @click="clickApproveSubmit(btn.value)">
@@ -336,8 +336,7 @@ const handleTabClick = async (tab, event) => {
 }
 
 .my-col {
-    border: 1px solid #ebeef5; 
-    margin-top: 44px;
+    border: 1px solid #ebeef5;  
 }
 
 .my-form {

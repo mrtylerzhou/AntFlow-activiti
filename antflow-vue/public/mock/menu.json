@@ -194,6 +194,18 @@
                         "noCache": true,
                         "link": null
                     }
+                },
+                {
+                    "name": "version",
+                    "path": "flow-version",
+                    "hidden": true,
+                    "component": "workflow/config/version",
+                    "meta": {
+                        "title": "版本管理",
+                        "icon": "",
+                        "noCache": true,
+                        "link": null
+                    }
                 }
             ]
         },

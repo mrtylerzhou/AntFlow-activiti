@@ -194,13 +194,8 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
 
-        //get conf
-        BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo1 =
-                Optional.ofNullable(bpmnNodeVo.getProperty())
-                        .map(BpmnNodePropertysVo::getConditionsConf)
-                        .orElse(new BpmnNodeConditionsConfBaseVo());
-
-        BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo =Optional.ofNullable(bpmnNodeVo.getProperty()).map(BpmnConfNodePropertyConverter::fromVue3Model)
+        BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo =Optional.ofNullable(bpmnNodeVo.getProperty())
+                .map(BpmnConfNodePropertyConverter::fromVue3Model)
                 .orElse(new BpmnNodeConditionsConfBaseVo());
 
         BpmnNodeConditionsConf bpmnNodeConditionsConf = new BpmnNodeConditionsConf();
@@ -218,7 +213,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
             return;
         }
 
-        Long nodeConditionsId = Optional.ofNullable(Optional.ofNullable(bpmnNodeConditionsConf).orElse(new BpmnNodeConditionsConf()).getId())
+        Long nodeConditionsId = Optional.ofNullable(Optional.of(bpmnNodeConditionsConf).orElse(new BpmnNodeConditionsConf()).getId())
                 .orElse(0L);
 
         //if node conditions id is not null then edit it

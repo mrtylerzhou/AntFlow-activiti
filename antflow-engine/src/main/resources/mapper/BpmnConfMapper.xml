@@ -69,6 +69,9 @@
             AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')
             OR a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.search},'%'))
         </if>
+        <if test="bpmnConfVo.formCode != null and bpmnConfVo.formCode != ''">
+            AND a.form_code LIKE CONCAT('%',#{bpmnConfVo.formCode},'%')
+        </if>
         <if test="bpmnConfVo.bpmnCode != null and bpmnConfVo.bpmnCode != ''">
             AND a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.bpmnCode},'%')
         </if>

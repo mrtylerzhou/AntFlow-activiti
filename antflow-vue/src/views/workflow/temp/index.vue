@@ -23,7 +23,7 @@
                     </el-row>
                 </div>
                 <div class="table-box">
-                    <el-table v-loading="loading" :data="LFPageList">
+                    <el-table v-loading="loading" :data="LFPageList" height="60vh">
                         <el-table-column label="类型标识" align="center" prop="key" v-if="columns[0].visible"
                             :show-overflow-tooltip="true">
                             <template #default="item">
@@ -53,11 +53,12 @@
                         </el-table-column>
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
+                                <el-button link type="primary" icon="Promotion" @click="handleLFDesign(scope.row)">设计流程</el-button>
                                 <el-button link type="success" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
-                                <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
+                                <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
                                 <el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button>
+                                    @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
                         </el-table-column>
                     </el-table>
@@ -99,11 +100,12 @@
                         </el-table-column>
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="ZoomIn"
+                                <el-button link type="primary" icon="Promotion" @click="handleDIYDesign(scope.row)">设计流程</el-button>
+                                <el-button link type="success" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
-                                <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
+                                <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
                                 <el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button>
+                                    @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
                         </el-table-column>
                     </el-table>
@@ -292,6 +294,28 @@ const handleLFTemp = async (row) => {
     }
     proxy.$modal.closeLoading();
     open.value = true;
+}
+
+async function handleDIYDesign(row) {
+  proxy.$modal.loading(); 
+  const param = { 
+    fcname: encodeURIComponent(row.value),  
+    fc: row.key
+  };
+  proxy.$modal.closeLoading();
+  const obj = { path: "/workflow/diy-design", query: param };
+  proxy.$tab.openPage(obj);
+}
+
+async function handleLFDesign(row) {
+  proxy.$modal.loading(); 
+  const param = { 
+    fcname: encodeURIComponent(row.value),  
+    fc: row.key
+  };
+  proxy.$modal.closeLoading();
+  const obj = { path: "/workflow/lf-design", query: param };
+  proxy.$tab.openPage(obj);
 }
 
 /** 修改按钮操作 */

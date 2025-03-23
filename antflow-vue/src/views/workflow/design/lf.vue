@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container" aria-hidden="true">
+    <div class="app-container">
         <div class="fd-nav">
             <div class="fd-nav-left"> 
                 <div class="fd-nav-title">  
@@ -30,7 +30,7 @@
         <div v-if="processConfig" v-show="activeStep === 'basicSetting'">
             <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps" :flowType="'LF'"/>
         </div>
-        <div v-show="activeStep === 'formDesign'" >
+        <div v-show="activeStep === 'formDesign'"  aria-hidden="true">
             <DynamicForm  ref="formDesign" :lfFormData="lfFormDataConfig" />
         </div> 
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
@@ -52,8 +52,7 @@ import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 const { proxy } = getCurrentInstance()
-const route = useRoute();
- 
+const route = useRoute(); 
 const basicSetting = ref(null);
 const processDesign = ref(null);
 const formDesign = ref(null);
@@ -86,12 +85,10 @@ onMounted(async () => {
    } else {
        mockjson = NodeUtils.createStartNode();
    }
-   let data = FormatDisplayUtils.getToTree(mockjson.data);
-   // console.log("old===data=nodes==========", JSON.stringify(data.nodes));
-   // console.log("old===data=nodeConfig==============", JSON.stringify(data.nodeConfig));
+   let data = FormatDisplayUtils.getToTree(mockjson.data); 
    proxy.$modal.closeLoading(); 
    processConfig.value = data;
-   title.value = data?.bpmnName;
+   title.value = proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(route.query.fcname??''):data?.bpmnName;  
    nodeConfig.value = data?.nodeConfig;     
    lfFormDataConfig.value = data?.lfFormData;   
    //console.log("lfFormDataConfig==========", JSON.stringify(lfFormDataConfig.value));
