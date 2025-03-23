@@ -2,11 +2,11 @@
    <div class="app-container">
       <div class="query-box">
          <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
-            <el-form-item label="流程编号" prop="bpmnCode">
+            <el-form-item label="版本编号" prop="bpmnCode">
                <el-input v-model="taskMgmtVO.bpmnCode" placeholder="请输入关键字" clearable style="width: 200px"
                   @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="流程名称" prop="bpmnName">
+            <el-form-item label="版本名称" prop="bpmnName">
                <el-input v-model="taskMgmtVO.bpmnName" placeholder="请输入关键字" clearable style="width: 200px"
                   @keyup.enter="handleQuery" />
             </el-form-item>
@@ -23,7 +23,7 @@
             </el-form-item>
          </el-form>
 
-         <el-row :gutter="10" class="mb8">
+         <!-- <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                <el-tooltip class="box-item" effect="dark" content="低代码表单+流程设计器" placement="bottom">
                   <el-button type="success" plain icon="Edit" @click="handleLFDesign">流程设计(LF)</el-button>
@@ -34,7 +34,7 @@
                   <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
                </el-tooltip>
             </el-col>
-         </el-row>
+         </el-row> -->
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
