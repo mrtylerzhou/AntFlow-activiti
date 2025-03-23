@@ -19,7 +19,7 @@
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="dataList">
-            <el-table-column label="模板类型" align="center" prop="processKey">
+            <el-table-column label="流程类型" align="center" prop="processKey">
                <template #default="item"> {{ substringHidden(item.row.processKey) }}
                   <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
                      <el-tag type="warning" round>OUT</el-tag>
