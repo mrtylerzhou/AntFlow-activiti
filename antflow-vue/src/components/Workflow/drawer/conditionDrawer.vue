@@ -331,7 +331,7 @@ const saveCondition = () => {
     conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
     conditionsConfig.value.conditionNodes.map((item, index) => {
         item.priorityLevel = index + 1,
-            convertConditionNodeValue(item.conditionList)
+            convertConditionNodeValue(item.conditionList,false)
     });
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
@@ -353,16 +353,22 @@ const closeDrawer = (val) => {
     setCondition(false)
 }
 /**格式化控件值 */
-const convertConditionNodeValue = (data) => {
+const convertConditionNodeValue = (data,isPreview=true) => {
     if (!data || proxy.isArrayEmpty(data)) return;
     for (let item of data) { 
         if (item.fieldTypeName == 'radio') {//单选radio
             item.zdy1 = parseInt(item.zdy1)
         }
-        if (item.fieldTypeName == 'select' && item.multiple) {//select多选
-            if (Array.isArray(item.zdy1) && item.zdy1.includes('[')) {
-                item.zdy1 = JSON.parse(item.zdy1)
-            }
+        if (item.fieldTypeName == 'select' && item.multiple) {//select多选 
+            if (!Array.isArray(item.zdy1) && item.zdy1.includes('[')) {
+                if (isPreview) {
+                    item.zdy1 = JSON.parse(item.zdy1)
+                }
+            } else {
+                if (!isPreview) {
+                    item.zdy1 = JSON.stringify(item.zdy1)
+                }
+            } 
         }
         if (item.fieldTypeName == 'select' && !item.multiple) {//select单选
             item.zdy1 = parseInt(item.zdy1)
