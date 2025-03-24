@@ -16,7 +16,7 @@
                     </el-form>
                     <el-row :gutter="10" class="mb8">
                         <el-col :span="1.5">
-                            <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">流程分类(LF)</el-button>
+                            <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">新增(LF)</el-button>
                         </el-col>
                         <right-toolbar v-model:showSearch="showSearch" @queryTable="getLFPageList"
                             :columns="columns"></right-toolbar>
@@ -72,7 +72,7 @@
                     <el-row :gutter="10" class="mb8">
                         <el-col :span="1.5">
                             <el-button type="primary" plain icon="CirclePlus"
-                                @click="handleDIYTemp">流程分类(DIY)</el-button>
+                                @click="handleDIYTemp">新增(DIY)</el-button>
                         </el-col>
                         <right-toolbar v-model:showSearch="showSearch" @queryTable="getDIYList"
                             :columns="columns"></right-toolbar>

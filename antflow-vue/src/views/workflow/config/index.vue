@@ -69,13 +69,9 @@
                </template>
             </el-table-column>
             <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
-               <template #default="scope">
-                  <!-- <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
-                  <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
-                  <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
-                  <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> -->
-                  <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button> 
-                  <!-- <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button> -->
+               <template #default="scope"> 
+                  <!--<el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> -->
+                  <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button>  
                </template>
             </el-table-column>
          </el-table>
@@ -87,8 +83,7 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { getBpmnConflistPage, getEffectiveBpmn } from "@/api/workflow";
-const router = useRouter();
+import { getBpmnConflistPage } from "@/api/workflow"; 
 const { proxy } = getCurrentInstance(); 
 const configList = ref([]);
 const loading = ref(false);
@@ -126,23 +121,7 @@ const getList = async () => {
       proxy.$modal.msgError("加载列表失败:" + r.message);
    });
 }
-/**
- * 复制操作
- * @param row
- */
-const handleCopy = (row) => {
-   const params = {
-      id: row.id
-   };
-   let obj = {};
-   if (row.isLowCodeFlow == '1') {
-      obj = { path: "/workflow/lf-design", query: params };
-   } else {
-      obj = { path: "/workflow/diy-design", query: params };
-   }
-   proxy.$tab.openPage(obj);
-}
-
+ 
 const handleVersion = async (row) => {
    const params = {
       formCode: row.formCode
@@ -150,34 +129,13 @@ const handleVersion = async (row) => {
    let obj = { path: "flow-version", query: params };
    proxy.$tab.openPage(obj);
 }
-/**
- * 启动流程
- * @param data
- */
-const effectiveById = async (data) => {
-   await getEffectiveBpmn(data).then(async (res) => {
-      if (res.code == 200) {
-         getList();
-         proxy.$modal.msgSuccess("操作成功");
-      } else {
-         proxy.$modal.msgError("操作失败");
-      }
-   });
-}
+
 /** 搜索按钮操作 */
 function handleQuery() {
    pageDto.value.page = 1;
    getList();
 }
-/** 跳转到低代码流程设计器 */
-function handleLFDesign() {
-   router.push({ path: "lf-design" });
-}
-/** 跳转到自定义流程设计器 */
-function handleDIYDesign() {
-   router.push({ path: "diy-design" });
-}
-
+ 
 /** 重置按钮操作 */
 function resetQuery() {
    taskMgmtVO.value = {
@@ -187,19 +145,5 @@ function resetQuery() {
    };
    proxy.resetForm("queryRef");
    handleQuery();
-}
-
-/** 删除按钮操作 */
-function handleDelete(row) {
-   proxy.$modal.msgError("演示环境不允许删除操作！");
-}
-/** 预览 */
-function handlePreview(row) {
-   const params = {
-      id: row.id
-   };
-   const obj = { path: "/workflow/preview", query: params };
-   proxy.$tab.openPage(obj);
-}
-
+} 
 </script>
