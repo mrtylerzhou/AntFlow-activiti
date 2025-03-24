@@ -36,16 +36,16 @@
         <div class="demo-drawer__footer clear">
             <el-button type="primary" @click="saveCopyer">确 定</el-button>
             <el-button @click="closeDrawer">取 消</el-button>
-        </div>
-        <employees-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
+        </div> 
+        <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
     </el-drawer>
 </template>
 <script setup>
-import employeesDialog from '../dialog/employeesDialog.vue'
-import FormPermConf from "../config/FormPermConf.vue";
-import $func from '@/utils/flow/index'
-import { useStore } from '@/store/modules/workflow'
 import { ref, watch, computed } from 'vue'
+import selectUserDialog from '../dialog/selectUserDialog.vue'
+import FormPermConf from "../config/FormPermConf.vue"
+import $func from '@/utils/flow/index'
+import { useStore } from '@/store/modules/workflow' 
 let copyerConfig = ref({})
 let ccSelfSelectFlag = ref([])
 let copyerVisible = ref(false)

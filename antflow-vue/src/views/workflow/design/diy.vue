@@ -47,7 +47,7 @@ import { NodeUtils } from '@/utils/flow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
-import { getWorkFlowData } from '@/api/mock.js';
+//import { getWorkFlowData } from '@/api/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
 const basicSetting = ref(null);
@@ -104,7 +104,10 @@ const publish = () => {
                 proxy.$modal.closeLoading();
                 if (resLog.code == 200) {
                     proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
-                    const obj = { path: "/workflow/config" };
+                    let obj = { path: "/workflow/config" };
+                    if (!proxy.isObjEmpty(route.query?.fc)) {
+                        obj = { path: "flow-version", query: { formCode: route.query.fc } };
+                    }
                     proxy.$tab.openPage(obj);
                 } else {
                     proxy.$modal.msgError("提交到API返回失败" + JSON.stringify(resLog.errMsg));
