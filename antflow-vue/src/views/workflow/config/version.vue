@@ -37,8 +37,8 @@
                 <template #default="scope">
                    <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
                    <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
-                   <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
                    <el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> 
+                   <el-button link type="success" @click="handlePreview(scope.row)">预览</el-button>
                 </template>
              </el-table-column>
           </el-table>
@@ -54,8 +54,7 @@
  const { query } = useRoute();
  const { proxy } = getCurrentInstance(); 
  const configList = ref([]);
- const loading = ref(false);
- const showSearch = ref(true);
+ const loading = ref(false); 
  const total = ref(0); 
  const data = reactive({
     form: {},

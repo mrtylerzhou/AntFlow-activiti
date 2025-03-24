@@ -31,9 +31,9 @@
                         <el-tooltip placement="right" >
                             <template #content> 
                                 <span> 
-                                    <el-alert style="margin-bottom: 5px;" title="第一步：添加模板类型(LF)：流程管理->流程模板" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第二步：流程设计：流程管理->流程设计(LF)" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用流程：流程管理->流程设计列表点击【启用】" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】" type="success" effect="dark"  :closable="false" /> 
                                 </span>
                             </template>
                             <el-icon><question-filled /></el-icon>
