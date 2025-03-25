@@ -11,14 +11,14 @@ import static org.openoa.base.constant.enums.InformEnum.*;
 
 public enum EventTypeEnum {
 
-    PROCESS_INITIATOR(1, "流程发起", true, ProcessOperationEnum.BUTTON_TYPE_SUBMIT.getCode(), 1, Lists.newArrayList()),
+    PROCESS_INITIATE(1, "流程发起", true, ProcessOperationEnum.BUTTON_TYPE_SUBMIT.getCode(), 1, Lists.newArrayList()),
     PROCESS_CANCELLATION(2, "作废操作", false, ProcessOperationEnum.BUTTON_TYPE_ABANDON.getCode(), 0, Collections.singletonList(APPLICANT.getCode())),
-    PROCESS_FLOW(3, "流程流转至当前节点", true, 0, 4, Collections.singletonList(AT_APPROVER.getCode())),
+    PROCESS_FLOW(3, "流程流转至当前节点", true, 0, 4, Collections.singletonList(CURRENT_APPROVER.getCode())),
     PROCESS_CONSENT(4, "同意操作", true, ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode(), 4, Lists.newArrayList()),
     PROCESS_DISAGREE(5, "不同意操作", true, ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE.getCode(), 4, Collections.singletonList(APPLICANT.getCode())),
-    PROCESS_ADDAPPROVE(6, "加批操作", true, ProcessOperationEnum.BUTTON_TYPE_JP.getCode(), 4, Lists.newArrayList()),
-    PROCESS_REPULSE(7, "打回修改操作", true, ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY.getCode(), 4, Lists.newArrayList()),
-    PROCESS_TRANSPOND(8, "转发操作", false, ProcessOperationEnum.BUTTON_TYPE_FORWARD.getCode(), 0, Collections.singletonList(BY_TRANSPOND.getCode())),
+    PROCESS_ADDAPPROVER(6, "加批操作", true, ProcessOperationEnum.BUTTON_TYPE_JP.getCode(), 4, Lists.newArrayList()),
+    PROCESS_BACK_TO_MODIFY(7, "退回修改操作", true, ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY.getCode(), 4, Lists.newArrayList()),
+    PROCESS_FORWARD(8, "转发操作", false, ProcessOperationEnum.BUTTON_TYPE_FORWARD.getCode(), 0, Collections.singletonList(FORWARDED_APPROVER.getCode())),
     PROCESS_END(9, "流程结束", false, 0, 0, Collections.singletonList(APPLICANT.getCode())),
     ;
 

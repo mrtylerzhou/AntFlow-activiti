@@ -6,8 +6,8 @@ public enum InformEnum {
 
     APPLICANT(1, "申请人", "startUser"),
     ALL_APPROVER(2, "所有已审批人", "approveds"),
-    AT_APPROVER(3, "当前节点审批人", "assignee"),
-    BY_TRANSPOND(4, "被转发人", "forwardUsers"),
+    CURRENT_APPROVER(3, "当前节点审批人", "assignee"),
+    FORWARDED_APPROVER(4, "被转发人", "forwardUsers"),
     ;
 
     @Getter

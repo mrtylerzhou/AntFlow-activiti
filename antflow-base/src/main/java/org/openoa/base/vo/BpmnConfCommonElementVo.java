@@ -133,4 +133,5 @@ public class BpmnConfCommonElementVo {
      * approve remind vo
      */
     private BpmnApproveRemindVo approveRemindVo;
+    private List<BpmnNodeLabelVO> labelList;
 }

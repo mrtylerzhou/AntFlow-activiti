@@ -39,6 +39,8 @@ public class BpmVariableSignUp {
      */
     @TableField("element_id")
     private String elementId;
+    @TableField("node_id")
+    private String nodeId;
     /**
      * after sign up way(1 comback to sign up user;2 not callback to sign up user)
      */

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author AntFlow
@@ -64,9 +65,9 @@ public class BpmnStartConditionsVo {
     private List<String> employeeIds;
 
     /**
-     * a list of approver
+     * key is node's id,value is a list of approves,if there is only one start user chosen node,the map's key is ignored
      */
-    private List<String> approversList;
+    private Map<String,List<BaseIdTranStruVo>> approversList;
     /**
      * entry Id
      */
@@ -127,7 +128,7 @@ public class BpmnStartConditionsVo {
     /**
      * template mark id
      */
-    private Integer templateMarkId;
+    private List<Integer> templateMarkIds;
 
     /**
      * 业务方类型（1-嵌入式；2-接入式）
@@ -149,4 +150,9 @@ public class BpmnStartConditionsVo {
      * third party level nodes
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
+    private Map<String,Object> lfConditions;
+    private  Boolean isMigration;
+    private boolean isPreview;
+    private BusinessDataVo businessDataVo;
+    private boolean isLowCodeFlow;
 }

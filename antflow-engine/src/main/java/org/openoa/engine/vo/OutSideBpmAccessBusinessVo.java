@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.OutSideBpmAccessEmbedNodeVo;
 import org.openoa.base.vo.OutSideLevelNodeVo;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 
@@ -55,9 +57,9 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      */
     private String formDataApp;
     /**
-     * template mark
+     * template marks
      */
-    private String templateMark;
+    private List<String> templateMarks;
     /**
      * start user id
      */
@@ -117,7 +119,10 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
 
     private Integer outSideType;
 
-
+    /**
+     * key is node's id,value is a list of approves,if there is only one start user chosen node,the map's key is ignored
+     */
+    private Map<String,List<BaseIdTranStruVo>> approversList;
     /**
      * embedded mode
      */
@@ -127,4 +132,7 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      * out side level nodes
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
+    private Map<String,Object> lfConditions;
+    private Boolean isLowCodeFlow;
+    private Map<String,Object> lfFields;
 }

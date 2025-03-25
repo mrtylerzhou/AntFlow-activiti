@@ -120,5 +120,9 @@ public class BpmBusinessProcess {
      */
     @TableField("is_out_side_process")
     private Integer isOutSideProcess;
-
+    /**
+     * 0 no ,1 yes
+     */
+    @TableField("is_lowcode_flow")
+    private Integer isLowCodeFlow;
 }

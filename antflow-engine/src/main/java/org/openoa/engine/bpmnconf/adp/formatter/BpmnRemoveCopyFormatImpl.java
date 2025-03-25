@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 @Service
 public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
     @Override
-    public Integer order() {
+    public int order() {
         return 2;
     }
 
@@ -37,6 +37,7 @@ public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
             if (bpmnStartConditions.getEmpToForwardList() == null) {
                 bpmnStartConditions.setEmpToForwardList(new ArrayList<>());
             }
+            vo.setEmpToForwardList(vo.getProperty().getEmplList());
             bpmnStartConditions.getEmpToForwardList().addAll(vo.getProperty().getEmplIds());
         }
         return Lists.newArrayList(supplier);

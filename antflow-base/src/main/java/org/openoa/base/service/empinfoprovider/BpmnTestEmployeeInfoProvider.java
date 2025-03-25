@@ -1,7 +1,7 @@
 package org.openoa.base.service.empinfoprovider;
 
 import com.google.common.collect.Maps;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Component
 public class BpmnTestEmployeeInfoProvider implements BpmnEmployeeInfoProviderService {
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
 
     @Override
     public Map<String, String> provideEmployeeInfo(Collection<String> empIds) {
@@ -32,7 +32,7 @@ public class BpmnTestEmployeeInfoProvider implements BpmnEmployeeInfoProviderSer
         if(CollectionUtils.isEmpty(users)){
             return Maps.newHashMap();
         }
-        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(a-> a.getId(),BaseIdTranStruVo::getName,(k1, k2)->k1));
+        Map<String,String>empIdAndNameMap = users.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId,BaseIdTranStruVo::getName,(k1, k2)->k1));
 
         return empIdAndNameMap;
     }

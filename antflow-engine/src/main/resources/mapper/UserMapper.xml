@@ -2,7 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.openoa.base.mapper.UserMapper">
 
-<select id="queryCompanyByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+    <!--employeeMap can be implemented or not,if not,you can write just like fieldxx as userName in the sql-->
+    <resultMap id="employeeMap" type="org.openoa.base.entity.Employee">
+        <id column="id" property="id"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="user_name" property="username"/>
+        <result column="mobile" property="mobile"/>
+        <result column="email" property="email"/>
+        <result column="head_img" property="headImg"/>
+        <result column="mobile_is_show" property="mobileIsShow"/>
+        <result column="leader_id" property="leaderId"/>
+        <result column="is_del" property="isDel"/>
+        <result column="hrbp_id" property="hrbpId"/>
+        <result column="path" property="path"/>
+    </resultMap>
+
+    <select id="queryCompanyByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
 
     select id,org_name as name from t_company
     <where>
@@ -12,42 +27,107 @@
         </if>
     </where>
     </select>
+    <!--根据用户名模糊查询用户信息,必须返回id,name字段(BaseIdTranStruVo)类型,用户数据库字段名不一样as即可-->
     <select id="queryByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-       <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByNameFuzzy">
-
-       </include>
+        select id,user_name as name from t_user
+        <where>
+            <if test="userName != null and userName != ''">
+                <bind name="user_name" value="'%' + user_name + '%'" />
+                and  user_name like #{user_name}
+            </if>
+        </where>
     </select>
+    <!--如果将AntFlow内嵌到自己系统,生产环境此sql必须改写,如果只是想快速跑demo,使用AntFlow带的t_user demo表即可-->
+    <!--根据用户id集体查询用户信息,必须返回id,name字段(BaseIdTranStruVo)类型,用户数据库字段名不一样as即可-->
     <select id="queryByIds" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-       <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryUserByIds">
-
-       </include>
+        select id,user_name as name from t_user
+        <where>
+            <if test="userIds != null and userIds.size() > 0">
+                id in
+                <foreach collection="userIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
-    <select id="getEmployeeDetailById" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoById">
-        </include>
+    <!--此sql主要用于消息通知系统,不同于流程引擎核心业务只需要用户id和用户name,通知系统需要的数据比较多,但是至少要有邮件(antflow默认实现了邮件通知),用户手机号非必须,如果还有其它定制化的场景,可能需要更改实体添加更多字段-->
+    <select id="getEmployeeDetailById" resultMap="org.openoa.base.mapper.UserMapper.employeeMap">
+        select id,user_name,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
+        <where>
+            <if test="employeeId != null ">
+                id = #{employeeId}
+            </if>
+        </where>
     </select>
-    <select id="getEmployeeDetailByIds" resultMap="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.employeeMap">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.findEmployeeInfoByIds">
-        </include>
+    <!--和getEmployeeDetailById使用场景类似,差别在于这个接口是批量的,用于批量发送消息-->
+    <select id="getEmployeeDetailByIds" resultMap="org.openoa.base.mapper.UserMapper.employeeMap">
+        select id,user_name,mobile,email,head_img,mobile_is_show,leader_id,is_del,hrbp_id,path from t_user
+        <where>
+            <if test="employeeIds != null and employeeIds.size() > 0">
+                id in
+                <foreach collection="employeeIds" item="employeeId" open="(" separator="," close=")">
+                    #{employeeId}
+                </foreach>
+            </if>
+        </where>
     </select>
+    <!--检查员工是否是有效的,发消息的时候提升体验,防止消息发给已经离职的人员引起信息泄露或者打扰-->
     <select id="checkEmployeeEffective" resultType="java.lang.Long">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.queryEffectiveEmployeeCount">
-        </include>
+        select count(1) from t_user
+        <where>
+            <if test="employeeId != null">
+                id = ${employeeId}
+            </if>
+            <if test="employeeId == null">
+                1=2
+            </if>
+        </where>
     </select>
+    <!--此方法主要用于展示查找员工指定层级的领导,这可不是一个普通的功能,比如指定5级,就会顺着找五个层级的所有领导,然后生成五层审批节点(不是在同一个节点上),很多工作流实现起来很麻烦,但是antflow非常方便,
+    和其它的并没有太大差别,只是sql稍微复杂了一些,本质仍然是找到审批人的id和name
+    ,实际中用户表设计千差万别,核心是根据业务需求将流程模板配置的流程审批人规则中的人找到,返回他们的用户id和用户name即可-->
     <select id="getLevelLeadersByEmployeeIdAndTier" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getLevelLeadersByEmployeeIdAndTier">
-
-        </include>
+        SELECT tu2.id,tu2.user_name as name
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10
+        ) AS numbers
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
+        ) order by tu2.id desc limit #{tier}
     </select>
+    <!--此sql主要展示通过用户id查找用户的hrbp作为审批人,实际中用户的表可能不是这样设计的,甚至没有hrbp,但是核心是根据指定条件找到配置的审批人规则里的审批人(不用关心流程引擎怎么调用的,当然也可以查看代码是怎么实现的,实现把审批人
+    id和name查到即可)-->
     <select id="getHrpbByEmployeeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getHrpbByEmployeeId">
-
-        </include>
+        select id,user_name as name from t_user where id=
+        (select hrbp_id from t_user
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>)
     </select>
+    <!--用于展示根据发起人找到他的直属领导的方法,还是那句话,你的表可能不是这样的,但无所谓,根据传入的用户id查找到他的直属领导的id和name即可-->
     <select id="getDirectLeaderByEmployeeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getDirectLeaderByEmployeeId">
-
-        </include>
+        select id,user_name as name from t_user where id =(
+        select leader_id from t_user
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
+        )
     </select>
 
     <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">
@@ -61,5 +141,63 @@
         </where>
         group by  u.id
         order by  u.id
+    </select>
+
+    <select id="selectUserPageList" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select  u.id, u.user_name as name from t_user u
+        <where>
+            <if test="vo.description !=null and vo.description !=''">
+                u.user_name like CONCAT("%",#{vo.description},"%")
+            </if>
+        </where>
+        order by  u.id desc
+    </select>
+
+    <!--查找用户指定层级领导-->
+    <select id="getLeaderByLeventDepartment" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <!--指定层审批,有的组织层级不够,则取最近一层级-->
+        select id,user_name as name
+        from
+        (SELECT tu2.id,tu2.user_name,td2.level
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10
+        ) AS numbers
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{startUserId})
+        ) AND  <![CDATA[ td2.level<=#{assignLevelGrade} ]]>)tmp order by level desc  limit 1
+    </select>
+    <!--这个和getLevelLeadersByEmployeeIdAndTier类似,只是条件不太一样,最终实现的效果是一下子生成一串审批节点-->
+    <select id="getLevelLeadersByEmployeeIdAndEndGrade" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        SELECT tu2.id,tu2.user_name as name
+        FROM t_department td2 join  t_user tu2  on td2.leader_id=tu2.id
+        WHERE td2.id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(path, '/', n), '/', -1) AS UNSIGNED)
+        FROM t_department
+        JOIN (
+        SELECT 1 AS n UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10
+        ) AS numbers
+        WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
+        ) and td2.level>#{endGrade}
     </select>
 </mapper>

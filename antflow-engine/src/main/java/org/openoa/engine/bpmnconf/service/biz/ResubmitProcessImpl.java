@@ -1,16 +1,17 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
+import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
-import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
@@ -23,6 +24,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -32,7 +34,7 @@ import static org.openoa.base.constant.enums.ProcessSubmitStateEnum.PROCESS_SIGN
 import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 
 /**
- *@Author JimuOffice
+ * @Author JimuOffice
  * @Description submit/approve
  * @Date 2022-04-28 15:55
  * @Param
@@ -54,13 +56,17 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
-
+    @Autowired
+    private BpmnProcessMigrationServiceImpl bpmnProcessMigrationService;
+    @Autowired
+    private BpmnConfCommonServiceImpl bpmnConfCommonService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
+        vo.setStartUserId(SecurityUtils.getLogInEmpIdStr());
+        vo.setStartUserName(SecurityUtils.getLogInEmpName());
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpIdStr()).list();
         if (ObjectUtils.isEmpty(tasks)) {
             throw new JiMuBizException("当前流程已审批！");
@@ -70,16 +76,46 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())).findFirst().orElse(null);
         } else {
             task = tasks.get(0);
+            if (StringUtils.isEmpty(task.getAssigneeName())) {
+                task.setAssigneeName(SecurityUtils.getLogInEmpNameSafe());
+            }
         }
+        if (ObjectUtils.isEmpty(task)) {
+            throw new JiMuBizException("当前流程代办已审批或不存在！");
+        }
+        String formKey = task.getFormKey();
+        //实际上存的是label信息
+        if (!StringUtils.isEmpty(formKey)) {
+            NodeExtraInfoDTO extraInfoDTO = JSON.parseObject(formKey, NodeExtraInfoDTO.class);
+            List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
+            if (!CollectionUtils.isEmpty(nodeLabelVOS)) {
+                for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
+                    if (StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())) {
+                        if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
+                            boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);
+                           if(conditionsChanged){
+                               bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(), bpmBusinessProcess, vo, this::executeTaskCompletion);
+                               return;
+                           }
+                        }
+                    }
+                }
+            }
+        }
+
         if (ObjectUtils.isEmpty(task)) {
             throw new JiMuBizException("当前流程代办已审批！");
         }
 
+        executeTaskCompletion(vo, task, bpmBusinessProcess);
+    }
+
+    private void executeTaskCompletion(BusinessDataVo vo, Task task, BpmBusinessProcess bpmBusinessProcess) {
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         BusinessDataVo businessDataVo = vo;
-        if(!vo.getIsOutSideAccessProc()){
-            businessDataVo= formFactory.getFormAdaptor(vo).consentData(vo);
+        if (!vo.getIsOutSideAccessProc()) {
+            businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
         }
 
         //save process verify info
@@ -89,13 +125,13 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 .taskName(task.getName())
                 .taskId(task.getId())
                 .runInfoId(bpmBusinessProcess.getProcInstId())
-                .verifyUserId(SecurityUtils.getLogInEmpIdStr())
-                .verifyUserName(SecurityUtils.getLogInEmpName())
+                .verifyUserId(task.getAssignee())
+                .verifyUserName(vo.getStartUserName())
+                .taskDefKey(task.getTaskDefinitionKey())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
                 .verifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "同意" : vo.getApprovalComment())
                 .processCode(vo.getProcessNumber())
                 .build();
-
 
 
         //if process digest is not empty then update process digest
@@ -128,7 +164,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP
         );
-        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  BUTTON_TYPE_RESUBMIT,
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), BUTTON_TYPE_RESUBMIT,
                 BUTTON_TYPE_AGREE,
                 BUTTON_TYPE_JP);
     }

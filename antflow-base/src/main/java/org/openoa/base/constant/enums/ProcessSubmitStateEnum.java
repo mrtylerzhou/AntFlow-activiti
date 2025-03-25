@@ -13,7 +13,7 @@ public enum ProcessSubmitStateEnum {
     END_AGRESS_TYPE(5, "流程作废状态"),
     CRMCEL_AGRESS_TYPE(6, "流程终止状态"),
     WITHDEAW_DISAGREE_TYPE(7, "back"),
-    PROCESS_UPDATE_TYPE(8, "打回修改"),
+    PROCESS_UPDATE_TYPE(8, "退回修改"),
     PROCESS_SIGN_UP(9, "加批"),
     ;
     @Getter

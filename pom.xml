@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>web</module>
+        <module>antflow-web</module>
         <module>antflow-base</module>
         <module>antflow-engine</module>
         <module>antflow-spring-boot-starter</module>
@@ -17,7 +17,7 @@
     </parent>
    <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
-    <version>0.11.0</version>
+    <version>0.84.0</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>

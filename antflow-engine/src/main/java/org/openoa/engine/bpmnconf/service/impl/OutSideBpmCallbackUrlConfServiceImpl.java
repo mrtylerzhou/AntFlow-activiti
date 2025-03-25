@@ -194,6 +194,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
             BeanUtils.copyProperties(vo, outSideBpmCallbackUrlConf);
             GenericEmployee loginedEmployee = new GenericEmployee();
             //todo
+            outSideBpmCallbackUrlConf.setStatus(1);
             outSideBpmCallbackUrlConf.setCreateTime(new Date());
             outSideBpmCallbackUrlConf.setCreateUser(SecurityUtils.getLogInEmpName());
             outSideBpmCallbackUrlConf.setUpdateTime(new Date());
@@ -209,15 +210,15 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
      * @param businessPartyId
      * @return
      */
-    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Integer businessPartyId) {
+    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
 
         OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmCallbackUrlConf>()
                 .eq("business_party_id", businessPartyId)
                 .eq("status", 1));
 
-        if (outSideBpmCallbackUrlConf==null) {
-            throw new JiMuBizException("流程回调URL未配置，方法执行失败");
-        }
+//        if (outSideBpmCallbackUrlConf==null) {
+//            throw new JiMuBizException("流程回调URL未配置，方法执行失败");
+//        }
 
         return outSideBpmCallbackUrlConf;
     }

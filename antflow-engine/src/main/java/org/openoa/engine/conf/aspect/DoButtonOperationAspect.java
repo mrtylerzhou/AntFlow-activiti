@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.service.biz.ButtonOperationServiceImpl;
@@ -46,7 +48,8 @@ public class DoButtonOperationAspect {
         if (ObjectUtils.isEmpty(poEnum)) {
             throw new JiMuBizException("unknown operation type,please Contact the Administrator");
         }
-
+        formCode=vo.getFormCode();
+        ThreadLocalContainer.set(StringConstants.FORM_CODE,formCode);
         //set the operation Flag
         if (poEnum.getCode().equals(BUTTON_TYPE_DIS_AGREE.getCode()) || poEnum.getCode().equals(BUTTON_TYPE_STOP.getCode())) {
             vo.setFlag(false);

@@ -2,6 +2,8 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -30,8 +32,10 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,6 +72,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
+    @Resource
+    private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
 
     public List<BpmVerifyInfoVo> getVerifyInfoList(String processCode) {
         List<BpmVerifyInfoVo> bpmVerifyInfoVos = service.verifyInfoList(processCode);
@@ -177,6 +183,18 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setVerifyStatus(99);
             taskVo.setVerifyStatusName("处理中");
             bpmVerifyInfoVos.add(taskVo);
+
+            List<BpmFlowrunEntrust> flowrunEntrustList = bpmFlowrunEntrustService.list(
+                    Wrappers.<BpmFlowrunEntrust>lambdaQuery().eq(BpmFlowrunEntrust::getRuntaskid, taskVo.getId()).orderByDesc(BpmFlowrunEntrust::getId));
+            if(!CollectionUtils.isEmpty(flowrunEntrustList)){
+                BpmFlowrunEntrust flowrunEntrust = flowrunEntrustList.get(0);
+                String actual = flowrunEntrust.getActual();
+                if(taskVo.getVerifyUserId().equals(actual)){
+                    String actualVerifyUserName = taskVo.getVerifyUserName();
+                    String originalName = flowrunEntrust.getOriginalName();
+                    taskVo.setVerifyUserName(actualVerifyUserName+" 代 "+originalName+" 审批 ");
+                }
+            }
             sort++;
 
 
@@ -203,12 +221,12 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         Integer processState = bpmBusinessProcess.getProcessState();
 
         Integer endVerifyStatus = 100;
-        if (processState != CRMCEL_STATE.getCode() || processState != END_STATE.getCode()) {
+        if (processState != REJECT_STATE.getCode() || processState != END_STATE.getCode()) {
             if (!finishFlag) {
                 //追加流程记录
                 addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
             }
-            if (processState == COMLETE_STATE.getCode()) {
+            if (processState == HANDLING_STATE.getCode()) {
                 endVerifyStatus = 0;
             }
         }
@@ -243,7 +261,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         List<ActivityImpl> collect = activitiList.stream().filter(a -> a.getId().equals(taskVo.getElementId())).collect(Collectors.toList());
 
-        if (collect.size() > 0) {
+        if (!collect.isEmpty()) {
 
             ActivityImpl activity = collect.get(0);
             Map<String, Object> properties = activity.getProperties();
@@ -255,15 +273,18 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
                 List<BaseIdTranStruVo> idTranStruVos=new ArrayList<>();
 
-                for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
+                if(!CollectionUtils.isEmpty(baseIdTranStruVos)){
+                    for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
 
-                    for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
-                        if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
-                            idTranStruVos.add(baseIdTranStruVo);
+                        for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
+                            if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
+                                idTranStruVos.add(baseIdTranStruVo);
+                            }
+
                         }
-
                     }
                 }
+
                 for (BaseIdTranStruVo idTranStruVo : idTranStruVos) {
                     BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder()
                             .verifyUserId(idTranStruVo.getId())
@@ -319,7 +340,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         return signUpNodeCollectionNameMap;
     }
-
+    /**
+     * 根据processNumber 获取当前审批节点的ElementId
+     * @param processNumber
+     * @return
+     */
+    public  String  findCurrentNodeIds(String processNumber) {
+      return  service.findCurrentNodeIds(processNumber);
+    }
     /**
      * do append verify info
      *
@@ -337,41 +365,52 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             Long variableId) {
 
         //get the netxt pvm activity element
-        PvmActivity nextElement = activitiAdditionalInfoService.getNextElement(elementId, activitiList);
+        List<PvmActivity> nextElements = activitiAdditionalInfoService.getNextElementList(elementId, activitiList);
 
-        if (ObjectUtils.isEmpty(nextElement)) {
+        if (CollectionUtils.isEmpty(nextElements)) {
             return;
         }
-
-        //get next node's approvers
-        List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(nextElement.getId());
         List<String> empIds = new ArrayList<>();
 
         List<String> emplNames = Lists.newArrayList();
-        if (!ObjectUtils.isEmpty(baseIdTranStruVos)) {
-            for (BaseIdTranStruVo empBaseInfo : baseIdTranStruVos) {
-                String emplIdStr=empBaseInfo.getId();
-                String name = empBaseInfo.getName();
-                empIds.add(emplIdStr);
-                emplNames.add(name);
+
+        for (PvmActivity nextElement : nextElements) {
+            //get next node's approvers
+            List<BaseIdTranStruVo> baseIdTranStruVos = nodeApproveds.get(nextElement.getId());
+            if (!ObjectUtils.isEmpty(baseIdTranStruVos)) {
+                for (BaseIdTranStruVo empBaseInfo : baseIdTranStruVos) {
+                    String emplIdStr=empBaseInfo.getId();
+                    String name = empBaseInfo.getName();
+                    empIds.add(emplIdStr);
+                    emplNames.add(name);
+                }
             }
         }
 
         //then assemble them
         String verifyUserName="";
-        if (!ObjectUtils.isEmpty(emplNames)) {
+        if (!CollectionUtils.isEmpty(emplNames)) {
             verifyUserName = StringUtils.join(emplNames, ",");
         } else {
 
             //If can not get the approvers info,then get it from activity engine
-            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElement.getId(), signUpNodeCollectionNameMap, variableInstanceMap,variableId);
+            verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElements.get(0).getId(), signUpNodeCollectionNameMap, variableInstanceMap,variableId);
+        }
+        StringBuilder nameSb=new StringBuilder();
+        StringBuilder elementIdSb=new StringBuilder();
+        for (int i = 0; i < nextElements.size(); i++) {
+            PvmActivity currElement = nextElements.get(i);
+            if(i!=nextElements.size()-1){
+                nameSb.append(currElement.getProperty("name")).append("||");
+                elementIdSb.append(currElement.getId()).append(",");
+            }else{
+                nameSb.append(currElement.getProperty("name"));
+                elementIdSb.append(currElement.getId());
+
+            }
         }
 
-        String taskName = Optional.ofNullable(nextElement.getProperty("name")).map(String::valueOf).orElse(StringUtils.EMPTY);
-
-        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(nextElement.getId()).taskName(taskName).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
-
-
+        BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(elementIdSb.toString()).taskName(nameSb.toString()).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
         //add to verify infos
         if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
             bpmVerifyInfoVos.add(bpmVerifyInfoVo);
@@ -379,11 +418,14 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
 
-        //get next node's next node,if it still exist,then treat it recursively
-        PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
-        if (!ObjectUtils.isEmpty(nextNextElement)) {
-            doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
+        for (PvmActivity nextElement : nextElements) {
+            //get next node's next node,if it still exist,then treat it recursively
+            PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
+            if (!ObjectUtils.isEmpty(nextNextElement)) {
+                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
+            }
         }
+
     }
 
     /**

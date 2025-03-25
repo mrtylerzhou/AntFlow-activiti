@@ -15,10 +15,10 @@ import org.springframework.util.ObjectUtils;
  */
 @Service
 @Slf4j
-public class ThirdAccountJudge extends ConditionJudge {
+public class ThirdAccountJudge implements ConditionJudge {
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         if (ObjectUtils.isEmpty(conditionsConf.getAccountType())) {
             throw new JiMuBizException("the process has no third party account conf,please contact the administrator to add one");
         }

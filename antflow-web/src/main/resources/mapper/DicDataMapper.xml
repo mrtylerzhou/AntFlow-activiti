@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.mapper.DicDataMapper">
+    <select id="selectLFActiveFormCodes" resultType="org.openoa.entity.DictData">
+        select a.id,
+        a.dict_sort as sort,
+        a.dict_value as value,
+        a.dict_label as label,
+        a.dict_type as dictType,
+        a.is_default as isDefault,
+        a.is_del as isDel,
+        a.create_user as createUser,
+        a.create_time as createTime,
+        a.remark as remark
+        from t_dict_data as a
+        where a.dict_type ='lowcodeflow'
+        order by a.create_time desc
+    </select>
+
+    <select id="selectLFFormCodePageList" resultType="org.openoa.entity.DictData">
+        select a.id,
+        a.dict_sort as sort,
+        a.dict_value as value,
+        a.dict_label as label,
+        a.dict_type as dictType,
+        a.is_default as isDefault,
+        a.is_del as isDel,
+        a.create_user as createUser,
+        a.create_time as createTime,
+        a.remark as remark
+        from t_dict_data as a
+        where a.dict_type ='lowcodeflow'
+        <if test="vo.processState != null and vo.processState > 0">
+            and  b.effective_status = #{vo.processState}
+        </if>
+        <if test="vo.description !=null and vo.description !=''">
+            and (
+            a.dict_label like CONCAT("%",#{vo.description},"%")
+            or  a.dict_value like CONCAT("%",#{vo.description},"%")
+            )
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectLFActiveFormCodePageList" resultType="org.openoa.entity.DictData">
+        select a.id,
+        a.dict_sort as sort,
+        a.dict_value as value,
+        a.dict_label as label,
+        a.dict_type as dictType,
+        a.is_default as isDefault,
+        a.is_del as isDel,
+        a.create_user as createUser,
+        a.create_time as createTime,
+        a.remark as remark
+        from t_dict_data as a
+        inner join t_bpmn_conf as b
+        on a.dict_value = b.form_code  and b.is_lowcode_flow =1
+        where a.dict_type ='lowcodeflow'
+        <if test="vo.processState != null and vo.processState > 0">
+             and  b.effective_status = #{vo.processState}
+        </if>
+        <if test="vo.description !=null and vo.description !=''">
+            and (
+            a.dict_label like CONCAT("%",#{vo.description},"%")
+            or  a.dict_value like CONCAT("%",#{vo.description},"%")
+            )
+        </if>
+        order by a.create_time desc
+    </select>
+</mapper>

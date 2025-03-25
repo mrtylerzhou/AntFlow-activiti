@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataFieldMapper">
+
+    <update id="updateByConfIdAndFieldName">
+        update t_bpmn_conf_lf_formdata_field set is_condition=1 where bpmn_conf_id=#{confId} and field_id=#{fieldName}
+    </update>
+</mapper>

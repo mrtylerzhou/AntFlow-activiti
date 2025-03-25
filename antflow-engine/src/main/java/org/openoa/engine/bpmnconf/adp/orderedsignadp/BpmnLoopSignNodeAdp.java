@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.orderedsignadp;
 
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
     @Override
     public List<String> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         BpmnNodePropertysVo propertysVo = nodeVo.getProperty();
@@ -70,13 +70,11 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
         if(CollectionUtils.isEmpty(baseIdTranStruVos)){
             throw new JiMuBizException("未能根据发起人找到审批人信息");
         }
-        List<String> approverIds = baseIdTranStruVos.stream().map(a -> a.getId().toString()).collect(Collectors.toList());
+        List<String> approverIds = baseIdTranStruVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         List<String> finalApproverIds = new ArrayList<>();
         for (String approverId : approverIds) {
             if(!loopEndPersonList.contains(approverId)){
                 finalApproverIds.add(approverId);
-            }else{
-                break;
             }
         }
         return  finalApproverIds;

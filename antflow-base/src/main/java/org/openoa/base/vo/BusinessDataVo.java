@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.MsgProcessEventEnum;
 import org.openoa.base.dto.PageDto;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessDataVo extends PageDto {
+public class BusinessDataVo extends PageDto implements Serializable {
     /**
      * process number
      */
@@ -71,7 +72,7 @@ public class BusinessDataVo extends PageDto {
     Map<String, Object> objectMap;
 
     /**
-     * nnode sign up approvers
+     * node sign up approvers
      */
     public List<String> moreHandlers;
 
@@ -89,9 +90,9 @@ public class BusinessDataVo extends PageDto {
     public List<String> userIds;
     public List<BaseIdTranStruVo> userInfos;
     /**
-     * approvers list
+     * key is node's id,value is a list of approves,if there is only one start user chosen node,the map's key is ignored
      */
-    private List<String> approversList;
+    private Map<String,List<BaseIdTranStruVo>> approversList;
 
     private Boolean flag;
 
@@ -167,6 +168,7 @@ public class BusinessDataVo extends PageDto {
      * {@link org.openoa.base.constant.enums.ProcessDisagreeTypeEnum}
      */
     private Integer backToModifyType;
+    private String backToNodeId;
     //===============>>third party process<<===================
 
     /**
@@ -190,6 +192,7 @@ public class BusinessDataVo extends PageDto {
     private Boolean isOutSideAccessProc = false;
 
     private Boolean isOutSideChecked = false;
+    private Integer isLowCodeFlow=0;
     /**
      * flow call back url
      */
@@ -217,14 +220,14 @@ public class BusinessDataVo extends PageDto {
      */
     private Integer outSideType;
     /**
-     * template mark
+     * template marks
      */
-    private String templateMark;
+    private List<String> templateMarks;
 
     /**
      * template mark id
      */
-    private Integer templateMarkId;
+    private List<Integer> templateMarkIds;
     /**
      * embedded node
      */
@@ -235,4 +238,7 @@ public class BusinessDataVo extends PageDto {
     private List<OutSideLevelNodeVo>outSideLevelNodes;
 
     private MsgProcessEventEnum msgProcessEventEnum;
+
+    private Map<String,Object> lfConditions;
+    private  Boolean isMigration;
 }

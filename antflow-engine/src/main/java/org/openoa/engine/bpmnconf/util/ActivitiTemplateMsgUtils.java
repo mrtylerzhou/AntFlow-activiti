@@ -10,6 +10,9 @@ import java.util.List;
 
 public class ActivitiTemplateMsgUtils {
 
+    private static ActivitiBpmMsgTemplateServiceImpl getMessageSendBean(){
+       return SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
+    }
     /**
      * send custom message
      *
@@ -17,8 +20,8 @@ public class ActivitiTemplateMsgUtils {
      * @param content
      */
     public static void sendCustomMsg(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmCustomMsg(activitiBpmMsgVo, content);
+
+        getMessageSendBean().sendBpmCustomMsg(activitiBpmMsgVo, content);
     }
 
     /**
@@ -27,8 +30,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmApprovalMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmApprovalMsg(activitiBpmMsgVo);
+        getMessageSendBean().sendBpmApprovalMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -37,8 +39,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmApprovalMsgBath(activitiBpmMsgVos);
+        getMessageSendBean().sendBpmApprovalMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -47,8 +48,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmForwardedlMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmForwardedlMsg(activitiBpmMsgVo);
+        getMessageSendBean().sendBpmForwardedlMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -57,8 +57,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmForwardedlMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmForwardedlMsgBath(activitiBpmMsgVos);
+        getMessageSendBean().sendBpmForwardedlMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -67,8 +66,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmFinishMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmFinishMsg(activitiBpmMsgVo);
+        getMessageSendBean().sendBpmFinishMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -77,8 +75,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmFinishMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmFinishMsgBath(activitiBpmMsgVos);
+        getMessageSendBean().sendBpmFinishMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -87,8 +84,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmRejectMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmRejectMsg(activitiBpmMsgVo);
+       getMessageSendBean().sendBpmRejectMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -97,8 +93,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public void sendBpmRejectMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmRejectMsgBath(activitiBpmMsgVos);
+       getMessageSendBean().sendBpmRejectMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -107,8 +102,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmOverTimeMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmOverTimeMsg(activitiBpmMsgVo);
+        getMessageSendBean().sendBpmOverTimeMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -117,8 +111,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmOverTimeMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmOverTimeMsgBath(activitiBpmMsgVos);
+       getMessageSendBean().sendBpmOverTimeMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -127,8 +120,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmTerminationMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmTerminationMsg(activitiBpmMsgVo);
+        getMessageSendBean().sendBpmTerminationMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -137,8 +129,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmTerminationMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmTerminationMsgBath(activitiBpmMsgVos);
+       getMessageSendBean().sendBpmTerminationMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -147,8 +138,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVo
      */
     public static void sendBpmGenerationApprovalMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmGenerationApprovalMsg(activitiBpmMsgVo);
+       getMessageSendBean().sendBpmGenerationApprovalMsg(activitiBpmMsgVo);
     }
 
     /**
@@ -157,8 +147,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVos
      */
     public static void sendBpmGenerationApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
-        bean.sendBpmGenerationApprovalMsgBath(activitiBpmMsgVos);
+        getMessageSendBean().sendBpmGenerationApprovalMsgBath(activitiBpmMsgVos);
     }
 
     /**
@@ -168,7 +157,7 @@ public class ActivitiTemplateMsgUtils {
      * @param activitiBpmMsgVoNew
      */
     public static void sendBpmChangePerson(ActivitiBpmMsgVo activitiBpmMsgVoOrgi, ActivitiBpmMsgVo activitiBpmMsgVoNew) {
-        ActivitiBpmMsgTemplateServiceImpl bean = SpringBeanUtils.getBean(ActivitiBpmMsgTemplateServiceImpl.class);
+        ActivitiBpmMsgTemplateServiceImpl bean = getMessageSendBean();
         bean.sendBpmChangePersonOrgiMsg(activitiBpmMsgVoOrgi);
         bean.sendBpmChangePersonNewMsg(activitiBpmMsgVoNew);
     }

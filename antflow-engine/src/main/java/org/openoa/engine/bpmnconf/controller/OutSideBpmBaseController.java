@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.OutSideBpmProcesses;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Tag(name = "第三方工作流配置", description = "")
+
 @Slf4j
 @RestController
 @RequestMapping(value = "/outSideBpm")

@@ -3,17 +3,23 @@ package org.openoa.engine.bpmnconf.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
+import org.openoa.base.exception.JiMuBizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.relation.RelationSupport;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * @Author tylerzhou
  */
+@Slf4j
 public class JsonUtils {
     private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
     private static final ObjectMapper mapper;
@@ -37,5 +43,14 @@ public class JsonUtils {
         }
 
         return sw.toString();
+    }
+    public static Map<String,Object> parseRaw(String jsonStr){
+        Map result=null;
+        try {
+           result = mapper.readValue(jsonStr, Map.class);
+        } catch (JsonProcessingException e) {
+            log.error("json deserialize error occur");
+        }
+        return result;
     }
 }

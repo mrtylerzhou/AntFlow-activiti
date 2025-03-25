@@ -41,6 +41,10 @@ public class BpmnConfVo {
      */
     private String formCode;
     /**
+     * formCode
+     */
+    private String formCodeDisplayName;
+    /**
      * appId
      */
     private Integer appId;
@@ -57,12 +61,19 @@ public class BpmnConfVo {
     /**
      */
     private Integer isOutSideProcess;
+    private Integer isLowCodeFlow;
+    /**
+     * process's business party
+     */
+    private Long businessPartyId;
 
     /**
      * process's business party
      */
-    private Integer businessPartyId;
+    private Integer applicationId;
 
+
+    private Integer extraFlags;
     /**
      */
     private String remark;
@@ -164,4 +175,6 @@ public class BpmnConfVo {
      * business type 1 for embedded 2 for api access
      */
     private Integer type;
+    private String lfFormData;
+    private Long lfFormDataId;
 }

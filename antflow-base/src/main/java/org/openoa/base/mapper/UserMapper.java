@@ -1,9 +1,11 @@
 package org.openoa.base.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.TaskMgmtVO;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -26,8 +28,14 @@ public interface UserMapper {
 
     //if you want to use level leader sign functions,you must implement it
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") String employeeId,@Param("tier") Integer tier);
+    List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndEndGrade(@Param("employeeId") String employeeId,@Param("endGrade") Integer tier);
     BaseIdTranStruVo getHrpbByEmployeeId(@Param("employeeId") String employeeId);
     BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
+
+    List<BaseIdTranStruVo> selectUserPageList(Page page, @Param("vo") TaskMgmtVO taskMgmtVO);
+
+    BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
+
 }

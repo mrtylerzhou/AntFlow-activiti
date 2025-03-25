@@ -2,11 +2,10 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.collect.Lists;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +18,13 @@ import java.util.List;
 @Component
 public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
         String startUserId = startConditionsVo.getStartUserId();
-        if (propertysVo==null || CollectionUtils.isEmpty(propertysVo.getRoleIds())) {
-            throw new JiMuBizException("指定角色找人条件不全，无法找人！");
-        }
-        if (propertysVo.getAssignLevelType()==null || startUserId==null) {
+
+        if (propertysVo==null||propertysVo.getAssignLevelGrade()==null || startUserId==null) {
             throw new JiMuBizException("指定层级审批条件不全，无法找人！");
         }
         Integer assignLevelType = propertysVo.getAssignLevelType();

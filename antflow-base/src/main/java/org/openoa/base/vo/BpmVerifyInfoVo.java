@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BpmVerifyInfoVo implements Serializable {
 
-    private Long id;
+    private String id;
     /**
      * process instance id
      */

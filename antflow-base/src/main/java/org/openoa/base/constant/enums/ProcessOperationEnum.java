@@ -7,14 +7,17 @@ public enum ProcessOperationEnum {
     BUTTON_TYPE_RESUBMIT(2, "重新提交"),
     BUTTON_TYPE_AGREE(3,"同意"),
     BUTTON_TYPE_DIS_AGREE(4,"不同意"),
+    BUTTON_TYPE_VIEW_BUSINESS_PROCESS(5,"查看流程详情"),
     BUTTON_TYPE_ABANDON(7,"作废"),
     BUTTON_TYPE_UNDERTAKE(10, "承办"),
     BUTTON_TYPE_CHANGE_ASSIGNEE(11,  "变更处理人"),
     BUTTON_TYPE_STOP(12,  "终止"),
     BUTTON_TYPE_FORWARD(15,  "转发"),
-    BUTTON_TYPE_BACK_TO_MODIFY(18, "打回修改"),
+    BUTTON_TYPE_BACK_TO_MODIFY(18, "退回修改"),
     BUTTON_TYPE_JP(19,"加批"),
     BUTTON_TYPE_ZB(21,"转办"),
+    BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
+    BUTTON_TYPE_BACK_TO_ANY_NODE(23,"退回任意节点"),
     ;
 
     @Getter

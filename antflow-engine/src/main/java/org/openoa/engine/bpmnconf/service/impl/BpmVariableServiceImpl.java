@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -133,5 +134,8 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         Map<String, String> assigneeMap = assignees.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId, BaseIdTranStruVo::getName, (k1, k2) -> k1));
         return assigneeMap;
     }
+   public String getVarNameByProcessNumberAndElementId(String processNum, String elementId){
+      return   bpmVariableMultiplayerService.getBaseMapper().getVarNameByElementId(processNum,elementId);
+   }
 
 }

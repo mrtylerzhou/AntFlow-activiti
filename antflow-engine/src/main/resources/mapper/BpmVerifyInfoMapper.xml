@@ -40,7 +40,7 @@
         when w.verify_status =4 then '撤回'
         when w.verify_status =5 then '作废'
         when w.verify_status =6 then '终止'
-        when w.verify_status =8 then '打回修改'
+        when w.verify_status =8 then '退回修改'
         when w.verify_status =9 then '加批'
         else '' end as verifyStatusName,
         w.verify_date as verifyDate,
@@ -69,6 +69,7 @@
         select t.ID_           as id,
                t.NAME_         AS taskName,
                t.ASSIGNEE_     AS verifyUserId,
+               t.ASSIGNEE_NAME as verifyUserName,
                '处理中'           AS verifyStatusName,
                t.TASK_DEF_KEY_ as elementId,
                null            AS verifyDate,

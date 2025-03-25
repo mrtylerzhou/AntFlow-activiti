@@ -22,7 +22,7 @@
         ORDER BY s.runTime DESC
     </select>
     <select id="isOperational" resultType="java.lang.Integer">
-        select  count(*) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
+        select  count(1) from  bpm_process_operation  w  where  w.process_node=#{taskMgmtVO.taskName} and w.process_key=#{taskMgmtVO.processKey}  and  w.type=#{taskMgmtVO.type}
     </select>
     <select id="doneTodayProcess" resultType="java.lang.Integer">
         SELECT count(distinct h.PROC_INST_ID_)
@@ -130,7 +130,7 @@
                           LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
                  where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
-                   and t.END_TIME_ <![CDATA[ <> ]]> ''
+                   and t.END_TIME_ IS NOT NULL
                    and t.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
                    and b.is_del = 0
              ) s
@@ -206,12 +206,38 @@
         act_hi_procinst h
         LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
         LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
-        where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0
+        where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0 and f.is_del=0
+        order by f.create_time desc
         ) s WHERE  1=1
     </sql>
     <select id="viewPcForwardList" resultType="org.openoa.base.vo.TaskMgmtVO">
         <include refid="viewForward"/>
         <include refid="base_param_sql"/>
 
+    </select>
+    <select id="viewPcProcessList" resultType="org.openoa.base.vo.TaskMgmtVO">
+        select * from (
+        SELECT
+        h.PROC_INST_ID_ AS processInstanceId,
+        h.PROC_DEF_ID_ AS processId,
+        h.START_USER_ID_ AS userId,
+        b.BUSINESS_ID AS businessId,
+        b.BUSINESS_NUMBER AS processNumber,
+        b.description AS description,
+        b.process_state AS processState,
+        b.PROCESSINESS_KEY AS processKey,
+        b.process_state AS taskStype,
+        h.START_TIME_ as runTime,
+        b.process_digest as processDigest,
+        b.VERSION as appVersion,
+        b.approval_user_id AS approvalUserId
+        FROM
+        act_hi_procinst h
+        LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
+        where b.is_del=0
+        order by h.START_TIME_ desc
+        ) s where 1=1
+        <include refid="base_param_sql"/>
+        ORDER BY s.runTime desc
     </select>
 </mapper>

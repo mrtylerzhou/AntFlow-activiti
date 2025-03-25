@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.base.mapper.MethodReplayMapper">
 
     <insert id="insert" parameterType="org.openoa.base.entity.MethodReplayEntity">
-        INSERT INTO OPS_METHOD_REPLAY (
+        INSERT INTO t_method_replay (
         ID,
         PROJECT_NAME,
         CLASS_NAME,
@@ -29,7 +29,7 @@
     </insert>
 
     <select id="select" resultType="org.openoa.base.entity.MethodReplayEntity">
-        SELECT * FROM OPS_METHOD_REPLAY
+        SELECT * FROM t_method_replay
         WHERE PROJECT_NAME = #{projectName,jdbcType=VARCHAR}
         AND MAX_REPLAY_TIMES > ALREADY_REPLAY_TIMES
         <if test="id != null and id != ''">
@@ -39,20 +39,20 @@
     </select>
 
     <select id="selectById" resultType="org.openoa.base.entity.MethodReplayEntity">
-        SELECT * FROM OPS_METHOD_REPLAY
+        SELECT * FROM t_method_replay
         WHERE ID = #{id,jdbcType=BIGINT}
     </select>
 
     <update id="addAlreadyReplayTimes">
-        UPDATE OPS_METHOD_REPLAY SET ALREADY_REPLAY_TIMES = ALREADY_REPLAY_TIMES + 1 WHERE ID = #{id,jdbcType=BIGINT}
+        UPDATE t_method_replay SET ALREADY_REPLAY_TIMES = ALREADY_REPLAY_TIMES + 1 WHERE ID = #{id,jdbcType=BIGINT}
     </update>
 
     <delete id="delete">
-        DELETE FROM OPS_METHOD_REPLAY WHERE ID = #{id,jdbcType=BIGINT}
+        DELETE FROM t_method_replay WHERE ID = #{id,jdbcType=BIGINT}
     </delete>
 
     <delete id="deleteByIds">
-        DELETE FROM OPS_METHOD_REPLAY WHERE ID IN
+        DELETE FROM t_method_replay WHERE ID IN
         <foreach collection="delIds" item="delId" open="(" close=")" separator=",">
             #{delId,jdbcType=BIGINT}
         </foreach>

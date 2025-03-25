@@ -46,21 +46,31 @@
         a.id AS id,
         a.bpmn_code AS bpmnCode,
         a.form_code AS formCode,
+        c.dict_label AS formCodeDisplayName,
         a.bpmn_name AS bpmnName,
         a.deduplication_type AS deduplicationType,
         a.effective_status AS effectiveStatus,
         a.business_party_id AS businessPartyId,
         a.update_time AS updateTime,
+        a.is_out_side_process as isOutSideProcess,
+        a.is_lowcode_flow as isLowCodeFlow,
         a.remark AS remark
         FROM t_bpmn_conf a
         left join t_out_side_bpm_business_party b on a.business_party_id = b.id
+        left join t_dict_data c on c.dict_value = a.form_code  and a.is_lowcode_flow =1
         WHERE a.is_del = 0
         <if test="bpmnConfVo.isOutSideProcess!=null">
             AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}
         </if>
+        <if test="bpmnConfVo.isLowCodeFlow!=null">
+            AND a.is_lowcode_flow = #{bpmnConfVo.isLowCodeFlow}
+        </if>
         <if test="bpmnConfVo.search != null and bpmnConfVo.search != ''">
             AND (a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.search},'%')
             OR a.bpmn_name LIKE CONCAT('%',#{bpmnConfVo.search},'%'))
+        </if>
+        <if test="bpmnConfVo.formCode != null and bpmnConfVo.formCode != ''">
+            AND a.form_code LIKE CONCAT('%',#{bpmnConfVo.formCode},'%')
         </if>
         <if test="bpmnConfVo.bpmnCode != null and bpmnConfVo.bpmnCode != ''">
             AND a.bpmn_code LIKE CONCAT('%',#{bpmnConfVo.bpmnCode},'%')
@@ -73,6 +83,9 @@
         </if>
         <if test="bpmnConfVo.effectiveStatus != null">
             AND a.effective_status = #{bpmnConfVo.effectiveStatus}
+        </if>
+        <if test="bpmnConfVo.formCodeDisplayName != null and bpmnConfVo.formCodeDisplayName != ''">
+            AND c.dict_label LIKE CONCAT('%',#{bpmnConfVo.formCodeDisplayName},'%')
         </if>
         ORDER BY a.create_time DESC
     </select>
@@ -93,6 +106,25 @@
         and a.effective_status = 1
         and a.is_out_side_process = 1
         and b.business_party_mark=#{bpmnConfVo.businessPartyMark}
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="selectOutSideFormCodeList" resultType="org.openoa.base.vo.BpmnConfVo">
+        SELECT a.id AS id,
+        a.bpmn_code AS bpmnCode,
+        a.form_code AS formCode,
+        a.bpmn_name AS bpmnName,
+        a.deduplication_type AS deduplicationType,
+        a.effective_status AS effectiveStatus,
+        a.business_party_id AS businessPartyId,
+        b.id AS applicationId,
+        a.update_time AS updateTime,
+        a.remark AS remark
+        FROM t_bpmn_conf a
+        left join bpm_process_app_application b on a.form_code = b.process_key
+        WHERE a.is_del = 0
+        and a.effective_status = 1
+        and a.is_out_side_process = 1
         ORDER BY a.create_time DESC
     </select>
 </mapper>

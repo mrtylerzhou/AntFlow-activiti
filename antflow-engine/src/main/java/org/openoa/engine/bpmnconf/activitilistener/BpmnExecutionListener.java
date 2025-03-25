@@ -1,28 +1,34 @@
 package org.openoa.engine.bpmnconf.activitilistener;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
 import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.openoa.engine.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +36,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_FINISH_CALL_BACK;
@@ -61,6 +68,8 @@ public class BpmnExecutionListener implements ExecutionListener {
     private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
     @Resource
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
+    @Resource
+    private BpmProcessForwardServiceImpl bpmProcessForwardService;
 
 
     @Override
@@ -96,7 +105,7 @@ public class BpmnExecutionListener implements ExecutionListener {
             return;
         }
 
-        log.info("execut" + processNumber + "process finished event Listener!");
+        log.info("execute{}process finished event Listener!", processNumber);
 
         //to indicate it is not an outside process
         boolean isOutside = false;
@@ -114,18 +123,38 @@ public class BpmnExecutionListener implements ExecutionListener {
             BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
             //回调通知业务方流程已完成
-            thirdPartyCallBackService.doCallback(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl(), PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
+            thirdPartyCallBackService.doCallback(Optional.ofNullable(outSideBpmCallbackUrlConf).map(OutSideBpmCallbackUrlConf::getBpmFlowCallbackUrl).orElse(""),
+                    PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
 
         } else {
-            formFactory.getFormAdaptor(formCode).finishData(businessId);
+            BusinessDataVo businessDataVo=new BusinessDataVo();
+            businessDataVo.setBusinessId(businessId);
+            businessDataVo.setFormCode(formCode);
+           if(Objects.equals(bpmnConf.getIsLowCodeFlow(),1)){
+               businessDataVo.setIsLowCodeFlow(1);
+               BpmnConfVo confVo=new BpmnConfVo();
+               BeanUtils.copyProperties(bpmnConf,confVo);
+               businessDataVo.setBpmnConfVo(confVo);
+
+           }
+            formFactory.getFormAdaptor(businessDataVo).finishData(businessDataVo);
         }
 
         //execute the process finish method and update status
-        bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
                 .businessNumber(processNumber)
-                .processState(ProcessStateEnum.HANDLE_STATE.getCode())
+                .processState(ProcessStateEnum.HANDLED_STATE.getCode())
                 .build());
 
+        if (BpmnConfFlagsEnum.hasFlag(bpmnConf.getExtraFlags(), BpmnConfFlagsEnum.HAS_LAST_NODE_COPY)) {
+            LambdaQueryWrapper<BpmProcessForward> qryWrapper = Wrappers.<BpmProcessForward>lambdaQuery()
+                    .eq(BpmProcessForward::getProcessNumber, processNumber)
+                    .eq(BpmProcessForward::getNodeId, StringConstants.LASTNODE_COPY);
+            BpmProcessForward processForward=new BpmProcessForward();
+            processForward.setProcessInstanceId(bpmBusinessProcess.getProcInstId());
+            processForward.setIsDel(0);//recover the default state,so that the forward record can be visible
+            bpmProcessForwardService.update(processForward, qryWrapper);
+        }
         BpmVariableMessageVo bpmVariableMessageVo = BpmVariableMessageVo
                 .builder()
                 .processNumber(processNumber)
@@ -143,6 +172,13 @@ public class BpmnExecutionListener implements ExecutionListener {
             bpmVariableMessageListenerService.listenerSendTemplateMessages(bpmVariableMessageVo);
         } else {
 
+            ProcessInforVo processInforVo = ProcessInforVo
+                    .builder()
+                    .processinessKey(bpmnCode)
+                    .businessNumber(processNumber)
+                    .formCode(formCode)
+                    .type(1)
+                    .build();
             ActivitiTemplateMsgUtils.sendBpmFinishMsg(
                     ActivitiBpmMsgVo
                             .builder()
@@ -153,29 +189,11 @@ public class BpmnExecutionListener implements ExecutionListener {
                             .processType("")//todo
                             .processName(bpmnConf.getBpmnName())
                             .emailUrl(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(1)
-                                            .build(), isOutside))
+                                   processInforVo, isOutside))
                             .url(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(1)
-                                            .build(), isOutside))
+                                    processInforVo, isOutside))
                             .appPushUrl(processBusinessContans.getRoute(ProcessNoticeEnum.APP_TYPE.getCode(),
-                                    ProcessInforVo
-                                            .builder()
-                                            .processinessKey(bpmnCode)
-                                            .businessNumber(processNumber)
-                                            .formCode(formCode)
-                                            .type(1)
-                                            .build(), isOutside))
+                                    processInforVo, isOutside))
                             .taskId(delegateExecution.getProcessInstanceId())
                             .build());
         }

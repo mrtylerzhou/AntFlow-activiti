@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -22,7 +23,6 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.constant.enums.ProcessTypeEnum;
@@ -111,7 +111,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 break;
             // mornitor current processes
             case 2:
-                //todo to be implemented
+                page.setRecords(this.getBaseMapper().viewPcProcessList(page, vo));
                 break;
             // recently build task
             case 3:
@@ -181,6 +181,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 BpmnConf bpmnConf = bpmnConfMap.get(record.getProcessKey());
                 if(bpmnConf!=null){
                     record.setIsOutSideProcess(Objects.equals(1,bpmnConf.getIsOutSideProcess()));
+                    record.setIsLowCodeFlow(Objects.equals(1,bpmnConf.getIsLowCodeFlow()));
+                    record.setConfId(bpmnConf.getId());
                 }
                 Integer applyUserId = record.getApplyUserId();
                 //todo get the actual user info from db
@@ -190,7 +192,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 record.setTaskState(ProcessStateEnum.getDescByCode(record.getProcessState()));
 
                 if (type.equals(ProcessTypeEnum.ENTRUST_TYPE.getCode())) {
-                    // to check whether the forwared record can process in batch
+                    // to check whether the forwarded record can process in batch
                     record.setIsForward(processForwardService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
@@ -219,10 +221,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
             throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
+        vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
         BusinessDataVo businessDataVo = null;
-        if(!vo.getIsOutSideAccessProc()){
-            businessDataVo=formFactory.getFormAdaptor(vo.getFormCode()).queryData(bpmBusinessProcess.getBusinessId());
+        if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
+            FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
+            businessDataVo=formAdaptor.queryData(vo);
         }else{
             businessDataVo=vo;
         }
@@ -237,7 +241,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         // checking process right,and set some information that from business table
         businessDataVo.setProcessRecordInfo(businessContans.processInfo(bpmBusinessProcess));
         businessDataVo.setProcessKey(bpmBusinessProcess.getBusinessNumber());
-        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(CRMCEL_STATE.getCode()));
+        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(REJECT_STATE.getCode()));
 
         boolean flag = businessDataVo.getProcessRecordInfo().getStartUserId().equals(SecurityUtils.getLogInEmpIdStr());
 

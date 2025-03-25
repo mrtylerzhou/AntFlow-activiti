@@ -43,9 +43,10 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
             if(!userIds.contains(assignee)){
                 bpmFlowrunEntrustService.addFlowrunEntrust(user,userName,assignee,assigneeName,task.getId(),0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey());
             }
-            taskMgmtMapper.updateaActinst(TaskMgmtVO.builder().applyUser(user).applyUserName(userName).taskId(task.getId()).build());
-            taskMgmtMapper.updateaTaskinst(TaskMgmtVO.builder().applyUser(user).applyUserName(userName).taskId(task.getId()).build());
-            taskMgmtMapper.updateTask(TaskMgmtVO.builder().applyUser(user).applyUserName(userName).taskId(task.getId()).build());
+            TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().applyUser(user).applyUserName(userName).taskId(task.getId()).build();
+            taskMgmtMapper.updateaActinst(taskMgmtVO);
+            taskMgmtMapper.updateaTaskinst(taskMgmtVO);
+            taskMgmtMapper.updateTask(taskMgmtVO);
 
         }
     }

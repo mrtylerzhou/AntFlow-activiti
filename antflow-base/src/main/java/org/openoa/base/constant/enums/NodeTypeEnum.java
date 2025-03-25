@@ -13,7 +13,8 @@ public enum NodeTypeEnum {
     NODE_TYPE_CONDITIONS(3, "条件节点", 1),
     NODE_TYPE_APPROVER(4, "审批人节点", 0),
     NODE_TYPE_OUT_SIDE_CONDITIONS(5, "接入方条件节点", 1),
-    NODE_TYPE_COPY(6,"抄送节点",1)
+    NODE_TYPE_COPY(6,"抄送节点",1),
+    NODE_TYPE_PARALLEL_GATEWAY(7,"并行网关",0),
     ;
 
     @Getter

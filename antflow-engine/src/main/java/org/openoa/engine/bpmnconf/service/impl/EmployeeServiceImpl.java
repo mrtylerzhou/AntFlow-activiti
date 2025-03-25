@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 import lombok.Data;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.mapper.UserMapper;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.util.EmployeeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class EmployeeServiceImpl {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
    public List<Employee> qryLiteEmployeeInfoByIds(Collection<String> ids){
         List<BaseIdTranStruVo> baseIdTranStruVos = userService.queryUserByIds(ids);
         return  EmployeeUtil.basicEmployeeInfos(baseIdTranStruVos);

@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ProcessOperationAdaptor;
@@ -11,7 +10,6 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
-import org.openoa.engine.bpmnconf.service.biz.callback.BusinessCallBackFactory;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
 
@@ -21,7 +19,6 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -29,9 +26,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
-import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_END_CALL_BACK;
-import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_AGREE;
-import static org.openoa.base.constant.enums.ProcessStateEnum.CRMCEL_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 
 /**
@@ -75,17 +70,13 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 verifyUserName =SecurityUtils.getLogInEmpName();
                 verifyUserId = SecurityUtils.getLogInEmpIdStr();
         }
-        //get the permission right
-        List<HistoricProcessInstance> hisList = Optional.of(historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(bpmBusinessProcess.getEntryId()).list()).orElse(Arrays.asList());
-        if (ObjectUtils.isEmpty(hisList)) {
-            throw new JiMuBizException("当前流程已审批！");
-        }
-        String processInstanceId = hisList.get(0).getId();
-        Integer processState = CRMCEL_STATE.getCode();
+
+        String processInstanceId = bpmBusinessProcess.getProcInstId();
+        Integer processState = REJECT_STATE.getCode();
         if (vo.getFlag()) {
             processState = END_STATE.getCode();
         }
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId().toString()).list();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
         Task taskData;
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
@@ -116,7 +107,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         //call business adaptor method
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
         if(!vo.getIsOutSideAccessProc()){
-            formFactory.getFormAdaptor(vo).cancellationData(vo.getBusinessId());
+            formFactory.getFormAdaptor(vo).cancellationData(vo);
         }
 
     }
@@ -126,7 +117,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_STOP,
                 ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
                 ProcessOperationEnum.BUTTON_TYPE_ABANDON);
-        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(),  ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_STOP, ProcessOperationEnum.BUTTON_TYPE_DIS_AGREE,
                 ProcessOperationEnum.BUTTON_TYPE_ABANDON);
     }
 }

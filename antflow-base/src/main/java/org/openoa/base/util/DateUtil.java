@@ -3,6 +3,7 @@ package org.openoa.base.util;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.DateTime;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -369,7 +370,14 @@ public abstract class DateUtil {
         return day;
     }
 
-
+    public static Date parseStandard(String dt){
+        try {
+            Date parsedDt = SDF_DATETIME_PATTERN.parse(dt);
+            return parsedDt;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * get day of week in Chinese format
      *
