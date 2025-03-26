@@ -140,19 +140,22 @@ public class DictServiceImpl implements LowCodeFlowBizService {
             );
         }
         List<String> formCodes = results.stream().map(BaseKeyValueStruVo::getKey).collect(Collectors.toList());
-        LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
-                .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
-                .in(BpmnConf::getFormCode, formCodes)
-                .eq(BpmnConf::getEffectiveStatus, 1)
-                .isNotNull(BpmnConf::getExtraFlags);
-        List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
-        if(!CollectionUtils.isEmpty(bpmnConfs)){
-            Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
-            for (BaseKeyValueStruVo lfDto : results) {
-                Integer flags = formCode2Flags.get(lfDto.getKey());
-                if(flags!=null){
-                    boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
-                    lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
+        //20250326:修改增加formCodes为空判断
+        if(!formCodes.isEmpty()){
+            LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
+                    .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
+                    .in(BpmnConf::getFormCode, formCodes)
+                    .eq(BpmnConf::getEffectiveStatus, 1)
+                    .isNotNull(BpmnConf::getExtraFlags);
+            List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
+            if(!CollectionUtils.isEmpty(bpmnConfs)){
+                Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+                for (BaseKeyValueStruVo lfDto : results) {
+                    Integer flags = formCode2Flags.get(lfDto.getKey());
+                    if(flags!=null){
+                        boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
+                        lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
+                    }
                 }
             }
         }
