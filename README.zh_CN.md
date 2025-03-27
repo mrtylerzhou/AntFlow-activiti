@@ -30,6 +30,7 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 -  系统操作手册 [查看入口](https://gitee.com/tylerzhou/Antflow/wikis/)
 -  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Designer) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview)
 -  开源Antflow项目地址 [Gitee仓库](https://gitee.com/tylerzhou/Antflow) | [Github仓库](https://github.com/mrtylerzhou/AntFlow) | [GitCode仓库](https://gitcode.com/zypqqgc/AntFlow/overview)
+- 随手 star ⭐是一种美德。 你们的star就是我的动力
 -  QQ技术交流群（972107977） 期待您的加入
 -  有疑问可以Issues留言，我们会认真对待  [issues地址](https://gitee.com/tylerzhou/Antflow/issues)
 
