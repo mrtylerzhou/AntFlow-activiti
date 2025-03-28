@@ -4,14 +4,14 @@
     "data": [ 
         { 
             "path": "", 
-            "redirect": "/showflow",
+            "redirect": "/showFlow",
             "component": "Layout", 
             "children": [ 
                 {
-                    "name": "showflow",
-                    "path": "/showflow",
+                    "name": "showFlow",
+                    "path": "/showFlow",
                     "hidden": false,
-                    "component": "showflow/index", 
+                    "component": "showFlow/index", 
                     "meta": {
                         "title": "发起请求",
                         "icon": "guide",
@@ -23,7 +23,7 @@
             ]
         },{
             "name": "flowTask",
-            "path": "/flowtask",
+            "path": "/flowTask",
             "hidden": false,
             "redirect": "noRedirect",
             "component": "Layout",
@@ -39,7 +39,7 @@
                     "name": "MyTask",
                     "path": "mytask",
                     "hidden": false,
-                    "component": "flowtask/mytask/index",
+                    "component": "flowTask/mytask/index",
                     "meta": {
                         "title": "我的发起",
                         "icon": "",
@@ -51,7 +51,7 @@
                     "name": "PenddingTask",
                     "path": "pendding",
                     "hidden": false,
-                    "component": "flowtask/pendding/index",
+                    "component": "flowTask/pendding/index",
                     "meta": {
                         "title": "待办任务",
                         "icon": "",
@@ -63,7 +63,7 @@
                     "name": "ApprovedTask",
                     "path": "approved",
                     "hidden": false,
-                    "component": "flowtask/approved/index",
+                    "component": "flowTask/approved/index",
                     "meta": {
                         "title": "已办任务",
                         "icon": "",
@@ -75,7 +75,7 @@
                     "name": "CopyToMeTask",
                     "path": "CopyToMe",
                     "hidden": false,
-                    "component": "flowtask/copyToMe/index",
+                    "component": "flowTask/copyToMe/index",
                     "meta": {
                         "title": "抄送到我",
                         "icon": "",
@@ -87,7 +87,7 @@
                     "name": "approve",
                     "path": "pendding/approve",
                     "hidden": true,
-                    "component": "flowtask/pendding/approve",
+                    "component": "flowTask/pendding/approve",
                     "meta": {
                         "title": "流程审批",
                         "icon": "",
@@ -222,8 +222,8 @@
             ]
         },
         {
-            "name": "flowentrust",
-            "path": "/flowentrust",
+            "name": "flowEntrust",
+            "path": "/flowEntrust",
             "hidden": false,
             "redirect": "noRedirect",
             "component": "Layout",
@@ -235,10 +235,10 @@
                 "link": null
             },
             "children": [{
-                    "name": "flowEntrustSet",
-                    "path": "entrustset",
+                    "name": "flowentrustSet",
+                    "path": "entrustSet",
                     "hidden": false,
-                    "component": "flowentrust/entrustset/index",
+                    "component": "flowEntrust/entrustSet/index",
                     "meta": {
                         "title": "委托设置",
                         "icon": "",
@@ -249,7 +249,7 @@
                     "name": "flowEntrustList",
                     "path": "entrustlist",
                     "hidden": false,
-                    "component": "flowentrust/entrustlist/index",
+                    "component": "flowEntrust/entrustlist/index",
                     "meta": {
                         "title": "委托列表",
                         "icon": "",
