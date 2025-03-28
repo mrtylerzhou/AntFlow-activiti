@@ -121,8 +121,7 @@ let bizAppForm = reactive({
 });
 
 onMounted(async () => {
-  getList();
-  getPartyMarkList();
+  getList(); 
 })
  
 /** 查询注册业务表单列表 */
