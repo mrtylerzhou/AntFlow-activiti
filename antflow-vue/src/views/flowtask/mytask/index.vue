@@ -17,7 +17,7 @@
          </el-form>
          <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-               <el-button type="success" plain icon="Promotion" @click="handleStartflow">发起请求</el-button>
+               <el-button type="success" plain icon="Promotion" @click="handleshowflow">发起请求</el-button>
             </el-col>
          </el-row>
       </div>
@@ -122,8 +122,8 @@ async function getList() {
 }
 
 /** 发起请求 */
-function handleStartflow() {
-   router.push({ path: "/startflow" });
+function handleshowflow() {
+   router.push({ path: "/showflow" });
 }
 /** 搜索按钮操作 */
 function handleQuery() {

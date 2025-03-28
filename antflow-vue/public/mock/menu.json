@@ -4,14 +4,14 @@
     "data": [ 
         { 
             "path": "", 
-            "redirect": "/startflow",
+            "redirect": "/showflow",
             "component": "Layout", 
             "children": [ 
                 {
-                    "name": "startflow",
-                    "path": "/startflow",
+                    "name": "showflow",
+                    "path": "/showflow",
                     "hidden": false,
-                    "component": "startflow/index", 
+                    "component": "showflow/index", 
                     "meta": {
                         "title": "发起请求",
                         "icon": "guide",
@@ -22,7 +22,7 @@
                 }
             ]
         },{
-            "name": "FlowTask",
+            "name": "flowTask",
             "path": "/flowtask",
             "hidden": false,
             "redirect": "noRedirect",
@@ -98,7 +98,7 @@
             ]
         },
         {
-            "name": "Workflow",
+            "name": "workflow",
             "path": "/workflow",
             "hidden": false,
             "redirect": "noRedirect",
@@ -112,7 +112,7 @@
             },
             "children": [ 
                 {
-                    "name": "FlowInstance",
+                    "name": "flowInstance",
                     "path": "instance",
                     "hidden": false,
                     "component": "workflow/instance/index",
@@ -136,7 +136,7 @@
                     }
                 },
                 {
-                    "name": "FlowConfig",
+                    "name": "flowConfig",
                     "path": "config",
                     "hidden": false,
                     "component": "workflow/config/index",
@@ -148,7 +148,7 @@
                     }
                 },
                 {
-                    "name": "LF-FlowDesign",
+                    "name": "lf-FlowDesign",
                     "path": "lf-design",
                     "hidden": true,
                     "component": "workflow/design/lf",
@@ -160,7 +160,7 @@
                     }
                 },
                 {
-                    "name": "DIY-FlowDesign",
+                    "name": "diy-FlowDesign",
                     "path": "diy-design",
                     "hidden": true,
                     "component": "workflow/design/diy",
@@ -172,7 +172,7 @@
                     }
                 },
                 {
-                    "name": "FlowPreview",
+                    "name": "flowPreview",
                     "path": "preview",
                     "hidden": true,
                     "component": "workflow/preview/index",
@@ -184,14 +184,26 @@
                     }
                 },
                 {
-                    "name": "BizEntry",
-                    "path": "/bizentry/index",
+                    "name": "startFlow",
+                    "path": "/startFlow/index",
                     "hidden": true,
-                    "component": "bizentry/index",
+                    "component": "startFlow/index",
                     "meta": {
                         "title": "发起申请流程",
                         "icon": "",
                         "noCache": true,
+                        "link": null
+                    }
+                }, 
+                {
+                    "name": "startOutside",
+                    "path": "/startOutside/index",
+                    "hidden": true,
+                    "component": "startOutside/index",
+                    "meta": {
+                        "title": "业务方表单发起测试",
+                        "icon": "",
+                        "noCache": false,
                         "link": null
                     }
                 },
@@ -223,7 +235,7 @@
                 "link": null
             },
             "children": [{
-                    "name": "FlowEntrustSet",
+                    "name": "flowEntrustSet",
                     "path": "entrustset",
                     "hidden": false,
                     "component": "flowentrust/entrustset/index",
@@ -234,7 +246,7 @@
                         "link": null
                     }
                 },{
-                    "name": "FlowEntrustList",
+                    "name": "flowEntrustList",
                     "path": "entrustlist",
                     "hidden": false,
                     "component": "flowentrust/entrustlist/index",
@@ -323,30 +335,6 @@
                     "component": "outsideMgt/preview/index",
                     "meta": {
                         "title": "三方流程模板预览",
-                        "icon": "",
-                        "noCache": false,
-                        "link": null
-                    }
-                },
-                {
-                    "name": "bizForm",
-                    "path": "bizForm",
-                    "hidden": true,
-                    "component": "outsideMgt/bizForm/form1",
-                    "meta": {
-                        "title": "业务方表单发起测试",
-                        "icon": "",
-                        "noCache": false,
-                        "link": null
-                    }
-                },
-                {
-                    "name": "outsideEntry",
-                    "path": "index",
-                    "hidden": true,
-                    "component": "outsideMgt/bizForm/index",
-                    "meta": {
-                        "title": "业务方表单发起测试",
                         "icon": "",
                         "noCache": false,
                         "link": null
