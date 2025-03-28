@@ -29,6 +29,7 @@ public class InformationTemplateController {
 
     @Resource
     private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
+
     /**
      * query information template vos;
      *
@@ -38,6 +39,7 @@ public class InformationTemplateController {
     public ResultAndPage list(PageDto pageDto, InformationTemplateVo informationTemplateVo) {
         return informationTemplateService.list(pageDto, informationTemplateVo);
     }
+
     /**
      * modify information template
      *
@@ -48,6 +50,7 @@ public class InformationTemplateController {
         informationTemplateService.edit(informationTemplateVo);
         return Result.success();
     }
+
     /**
      * save information template
      *
@@ -58,6 +61,7 @@ public class InformationTemplateController {
         informationTemplateService.edit(informationTemplateVo);
         return Result.success();
     }
+
     /**
      * delete information template
      *
@@ -73,6 +77,7 @@ public class InformationTemplateController {
                 .build());
         return Result.success();
     }
+
     /**
      * notice template list
      *
@@ -87,6 +92,7 @@ public class InformationTemplateController {
         List<InformationTemplate> results = informationTemplateService.list(queryWrapper);
         return Result.newSuccessResult(results);
     }
+
     /**
      * get default template
      *
@@ -96,6 +102,7 @@ public class InformationTemplateController {
     public Result getList() {
         return Result.newSuccessResult(informationTemplateService.getList());
     }
+
     /**
      * set default template
      *
@@ -106,6 +113,7 @@ public class InformationTemplateController {
         informationTemplateService.setList(Arrays.asList(vos));
         return Result.success();
     }
+
     /**
      * wildcard list
      *
@@ -115,7 +123,7 @@ public class InformationTemplateController {
     @GetMapping("getWildcardCharacte")
     public Result getWildcardCharacter(@RequestParam(required = false) String name) {
         return Result.newSuccessResult(
-               !StringUtils.isEmpty(name)
+                !StringUtils.isEmpty(name)
                         ? new ArrayList<>(Arrays.asList(WildcardCharacterEnum.values()))
                         .stream()
                         .filter(o -> o.getDesc().contains(name))

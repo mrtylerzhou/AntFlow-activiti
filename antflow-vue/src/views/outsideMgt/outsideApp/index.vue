@@ -75,8 +75,7 @@
 import { ref, onMounted } from "vue";
 import {
   getApplicationsPageList, 
-  getApplicationDetail,
-  getPartyMarkKV,
+  getApplicationDetail, 
   getConditionTemplatelist,
   getApproveTemplatelist
 } from "@/api/outsideApi";
@@ -98,8 +97,7 @@ const callbackConfVisible = ref(false);
 const title = ref("");
 const single = ref(true);
 const multiple = ref(true);
-
-let partyMarkOptions = ref([]);
+ 
 let conditionListVisible = ref(false);
 let approveListVisible = ref(false);
 const data = reactive({ 
@@ -126,14 +124,7 @@ onMounted(async () => {
   getList();
   getPartyMarkList();
 })
-
-/** 获取业务方标识 */
-function getPartyMarkList() {
-  getPartyMarkKV().then(response => {
-    partyMarkOptions.value = response.data;
-  });
-}
-
+ 
 /** 查询注册业务表单列表 */
 function getList() {
   loading.value = true;
