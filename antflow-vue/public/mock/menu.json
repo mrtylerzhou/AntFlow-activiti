@@ -235,10 +235,10 @@
                 "link": null
             },
             "children": [{
-                    "name": "flowentrustSet",
-                    "path": "entrustSet",
+                    "name": "flowentrustsetting",
+                    "path": "setting",
                     "hidden": false,
-                    "component": "flowEntrust/entrustSet/index",
+                    "component": "flowEntrust/setting/index",
                     "meta": {
                         "title": "委托设置",
                         "icon": "",
@@ -246,10 +246,10 @@
                         "link": null
                     }
                 },{
-                    "name": "flowEntrustList",
-                    "path": "entrustlist",
+                    "name": "flowentrustlist",
+                    "path": "list",
                     "hidden": false,
-                    "component": "flowEntrust/entrustlist/index",
+                    "component": "flowEntrust/list/index",
                     "meta": {
                         "title": "委托列表",
                         "icon": "",
