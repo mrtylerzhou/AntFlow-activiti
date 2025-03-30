@@ -436,17 +436,16 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     private Map<String, List<BaseIdTranStruVo>> getNodeApproveds(Long variableId) {
 
         Map<String, List<BaseIdTranStruVo>> nodeApprovedsMap = Maps.newHashMap();
+        List<BpmVariableSingle> variableSingles = bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId));
 
-
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId)) > 0) {
-            for (BpmVariableSingle bpmVariableSingle : bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId))) {
+        if (!variableSingles.isEmpty()) {
+            for (BpmVariableSingle bpmVariableSingle : variableSingles) {
                 nodeApprovedsMap.put(bpmVariableSingle.getElementId(), Lists.newArrayList(BaseIdTranStruVo.builder().id(bpmVariableSingle.getAssignee()).name(bpmVariableSingle.getAssigneeName()).build()));
             }
         }
+        List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId));
 
-
-        if (bpmVariableMultiplayerService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId)) > 0) {
-            List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId));
+        if (!bpmVariableMultiplayers.isEmpty()) {
             for (BpmVariableMultiplayer bpmVariableMultiplayer : bpmVariableMultiplayers) {
                 List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels = bpmVariableMultiplayerPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayerPersonnel>().eq("variable_multiplayer_id", bpmVariableMultiplayer.getId()));
                 if (!ObjectUtils.isEmpty(bpmVariableMultiplayerPersonnels)) {
