@@ -313,7 +313,8 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         Multimap<String, HistoricVariableInstance> variableInstanceMap = activitiAdditionalInfoService.getVariableInstanceMap(historicProcessInstance.getId());
 
         //do append record
-        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId());    }
+        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId());
+    }
 
     /**
      * to process the signup special node
