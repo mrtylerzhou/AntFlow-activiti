@@ -61,62 +61,63 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
      */
     public ProcessRecordInfoVo processInfo(BpmBusinessProcess bpmBusinessProcess) {
         ProcessRecordInfoVo processInfoVo = new ProcessRecordInfoVo();
-        if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
-            //check permissions
-            if (!this.showProcessData(bpmBusinessProcess.getBusinessNumber())) {
-                throw new JiMuBizException("00", "current user has no access right！");
-            }
-            //set task state
-            processInfoVo.setTaskState(ProcessStateEnum.getDescByCode(bpmBusinessProcess.getProcessState()));
-            //process's verify info
-            processInfoVo.setVerifyInfoList(verifyInfoService.verifyInfoList(bpmBusinessProcess));
-            //set process desc
-            processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
+        if (bpmBusinessProcess == null) {
+            return processInfoVo;
+        }
+        //check permissions
+        if (!this.showProcessData(bpmBusinessProcess.getBusinessNumber())) {
+            throw new JiMuBizException("00", "current user has no access right！");
+        }
+        //set task state
+        processInfoVo.setTaskState(ProcessStateEnum.getDescByCode(bpmBusinessProcess.getProcessState()));
+        //process's verify info
+        processInfoVo.setVerifyInfoList(verifyInfoService.verifyInfoList(bpmBusinessProcess));
+        //set process desc
+        processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
 
-            Employee employee = employeeService.qryLiteEmployeeInfoById(bpmBusinessProcess.getCreateUser());
-            processInfoVo.setEmployee(employee);
-            processInfoVo.setCreateTime(bpmBusinessProcess.getCreateTime());
-            //set start userId
-            processInfoVo.setStartUserId(bpmBusinessProcess.getCreateUser());
-            //set process Number
-            processInfoVo.setProcessNumber(bpmBusinessProcess.getBusinessNumber());
-            String processInstanceId = taskMgmtMapper.findByBusinessId(bpmBusinessProcess.getEntryId());
-            //modify forward data
-            processForwardService.updateProcessForward(BpmProcessForward.builder()
-                    .processInstanceId(processInstanceId)
-                    .forwardUserId(SecurityUtils.getLogInEmpIdStr())
-                    .build());
-            //modify notice
-            userMessageService.readNode(processInstanceId);
-            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
-            String taskDefKey="";
-            if (!ObjectUtils.isEmpty(list)) {
-                taskDefKey = list.get(0).getTaskDefinitionKey();
-                processInfoVo.setTaskId(list.get(0).getId());
-                processInfoVo.setNodeId(taskDefKey);
+        Employee employee = employeeService.qryLiteEmployeeInfoById(bpmBusinessProcess.getCreateUser());
+        processInfoVo.setEmployee(employee);
+        processInfoVo.setCreateTime(bpmBusinessProcess.getCreateTime());
+        //set start userId
+        processInfoVo.setStartUserId(bpmBusinessProcess.getCreateUser());
+        //set process Number
+        processInfoVo.setProcessNumber(bpmBusinessProcess.getBusinessNumber());
+        String processInstanceId = taskMgmtMapper.findByBusinessId(bpmBusinessProcess.getEntryId());
+        //modify forward data
+        processForwardService.updateProcessForward(BpmProcessForward.builder()
+                .processInstanceId(processInstanceId)
+                .forwardUserId(SecurityUtils.getLogInEmpIdStr())
+                .build());
+        //modify notice
+        userMessageService.readNode(processInstanceId);
+        List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
+        String taskDefKey = "";
+        if (!ObjectUtils.isEmpty(list)) {
+            taskDefKey = list.get(0).getTaskDefinitionKey();
+            processInfoVo.setTaskId(list.get(0).getId());
+            processInfoVo.setNodeId(taskDefKey);
 
-            }else{
-                if(Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
-                    List<HistoricTaskInstance> historicTaskInstances = historyService
-                            .createHistoricTaskInstanceQuery()
-                            .processInstanceId(bpmBusinessProcess
-                                    .getProcInstId()).
-                                    taskAssignee(SecurityUtils.getLogInEmpId())
-                            .orderByHistoricTaskInstanceEndTime()
-                            .desc()
-                            .list();
-                    if(!CollectionUtils.isEmpty(historicTaskInstances)){
-                        taskDefKey=historicTaskInstances.get(0).getTaskDefinitionKey();
-                    }
+        } else {
+            if (Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
+                List<HistoricTaskInstance> historicTaskInstances = historyService
+                        .createHistoricTaskInstanceQuery()
+                        .processInstanceId(bpmBusinessProcess
+                                .getProcInstId()).
+                        taskAssignee(SecurityUtils.getLogInEmpId())
+                        .orderByHistoricTaskInstanceEndTime()
+                        .desc()
+                        .list();
+                if (!CollectionUtils.isEmpty(historicTaskInstances)) {
+                    taskDefKey = historicTaskInstances.get(0).getTaskDefinitionKey();
                 }
             }
-            if(!StringUtils.isEmpty(taskDefKey)&&Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(),1)){
+        }
+        if (!StringUtils.isEmpty(taskDefKey) && Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
 
-                List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
-                        .getBaseMapper()
-                        .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefKey);
-                processInfoVo.setLfFieldControlVOs(currentFieldControls);
-            }
+            List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
+                    .getBaseMapper()
+                    .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefKey);
+            processInfoVo.setLfFieldControlVOs(currentFieldControls);
         }
         return processInfoVo;
     }
