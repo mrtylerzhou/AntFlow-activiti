@@ -126,17 +126,7 @@ export function getApplicationDetail(id) {
     { headers }
   );
 }
-/**
- * 获取可用接入业务方的标识
- * @param { String } businessPartyMark
- * @returns
- */
-export function getPartyMarkByIdBpmConf(businessPartyMark) {
-  return http.get(
-    `${baseUrl}/outSideBpm/businessParty/getPartyMarkByIdBpmConf/${businessPartyMark}`,
-    { headers }
-  );
-}
+
 /**
  * 获取业务方k-v
  * @returns

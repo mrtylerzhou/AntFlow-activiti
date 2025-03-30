@@ -258,7 +258,7 @@ function uniqueByMap(arr) {
  * 关闭当前审批页
  */
 const close = () => {
-    const obj = { path: "/flowtask/pendding" };
+    const obj = { path: "/flowTask/pendding" };
     proxy.$tab.closeOpenPage(obj);
 }
 /**

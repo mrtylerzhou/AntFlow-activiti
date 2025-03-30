@@ -223,7 +223,7 @@ function handleStart(row) {
         formCode: row.formCode,
         hasChooseApprove: row.hasChooseApprove
     };
-    const obj = { path: '/bizentry/index', query: params };
+    const obj = { path: '/startFlow/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function handleOutSide(row) { 
@@ -234,7 +234,7 @@ function handleOutSide(row) {
         ha: row.hasChooseApprove,
         fcname:  encodeURIComponent(row.title) 
     };
-    const obj = { path: '/outsideMgt/index', query: params };
+    const obj = { path: '/startOutside/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function getAssetsFile(pathUrl) {

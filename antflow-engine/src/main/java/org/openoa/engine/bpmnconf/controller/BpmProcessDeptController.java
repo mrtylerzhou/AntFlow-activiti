@@ -24,11 +24,12 @@ public class BpmProcessDeptController {
 
     /**
      * 流程图标下面弄一个配置选项,保存流程权限(目前尚未实现),流程通知类型
+     *
      * @param vo
      * @return
      */
     @PostMapping("/taskMgmt")
-    public Result saveProcessNotices(@RequestBody BpmProcessDeptVo vo){
+    public Result saveProcessNotices(@RequestBody BpmProcessDeptVo vo) {
         processDeptService.editProcessConf(vo);
         return Result.success();
     }
