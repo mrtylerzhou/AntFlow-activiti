@@ -76,7 +76,6 @@ public class BpmnConfController {
      */
     @PostMapping("/preview")
     public Result preview( @RequestBody String params) {
-        bpmVerifyInfoBizService.getVerifyInfoList("DSFZH_WMA_21");
         return Result.newSuccessResult(bpmnConfCommonService.previewNode(params));
     }
 
