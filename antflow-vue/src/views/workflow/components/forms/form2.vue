@@ -126,7 +126,7 @@ const disabledBeginDateDate = (time) => {
 const disabledEndDate = (time) => {
     return time.getTime() < new Date(form.beginDate);
 }
-/**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
+/**以下是通用方法不需要修改 views/startFlow/index.vue中调用*/
 /**自选审批人 */
 const chooseApprovers = (data) => {
     form.approversList = data.approvers; 

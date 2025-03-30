@@ -145,10 +145,10 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                     case NUMBER:
                        actualValue=Integer.parseInt(field.getFieldValue());;
                         break;
-                    case DATE:
+                    case DATE_TIME:
                        actualValue=DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
                         break;
-                    case DATE_TIME:
+                    case DATE:
                         actualValue=DateUtil.SDF_DATE_PATTERN.format(field.getFieldValueDt());
                         break;
                     case TEXT:

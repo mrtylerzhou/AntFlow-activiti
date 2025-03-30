@@ -4,14 +4,14 @@
     "data": [ 
         { 
             "path": "", 
-            "redirect": "/startflow",
+            "redirect": "/showFlow",
             "component": "Layout", 
             "children": [ 
                 {
-                    "name": "startflow",
-                    "path": "/startflow",
+                    "name": "showFlow",
+                    "path": "/showFlow",
                     "hidden": false,
-                    "component": "startflow/index", 
+                    "component": "showFlow/index", 
                     "meta": {
                         "title": "发起请求",
                         "icon": "guide",
@@ -22,8 +22,8 @@
                 }
             ]
         },{
-            "name": "FlowTask",
-            "path": "/flowtask",
+            "name": "flowTask",
+            "path": "/flowTask",
             "hidden": false,
             "redirect": "noRedirect",
             "component": "Layout",
@@ -39,7 +39,7 @@
                     "name": "MyTask",
                     "path": "mytask",
                     "hidden": false,
-                    "component": "flowtask/mytask/index",
+                    "component": "flowTask/mytask/index",
                     "meta": {
                         "title": "我的发起",
                         "icon": "",
@@ -51,7 +51,7 @@
                     "name": "PenddingTask",
                     "path": "pendding",
                     "hidden": false,
-                    "component": "flowtask/pendding/index",
+                    "component": "flowTask/pendding/index",
                     "meta": {
                         "title": "待办任务",
                         "icon": "",
@@ -63,7 +63,7 @@
                     "name": "ApprovedTask",
                     "path": "approved",
                     "hidden": false,
-                    "component": "flowtask/approved/index",
+                    "component": "flowTask/approved/index",
                     "meta": {
                         "title": "已办任务",
                         "icon": "",
@@ -75,7 +75,7 @@
                     "name": "CopyToMeTask",
                     "path": "CopyToMe",
                     "hidden": false,
-                    "component": "flowtask/copyToMe/index",
+                    "component": "flowTask/copyToMe/index",
                     "meta": {
                         "title": "抄送到我",
                         "icon": "",
@@ -87,7 +87,7 @@
                     "name": "approve",
                     "path": "pendding/approve",
                     "hidden": true,
-                    "component": "flowtask/pendding/approve",
+                    "component": "flowTask/pendding/approve",
                     "meta": {
                         "title": "流程审批",
                         "icon": "",
@@ -98,7 +98,7 @@
             ]
         },
         {
-            "name": "Workflow",
+            "name": "workflow",
             "path": "/workflow",
             "hidden": false,
             "redirect": "noRedirect",
@@ -112,7 +112,7 @@
             },
             "children": [ 
                 {
-                    "name": "FlowInstance",
+                    "name": "flowInstance",
                     "path": "instance",
                     "hidden": false,
                     "component": "workflow/instance/index",
@@ -136,7 +136,7 @@
                     }
                 },
                 {
-                    "name": "FlowConfig",
+                    "name": "flowConfig",
                     "path": "config",
                     "hidden": false,
                     "component": "workflow/config/index",
@@ -148,7 +148,7 @@
                     }
                 },
                 {
-                    "name": "LF-FlowDesign",
+                    "name": "lf-FlowDesign",
                     "path": "lf-design",
                     "hidden": true,
                     "component": "workflow/design/lf",
@@ -160,7 +160,7 @@
                     }
                 },
                 {
-                    "name": "DIY-FlowDesign",
+                    "name": "diy-FlowDesign",
                     "path": "diy-design",
                     "hidden": true,
                     "component": "workflow/design/diy",
@@ -172,7 +172,7 @@
                     }
                 },
                 {
-                    "name": "FlowPreview",
+                    "name": "flowPreview",
                     "path": "preview",
                     "hidden": true,
                     "component": "workflow/preview/index",
@@ -184,14 +184,26 @@
                     }
                 },
                 {
-                    "name": "BizEntry",
-                    "path": "/bizentry/index",
+                    "name": "startFlow",
+                    "path": "/startFlow/index",
                     "hidden": true,
-                    "component": "bizentry/index",
+                    "component": "startFlow/index",
                     "meta": {
                         "title": "发起申请流程",
                         "icon": "",
                         "noCache": true,
+                        "link": null
+                    }
+                }, 
+                {
+                    "name": "startOutside",
+                    "path": "/startOutside/index",
+                    "hidden": true,
+                    "component": "startOutside/index",
+                    "meta": {
+                        "title": "业务方表单发起测试",
+                        "icon": "",
+                        "noCache": false,
                         "link": null
                     }
                 },
@@ -210,8 +222,8 @@
             ]
         },
         {
-            "name": "flowentrust",
-            "path": "/flowentrust",
+            "name": "flowEntrust",
+            "path": "/flowEntrust",
             "hidden": false,
             "redirect": "noRedirect",
             "component": "Layout",
@@ -223,10 +235,10 @@
                 "link": null
             },
             "children": [{
-                    "name": "FlowEntrustSet",
-                    "path": "entrustset",
+                    "name": "flowentrustsetting",
+                    "path": "setting",
                     "hidden": false,
-                    "component": "flowentrust/entrustset/index",
+                    "component": "flowEntrust/setting/index",
                     "meta": {
                         "title": "委托设置",
                         "icon": "",
@@ -234,10 +246,10 @@
                         "link": null
                     }
                 },{
-                    "name": "FlowEntrustList",
-                    "path": "entrustlist",
+                    "name": "flowentrustlist",
+                    "path": "list",
                     "hidden": false,
-                    "component": "flowentrust/entrustlist/index",
+                    "component": "flowEntrust/list/index",
                     "meta": {
                         "title": "委托列表",
                         "icon": "",
@@ -323,30 +335,6 @@
                     "component": "outsideMgt/preview/index",
                     "meta": {
                         "title": "三方流程模板预览",
-                        "icon": "",
-                        "noCache": false,
-                        "link": null
-                    }
-                },
-                {
-                    "name": "bizForm",
-                    "path": "bizForm",
-                    "hidden": true,
-                    "component": "outsideMgt/bizForm/form1",
-                    "meta": {
-                        "title": "业务方表单发起测试",
-                        "icon": "",
-                        "noCache": false,
-                        "link": null
-                    }
-                },
-                {
-                    "name": "outsideEntry",
-                    "path": "index",
-                    "hidden": true,
-                    "component": "outsideMgt/bizForm/index",
-                    "meta": {
-                        "title": "业务方表单发起测试",
                         "icon": "",
                         "noCache": false,
                         "link": null

@@ -134,7 +134,7 @@ const startTest = (param) => {
     processOperation(bizFrom).then((res) => {
         if (res.code == 200) {
             proxy.$modal.msgSuccess("发起流程成功");
-            const obj = { path: "/flowtask/mytask" };
+            const obj = { path: "/flowTask/mytask" };
             proxy.$tab.openPage(obj);
         } else {
             proxy.$modal.msgError("发起流程失败" + res.errMsg);

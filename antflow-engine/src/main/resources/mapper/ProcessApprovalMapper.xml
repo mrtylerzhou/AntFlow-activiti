@@ -125,7 +125,8 @@
                         b.BUSINESS_NUMBER  AS processNumber,
                         t.END_TIME_        AS runTime,
                         b.process_state    AS processState,
-                        b.process_digest   as processDigest
+                        b.process_digest   as processDigest,
+                        ROW_NUMBER() over(partition BY b.business_id ORDER BY BUSINESS_NUMBER, t.END_TIME_ DESC) AS rn
                  FROM act_hi_taskinst t
                           LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
@@ -134,7 +135,7 @@
                    and t.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
                    and b.is_del = 0
              ) s
-        where 1 = 1
+        where 1 = 1 and rn = 1
     </sql>
     <!--query to do list for the pc-->
     <sql id="viewPcToDo">

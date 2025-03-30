@@ -110,12 +110,16 @@ const handleEdit =  (row) => {
 }
 /**流程启用 */
 const effectiveById = async (data) => {
+   if (data.formCode == 'RUOYI_RYQJLC') {
+       proxy.$modal.msgError("若依请假流程【管理员专用】禁止操作");
+       return;
+   }
    await getEffectiveBpmn(data).then(async (res) => {
        if (res.code == 200) {
            getList();
            proxy.$modal.msgSuccess("操作成功"); 
        } else {
-         proxy.$modal.msgSuccess("操作失败"); 
+         proxy.$modal.msgError("操作失败"); 
        }
    });
 
