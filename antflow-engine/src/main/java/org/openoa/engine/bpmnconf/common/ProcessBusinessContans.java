@@ -82,7 +82,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         processInfoVo.setStartUserId(bpmBusinessProcess.getCreateUser());
         //set process Number
         processInfoVo.setProcessNumber(bpmBusinessProcess.getBusinessNumber());
-        String processInstanceId = taskMgmtMapper.findByBusinessId(bpmBusinessProcess.getEntryId());
+        String processInstanceId = bpmBusinessProcess.getBusinessId();
         //modify forward data
         processForwardService.updateProcessForward(BpmProcessForward.builder()
                 .processInstanceId(processInstanceId)
