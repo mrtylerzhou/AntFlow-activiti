@@ -85,8 +85,7 @@ public class BpmnConfController {
      * 流程设计信息预览详情
      */
     @PostMapping("/preview")
-    public Result preview(@RequestBody String params) {
-        bpmVerifyInfoBizService.getVerifyInfoList("DSFZH_WMA_21");
+    public Result preview( @RequestBody String params) {
         return Result.newSuccessResult(bpmnConfCommonService.previewNode(params));
     }
 

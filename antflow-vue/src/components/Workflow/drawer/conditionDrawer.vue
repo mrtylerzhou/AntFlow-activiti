@@ -118,7 +118,7 @@
                                 <span class="ellipsis"
                                     style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
                                     item.showName }}</span>
-                                <el-select style="width:60px;" class="ml_10" v-model="item.opt1">
+                                <el-select style="width:60px;" class="ml_10" v-model="item.opt2">
                                     <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
                                         :value="itemOpt.value" />
                                 </el-select>
@@ -379,6 +379,21 @@ const convertConditionNodeValue = (data,isPreview=true) => {
         if (item.fieldTypeName == 'time') {//时间控件
             item.zdy1 = proxy.parseTime(item.zdy1, '{y}-{m}-{d} {h}:{i}:{s}')
         }
+        /**适配后端设计 */
+        if (item.optType == '6') {//数字控件
+            //提交转换
+            if(item.opt1 == '≤'&& item.opt2 == '<'){
+                item.optType='7' 
+            }else if(item.opt1 == '<'&& item.opt2 == '≤'){
+                item.optType='8'
+            }else if(item.opt1 == '≤'&& item.opt2 == '≤'){
+                item.optType='9' 
+            }else{
+                item.optType='6' 
+            }
+        }else if(item.optType == '7' || item.optType == '8' || item.optType == '9'){
+            item.optType='6'//显示转换
+        } 
     }
 }
 </script>
