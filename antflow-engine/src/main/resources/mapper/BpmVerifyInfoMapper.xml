@@ -32,7 +32,7 @@
         where w.business_id = #{business_id}
     </select>
     <select id="getVerifyInfo" resultType="org.openoa.base.vo.BpmVerifyInfoVo">
-        select w.id as id,w.verify_user_id as verifyUserId,w.verify_user_name as verifyUserName, w.verify_user_name as verifyUserName,w.task_name as taskName,w.verify_status as verifyStatus,
+        select w.id as id,w.verify_user_id as verifyUserId, w.verify_user_name as verifyUserName,w.task_name as taskName,w.verify_status as verifyStatus,
         case
         when w.verify_status =1 then '提交'
         when w.verify_status =2 then '同意'
@@ -71,7 +71,6 @@
                t.ASSIGNEE_     AS verifyUserId,
                t.ASSIGNEE_NAME as verifyUserName,
                '处理中'           AS verifyStatusName,
-               t.TASK_DEF_KEY_ as elementId,
                null            AS verifyDate,
                ''              AS verifyDesc,
                t.TASK_DEF_KEY_ AS elementId
