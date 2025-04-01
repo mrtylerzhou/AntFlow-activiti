@@ -115,7 +115,7 @@
                     "name": "flowInstance",
                     "path": "instance",
                     "hidden": false,
-                    "component": "workflow/instance/index",
+                    "component": "flowTask/instance/index",
                     "meta": {
                         "title": "流程实例",
                         "icon": "",
