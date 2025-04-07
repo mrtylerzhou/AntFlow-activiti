@@ -60,7 +60,7 @@ export function getBusinessPartyList(page, vo) {
     "pageDto": page,
     "entity": vo
   };
-  return http.get(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
+  return http.post(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
     headers,
   });
 }

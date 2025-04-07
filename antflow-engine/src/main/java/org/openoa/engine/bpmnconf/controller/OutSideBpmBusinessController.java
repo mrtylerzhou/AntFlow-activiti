@@ -35,7 +35,7 @@ public class OutSideBpmBusinessController {
     /**
      * 获取业务方项目信息分页列表
      */
-    @GetMapping("/businessParty/listPage")
+    @PostMapping("/businessParty/listPage")
     public Result listPage(@RequestBody ConfDetailRequestDto dto) {
         PageDto page = dto.getPageDto();
         BpmnConfVo vo = dto.getEntity();
