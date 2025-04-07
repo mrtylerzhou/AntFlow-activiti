@@ -5,6 +5,8 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.ConfDetailRequestDto;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmApproveTemplateServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
@@ -58,12 +60,19 @@ public class OutSideBpmBusinessController {
     /**
      * 获取业务方项目列表
      */
-    @GetMapping("/businessParty/applicationsPageList")
-    public Result applicationsPageList(PageDto page, BpmProcessAppApplicationVo vo) {
+    @PostMapping("/businessParty/applicationsPageList")
+    public Result applicationsPageList(@RequestBody ConfDetailRequestDto dto) {
+        PageDto page = dto.getPageDto();
+        BpmnConfVo vo = dto.getEntity();
+        BpmProcessAppApplicationVo searchVo =new BpmProcessAppApplicationVo();
+        if (!Strings.isNullOrEmpty(vo.getRemark())) {
+            searchVo.setBusinessName(vo.getRemark());
+            searchVo.setProcessKey(vo.getRemark());
+        }
         if (Strings.isNullOrEmpty(page.getOrderColumn())) {
             page.setOrderColumn("id");
         }
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.applicationsPageList(page, vo));
+        return Result.newSuccessResult(outSideBpmBusinessPartyService.applicationsPageList(page, searchVo));
     }
 
     /**
