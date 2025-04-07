@@ -57,8 +57,8 @@ export function setApiWorkFlowData(data) {
  */
 export function getBusinessPartyList(page, vo) {
   let data = {
-    page: page,
-    vo: vo,
+    "pageDto": page,
+    "entity": vo
   };
   return http.get(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
     headers,
