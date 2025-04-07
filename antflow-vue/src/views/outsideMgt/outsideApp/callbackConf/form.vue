@@ -78,7 +78,7 @@ let dialogVisible = computed({
     closeDialog()
   }
 })
-const emits = defineEmits(["update:visible"]);
+const emits = defineEmits(["update:visible", "changeRefresh"]);
  
 const data = reactive({
   form: {},  
@@ -107,12 +107,13 @@ watch(() => props.bizformData, (val) => {
   
 /** 提交表单 */
 function submitApproveTempForm() {
-  proxy.$refs["callbackConfRef"].validate(valid => {
+  proxy.$refs["callbackConfRef"].validate(async valid => {
     if (valid) {
       proxy.$modal.loading(); 
-      callbackUrlConf(form.value).then(res => {
+      await callbackUrlConf(form.value).then(res => {
         if (res && res.code == 200) {          
           emits("update:visible", false);
+          emits("changeRefresh", { paneName:'callbackSet'});
           proxy.$modal.msgSuccess("添加成功");
         } else {
           proxy.$modal.msgError("添加失败" + res.errMsg);

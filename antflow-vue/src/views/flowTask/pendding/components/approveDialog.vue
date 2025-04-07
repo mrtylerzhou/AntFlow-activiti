@@ -19,7 +19,7 @@
                     </el-button>  
                 </div>
                 <div class="mb-4" v-else="quickAnswerOK.length > 0"> 
-                    <el-button type="primary" plain round v-for="btnTxt in quickAnswerNO" :key="btn" @click="approveForm.remark = btnTxt">
+                    <el-button type="danger" plain round v-for="btnTxt in quickAnswerNO" :key="btn" @click="approveForm.remark = btnTxt">
                     {{ btnTxt }}
                     </el-button>  
                 </div>
