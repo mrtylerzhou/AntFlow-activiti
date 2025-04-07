@@ -36,8 +36,15 @@ public class OutSideBpmBusinessController {
      * 获取业务方项目信息分页列表
      */
     @GetMapping("/businessParty/listPage")
-    public Result listPage(PageDto page, OutSideBpmBusinessPartyVo vo) {
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.listPage(page, vo));
+    public Result listPage(@RequestBody ConfDetailRequestDto dto) {
+        PageDto page = dto.getPageDto();
+        BpmnConfVo vo = dto.getEntity();
+        OutSideBpmBusinessPartyVo searchVo =new OutSideBpmBusinessPartyVo();
+        if (!Strings.isNullOrEmpty(vo.getRemark())) {
+            searchVo.setName(vo.getRemark());
+            searchVo.setRemark(vo.getRemark());
+        }
+        return Result.newSuccessResult(outSideBpmBusinessPartyService.listPage(page, searchVo));
     }
 
     /**
