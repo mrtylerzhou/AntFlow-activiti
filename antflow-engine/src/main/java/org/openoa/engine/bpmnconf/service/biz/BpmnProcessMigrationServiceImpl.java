@@ -20,6 +20,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
+import static org.openoa.base.constant.enums.MsgProcessEventEnum.PROCESS_SUBMIT;
+
 @Service
 public class BpmnProcessMigrationServiceImpl {
     @Autowired
@@ -41,6 +43,7 @@ public class BpmnProcessMigrationServiceImpl {
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
         submitVo.setBpmnCode(bpmBusinessProcess.getVersion());
+        submitVo.setOperationType(PROCESS_SUBMIT.getCode());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
@@ -60,7 +63,7 @@ public class BpmnProcessMigrationServiceImpl {
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
                     .taskDefinitionKey(activity.getId()).list();
             if (!CollectionUtils.isEmpty(tsks)) {
-                Map<String, BpmVerifyInfo> verifyInfoMap =verifyInfoMap=bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
+                Map<String, BpmVerifyInfo> verifyInfoMap = bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
                 for (Task tsk : tsks) {
                     if(!CollectionUtils.isEmpty(verifyInfoMap)){
                         BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());

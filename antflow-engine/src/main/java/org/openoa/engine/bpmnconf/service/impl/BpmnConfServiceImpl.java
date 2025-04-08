@@ -867,7 +867,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         }
         this.updateById(BpmnConf
                 .builder()
-                .id(Long.parseLong(id.toString()))
+                .id(id.longValue())
                 .appId(confInDb.getAppId())
                 .bpmnType(confInDb.getBpmnType())
                 .isAll(getIsAll(bpmnConf, confInDb))
