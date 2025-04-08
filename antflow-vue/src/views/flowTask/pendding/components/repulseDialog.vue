@@ -87,6 +87,11 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <div class="mb-4"> 
+                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList" :key="btn" @click="repulseForm.remark = btnTxt">
+                    {{ btnTxt }}
+                    </el-button>  
+                </div>
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
@@ -152,22 +157,22 @@ const tipsVisible3 = computed(() => repulseForm.backToModifyType == 3);
 const tipsVisible4 = computed(() => repulseForm.backToModifyType == 4);
 const tipsVisible5 = computed(() => repulseForm.backToModifyType == 5);
 
-
+const quickAnswerList = ["不同意", "有异议", "不支持", "无法核实", "需要补充材料", "不符合要求"];
 let rules = {
     backToModifyType: [{
         required: true,
         message: '请选择退回类型',
-        trigger: 'blur'
+        trigger: ['change','blur']
     }],
     backToNodeId: [{
         required: true,
         message: '请选择审批节点',
-        trigger: 'blur'
+        trigger: ['change','blur']
     }],
     remark: [{
         required: true,
         message: '请输入备注',
-        trigger: 'blur'
+        trigger:['change','blur']
     }]
 };
 

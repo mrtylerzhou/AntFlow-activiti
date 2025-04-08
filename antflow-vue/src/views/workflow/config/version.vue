@@ -1,5 +1,10 @@
 <template>
     <div class="app-container"> 
+      <div class="query-box">
+         <div class="mb-4 fr"> 
+           <el-button type="primary" plain @click="backPage()"><el-icon><Back /></el-icon>返回 </el-button>   
+         </div>
+      </div>
        <div class="table-box">
           <el-table v-loading="loading" :data="configList">
              <el-table-column label="类型标识" align="center" prop="formCode" />
@@ -128,6 +133,10 @@
     const obj = { path: "/workflow/preview", query: params };
     proxy.$tab.openPage(obj);
  }
- 
+ /**  返回按钮操作 */
+ const backPage = () => {
+    const obj = { path: "/workflow/config" };
+    proxy.$tab.openPage(obj);
+ }
  </script>
  

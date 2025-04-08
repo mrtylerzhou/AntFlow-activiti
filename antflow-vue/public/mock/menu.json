@@ -339,7 +339,19 @@
                         "noCache": false,
                         "link": null
                     }
-                }
+                },
+                {
+                    "name": "app-setting",
+                    "path": "app-setting",
+                    "hidden": true,
+                    "component": "outsideMgt/outsideApp/Setting/index",
+                    "meta": {
+                        "title": "应用设置",
+                        "icon": "",
+                        "noCache": false,
+                        "link": null
+                    }
+                } 
             ]
         }
     ]

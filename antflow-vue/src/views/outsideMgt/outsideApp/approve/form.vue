@@ -90,7 +90,7 @@ let dialogVisible = computed({
     closeDialog()
   }
 })
-const emits = defineEmits(["update:visible"]);
+const emits = defineEmits(["update:visible", "changeRefresh"]);
 const approveTypeOptions = [
   { label: "指定人员", value: 1 },
   { label: "指定角色", value: 2 }
@@ -117,7 +117,6 @@ const { form, rules } = toRefs(data);
 
 watch(() => props.bizformData, (val) => {
   form.value = val;  
-
   form.value.apiToken= "AA2BB0F7647D408992333672A8551E96";
   form.value.apiClientId= "033AFA1C6C3545AD";
   form.value.apiClientSecret= "EF28AC4A539E4A6F8CFC17ECC2C863CC"; 
@@ -135,13 +134,14 @@ function selectTypeChanged() {
 
 /** 提交表单 */
 function submitApproveTempForm() {
-  proxy.$refs["approveTemplateRef"].validate(valid => {
+  proxy.$refs["approveTemplateRef"].validate(async valid => {
     if (valid) {
       proxy.$modal.loading();
-      setApproveTemplate(form.value).then(res => {
+      await setApproveTemplate(form.value).then(res => {
         if (res && res.code == 200) {
-          proxy.$modal.msgSuccess("添加成功");
           emits("update:visible", false);
+          emits("changeRefresh", { paneName:'approveSet'});
+          proxy.$modal.msgSuccess("添加成功"); 
         } else {
           proxy.$modal.msgError("添加失败" + res.errMsg);
         }

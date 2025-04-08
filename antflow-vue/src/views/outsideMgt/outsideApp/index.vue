@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="query-box">
       <el-form :model="vo" ref="queryRef" :inline="true" v-show="showSearch">
-        <el-form-item label="业务表单名称" prop="title">
-          <el-input v-model="vo.title" placeholder="请输入关键字" clearable style="width: 200px" @keyup.enter="handleQuery" />
+        <el-form-item label="业务表单名称" prop="remark">
+          <el-input v-model="vo.remark" placeholder="请输入关键字" clearable style="width: 200px" @keyup.enter="handleQuery" />
         </el-form-item>
 
         <el-form-item>
@@ -11,20 +11,6 @@
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-row :gutter="10" class="mb8"> 
-        <el-col :span="1.5">
-          <el-button type="warning" icon="Setting" :disabled="single"
-            @click="approveTempVisible = true">设置审批人</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button type="success" icon="Setting" :disabled="single"
-            @click="conditionTempVisible = true">设置条件</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button type="primary" icon="Setting" :disabled="single"
-            @click="callbackConfVisible = true">设置流程回调</el-button>
-        </el-col>
-      </el-row>
     </div>
     <div class="table-box">
       <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
@@ -51,8 +37,7 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button link type="primary" icon="View" @click="viewConditionList(scope.row)">条件</el-button>
-            <el-button link type="primary" icon="View" @click="viewApproveList(scope.row)">审批人</el-button>
+            <el-button link type="primary" icon="Setting" @click="settingPage(scope.row)">设置</el-button>
             <el-button link type="primary" icon="Promotion" @click="handleFlowDesign(scope.row)">设计流程</el-button>
             <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button> -->
           </template>
@@ -60,14 +45,7 @@
       </el-table>
       <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
         @pagination="getList" />
-    </div> 
-
-    <conditionForm v-model:visible="conditionTempVisible" v-model:bizformData="bizAppForm" />
-    <approveForm v-model:visible="approveTempVisible" v-model:bizformData="bizAppForm" />
-    <conditionTemplateList ref="conditionListRef" v-model:visible="conditionListVisible" />
-    <approveTemplateList ref="approveListRef" v-model:visible="approveListVisible" />
-    <callbackConf v-model:visible="callbackConfVisible" v-model:bizformData="bizAppForm" /> 
-    <addform v-model:visible="open" v-model:appformData="appForm" @refresh="getList" />
+    </div>  
   </div>
 </template>
 
@@ -76,30 +54,16 @@ import { ref, onMounted } from "vue";
 import {
   getApplicationsPageList, 
   getApplicationDetail, 
-  getConditionTemplatelist,
+  getCallbackUrlConfList,
   getApproveTemplatelist
-} from "@/api/outsideApi";
-import conditionForm from "./condition/form.vue";
-import conditionTemplateList from "./condition/list.vue";
-import approveForm from "./approve/form.vue";
-import approveTemplateList from "./approve/list.vue";
-import callbackConf from "./callbackConf/form.vue";
-import addform from "./form.vue";
+} from "@/api/outsideApi"; 
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
-const open = ref(false);
-const conditionTempVisible = ref(false);
-const approveTempVisible = ref(false);
-const callbackConfVisible = ref(false);
-const title = ref("");
-const single = ref(true);
-const multiple = ref(true);
- 
-let conditionListVisible = ref(false);
-let approveListVisible = ref(false);
+const open = ref(false); 
+const title = ref(""); 
 const data = reactive({ 
   appForm: {},
   page: {
@@ -107,19 +71,10 @@ const data = reactive({
     pageSize: 10
   },
   vo: {
-    title: undefined
+    remark: undefined
   }
 });
-const { page, vo, appForm } = toRefs(data);
-
-let bizAppForm = reactive({
-  businessPartyId: undefined,
-  applicationId: undefined,
-  formCode: undefined,
-  businessPartyName: undefined,
-  applicationName: undefined,
-});
-
+const { page, vo, appForm } = toRefs(data); 
 onMounted(async () => {
   getList(); 
 })
@@ -139,12 +94,7 @@ function getList() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   single.value = selection.length != 1;
-  multiple.value = !selection.length;
-  bizAppForm.businessPartyId = selection.map(item => item.businessPartyId)[0];
-  bizAppForm.applicationId = selection.map(item => item.id)[0];
-  bizAppForm.businessPartyName = selection.map(item => item.businessName)[0];
-  bizAppForm.applicationName = selection.map(item => item.name)[0];
-  bizAppForm.formCode = selection.map(item => item.processKey)[0];
+  multiple.value = !selection.length; 
 }
  
 /** 修改按钮操作 */
@@ -181,27 +131,30 @@ function handleQuery() {
 function handleDelete(row) {
   proxy.$modal.msgError("演示环境不允许删除操作！");
 }
-/** 查看条件列表 */
-function viewConditionList(row) {
-  proxy.$refs["conditionListRef"].show(row.businessPartyId, row.id);
-}
-/** 查看条件列表 */
-function viewApproveList(row) {
-  proxy.$refs["approveListRef"].show(row.businessPartyId, row.id);
-}
+const settingPage = (row) => { 
+  const params = {
+    appId: row.id,
+    appName: encodeURIComponent(row.name),
+    pId: row.businessPartyId, 
+    pName: encodeURIComponent(row.businessName),
+    fc: row.processKey
+  };
+  let obj = { path: "app-setting", query: params };
+  proxy.$tab.openPage(obj);
+};
 
 async function handleFlowDesign(row) {
   proxy.$modal.loading();
   const resultCheckApprove = await checkApproveConfig(row);
-  const resultCheckCondition = true;//await checkConditionConfig(row); 
+  const resultCheckCallback = await checkCallBackConfig(row); 
   if (!resultCheckApprove) {
     proxy.$modal.closeLoading();
     proxy.$modal.msgError("请先设置审批人");
     return;
   }
-  if (!resultCheckCondition) {
+  if (!resultCheckCallback) {
     proxy.$modal.closeLoading();
-    proxy.$modal.msgError("至少设置一个条件");
+    proxy.$modal.msgError("请先设置流程回调");
     return;
   }
   const param = {
@@ -227,8 +180,8 @@ const checkApproveConfig = async (row) => {
     return false;
   });
 }
-const checkConditionConfig = async (row) => {
-  return await getConditionTemplatelist(row.id).then(response => {
+const checkCallBackConfig = async (row) => {
+  return await getCallbackUrlConfList(row.processKey).then(response => {
     if (response.code == 200) {
       return response.data.length > 0
     } else {
