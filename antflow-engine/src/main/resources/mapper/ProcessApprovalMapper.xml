@@ -153,7 +153,7 @@
                         b.BUSINESS_NUMBER  AS processNumber,
                         t.ID_              AS taskId,
                         t.CREATE_TIME_     AS runTime,
-                        t.TASK_DEF_KEY_       taskName,
+                        t.TASK_DEF_KEY_    AS  taskName,
                         b.process_state    AS processState,
                         b.process_digest   as processDigest
                  FROM act_ru_task t
