@@ -38,45 +38,7 @@
         </el-card>
       </el-col>
 
-      <el-col :sm="24" :lg="12" style="margin-bottom: 5px;">
-        <el-card class="update-log">
-          <template v-slot:header>
-            <div class="clearfix">
-              <span>技术选型</span>
-            </div>
-          </template>
-          <div class="body">
-            <el-row>
-              <el-col :span="6">
-                <h4>前端技术</h4>
-                <ul>
-                  <li>Vue3.5</li>
-                  <li>Pinia</li>
-                  <li>Element-Plus</li>
-                  <li>Axios</li>
-                  <li>Sass</li>
-                  <li>借鉴RuoYi</li>
-                  <li>...</li>
-                </ul>
-              </el-col>
-              <el-col :span="6">
-                <h4>后端技术</h4>
-                <ul>
-                  <li>Spring Boot 2.7.17</li>
-                  <li>MybatisPlus 3.5.1</li>
-                  <li>MySql 5.7+</li>
-                  <li>Activiti 5.2+</li>
-                  <li>...</li>
-                </ul>
-              </el-col>
-            </el-row>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-    <el-divider />
-    <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :md="12" :lg="8" style="margin-bottom: 5px;">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" style="margin-bottom: 5px;">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -99,6 +61,9 @@
           </div>
         </el-card>
       </el-col>
+    </el-row>
+    <el-divider />
+    <el-row :gutter="20"> 
       <el-col :xs="24" :sm="24" :md="12" :lg="8" style="margin-bottom: 5px;">
         <el-card class="update-log">
           <template v-slot:header>
