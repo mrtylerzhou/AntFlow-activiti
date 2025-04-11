@@ -86,11 +86,13 @@ const handleTodayCreate = () => {
 </script>
 <style lang="scss" scoped>
 .el-row {
-    height: 50%; 
+    height: 50%;  
+    padding-top: 10px;
     padding-right: 10px;   
+    padding-left: 10px;
 }
 .el-col {  
-    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 .ve-card {
     cursor: pointer;
