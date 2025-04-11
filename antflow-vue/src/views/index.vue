@@ -1,10 +1,6 @@
 <template>
   <div class="app-container home">
-    <el-row :gutter="20">
-      <el-col :sm="24" :lg="24">
-        <shortcuts />
-      </el-col>
-    </el-row>
+    <shortcuts />
     <el-divider />
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="margin-bottom: 5px;">
@@ -138,6 +134,15 @@ function goTarget(url) {
 </script>
 
 <style scoped lang="scss">
+.el-row {
+    height: 50%;  
+    padding-top: 10px;
+    padding-right: 10px;   
+    padding-left: 10px;
+}
+.el-col {  
+    padding-bottom: 10px;
+}
 .home {
   blockquote {
     padding: 10px 20px;

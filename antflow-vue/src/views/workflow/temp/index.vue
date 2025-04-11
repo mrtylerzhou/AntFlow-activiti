@@ -54,6 +54,7 @@
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-button link type="primary" icon="Promotion" @click="handleLFDesign(scope.row)">设计流程</el-button>
+                                <el-button link type="warning" icon="Operation" @click="handleVersion(scope.row)">流程版本</el-button>
                                 <el-button link type="success" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
                                 <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
@@ -101,10 +102,9 @@
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-button link type="primary" icon="Promotion" @click="handleDIYDesign(scope.row)">设计流程</el-button>
-                                <el-button link type="success" icon="ZoomIn"
-                                    @click="handleLFTemp(scope.row)">查看表单</el-button>
-                                <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                                <el-button link type="danger" icon="Delete"
+                                <el-button link type="warning" icon="Operation" @click="handleVersion(scope.row)">流程版本</el-button>
+                                <el-button link type="success" icon="ZoomIn" @click="handleLFTemp(scope.row)">查看表单</el-button> 
+                                <!--<el-button link type="danger" icon="Delete"
                                     @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
                         </el-table-column>
@@ -317,7 +317,18 @@ async function handleLFDesign(row) {
   const obj = { path: "/workflow/lf-design", query: param };
   proxy.$tab.openPage(obj);
 }
-
+/**
+ * 跳转到版本管理
+ * @param row 
+ */
+const handleVersion = async (row) => {
+    console.log(row);
+    const params = {
+        formCode: row.key
+    };
+    let obj = { path: "flow-version", query: params };
+    proxy.$tab.openPage(obj);
+}
 /** 修改按钮操作 */
 function handleEdit(row) {
     proxy.$modal.msgError("演示数据不允许修改操作！");

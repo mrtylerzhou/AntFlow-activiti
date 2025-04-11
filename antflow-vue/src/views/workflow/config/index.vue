@@ -70,7 +70,7 @@
             </el-table-column>
             <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
                <template #default="scope"> 
-                  <!--<el-button link type="primary" @click="handleCopy(scope.row)">复制</el-button> -->
+                  <el-button link type="success" @click="handleCopy(scope.row)">复制</el-button>
                   <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button>  
                </template>
             </el-table-column>
@@ -146,4 +146,21 @@ function resetQuery() {
    proxy.resetForm("queryRef");
    handleQuery();
 } 
+/**
+ * 复制操作
+ * @param row
+ */
+ const handleCopy = (row) => {
+   const params = {
+      id: row.id,
+      copy: 1,
+   };
+   let obj = {};
+   if (row.isLowCodeFlow == '1') {
+      obj = { path: "/workflow/lf-design", query: params };
+   } else {
+      obj = { path: "/workflow/diy-design", query: params };
+   }
+   proxy.$tab.openPage(obj);
+}
 </script>
