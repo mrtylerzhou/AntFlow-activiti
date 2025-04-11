@@ -1690,3 +1690,17 @@ create index indx_process_number
 
 alter table t_bpmn_node_conditions_param_conf
 	add operator int null after condition_param_jsom;
+
+
+CREATE TABLE `t_bpmn_node_customize_conf` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
+  `bpmn_node_id` BIGINT(20) NULL COMMENT 'node id',
+   `sign_type` INT(11) NOT NULL COMMENT 'sign type 1 all sign,2 or sign',
+  `remark` VARCHAR(255) NULL COMMENT 'remark',
+  `is_del` INT(11) NULL COMMENT '0 for normal,1 for deleted',
+  `create_user` VARCHAR(255) NULL COMMENT 'create user',
+  `create_time` DATETIME NULL COMMENT 'create time',
+  `update_user` VARCHAR(255) NULL COMMENT 'update user',
+  `update_time` DATETIME NULL COMMENT 'update time',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  COMMENT='customize config entity';
