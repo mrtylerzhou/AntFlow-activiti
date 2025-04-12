@@ -74,7 +74,7 @@
                null            AS verifyDate,
                ''              AS verifyDesc,
                t.TASK_DEF_KEY_ AS elementId
-        from act_ru_task t
+        from ACT_RU_TASK t
         where t.PROC_INST_ID_=#{procInstId}
 
     </select>

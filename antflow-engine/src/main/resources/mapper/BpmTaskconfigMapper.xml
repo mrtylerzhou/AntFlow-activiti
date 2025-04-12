@@ -91,7 +91,7 @@
     <!--get a a task's assignee by processKey and taskKey-->
     <select id="findHiTaskHandle" resultType="java.util.Map">
         select h.ASSIGNEE_ assignee
-        from act_hi_taskinst h
+        from ACT_HI_TASKINST h
         where h.PROC_INST_ID_ = #{procInstId}
           and h.TASK_DEF_KEY_ = #{taskDefKey}
           and h.END_TIME_  <![CDATA[<> ]]> ''
@@ -115,7 +115,7 @@
     </select>
     <select id="getProcessKey" resultType="java.lang.String">
         select s.KEY_
-        from act_re_procdef s
+        from ACT_RE_PROCDEF s
         where s.DEPLOYMENT_ID_ = #{deploymentId}
     </select>
 </mapper>
