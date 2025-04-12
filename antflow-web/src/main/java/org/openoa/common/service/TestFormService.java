@@ -67,7 +67,8 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
 
     @Override
     public ThirdPartyAccountApplyVo consentData(ThirdPartyAccountApplyVo vo) {
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
             BeanUtils.copyProperties(vo,thirdPartyAccountApply);
             Integer id=  Integer.valueOf((vo.getBusinessId()));

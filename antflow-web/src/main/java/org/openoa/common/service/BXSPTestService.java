@@ -72,7 +72,8 @@ public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, Activ
 
     @Override
     public BizRefundVo consentData(BizRefundVo vo) {
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizRefund entity = new BizRefund();
             BeanUtils.copyProperties(vo,entity);
             Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
