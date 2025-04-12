@@ -46,13 +46,17 @@
                 <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly/>
             </el-form-item>
 
-
             <el-form-item label="审批人去重" prop="deduplicationType">
                 <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :style="{ width: '100%' }">
                     <el-option v-for="(item, index) in duplicateOptions" :key="index" :label="item.label"
                         :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
+
+            <!-- <el-form-item label="启用流程" prop="effectiveStatus">
+                <el-switch v-model="form.effectiveStatus" />
+            </el-form-item> -->
+
             <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>

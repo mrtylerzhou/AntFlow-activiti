@@ -88,7 +88,7 @@
                     </el-col>
                 </el-row>
                 <div class="mb-4"> 
-                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList" :key="btn" @click="repulseForm.remark = btnTxt">
+                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList" @click="repulseForm.remark = btnTxt">
                     {{ btnTxt }}
                     </el-button>  
                 </div>

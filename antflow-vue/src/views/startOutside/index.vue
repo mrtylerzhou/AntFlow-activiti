@@ -8,7 +8,7 @@
                     </template>
                     <div class="component">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
-                            :isPreview="false" :reSubmit="false" @handleBizBtn="handleSubmit">
+                            :isPreview="false" :showSubmit="false" @handleBizBtn="handleSubmit">
                         </component> 
                     </div> 
                 </el-tab-pane>

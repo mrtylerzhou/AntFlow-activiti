@@ -17,7 +17,7 @@
                             :style="{ width: '100%' }"></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
+                <el-col :span="24" v-if="!props.isPreview && props.showSubmit">
                     <el-form-item>
                         <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
@@ -41,7 +41,7 @@ let props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    reSubmit: {//是否重新提交
+    showSubmit: {//是否显示提交按钮
         type: Boolean,
         default: false,
     },
