@@ -89,7 +89,8 @@ const handlerFn = (w) => {
       }
     }
   }else{ 
-    w.options.disabled = true;
+    w.options.disabled = false;
+    w.options.readonly = false;
   }
 }
 /**递归处理表单中所有字段 */
@@ -121,7 +122,9 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
     }
   })
 }
-onBeforeMount(() => { 
+onBeforeMount(() => {
+  console.log("isPreview======", JSON.stringify(props.isPreview));
+  console.log("showSubmit======", JSON.stringify(props.showSubmit));
   advanceHandleFormData();
 })
 const submitForm = () => {

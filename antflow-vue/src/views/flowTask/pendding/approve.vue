@@ -149,7 +149,7 @@ const clickApproveSubmit = async (btnType) => {
 const approveSubmit = async (param) => {
     approveSubData.approvalComment = param.remark;
     approveSubData.operationType = handleClickType.value;
-    if (handleClickType.value == approvalButtonConf.resubmit) {
+    if (handleClickType.value == approvalButtonConf.resubmit || handleClickType.value == approvalButtonConf.agree) {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
