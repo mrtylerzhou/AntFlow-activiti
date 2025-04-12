@@ -20,7 +20,7 @@
                             <el-col :span="24" class="my-col" v-if="baseTabShow">
                                 <div v-if="componentLoaded" class="component">
                                     <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
-                                        :isPreview="isPreview" :reSubmit="reSubmit" :lfFormData="lfFormDataConfig"
+                                        :isPreview="false" :lfFormData="lfFormDataConfig"
                                         :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
                                     </component>
                                 </div> 
@@ -78,9 +78,7 @@ let approveDialogTitle = ref("审批");
 let dialogVisible = ref(false);
 let dialogTitle = ref('');
 let isMultiple = ref(false);//false 转办，true 加批
-let approvalButtons = ref([]);
-let isPreview = ref(true);
-let reSubmit = ref(false); 
+let approvalButtons = ref([]);  
 let loadedComponent = ref(null);
 let componentData = ref(null);
 let componentLoaded = ref(false);
@@ -151,7 +149,7 @@ const clickApproveSubmit = async (btnType) => {
 const approveSubmit = async (param) => {
     approveSubData.approvalComment = param.remark;
     approveSubData.operationType = handleClickType.value;
-    if (handleClickType.value == approvalButtonConf.resubmit) {
+    if (handleClickType.value == approvalButtonConf.resubmit || handleClickType.value == approvalButtonConf.agree) {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
@@ -222,8 +220,6 @@ const preview = async () => {
                 });
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
-            reSubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
-            isPreview.value = !approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit); 
             if (isLowCodeFlow == 'true' || isOutSideAccess == 'true') {//低代码表单 和 外部表单接入
                 lfFormDataConfig.value = response.data.lfFormData;
                 lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);

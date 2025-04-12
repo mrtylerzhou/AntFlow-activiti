@@ -72,7 +72,8 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
 
     @Override
     public BizUcarRefuelVo consentData(BizUcarRefuelVo vo) {
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizUcarfuel ucarFuel = new BizUcarfuel();
             BeanUtils.copyProperties(vo,ucarFuel);
             Integer id=  Integer.valueOf((vo.getBusinessId()).toString());

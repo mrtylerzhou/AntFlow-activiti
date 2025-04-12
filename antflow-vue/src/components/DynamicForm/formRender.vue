@@ -2,15 +2,16 @@
   <div class="form-container">
     <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
     </v-form-render>
-    <el-button v-if="!isPreview && !props.reSubmit" type="primary" @click="submitForm">提交</el-button>
+    <el-button v-if="!isPreview && props.showSubmit" type="primary" @click="submitForm">提交</el-button>
     <div style="margin-top: 20px;">
-      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
+        @chooseApprove="chooseApprovers" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance } from 'vue'; 
+import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true;
@@ -31,7 +32,7 @@ let props = defineProps({
     type: String,
     default: "[]",
   },
-  reSubmit: {//是否重新提交
+  showSubmit: {//是否显示提交按钮
     type: Boolean,
     default: false,
   },
@@ -49,51 +50,48 @@ const vFormRef = ref(null);
 /**表单渲染预处理 */
 const advanceHandleFormData = () => {
   if (!isEmpty(props.lfFieldsData)) {
-    let handlerFieldType = (fieldOpt) => {
-      if (fieldOpt.fieldTypeName == 'input-number') {
-        formData[fieldOpt.name] = Number(formData[fieldOpt.name]);
-      }
-    }
-    traverseFieldWidgetsList(formJson.widgetList, handlerFieldType);
-  }
-  if (!isEmpty(props.lfFieldPerm)) {
-    handleFormPerm();
-  } else {
-    if (props.isPreview && !props.reSubmit) {
-      let handlerFn = (fieldOpt) => { //控制元素是否可编辑
-        fieldOpt.readonly = true;
-        fieldOpt.hidden = false;
-      }
-      traverseFieldWidgetsList(formJson.widgetList, handlerFn);
-    }
+    traverseFieldWidgetsList(formJson.widgetList, handlerFn);
   }
 }
 /**表单字段权限控制 */
-const handleFormPerm = () => {
-  if (isEmpty(props.lfFieldPerm)) return;
-  if (isEmptyArray(lfFieldPermData)) return;
-  let handlerFn = (fieldOpt) => {
-    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == fieldOpt.name; });
+const handlerFn = (w) => { 
+  w.options.hidden = false;//字段都隐藏，隐藏后表单字段不会自动补位
+  const numberFields = ['number', 'select', 'radio'];
+  if (numberFields.includes(w.type)) {
+    if (!w.options.multiple) {
+      formData[w.options.name] = Number(formData[w.options.name]);
+    }
+  }
+  if (props.showSubmit) { 
+    w.options.disabled = false;
+    w.options.readonly = false;
+  }
+  else if (props.isPreview) { 
+    w.options.disabled = true;
+  }
+  else if (!isEmpty(props.lfFieldPerm)) { 
+    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; }); 
     if (info) {
       if (info.perm == 'R') {
-        fieldOpt.readonly = true;
-        fieldOpt.hidden = false;
+        w.options.disabled = true;
       } else if (info.perm == 'E') {
-        fieldOpt.readonly = false;
-        fieldOpt.hidden = false;
-      } else if (info.perm == 'H') {
-        if (fieldOpt.fieldTypeName == 'input' || fieldOpt.fieldTypeName == 'textarea') {
-          formData[fieldOpt.name] = '******';
-        }
-        fieldOpt.readonly = true;
-        fieldOpt.hidden = false;
-      } else {
-        fieldOpt.readonly = true;
-        fieldOpt.hidden = false;
+        w.options.readonly = false;
+      } else if (info.perm == 'H') {//隐藏字段处理：将所以字段类型转化为input格式，value 赋值为 ******
+        w.type = 'input';
+        w.options.type = 'text';
+        formData[w.options.name] = '******';
+        delete w.options.format;
+        delete w.options.valueFormat;
+        w.options.disabled = true;
+      } else { 
+        w.options.disabled = false;
+        w.options.readonly = true;
       }
     }
-  };
-  traverseFieldWidgetsList(formJson.widgetList, handlerFn);
+  }else{ 
+    w.options.disabled = false;
+    w.options.readonly = false;
+  }
 }
 /**递归处理表单中所有字段 */
 const traverseFieldWidgetsList = function (widgetList, handler) {
@@ -102,7 +100,7 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
   }
   widgetList.map(w => {
     if (w.formItemFlag) {
-      handler(w.options)
+      handler(w)
     } else if (w.type === 'grid') {
       w.cols.map(col => {
         traverseFieldWidgetsList(col.widgetList, handler, w)
@@ -124,9 +122,13 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
     }
   })
 }
-advanceHandleFormData();
+onBeforeMount(() => {
+  console.log("isPreview======", JSON.stringify(props.isPreview));
+  console.log("showSubmit======", JSON.stringify(props.showSubmit));
+  advanceHandleFormData();
+})
 const submitForm = () => {
-  vFormRef.value.getFormData().then(res => { 
+  vFormRef.value.getFormData().then(res => {
     //console.log("Form Validation===", JSON.stringify(res))
     proxy.$emit("handleBizBtn", JSON.stringify(res))
   }).catch(error => {
@@ -160,7 +162,7 @@ const getFromData = () => {
   return new Promise((resolve, reject) => {
     try {
       vFormRef.value.getFormData().then(res => {
-        if(hasChooseApprove == 'true'){
+        if (hasChooseApprove == 'true') {
           Object.assign(res, {
             approversList: formData.approversList,
             approversValid: formData.approversValid
