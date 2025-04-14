@@ -66,9 +66,6 @@ const handlerFn = (w) => {
     w.options.disabled = false;
     w.options.readonly = false;
   }
-  else if (props.isPreview) { 
-    w.options.disabled = true;
-  }
   else if (!isEmpty(props.lfFieldPerm)) { 
     let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; }); 
     if (info) {
