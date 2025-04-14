@@ -239,7 +239,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
             return "";
         }
-        // act_ru_task 表的 PROC_INST_ID_
+        // ACT_RU_TASK 表的 PROC_INST_ID_
         String procInstId = bpmBusinessProcess.getProcInstId();
 
         List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getBaseMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());

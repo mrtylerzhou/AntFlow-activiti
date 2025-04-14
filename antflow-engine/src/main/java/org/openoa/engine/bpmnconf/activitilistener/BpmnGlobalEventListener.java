@@ -13,7 +13,6 @@ import org.activiti.engine.delegate.event.impl.ActivitiActivityEventImpl;
 @Slf4j
 public class BpmnGlobalEventListener implements ActivitiEventListener {
     public void onEvent(ActivitiEvent event) {
-        String s="s";
         switch (event.getType()) {
             case ACTIVITY_COMPENSATE:
                 // 一个节点将要被补偿。事件包含了将要执行补偿的节点id。

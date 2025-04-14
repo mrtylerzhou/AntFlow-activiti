@@ -1093,13 +1093,13 @@ public class DbSqlSession implements Session {
   }
 
   public boolean isEngineTablePresent(){
-    return isTablePresent("act_ru_execution");
+    return isTablePresent("ACT_RU_EXECUTION");
   }
   public boolean isHistoryTablePresent(){
-    return isTablePresent("act_hi_procinst");
+    return isTablePresent("ACT_HI_PROCINST");
   }
   public boolean isIdentityTablePresent(){
-    return isTablePresent("act_id_user");
+    return isTablePresent("ACT_ID_USER");
   }
 
   public boolean isTablePresent(String tableName) {
