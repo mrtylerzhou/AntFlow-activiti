@@ -153,10 +153,10 @@ public class BpmnConfCommonServiceImpl {
 
         //5、set record variables
         BpmnInsertVariables bpmnInsertVariables = SpringBeanUtils.getBean(BpmnInsertVariablesImpl.class);
-        if(!Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
-            bpmnInsertVariables.insertVariables(bpmnConfCommonVo, bpmnStartConditions);
+        if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
+            bpmnVariableService.deleteByProcessNumber(bpmnStartConditions.getProcessNum());
         }
-
+        bpmnInsertVariables.insertVariables(bpmnConfCommonVo, bpmnStartConditions);
         //prepared and begin to start up a process
         BpmnCreateBpmnAndStart bpmnCreateBpmnAndStart = SpringBeanUtils.getBean(BpmnCreateBpmnAndStartImpl.class);
         bpmnCreateBpmnAndStart.createBpmnAndStart(bpmnConfCommonVo, bpmnStartConditions);
