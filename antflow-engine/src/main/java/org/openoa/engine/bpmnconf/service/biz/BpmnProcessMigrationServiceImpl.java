@@ -80,6 +80,8 @@ public class BpmnProcessMigrationServiceImpl {
                                 vo.setStartUserName(tsk.getAssigneeName());
                             }
                         }
+                    }else{
+                        vo.setStartUserName(tsk.getAssigneeName());
                     }
                     tripleConsumer.accept(vo,tsk,bpmBusinessProcess);
                 }
