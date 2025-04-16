@@ -67,7 +67,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         vo.setStartUserName(SecurityUtils.getLogInEmpName());
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpIdStr()).list();
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
         if (ObjectUtils.isEmpty(tasks)) {
             throw new JiMuBizException("当前流程已审批！");
         }
@@ -94,7 +94,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                         if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
                             boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);
                            if(conditionsChanged){
-                               bpmnProcessMigrationService.migrateAndJumpToCurrent(task.getTaskDefinitionKey(), bpmBusinessProcess, vo, this::executeTaskCompletion);
+                               bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion);
                                return;
                            }
                         }
