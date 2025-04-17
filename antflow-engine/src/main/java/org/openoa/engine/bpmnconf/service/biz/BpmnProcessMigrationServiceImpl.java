@@ -70,44 +70,44 @@ public class BpmnProcessMigrationServiceImpl {
             List<Task> tsks = taskService.createTaskQuery()
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
                     .taskDefinitionKey(activity.getId()).list();
-            Map<String, BpmVerifyInfo> verifyInfoMap=new HashMap<>();
-            if(tsks.size()>1){
-                List<String> taskNames = tsks.stream().map(TaskInfo::getName).distinct().collect(Collectors.toList());
-                if(taskNames.size()==1){
-                    List<BpmVariableMultiplayer> bpmVariableMultiplayerList = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), tsks.get(0).getTaskDefinitionKey());
-                    if (!CollectionUtils.isEmpty(bpmVariableMultiplayerList) && bpmVariableMultiplayerList.get(0).getSignType() == 2){
-                        if(currentTaskDefKey.equals(id)){
-                            tsks=tsks.stream().filter(a->a.getAssignee().equals(currentTask.getAssignee())).collect(Collectors.toList());
-                        }else{
-                            verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
-                            List<String> verifyUserIds = verifyInfoMap.values().stream().map(BpmVerifyInfo::getVerifyUserId).collect(Collectors.toList());
-                            tsks=tsks.stream().filter(a->verifyUserIds.contains(a.getAssignee())).collect(Collectors.toList());
+            Map<String, BpmVerifyInfo> verifyInfoMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(tsks)) {
+                verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
+                if (tsks.size() > 1) {
+                    List<String> taskNames = tsks.stream().map(TaskInfo::getName).distinct().collect(Collectors.toList());
+                    if (taskNames.size() == 1) {
+                        List<BpmVariableMultiplayer> bpmVariableMultiplayerList = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), tsks.get(0).getTaskDefinitionKey());
+                        if (!CollectionUtils.isEmpty(bpmVariableMultiplayerList) && bpmVariableMultiplayerList.get(0).getSignType() == 2) {
+                            if (currentTaskDefKey.equals(id)) {
+                                tsks = tsks.stream().filter(a -> a.getAssignee().equals(currentTask.getAssignee())).collect(Collectors.toList());
+                            } else {
+                                List<String> verifyUserIds = verifyInfoMap.values().stream().map(BpmVerifyInfo::getVerifyUserId).collect(Collectors.toList());
+                                tsks = tsks.stream().filter(a -> verifyUserIds.contains(a.getAssignee())).collect(Collectors.toList());
+                            }
                         }
                     }
                 }
-            }
-            if (!CollectionUtils.isEmpty(tsks)) {
 
                 for (Task tsk : tsks) {
-                    if(!CollectionUtils.isEmpty(verifyInfoMap)){
+                    if (!CollectionUtils.isEmpty(verifyInfoMap)) {
                         BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
                         vo.setStartUserId(tsk.getAssignee());
-                        if(bpmVerifyInfo!=null){
-                            if(!StringUtils.isEmpty(tsk.getAssigneeName())){
+                        if (bpmVerifyInfo != null) {
+                            if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
                                 vo.setStartUserName(tsk.getAssigneeName());
-                            }else{
+                            } else {
                                 vo.setStartUserName(bpmVerifyInfo.getVerifyUserName());
                             }
                             vo.setApprovalComment(bpmVerifyInfo.getVerifyDesc());
-                        }else{
-                            if(!StringUtils.isEmpty(tsk.getAssigneeName())){
+                        } else {
+                            if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
                                 vo.setStartUserName(tsk.getAssigneeName());
                             }
                         }
-                    }else{
+                    } else {
                         vo.setStartUserName(tsk.getAssigneeName());
                     }
-                    tripleConsumer.accept(vo,tsk,bpmBusinessProcess);
+                    tripleConsumer.accept(vo, tsk, bpmBusinessProcess);
                 }
             }
             if (currentTaskDefKey.equals(id)) {
