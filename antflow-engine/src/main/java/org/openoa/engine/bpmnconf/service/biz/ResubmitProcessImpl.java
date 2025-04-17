@@ -71,6 +71,9 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         if (ObjectUtils.isEmpty(tasks)) {
             throw new JiMuBizException("当前流程已审批！");
         }
+        if(tasks.stream().noneMatch(a->a.getAssignee().equals(SecurityUtils.getLogInEmpIdStr()))){
+            throw new JiMuBizException("当前流程已审批！");
+        }
         Task task;
         if (!ObjectUtils.isEmpty(vo.getTaskId())) {
             task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())).findFirst().orElse(null);
