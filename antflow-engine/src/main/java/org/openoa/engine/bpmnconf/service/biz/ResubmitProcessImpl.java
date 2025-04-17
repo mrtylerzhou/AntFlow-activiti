@@ -150,7 +150,10 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             bpmVerifyInfo.setVerifyStatus(PROCESS_SIGN_UP.getCode());
             bpmVerifyInfo.setVerifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "加批" : vo.getApprovalComment());
         }
-        verifyInfoService.addVerifyInfo(bpmVerifyInfo);
+        if(!StringConstants.CURRENT_USER_ALREADY_PROCESSED.equals(bpmVerifyInfo.getVerifyDesc())){
+            verifyInfoService.addVerifyInfo(bpmVerifyInfo);
+        }
+
 
         //process node sign up
         if (!ObjectUtils.isEmpty(vo.getOperationType()) && vo.getOperationType().intValue() == BUTTON_TYPE_JP.getCode()) {

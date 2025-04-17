@@ -7,6 +7,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BusinessDataVo;
@@ -98,7 +99,7 @@ public class BpmnProcessMigrationServiceImpl {
                             } else {
                                 vo.setStartUserName(bpmVerifyInfo.getVerifyUserName());
                             }
-                            vo.setApprovalComment(bpmVerifyInfo.getVerifyDesc());
+                            vo.setApprovalComment(StringConstants.CURRENT_USER_ALREADY_PROCESSED);
                         } else {
                             if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
                                 vo.setStartUserName(tsk.getAssigneeName());
