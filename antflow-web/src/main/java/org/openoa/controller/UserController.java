@@ -40,13 +40,6 @@ public class UserController {
 
     @RequestMapping("/queryUserByNameFuzzy")
     public Result queryUserByNameFuzzy(String userName){
-        int i = RandomUtils.nextInt();
-        if(i%2==0){
-            infoHolder.setCurrentTenantId("tenantA");
-        }else{
-            infoHolder.setCurrentTenantId("");
-        }
-        Employee employeeDetailById = userMapper.getEmployeeDetailById("1");
         if(StringUtils.isEmpty(userName)){
             return Result.newSuccessResult(Lists.newArrayList());
         }
@@ -55,6 +48,9 @@ public class UserController {
     }
     @RequestMapping("/queryCompanyByNameFuzzy")
     public Result queryCompanyByNameFuzzy(String companyName){
+        if(StringUtils.isEmpty(companyName)){
+            return Result.newSuccessResult(Lists.newArrayList());
+        }
         List<BaseIdTranStruVo> codeTranStruVos = userService.queryCompanyByNameFuzzy(companyName);
         return Result.newSuccessResult(codeTranStruVos);
     }

@@ -1,6 +1,8 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -138,4 +140,21 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
       return   bpmVariableMultiplayerService.getBaseMapper().getVarNameByElementId(processNum,elementId);
    }
 
+   public void deleteByProcessNumber(String processNumber){
+       LambdaQueryWrapper<BpmVariable> variableQry = Wrappers.<BpmVariable>lambdaQuery()
+               .eq(BpmVariable::getProcessNum, processNumber);
+       BpmVariable bpmVariable = this.getBaseMapper().selectOne(variableQry);
+       Long variableId = bpmVariable.getId();
+       this.getBaseMapper().deleteById(variableId);
+
+        // 删除t_bpm_variable_single表数据
+        LambdaQueryWrapper<BpmVariableSingle> singleQry = Wrappers.<BpmVariableSingle>lambdaQuery()
+                .eq(BpmVariableSingle::getVariableId, variableId);
+        bpmVariableSingleService.getBaseMapper().delete(singleQry);
+
+        // 删除t_bpm_variable_multiplayer表数据
+        LambdaQueryWrapper<BpmVariableMultiplayer> multiplayerQry = Wrappers.<BpmVariableMultiplayer>lambdaQuery()
+                .eq(BpmVariableMultiplayer::getVariableId, variableId);
+        bpmVariableMultiplayerService.getBaseMapper().delete(multiplayerQry);
+   }
 }

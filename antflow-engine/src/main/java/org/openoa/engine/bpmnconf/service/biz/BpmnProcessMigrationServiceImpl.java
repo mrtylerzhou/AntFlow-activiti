@@ -4,11 +4,14 @@ import com.alibaba.fastjson2.JSON;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
@@ -17,8 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.MsgProcessEventEnum.PROCESS_SUBMIT;
 
@@ -36,9 +42,11 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoServiceImpl bpmVerifyInfoService;
+    @Autowired
+    private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
-    public void migrateAndJumpToCurrent(String currentTaskDefKey, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
-
+    public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
+        String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
         BusinessDataVo submitVo= JSON.to(BusinessDataVo.class,vo);
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
@@ -62,8 +70,24 @@ public class BpmnProcessMigrationServiceImpl {
             List<Task> tsks = taskService.createTaskQuery()
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
                     .taskDefinitionKey(activity.getId()).list();
+            Map<String, BpmVerifyInfo> verifyInfoMap=new HashMap<>();
+            if(tsks.size()>1){
+                List<String> taskNames = tsks.stream().map(TaskInfo::getName).distinct().collect(Collectors.toList());
+                if(taskNames.size()==1){
+                    List<BpmVariableMultiplayer> bpmVariableMultiplayerList = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), tsks.get(0).getTaskDefinitionKey());
+                    if (!CollectionUtils.isEmpty(bpmVariableMultiplayerList) && bpmVariableMultiplayerList.get(0).getSignType() == 2){
+                        if(currentTaskDefKey.equals(id)){
+                            tsks=tsks.stream().filter(a->a.getAssignee().equals(currentTask.getAssignee())).collect(Collectors.toList());
+                        }else{
+                            verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
+                            List<String> verifyUserIds = verifyInfoMap.values().stream().map(BpmVerifyInfo::getVerifyUserId).collect(Collectors.toList());
+                            tsks=tsks.stream().filter(a->verifyUserIds.contains(a.getAssignee())).collect(Collectors.toList());
+                        }
+                    }
+                }
+            }
             if (!CollectionUtils.isEmpty(tsks)) {
-                Map<String, BpmVerifyInfo> verifyInfoMap = bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
+
                 for (Task tsk : tsks) {
                     if(!CollectionUtils.isEmpty(verifyInfoMap)){
                         BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
@@ -80,6 +104,8 @@ public class BpmnProcessMigrationServiceImpl {
                                 vo.setStartUserName(tsk.getAssigneeName());
                             }
                         }
+                    }else{
+                        vo.setStartUserName(tsk.getAssigneeName());
                     }
                     tripleConsumer.accept(vo,tsk,bpmBusinessProcess);
                 }
