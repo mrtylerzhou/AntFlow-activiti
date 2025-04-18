@@ -31,7 +31,7 @@ import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
-import {wheelZoomFunc, zoomInit,resetImage} from "@/utils/zoom.js";
+import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/zoom.js";
 const { proxy } = getCurrentInstance();
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
@@ -48,8 +48,8 @@ let tipVisible = ref(false);
 let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
-onMounted(async () => { 
-    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
+onMounted(async () => {
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => {
         nowVal.value = val
     });
     if (props.processData) {
@@ -61,26 +61,26 @@ onMounted(async () => {
  * 判断流程中是否有审批节点 Demo 预览需要，项目中不使用可以去掉这步验证
  * @param treeNode 
  */
- const preTreeIsApproveNode = (treeNode) =>  { 
-  if(!treeNode) return false;  
-  if(treeNode.nodeType == 4) { 
-    return true;
-  }
-  else{
-    return preTreeIsApproveNode(treeNode.childNode);
-  } 
+const preTreeIsApproveNode = (treeNode) => {
+    if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效审批人节点，实际项目中不需要可以去掉" };
+    if (treeNode.nodeType == 4) {
+        return { isSuccess: true, msg: "" };
+    }
+    else {
+        return preTreeIsApproveNode(treeNode.childNode);
+    }
 }
 /**
- * 并行审批节点验证
- * 判断存在并行审批就必须有聚合节点
+ * 并行 审批或条件节点验证
+ * 判断存在并行审批或条件就必须有聚合节点
  * @param treeNode 
  */
-const preTreeIsParallelNode = (treeNode) => { 
-    if (proxy.isObjEmpty(treeNode)) return true;
+const preTreeIsParallelNode = (treeNode) => {
+    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 7) {
-        if(proxy.isObjEmpty(treeNode.childNode)){
-            return false;
-        }else{
+        if (proxy.isObjEmpty(treeNode.childNode)) {
+            return { isSuccess: false, msg: "并行审批下必须有一个审批人节点作为聚合节点" };
+        } else {
             return preTreeIsParallelNode(treeNode.childNode);
         }
     }
@@ -88,6 +88,9 @@ const preTreeIsParallelNode = (treeNode) => {
         return preTreeIsParallelNode(treeNode.childNode);
     }
 }
+// 节点验证 Set集合
+const nodeVerifyMap = new Set([preTreeIsApproveNode, preTreeIsParallelNode]);
+
 /**
  * 节点必填校验
  * @param childNode 
@@ -119,39 +122,24 @@ const reErr = ({ childNode }) => {
             }
             reErr(childNode);
         }
+        else if (nodeType == 7) {   
+            reErr(childNode); 
+        }
     } else {
         childNode = null;
     }
 };
-/** 页面放大 */
-function zoomIn() {
-  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})
-}
-
-/** 页面缩小 */
-function zoomOut() {
-  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
-}
-/** 还原缩放比例 */
-function zoomReset() {
-  resetImage()
-}
-
+ 
 const getJson = () => {
-    setIsTried(true); 
-     /**并行审批验证 */
-     let verifyParallelNode = preTreeIsParallelNode(nodeConfig.value); 
-    if (!verifyParallelNode) {
-        proxy.$modal.msgError("并行审批下必须有一个审批人节点作为聚合节点");
-        emit('nextChange', { label: "流程设计", key: "processDesign" });
-        return false;
-    }  
-    let verifyApproveNode = preTreeIsApproveNode(nodeConfig.value);   
-    if (!nodeConfig.value || !nodeConfig.value.childNode || !verifyApproveNode) {
-        emit('nextChange', { label: "流程设计", key: "processDesign" }); 
-        return false;
+    setIsTried(true);
+    for (const handleVerifyFunc of nodeVerifyMap) {  
+        const { isSuccess, msg } = handleVerifyFunc(nodeConfig.value);
+        if (!isSuccess) {
+            proxy.$modal.msgError(msg);
+            emit('nextChange', { label: "流程设计", key: "processDesign" });
+            return false;
+        }
     } 
-   
     tipList.value = [];
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
@@ -173,10 +161,23 @@ const getData = () => {
         resolve({ formData: resData })
     })
 };
+/** 页面放大 */
+function zoomIn() {
+    wheelZoomFunc({ scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true })
+}
+
+/** 页面缩小 */
+function zoomOut() {
+    wheelZoomFunc({ scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true })
+}
+/** 还原缩放比例 */
+function zoomReset() {
+    resetImage()
+}
 defineExpose({
     getData
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss"; 
+@import "@/assets/styles/flow/workflow.scss";
 </style>
