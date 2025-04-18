@@ -21,6 +21,8 @@ public class StringConstants {
     public static final String DRUID_POOL_NAME_PREFIX="druidDataSourcePool_";
     public static final String DB_TRANSACTION_MANAGERNAME_SUFFIX="transactionmanager";
 
+    public static final String CURRENT_USER_ALREADY_PROCESSED="currentUserAlreadyProcessed";
+
     public static final String ADAPTOR_FACTORY_BEANNAME="jimuAdaptorFactory";
 
     public static final String TASK_ASSIGNEE_NAME="assigneeName";

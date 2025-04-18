@@ -8,8 +8,8 @@ public class BpmnNodeLabelVO {
 
     public BpmnNodeLabelVO(){}
     public BpmnNodeLabelVO(String labelValue,String labelName){
-        this.labelName=labelName;
         this.labelValue=labelValue;
+        this.labelName=labelName;
     }
     private String labelName;
 
