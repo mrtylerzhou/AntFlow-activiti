@@ -38,7 +38,7 @@
                     <a class="add-node-popover-item condition" @click="addType(6)">
                         <div class="item-wrapper">
                             <svg-icon icon-class="parallel-condition" class="iconfont"/> 
-                            <p>并行条件</p> 
+                            <p>条件并行</p> 
                         </div> 
                     </a>  
                 </div>

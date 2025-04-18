@@ -120,22 +120,22 @@ export class NodeUtils {
       return gatewayNode;
     }
      /**
-   * 创建并行网关对象
+   * 创建条件并行网关对象
    * @returns object
    */
      static createParallelConditionWayNode(child) {
       let gatewayNode = {
         nodeId: this.idGenerator(),
-        nodeName: "并行网关",
+        nodeName: "条件并行网关",
         nodeType: 2,
         nodeFrom: "",
         nodeTo: [],
-        childNode: this.createParallelNode("并行条件聚合审批人", null,1, 0),
+        childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),
         error: true,
         property: null,
         conditionNodes: [
-          this.createConditionNode("并行条件1", child,1,false,true, 0),
-          this.createConditionNode("并行条件2", null,2,false,true, 0),
+          this.createConditionNode("条件并行1", child,1,false,true, 0),
+          this.createConditionNode("条件并行2", null,2,false,true, 0),
         ],
       };
       return gatewayNode;
