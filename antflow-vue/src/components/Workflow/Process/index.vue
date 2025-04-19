@@ -97,7 +97,7 @@ const nodeVerifyMap = new Set([preTreeIsApproveNode, preTreeIsParallelNode]);
  */
 const reErr = ({ childNode }) => {
     if (childNode) {
-        let { nodeType, error, nodeName, conditionNodes } = childNode;
+        let { nodeType, error, nodeName, conditionNodes,parallelNodes } = childNode;
         if (nodeType == 1) {
             reErr(childNode);
         }
@@ -124,6 +124,12 @@ const reErr = ({ childNode }) => {
         }
         else if (nodeType == 7) {   
             reErr(childNode); 
+            for (var i = 0; i < parallelNodes.length; i++) {
+                if (parallelNodes[i].error) {
+                    tipList.value.push({ name: parallelNodes[i].nodeName, nodeType: "条件" });
+                }
+                reErr(parallelNodes[i]);
+            }
         }
     } else {
         childNode = null;

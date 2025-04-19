@@ -138,7 +138,8 @@ import $func from "@/utils/flow/index";
 import { useStore } from '@/store/modules/workflow'
 import { bgColors, placeholderList } from '@/utils/flow/const'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
-let _uid = getCurrentInstance().uid;
+const { proxy } = getCurrentInstance();
+let _uid = proxy.uid;
 
 let props = defineProps({
     nodeConfig: {
@@ -190,7 +191,7 @@ const resetConditionNodesErr = () => {
         let conditionTitle= $func.conditionStr(props.nodeConfig, i); 
         props.nodeConfig.conditionNodes[i].error = conditionTitle == "请设置条件" && i != props.nodeConfig.conditionNodes.length - 1; 
         props.nodeConfig.conditionNodes[i].isDefault = 0;   
-        props.nodeConfig.conditionNodes[i].nodeDisplayName = conditionTitle=='null' || conditionTitle==''?props.nodeConfig.conditionNodes[i].nodeDisplayName:conditionTitle;
+        props.nodeConfig.conditionNodes[i].nodeDisplayName = proxy.isObjEmpty(conditionTitle)?props.nodeConfig.conditionNodes[i].nodeDisplayName:conditionTitle;
     }
     let maxLen = props.nodeConfig.conditionNodes.length-1;
     let node = props.nodeConfig.conditionNodes[maxLen];
@@ -205,8 +206,8 @@ const resetConditionNodesErr = () => {
 const resetParallelNodesErr = () => {   
     if(!props.nodeConfig.parallelNodes) return;
     for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {  
-        let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);   
-        props.nodeConfig.parallelNodes[i].error = false;//props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
+        let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);    
+        props.nodeConfig.parallelNodes[i].error = proxy.isArrayEmpty(props.nodeConfig.parallelNodes[i].nodeApproveList);   
         props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle; 
     }  
 }
