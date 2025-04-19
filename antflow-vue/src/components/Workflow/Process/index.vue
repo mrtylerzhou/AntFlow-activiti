@@ -61,35 +61,55 @@ onMounted(async () => {
  * 判断流程中是否有审批节点 Demo 预览需要，项目中不使用可以去掉这步验证
  * @param treeNode 
  */
-const preTreeIsApproveNode = (treeNode) => {
+const validateIsExistApproveNode = (treeNode) => {
     if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效审批人节点，实际项目中不需要可以去掉" };
     if (treeNode.nodeType == 4) {
         return { isSuccess: true, msg: "" };
     }
     else {
-        return preTreeIsApproveNode(treeNode.childNode);
+        return validateIsExistApproveNode(treeNode.childNode);
     }
 }
 /**
- * 并行 审批或条件节点验证
- * 判断存在并行审批或条件就必须有聚合节点
+ * 并行审批节点验证
+ * 判断存在并行审批就必须有聚合节点
  * @param treeNode 
  */
-const preTreeIsParallelNode = (treeNode) => {
+const validateParallelApproveNode = (treeNode) => {
     if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 7) {
-        if (proxy.isObjEmpty(treeNode.childNode)) {
+        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "并行审批下必须有一个审批人节点作为聚合节点" };
         } else {
-            return preTreeIsParallelNode(treeNode.childNode);
+            return validateParallelApproveNode(treeNode.childNode);
         }
     }
     else {
-        return preTreeIsParallelNode(treeNode.childNode);
+        return validateParallelApproveNode(treeNode.childNode);
     }
 }
+
+/**
+ * 条件并行 节点验证
+ * 判断存在条件并行节点就必须有聚合节点
+ * @param treeNode 
+ */
+ const validateParallelConditionNode = (treeNode) => {
+    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
+    if (treeNode.nodeType == 2) {
+        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
+            return { isSuccess: false, msg: "条件并行节点下必须有一个审批人节点作为聚合节点" };
+        } else {
+            return validateParallelConditionNode(treeNode.childNode);
+        }
+    }
+    else {
+        return validateParallelConditionNode(treeNode.childNode);
+    }
+}
+
 // 节点验证 Set集合
-const nodeVerifyMap = new Set([preTreeIsApproveNode, preTreeIsParallelNode]);
+const nodeVerifyMap = new Set([validateIsExistApproveNode, validateParallelApproveNode, validateParallelConditionNode]);
 
 /**
  * 节点必填校验
@@ -126,7 +146,7 @@ const reErr = ({ childNode }) => {
             reErr(childNode); 
             for (var i = 0; i < parallelNodes.length; i++) {
                 if (parallelNodes[i].error) {
-                    tipList.value.push({ name: parallelNodes[i].nodeName, nodeType: "条件" });
+                    tipList.value.push({ name: parallelNodes[i].nodeName, nodeType: "审批人" });
                 }
                 reErr(parallelNodes[i]);
             }
@@ -145,8 +165,7 @@ const getJson = () => {
             emit('nextChange', { label: "流程设计", key: "processDesign" });
             return false;
         }
-    } 
-    tipList.value = [];
+    }  
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
         emit('nextChange', { label: "流程设计", key: "processDesign" });
