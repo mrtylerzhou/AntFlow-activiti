@@ -44,7 +44,10 @@
                         <div class="condition-node-box">
                             <div class="auto-judge" :class="isTried && item.error ? 'error active' : ''">
                                 <div class="sort-left" v-if="index != 0" @click="arrTransfer(index, -1)">&lt;</div>
-                                <div class="title-wrapper">
+                                <div class="title-wrapper">                               
+                                    <svg-icon icon-class="dynamic-condition" class="iconfont" v-if="item.isDynamicCondition == true"/>  
+                                    <svg-icon icon-class="parallel-condition" class="iconfont" v-else-if="item.isParallel == true"/>  
+                                    <svg-icon icon-class="condition" class="iconfont" v-else/>  
                                     <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
@@ -281,7 +284,16 @@ const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
         let len = props.nodeConfig.conditionNodes.length + 1;
         let n_name = '条件' + len;
-        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
+        let isDynamicCondition = props.nodeConfig.conditionNodes[0].isDynamicCondition;
+        let isParallel = props.nodeConfig.conditionNodes[0].isParallel;
+
+        if(isDynamicCondition == true){
+            n_name = '动态条件' + len;
+        }
+        if(isParallel == true){
+            n_name = '并行条件' + len;
+        } 
+        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len,isDynamicCondition,isParallel, 0));
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
         let len = props.nodeConfig.parallelNodes.length + 1;

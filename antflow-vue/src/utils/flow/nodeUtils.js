@@ -134,8 +134,8 @@ export class NodeUtils {
         error: true,
         property: null,
         conditionNodes: [
-          this.createConditionNode("条件并行1", child,1,false,true, 0),
-          this.createConditionNode("条件并行2", null,2,false,true, 0),
+          this.createConditionNode("并行条件1", child,1,false,true, 0),
+          this.createConditionNode("并行条件2", null,2,false,true, 0),
         ],
       };
       return gatewayNode;

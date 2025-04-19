@@ -75,7 +75,7 @@ const init = async () => {
   nodeConfig.value = data?.nodeConfig;
   if (data.isLowCodeFlow == '1') {//低代码表单
     lfFormDataConfig.value = data?.lfFormData
-    lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo.lfFieldControlVOs);
+    lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);
     loadedComponent.value = await loadLFComponent();
     componentLoaded.value = true;
   } else {//自定义表单
