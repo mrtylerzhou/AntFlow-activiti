@@ -158,6 +158,7 @@ const reErr = ({ childNode }) => {
  
 const getJson = () => {
     setIsTried(true);
+    tipList.value=[];
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
         emit('nextChange', { label: "流程设计", key: "processDesign" });

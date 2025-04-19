@@ -89,7 +89,7 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: null,
-      error: true,
+      error: false,
       property: null,
       conditionNodes: [
         this.createConditionNode("条件1", child,1,false,false, 0),
@@ -110,7 +110,7 @@ export class NodeUtils {
         nodeFrom: "",
         nodeTo: [],
         childNode: null,
-        error: true,
+        error: false,
         property: null,
         conditionNodes: [
           this.createConditionNode("动态条件1", child,1,true,false, 0),
@@ -131,7 +131,7 @@ export class NodeUtils {
         nodeFrom: "",
         nodeTo: [],
         childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),
-        error: true,
+        error: false,
         property: null,
         conditionNodes: [
           this.createConditionNode("并行条件1", child,1,false,true, 0),
@@ -267,7 +267,7 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: this.createParallelNode("并行聚合节点", null,1, 0),
-      error: true,
+      error: false,
       property: null,
       parallelNodes: [
         this.createParallelNode("并行审核人1", child,1, 0),
