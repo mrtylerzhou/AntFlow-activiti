@@ -158,6 +158,13 @@ const reErr = ({ childNode }) => {
  
 const getJson = () => {
     setIsTried(true);
+    reErr(nodeConfig.value);
+    if (tipList.value.length != 0) {
+        emit('nextChange', { label: "流程设计", key: "processDesign" });
+        tipVisible.value = true;
+        return false;
+    }
+
     for (const handleVerifyFunc of nodeVerifyMap) {  
         const { isSuccess, msg } = handleVerifyFunc(nodeConfig.value);
         if (!isSuccess) {
@@ -165,13 +172,7 @@ const getJson = () => {
             emit('nextChange', { label: "流程设计", key: "processDesign" });
             return false;
         }
-    }  
-    reErr(nodeConfig.value);
-    if (tipList.value.length != 0) {
-        emit('nextChange', { label: "流程设计", key: "processDesign" });
-        tipVisible.value = true;
-        return false;
-    }
+    }   
     let submitData = JSON.parse(JSON.stringify(nodeConfig.value));
     return submitData;
 };

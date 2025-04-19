@@ -11,9 +11,9 @@
             :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '') +(isTried && nodeConfig.error ? 'active error' : '')">
             <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
-                <template v-else>
-                    <svg-icon icon-class="approve" class="iconfont" v-if="nodeConfig.nodeType == 4"/>  
+                <template v-else>             
                     <svg-icon icon-class="copy-user"  class="iconfont" v-if="nodeConfig.nodeType == 6"/>   
+                    <svg-icon icon-class="approve" class="iconfont" v-else />  
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
                         :placeholder="defaultText" />
@@ -139,8 +139,7 @@ import { useStore } from '@/store/modules/workflow'
 import { bgColors, placeholderList } from '@/utils/flow/const'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 const { proxy } = getCurrentInstance();
-let _uid = proxy.uid;
-
+let _uid = getCurrentInstance().uid;
 let props = defineProps({
     nodeConfig: {
         type: Object,
