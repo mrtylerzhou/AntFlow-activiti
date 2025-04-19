@@ -314,7 +314,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
                         List<Long> list = new ArrayList<>();
                         if (split.length > 1) {
                             for (String typeId : split) {
-                                List<String> stringList = Arrays.asList(appCommonId.toString(), appCommonId.toString());
+                                List<String> stringList = Arrays.asList(appCommonId.toString(), pcCommonId.toString());
                                 if (!stringList.contains(typeId)) {
                                     list.add(Long.parseLong(typeId));
                                 }
