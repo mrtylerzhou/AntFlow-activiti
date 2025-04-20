@@ -13,10 +13,12 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
+import org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper;
 import org.openoa.engine.vo.GenericEmployee;
+import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
@@ -24,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -53,6 +53,12 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
     @Autowired
     private EmployeeServiceImpl employeeService;
 
+    public List<OutSideBpmCallbackUrlConf> selectListByFormCode(String formCode) {
+        List<OutSideBpmCallbackUrlConf> confList = this.getBaseMapper().selectList(new QueryWrapper<OutSideBpmCallbackUrlConf>()
+                .eq("form_code", formCode)
+                .eq("status", 1));
+        return confList;
+    }
     /**
      * query by page
      *

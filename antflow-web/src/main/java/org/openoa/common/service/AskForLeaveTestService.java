@@ -76,7 +76,8 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
 
     @Override
     public BizLeaveTimeVo consentData(BizLeaveTimeVo vo) {
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode())){
             BizLeaveTime leaveTime = new BizLeaveTime();
             BeanUtils.copyProperties(vo,leaveTime);
             Integer id=  Integer.valueOf((vo.getBusinessId()).toString());

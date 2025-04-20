@@ -5,7 +5,7 @@
  * @FilePath: /ant-flow/src/components/dialog/errorDialog.vue
 -->
 <template>
-  <el-dialog title="提示" v-model="visibleDialog" :width="520">
+  <el-dialog title="错误提示" v-model="visibleDialog" :width="520">
     <div class="fd-confirm-body">
       <i class="anticon anticon-close-circle" style="color: #f00;"></i>
       <span class="fd-confirm-title">当前无法发布</span>
@@ -15,7 +15,7 @@
           <div class="error-modal-list">
             <div class="error-modal-item" v-for="(item,index) in list" :key="index">
               <div class="error-modal-item-label">流程设计</div>
-              <div class="error-modal-item-content">{{item.nodeName}} 未选择{{item.nodeType}}</div>
+              <div class="error-modal-item-content">【{{item.name}}】 未选择{{item.nodeType}}</div>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ let visibleDialog = computed({
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/styles/flow/dialog.scss"; 
+@import "@/assets/styles/flow/workflow.scss"; 
 .fd-confirm-body .fd-confirm-title {
   color: rgba(0, 0, 0, .85);
   font-weight: 500;
@@ -65,7 +65,7 @@ let visibleDialog = computed({
 }
 
 .fd-confirm-body .fd-confirm-content {
-  margin-left: 38px;
+  margin-left: 40px;
   font-size: 14px;
   color: rgba(0, 0, 0, .65);
   margin-top: 8px
@@ -73,7 +73,8 @@ let visibleDialog = computed({
 
 .fd-confirm-body>.anticon {
   font-size: 22px;
-  margin-right: 16px;
+  margin-right: 15px;
+  margin-left: 40px;
   float: left
 }
 </style>

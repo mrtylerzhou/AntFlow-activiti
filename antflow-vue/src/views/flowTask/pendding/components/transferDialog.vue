@@ -60,8 +60,8 @@ let visibleDialog = computed({
 });
 
 let rules = {
-  selectList: [{ required: true, message: '', trigger: 'change' }],
-  remark: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+  selectList: [{ required: true, message: '', trigger:  ['change','blur']}],
+  remark: [{ required: true, message: '请输入备注', trigger:  ['change','blur'] }]
 };
 onMounted(async () => {
   reset();

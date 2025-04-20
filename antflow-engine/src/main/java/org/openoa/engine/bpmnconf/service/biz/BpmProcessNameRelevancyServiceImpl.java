@@ -25,7 +25,7 @@ public class BpmProcessNameRelevancyServiceImpl extends ServiceImpl<BpmProcessNa
         QueryWrapper<BpmProcessNameRelevancy> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", formCode);
         wrapper.eq("is_del", 0);
-        long count = mapper.selectCount(wrapper).longValue();
+        long count = mapper.selectCount(wrapper);
         return count > 0;
     }
 

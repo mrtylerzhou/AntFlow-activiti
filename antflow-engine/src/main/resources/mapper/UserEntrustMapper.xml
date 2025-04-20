@@ -32,10 +32,10 @@
                t.receiver_name as receiverName
         from (select substring_index(f.ID_, ":", 1) as processKey,
                      f.NAME_
-              from act_re_procdef f,
+              from ACT_RE_PROCDEF f,
                    (SELECT max(VERSION_) AS max_version, key_ AS key_
-                    FROM act_re_procdef
-                    WHERE key_ IN (SELECT key_ FROM act_re_procdef)
+                    FROM ACT_RE_PROCDEF
+                    WHERE key_ IN (SELECT key_ FROM ACT_RE_PROCDEF)
                     GROUP BY key_) a
               where VERSION_ = a.max_version
                 AND f.key_ = a.key_

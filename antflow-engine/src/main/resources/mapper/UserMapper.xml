@@ -32,7 +32,7 @@
         select id,user_name as name from t_user
         <where>
             <if test="userName != null and userName != ''">
-                <bind name="user_name" value="'%' + user_name + '%'" />
+                <bind name="user_name" value="'%' + userName + '%'" />
                 and  user_name like #{user_name}
             </if>
         </where>

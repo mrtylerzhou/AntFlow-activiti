@@ -214,7 +214,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public UDLFApplyVo consentData(UDLFApplyVo vo) {
-        if (!vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (!vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode()) && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             return vo;
         }
         Map<String, Object> lfFields = vo.getLfFields();
@@ -235,7 +235,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         for (LFMainField field : lfMainFields){
             String f_value = lfFields.get(field.getFieldId()).toString();
-            field.setFieldValue(f_value);
+            if (!Objects.equals(f_value, "******")){
+                field.setFieldValue(f_value);
+            }
             mainFieldService.updateById(field);
         }
         return vo;

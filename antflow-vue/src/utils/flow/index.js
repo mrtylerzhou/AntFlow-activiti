@@ -209,11 +209,11 @@ All.prototype = {
               "{h}:{i}:{s}"
             )} 并且 `;
           }
-        } else if (fieldTypeName == "input-number") {
-          if (optType != 6 && zdy1) {
+        } else if (fieldTypeName == "input-number") { 
+          if (optType < 6 && zdy1) {
             var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
             str += `${showName} ${optTypeStr} ${zdy1} 并且 `;
-          } else if (optType == 6 && zdy1 && zdy2) {
+          } else if (optType >= 6 && zdy1 && zdy2) {
             str += `${zdy1} ${opt1} ${showName} ${opt2} ${zdy2} 并且 `;
           }
         } else {

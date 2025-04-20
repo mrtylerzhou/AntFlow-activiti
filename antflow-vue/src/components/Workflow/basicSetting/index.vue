@@ -18,11 +18,32 @@
             </el-form-item> -->
 
 
-            <el-form-item label="类型标识" prop="formCode">
+            <el-form-item v-if="!copyOpt" label="类型标识" prop="formCode">
                 <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" />
             </el-form-item>  
-            <el-form-item label="流程名称" prop="bpmnName"> 
+
+            <el-form-item v-else label="类型标识" prop="formCode">
+                <el-select filterable v-model="form.formCode" placeholder="请选类型标识" :style="{ width: '100%' }">
+                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value" :value="item.key">
+                        <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
+                    </el-option>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item v-if="!copyOpt"  label="流程名称" prop="bpmnName"> 
                 <el-input v-model="form.bpmnName" :disabled="true" :style="{ width: '100%' }" readonly />
+            </el-form-item> 
+
+            <el-form-item v-else label="流程名称" prop="bpmnName">
+                <template #label>
+                    <span>
+                        <el-tooltip content="同【模板类型】名称一致，不需手动输入" placement="top">
+                        <el-icon><question-filled /></el-icon>
+                        </el-tooltip>
+                        流程名称
+                    </span>
+                </template>
+                <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly/>
             </el-form-item>
 
             <el-form-item label="审批人去重" prop="deduplicationType">
@@ -31,13 +52,15 @@
                         :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
+
+            <!-- <el-form-item label="启用流程" prop="effectiveStatus">
+                <el-switch v-model="form.effectiveStatus" />
+            </el-form-item> -->
+
             <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
-            </el-form-item>
-            <!-- <el-form-item style="float: right;">
-                <el-button type="primary" @click="nextSubmit(ruleFormRef)">下一步》》》</el-button>
-            </el-form-item> -->
+            </el-form-item> 
         </el-form>
     </div>
 </template>
@@ -46,11 +69,12 @@
 import { ref, reactive, onMounted, watch, getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
 import { getDIYFromCodeData } from "@/api/workflow";
-import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi";
-const { query } = useRoute();
+import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi"; 
+const { query } = useRoute(); 
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
 let loading = ref(false);
+const copyOpt = query?.copy??0 > 0?true:false;
 let props = defineProps({
     flowType: {
         type: String,
@@ -85,9 +109,17 @@ const form = reactive({
     effectiveStatus: false,
     deduplicationType: 1
 })
-
-onMounted(async () => {
-    //console.log('basicData=====props=======',JSON.stringify(props.basicData))
+// 复制操作 监听formCode的变化
+watch(() => form.formCode,(val) => { 
+    if (val) { 
+        formCodeOptions.value.forEach(item => {
+            if (item.key == val) {
+                form.bpmnName = item.value;
+            }
+        })
+    }
+});
+onMounted(async () => { 
     if (!proxy.isObjEmpty(props.basicData) && !proxy.isObjEmpty(props.basicData.formCode)) {
         form.bpmnName = props.basicData.bpmnName;
         form.bpmnCode = props.basicData.bpmnCode;
@@ -100,6 +132,11 @@ onMounted(async () => {
         form.formCode = query.fc;
         form.bpmnName = decodeURIComponent(query.fcname??''); 
     }
+    if (props.flowType == 'DIY') {
+        getDIYFromCodeList();
+    } else if (props.flowType == 'LF') {
+        getLFFromCodeList();
+    } 
 });
 
 /**获取全部DIY FromCode */

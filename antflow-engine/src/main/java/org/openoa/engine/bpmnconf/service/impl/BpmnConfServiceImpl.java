@@ -735,7 +735,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         setFieldControlVOs(bpmnNode,lfFieldControlMap,bpmnNodeVo);
         List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
         if(!CollectionUtils.isEmpty(nodeLabels)){
-            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelName(), a.getLabelValue())).collect(Collectors.toList());
+            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
             bpmnNodeVo.setLabelList(labelVOList);
         }
 
@@ -867,7 +867,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         }
         this.updateById(BpmnConf
                 .builder()
-                .id(Long.parseLong(id.toString()))
+                .id(id.longValue())
                 .appId(confInDb.getAppId())
                 .bpmnType(confInDb.getBpmnType())
                 .isAll(getIsAll(bpmnConf, confInDb))

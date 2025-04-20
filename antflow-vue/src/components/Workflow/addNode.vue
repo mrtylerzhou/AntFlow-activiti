@@ -3,30 +3,44 @@
         <div class="add-node-btn">
             <el-popover placement="right-start" v-model="visible" aria-hidden="true" width="auto">
                 <div class="add-node-popover-body">
-                    <a class="add-node-popover-item approver" @click="addType(4)">
+                    <a class="add-node-popover-item approver" @click="addType(1)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont"/>  
-                        </div>
-                        <p>审批人</p>
+                            <svg-icon icon-class="approve" class="iconfont"/> 
+                            <p>审批人</p> 
+                        </div>                  
                     </a>
-                    <a class="add-node-popover-item approver" @click="addType(7)">
+                    <a class="add-node-popover-item approver" @click="addType(3)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="parallel-approve" class="iconfont"/>                       
-                        </div>
-                        <p>并行审批</p>
+                            <svg-icon icon-class="parallel-approve" class="iconfont"/>      
+                            <p>并行审批</p>                 
+                        </div>                        
                     </a>
-                    <a class="add-node-popover-item notifier" @click="addType(6)">
+                    <a class="add-node-popover-item notifier" @click="addType(2)">
                         <div class="item-wrapper">
                             <svg-icon icon-class="copy-user" class="iconfont"/>  
-                        </div>
-                        <p>抄送人</p>
-                    </a>
-                    <a class="add-node-popover-item condition" @click="addType(2)">
+                            <p>抄送人</p>
+                        </div> 
+                    </a> 
+                </div>
+                <div class="add-node-popover-body">
+                    <a class="add-node-popover-item condition" @click="addType(4)">
                         <div class="item-wrapper">
                             <svg-icon icon-class="condition" class="iconfont"/>  
-                        </div>
-                        <p>条件分支</p>
+                            <p>条件分支</p>
+                        </div>                    
                     </a>
+                    <a class="add-node-popover-item condition" @click="addType(5)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="dynamic-condition" class="iconfont"/> 
+                            <p>动态条件</p> 
+                        </div> 
+                    </a> 
+                    <a class="add-node-popover-item condition" @click="addType(6)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="parallel-condition" class="iconfont"/> 
+                            <p>条件并行</p> 
+                        </div> 
+                    </a>  
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -47,27 +61,46 @@ let props = defineProps({
     }
 })
 let emits = defineEmits(['update:childNodeP'])
-let visible = ref(false)
-const addType = (type)=> {
-    visible.value = false;
-    if (type != 2 && type != 3) { 
-        var _dataNode;
-        if (type == 4) { 
-            _dataNode = NodeUtils.createApproveNode();  
-            _dataNode.childNode = props.childNodeP; 
-        } else if (type == 6) {
-            _dataNode = NodeUtils.createCopyNode();  
-            _dataNode.childNode = props.childNodeP;  
-        }
-        else if (type == 7) {
-            _dataNode = NodeUtils.createParallelWayNode(props.childNodeP);   
-        }
-        emits("update:childNodeP", _dataNode)
-    } else { 
-        let gatewayNode= NodeUtils.createGatewayNode(props.childNodeP); 
-        emits("update:childNodeP", gatewayNode)
-    }
+let visible = ref(false) 
+/**创建审批人节点 */
+const createApproveNode = (childNode) => {
+   return NodeUtils.createApproveNode(childNode);   
 }
+/**创建抄送人节点 */
+const createCopyNode = (childNode) => {
+    return NodeUtils.createCopyNode(childNode);   
+}
+/**创建并行审批人节点 */
+const createParallelWayNode = (childNode) => {
+    return NodeUtils.createParallelWayNode(childNode);   
+}
+/**创建条件网关节点 */
+const createGatewayNode = (childNode) => {
+    return NodeUtils.createGatewayNode(childNode);   
+}
+/**创建动态网关节点 */
+const createDynamicConditionWayNode = (childNode) => {
+    return NodeUtils.createDynamicConditionWayNode(childNode);   
+}
+/**创建并行网关节点 */
+const createParallelConditionWayNode = (childNode) => {
+    return NodeUtils.createParallelConditionWayNode(childNode);   
+}
+// 创建节点 Map集合
+const createNodeMap = new Map([
+  [1, createApproveNode],
+  [2, createCopyNode],
+  [3, createParallelWayNode],
+  [4, createGatewayNode],
+  [5, createDynamicConditionWayNode],
+  [6, createParallelConditionWayNode]
+]); 
+const addType = (type) => {
+    visible.value = false; 
+    const handleCreateNodeFunc = createNodeMap.get(type); 
+    const newNodeInfo = handleCreateNodeFunc(props.childNodeP); 
+    emits("update:childNodeP", newNodeInfo)
+} 
 </script>
 <style scoped lang="scss">  
 @import "@/assets/styles/flow/workflow.scss"; 
@@ -133,7 +166,7 @@ const addType = (type)=> {
     }
 }
 .add-node-popover-body {
-    display: flex;
+    display: flex; 
     .add-node-popover-item {
         margin-right: 10px;
         cursor: pointer;
@@ -143,18 +176,24 @@ const addType = (type)=> {
         .item-wrapper {
             user-select: none;
             display: inline-block;
-            width: 65px;
-            height: 65px;
+            width: 60px;
+            height: 66px;
             margin-bottom: 5px;
             background: #fff;
             border: 1px solid #e2e2e2;
             border-radius: 10%;
             transition: all .3s cubic-bezier(.645, .045, .355, 1);
             .iconfont {
-                margin-top: 13px;
+                margin-top: 5px;
                 font-size: 35px;
                 line-height: 65px
             }
+        }
+        p{
+            margin: 0;
+            font-size: 12px;
+            font-weight: 900;
+            color: #000;
         }
         &.approver{
             .item-wrapper {

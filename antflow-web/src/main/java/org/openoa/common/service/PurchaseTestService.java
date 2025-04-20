@@ -78,7 +78,8 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
 
     @Override
     public BizPurchaseVo consentData(BizPurchaseVo vo) {
-        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())){
+        if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizPurchase purchaseEntity = new BizPurchase();
             BeanUtils.copyProperties(vo,purchaseEntity);
             Integer id=  Integer.valueOf((vo.getBusinessId()).toString());

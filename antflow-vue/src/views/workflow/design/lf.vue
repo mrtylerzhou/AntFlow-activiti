@@ -117,25 +117,19 @@ const publish = () => {
             setApiWorkFlowData(data).then((resLog) => {
                 proxy.$modal.closeLoading();
                 if (resLog.code == 200) { 
-                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
-                    let obj = { path: "/workflow/config" };
-                    if (!proxy.isObjEmpty(route.query?.fc)) {
-                        obj = { path: "flow-version", query: { formCode: route.query.fc } };
-                    }
+                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据"); 
+                    let  obj = { path: "flow-version", query: { formCode: data.formCode } };
                     proxy.$tab.openPage(obj);
                 } else { 
                     proxy.$modal.msgError("提交到API返回失败" + JSON.stringify(resLog.errMsg));
                 }
-            });
-        })
+            })
+        }) 
         .catch((err) => { 
-            proxy.$modal.closeLoading();
-            if (err){
-                console.log("设置失败" + JSON.stringify(err));
-                proxy.$modal.msgError("至少配置一个有效审批人节点");
+            proxy.$modal.closeLoading(); 
+            if (err) {
+                console.log("设置失败" + JSON.stringify(err)); 
             }
-        }).finally(() => {
-            //proxy.$modal.closeLoading();
         });
 };
 const previewJson = () => {

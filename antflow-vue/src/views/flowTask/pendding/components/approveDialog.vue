@@ -13,7 +13,18 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <div class="mb-4" v-if="title === '同意'"> 
+                    <el-button type="primary" plain round v-for="btnTxt in quickAnswerOK" @click="approveForm.remark = btnTxt">
+                    {{ btnTxt }}
+                    </el-button>  
+                </div>
+                <div class="mb-4" v-else="quickAnswerOK.length > 0"> 
+                    <el-button type="danger" plain round v-for="btnTxt in quickAnswerNO" @click="approveForm.remark = btnTxt">
+                    {{ btnTxt }}
+                    </el-button>  
+                </div>
             </el-form>
+        
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="openVisible = false">取 消</el-button>
@@ -49,11 +60,15 @@ const approveForm = reactive({
     remark: ''
 });
 
+const quickAnswerOK = ["同意", "好的", "OK", "通过", "已核实"];
+
+const quickAnswerNO = ["不同意", "NO", "材料不足", "无法核实", "理由不充分", "已拒绝"];
+
 let rules = { 
     remark: [{
         required: true,
         message: '请输入备注',
-        trigger: 'blur'
+        trigger: ['change','blur']
     }]
 };
 

@@ -4,11 +4,15 @@ import com.alibaba.fastjson2.JSON;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
@@ -17,8 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.openoa.base.constant.enums.MsgProcessEventEnum.PROCESS_SUBMIT;
 
 @Service
 public class BpmnProcessMigrationServiceImpl {
@@ -34,13 +43,17 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoServiceImpl bpmVerifyInfoService;
+    @Autowired
+    private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
-    public void migrateAndJumpToCurrent(String currentTaskDefKey, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
-
+    public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
+        String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
+        String currentComment=vo.getApprovalComment();
         BusinessDataVo submitVo= JSON.to(BusinessDataVo.class,vo);
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
         submitVo.setBpmnCode(bpmBusinessProcess.getVersion());
+        submitVo.setOperationType(PROCESS_SUBMIT.getCode());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
@@ -59,26 +72,50 @@ public class BpmnProcessMigrationServiceImpl {
             List<Task> tsks = taskService.createTaskQuery()
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
                     .taskDefinitionKey(activity.getId()).list();
+            Map<String, BpmVerifyInfo> verifyInfoMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(tsks)) {
-                Map<String, BpmVerifyInfo> verifyInfoMap =verifyInfoMap=bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
-                for (Task tsk : tsks) {
-                    if(!CollectionUtils.isEmpty(verifyInfoMap)){
-                        BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
-                        vo.setStartUserId(tsk.getAssignee());
-                        if(bpmVerifyInfo!=null){
-                            if(!StringUtils.isEmpty(tsk.getAssigneeName())){
-                                vo.setStartUserName(tsk.getAssigneeName());
-                            }else{
-                                vo.setStartUserName(bpmVerifyInfo.getVerifyUserName());
-                            }
-                            vo.setApprovalComment(bpmVerifyInfo.getVerifyDesc());
-                        }else{
-                            if(!StringUtils.isEmpty(tsk.getAssigneeName())){
-                                vo.setStartUserName(tsk.getAssigneeName());
+                verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);
+                if (tsks.size() > 1) {
+                    List<String> taskNames = tsks.stream().map(TaskInfo::getName).distinct().collect(Collectors.toList());
+                    if (taskNames.size() == 1) {
+                        List<BpmVariableMultiplayer> bpmVariableMultiplayerList = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), tsks.get(0).getTaskDefinitionKey());
+                        if (!CollectionUtils.isEmpty(bpmVariableMultiplayerList) && bpmVariableMultiplayerList.get(0).getSignType() == 2) {
+                            if (currentTaskDefKey.equals(id)) {
+                                tsks = tsks.stream().filter(a -> a.getAssignee().equals(currentTask.getAssignee())).collect(Collectors.toList());
+                            } else {
+                                List<String> verifyUserIds = verifyInfoMap.values().stream().map(BpmVerifyInfo::getVerifyUserId).collect(Collectors.toList());
+                                tsks = tsks.stream().filter(a -> verifyUserIds.contains(a.getAssignee())).collect(Collectors.toList());
                             }
                         }
                     }
-                    tripleConsumer.accept(vo,tsk,bpmBusinessProcess);
+                }
+
+                for (Task tsk : tsks) {
+                    if (!CollectionUtils.isEmpty(verifyInfoMap)) {
+                        BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
+                        vo.setStartUserId(tsk.getAssignee());
+                        if (bpmVerifyInfo != null) {
+                            if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
+                                vo.setStartUserName(tsk.getAssigneeName());
+                            } else {
+                                vo.setStartUserName(bpmVerifyInfo.getVerifyUserName());
+                            }
+                            vo.setApprovalComment(StringConstants.CURRENT_USER_ALREADY_PROCESSED);
+                        } else {
+                            if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
+                                vo.setStartUserName(tsk.getAssigneeName());
+                            }
+                            if(currentTaskDefKey.equals(tsk.getTaskDefinitionKey())){
+                                vo.setApprovalComment(currentComment);
+                            }
+                        }
+                    } else {
+                        vo.setStartUserName(tsk.getAssigneeName());
+                        if(currentTaskDefKey.equals(tsk.getTaskDefinitionKey())){
+                            vo.setApprovalComment(currentComment);
+                        }
+                    }
+                    tripleConsumer.accept(vo, tsk, bpmBusinessProcess);
                 }
             }
             if (currentTaskDefKey.equals(id)) {

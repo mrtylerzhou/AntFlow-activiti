@@ -20,7 +20,16 @@ public class OutSideBpmCallbackUrlConfController {
 
     @Autowired
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
-
+    /**
+     * query callback conf list by formCode
+     *
+     * @param formCode
+     * @return
+     */
+    @GetMapping("/callbackUrlConf/list/{formCode}")
+    public Result list(@PathVariable("formCode") String formCode) {
+        return Result.newSuccessResult(outSideBpmCallbackUrlConfService.selectListByFormCode(formCode));
+    }
     /**
      * query callback conf list by page
      *

@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
             <div v-if="processConfig" class="component">
-              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig" :isPreview="true">
+              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
               </component>
             </div>
           </el-col>
@@ -47,6 +47,7 @@ const route = useRoute();
 const activeTab = ref('flowForm')
 let processConfig = ref(null)
 let lfFormDataConfig = ref(null)
+let lfFieldControlVOs = ref(null)
 let nodeConfig = ref(null)
 let title = ref('')
 let id = route.query?.id
@@ -74,6 +75,7 @@ const init = async () => {
   nodeConfig.value = data?.nodeConfig;
   if (data.isLowCodeFlow == '1') {//低代码表单
     lfFormDataConfig.value = data?.lfFormData
+    lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);
     loadedComponent.value = await loadLFComponent();
     componentLoaded.value = true;
   } else {//自定义表单

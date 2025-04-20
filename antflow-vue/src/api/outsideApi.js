@@ -57,10 +57,10 @@ export function setApiWorkFlowData(data) {
  */
 export function getBusinessPartyList(page, vo) {
   let data = {
-    page: page,
-    vo: vo,
+    "pageDto": page,
+    "entity": vo
   };
-  return http.get(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
+  return http.post(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
     headers,
   });
 }
@@ -93,10 +93,10 @@ export function setBusinessParty(data) {
  */
 export function getApplicationsPageList(page, vo) {
   let data = {
-    page: page,
-    vo: vo,
-  };
-  return http.get(
+    "pageDto": page,
+    "entity": vo
+  }; 
+  return http.post(
     `${baseUrl}/outSideBpm/businessParty/applicationsPageList`,
     data,
     { headers }
@@ -224,4 +224,12 @@ export function processSubmit(data) {
  */
 export function callbackUrlConf(data) { 
   return http.post(`${baseUrl}/outSideBpm/callbackUrlConf/edit`, data, { headers });
+}
+/**
+ * 回调地址列表
+ * @param {*} applicationId
+ * @returns
+ */
+export function getCallbackUrlConfList(formCode) { 
+  return http.get(`${baseUrl}/outSideBpm/callbackUrlConf/list/${formCode}`,{ headers });
 }
