@@ -57,7 +57,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
         List<OutSideBpmCallbackUrlConf> confList = this.getBaseMapper().selectList(new QueryWrapper<OutSideBpmCallbackUrlConf>()
                 .eq("form_code", formCode)
                 .eq("status", 1));
-        return new ArrayList<>(confList);
+        return confList;
     }
     /**
      * query by page
