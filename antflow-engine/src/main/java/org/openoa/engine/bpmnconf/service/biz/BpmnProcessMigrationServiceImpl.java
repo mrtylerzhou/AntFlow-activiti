@@ -48,6 +48,7 @@ public class BpmnProcessMigrationServiceImpl {
 
     public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
         String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
+        String currentComment=vo.getApprovalComment();
         BusinessDataVo submitVo= JSON.to(BusinessDataVo.class,vo);
         submitVo.setIsMigration(true);
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
@@ -104,9 +105,15 @@ public class BpmnProcessMigrationServiceImpl {
                             if (!StringUtils.isEmpty(tsk.getAssigneeName())) {
                                 vo.setStartUserName(tsk.getAssigneeName());
                             }
+                            if(currentTaskDefKey.equals(tsk.getTaskDefinitionKey())){
+                                vo.setApprovalComment(currentComment);
+                            }
                         }
                     } else {
                         vo.setStartUserName(tsk.getAssigneeName());
+                        if(currentTaskDefKey.equals(tsk.getTaskDefinitionKey())){
+                            vo.setApprovalComment(currentComment);
+                        }
                     }
                     tripleConsumer.accept(vo, tsk, bpmBusinessProcess);
                 }
