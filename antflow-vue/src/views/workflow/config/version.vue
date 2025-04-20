@@ -156,6 +156,7 @@ const backPage = () => {
     overflow: hidden;
     white-space: nowrap;
     position: relative; 
+    font-size: 18px;
   }
 
   .marquee-text {

@@ -21,7 +21,7 @@ export class NodeUtils {
   /**
    * 创建审批人对象
    */
-  static createApproveNode() {
+  static createApproveNode(child) {
     let approveNode = {
       nodeId: this.idGenerator(),
       nodeName: "审核人",
@@ -34,7 +34,7 @@ export class NodeUtils {
       isSignUp: 0,//是否加批 0:否，1:是
       directorLevel: 1, 
       noHeaderAction: 1,
-      childNode: null,
+      childNode: child,
       error: true,
       property: {
         afterSignUpWay: 2,
@@ -48,13 +48,13 @@ export class NodeUtils {
       },
       nodeApproveList: [],
     };
-    return approveNode;
+    return approveNode; 
   }
   /**
    * 创建抄送人对象
    * @returns object
    */
-  static createCopyNode() {
+  static createCopyNode(child) {
     let copyNode = {
       nodeId: this.idGenerator(),
       nodeName: "抄送人",
@@ -65,7 +65,7 @@ export class NodeUtils {
       setType: 5,//仅支持选择人员
       error: true,
       ccFlag: 1,
-      childNode: {},
+      childNode: child,
       property: {},
       lfFieldControlVOs: [],
       buttons: {
@@ -89,20 +89,62 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: null,
-      error: true,
+      error: false,
       property: null,
       conditionNodes: [
-        this.createConditionNode("条件1", child,1, 0),
-        this.createConditionNode("条件2", null,2, 1),
+        this.createConditionNode("条件1", child,1,false,false, 0),
+        this.createConditionNode("条件2", null,2,false,false, 1),
       ],
     };
     return gatewayNode;
   }
+    /**
+   * 创建动态网关对象
+   * @returns object
+   */
+    static createDynamicConditionWayNode(child) {
+      let gatewayNode = {
+        nodeId: this.idGenerator(),
+        nodeName: "动态网关",
+        nodeType: 2,
+        nodeFrom: "",
+        nodeTo: [],
+        childNode: null,
+        error: false,
+        property: null,
+        conditionNodes: [
+          this.createConditionNode("动态条件1", child,1,true,false, 0),
+          this.createConditionNode("动态条件2", null,2,true,false, 1),
+        ],
+      };
+      return gatewayNode;
+    }
+     /**
+   * 创建条件并行网关对象
+   * @returns object
+   */
+     static createParallelConditionWayNode(child) {
+      let gatewayNode = {
+        nodeId: this.idGenerator(),
+        nodeName: "条件并行网关",
+        nodeType: 2,
+        nodeFrom: "",
+        nodeTo: [],
+        childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),
+        error: false,
+        property: null,
+        conditionNodes: [
+          this.createConditionNode("并行条件1", child,1,false,true, 0),
+          this.createConditionNode("并行条件2", null,2,false,true, 0),
+        ],
+      };
+      return gatewayNode;
+    }
   /**
    * 创建条件对象
    * @returns object
    */
-  static createConditionNode(name, childNode,priority, isDefault) {
+  static createConditionNode(name, childNode,priority,isDynamic,isParallel, isDefault) {
     let conditionNode = {
       nodeId: this.idGenerator(),
       nodeName: name || "条件1",
@@ -111,6 +153,8 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       priorityLevel: priority,
+      isDynamicCondition: isDynamic,//true 动态条件 false 非动态条件
+      isParallel: isParallel,//true 是并行条件 false 非并行条件 
       conditionList: [],
       nodeApproveList: [],
       error: true,
@@ -223,7 +267,7 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: this.createParallelNode("并行聚合节点", null,1, 0),
-      error: true,
+      error: false,
       property: null,
       parallelNodes: [
         this.createParallelNode("并行审核人1", child,1, 0),

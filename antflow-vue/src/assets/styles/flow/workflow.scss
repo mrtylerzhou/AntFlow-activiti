@@ -586,7 +586,7 @@
 
  .error-modal-desc {
      font-size: 13px;
-     color: rgba(25, 31, 37, .56);
+     color:  #2186ef;
      line-height: 22px;
      margin-bottom: 14px
  }
@@ -612,7 +612,7 @@
  .error-modal-item-label {
      flex: none;
      font-size: 15px;
-     color: rgba(25, 31, 37, .56);
+     color: red;
      padding-right: 10px
  }
 
@@ -1172,7 +1172,7 @@
  .antflow-design .auto-judge .title-wrapper .priority-title {
      display: inline;
      float: right;
-     margin-right: 10px;
+     margin-right: 0px;
      color: rgba(25, 31, 37, .56)
  }
 

@@ -209,8 +209,7 @@ All.prototype = {
               "{h}:{i}:{s}"
             )} 并且 `;
           }
-        } else if (fieldTypeName == "input-number") {
-          console.log("optType", optType, typeof optType);
+        } else if (fieldTypeName == "input-number") { 
           if (optType < 6 && zdy1) {
             var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
             str += `${showName} ${optTypeStr} ${zdy1} 并且 `;

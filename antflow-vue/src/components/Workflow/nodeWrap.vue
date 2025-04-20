@@ -11,9 +11,9 @@
             :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '') +(isTried && nodeConfig.error ? 'active error' : '')">
             <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
-                <template v-else>
-                    <svg-icon icon-class="approve" class="iconfont" v-if="nodeConfig.nodeType == 4"/>  
+                <template v-else>             
                     <svg-icon icon-class="copy-user"  class="iconfont" v-if="nodeConfig.nodeType == 6"/>   
+                    <svg-icon icon-class="approve" class="iconfont" v-else />  
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
                         :placeholder="defaultText" />
@@ -44,7 +44,10 @@
                         <div class="condition-node-box">
                             <div class="auto-judge" :class="isTried && item.error ? 'error active' : ''">
                                 <div class="sort-left" v-if="index != 0" @click="arrTransfer(index, -1)">&lt;</div>
-                                <div class="title-wrapper">
+                                <div class="title-wrapper">                               
+                                    <svg-icon icon-class="dynamic-condition" class="iconfont" v-if="item.isDynamicCondition == true"/>  
+                                    <svg-icon icon-class="parallel-condition" class="iconfont" v-else-if="item.isParallel == true"/>  
+                                    <svg-icon icon-class="condition" class="iconfont" v-else/>  
                                     <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
@@ -135,8 +138,8 @@ import $func from "@/utils/flow/index";
 import { useStore } from '@/store/modules/workflow'
 import { bgColors, placeholderList } from '@/utils/flow/const'
 import { NodeUtils } from '@/utils/flow/nodeUtils'
+const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
-
 let props = defineProps({
     nodeConfig: {
         type: Object,
@@ -187,7 +190,7 @@ const resetConditionNodesErr = () => {
         let conditionTitle= $func.conditionStr(props.nodeConfig, i); 
         props.nodeConfig.conditionNodes[i].error = conditionTitle == "请设置条件" && i != props.nodeConfig.conditionNodes.length - 1; 
         props.nodeConfig.conditionNodes[i].isDefault = 0;   
-        props.nodeConfig.conditionNodes[i].nodeDisplayName = conditionTitle=='null' || conditionTitle==''?props.nodeConfig.conditionNodes[i].nodeDisplayName:conditionTitle;
+        props.nodeConfig.conditionNodes[i].nodeDisplayName = proxy.isObjEmpty(conditionTitle)?props.nodeConfig.conditionNodes[i].nodeDisplayName:conditionTitle;
     }
     let maxLen = props.nodeConfig.conditionNodes.length-1;
     let node = props.nodeConfig.conditionNodes[maxLen];
@@ -202,8 +205,8 @@ const resetConditionNodesErr = () => {
 const resetParallelNodesErr = () => {   
     if(!props.nodeConfig.parallelNodes) return;
     for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {  
-        let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);   
-        props.nodeConfig.parallelNodes[i].error = false;//props.nodeConfig.parallelNodes[i].nodeApproveList.length <= 0;  
+        let parallTitle= $func.setApproverStr(props.nodeConfig.parallelNodes[i]);    
+        props.nodeConfig.parallelNodes[i].error = proxy.isArrayEmpty(props.nodeConfig.parallelNodes[i].nodeApproveList);   
         props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle; 
     }  
 }
@@ -268,29 +271,35 @@ const blurEvent = (index) => {
         props.nodeConfig.nodeName = props.nodeConfig.nodeName || defaultText
     }
 };
-/**
- * 删除节点
- */
-const delNode = () => { 
-    emits("update:nodeConfig", props.nodeConfig.childNode);
-};
+
 /**
  * 添加网关下节点
  */
 const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
-        let len = props.nodeConfig.conditionNodes.length + 1;
-        let n_name = '条件' + len;
-        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
+        const len = props.nodeConfig.conditionNodes.length;
+        const fistConditionNode = props.nodeConfig.conditionNodes[0];
+        const n_name = resetConditionNodesTitle(fistConditionNode, len);
+        const isDynamicCondition = fistConditionNode.isDynamicCondition;
+        const isParallel = fistConditionNode.isParallel; 
+        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len,isDynamicCondition,isParallel, 0));
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
-        let len = props.nodeConfig.parallelNodes.length + 1;
-        let n_name = '并行审核人' + len;
+        const len = props.nodeConfig.parallelNodes.length + 1;
+        const n_name = '并行审核人' + len;
         props.nodeConfig.parallelNodes.push(NodeUtils.createParallelNode(n_name, null, len, 0));
         resetParallelNodesErr();
     }
     emits("update:nodeConfig", props.nodeConfig);
 };
+
+/**
+ * 删除普通审批人或抄送人节点
+ */
+ const delNode = () => { 
+    emits("update:nodeConfig", props.nodeConfig.childNode);
+};
+
 /**
  * 删除网关下节点
  * @param index 条件索引
@@ -309,8 +318,8 @@ const delTerm = (index) => {
 const delConditionNodeTerm = (index) => {
     props.nodeConfig.conditionNodes.splice(index, 1);
     props.nodeConfig.conditionNodes.map((item, index) => {
-        item.priorityLevel = index + 1;
-        item.nodeName = `条件${index + 1}`;
+        item.priorityLevel = index + 1; 
+        item.nodeName = resetConditionNodesTitle(item, index); 
     });
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
@@ -357,6 +366,23 @@ const reData = (data, addData) => {
         reData(data.childNode, addData);
     }
 };
+
+/**删除或添加条件节点 重置节点标题 */
+const resetConditionNodesTitle = (conditionNode,len) => {
+    if(!conditionNode){
+        return `条件`;
+    }
+    let isDynamicCondition = conditionNode.isDynamicCondition;
+    let isParallel = conditionNode.isParallel; 
+    if (isDynamicCondition == true) {
+        return `动态条件${len + 1}`;
+    }
+    if (isParallel == true) {
+        return `并行条件${len + 1}`;
+    }
+    return `条件${len + 1}`;
+}
+
 /**
  * 设置节点信息
  */
