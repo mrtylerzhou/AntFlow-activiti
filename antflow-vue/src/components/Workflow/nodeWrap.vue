@@ -271,38 +271,35 @@ const blurEvent = (index) => {
         props.nodeConfig.nodeName = props.nodeConfig.nodeName || defaultText
     }
 };
-/**
- * 删除节点
- */
-const delNode = () => { 
-    emits("update:nodeConfig", props.nodeConfig.childNode);
-};
+
 /**
  * 添加网关下节点
  */
 const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
-        let len = props.nodeConfig.conditionNodes.length + 1;
-        let n_name = '条件' + len;
-        let isDynamicCondition = props.nodeConfig.conditionNodes[0].isDynamicCondition;
-        let isParallel = props.nodeConfig.conditionNodes[0].isParallel;
-
-        if(isDynamicCondition == true){
-            n_name = '动态条件' + len;
-        }
-        if(isParallel == true){
-            n_name = '并行条件' + len;
-        } 
+        const len = props.nodeConfig.conditionNodes.length;
+        const fistConditionNode = props.nodeConfig.conditionNodes[0];
+        const n_name = resetConditionNodesTitle(fistConditionNode, len);
+        const isDynamicCondition = fistConditionNode.isDynamicCondition;
+        const isParallel = fistConditionNode.isParallel; 
         props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len,isDynamicCondition,isParallel, 0));
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
-        let len = props.nodeConfig.parallelNodes.length + 1;
-        let n_name = '并行审核人' + len;
+        const len = props.nodeConfig.parallelNodes.length + 1;
+        const n_name = '并行审核人' + len;
         props.nodeConfig.parallelNodes.push(NodeUtils.createParallelNode(n_name, null, len, 0));
         resetParallelNodesErr();
     }
     emits("update:nodeConfig", props.nodeConfig);
 };
+
+/**
+ * 删除普通审批人或抄送人节点
+ */
+ const delNode = () => { 
+    emits("update:nodeConfig", props.nodeConfig.childNode);
+};
+
 /**
  * 删除网关下节点
  * @param index 条件索引
@@ -321,8 +318,8 @@ const delTerm = (index) => {
 const delConditionNodeTerm = (index) => {
     props.nodeConfig.conditionNodes.splice(index, 1);
     props.nodeConfig.conditionNodes.map((item, index) => {
-        item.priorityLevel = index + 1;
-        item.nodeName = `条件${index + 1}`;
+        item.priorityLevel = index + 1; 
+        item.nodeName = resetConditionNodesTitle(item, index); 
     });
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
@@ -369,6 +366,23 @@ const reData = (data, addData) => {
         reData(data.childNode, addData);
     }
 };
+
+/**删除或添加条件节点 重置节点标题 */
+const resetConditionNodesTitle = (conditionNode,len) => {
+    if(!conditionNode){
+        return `条件`;
+    }
+    let isDynamicCondition = conditionNode.isDynamicCondition;
+    let isParallel = conditionNode.isParallel; 
+    if (isDynamicCondition == true) {
+        return `动态条件${len + 1}`;
+    }
+    if (isParallel == true) {
+        return `并行条件${len + 1}`;
+    }
+    return `条件${len + 1}`;
+}
+
 /**
  * 设置节点信息
  */
