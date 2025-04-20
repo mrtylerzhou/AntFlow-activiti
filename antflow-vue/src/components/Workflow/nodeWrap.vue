@@ -45,8 +45,8 @@
                             <div class="auto-judge" :class="isTried && item.error ? 'error active' : ''">
                                 <div class="sort-left" v-if="index != 0" @click="arrTransfer(index, -1)">&lt;</div>
                                 <div class="title-wrapper">                               
-                                    <svg-icon icon-class="dynamic-condition" class="iconfont" v-if="item.isDynamicCondition == true"/>  
-                                    <svg-icon icon-class="parallel-condition" class="iconfont" v-else-if="item.isParallel == true"/>  
+                                    <svg-icon icon-class="dynamic-condition" class="iconfont" v-if="nodeConfig.isDynamicCondition == true"/>  
+                                    <svg-icon icon-class="parallel-condition" class="iconfont" v-else-if="nodeConfig.isParallel == true"/>  
                                     <svg-icon icon-class="condition" class="iconfont" v-else/>  
                                     <input v-if="isInputList[index]" type="text" class="fd-input editable-title-input"
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
@@ -279,6 +279,7 @@ const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
         const len = props.nodeConfig.conditionNodes.length;
         const fistConditionNode = props.nodeConfig;
+        console.log('props.nodeConfig==',JSON.stringify(props.nodeConfig))
         const n_name = resetConditionNodesTitle(fistConditionNode, len); 
         props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
         resetConditionNodesErr()
