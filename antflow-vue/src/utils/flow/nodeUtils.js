@@ -92,8 +92,8 @@ export class NodeUtils {
       error: false,
       property: null,
       conditionNodes: [
-        this.createConditionNode("条件1", child,1,false,false, 0),
-        this.createConditionNode("条件2", null,2,false,false, 1),
+        this.createConditionNode("条件1", child,1, 0),
+        this.createConditionNode("条件2", null,2,1),
       ],
     };
     return gatewayNode;
@@ -110,11 +110,13 @@ export class NodeUtils {
         nodeFrom: "",
         nodeTo: [],
         childNode: null,
+        isDynamicCondition: true,//true 动态条件 false 非动态条件
+        isParallel: false,//true 是并行条件 false 非并行条件 
         error: false,
         property: null,
         conditionNodes: [
-          this.createConditionNode("动态条件1", child,1,true,false, 0),
-          this.createConditionNode("动态条件2", null,2,true,false, 1),
+          this.createConditionNode("动态条件1", child,1,0),
+          this.createConditionNode("动态条件2", null,2, 1),
         ],
       };
       return gatewayNode;
@@ -130,12 +132,14 @@ export class NodeUtils {
         nodeType: 2,
         nodeFrom: "",
         nodeTo: [],
-        childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),
+        childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),        
+        isDynamicCondition: false,//true 动态条件 false 非动态条件
+        isParallel: true,//true 是并行条件 false 非并行条件 
         error: false,
         property: null,
         conditionNodes: [
-          this.createConditionNode("并行条件1", child,1,false,true, 0),
-          this.createConditionNode("并行条件2", null,2,false,true, 0),
+          this.createConditionNode("并行条件1", child,1,0),
+          this.createConditionNode("并行条件2", null,2, 0),
         ],
       };
       return gatewayNode;
@@ -144,7 +148,7 @@ export class NodeUtils {
    * 创建条件对象
    * @returns object
    */
-  static createConditionNode(name, childNode,priority,isDynamic,isParallel, isDefault) {
+  static createConditionNode(name, childNode,priority,isDefault) {
     let conditionNode = {
       nodeId: this.idGenerator(),
       nodeName: name || "条件1",
@@ -153,8 +157,6 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       priorityLevel: priority,
-      isDynamicCondition: isDynamic,//true 动态条件 false 非动态条件
-      isParallel: isParallel,//true 是并行条件 false 非并行条件 
       conditionList: [],
       nodeApproveList: [],
       error: true,

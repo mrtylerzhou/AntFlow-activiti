@@ -96,7 +96,7 @@ const validateParallelApproveNode = (treeNode) => {
  */
  const validateParallelConditionNode = (treeNode) => {
     if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
-    if (treeNode.nodeType == 2) {
+    if (treeNode.nodeType == 2 && treeNode.isParallel == true) {
         if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "条件并行节点下必须有一个审批人节点作为聚合节点" };
         } else {
