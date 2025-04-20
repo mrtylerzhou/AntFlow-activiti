@@ -278,11 +278,9 @@ const blurEvent = (index) => {
 const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
         const len = props.nodeConfig.conditionNodes.length;
-        const fistConditionNode = props.nodeConfig.conditionNodes[0];
-        const n_name = resetConditionNodesTitle(fistConditionNode, len);
-        const isDynamicCondition = fistConditionNode.isDynamicCondition;
-        const isParallel = fistConditionNode.isParallel; 
-        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len,isDynamicCondition,isParallel, 0));
+        const fistConditionNode = props.nodeConfig;
+        const n_name = resetConditionNodesTitle(fistConditionNode, len); 
+        props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
         resetConditionNodesErr()
     } else if (props.nodeConfig.nodeType == 7) {
         const len = props.nodeConfig.parallelNodes.length + 1;
