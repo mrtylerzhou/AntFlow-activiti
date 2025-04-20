@@ -128,7 +128,9 @@ public class BpmnNode {
     //0 for no and 1 for yes
     @TableField("is_dynamicCondition")
     private Boolean isDynamicCondition;
-
+    //whether current node is a parallel node 0 for no and 1 for yes
+    @TableField("is_parallel")
+    private Boolean isParallel;
 
 
 
