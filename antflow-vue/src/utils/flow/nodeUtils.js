@@ -89,6 +89,8 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: null,
+      isDynamicCondition: false,//true 动态条件 false 非动态条件
+      isParallel: false,//true 是并行条件 false 非并行条件 
       error: false,
       property: null,
       conditionNodes: [

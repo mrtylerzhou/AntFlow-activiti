@@ -318,7 +318,7 @@ const delConditionNodeTerm = (index) => {
     props.nodeConfig.conditionNodes.splice(index, 1);
     props.nodeConfig.conditionNodes.map((item, index) => {
         item.priorityLevel = index + 1; 
-        item.nodeName = resetConditionNodesTitle(item, index); 
+        item.nodeName = resetConditionNodesTitle(props.nodeConfig, index); 
     });
     resetConditionNodesErr()
     emits("update:nodeConfig", props.nodeConfig);
