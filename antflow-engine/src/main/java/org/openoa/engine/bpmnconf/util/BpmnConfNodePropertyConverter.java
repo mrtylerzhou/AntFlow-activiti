@@ -79,7 +79,7 @@ public class BpmnConfNodePropertyConverter {
                 String fixedDownBoxValue = newModel.getFixedDownBoxValue();
                 List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
                 String zdy1 = newModel.getZdy1();
-                if (zdy1.contains("[")&& zdy1.contains("]")){
+                if (zdy1.startsWith("[")&& zdy1.endsWith("]")){
                     zdy1 = zdy1.substring(1,zdy1.length() -1);
                 }
                 String[] keys = zdy1.split(",");
