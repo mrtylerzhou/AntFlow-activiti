@@ -63,7 +63,7 @@ onMounted(async () => {
  */
 const validateIsExistApproveNode = (treeNode) => {
     if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效审批人节点，实际项目中不需要可以去掉" };
-    if (treeNode.nodeType == 4) {
+    if (treeNode.nodeType == 3 || treeNode.nodeType == 4 || treeNode.nodeType == 6 || treeNode.nodeType == 7) {
         return { isSuccess: true, msg: "" };
     }
     else {
