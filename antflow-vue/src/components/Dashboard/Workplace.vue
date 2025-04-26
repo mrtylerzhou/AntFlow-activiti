@@ -31,9 +31,9 @@
                         <el-tooltip placement="right" >
                             <template #content> 
                                 <span> 
-                                    <el-alert style="margin-bottom: 5px;" title="第一步：添加模板类型(LF)：流程管理->流程模板" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第二步：流程设计：流程管理->流程设计(LF)" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用流程：流程管理->流程设计列表点击【启用】" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】" type="success" effect="dark"  :closable="false" /> 
+                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】" type="success" effect="dark"  :closable="false" /> 
                                 </span>
                             </template>
                             <el-icon><question-filled /></el-icon>
@@ -50,10 +50,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -73,6 +72,12 @@
                         <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
                             <el-icon><question-filled /></el-icon>
                         </el-tooltip> 
+                        <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
+                            <a href="http://117.72.70.166/ruoyi/#/hr/leavetime" target="_blank">
+                                <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
+                            </a>
+                        </el-tooltip> 
+                   
                     </span>
                 </div>
             </template>
@@ -85,10 +90,9 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title">
-                                <a>【{{ substringHidden(item.formCode) }}】</a>
+                            <div class="card-title"> 
                                 <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
                         </div>
                     </el-card>
@@ -219,7 +223,7 @@ function handleStart(row) {
         formCode: row.formCode,
         hasChooseApprove: row.hasChooseApprove
     };
-    const obj = { path: '/bizentry/index', query: params };
+    const obj = { path: '/startFlow/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function handleOutSide(row) { 
@@ -230,7 +234,7 @@ function handleOutSide(row) {
         ha: row.hasChooseApprove,
         fcname:  encodeURIComponent(row.title) 
     };
-    const obj = { path: '/outsideMgt/bizForm', query: params };
+    const obj = { path: '/startOutside/index', query: params };
     proxy.$tab.openPage(obj);
 }
 function getAssetsFile(pathUrl) {
@@ -274,7 +278,7 @@ function handleFlow(row) {
     }
 
     p {
-        width: 95px;
+        width: 150px;
         font-size: 12px;
         font-weight: 300;
         overflow: hidden;

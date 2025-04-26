@@ -1,49 +1,53 @@
 <template>
-  <div class="app-container home">
-    <div class="task-title">
-      <span class="task-title-text">流程详情预览</span>
+  <div class="app-container">
+    <div class="card-box" style="padding-top: 10px;">
+      <div class="task-title">
+        <span class="task-title-text">流程详情预览</span>
+      </div>
+      <div style="background-color: #f5f5f7;min-height: calc(100vh - 200px);">
+        <el-tabs v-model="activeTab" class="demo-tabs">
+          <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
+          <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
+          <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
+        </el-tabs>
+        <el-row>
+          <el-col :span="24" v-if="activeTab === 'flowForm'" class="item">
+            <div v-if="processConfig">
+              <BasicSetting ref="basicSetting" :basicData="processConfig" />
+            </div>
+          </el-col>
+          <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
+            <div v-if="processConfig" class="component">
+              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
+              </component>
+            </div>
+          </el-col>
+          <el-col :span="24" v-if="activeTab === 'flow'" class="item">
+            <div v-if="nodeConfig" class="flow">
+              <Process ref="processDesign" :processData="nodeConfig" />
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </div>
-    <div>
-      <el-tabs v-model="activeTab" class="demo-tabs">
-        <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
-        <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
-        <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
-      </el-tabs>
-      <div v-if="activeTab === 'flowForm'" class="item">
-        <div v-if="processConfig">
-          <BasicSetting ref="basicSetting" :basicData="processConfig"/>
-        </div>
-      </div>
-      <div v-if="activeTab === 'formRender'" class="item">
-        <div v-if="processConfig" class="component">
-          <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
-                     :isPreview="true">
-          </component>
-        </div>
-      </div>
-      <div v-if="activeTab === 'flow'" class="item">
-        <div v-if="nodeConfig" class="flow">
-          <Process ref="processDesign" :processData="nodeConfig"/>
-        </div>
-      </div>
-      <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
-    </div>
+    <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
   </div>
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
-import {getApiWorkFlowData} from "@/api/workflow";
-import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
+import { onMounted, ref } from 'vue';
+import { getApiWorkFlowData } from "@/api/workflow";
+import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
-import {FormatDisplayUtils} from '@/utils/flow/formatdisplay_data';
-import {loadDIYComponent, loadLFComponent} from '@/views/workflow/components/componentload.js';
+import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
+import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 
-const {proxy} = getCurrentInstance();
+const { proxy } = getCurrentInstance();
 const route = useRoute();
 const activeTab = ref('flowForm')
 let processConfig = ref(null)
 let lfFormDataConfig = ref(null)
+let lfFieldControlVOs = ref(null)
 let nodeConfig = ref(null)
 let title = ref('')
 let id = route.query?.id
@@ -60,7 +64,7 @@ onMounted(async () => {
   proxy.$modal.closeLoading();
 });
 const init = async () => {
-  let mockjson = await getApiWorkFlowData({id});
+  let mockjson = await getApiWorkFlowData({ id });
   if (mockjson.code != 200) {
     proxy.$modal.msgError(mockjson.errMsg);
     return;
@@ -71,6 +75,7 @@ const init = async () => {
   nodeConfig.value = data?.nodeConfig;
   if (data.isLowCodeFlow == '1') {//低代码表单
     lfFormDataConfig.value = data?.lfFormData
+    lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);
     loadedComponent.value = await loadLFComponent();
     componentLoaded.value = true;
   } else {//自定义表单
@@ -83,30 +88,7 @@ const init = async () => {
 
 </script>
 
-<style scoped lang="scss">
-.home {
-  & > div:nth-child(2) {
-    height: calc(100vh - 175px);
-
-    .item {
-      padding: 10px;
-      box-sizing: border-box;
-      height: calc(100% - 54px);
-      background: #f5f5f7;
-      border-radius: 10px;
-      overflow: auto;
-
-      .flow {
-        height: 100%;
-
-        ::v-deep(.antflow-design) {
-          height: 100%;
-        }
-      }
-    }
-  }
-}
-
+<style scoped lang="scss"> 
 .task-title {
   display: flex;
   justify-content: space-between;

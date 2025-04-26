@@ -2,9 +2,13 @@
     <div class="app-container">
         <div class="fd-nav">
             <div class="fd-nav-left"> 
-                <div class="fd-nav-title">{{ title }}</div>
-            </div>
-
+                <div class="fd-nav-title">  
+                    <el-icon>
+                        <HomeFilled />
+                    </el-icon>
+                    {{ title }}
+                </div>
+            </div> 
             <div class="fd-nav-center">
                 <div class="step-tab">
                     <div v-for="(item, index) in steps" :key="index" class="step"
@@ -26,7 +30,7 @@
         <div v-if="processConfig" v-show="activeStep === 'basicSetting'">
             <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps" :flowType="'LF'"/>
         </div>
-        <div v-show="activeStep === 'formDesign'" >
+        <div v-show="activeStep === 'formDesign'"  aria-hidden="true">
             <DynamicForm  ref="formDesign" :lfFormData="lfFormDataConfig" />
         </div> 
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
@@ -43,13 +47,12 @@ import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
 import { FormatUtils } from '@/utils/flow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { NodeUtils } from '@/utils/flow/nodeUtils';
-import BasicSetting from "@/components/Workflow/BasicSetting/index.vue";
+import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue"; 
 import DynamicForm from "@/components/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 const { proxy } = getCurrentInstance()
-const route = useRoute();
- 
+const route = useRoute(); 
 const basicSetting = ref(null);
 const processDesign = ref(null);
 const formDesign = ref(null);
@@ -82,12 +85,10 @@ onMounted(async () => {
    } else {
        mockjson = NodeUtils.createStartNode();
    }
-   let data = FormatDisplayUtils.getToTree(mockjson.data);
-   // console.log("old===data=nodes==========", JSON.stringify(data.nodes));
-   // console.log("old===data=nodeConfig==============", JSON.stringify(data.nodeConfig));
+   let data = FormatDisplayUtils.getToTree(mockjson.data); 
    proxy.$modal.closeLoading(); 
    processConfig.value = data;
-   title.value = data?.bpmnName;
+   title.value = proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(route.query.fcname??''):data?.bpmnName;  
    nodeConfig.value = data?.nodeConfig;     
    lfFormDataConfig.value = data?.lfFormData;   
    //console.log("lfFormDataConfig==========", JSON.stringify(lfFormDataConfig.value));
@@ -116,22 +117,19 @@ const publish = () => {
             setApiWorkFlowData(data).then((resLog) => {
                 proxy.$modal.closeLoading();
                 if (resLog.code == 200) { 
-                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
-                    const obj = { path: "/workflow/config" };
+                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据"); 
+                    let  obj = { path: "flow-version", query: { formCode: data.formCode } };
                     proxy.$tab.openPage(obj);
                 } else { 
                     proxy.$modal.msgError("提交到API返回失败" + JSON.stringify(resLog.errMsg));
                 }
-            });
-        })
+            })
+        }) 
         .catch((err) => { 
-            proxy.$modal.closeLoading();
-            if (err){
-                console.log("设置失败" + JSON.stringify(err));
-                proxy.$modal.msgError("至少配置一个有效审批人节点");
+            proxy.$modal.closeLoading(); 
+            if (err) {
+                console.log("设置失败" + JSON.stringify(err)); 
             }
-        }).finally(() => {
-            //proxy.$modal.closeLoading();
         });
 };
 const previewJson = () => {
@@ -145,7 +143,7 @@ const previewJson = () => {
 .app-container{
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 85px); 
+    min-height: calc(100vh - 115px); 
     padding-top: 15px;
     overflow: auto;
 }

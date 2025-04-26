@@ -11,7 +11,6 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.el.FixedValue;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.ast.Var;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
@@ -25,7 +24,6 @@ import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNode;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
@@ -41,8 +39,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -126,6 +122,10 @@ public class BpmnTaskListener implements TaskListener {
                         if (StringConstants.COPY_NODE.equals(nodeLabelVO.getLabelValue())) {
                             String processInstanceId = delegateTask.getProcessInstanceId();
                             String elementId=delegateTask.getTaskDefinitionKey();
+                            //如果是最后一个节点通知,在BpmnExecutionListener里面处理,这里跳过,减少数据库查询
+                            if(StringConstants.LASTNODE_COPY.equals(elementId)){
+                                continue;
+                            }
                             List<String> nodeIdsByeElementId = bpmVariableMapper.getNodeIdsByeElementId(processNumber, elementId);
                             if(!CollectionUtils.isEmpty(nodeIdsByeElementId)){
                                 String nodeId = nodeIdsByeElementId.get(0);

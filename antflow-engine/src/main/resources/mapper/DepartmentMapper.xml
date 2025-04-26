@@ -3,13 +3,19 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.DepartmentMapper">
 
     <select id="ListSubDepartmentByEmployeeId" resultType="org.openoa.engine.bpmnconf.confentity.Department">
-    <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getSubDepartmentsByEmpId">
-
-    </include>
+        select id,name from t_department
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
     </select>
     <select id="getDepartmentByEmployeeId" resultType="org.openoa.engine.bpmnconf.confentity.Department">
-    <include refid="org.openoa.engine.bpmnconf.mapper.AntFlowBaseMapper.getDepartmentByEmployeeId">
-
-    </include>
+        select id,name from t_department
+        <where>
+            <if test="employeeId != null">
+                id = #{employeeId}
+            </if>
+        </where>
     </select>
 </mapper>

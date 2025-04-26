@@ -14,9 +14,9 @@ import org.springframework.util.CollectionUtils;
  */
 @Slf4j
 @Component
-public class BpmnTemplateMarkJudge extends ConditionJudge {
+public class BpmnTemplateMarkJudge implements ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
         if (!CollectionUtils.isEmpty(conditionsConf.getTemplateMarks()) &&
                 CollectionUtils.containsAny(conditionsConf.getTemplateMarks(),bpmnStartConditionsVo.getTemplateMarkIds())
         ) {

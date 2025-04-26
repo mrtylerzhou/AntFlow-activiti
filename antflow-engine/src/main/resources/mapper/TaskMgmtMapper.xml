@@ -20,8 +20,8 @@
         r.ID_ AS taskId,
         r.CREATE_TIME_ AS runTime
         FROM
-        act_ru_task r
-        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = r.PROC_INST_ID_
+        ACT_RU_TASK r
+        LEFT JOIN ACT_HI_PROCINST h ON h.PROC_INST_ID_ = r.PROC_INST_ID_
         LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
         ) t
         where 1=1
@@ -88,7 +88,7 @@
         b.process_state AS taskStype,
         b.PROCESSINESS_KEY AS processKey
         FROM
-        act_hi_procinst h
+        ACT_HI_PROCINST h
         LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
         where h.START_USER_ID_=#{applyUser}
         ) h where h.userId=#{applyUser}
@@ -108,7 +108,7 @@
             h.userName  like CONCAT ('%', #{search},'%')
             or h.description LIKE CONCAT('%', #{search},'%')
             or h.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME  like concat('%', #{search},'%')
+            select r.PROC_INST_ID_ from ACT_RU_TASK r where r.ASSIGNEE_NAME  like concat('%', #{search},'%')
             )
             )
         </if>
@@ -134,8 +134,8 @@
         (select count(1) from bpm_user_concern c where c.process_id=w.PROC_INST_ID_ and c.user_id=w.ASSIGNEE_) as
         concernState
         FROM
-        act_hi_actinst w
-        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
+        ACT_HI_ACTINST w
+        LEFT JOIN ACT_HI_PROCINST h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
         LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
         WHERE
         w.END_TIME_  <![CDATA[ <> ]]>''
@@ -155,7 +155,7 @@
             s.userName  like CONCAT ('%', #{taskMgmtVO.search},'%')
             or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
             or s.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME like concat('%', #{taskMgmtVO.search},'%')
+            select r.PROC_INST_ID_ from ACT_RU_TASK r where r.ASSIGNEE_NAME like concat('%', #{taskMgmtVO.search},'%')
             )
             )
         </if>
@@ -180,8 +180,8 @@
         b.CREATE_TIME AS createTime,
         w.ASSIGNEE_ AS assignee
         FROM
-        act_hi_actinst w
-        LEFT JOIN act_hi_procinst h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
+        ACT_HI_ACTINST w
+        LEFT JOIN ACT_HI_PROCINST h ON h.PROC_INST_ID_ = w.PROC_INST_ID_
         LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
         WHERE
         w.END_TIME_   <![CDATA[<>]]> ''
@@ -200,7 +200,7 @@
             s.userName in  like CONCAT ('%', #{taskMgmtVO.search},'%')
             or s.description LIKE CONCAT('%', #{taskMgmtVO.search},'%')
             or s.processInstanceId in (
-            select r.PROC_INST_ID_ from act_ru_task r where r.ASSIGNEE_NAME
+            select r.PROC_INST_ID_ from ACT_RU_TASK r where r.ASSIGNEE_NAME
              like concat('%', #{taskMgmtVO.search},'%')
             )
             )
@@ -212,25 +212,25 @@
     <!--query current task assignee by task id-->
     <select id="findTask" resultType="org.openoa.base.vo.TaskMgmtVO">
         select w.ASSIGNEE_ as applyUser, w.ASSIGNEE_ AS userId, w.ASSIGNEE_NAME as actualName
-        from act_ru_task w
+        from ACT_RU_TASK w
         where w.ID_ = #{taskId}
     </select>
     <!--modify current assignee-->
     <update id="updateTask">
-        update act_ru_task
+        update ACT_RU_TASK
         set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
         where ID_ = #{taskMgmtVO.taskId}
     </update>
 
     <!--modify current node's history assignee-->
     <update id="updateaActinst">
-        update act_hi_actinst
+        update ACT_HI_ACTINST
         set ASSIGNEE_ =#{taskMgmtVO.applyUser}
         where TASK_ID_ = #{taskMgmtVO.taskId}
     </update>
     <!--modify current node's history assignee-->
     <update id="updateaTaskinst">
-        update act_hi_taskinst
+        update ACT_HI_TASKINST
         set ASSIGNEE_ =#{taskMgmtVO.applyUser},ASSIGNEE_NAME=#{taskMgmtVO.applyUserName}
         where id_ = #{taskMgmtVO.taskId}
     </update>
@@ -238,7 +238,7 @@
     <!--get login user task count-->
     <select id="findTaskCount" resultType="java.lang.Integer">
         select count(*)
-        from act_ru_task w
+        from ACT_RU_TASK w
         where w.ASSIGNEE_ = #{loginUserId}
     </select>
 
@@ -257,8 +257,8 @@
 
     <!--get to do task by taskId and process instance id-->
     <select id="getAgencyList" resultType="org.openoa.base.vo.TaskMgmtVO">
-        select w.ID_ as taskId from act_ru_task w where w.TASK_DEF_KEY_ in(
-        select t.TASK_DEF_KEY_ from act_ru_task t where t.ID_=#{taskId}
+        select w.ID_ as taskId from ACT_RU_TASK w where w.TASK_DEF_KEY_ in(
+        select t.TASK_DEF_KEY_ from ACT_RU_TASK t where t.ID_=#{taskId}
         ) and w.PROC_INST_ID_=#{processInstanceId}
         <if test="type!=null and type!=''">
             and w.ID_ !=#{taskId}
@@ -267,7 +267,7 @@
     <!--delete current task-->
     <delete id="deletTask">
         delete
-        from act_ru_task
+        from ACT_RU_TASK
         where ID_ = #{taskId}
     </delete>
 
@@ -287,9 +287,9 @@
                s.RESOURCE_NAME_ as processName,
                s.DEPLOYMENT_ID_ as processInstanceId,
                s.VERSION_       as version
-        from act_re_procdef s
+        from ACT_RE_PROCDEF s
         where not exists(
-                select 1 from act_re_procdef r where r.KEY_ = s.KEY_ and r.VERSION_ > s.VERSION_
+                select 1 from ACT_RE_PROCDEF r where r.KEY_ = s.KEY_ and r.VERSION_ > s.VERSION_
             )
     </select>
 
@@ -303,7 +303,7 @@
         w.TASK_DEF_KEY_ as taskName,
         substring_index(w.PROC_DEF_ID_, ':', 1) as processKey
         FROM
-        act_ru_task w
+        ACT_RU_TASK w
         WHERE
         EXISTS (
         SELECT
@@ -330,7 +330,7 @@
     <!--query whether show revoke button by  business key and start user id-->
     <select id="showRevoke" resultType="java.lang.Integer">
         select count(1)
-        from act_ru_task t
+        from ACT_RU_TASK t
         where t.PROC_INST_ID_ in (
             select PROC_INST_ID_
             from ACT_HI_PROCINST h
@@ -363,7 +363,7 @@
     <!--get revoke node data-->
     <select id="findByTaskinst" resultType="org.openoa.base.vo.TaskMgmtVO">
         select h.ASSIGNEE_ as applyUser, h.TASK_DEF_KEY_ as processKey, h.PROC_INST_ID_ as processInstanceId
-        from act_hi_taskinst h
+        from ACT_HI_TASKINST h
         where h.PROC_INST_ID_ in (
             select p.PROC_INST_ID_ from ACT_HI_PROCINST p where p.BUSINESS_KEY_ = #{entryId}
         )
@@ -385,7 +385,7 @@
     <!--get all approvers by entryId-->
     <select id="getAssigneesByEntryId" resultType="java.lang.String">
         SELECT DISTINCT t.ASSIGNEE_
-        FROM act_hi_taskinst t
+        FROM ACT_HI_TASKINST t
         WHERE t.PROC_INST_ID_ = (
             SELECT p.PROC_INST_ID_
             FROM ACT_HI_PROCINST p
@@ -403,17 +403,17 @@
     <!--delete a process historic task instance by process instance id-->
     <delete id="deleteTaskinst">
         delete
-        from act_hi_taskinst
+        from ACT_HI_TASKINST
         WHERE PROC_INST_ID_ = #{processInstanceId}
     </delete>
     <!--delete a process historic instance id-->
     <delete id="deleteActinst">
         delete
-        from act_hi_actinst
+        from ACT_HI_ACTINST
         WHERE PROC_INST_ID_ = #{processInstanceId}
     </delete>
     <delete id="deleteExecutionsByProcinstIdAndTaskDefKeys">
-        delete  from act_ru_execution where PROC_INST_ID_=#{procInstId} and ACT_ID_ in
+        delete  from ACT_RU_EXECUTION where PROC_INST_ID_=#{procInstId} and ACT_ID_ in
         <foreach collection="taskDefKeys" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -422,25 +422,25 @@
     <!--query whether current process resource is exist-->
     <select id="findProcessModel" resultType="java.lang.Integer">
         select count(*)
-        from act_re_procdef r
+        from ACT_RE_PROCDEF r
         where r.RESOURCE_NAME_ = #{fileName}
     </select>
 
     <!--get process name-->
     <select id="getProcessName" resultType="java.lang.String">
         SELECT NAME_
-        FROM act_re_procdef f
+        FROM ACT_RE_PROCDEF f
         where KEY_ = #{id}
           and f.VERSION_ = (
             SELECT max(t.VERSION_)
-            from act_re_procdef t
+            from ACT_RE_PROCDEF t
             where t.KEY_ = #{id}
         )
     </select>
     <!-- query current assignee by provided task_id -->
     <select id="getAssigneeByTaskId" resultType="java.lang.String">
         SELECT ASSIGNEE_
-        FROM act_ru_task
+        FROM ACT_RU_TASK
         WHERE id = #{taskId}
     </select>
     <!-- 根据BUSINESS_NUMBER获取entryId -->
@@ -453,23 +453,23 @@
     <!--query current task's id by process instance id-->
     <select id="getTaskId" resultType="java.lang.String">
         select t.ID_
-        from act_ru_task t
+        from ACT_RU_TASK t
         where t.PROC_INST_ID_ = #{processInstanceId}
         LIMIT 1
     </select>
     <!-- get to do task notify info -->
     <select id="findNotifyInfo" resultType="org.openoa.base.vo.TaskMgmtVO">
         SELECT resource_num                                                                                  AS nodeType,
-               (SELECT ID_ FROM act_ru_task WHERE PROC_INST_ID_ = #{procInstId} and ASSIGNEE_ = #{assignee}) as taskId
+               (SELECT ID_ FROM ACT_RU_TASK WHERE PROC_INST_ID_ = #{procInstId} and ASSIGNEE_ = #{assignee}) as taskId
         FROM bpm_task_resource t
         WHERE t.node_type = 'TASK_CODE'
-          AND task_def_key_ = #{taskDefId};
+          AND TASK_DEF_KEY_ = #{taskDefId};
     </select>
     <!-- query current assignee by entryId -->
     <select id="getCurrentAssignee" resultType="org.openoa.base.vo.TaskMgmtVO">
         SELECT a.ASSIGNEE_     AS originalName,
                a.TASK_DEF_KEY_ AS taskName
-        FROM act_ru_task a
+        FROM ACT_RU_TASK a
         WHERE a.PROC_INST_ID_ = (
             SELECT p.PROC_INST_ID_
             FROM ACT_HI_PROCINST p
@@ -480,7 +480,7 @@
     <!-- get start user id by entryId -->
     <select id="getStartuserByEntryId" resultType="java.lang.String">
         SELECT START_USER_ID_
-        FROM act_hi_procinst
+        FROM ACT_HI_PROCINST
         WHERE BUSINESS_KEY_ = #{entryId}
     </select>
 
@@ -494,7 +494,7 @@
     <!--query whether current process has parallel gateway-->
     <select id="findTaskCout" resultType="org.openoa.base.vo.TaskMgmtVO">
         select t.PROC_INST_ID_ as processInstanceId, t.TASK_DEF_KEY_ as taskName, t.PROC_DEF_ID_ as processKey
-        from act_ru_task t
+        from ACT_RU_TASK t
         where EXISTS(
                       select h.PROC_INST_ID_
                       from ACT_HI_PROCINST h
@@ -506,10 +506,10 @@
     <!--query task by task id-->
     <select id="findTaskById" resultType="java.util.Map">
         select t.ASSIGNEE_ assignee, t.TASK_DEF_KEY_ taskKey
-        from act_ru_task t
+        from ACT_RU_TASK t
         where t.id_ = #{taskId}
     </select>
     <select id="findProcDefIdByInstId" resultType="java.lang.String">
-        select PROC_DEF_ID_ from act_hi_procinst where PROC_INST_ID_=#{procInstId}
+        select PROC_DEF_ID_ from ACT_HI_PROCINST where PROC_INST_ID_=#{procInstId}
     </select>
 </mapper>

@@ -239,7 +239,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
             return "";
         }
-        // act_ru_task 表的 PROC_INST_ID_
+        // ACT_RU_TASK 表的 PROC_INST_ID_
         String procInstId = bpmBusinessProcess.getProcInstId();
 
         List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getBaseMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());
@@ -307,10 +307,10 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
             String verifyUserName = StringUtils.join(tasks.stream().map(BpmVerifyInfoVo::getVerifyUserName).collect(Collectors.toList()), ",");
             String taskName = StringUtils.EMPTY;
             List<String> strs = tasks.stream().map(BpmVerifyInfoVo::getTaskName).filter(Objects::nonNull).collect(Collectors.toList());
-            if (!org.springframework.util.ObjectUtils.isEmpty(strs)) {
-                taskName = strs.get(0);
+            if (!CollectionUtils.isEmpty(strs)) {
+                taskName = String.join("||", strs);
             }
-            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).findFirst().orElse(StringUtils.EMPTY);
+            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).collect(Collectors.joining(","));
             taskInfors.add(BpmVerifyInfoVo.builder()
                             .verifyUserIds(verifyUserIds)
                     .verifyUserName(verifyUserName)

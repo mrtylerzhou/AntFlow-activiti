@@ -7,6 +7,8 @@ import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
+
+import static org.openoa.base.constant.StringConstants.EXPRESSION_FIELD_NAME;
 import static org.openoa.base.constant.StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME;
 
 import java.util.Date;
@@ -31,7 +33,7 @@ public enum ConditionTypeEnum {
     CONDITION_TYPE_NUMBER_OPERATOR(7, "数字运算符", "numberOperator", 2, Integer.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "numberOperator", MoneyOperatorJudge.class),
 
-    CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, Double.class,
+    CONDITION_THIRD_PARK_AREA(37, "园区面积", "parkArea", 3, String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "parkArea", ParkAreaJudge.class),
     CONDITION_TYPE_TOTAL_MONEY(38, "总金额", "totalMoney", 2, String.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "totalMoney", TotalMoneyJudge.class),
@@ -44,14 +46,20 @@ public enum ConditionTypeEnum {
     //低(无)代码流程条件
     CONDITION_TYPE_LF_STR_CONDITION(10000,"无代码字符串流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions",LFStringConditionJudge.class),
-    CONDITION_TYPE_LF_NUM_CONDITION(10001,"无代码数字流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Double.class,
+    CONDITION_TYPE_LF_NUM_CONDITION(10001,"无代码数字流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"lfConditions", LFNumberFormatJudge.class),
-    CONDITION_TYPE_LF_DATE_CONDITION(10002,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, Date.class,
+    CONDITION_TYPE_LF_DATE_CONDITION(10002,"无代码日期流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2, String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateConditionJudge.class),
-    CONDITION_TYPE_LF_DATE_TIME_CONDITION(10003,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,Date.class,
+    CONDITION_TYPE_LF_DATE_TIME_CONDITION(10003,"无代码日期时间流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,2,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFDateTimeConditionJudge.class),
     CONDITION_TYPE_LF_COLLECTION_CONDITION(10004,"无代码集合流程条件",LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,1,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,LOWFLOW_CONDITION_CONTAINER_FIELD_NAME, LFCollectionConditionJudge.class),
+
+
+    CONDITION_TYPE_JUEL_EXPRESSION(20000,"JUEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, JuelExpressionConditionJudge.class),
+    CONDITION_TYPE_SPEL_EXPRESSION(20001,"SpEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, SpelExpressionConditionJudge.class),
     ;
 static{
     lowFlowCodes=  Lists.newArrayList(

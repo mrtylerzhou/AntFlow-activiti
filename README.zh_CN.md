@@ -5,21 +5,38 @@
  
   **严正声明：现在、未来都不会有商业版本，拒绝伪开源，拒绝加密、加壳、混淆，连网检查授权等行为。** 
 
+### 企业/个人使用登记[登记入口](https://gitee.com/tylerzhou/Antflow/issues/IC07CJ)
+
 >我 🐶 在上海艰苦奋斗，白天在 top3 大厂搬砖，晚上在top3大厂混个晚餐，夜里和早上为开源做贡献。
 
 >如果这个项目让你有所收获，记得 Star 关注哦，这对我是非常不错的鼓励与支持。
 
-> antflow不会卖文档,文档是开源的一部分.目前核心开发者都是兼职做开源,还要上班.功能都是加班做出来的,文档目前只有一些基本的,不是很全,后面会慢慢补齐.有问题可以群里问或者提issue.我们有一个活跃的社区,您的问题会被重视的
++ **🥇🥇全网首创虚拟节点(VNode)模式!将流程流转业务和引擎(Flowable/camunda/activiti)执行api高度分离,零流程引擎知识也可上手开发工作流系统!(有经验的开发者更是如鱼得水,游刃有余,简介最后面有专业书籍推荐)**
+
+
++ **🦍🦍虚拟节点是activiti/flowable引擎api无关的、可迁移的（目前正在移植其它语言）、更加灵活可控的、安全的流程节点（你是否遇到过因为改activiti/flowable某个属性导致报错无法解决或者即便不报错但是行为不符合预期😭😭）。虚拟节点提供更加灵活的控制和更强大的业务表达能力。从而实现更的特定流程引擎api和流转业务设计解耦.让开发者更加聚焦业务开发**
+
+
++ **😄😄超级简单的开发模式。使用适配器模式将流程引擎流转业务和用户表单处理业务完全分离。 DIY流程后端只需要实现一个接口即可快速开发上线！低代码流程更是只需要拖拽即可完成流程设计，简单流程实现零代码！！这一切都如此简单，而且不需要流程引擎知识！不需要流程引擎知识！不需要流程引擎知识！**
+
++ **👨‍👨‍👦‍👦👨‍👨‍👦‍👦完全接管activiti用户系统(activiti自身用户系统太弱了,而且企业都有自身的用户系统设计),企业可以完全忘掉activiti中的用户表,群组表,成员关系表等等.接入企业现有系统中的用户,角色系统,这一切都非常容易!**
+
+
++ **🚩🚩允许运行时定义节点.彻底满足中国式办公特点! 安全实现流程串行、并行、会签、或签，顺序会签、审批人去重、加批、委托、转办、退回任意节点、动态跳过节点、变更处理人，版本迁移，低代码设计等等功能。**
+
+
++ **💻💻流程预览图、流程审批路径都是Json数据，而非图片流！一切皆Json！可自定义视觉渲染风格，以适应不同风格的系统。**
+
+> 以上多多次提到不需要流程引擎知识，主要是想强调使用Antflow即便没有专业的流程引擎知识也可以快速上手开发流程。 如果想要二开流程引擎知识仍然是必不可少的。二开指的是更改流程引擎核心源代码从而改变引擎的默认行为以适应企业特殊定制需求。Antflow本身提供了强大的审批人规则、审批条件规则等丰富的定制api，已经能满足95%以上场景，这些叫扩展，不叫二开，也是不需要流程引擎专业知识的
 
 # Antflow 简介
 AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
 -  在线预览(**设计器**) &nbsp;[预览入口](http://117.72.70.166/ant-flow/dist/#/)
 -  在线预览(**成品案例**) &nbsp;[预览入口](http://117.72.70.166/admin/) 
 -  系统操作手册 [查看入口](https://gitee.com/tylerzhou/Antflow/wikis/)
--  📢📢预览功能以及API介绍文档来啦(持续完善中...) [wiki](https://gitee.com/tylerzhou/Antflow/wikis/)
--  📢📢 **完全开源免费,无付费引导,可放心使用**
 -  开源设计器地址 [Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer) | [GitHub仓库](https://github.com/ldhnet/AntFlow-Designer) | [GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview)
 -  开源Antflow项目地址 [Gitee仓库](https://gitee.com/tylerzhou/Antflow) | [Github仓库](https://github.com/mrtylerzhou/AntFlow) | [GitCode仓库](https://gitcode.com/zypqqgc/AntFlow/overview)
+- 随手 star ⭐是一种美德。 你们的star就是我的动力
 -  QQ技术交流群（972107977） 期待您的加入
 -  有疑问可以Issues留言，我们会认真对待  [issues地址](https://gitee.com/tylerzhou/Antflow/issues)
 
@@ -27,8 +44,7 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 # Antflow核心技术栈
 
 * Java8-21 (master分支为java8版本,如果使用较新java版本,请切换到java17_support分支)
-* 温馨提示：java8版本 需要使用JDK-8.0.382.5 以上版本,如需要JDK文件可以加入QQ群下载
-* Activiti（fork了activiti5源码，并进行了魔改，⚠⚠用户请使用antflow源码中提供的sql进行建表，不要使用activiti自动创建表功能）
+* Activiti（fork了activiti源码，并进行了魔改，⚠⚠用户请使用antflow源码中提供的sql进行建表，不要使用activiti自动创建表功能）
 * Spring Boot 2.7.17
 * MybatisPlus 3.5.1
 * MySql 5.7+

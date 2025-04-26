@@ -81,7 +81,7 @@
     </select>
     <select id="selectMaxProcessId" resultType="java.lang.String">
         select r.ID_
-        from act_re_procdef r
+        from ACT_RE_PROCDEF r
         where r.KEY_ = #{processKey}
         order by r.VERSION_ desc
         LIMIT 1

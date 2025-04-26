@@ -122,11 +122,12 @@ aside {
 
 //main-container全局样式
 .app-container {
-  padding: 20px;
+  margin: 10px 10px 10px 10px;
   // height: 100%;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
+  box-shadow:0px 0px 12px rgba(0, 0, 0, 0.12);
 }
 
 .components-container {
@@ -134,10 +135,16 @@ aside {
   position: relative;
 }
 
-.pagination-container {
- /* margin-top: 10px;*/ //ruoyi.css
+.query-box {
+  padding: 10px; 
+  margin-bottom: 5px;
+  background-color: #fff;
 }
-
+.table-box {
+  padding: 10px; 
+  margin-top: 5px;
+  background-color: #fff;
+}
 .text-center {
   text-align: center
 }

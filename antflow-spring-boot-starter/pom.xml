@@ -9,7 +9,7 @@
     <properties>
 
         <!-- 主版本        -->
-        <antflow.version>0.81.0</antflow.version>
+        <antflow.version>0.90.0</antflow.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -351,7 +351,7 @@
                         <additionalparam>-quiet</additionalparam>
                     </additionalJOptions>
                     <reportOutputDirectory>${project.build.directory}/empty-javadoc</reportOutputDirectory>
-                    <skip>true</skip>
+                  <!--  <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>

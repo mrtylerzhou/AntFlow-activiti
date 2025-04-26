@@ -35,7 +35,7 @@
                             :style="{ width: '100%' }"></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="24" v-if="!props.isPreview && !props.reSubmit">
+                <el-col :span="24" v-if="!props.isPreview && props.showSubmit">
                     <el-form-item>
                         <el-button type="primary"  @click="handleSubmit">提交</el-button>
                     </el-form-item>
@@ -59,7 +59,7 @@ let props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    reSubmit: {//是否重新提交
+    showSubmit: {//是否显示提交按钮
         type: Boolean,
         default: false,
     },
@@ -126,7 +126,7 @@ const disabledBeginDateDate = (time) => {
 const disabledEndDate = (time) => {
     return time.getTime() < new Date(form.beginDate);
 }
-/**以下是通用方法不需要修改 views/bizentry/index.vue中调用*/
+/**以下是通用方法不需要修改 views/startFlow/index.vue中调用*/
 /**自选审批人 */
 const chooseApprovers = (data) => {
     form.approversList = data.approvers; 

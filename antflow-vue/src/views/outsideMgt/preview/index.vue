@@ -1,32 +1,38 @@
 <template>
     <div class="app-container home">
-        <div class="task-title">
-            <span class="task-title-text">流程详情预览</span>
-        </div>
-        <div style="background-color: #f5f5f7;min-height: calc(100vh - 200px);">
-            <el-row>
-                <el-col :span="24" style="margin-bottom: 20px;">
-                    <el-radio-group v-model="tabPosition">
-                        <!-- <el-radio-button value="buinessForm">业务表单信息</el-radio-button> -->
-                        <el-radio-button value="flowForm">流程基本信息</el-radio-button>
-                        <el-radio-button value="flow">流程模板预览</el-radio-button>
-                    </el-radio-group>
-                </el-col>
-                <!-- <el-col :span="24" v-if="tabPosition == 'buinessForm'">
-                    <demo1 ref="buinessDemo1" />
-                </el-col> -->
-                <el-col :span="24" v-if="tabPosition == 'flowForm'">
-                    <div v-if="processConfig">
-                        <BasicSetting ref="basicSetting" :basicData="processConfig" />
-                    </div>
-                </el-col>
-                <el-col :span="24" v-if="tabPosition == 'flow'">
-                    <div style="pointer-events: auto;" v-if="nodeConfig">
-                        <Process ref="processDesign" :processData="nodeConfig" />
-                    </div>
-                </el-col>
-            </el-row>
-            <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+        <div class="card-box" style="padding-top: 10px;">
+            <div class="task-title">
+                <span class="task-title-text">流程详情预览</span>
+            </div>
+            <div style="background-color: #f5f5f7;min-height: calc(100vh - 200px);">
+                <el-row>
+                    <el-col :span="24" style="margin-bottom: 20px;">
+                        <el-radio-group v-model="tabPosition">
+                            <el-radio-button value="flowForm">流程基本信息</el-radio-button>
+                            <el-radio-button value="formRender">业务表单预览</el-radio-button>
+                            <el-radio-button value="flow">流程模板预览</el-radio-button>
+                        </el-radio-group>
+                    </el-col>
+                    <el-col :span="24" v-if="tabPosition == 'flowForm'">
+                        <div v-if="processConfig">
+                            <BasicSetting ref="basicSetting" :basicData="processConfig" />
+                        </div>
+                    </el-col>
+                    <el-col :span="24" v-if="tabPosition === 'formRender'" class="item">
+                        <div v-if="processConfig" class="component">
+                            <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
+                                :isPreview="true">
+                            </component>
+                        </div>
+                    </el-col>
+                    <el-col :span="24" v-if="tabPosition == 'flow'">
+                        <div style="pointer-events: auto;" v-if="nodeConfig">
+                            <Process ref="processDesign" :processData="nodeConfig" />
+                        </div>
+                    </el-col>
+                </el-row>
+                <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+            </div>
         </div>
     </div>
 </template>
@@ -34,16 +40,22 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getApiWorkFlowData } from "@/api/outsideApi"
-import BasicSetting from "@/components/OutsideFlow/BasicSetting/index.vue"
-import Process from "@/components/OutsideFlow/Process/index.vue"
+import BasicSetting from "@/components/Workflow/outsideSetting/index.vue"
+import Process from "@/components/Workflow/Process/index.vue"
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data'
-const { proxy } = getCurrentInstance();
-const route = useRoute();
+import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
+const { proxy } = getCurrentInstance()
+const route = useRoute()
 const tabPosition = ref('flowForm')
 let processConfig = ref(null)
 let nodeConfig = ref(null)
 let title = ref('')
 let id = route.query?.id
+
+let lfFormDataConfig = ref(null)
+let loadedComponent = ref(null)
+let componentLoaded = ref(null)
+
 /** 关闭按钮 */
 function close() {
     proxy.$tab.closePage();
@@ -53,14 +65,28 @@ onMounted(async () => {
     await init();
     proxy.$modal.closeLoading();
 });
+
 const init = async () => {
-    let mockjson = await getApiWorkFlowData({ id }); 
+    let mockjson = await getApiWorkFlowData({ id });
+    if (mockjson.code != 200) {
+        proxy.$modal.msgError(mockjson.errMsg);
+        return;
+    }
     let data = FormatDisplayUtils.getToTree(mockjson.data);
     processConfig.value = data;
     title.value = data?.bpmnName;
     nodeConfig.value = data?.nodeConfig;
+    if (data.isLowCodeFlow == '1') {//低代码表单
+        lfFormDataConfig.value = data?.lfFormData
+        loadedComponent.value = await loadLFComponent();
+        componentLoaded.value = true;
+    } else {//自定义表单
+        loadedComponent.value = await loadDIYComponent(data.formCode).catch((err) => {
+            proxy.$modal.msgError(err);
+        });
+        componentLoaded.value = true;
+    }
 }
-
 </script>
 
 <style scoped lang="scss">

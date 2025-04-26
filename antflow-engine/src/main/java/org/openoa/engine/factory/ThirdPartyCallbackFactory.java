@@ -89,7 +89,8 @@ public class ThirdPartyCallbackFactory {
     public <T> T doCallback(String url, CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
                             String processNum, String businessId) {
 
-        boolean callBackSwitch = false;
+        //true代表回调调,false代表关闭回调
+        boolean callBackSwitch = true;
         Environment environment = SpringBeanUtils.getBean(Environment.class);
         String callbackSwitchStr = environment.getProperty("outside.callback.switch");
         if(!StringUtils.isEmpty(callbackSwitchStr)){

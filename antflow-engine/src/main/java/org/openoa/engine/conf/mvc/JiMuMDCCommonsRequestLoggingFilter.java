@@ -1,7 +1,7 @@
 package org.openoa.engine.conf.mvc;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.MDCLogUtil;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFilter {
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
 
     @Override
     protected boolean shouldLog(HttpServletRequest request) {

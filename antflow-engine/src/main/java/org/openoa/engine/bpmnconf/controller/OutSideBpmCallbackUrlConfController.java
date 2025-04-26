@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.controller;
 
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
@@ -21,7 +20,16 @@ public class OutSideBpmCallbackUrlConfController {
 
     @Autowired
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
-
+    /**
+     * query callback conf list by formCode
+     *
+     * @param formCode
+     * @return
+     */
+    @GetMapping("/callbackUrlConf/list/{formCode}")
+    public Result list(@PathVariable("formCode") String formCode) {
+        return Result.newSuccessResult(outSideBpmCallbackUrlConfService.selectListByFormCode(formCode));
+    }
     /**
      * query callback conf list by page
      *

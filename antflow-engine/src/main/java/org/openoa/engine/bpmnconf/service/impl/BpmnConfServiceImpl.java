@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
+import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_CONDITIONS;
 
 
 /**
@@ -127,6 +128,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
         int hasStartUserChooseModules=0;
         int hasCopy=0;
+        int hasLastNodeCopy=0;
+
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
@@ -189,11 +192,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
             //then edit the node
             bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
+            if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())&&CollectionUtils.isEmpty(bpmnNodeVo.getNodeTo())){
+                hasLastNodeCopy=BpmnConfFlagsEnum.HAS_LAST_NODE_COPY.getCode();
+            }
 
         }
         ProcessorFactory.executePostProcessors(bpmnConfVo);
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        Integer currentFlags=hasStartUserChooseModules|hasCopy;
+        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy;
         if(currentFlags!=null&&currentFlags>0){
             Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, currentFlags);
             bpmnConfVo.setExtraFlags(binariedOr);
@@ -354,7 +360,32 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
         if (!ObjectUtils.isEmpty(bpmnConfVo.getNodes())) {
-            bpmnConfVo.getNodes().forEach(node -> node.setFormCode(bpmnConfVo.getFormCode()));
+            Map<String,BpmnNodeVo>id2NodeMap=null;
+            for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
+                    node.setFormCode(bpmnConfVo.getFormCode());
+                    if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
+                        BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                        if(aggregationNode==null){
+                            throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                        }
+                        aggregationNode.setAggregationNode(true);
+                        aggregationNode.setDeduplicationExclude(true);
+                    }
+                   /* if(NODE_TYPE_CONDITIONS.getCode().equals(node.getNodeType())&&node.getNodeTo().size()>1){
+                        String nodeFrom = node.getNodeFrom();
+                        if(id2NodeMap==null){
+                            id2NodeMap=bpmnConfVo.getNodes().stream().collect(Collectors.toMap(BpmnNodeVo::getNodeId, o -> o,(k1,k2)->k1));
+                        }
+                        BpmnNodeVo gatewayNode = id2NodeMap.get(nodeFrom);
+                        gatewayNode.setIsParallel(true);
+                        BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
+                        if(aggregationNode==null){
+                            throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                        }
+                        aggregationNode.setAggregationNode(true);
+                        aggregationNode.setDeduplicationExclude(true);
+                    }*/
+            }
         }
         //set viewpage buttons
         setViewPageButton(bpmnConfVo);
@@ -704,7 +735,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         setFieldControlVOs(bpmnNode,lfFieldControlMap,bpmnNodeVo);
         List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
         if(!CollectionUtils.isEmpty(nodeLabels)){
-            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelName(), a.getLabelValue())).collect(Collectors.toList());
+            List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
             bpmnNodeVo.setLabelList(labelVOList);
         }
 
@@ -836,7 +867,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         }
         this.updateById(BpmnConf
                 .builder()
-                .id(Long.parseLong(id.toString()))
+                .id(id.longValue())
                 .appId(confInDb.getAppId())
                 .bpmnType(confInDb.getBpmnType())
                 .isAll(getIsAll(bpmnConf, confInDb))

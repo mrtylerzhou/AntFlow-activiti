@@ -101,6 +101,20 @@ public class ActivitiAdditionalInfoServiceImpl {
         }
         return null;
     }
+    public List<PvmActivity> getNextElementList(String elementId, List<ActivityImpl> activitiList) {
+        List<PvmActivity> pvmActivityList = Lists.newArrayList();
+        for (ActivityImpl activity : activitiList) {
+            if (elementId.equals(activity.getId())) {
+                List<PvmTransition> outTransitions = activity.getOutgoingTransitions();//get all outgoing transitions from this activity
+                for (PvmTransition tr : outTransitions) {
+                    PvmActivity ac = tr.getDestination(); // get the destination activity
+                    pvmActivityList.add(ac);
+                }
+                break;
+            }
+        }
+        return pvmActivityList;
+    }
     public PvmActivity getNextElement(String elementId,String procInstId){
         if(StringUtils.isAnyBlank(elementId,procInstId)){
             throw new JiMuBizException("获取流程下一节点失败,elementId或procInstId值为空!");

@@ -42,6 +42,7 @@ public class BpmnNodeConditionsParamConf {
      */
     @TableField("condition_param_jsom")
     private String conditionParamJsom;
+    private Integer operator;
     /**
      * remark
      */

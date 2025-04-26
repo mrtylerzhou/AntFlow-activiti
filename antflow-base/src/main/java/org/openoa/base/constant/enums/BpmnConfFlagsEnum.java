@@ -14,6 +14,7 @@ public enum BpmnConfFlagsEnum {
     HAS_STARTUSER_CHOOSE_MODULES(0b10,"是否包含发起人自选模块"),
     HAS_DYNAMIC_CONDITIONS(0b100,"是否包含动态条件"),
     HAS_COPY(0b1000,"是否包含抄送"),
+    HAS_LAST_NODE_COPY(0b10000,"最后一个节点是否包含抄送"),
     ;
     private final Integer code;
     private final String desc;

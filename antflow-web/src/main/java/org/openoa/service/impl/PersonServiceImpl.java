@@ -2,7 +2,7 @@ package org.openoa.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfUserService;
 import org.openoa.entity.Person;
 import org.openoa.entity.Student;
 import org.openoa.base.entity.User;
@@ -44,7 +44,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
     @Autowired
     private StudentMapper studentMapper;
     @Autowired
-    private UserServiceImpl userService;
+    private AfUserService userService;
 
 
     //@DS(DB_NAME_2)

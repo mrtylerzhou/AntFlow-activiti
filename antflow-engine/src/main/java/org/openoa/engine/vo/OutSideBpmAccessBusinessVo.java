@@ -132,4 +132,7 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
      * out side level nodes
      */
     private List<OutSideLevelNodeVo>outSideLevelNodes;
+    private Map<String,Object> lfConditions;
+    private Boolean isLowCodeFlow;
+    private Map<String,Object> lfFields;
 }

@@ -166,7 +166,7 @@
             <el-button type="primary" @click="saveApprover">确 定</el-button>
             <el-button @click="closeDrawer">取 消</el-button>
         </div>
-        <employees-dialog v-model:visible="approverVisible" :data="checkedList" @change="sureApprover" />
+        <select-user-dialog v-model:visible="approverVisible" :data="checkedList" @change="sureApprover" />
         <role-dialog v-model:visible="approverRoleVisible" :data="checkedRoleList" @change="sureRoleApprover" />
     </el-drawer>
 </template>
@@ -175,7 +175,7 @@ import { ref, watch, computed } from 'vue';
 import $func from '@/utils/flow/index';
 import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/flow/const';
 import { useStore } from '@/store/modules/workflow';
-import employeesDialog from '../dialog/employeesDialog.vue';
+import selectUserDialog from '../dialog/selectUserDialog.vue';
 import roleDialog from '../dialog/roleDialog.vue';
 import FormPermConf from "../config/FormPermConf.vue";
 const { proxy } = getCurrentInstance();
@@ -332,7 +332,6 @@ const closeDrawer = () => {
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
-
 .el-drawer__header {
     margin-bottom: 5px !important;
 }
@@ -340,6 +339,8 @@ const closeDrawer = () => {
 .selected_list {
     margin-bottom: 20px;
     line-height: 40px;
+    max-height: 180px;
+    overflow-y: auto;
 }
 
 .selected_list span {
@@ -446,5 +447,5 @@ const closeDrawer = () => {
     margin-top: 6px;
     width: 95%;
     height: 45px;
-}
+} 
 </style>

@@ -153,10 +153,10 @@ public class BpmnConfCommonServiceImpl {
 
         //5、set record variables
         BpmnInsertVariables bpmnInsertVariables = SpringBeanUtils.getBean(BpmnInsertVariablesImpl.class);
-        if(!Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
-            bpmnInsertVariables.insertVariables(bpmnConfCommonVo, bpmnStartConditions);
+        if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
+            bpmnVariableService.deleteByProcessNumber(bpmnStartConditions.getProcessNum());
         }
-
+        bpmnInsertVariables.insertVariables(bpmnConfCommonVo, bpmnStartConditions);
         //prepared and begin to start up a process
         BpmnCreateBpmnAndStart bpmnCreateBpmnAndStart = SpringBeanUtils.getBean(BpmnCreateBpmnAndStartImpl.class);
         bpmnCreateBpmnAndStart.createBpmnAndStart(bpmnConfCommonVo, bpmnStartConditions);
@@ -355,7 +355,7 @@ public class BpmnConfCommonServiceImpl {
         vo.setIsStartPagePreview(isStartPagePreview);
 
         BpmnStartConditionsExtendVo bpmnStartConditionsExtendVo = new BpmnStartConditionsExtendVo();
-
+        bpmnStartConditionsExtendVo.setLowCodeFlow(true);
         //set start user information
         String startUserId;
         if (isStartPagePreview) {
@@ -373,7 +373,7 @@ public class BpmnConfCommonServiceImpl {
             }
         }
         if (!ObjectUtils.isEmpty(startUserId)) {
-            bpmnStartConditionsExtendVo.setStartUserId(startUserId.toString());
+            bpmnStartConditionsExtendVo.setStartUserId(startUserId);
             //todo set startcondition
         }
 
@@ -687,6 +687,7 @@ public class BpmnConfCommonServiceImpl {
                 if (!NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(node.getNodeType())&&!CollectionUtils.isEmpty(node.getEmpToForwardList())) {
                     List<BaseIdTranStruVo> empToForwardList = node.getEmpToForwardList();
                     List<BpmProcessForward> processForwardList=new ArrayList<>(node.getEmpToForwardList().size());
+                    boolean lastNodeForward = node.isLastNodeForward();
                     for (BaseIdTranStruVo baseIdTranStruVo : empToForwardList) {
                         BpmProcessForward bpmProcessForward = BpmProcessForward.builder()
                                 .createTime(new Date())
@@ -698,6 +699,9 @@ public class BpmnConfCommonServiceImpl {
                                 .isDel(1)//it is invalid at first,then set it to be valid
                                 //at this moment,we can not get procInstId,update it later
                                 .build();
+                        if(lastNodeForward){
+                            bpmProcessForward.setNodeId(StringConstants.LASTNODE_COPY);
+                        }
                         processForwardList.add(bpmProcessForward);
                     }
                     processForwardService.saveBatch(processForwardList);

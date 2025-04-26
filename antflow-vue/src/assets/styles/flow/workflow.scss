@@ -449,21 +449,6 @@
      height: 100%
  }
 
- @font-face {
-     font-family: IconFont;
-     src: url("//at.alicdn.com/t/font_135284_ph2thxxbzgf.eot");
-     src: url("//at.alicdn.com/t/font_135284_ph2thxxbzgf.eot?#iefix") format("embedded-opentype"), url("//at.alicdn.com/t/font_135284_ph2thxxbzgf.woff") format("woff"), url("//at.alicdn.com/t/font_135284_ph2thxxbzgf.ttf") format("truetype"), url("//at.alicdn.com/t/font_135284_ph2thxxbzgf.svg#IconFont") format("svg")
- }
-
- .iconfont {
-     font-family: IconFont !important;
-     font-size: 16px;
-     font-style: normal;
-     -webkit-font-smoothing: antialiased;
-     -webkit-text-stroke-width: .2px;
-     -moz-osx-font-smoothing: grayscale
- }
-
  .fd-nav {
      // position: fixed;
      top: 20px;
@@ -531,6 +516,7 @@
  .fd-nav .fd-nav-title {
      width: 0;
      flex: 1;
+     font-weight: 700;
      overflow: hidden;
      white-space: nowrap;
      text-overflow: ellipsis;
@@ -600,7 +586,7 @@
 
  .error-modal-desc {
      font-size: 13px;
-     color: rgba(25, 31, 37, .56);
+     color:  #2186ef;
      line-height: 22px;
      margin-bottom: 14px
  }
@@ -626,7 +612,7 @@
  .error-modal-item-label {
      flex: none;
      font-size: 15px;
-     color: rgba(25, 31, 37, .56);
+     color: red;
      padding-right: 10px
  }
 
@@ -860,7 +846,8 @@
      overflow: hidden;
      text-overflow: ellipsis;
      display: -webkit-box;
-     -webkit-line-clamp: 3;
+     -webkit-line-clamp: 3; 
+     line-clamp: 3;
      -webkit-box-orient: vertical
  }
 
@@ -1183,9 +1170,9 @@
  }
 
  .antflow-design .auto-judge .title-wrapper .priority-title {
-     display: inline-block;
+     display: inline;
      float: right;
-     margin-right: 10px;
+     margin-right: 0px;
      color: rgba(25, 31, 37, .56)
  }
 
@@ -1217,6 +1204,7 @@
      text-overflow: ellipsis;
      display: -webkit-box;
      -webkit-line-clamp: 3;
+     line-clamp: 3;
      -webkit-box-orient: vertical
  }
 

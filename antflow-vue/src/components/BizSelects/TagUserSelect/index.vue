@@ -78,6 +78,6 @@ const saveUserDialog = (data) => {
 }
 
 .validate-class {
-    box-shadow: 0 0 0 1px #f56c6c;
+    box-shadow: 0 0 0 1px #ff4949;
 }
 </style>

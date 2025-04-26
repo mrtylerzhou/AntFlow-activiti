@@ -7,8 +7,8 @@ import org.openoa.base.vo.BpmnStartConditionsVo;
  * @author AntFlow
  * @since 0.5
  */
-public abstract class ConditionJudge {
+public interface ConditionJudge {
 
-    public abstract boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo);
+   boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index);
 
 }

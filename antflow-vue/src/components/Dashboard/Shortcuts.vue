@@ -6,7 +6,7 @@
 -->
 <template>
     <el-row :gutter="20">
-        <el-col :xs="24"  :md="6">
+        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
             <div class="ve-card ve_card1" @click="handleTodo()">
                 <el-icon>
                     <bell />
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :xs="24"  :md="6">
+        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
             <div class="ve-card ve_card2" @click="handleTodayDone()">
                 <el-icon>
                     <EditPen />
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </el-col> 
-        <el-col :xs="24"  :md="6">
+        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
             <div class="ve-card ve_card3" @click="handleTodayCreate()">
                 <el-icon>
                     <TakeawayBox /> 
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col  :xs="24" :md="6">
+        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
             <div class="ve-card ve_card4">
                 <el-icon>
                     <document />
@@ -72,25 +72,27 @@ const getTodo = () => {
 }
 getTodo();
 const handleTodo = () => {
-  const obj = {path: "/flowtask/pendding"};
+  const obj = {path: "/flowTask/pendding"};
   proxy.$tab.openPage(obj);
 }
 const handleTodayDone = () => {
-  const obj = {path: "/flowtask/approved"};
+  const obj = {path: "/flowTask/approved"};
   proxy.$tab.openPage(obj);
 }
 const handleTodayCreate = () => {
-  const obj = {path: "/flowtask/mytask"};
+  const obj = {path: "/flowTask/mytask"};
   proxy.$tab.openPage(obj);
 } 
 </script>
 <style lang="scss" scoped>
 .el-row {
-    height: 50%; 
+    height: 50%;  
+    padding-top: 10px;
     padding-right: 10px;   
+    padding-left: 10px;
 }
 .el-col {  
-    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 .ve-card {
     cursor: pointer;
@@ -103,6 +105,7 @@ const handleTodayCreate = () => {
     &:hover {
         box-shadow: 3px 3px 6px 1px rgba(0, 0, 0, 0.2);
         background: #fff;
+        border: 2px solid #1890ff;
     }
     i {
         font-size: 90px;
@@ -118,33 +121,33 @@ const handleTodayCreate = () => {
             text-overflow: ellipsis;
         }
         span {
-            font-size: 60px;
+            font-size: 55px;
             font-weight: bold;
         }
     }
 }
 .ve_card1 {
-    background: #409eff;
+    background: #1890ff;
     &:hover {
-        color: #409eff;
+        color: #1890ff;
     }
 }
 .ve_card2 {
-    background: #67c23a;
+    background: #13ce66;
     &:hover {
-        color: #67c23a;
+        color: #13ce66;
     }
 }
 .ve_card3 {
-    background: #e6a23c;
+    background: #FE7300;
     &:hover {
-        color: #e6a23c;
+        color: #FE7300;
     }
 }
 .ve_card4 {
-    background: #f56c6c;
+    background: #ff4949;
     &:hover {
-        color: #f56c6c;
+        color: #ff4949;
     }
 }
 </style>
