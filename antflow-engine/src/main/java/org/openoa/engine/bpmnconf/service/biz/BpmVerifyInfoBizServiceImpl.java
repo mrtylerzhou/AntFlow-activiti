@@ -39,6 +39,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.enums.ProcessEnum.COMLETE_STATE;
 import static org.openoa.base.constant.enums.ProcessNodeEnum.START_TASK_KEY;
 import static org.openoa.base.constant.enums.ProcessStateEnum.*;
 
@@ -121,12 +122,15 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         int sort = 0;
 
         //iterate through the verify info
+        //审批拒绝
+        Boolean noApproval = false;
         List<BpmVerifyInfoVo> bpmVerifyInfoSortVos = Lists.newArrayList();
         for (BpmVerifyInfoVo bpmVerifyInfoVo : bpmVerifyInfoVos) {
             if (bpmVerifyInfoVo.getVerifyStatus() == 3 || bpmVerifyInfoVo.getVerifyStatus() == 6) {
                 bpmVerifyInfoVo.setTaskName(lastHistoricTaskInstance.getName());
 
                 bpmVerifyInfoVo.setVerifyStatusName("审批拒绝");
+                noApproval = true; //有审批拒绝，则流程结束
             }
 
             if (bpmVerifyInfoVo.getVerifyStatus() == 5) {
@@ -218,17 +222,18 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setElementId(lastHistoricTaskInstance.getTaskDefinitionKey());
         }
 
-        Integer processState = bpmBusinessProcess.getProcessState();
-
-        Integer endVerifyStatus = 100;
-        if (processState != REJECT_STATE.getCode() || processState != END_STATE.getCode()) {
-            if (!finishFlag) {
-                //追加流程记录
+        //追加流程记录
+        if (!finishFlag) {
+            if(!noApproval){
+                //当节点没有审批拒绝时，才追加流程记录
                 addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
             }
-            if (processState == HANDLING_STATE.getCode()) {
-                endVerifyStatus = 0;
-            }
+        }
+
+
+        Integer endVerifyStatus = 100;
+        if (bpmBusinessProcess.getProcessState() == COMLETE_STATE.getCode()) {
+            endVerifyStatus = 0;
         }
 
         bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("流程结束").verifyStatus(endVerifyStatus).build());
