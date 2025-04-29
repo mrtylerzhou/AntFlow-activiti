@@ -1,10 +1,11 @@
 package org.openoa.engine.lowflow.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
@@ -15,10 +16,12 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.engine.bpmnconf.mapper.LFMainMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
@@ -29,7 +32,6 @@ import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -204,7 +206,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         if(CollectionUtils.isEmpty(fieldConfMap)){
             throw  new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
-        List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId);
+        List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId,formCode);
         mainFieldService.saveBatch(mainFields);
         vo.setBusinessId(mainId.toString());
         vo.setProcessDigest(vo.getRemark());

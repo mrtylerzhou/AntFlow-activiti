@@ -1,15 +1,20 @@
 package org.openoa.engine.conf.mybatis.interceptor;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.BinaryExpression;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Parenthesis;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.insert.Insert;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.statement.update.Update;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
@@ -27,20 +32,24 @@ import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.utils.BoundSqlUtils;
 import org.openoa.engine.utils.ConsistentHashingAlg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.zip.CRC32;
+import java.util.*;
 
 @Component
 @Intercepts({
@@ -48,6 +57,7 @@ import java.util.zip.CRC32;
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
 })
 public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, InitializingBean {
+    private static final Logger log = LoggerFactory.getLogger(LFConsistentHashingRoutingSqlInterceptor.class);
     @Value("${lf.main.table.count:1}")
     private  Integer mainTableCount;
     @Value("${lf.field.table.count:1}")
@@ -128,6 +138,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
         return builder.build();
     }
     private String restoreFormCodeValueFromSql(String sql, BoundSql boundSql) {
+
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         Object parameterObject = boundSql.getParameterObject();
 
@@ -144,6 +155,46 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
                 new DefaultReflectorFactory()
         );
 
+        try {
+            List<Map.Entry<String, String>> entries = BoundSqlUtils.extractWhereColumnsAndParams(boundSql);
+            String idValue="";
+            if(!CollectionUtils.isEmpty(entries)){
+                for (Map.Entry<String, String> entry : entries) {
+                    if(FORM_CODES_UPPER.contains(entry.getKey().toUpperCase())){
+                        Object value = metaObject.getValue(entry.getValue());
+                        if(value!=null){
+                            return formatParameter(value);
+                        }
+                    }else if ("ID".equalsIgnoreCase(entry.getKey())) {
+                        Object value = metaObject.getValue(entry.getValue());
+                        if(value!=null){
+                            idValue= formatParameter(value);
+                        }
+                    }
+                }
+                if(!StringUtils.hasText(idValue)){
+                    //目前无法支持模糊查找,必须要拿到formcode先确定路由表,其它场景太复杂了,暂不支持
+                    throw new JiMuBizException("不支持的sql语句,sql语句中没有formCode,并且没有id条件!");
+                }
+                BpmBusinessProcessServiceImpl businessProcessService = SpringBeanUtils.getBean(BpmBusinessProcessServiceImpl.class);
+                LambdaQueryWrapper<BpmBusinessProcess> queryWrapper = Wrappers.<BpmBusinessProcess>lambdaQuery()
+                        .eq(BpmBusinessProcess::getBusinessId, idValue)
+                        .eq(BpmBusinessProcess::getIsLowCodeFlow, 0);
+                BpmBusinessProcess bpmBusinessProcess = businessProcessService.getOne(queryWrapper);
+                if(bpmBusinessProcess!=null){
+                    return bpmBusinessProcess.getProcessinessKey();
+                }else{
+                    throw new JiMuBizException("无法根据低代码流程指定Id:"+idValue+"找到流程信息,对应的流程不存在!");
+                }
+
+            }else {
+                log.warn("不支持的sql语句,sql语句中没有where子句"+sql);
+
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         for (ParameterMapping parameterMapping : parameterMappings) {
             String propertyName = parameterMapping.getProperty();
             if(!FORM_CODES_UPPER.contains(propertyName.toUpperCase())){
@@ -318,6 +369,135 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
             table.setName(newTblName);
         }
         return delete.toString();
+    }
+    /**
+     * 从 SQL 查询中提取列名
+     * @param sql 输入的 SQL 查询
+     * @return 返回 SQL 查询中的列名
+     * @throws Exception 解析错误
+     */
+    public static List<String> getColumnNamesFromSelectSql(String sql)  {
+        List<String> columnNames = new ArrayList<>();
+
+        // 创建 SQL 解析器
+        CCJSqlParserManager parserManager = new CCJSqlParserManager();
+        // 解析 SQL 语句
+        Statement statement = null;
+        try {
+            statement = parserManager.parse(new StringReader(sql));
+        } catch (JSQLParserException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (statement instanceof Select) {
+            Select selectStatement = (Select) statement;
+
+            // 获取 SELECT 子句中的列名
+            SelectBody selectBody = selectStatement.getSelectBody();
+            if (selectBody instanceof PlainSelect) {
+                PlainSelect plainSelect = (PlainSelect) selectBody;
+
+                // 获取 SELECT 子句中的所有列名
+                for (SelectItem item : plainSelect.getSelectItems()) {
+                    if (item instanceof SelectExpressionItem) {
+                        Expression expression = ((SelectExpressionItem) item).getExpression();
+                        columnNames.addAll(getColumnNames(expression));
+                    }
+                }
+
+                // 获取 WHERE 子句中的列名
+                Expression whereClause = plainSelect.getWhere();
+                if (whereClause != null) {
+                    columnNames.addAll(getColumnNames(whereClause));
+                }
+            }
+        }
+
+        return columnNames;
+    }
+    /**
+     * 从 SQL 查询中提取 WHERE 子句中的列名
+     * @param sql 输入的 SQL 查询
+     * @return 返回 SQL 查询中的 WHERE 子句涉及的列名
+     * @throws Exception 解析错误
+     */
+    public static List<String> getWhereColumnNamesFromSql(String sql) {
+        List<String> columnNames = new ArrayList<>();
+
+        // 创建 SQL 解析器
+        CCJSqlParserManager parserManager = new CCJSqlParserManager();
+        // 解析 SQL 语句
+        Statement statement = null;
+        try {
+            statement = parserManager.parse(new StringReader(sql));
+        } catch (JSQLParserException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 处理不同类型的 SQL 语句
+        if (statement instanceof Select) {
+            Select selectStatement = (Select) statement;
+            processWhereClause(selectStatement, columnNames);
+        } else if (statement instanceof Update) {
+            Update updateStatement = (Update) statement;
+            processWhereClause(updateStatement, columnNames);
+        } else if (statement instanceof Delete) {
+            Delete deleteStatement = (Delete) statement;
+            processWhereClause(deleteStatement, columnNames);
+        }
+
+        return columnNames;
+    }
+
+    /**
+     * 提取 SQL 语句中 WHERE 子句中的列名
+     * @param statement SQL 语句
+     * @param columnNames 存储列名的列表
+     */
+    private static void processWhereClause(Statement statement, List<String> columnNames) {
+        Expression whereClause = null;
+
+        // 对不同类型的 SQL 语句进行处理
+        if (statement instanceof Select) {
+            Select selectStatement = (Select) statement;
+            PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
+            whereClause = plainSelect.getWhere();
+        } else if (statement instanceof Update) {
+            Update updateStatement = (Update) statement;
+            whereClause = updateStatement.getWhere();
+        } else if (statement instanceof Delete) {
+            Delete deleteStatement = (Delete) statement;
+            whereClause = deleteStatement.getWhere();
+        }
+
+
+        if (whereClause != null) {
+            columnNames.addAll(getColumnNames(whereClause));
+        }
+    }
+    /**
+     * 递归解析表达式并提取列名
+     * @param expression SQL 中的表达式
+     * @return 返回列名
+     */
+    public static List<String> getColumnNames(Expression expression) {
+        List<String> columnNames = new ArrayList<>();
+
+        if (expression instanceof Column) {
+            // 如果是列名，则加入到结果列表中
+            columnNames.add(((Column) expression).getColumnName());
+        } else if (expression instanceof BinaryExpression) {
+            // 如果是二元表达式（如 AND、OR 等），则递归解析左侧和右侧表达式
+            BinaryExpression binaryExpression = (BinaryExpression) expression;
+            columnNames.addAll(getColumnNames(binaryExpression.getLeftExpression()));
+            columnNames.addAll(getColumnNames(binaryExpression.getRightExpression()));
+        } else if (expression instanceof Parenthesis) {
+            // 如果是括号表达式，继续递归解析括号内的表达式
+            Parenthesis parenthesis = (Parenthesis) expression;
+            columnNames.addAll(getColumnNames(parenthesis.getExpression()));
+        }
+
+        return columnNames;
     }
     @Override
     public Object plugin(Object target) {

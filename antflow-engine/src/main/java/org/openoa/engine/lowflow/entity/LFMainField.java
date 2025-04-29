@@ -76,7 +76,7 @@ public class LFMainField {
     private Date updateTime;
 
 
-    public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId){
+    public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId,String formCode){
         if(CollectionUtils.isEmpty(fieldMap)){
             throw new JiMuBizException("form data has no value");
         }
@@ -93,6 +93,7 @@ public class LFMainField {
             }
             Object value = fieldId2ValueEntry.getValue();
             LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
+            mainField.setFormCode(formCode);
             mainFields.add(mainField);
         }
         return mainFields;
