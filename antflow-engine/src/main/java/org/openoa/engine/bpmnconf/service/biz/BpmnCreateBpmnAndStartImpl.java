@@ -16,6 +16,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +127,15 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
             Map<String,Object> varMap=new HashMap<>();
             varMap.put(StringConstants.TASK_ASSIGNEE_NAME, SecurityUtils.getLogInEmpName());
             taskService.complete(task.getId(),varMap);
+
+            //执行自定义业务逻辑
+            Collection<BpmnBizCustomService> beans = SpringBeanUtils.getBeans(BpmnBizCustomService.class);
+            if (!ObjectUtils.isEmpty(beans)) {
+                for (BpmnBizCustomService bean : beans) {
+                    bean.execute(task);
+                }
+            }
+
         }
 
     }

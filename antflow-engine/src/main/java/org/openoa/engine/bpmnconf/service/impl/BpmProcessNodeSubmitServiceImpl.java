@@ -9,13 +9,16 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeSubmitMapper;
+import org.openoa.engine.bpmnconf.service.biz.BpmnBizCustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +139,14 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
             }
         } else {
             taskService.complete(task.getId(), varMap);
+
+            //执行自定义业务逻辑
+            Collection<BpmnBizCustomService> beans = SpringBeanUtils.getBeans(BpmnBizCustomService.class);
+            if (!ObjectUtils.isEmpty(beans)) {
+                for (BpmnBizCustomService bean : beans) {
+                    bean.execute(task);
+                }
+            }
         }
     }
 }
