@@ -300,22 +300,22 @@ export class FormatUtils {
           if (node.setType == 4) {
             for (let approve of node.nodeApproveList) {
               let role = {};
-              role.id = parseInt(approve.targetId);
+              role.id = approve.targetId;
               role.name = approve.name;
-              approveObj.roleIds.push(parseInt(approve.targetId));
+              approveObj.roleIds.push(approve.targetId);
               approveObj.roleList.push(role);
             }
           } else if (node.setType == 5) {
             for (let approve of node.nodeApproveList) {
               let emp = {};
-              emp.id = parseInt(approve.targetId);
+              emp.id = approve.targetId;
               emp.name = approve.name;
-              approveObj.emplIds.push(parseInt(approve.targetId));
+              approveObj.emplIds.push(approve.targetId);
               approveObj.emplList.push(emp);
             }
           } else if (node.setType == 6) {
             for (let approve of node.nodeApproveList) {
-              approveObj.hrbpConfType = parseInt(approve.targetId);
+              approveObj.hrbpConfType = approve.targetId;
             }
           }
         } else if (node.setType == 3) {
