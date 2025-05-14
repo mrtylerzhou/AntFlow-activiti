@@ -43,8 +43,8 @@
           </template>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link href="http://117.72.70.166/admin/"
-                target="_blank">http://117.72.70.166/admin/</el-link>
+              <i class="el-icon-s-promotion"></i> 官网：<el-link href="http://14.103.207.27/admin/"
+                target="_blank">http://14.103.207.27/admin/</el-link>
             </p>
             <p>
               <i class="el-icon-user-solid"></i> QQ群：
@@ -59,7 +59,7 @@
       </el-col>
     </el-row>
     <el-divider />
-    <el-row :gutter="20"> 
+    <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="8" style="margin-bottom: 5px;">
         <el-card class="update-log">
           <template v-slot:header>
@@ -135,14 +135,16 @@ function goTarget(url) {
 
 <style scoped lang="scss">
 .el-row {
-    height: 50%;  
-    padding-top: 10px;
-    padding-right: 10px;   
-    padding-left: 10px;
+  height: 50%;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
-.el-col {  
-    padding-bottom: 10px;
+
+.el-col {
+  padding-bottom: 10px;
 }
+
 .home {
   blockquote {
     padding: 10px 20px;
