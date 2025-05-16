@@ -13,7 +13,7 @@
             <el-input v-model="form.applicationName" :disabled=true placeholder="请输入业务表单名称" />
           </el-form-item>
         </el-col>
-   
+
         <el-col :span="24">
           <el-form-item label="ClientId" prop="apiClientId">
             <el-input v-model="form.apiClientId" placeholder="请输入ClientId" :disabled=true />
@@ -23,7 +23,7 @@
           <el-form-item label="ClientSecret" prop="apiClientSecret">
             <el-input v-model="form.apiClientSecret" placeholder="请输入ClientSecret" :disabled=true />
           </el-form-item>
-        </el-col> 
+        </el-col>
         <el-col :span="24">
           <el-form-item label="流程回调URL" prop="bpmFlowCallbackUrl">
             <el-input v-model="form.bpmFlowCallbackUrl" placeholder="请输入流程流转回调URL(必须http或https开头)">
@@ -38,7 +38,7 @@
               </template>
             </el-input>
           </el-form-item>
-        </el-col>  
+        </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
@@ -54,20 +54,20 @@
     </template>
   </el-dialog>
 </template>
-<script setup> 
+<script setup>
 import { computed, reactive, getCurrentInstance, watch } from "vue";
 import { callbackUrlConf } from "@/api/outsideApi";
 import { getDynamicsList } from "@/api/mock";
 const { proxy } = getCurrentInstance();
 let props = defineProps({
-   visible: {
-        type: Boolean,
-        default:false,
-    },
-    bizformData: {
-        type: Object,
-        default: () => {},
-    }
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  bizformData: {
+    type: Object,
+    default: () => { },
+  }
 });
 
 let dialogVisible = computed({
@@ -79,14 +79,14 @@ let dialogVisible = computed({
   }
 })
 const emits = defineEmits(["update:visible", "changeRefresh"]);
- 
+
 const data = reactive({
-  form: {},  
+  form: {},
   rules: {
     businessPartyName: [{ required: true, message: '', trigger: 'blur' }],
-    applicationName: [{ required: true, message: '', trigger: 'blur' }], 
+    applicationName: [{ required: true, message: '', trigger: 'blur' }],
     apiClientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务方唯一标识(不能输入中文)', trigger: 'blur' }],
-    apiClientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务方密钥(不能输入中文)', trigger: 'blur' }], 
+    apiClientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务方密钥(不能输入中文)', trigger: 'blur' }],
     bpmFlowCallbackUrl: [
       {
         required: true,
@@ -99,21 +99,21 @@ const data = reactive({
 const { form, rules } = toRefs(data);
 
 watch(() => props.bizformData, (val) => {
-  form.value = val;    
-  form.value.apiClientId= "033AFA1C6C3545AD";
-  form.value.apiClientSecret= "EF28AC4A539E4A6F8CFC17ECC2C863CC"; 
-  form.value.bpmFlowCallbackUrl= "http://117.72.70.166:7001/user/getUser"; 
-}, { deep: true});
-  
+  form.value = val;
+  form.value.apiClientId = "033AFA1C6C3545AD";
+  form.value.apiClientSecret = "EF28AC4A539E4A6F8CFC17ECC2C863CC";
+  form.value.bpmFlowCallbackUrl = "http://14.103.207.27:7001/user/getUser";
+}, { deep: true });
+
 /** 提交表单 */
 function submitApproveTempForm() {
   proxy.$refs["callbackConfRef"].validate(async valid => {
     if (valid) {
-      proxy.$modal.loading(); 
+      proxy.$modal.loading();
       await callbackUrlConf(form.value).then(res => {
-        if (res && res.code == 200) {          
+        if (res && res.code == 200) {
           emits("update:visible", false);
-          emits("changeRefresh", { paneName:'callbackSet'});
+          emits("changeRefresh", { paneName: 'callbackSet' });
           proxy.$modal.msgSuccess("添加成功");
         } else {
           proxy.$modal.msgError("添加失败" + res.errMsg);
@@ -147,12 +147,12 @@ function handleCheckCallbackUrl() {
   }
 }
 /** 取消操作添加条件模板表单 */
-function closeDialog() {  
+function closeDialog() {
   emits("update:visible", false);
   //reset();
 }
 /** 重置操作表单 */
 function reset() {
-  form.value = {}; 
+  form.value = {};
 }
 </script>

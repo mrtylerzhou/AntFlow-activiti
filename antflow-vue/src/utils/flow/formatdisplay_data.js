@@ -180,7 +180,7 @@ export class FormatDisplayUtils {
         if (node.nodeProperty == 6) {
           let approveObj = {
             type: 5,
-            targetId: parseInt(node.property.hrbpConfType || 0),
+            targetId: node.property.hrbpConfType || 0,
             name: hrbpOptions.find(
               (item) => item.value == node.property.hrbpConfType
             )?.label,
@@ -193,7 +193,7 @@ export class FormatDisplayUtils {
           for (let role of node.property.roleList) {
             let r = {
               type: 3,
-              targetId: parseInt(role.id),
+              targetId: role.id,
               name: role.name,
             };
             empList.push(r);
@@ -205,7 +205,7 @@ export class FormatDisplayUtils {
           for (let emp of node.property.emplList) {
             let approveObj = {
               type: 5,
-              targetId: parseInt(emp.id),
+              targetId: emp.id,
               name: emp.name,
             };
             empList.push(approveObj);

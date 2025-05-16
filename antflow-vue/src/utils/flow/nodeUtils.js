@@ -1,4 +1,13 @@
 //import { NodeUtils } from '@/utils/flow/nodeUtils'
+const isEmpty = (data) =>
+  data === null ||
+  data === undefined ||
+  data == "" ||
+  data == "" ||
+  data == "{}" ||
+  data == "[]" ||
+  data == "null";
+const isEmptyArray = (data) => (Array.isArray(data) ? data.length === 0 : true);
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
@@ -343,3 +352,49 @@ export function getMockData() {
     return startNode;
   }
   
+
+  /**
+   * 展平树结构
+   * @param {Object} treeData  - 节点数据
+   * @returns Array - 节点数组
+   */
+  export function flattenMapTreeToList(treeData) {
+    let nodeData = []; 
+    function traverse(node) {
+      if (!node && !node.hasOwnProperty("nodeType")) {
+        return nodeData;
+      }
+      if (node.nodeType == 2) {
+        if (node.childNode) {
+          node.childNode.nodeFrom = node.nodeId;
+          traverse(node.childNode);
+        }
+        if (!isEmptyArray(node.conditionNodes)) {
+          for (let child of node.conditionNodes) {
+            child.nodeFrom = node.nodeId;
+            traverse(child);
+          }
+          node.nodeTo = node.conditionNodes.map((item) => item.nodeId); 
+        }
+      } else if (node.nodeType == 7) {
+        if (node.childNode) {
+          node.childNode.nodeFrom = node.nodeId;
+          traverse(node.childNode);
+        }
+        if (!isEmptyArray(node.parallelNodes)) {
+          for (let child of node.parallelNodes) {
+            child.nodeFrom = node.nodeId;
+            traverse(child);
+          }
+          node.nodeTo = node.parallelNodes.map((item) => item.nodeId); 
+        }
+      } else if (node.childNode) {
+        node.nodeTo = [node.childNode.nodeId];
+        node.childNode.nodeFrom = node.nodeId;
+        traverse(node.childNode);
+      } 
+      nodeData.push(node);
+    }
+    traverse(treeData);
+    return nodeData;
+  }
