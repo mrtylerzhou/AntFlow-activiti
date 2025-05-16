@@ -37,6 +37,8 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.lowflow.entity.LFMain;
+import org.openoa.engine.lowflow.entity.LFMainField;
 import org.openoa.engine.utils.BoundSqlUtils;
 import org.openoa.engine.utils.ConsistentHashingAlg;
 import org.slf4j.Logger;
@@ -198,6 +200,12 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
         for (ParameterMapping parameterMapping : parameterMappings) {
             String propertyName = parameterMapping.getProperty();
             if("ID".equalsIgnoreCase(propertyName)){
+                if(parameterObject instanceof LFMain){
+                    return ((LFMain)parameterObject).getFormCode();
+                }
+                if(parameterObject instanceof LFMainField){
+                    return ((LFMainField)parameterObject).getFormCode();
+                }
                 //虽然理论上也也存在where id=xxx and a=x and b=x这种sql,但是默认用户不会这么写,所以暂时不支持
                     BpmBusinessProcess bpmBusinessProcess = SpringBeanUtils.getBean(BpmBusinessProcessServiceImpl.class).getOne(Wrappers.<BpmBusinessProcess>lambdaQuery()
                             .eq(BpmBusinessProcess::getBusinessId, parameterObject)
