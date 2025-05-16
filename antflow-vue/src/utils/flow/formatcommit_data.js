@@ -150,19 +150,23 @@ export class FormatUtils {
         if (nodesGroup.hasOwnProperty(parallel.nodeId)) {
           let itemNodes = nodesGroup[parallel.nodeId];
           if (isEmptyArray(itemNodes)) continue;
-          let childParallelList = itemNodes.filter((c) => {//并行子分支
+          let childParallelList = itemNodes.filter((c) => {
+            //并行子分支
             return parallel.nodeTo.includes(c.nodeId);
           });
           if (isEmptyArray(childParallelList)) continue;
-          let parallelWayChild = itemNodes.find((c) => {//并行聚合节点
+          let parallelWayChild = itemNodes.find((c) => {
+            //并行聚合节点
             return !parallel.nodeTo.includes(c.nodeId);
           });
           for (let itemNode of childParallelList) {
             function internalTraverse(info) {
               if (!info) return;
-              if (info.nodeType == 7) {//并行审批嵌套
+              if (info.nodeType == 7) {
+                //并行审批嵌套
                 let parallelCilds = nodesGroup[info.nodeId];
-                let parallelComboNode = parallelCilds.find((c) => {//并行聚合节点递归
+                let parallelComboNode = parallelCilds.find((c) => {
+                  //并行聚合节点递归
                   return !info.nodeTo.includes(c.nodeId);
                 });
                 internalTraverse(parallelComboNode);
@@ -191,9 +195,11 @@ export class FormatUtils {
       }
     }
 
-    let getwayList = parmData.filter((c) => {
-      return c.nodeType == 2;
-    });
+    let getwayList = parmData
+      .filter((c) => {
+        return c.nodeType == 2;
+      })
+      .reverse();
 
     if (!isEmptyArray(getwayList)) {
       //处理条件网关
@@ -212,13 +218,16 @@ export class FormatUtils {
               if (!info) return;
               if (info.nodeType == 7) {
                 let condition_parallelNodes = nodesGroup[info.nodeId];
-                if (isEmptyArray(condition_parallelNodes)) return;            
-                let condition_parallelWayChild = condition_parallelNodes.find((c) => {//并行聚合节点
-                  return !info.nodeTo.includes(c.nodeId);
-                });                
+                if (isEmptyArray(condition_parallelNodes)) return;
+                let condition_parallelWayChild = condition_parallelNodes.find(
+                  (c) => {
+                    //并行聚合节点
+                    return !info.nodeTo.includes(c.nodeId);
+                  }
+                );
                 condition_parallelWayChild.nodeTo = [comNode.nodeId];
-                return; 
-              };
+                return;
+              }
               if (!nodesGroup[info.nodeId]) {
                 info.nodeTo = [comNode.nodeId];
               } else {
