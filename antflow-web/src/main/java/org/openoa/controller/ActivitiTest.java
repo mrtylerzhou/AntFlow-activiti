@@ -25,10 +25,10 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.bpmnconf.service.flowcontrol.MultiInstanceSignOffService;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
-import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -93,6 +93,8 @@ public class ActivitiTest {
     private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
+    @Autowired
+    private MultiInstanceSignOffService multiInstanceSignOffService;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -278,5 +280,15 @@ public class ActivitiTest {
         vo.setBusinessDataVo(dataVo);
         boolean evaluate = JuelEvaluator.evaluate(exp, vo);
         return Result.newSuccessResult(evaluate);
+    }
+    @RequestMapping("/removeAssignee")
+    public Result resultmoveAssignee(String procInstId,String taskdefKey,String userId){
+        multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId);
+        return Result.success();
+    }
+    @RequestMapping("/addAssignees")
+    public Result addAssignees(String procInstId,String taskdefKey,String userId){
+        multiInstanceSignOffService.addAssigneesToCurrentTask(procInstId,taskdefKey,Lists.newArrayList(userId));
+        return Result.success();
     }
 }

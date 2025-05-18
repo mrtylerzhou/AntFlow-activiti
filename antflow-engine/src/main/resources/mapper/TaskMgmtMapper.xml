@@ -418,6 +418,9 @@
             #{item}
         </foreach>
     </delete>
+    <delete id="deleteExecutionById">
+        delete  from ACT_RU_EXECUTION where ID_ = #{executionId}
+    </delete>
 
     <!--query whether current process resource is exist-->
     <select id="findProcessModel" resultType="java.lang.Integer">
