@@ -13,4 +13,14 @@
         where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId})tmp
         on tbnlffc.node_id=tmp.node_id
     </select>
+
+    <select id="getFieldControlByNodeId" resultType="org.openoa.base.vo.LFFieldControlVO">
+        SELECT node_id AS nodeId,
+               formdata_id AS formdataId,
+               field_id AS fieldId,
+               field_name AS fieldName,
+               field_perm AS perm
+        FROM t_bpmn_node_lf_formdata_field_control
+        WHERE node_id = #{nodeId}
+    </select>
 </mapper>
