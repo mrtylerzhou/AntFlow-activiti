@@ -13,7 +13,7 @@
           <div class="body">
             <p>
             <h3>
-              AntFlow是一款采用Springboot+Mybatis+activiti+vue3等主流前后端技术开发的仿钉钉workflow工作流引擎，结合中国式办公特点深度定制，可以作为钉钉工作流的开源替代。致力解决传统activiti/flowable流程图必须由专业程序员绘制，学习曲线陡峭，上手难、排查问题难、维护成本高等问题,是企业审批流&saas化工作流部署不二选择!如果喜欢请给颗星星！
+              {{ readmeForDotnet }}
             </h3>
             </p>
             <p>
@@ -127,6 +127,9 @@ console.log("VITE_APP_ENV=======", import.meta.env.VITE_APP_ENV);
 console.log("VITE_APP_BASE_API=======", import.meta.env.VITE_APP_BASE_API);
 console.log("BASE_URL=======", import.meta.env.BASE_URL);
 console.log("VITE_HOME_PATH=======", import.meta.env.VITE_HOME_PATH);
+
+const readmeForDotnet = ".net首个钉钉工作流UI风格的流程引擎！支持数十种数据库，开箱即用。同时也是一款纯血版工作流引擎，仅依赖了asp.net 9.0和freesql，natasha等几款优秀开源项目。致力解决传统工作流流程图必须由专业程序员绘制、学习曲线陡峭、上手难、排查问题难、维护成本高等问题。如果喜欢请给颗star"
+const readmeForJava = "AntFlow是一款采用Springboot+Mybatis+activiti+vue3等主流前后端技术开发的仿钉钉workflow工作流引擎，结合中国式办公特点深度定制，可以作为钉钉工作流的开源替代。致力解决传统activiti/flowable流程图必须由专业程序员绘制，学习曲线陡峭，上手难、排查问题难、维护成本高等问题,是企业审批流&saas化工作流部署不二选择!如果喜欢请给颗星星！"
 
 function goTarget(url) {
   window.open(url, '__blank')
