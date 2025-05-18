@@ -15,10 +15,14 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
+import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.vo.ProcessInforVo;
@@ -51,6 +55,10 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private EmployeeServiceImpl employeeService;
     @Autowired
     private BpmnNodeLfFormdataFieldControlServiceImpl bpmnNodeLfFormdataFieldControlService;
+    @Autowired
+    private BpmVariableServiceImpl bpmnVariableService;
+    @Autowired
+    private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
 
 
 
@@ -114,10 +122,18 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         }
         if (!StringUtils.isEmpty(taskDefKey) && Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
 
-            List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
-                    .getBaseMapper()
-                    .getFieldControlByProcessNumberAndElementId(bpmBusinessProcess.getBusinessNumber(), taskDefKey);
-            processInfoVo.setLfFieldControlVOs(currentFieldControls);
+            Long variableId = Optional.ofNullable(bpmnVariableService.lambdaQuery().eq(BpmVariable::getProcessNum, processInfoVo.getProcessNumber()).last(" limit 1").one()).map(BpmVariable::getId).orElse(null);
+            String elementId = processInfoVo.getNodeId();
+            String nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
+                    .eq(BpmVariableMultiplayer::getElementId, elementId)
+                    .eq(BpmVariableMultiplayer::getVariableId, variableId)
+                    .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+            if (StringUtils.isNotBlank(nodeId)) {
+                List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
+                        .getBaseMapper()
+                        .getFieldControlByNodeId(Long.valueOf(nodeId));
+                processInfoVo.setLfFieldControlVOs(currentFieldControls);
+            }
         }
         return processInfoVo;
     }
