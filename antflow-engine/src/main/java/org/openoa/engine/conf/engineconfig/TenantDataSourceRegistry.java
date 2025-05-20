@@ -15,8 +15,7 @@ public class TenantDataSourceRegistry implements InitializingBean {
     private DataSourceFactory dataSourceFactory;
     @Autowired
     private AntflowDataSourceConfigScanner antflowDataSourceConfigScanner;
-    @Autowired
-    private MBPDynamicDataSourceDetector mbpDynamicDataSourceDetector;
+
     @Autowired
     private DataSourceProperties dataSourceProperties;
 
