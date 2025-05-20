@@ -288,7 +288,7 @@ public class ActivitiTest {
     }
     @RequestMapping("/addAssignees")
     public Result addAssignees(String procInstId,String taskdefKey,String userId){
-        multiInstanceSignOffService.addAssigneesToCurrentTask(procInstId,taskdefKey,Lists.newArrayList(userId));
+        multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId);
         return Result.success();
     }
 }
