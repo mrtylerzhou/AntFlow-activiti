@@ -12,6 +12,7 @@ import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,8 +31,13 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
+        String taskDefKey = vo.getTaskDefKey();
         List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId())
+                .taskDefinitionKey(taskDefKey)
                 .list();
+        if(CollectionUtils.isEmpty(list)){
+            throw new RuntimeException("未能根据流程编号找到流程实例:"+vo.getProcessNumber());
+        }
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         List<String> userIds=userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         for (int i = 0; i < list.size(); i++) {
