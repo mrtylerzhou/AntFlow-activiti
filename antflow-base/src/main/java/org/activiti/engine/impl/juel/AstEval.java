@@ -15,12 +15,14 @@
  */
 package org.activiti.engine.impl.juel;
 
+import lombok.Getter;
 import org.activiti.engine.impl.javax.el.ELContext;
 import org.activiti.engine.impl.javax.el.MethodInfo;
 import org.activiti.engine.impl.javax.el.ValueReference;
 
 
 public final class AstEval extends AstNode {
+	@Getter
 	private final AstNode child;
 	private final boolean deferred;
 

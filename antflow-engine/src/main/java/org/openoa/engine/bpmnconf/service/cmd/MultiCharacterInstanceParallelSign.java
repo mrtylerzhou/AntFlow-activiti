@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.cmd;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
  
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -9,15 +10,17 @@ import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
- 
+import org.openoa.base.vo.BaseIdTranStruVo;
+
 public class MultiCharacterInstanceParallelSign implements Command {
  
 	private String taskId;
-	private Map<String, Object> variables;
- 
-	public MultiCharacterInstanceParallelSign(String taskId, Map<String, Object> variables) {
+	private final List<BaseIdTranStruVo> userInfos;
+
+
+	public MultiCharacterInstanceParallelSign(String taskId, List<BaseIdTranStruVo> userInfos) {
 		this.taskId = taskId;
-		this.variables = variables;
+		this.userInfos = userInfos;
 	}
  
 	public Object execute(CommandContext commandContext) {
@@ -27,7 +30,7 @@ public class MultiCharacterInstanceParallelSign implements Command {
 		ExecutionEntity executionEntity = taskEntity.getExecution();
  
 		// 设置流程变量
-		executionEntity.setVariables(variables);
+		//executionEntity.setVariables(variables);
  
 		ExecutionEntity parentExecutionEntity = executionEntity.getParent();
 		ExecutionEntity newExecutionEntity = parentExecutionEntity.createExecution();
@@ -35,8 +38,8 @@ public class MultiCharacterInstanceParallelSign implements Command {
 		newExecutionEntity.setConcurrent(true);
 		newExecutionEntity.setScope(false);
 		TaskEntity newTaskEntity = new TaskEntity();
-		newTaskEntity.setAssignee("8");
-		newTaskEntity.setAssigneeName("tyler");
+		newTaskEntity.setAssignee(userInfos.get(0).getId());
+		newTaskEntity.setAssigneeName(userInfos.get(0).getName());
 		newTaskEntity.setCreateTime(new Date());
 		newTaskEntity.setTaskDefinition(taskEntity.getTaskDefinition());
 		newTaskEntity.setProcessDefinitionId(taskEntity.getProcessDefinitionId());

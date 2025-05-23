@@ -34,7 +34,7 @@ import org.activiti.engine.impl.javax.el.ValueExpression;
 public class JuelExpression implements Expression {
 
   protected String expressionText;
-  protected ValueExpression valueExpression;
+  public ValueExpression valueExpression;
   
   public JuelExpression(ValueExpression valueExpression, String expressionText) {
     this.valueExpression = valueExpression;

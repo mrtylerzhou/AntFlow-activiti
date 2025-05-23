@@ -10,11 +10,13 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RuntimeServiceImpl;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +26,7 @@ import org.openoa.base.util.MailUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.MailInfo;
+import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.flowcontrol.MultiInstanceSignOffService;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
@@ -95,6 +98,10 @@ public class ActivitiTest {
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
     @Autowired
     private MultiInstanceSignOffService multiInstanceSignOffService;
+    @Autowired
+    private ManagementService managementService;
+    @Autowired
+    private ActivitiAdditionalInfoServiceImpl activitiAdditionalInfoService;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -253,7 +260,7 @@ public class ActivitiTest {
     public Result addSign2(String taskId,String varname){
         Map<String,Object> variables=new HashMap<>();
         variables.put(varname, Lists.newArrayList(8,9,10));
-        MultiCharacterInstanceParallelSign parallelSign=new MultiCharacterInstanceParallelSign(taskId, variables);
+        MultiCharacterInstanceParallelSign parallelSign=new MultiCharacterInstanceParallelSign(taskId, null);
         ((RuntimeServiceImpl) ProcessEngines.getDefaultProcessEngine().getRuntimeService()).getCommandExecutor().execute(parallelSign);
         return Result.success();
     }
@@ -283,12 +290,13 @@ public class ActivitiTest {
     }
     @RequestMapping("/removeAssignee")
     public Result resultmoveAssignee(String procInstId,String taskdefKey,String userId){
-        multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId);
+        List<ActivityImpl> activitiList = activitiAdditionalInfoService.getActivitiList(procInstId);
+        multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId,"");
         return Result.success();
     }
-    @RequestMapping("/addAssignees")
-    public Result addAssignees(String procInstId,String taskdefKey,String userId){
-        multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId);
-        return Result.success();
+
+    @RequestMapping("/insertTask")
+    public void  insertTask(String executionId){
+        managementService.executeCommand(new MultiCharacterInstanceSequentialSign(executionId, null));
     }
 }

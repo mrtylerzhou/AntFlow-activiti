@@ -18,6 +18,9 @@ public enum ProcessOperationEnum {
     BUTTON_TYPE_ZB(21,"转办"),
     BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
     BUTTON_TYPE_BACK_TO_ANY_NODE(23,"退回任意节点"),
+    BUTTON_TYPE_REMOVE_ASSIGNEE(24,"减签"),
+    BUTTON_TYPE_ADD_ASSIGNEE(25,"加签"),//加批生成了新的节点,加签在当前节点增加审批人
+    BUTTON_TYPE_CHANGE_FUTURE_ASSIGNEE(26,"变更未来节点审批人"),
     ;
 
     @Getter
