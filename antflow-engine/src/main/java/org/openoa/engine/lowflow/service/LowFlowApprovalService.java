@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
@@ -232,7 +233,26 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String formCode = vo.getFormCode();
         Long confId = vo.getBpmnConfVo().getId();
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
-        if(CollectionUtils.isEmpty(lfMainFields)){
+	    // 如果vo.getLfFields()里面有lfMainFields没有的元素，那么就将没有的元素save到LFMainField表中
+	    Map<String, Object> submitLfFields = vo.getLfFields();
+	    if (ObjectUtils.isNotEmpty(submitLfFields)) {
+		    Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
+		    if (ObjectUtils.isEmpty(lfFormdataFieldMap)) {
+			    Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+			    allFieldConfMap.put(confId,name2SelfMap);
+		    }
+		    Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
+		    if (ObjectUtils.isEmpty(fieldConfMap)) {
+			    throw new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
+		    }
+		    List<LFMainField> mainFields = LFMainField.parseFromMap(submitLfFields, fieldConfMap, mainId, vo.getFormCode());
+		    if (CollectionUtils.isNotEmpty(mainFields)) {
+			    // 根据fieldId过滤掉已存在表里的数据lfMainFields
+			    mainFields.removeIf(mainField -> lfMainFields.stream().anyMatch(ori -> ori.getFieldId().equals(mainField.getFieldId())));
+			    mainFieldService.saveBatch(mainFields);
+		    }
+	    }
+		if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         for (LFMainField field : lfMainFields){
