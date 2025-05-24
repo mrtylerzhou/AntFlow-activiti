@@ -1,18 +1,7 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.*;
-import org.activiti.engine.impl.RepositoryServiceImpl;
-import org.activiti.engine.impl.TaskServiceImpl;
-import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
-import org.activiti.engine.impl.el.FixedValue;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -22,13 +11,9 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

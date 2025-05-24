@@ -14,6 +14,7 @@ import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -98,7 +99,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //query business process info
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
 
-
+        finishFlag=Objects.equals(bpmBusinessProcess.getProcessState(), HANDLED_STATE.getCode());
         if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
             return bpmVerifyInfoVos;
         }
