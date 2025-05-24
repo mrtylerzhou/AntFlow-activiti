@@ -108,16 +108,16 @@
     <select id="getAssigneeAndVariableByElementId" resultType="org.openoa.base.vo.BaseInfoTranStructVo">
         <bind name="whereValue" value="_parameter.elementId" />
         <include refid="common_assignee_query_sql">
-            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName"/>
-            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName"/>
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName,tbvs.id as variableId"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName,tbvmp.id as variableId"/>
             <property name="wherefield" value="element_id"/>
         </include>
     </select>
     <select id="getAssigneeAndVariableByNodeId" resultType="org.openoa.base.vo.BaseInfoTranStructVo">
         <bind name="whereValue" value="_parameter.nodeId" />
         <include refid="common_assignee_query_sql">
-            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName"/>
-            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName"/>
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName,tbvs.id as variableId"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName,tbvmp.id as variableId"/>
             <property name="wherefield" value="node_id"/>
         </include>
     </select>

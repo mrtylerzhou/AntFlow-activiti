@@ -1,5 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -8,7 +10,11 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseInfoTranStructVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
+import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
+import org.openoa.common.mapper.BpmVariableMultiplayerPersonnelMapper;
+import org.openoa.common.mapper.BpmVariableSingleMapper;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +38,10 @@ public class ChangeFutrueAssigneeProcessImpl implements ProcessOperationAdaptor 
     private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private BpmFlowrunEntrustServiceImpl flowrunEntrustService;
+    @Autowired
+    private BpmVariableSingleMapper variableSingleMapper;
+    @Autowired
+    private BpmVariableMultiplayerPersonnelMapper variableMultiplayerPersonnelMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -69,6 +79,7 @@ public class ChangeFutrueAssigneeProcessImpl implements ProcessOperationAdaptor 
            throw  new JiMuBizException("当前审批人未发生变更!勿需操作!");
         }
         String varName = assignees.get(0).getVarName();
+        String variableId=assignees.get(0).getVariableId();//单人的是single表id,多人的是multiplayer personnel表id
         List<String> assigneeIds = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         taskMgmtService.changeFutureAssignees(bpmBusinessProcess.getProcInstId(), varName, assigneeIds);
         //由于是未来节点,审批任务还没有生成,因此获取不到taskId,这里记录的是nodeId
@@ -77,6 +88,19 @@ public class ChangeFutrueAssigneeProcessImpl implements ProcessOperationAdaptor 
             BaseIdTranStruVo newAssignee = old2newAssignees.getValue();
             flowrunEntrustService.addFlowrunEntrust(newAssignee.getId(),newAssignee.getName(),oldAssignee.getId(),oldAssignee.getName(),
                     nodeId,0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey());
+            if(assignees.size()>1){//大于1是多人节点,多人节点variableId取的是t_bpm_variable_multiplayer_personnel表的id
+                LambdaUpdateWrapper<BpmVariableMultiplayerPersonnel> updateWrapper = Wrappers.<BpmVariableMultiplayerPersonnel>lambdaUpdate();
+                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssignee,newAssignee.getId());
+                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssigneeName,newAssignee.getName()+"*");
+                updateWrapper.eq(BpmVariableMultiplayerPersonnel::getId,variableId);
+                variableMultiplayerPersonnelMapper.update(null,updateWrapper);
+            }else{//虽然是在循环里执行,走到这里只应该走一次
+                LambdaUpdateWrapper<BpmVariableSingle> updateWrapper = Wrappers.<BpmVariableSingle>lambdaUpdate();
+                updateWrapper.set(BpmVariableSingle::getAssignee,newAssignee.getId());
+                updateWrapper.set(BpmVariableSingle::getAssigneeName,newAssignee.getName()+"*");
+                updateWrapper.eq(BpmVariableSingle::getId,variableId);
+                variableSingleMapper.update(null,updateWrapper);
+            }
         }
     }
 

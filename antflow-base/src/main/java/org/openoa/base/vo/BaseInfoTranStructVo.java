@@ -7,4 +7,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class BaseInfoTranStructVo extends BaseIdTranStruVo{
     private String varName;
+    private String variableId;
 }
