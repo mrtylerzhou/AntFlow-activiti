@@ -84,7 +84,7 @@ public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
                 throw new JiMuBizException("can not find specified out side process template user info url via confId:"+bpmnNodeVo.getConfId());
             }
 
-            return assigneeVoBuildUtils.buildVOs(new ArrayList<>(userList), bpmnNodeVo.getNodeName(), false);
+            return assigneeVoBuildUtils.buildVOs(userList, bpmnNodeVo.getNodeName(), false);
         }
         List<String> roleIds = propertysVo.getRoleIds();
         Map<String, String> roleEmployeeInfo = roleInfoProvider.provideRoleEmployeeInfo(roleIds);
