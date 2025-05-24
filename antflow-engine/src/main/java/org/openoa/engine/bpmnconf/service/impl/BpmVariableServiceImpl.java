@@ -131,6 +131,20 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         return false;
     }
 
+    public List<BaseIdTranStruVo> getApproversByNodeId(String processNumber,String nodeId){
+        List<BaseIdTranStruVo> currentNodeAssignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByNodeId(processNumber, nodeId);
+        return currentNodeAssignees;
+    }
+    /**
+     * 根据流程节点ID查询当前节点所有审批人
+     * @param elementId 流程节点ID
+     * @return 审批人列表
+     */
+    public List<BaseIdTranStruVo> getApproversByElementId(String processNumber,String elementId) {
+        List<BaseIdTranStruVo> currentNodeAssignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
+        return currentNodeAssignees;
+    }
+
     public Map<String,String> getAssigneeNameByProcessNumAndElementId(String processNumber, String elementId){
         List<BaseIdTranStruVo> assignees = bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, elementId);
         Map<String, String> assigneeMap = assignees.stream().collect(Collectors.toMap(BaseIdTranStruVo::getId, BaseIdTranStruVo::getName, (k1, k2) -> k1));

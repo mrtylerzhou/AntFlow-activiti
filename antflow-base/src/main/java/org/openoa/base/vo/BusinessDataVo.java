@@ -67,6 +67,8 @@ public class BusinessDataVo extends PageDto implements Serializable {
      */
     private String taskId;
     private String taskDefKey;
+    private String nodeId;
+    private String elementId;
     /**
      * variable object map
      */

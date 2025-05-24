@@ -23,9 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.MailUtils;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.vo.MailInfo;
+import org.openoa.base.vo.*;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.flowcontrol.MultiInstanceSignOffService;
@@ -50,7 +49,6 @@ import org.openoa.mapper.PersonMapper;
 import org.openoa.mapper.StudentMapper;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.service.biz.MybisService;
 import org.openoa.service.impl.PersonServiceImpl;
 import org.openoa.base.util.PageUtils;
@@ -102,6 +100,8 @@ public class ActivitiTest {
     private ManagementService managementService;
     @Autowired
     private ActivitiAdditionalInfoServiceImpl activitiAdditionalInfoService;
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -290,6 +290,13 @@ public class ActivitiTest {
     }
     @RequestMapping("/removeAssignee")
     public Result resultmoveAssignee(String procInstId,String taskdefKey,String userId){
+        String varNameByElementId = bpmVariableMultiplayerMapper.getVarNameByElementId(procInstId, taskdefKey);
+        String nodeIdByElementId = bpmVariableMultiplayerMapper.getNodeIdByElementId(procInstId, taskdefKey);
+        String elementIdByNodeId = bpmVariableMultiplayerMapper.getElementIdByNodeId(procInstId, nodeIdByElementId);
+        List<BaseIdTranStruVo> assigneeByElementId = bpmVariableMultiplayerMapper.getAssigneeByElementId(procInstId, taskdefKey);
+        List<BaseIdTranStruVo> assigneeByNodeId = bpmVariableMultiplayerMapper.getAssigneeByNodeId(procInstId, nodeIdByElementId);
+        List<BaseInfoTranStructVo> assigneeAndVariableByElementId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByElementId(procInstId, taskdefKey);
+        List<BaseInfoTranStructVo> assigneeAndVariableByNodeId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(procInstId, nodeIdByElementId);
         List<ActivityImpl> activitiList = activitiAdditionalInfoService.getActivitiList(procInstId);
         multiInstanceSignOffService.removeAssignee(procInstId,taskdefKey,userId,"");
         return Result.success();

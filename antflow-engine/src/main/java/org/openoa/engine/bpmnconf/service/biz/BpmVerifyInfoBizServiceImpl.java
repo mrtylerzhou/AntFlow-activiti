@@ -15,6 +15,7 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
@@ -29,6 +30,8 @@ import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.*;
  */
 @Service
 public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoServiceImpl> {
+    private static final Logger log = LoggerFactory.getLogger(BpmVerifyInfoBizServiceImpl.class);
     @Autowired
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired

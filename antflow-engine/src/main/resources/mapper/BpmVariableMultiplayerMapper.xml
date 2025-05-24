@@ -44,22 +44,82 @@
           AND b.`process_num` = #{processNum}
 
     </select>
-    <select id="getAssigneeByElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        select  tbvs.assignee as id,tbvs.assignee_name as name from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
-        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee_name is not null
+
+    <sql id="common_assignee_query_sql">
+        select ${selectfield1}  from t_bpm_variable tbv left join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
+        where tbv.process_num=#{processNum} and tbvs.${wherefield}=#{whereValue} and tbvs.assignee_name is not null
         union all
-        select tbvmp.assignee as id,tbvmp.assignee_name as name from t_bpm_variable tbv
+        select ${selectfield2} from t_bpm_variable tbv
         left join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         left join t_bpm_variable_multiplayer_personnel tbvmp on tbvmp.variable_multiplayer_id=tbvm.id
-        where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee_name is not null
-    </select>
-    <select id="getVarNameByElementId" resultType="java.lang.String">
-        select  tbvs.assignee_param_name as variablename from t_bpm_variable tbv inner join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
-        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee_name is not null
+        where tbv.process_num=#{processNum} and tbvm.${wherefield}=#{whereValue} and tbvmp.assignee_name is not null
+    </sql>
+
+    <sql id="common_query_sql">
+        select ${selectfield1}  from t_bpm_variable tbv inner join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
+        where tbv.process_num=#{processNum} and tbvs.${wherefield}=#{whereValue}
         union all
-        select tbvm.collection_name as variablename from t_bpm_variable tbv
+        select ${selectfield2} from t_bpm_variable tbv
         left join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
-        where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId}
+        where tbv.process_num=#{processNum} and tbvm.${wherefield}=#{whereValue}
+    </sql>
+    <select id="getVarNameByElementId" resultType="java.lang.String">
+        <bind name="whereValue" value="_parameter.elementId" />
+       <include refid="common_query_sql">
+           <property name="selectfield1" value="tbvs.assignee_param_name as variablename"/>
+           <property name="selectfield2" value="tbvm.collection_name as variablename"/>
+           <property name="wherefield" value="element_id"/>
+       </include>
+    </select>
+    <select id="getAssigneeByElementId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <bind name="whereValue" value="_parameter.elementId" />
+        <include refid="common_assignee_query_sql">
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name"/>
+            <property name="wherefield" value="element_id"/>
+        </include>
+    </select>
+
+    <select id="getAssigneeByNodeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        <bind name="whereValue" value="_parameter.nodeId" />
+        <include refid="common_assignee_query_sql">
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name"/>
+            <property name="wherefield" value="node_id"/>
+        </include>
+    </select>
+
+    <select id="getNodeIdByElementId" resultType="java.lang.String">
+        <bind name="whereValue" value="_parameter.elementId" />
+        <include refid="common_query_sql">
+            <property name="selectfield1" value="tbvs.node_id"/>
+            <property name="selectfield2" value="tbvm.node_id"/>
+            <property name="wherefield" value="element_id"/>
+        </include>
+    </select>
+    <select id="getElementIdByNodeId" resultType="java.lang.String">
+        <bind name="whereValue" value="_parameter.nodeId" />
+        <include refid="common_query_sql">
+                <property name="selectfield1" value="tbvs.element_id"/>
+                <property name="selectfield2" value="tbvm.element_id"/>
+                <property name="wherefield" value="node_id"/>
+        </include>
+    </select>
+    <select id="getAssigneeAndVariableByElementId" resultType="org.openoa.base.vo.BaseInfoTranStructVo">
+        <bind name="whereValue" value="_parameter.elementId" />
+        <include refid="common_assignee_query_sql">
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName"/>
+            <property name="wherefield" value="element_id"/>
+        </include>
+    </select>
+    <select id="getAssigneeAndVariableByNodeId" resultType="org.openoa.base.vo.BaseInfoTranStructVo">
+        <bind name="whereValue" value="_parameter.nodeId" />
+        <include refid="common_assignee_query_sql">
+            <property name="selectfield1" value="tbvs.assignee as id,tbvs.assignee_name as name,tbvs.assignee_param_name as varName"/>
+            <property name="selectfield2" value="tbvmp.assignee as id,tbvmp.assignee_name as name,tbvm.collection_name as varName"/>
+            <property name="wherefield" value="node_id"/>
+        </include>
     </select>
 
 </mapper>

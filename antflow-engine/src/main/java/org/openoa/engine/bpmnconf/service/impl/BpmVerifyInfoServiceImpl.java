@@ -306,7 +306,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         if (tasks.size() > 1) {
             String verifyUserName = StringUtils.join(tasks.stream().map(BpmVerifyInfoVo::getVerifyUserName).collect(Collectors.toList()), ",");
             String taskName = StringUtils.EMPTY;
-            List<String> strs = tasks.stream().map(BpmVerifyInfoVo::getTaskName).filter(Objects::nonNull).collect(Collectors.toList());
+            List<String> strs = tasks.stream().map(BpmVerifyInfoVo::getTaskName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(strs)) {
                 taskName = String.join("||", strs);
             }
