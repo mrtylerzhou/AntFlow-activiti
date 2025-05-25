@@ -9,7 +9,7 @@
     <properties>
 
         <!-- 主版本        -->
-        <antflow.version>0.91.0</antflow.version>
+        <antflow.0.95.0</antflow.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
