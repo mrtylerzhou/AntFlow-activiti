@@ -16,7 +16,7 @@
         <el-button type="warning" size="default" @click="handleClose">取消</el-button>
       </el-form-item>
     </el-form>
-    <el-radio-group class="radio-table" v-model="selectUserId" @change="clickedRadio">
+    <el-radio-group class="radio-table" style="width: 100%;" v-model="selectUserId" @change="clickedRadio">
       <el-table row-key="userId" :data="userList" v-loading="loading" height="350px"
         @selection-change="handleSelectionChange">
         <el-table-column v-if="multiple" align="center" type="selection" width="50px" :selectable="canSelectable" />

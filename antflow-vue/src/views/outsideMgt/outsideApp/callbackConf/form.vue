@@ -13,17 +13,6 @@
             <el-input v-model="form.applicationName" :disabled=true placeholder="请输入业务表单名称" />
           </el-form-item>
         </el-col>
-
-        <el-col :span="24">
-          <el-form-item label="ClientId" prop="apiClientId">
-            <el-input v-model="form.apiClientId" placeholder="请输入ClientId" :disabled=true />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="ClientSecret" prop="apiClientSecret">
-            <el-input v-model="form.apiClientSecret" placeholder="请输入ClientSecret" :disabled=true />
-          </el-form-item>
-        </el-col>
         <el-col :span="24">
           <el-form-item label="流程回调URL" prop="bpmFlowCallbackUrl">
             <el-input v-model="form.bpmFlowCallbackUrl" placeholder="请输入流程流转回调URL(必须http或https开头)">
@@ -37,6 +26,16 @@
                 </el-tooltip>
               </template>
             </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="ClientId" prop="apiClientId">
+            <el-input v-model="form.apiClientId" placeholder="请输入ClientId" :disabled=true />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="ClientSecret" prop="apiClientSecret">
+            <el-input v-model="form.apiClientSecret" placeholder="请输入ClientSecret" :disabled=true />
           </el-form-item>
         </el-col>
         <el-col :span="24">

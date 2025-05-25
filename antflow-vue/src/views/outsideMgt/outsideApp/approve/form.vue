@@ -23,21 +23,6 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="ClientId" prop="apiClientId">
-            <el-input v-model="form.apiClientId" placeholder="请输入ClientId" :disabled=true />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="ClientSecret" prop="apiClientSecret">
-            <el-input v-model="form.apiClientSecret" placeholder="请输入ClientSecret" :disabled=true />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="Token" prop="apiToken">
-            <el-input v-model="form.apiToken" placeholder="请输入Token" :disabled=true />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
           <el-form-item label="审批人模板URL" prop="apiUrl">
             <el-input v-model="form.apiUrl" placeholder="请输入审批人模板URL(必须http或https开头)" :disabled=true>
               <template #append>
@@ -50,6 +35,21 @@
                 </el-tooltip>
               </template>
             </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="ClientId" prop="apiClientId">
+            <el-input v-model="form.apiClientId" placeholder="请输入ClientId" :disabled=true />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="ClientSecret" prop="apiClientSecret">
+            <el-input v-model="form.apiClientSecret" placeholder="请输入ClientSecret" :disabled=true />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="Token" prop="apiToken">
+            <el-input v-model="form.apiToken" placeholder="请输入Token" :disabled=true />
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -129,7 +129,7 @@ function selectTypeChanged() {
     form.value.apiUrl = "http://14.103.207.27:7001/user/getUser";
   } else {
     form.value.approveTypeName = "指定角色";
-    form.value.apiUrl = "http://localhost:7001/user/getRoleInfo";
+    form.value.apiUrl = "http://14.103.207.27:7001/user/getRoleInfo";
   }
 }
 
