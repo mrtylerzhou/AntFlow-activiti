@@ -34,9 +34,9 @@ public class OutSideBpmCallbackUrlConfVo implements Serializable {
      */
     private Long businessPartyId;
     /**
-     * conf id
+     * app id
      */
-    private Long bpmnConfId;
+    private Long applicationId;
     /**
      * conf call back url
      */
@@ -54,7 +54,7 @@ public class OutSideBpmCallbackUrlConfVo implements Serializable {
     /**
      * api-secret
      */
-    private String apiClientSecrent;
+    private String apiClientSecret;
 
     /**
      * status 1 for enabled,2 for disabled
