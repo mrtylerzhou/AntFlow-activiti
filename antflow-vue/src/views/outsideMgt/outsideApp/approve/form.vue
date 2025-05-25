@@ -4,13 +4,13 @@
     <el-form :model="form" :rules="rules" ref="approveTemplateRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="业务方名称" prop="businessPartyName">
-            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入业务方名称" />
+          <el-form-item label="项目名称" prop="businessPartyName">
+            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入项目名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="业务表单名称" prop="applicationName">
-            <el-input v-model="form.applicationName" :disabled=true placeholder="请输入业务表单名称" />
+          <el-form-item label="应用名称" prop="applicationName">
+            <el-input v-model="form.applicationName" :disabled=true placeholder="请输入应用名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
