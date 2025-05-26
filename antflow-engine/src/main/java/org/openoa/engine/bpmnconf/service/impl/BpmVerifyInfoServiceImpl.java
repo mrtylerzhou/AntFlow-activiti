@@ -312,7 +312,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
             }
             String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).collect(Collectors.joining(","));
             taskInfors.add(BpmVerifyInfoVo.builder()
-                            .verifyUserIds(verifyUserIds)
+                    .verifyUserIds(verifyUserIds)
                     .verifyUserName(verifyUserName)
                     .taskName(taskName)
                     .elementId(elementId)
