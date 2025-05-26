@@ -11,6 +11,7 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.exception.JiMuBizException;
@@ -25,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -102,9 +101,11 @@ public class ActivitiAdditionalInfoServiceImpl {
         return null;
     }
     public List<PvmActivity> getNextElementList(String elementId, List<ActivityImpl> activitiList) {
-        List<PvmActivity> pvmActivityList = Lists.newArrayList();
+        String[] elementIs=elementId.split(",");
+
+        Set<PvmActivity> pvmActivityList = new HashSet<>();
         for (ActivityImpl activity : activitiList) {
-            if (elementId.equals(activity.getId())) {
+            if (ArrayUtils.contains(elementIs, activity.getId())) {
                 List<PvmTransition> outTransitions = activity.getOutgoingTransitions();//get all outgoing transitions from this activity
                 for (PvmTransition tr : outTransitions) {
                     PvmActivity ac = tr.getDestination(); // get the destination activity
@@ -113,7 +114,7 @@ public class ActivitiAdditionalInfoServiceImpl {
                 break;
             }
         }
-        return pvmActivityList;
+        return Lists.newArrayList(pvmActivityList);
     }
     public PvmActivity getNextElement(String elementId,String procInstId){
         if(StringUtils.isAnyBlank(elementId,procInstId)){

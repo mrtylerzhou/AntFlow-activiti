@@ -6,13 +6,10 @@
     <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf">
         <id column="id" property="id"/>
         <result column="business_party_id" property="businessPartyId"/>
-        <result column="bpmn_conf_id" property="bpmnConfId"/>
+        <result column="application_id" property="applicationId"/>
         <result column="bpm_conf_callback_url" property="bpmConfCallbackUrl"/>
         <result column="bpm_flow_callback_url" property="bpmFlowCallbackUrl"/>
         <result column="status" property="status"/>
-        <result column="create_user_id" property="createUserId"/>
-        <result column="create_user_name" property="createUserName"/>
-        <result column="create_user_uuid" property="createUserUuid"/>
         <result column="remark" property="remark"/>
         <result column="is_del" property="isDel"/>
         <result column="create_user" property="createUser"/>
@@ -31,7 +28,7 @@
         SELECT
         a.id AS id,
         a.business_party_id AS businessPartyId,
-        a.bpmn_conf_id AS bpmnConfId,
+        a.application_id AS applicationId,
         a.bpm_conf_callback_url AS bpmConfCallbackUrl,
         a.bpm_flow_callback_url AS bpmFlowCallbackUrl,
         a.create_user_name AS createUserName,

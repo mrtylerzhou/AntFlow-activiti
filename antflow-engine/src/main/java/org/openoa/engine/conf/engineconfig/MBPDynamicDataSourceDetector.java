@@ -22,7 +22,7 @@ import java.util.Map;
  * 用于自动侦测项目是否配置了mybatis-plus多数据源,如果配置了,直接使用mybatis-plus多数据源做为流程引擎多租房数据源
  * 如果项目没有使用mybatis-plus多数据源,并且需要开启多数据源多租房支持,则需要配置spring.antflow
  */
-@Component
+
 public class MBPDynamicDataSourceDetector implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 

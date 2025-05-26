@@ -9,8 +9,8 @@
                     <div class="component">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
                             :isPreview="false" :showSubmit="true" @handleBizBtn="handleSubmit">
-                        </component> 
-                    </div> 
+                        </component>
+                    </div>
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">
@@ -18,7 +18,7 @@
                         <ReviewWarp v-model:previewConf="previewConf" />
                     </div>
                 </el-tab-pane>
-            </el-tabs>            
+            </el-tabs>
         </div>
         <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
     </div>
@@ -80,17 +80,15 @@ const handleClick = async (tab, event) => {
         proxy.$modal.msgError("未定义表单组件");
         return;
     }
-    await formRef.value.handleValidate().then(async (isValid) => { 
+    await formRef.value.handleValidate().then(async (isValid) => {
         if (!isValid) {
             activeName.value = "createFrom";
         } else {
             const _formData = await formRef.value.getFromData();
             if (isLFFlow && isLFFlow == true) {
-                let  lfFormdata = JSON.parse(_formData);
+                let lfFormdata = JSON.parse(_formData);
                 previewConf.value.approversList = lfFormdata.approversList;
                 previewConf.value.approversValid = lfFormdata.approversValid;
-                delete lfFormdata.approversList;
-                delete lfFormdata.approversValid; 
                 previewConf.value.lfFields = JSON.parse(_formData);
             } else {
                 previewConf.value = JSON.parse(_formData);
@@ -111,36 +109,40 @@ const handleClick = async (tab, event) => {
  * 发起流程
  * @param param 
  */
-const startTest = (param) => {
-    let bizFrom = JSON.parse(param);
-    bizFrom.formCode = flowCode || '';
-    bizFrom.operationType = 1;//operationType 1发起 3 审批 
-    bizFrom.isLowCodeFlow = false;
-    bizFrom.lfFields = null;
-    if (isLFFlow && isLFFlow == true) {
-        bizFrom = {};
-        bizFrom.formCode = flowCode || '';
-        bizFrom.operationType = 1;//operationType 1发起 3 审批 
-        bizFrom.isLowCodeFlow = true;
-
-        let  lfFormdata = JSON.parse(param);
-        bizFrom.approversList = lfFormdata.approversList;
-        bizFrom.approversValid = lfFormdata.approversValid;
-        delete lfFormdata.approversList;
-        delete lfFormdata.approversValid; 
-        bizFrom.lfFields = lfFormdata; 
-    }
-    proxy.$modal.loading();
-    processOperation(bizFrom).then((res) => {
-        if (res.code == 200) {
-            proxy.$modal.msgSuccess("发起流程成功");
-            const obj = { path: "/flowTask/mytask" };
-            proxy.$tab.openPage(obj);
-        } else {
-            proxy.$modal.msgError("发起流程失败" + res.errMsg);
+const startTest = async (param) => {
+    await formRef.value.handleValidate().then(async (isValid) => {
+        if (!isValid) {
+            activeName.value = "createFrom";
         }
-        proxy.$modal.closeLoading();
-    });
+        else {
+            let bizFrom = JSON.parse(param);
+            bizFrom.formCode = flowCode || '';
+            bizFrom.operationType = 1;//operationType 1发起 3 审批 
+            bizFrom.isLowCodeFlow = false;
+            bizFrom.lfFields = null;
+            if (isLFFlow && isLFFlow == true) {    
+                bizFrom.isLowCodeFlow = true;
+                const _formData = await formRef.value.getFromData();
+                let lfFormdata = JSON.parse(_formData);
+                bizFrom.approversList = lfFormdata.approversList;
+                bizFrom.approversValid = lfFormdata.approversValid;         
+                bizFrom.lfFields = lfFormdata;
+            } 
+            proxy.$modal.loading();
+            processOperation(bizFrom).then((res) => {
+                if (res.code == 200) {
+                    proxy.$modal.msgSuccess("发起流程成功");
+                    const obj = { path: "/flowTask/mytask" };
+                    proxy.$tab.openPage(obj);
+                } else {
+                    proxy.$modal.msgError("发起流程失败" + res.errMsg);
+                }
+                proxy.$modal.closeLoading();
+            });
+        } 
+    }).catch((r) => {
+        activeName.value = "createFrom";
+    }) 
 }
 /** 关闭按钮 */
 function close() {
@@ -154,11 +156,12 @@ function close() {
     font-size: 16px;
     color: #383838;
 }
-.component{
+
+.component {
     height: calc(100vh - 178px);
     padding-top: 15px;
     padding-bottom: 15px;
-    overflow: auto; 
+    overflow: auto;
     background-color: #f5f5f7;
 }
 </style>

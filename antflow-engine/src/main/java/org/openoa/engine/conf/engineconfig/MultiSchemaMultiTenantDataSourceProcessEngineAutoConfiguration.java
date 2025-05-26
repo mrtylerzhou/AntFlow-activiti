@@ -40,12 +40,12 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
     public MultiSchemaMultiTenantProcessEngineConfiguration multiTenantProcessEngineConfiguration(MultiTenantInfoHolder tenantInfoHolder,
                                                                                                   TenantAwareDataSource tenantAwareDataSource,
                                                                                                   PlatformTransactionManager transactionManager,
-                                                                                                  MBPDynamicDataSourceDetector mbpDynamicDataSourceDetector,
+
                                                                                                   SpringAsyncExecutor springAsyncExecutor) {
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
 
 
-        Map<DataSource,String > stringDataSourceMap = mbpDynamicDataSourceDetector.detectMybatisPlusDynamicDataSource();
+      /*  Map<DataSource,String > stringDataSourceMap = mbpDynamicDataSourceDetector.detectMybatisPlusDynamicDataSource();
         if(!CollectionUtils.isEmpty(stringDataSourceMap)){
             int index=0;
             for (Map.Entry<DataSource, String> dataSourceStringEntry : stringDataSourceMap.entrySet()) {
@@ -59,7 +59,7 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
                 }
                 index++;
             }
-        }
+        }*/
         // 配置默认数据源
         configuration.setDataSource(tenantAwareDataSource);
         configuration.setDatabaseType(DefaultDataBaseTypeDetector.detectDataSourceDbType(tenantInfoHolder.getDefaultDataSource()));

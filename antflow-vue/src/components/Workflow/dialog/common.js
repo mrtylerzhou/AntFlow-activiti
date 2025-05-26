@@ -4,25 +4,29 @@
  * @LastEditTime: 2023-03-29 15:53:05
  * @FilePath: /ant-flow/src/components/dialog/common.js
  */
-
-import { getRoles, getDepartments, getEmployees } from '@/api/mock.js' 
-import { ref } from 'vue'
-export let searchVal = ref('')
+import { ref } from "vue";
+import { getRoles, getDepartments, getEmployees } from "@/api/mock.js";
+export let searchVal = ref("");
 export let departments = ref({
   titleDepartments: [],
   childDepartments: [],
   employees: [],
-})
-export let roles = ref({})
+});
+export let roles = ref({});
 export let getRoleList = async () => {
-  let { data  } = await getRoles()
-  roles.value = data;
-}
+  let { data } = await getRoles();
+  roles.value = data.map((c) => {
+    return {
+      roleId: c.id,
+      roleName: c.name,
+    };
+  });
+};
 export let getDepartmentList = async (parentId = 0) => {
-  let { data } = await getDepartments({ parentId })
+  let { data } = await getDepartments({ parentId });
   departments.value.childDepartments = data;
-}
-export let getEmployeeList =async () => {
-  let res = await getEmployees()
-  departments.value.employees = res.data
-}
+};
+export let getEmployeeList = async () => {
+  let res = await getEmployees();
+  departments.value.employees = res.data;
+};

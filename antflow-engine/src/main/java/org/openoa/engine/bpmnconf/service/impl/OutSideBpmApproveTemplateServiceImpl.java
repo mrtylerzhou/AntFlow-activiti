@@ -128,5 +128,16 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
         this.updateById(entity.builder().id(id.longValue()).isDel(1) .build());
     }
 
+    /**
+     * get role api url
+     * @param confId
+     * @return
+     */
+    public String getRoelApiUrlByConfId(Long  confId){
+
+        return   OutSideBpmApproveTemplateMapper.selectRoleApiUrlByConfId(confId);
+    }
+
+
 
 }

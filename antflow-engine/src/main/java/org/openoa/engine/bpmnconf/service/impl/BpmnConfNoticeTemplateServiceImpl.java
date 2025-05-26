@@ -15,8 +15,8 @@ import java.util.List;
 /**
  * @Classname BpmnConfNoticeTemplateServiceImpl
  * @Description notice tempalte service
- * @since 0.5
  * @Created by AntOffice
+ * @since 0.5
  */
 @Service
 public class BpmnConfNoticeTemplateServiceImpl extends ServiceImpl<BpmnConfNoticeTemplateMapper, BpmnConfNoticeTemplate> {
@@ -27,12 +27,12 @@ public class BpmnConfNoticeTemplateServiceImpl extends ServiceImpl<BpmnConfNotic
 
 
     public BpmnConfNoticeTemplateDetail getDetailByCodeAndType(String bpmnCode, Integer noticeType) {
-        BpmnConfNoticeTemplateDetail bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateDetailService.getOne(new QueryWrapper<BpmnConfNoticeTemplateDetail>()
+        List<BpmnConfNoticeTemplateDetail> bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateDetailService.list(new QueryWrapper<BpmnConfNoticeTemplateDetail>()
                 .eq("bpmn_code", bpmnCode)
                 .eq("notice_template_type", noticeType)
                 .eq("is_del", 0)
-                .orderByAsc("id"));
-        return bpmnConfNoticeTemplateDetail;
+                .orderByDesc("id"));
+        return bpmnConfNoticeTemplateDetail.isEmpty() ? null : bpmnConfNoticeTemplateDetail.get(0);
     }
 
     public Integer insert(String bpmnCode) {

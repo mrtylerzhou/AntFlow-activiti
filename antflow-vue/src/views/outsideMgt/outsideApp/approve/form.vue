@@ -4,21 +4,37 @@
     <el-form :model="form" :rules="rules" ref="approveTemplateRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="业务方名称" prop="businessPartyName">
-            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入业务方名称" />
+          <el-form-item label="项目名称" prop="businessPartyName">
+            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入项目名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="业务表单名称" prop="applicationName">
-            <el-input v-model="form.applicationName" :disabled=true placeholder="请输入业务表单名称" />
+          <el-form-item label="应用名称" prop="applicationName">
+            <el-input v-model="form.applicationName" :disabled=true placeholder="请输入应用名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="审批人类型" prop="approveTypeId">
-            <el-select v-model="form.approveTypeId" @change="selectTypeChanged"  placeholder="请选择账户类型" :style="{ width: '100%' }">
+            <el-select v-model="form.approveTypeId" @change="selectTypeChanged" placeholder="请选择账户类型"
+              :style="{ width: '100%' }">
               <el-option v-for="(item, index) in approveTypeOptions" :key="index" :label="item.label"
                 :value="item.value"></el-option>
             </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="审批人模板URL" prop="apiUrl">
+            <el-input v-model="form.apiUrl" placeholder="请输入审批人模板URL(必须http或https开头)" :disabled=true>
+              <template #append>
+                <el-tooltip class="box-item" effect="dark" content="检查审批人模板URL是否连通" placement="bottom-end">
+                  <el-button @click="handleCheckUserUrl">
+                    <el-icon>
+                      <CircleCheck />
+                    </el-icon>
+                  </el-button>
+                </el-tooltip>
+              </template>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -37,21 +53,6 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="审批人模板URL" prop="apiUrl">
-            <el-input v-model="form.apiUrl" placeholder="请输入审批人模板URL(必须http或https开头)" :disabled=true >
-              <template #append>
-                <el-tooltip class="box-item" effect="dark" content="检查审批人模板URL是否连通" placement="bottom-end">
-                  <el-button @click="handleCheckUserUrl">
-                    <el-icon>
-                      <CircleCheck />
-                    </el-icon>
-                  </el-button>
-                </el-tooltip>
-              </template>
-            </el-input>
-          </el-form-item>
-        </el-col>  
-        <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
           </el-form-item>
@@ -66,20 +67,20 @@
     </template>
   </el-dialog>
 </template>
-<script setup> 
+<script setup>
 import { computed, reactive, getCurrentInstance, watch } from "vue";
 import { setApproveTemplate } from "@/api/outsideApi";
 import { getDynamicsList } from "@/api/mock";
 const { proxy } = getCurrentInstance();
 let props = defineProps({
-   visible: {
-        type: Boolean,
-        default:false,
-    },
-    bizformData: {
-        type: Object,
-        default: () => {},
-    }
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  bizformData: {
+    type: Object,
+    default: () => { },
+  }
 });
 
 let dialogVisible = computed({
@@ -94,13 +95,13 @@ const emits = defineEmits(["update:visible", "changeRefresh"]);
 const approveTypeOptions = [
   { label: "指定人员", value: 1 },
   { label: "指定角色", value: 2 }
-]; 
+];
 const data = reactive({
-  form: {},  
+  form: {},
   rules: {
     businessPartyName: [{ required: true, message: '', trigger: 'blur' }],
     applicationName: [{ required: true, message: '', trigger: 'blur' }],
-    approveTypeId: [{ required: true, message: '请选择审批人类型', trigger: 'change' }],  
+    approveTypeId: [{ required: true, message: '请选择审批人类型', trigger: 'change' }],
     apiClientId: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务表单唯一标识(不能输入中文)', trigger: 'blur' }],
     apiClientSecret: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务表单密钥(不能输入中文)', trigger: 'blur' }],
     apiToken: [{ required: true, pattern: /^[^\u4e00-\u9fff]+$/, message: '请输入业务表单唯一标识(不能输入中文)', trigger: 'blur' }],
@@ -116,20 +117,20 @@ const data = reactive({
 const { form, rules } = toRefs(data);
 
 watch(() => props.bizformData, (val) => {
-  form.value = val;  
-  form.value.apiToken= "AA2BB0F7647D408992333672A8551E96";
-  form.value.apiClientId= "033AFA1C6C3545AD";
-  form.value.apiClientSecret= "EF28AC4A539E4A6F8CFC17ECC2C863CC"; 
-}, { deep: true});
- 
-function selectTypeChanged() { 
-  if(form.value.approveTypeId==1){
-    form.value.approveTypeName= "指定人员";
-    form.value.apiUrl= "http://117.72.70.166:7001/user/getUser"; 
-  }else{
-    form.value.approveTypeName= "指定角色";
-    form.value.apiUrl= "http://localhost:7001/user/getRoleInfo"; 
-  } 
+  form.value = val;
+  form.value.apiToken = "AA2BB0F7647D408992333672A8551E96";
+  form.value.apiClientId = "033AFA1C6C3545AD";
+  form.value.apiClientSecret = "EF28AC4A539E4A6F8CFC17ECC2C863CC";
+}, { deep: true });
+
+function selectTypeChanged() {
+  if (form.value.approveTypeId == 1) {
+    form.value.approveTypeName = "指定人员";
+    form.value.apiUrl = "http://14.103.207.27:7001/user/getUser";
+  } else {
+    form.value.approveTypeName = "指定角色";
+    form.value.apiUrl = "http://14.103.207.27:7001/user/getRoleInfo";
+  }
 }
 
 /** 提交表单 */
@@ -140,8 +141,8 @@ function submitApproveTempForm() {
       await setApproveTemplate(form.value).then(res => {
         if (res && res.code == 200) {
           emits("update:visible", false);
-          emits("changeRefresh", { paneName:'approveSet'});
-          proxy.$modal.msgSuccess("添加成功"); 
+          emits("changeRefresh", { paneName: 'approveSet' });
+          proxy.$modal.msgSuccess("添加成功");
         } else {
           proxy.$modal.msgError("添加失败" + res.errMsg);
         }
@@ -174,12 +175,12 @@ function handleCheckUserUrl() {
   }
 }
 /** 取消操作添加条件模板表单 */
-function closeDialog() {  
+function closeDialog() {
   emits("update:visible", false);
   //reset();
 }
 /** 重置操作表单 */
 function reset() {
-  form.value = {}; 
+  form.value = {};
 }
 </script>

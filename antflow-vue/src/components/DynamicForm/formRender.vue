@@ -120,8 +120,8 @@ const traverseFieldWidgetsList = function (widgetList, handler) {
   })
 }
 onBeforeMount(() => {
-  console.log("isPreview======", JSON.stringify(props.isPreview));
-  console.log("showSubmit======", JSON.stringify(props.showSubmit));
+  // console.log("isPreview======", JSON.stringify(props.isPreview));
+  // console.log("showSubmit======", JSON.stringify(props.showSubmit));
   advanceHandleFormData();
 })
 const submitForm = () => {

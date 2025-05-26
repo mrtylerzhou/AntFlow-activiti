@@ -177,15 +177,14 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
      * @param vo
      */
     public void edit(OutSideBpmCallbackUrlConfVo vo) {
-
-
         //to check whether the business party can add data
         if (vo.getId()==null) {
             Long count = this.getBaseMapper().selectCount(new QueryWrapper<OutSideBpmCallbackUrlConf>()
-                    .eq("business_party_id", vo.getBusinessPartyId()));
-
+                    .eq("business_party_id", vo.getBusinessPartyId())
+                    .eq("application_id", vo.getApplicationId())
+            );
             if (count > 0) {
-                throw new JiMuBizException("一个业务方只能配置一条接口回调数据");
+                throw new JiMuBizException("一个应用只能配置一条回调数据");
             }
         }
 
@@ -198,7 +197,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
         } else {
             outSideBpmCallbackUrlConf = new OutSideBpmCallbackUrlConf();
             BeanUtils.copyProperties(vo, outSideBpmCallbackUrlConf);
-            GenericEmployee loginedEmployee = new GenericEmployee();
+            //GenericEmployee loginedEmployee = new GenericEmployee();
             //todo
             outSideBpmCallbackUrlConf.setStatus(1);
             outSideBpmCallbackUrlConf.setCreateTime(new Date());

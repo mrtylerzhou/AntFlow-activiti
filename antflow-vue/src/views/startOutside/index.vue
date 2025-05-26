@@ -8,9 +8,9 @@
                     </template>
                     <div class="component">
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
-                            :isPreview="false" :showSubmit="false" @handleBizBtn="handleSubmit">
-                        </component> 
-                    </div> 
+                            :isPreview="false" :showSubmit="true" @handleBizBtn="handleSubmit">
+                        </component>
+                    </div>
                 </el-tab-pane>
 
                 <el-tab-pane name="flowFromReview" label="流程预览">
@@ -29,7 +29,7 @@ import { ref, getCurrentInstance, onMounted } from 'vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import { getLowCodeFromCodeData } from '@/api/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
-import { processSubmit } from "@/api/outsideApi"; 
+import { processSubmit } from "@/api/outsideApi";
 import cache from "@/plugins/cache";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -80,17 +80,17 @@ const handleClick = async (tab, event) => {
         proxy.$modal.msgError("未定义表单组件");
         return;
     }
-    await formRef.value.handleValidate().then(async (isValid) => { 
+    await formRef.value.handleValidate().then(async (isValid) => {
         if (!isValid) {
             activeName.value = "createFrom";
         } else {
             const _formData = await formRef.value.getFromData();
             if (isLFFlow && isLFFlow == true) {
-                let  lfFormdata = JSON.parse(_formData);
+                let lfFormdata = JSON.parse(_formData);
                 previewConf.value.approversList = lfFormdata.approversList;
                 previewConf.value.approversValid = lfFormdata.approversValid;
                 delete lfFormdata.approversList;
-                delete lfFormdata.approversValid; 
+                delete lfFormdata.approversValid;
                 previewConf.value.lfFields = JSON.parse(_formData);
             } else {
                 previewConf.value = JSON.parse(_formData);
@@ -116,21 +116,21 @@ const startTest = (param) => {
     bizFrom.formCode = flowCode || '';
     bizFrom.operationType = 1;//operationType 1发起 3 审批 
     bizFrom.isLowCodeFlow = true;
-    bizFrom.lfFields = null;  
+    bizFrom.lfFields = null;
     if (isLFFlow && isLFFlow == true) {
         bizFrom = {};
         bizFrom.formCode = flowCode || '';
         bizFrom.operationType = 1;//operationType 1发起 3 审批 
         bizFrom.isLowCodeFlow = true;
 
-        let  lfFormdata = JSON.parse(param);
+        let lfFormdata = JSON.parse(param);
         bizFrom.approversList = lfFormdata.approversList;
         bizFrom.approversValid = lfFormdata.approversValid;
         delete lfFormdata.approversList;
-        delete lfFormdata.approversValid; 
-        bizFrom.lfFields = lfFormdata; 
+        delete lfFormdata.approversValid;
+        bizFrom.lfFields = lfFormdata;
     }
-    bizFrom.userId= cache.session.get('userId');
+    bizFrom.userId = cache.session.get('userId');
     proxy.$modal.loading();
     processSubmit(bizFrom).then((res) => {
         if (res.code == 200) {
@@ -155,11 +155,12 @@ function close() {
     font-size: 16px;
     color: #383838;
 }
-.component{
+
+.component {
     height: calc(100vh - 178px);
     padding-top: 15px;
     padding-bottom: 15px;
-    overflow: auto; 
+    overflow: auto;
     background-color: #f5f5f7;
 }
 </style>

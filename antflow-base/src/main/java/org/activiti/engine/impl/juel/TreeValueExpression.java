@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 
+import lombok.Getter;
 import org.activiti.engine.impl.javax.el.ELContext;
 import org.activiti.engine.impl.javax.el.ELException;
 import org.activiti.engine.impl.javax.el.FunctionMapper;
@@ -44,6 +45,7 @@ public final class TreeValueExpression extends org.activiti.engine.impl.javax.el
 	private final Class<?> type;
 	private final boolean deferred;
 
+	@Getter
 	private transient ExpressionNode node;
 
 	private String structure;

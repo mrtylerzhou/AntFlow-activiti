@@ -16,7 +16,7 @@
         <el-button type="warning" size="default" @click="handleClose">取消</el-button>
       </el-form-item>
     </el-form>
-    <el-radio-group class="radio-table" v-model="selectUserId" @change="clickedRadio">
+    <el-radio-group class="radio-table" style="width: 100%;" v-model="selectUserId" @change="clickedRadio">
       <el-table row-key="userId" :data="userList" v-loading="loading" height="350px"
         @selection-change="handleSelectionChange">
         <el-table-column v-if="multiple" align="center" type="selection" width="50px" :selectable="canSelectable" />
@@ -67,7 +67,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["update:visible","change"]);
+const emits = defineEmits(["update:visible", "change"]);
 const loading = ref(false);
 const userList = ref([]);
 const total = ref(23);
@@ -98,9 +98,9 @@ const queryParams = reactive({
 });
 const { pageDto, qform } = toRefs(queryParams);
 
-  
-const canCommit = computed(() => { 
-  return props.multiple ? multiSelectUser.value.length > 0 && multiSelectUser.value.length <= props.multiplelimit: (selectUserId.value != null && selectUserId.value !== '');
+
+const canCommit = computed(() => {
+  return props.multiple ? multiSelectUser.value.length > 0 && multiSelectUser.value.length <= props.multiplelimit : (selectUserId.value != null && selectUserId.value !== '');
 });
 const canSelectable = (row) => {
   return !props.checkedData || !props.checkedData.approversList.some((item) => item.id === row.userId);
@@ -108,11 +108,11 @@ const canSelectable = (row) => {
 // 查询表数据
 const getPageList = async () => {
   loading.value = true;
-  await getUserPageList(pageDto.value,qform.value).then((res) => {
+  await getUserPageList(pageDto.value, qform.value).then((res) => {
     loading.value = false;
     userList.value = res.data.map((item) => {
       return {
-        userId: Number(item.id),
+        userId: item.id,
         userName: item.name,
         email: "574427343@qq.com",
         status: 1,
@@ -132,7 +132,7 @@ async function handleQuery() {
 function clickedRadio(id) {
   let selectInfo = userList.value.find((item) => item.userId === id);
   if (!proxy.isObjEmpty(selectInfo)) {
-    multiSelectUser.value=[{
+    multiSelectUser.value = [{
       id: selectInfo.userId,
       name: selectInfo.userName,
     }];
@@ -144,7 +144,7 @@ function handleSelectionChange(selection) {
   const selectArr = selection.map(item => ({
     id: item.userId,
     name: item.userName,
-  })); 
+  }));
   multiSelectUser.value = selectArr;
   if (!proxy.isObjEmpty(props.checkedData) && !proxy.isArrayEmpty(props.checkedData.approversList)) {
     for (let psd of props.checkedData.approversList) {
@@ -152,7 +152,7 @@ function handleSelectionChange(selection) {
         multiSelectUser.value.push(psd);
       }
     }
-  }; 
+  };
 }
 /**
  * 确认/保存
@@ -169,7 +169,7 @@ const uniqueArr = (arr) => {
   return Array.from(new Set(arr.map(item => item.id))).map(id => {
     return arr.find(item => item.id === id);
   });
-}; 
+};
 /**
  * 关闭弹窗
  */
@@ -185,7 +185,7 @@ const handleClose = () => {
 function resetQuery() {
   qform.value = {
     description: null,
-  }; 
+  };
   handleQuery();
 }
 </script>

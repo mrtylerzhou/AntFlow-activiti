@@ -8,8 +8,8 @@
           <el-col :span="24">
             <el-form :model="qform" ref="queryRef" :inline="true">
               <el-form-item label="用户名称" prop="description">
-                <el-input v-model="qform.description" placeholder="请输入用户名称" clearable style="width: 150px" size="default"
-                  @keyup.enter="handleQuery" />
+                <el-input v-model="qform.description" placeholder="请输入用户名称" clearable style="width: 150px"
+                  size="default" @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" size="default" @click="handleQuery">搜索</el-button>
@@ -62,7 +62,7 @@
 
 <script setup name="selectUserDialog">
 import { onMounted, watch } from "vue";
-import { getUserPageList } from "@/api/mock"; 
+import { getUserPageList } from "@/api/mock";
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -79,21 +79,21 @@ const loading = ref(false);
 const layoutSize = 'total, prev, pager, next';
 const userList = ref([]);
 const total = ref(0);
-let checkedUsersList = ref([]); 
+let checkedUsersList = ref([]);
 const queryParams = reactive({
   qform: {
-    description: undefined 
+    description: undefined
   },
   pageDto: {
     page: 1,
     pageSize: 10
   },
 });
-const { pageDto, qform } = toRefs(queryParams);  
+const { pageDto, qform } = toRefs(queryParams);
 let visibleDialog = computed({
-  get() {  
-    if(props.visible){
-      getPageList(); 
+  get() {
+    if (props.visible) {
+      getPageList();
     }
     return props.visible;
   },
@@ -101,7 +101,7 @@ let visibleDialog = computed({
     closeDialog();
   },
 });
-let list = computed(() => props.data); 
+let list = computed(() => props.data);
 watch(list, (newVal) => {
   checkedUsersList.value = newVal.map((item) => {
     return {
@@ -109,20 +109,20 @@ watch(list, (newVal) => {
       userName: item.name,
     };
   });
-},{ deep: true });
+}, { deep: true });
 onMounted(() => {
   getPageList();
 });
 // 用户数据
-const getPageList =  () => {
-  loading.value = true; 
-  getUserPageList(pageDto.value,qform.value).then((res) => {
+const getPageList = () => {
+  loading.value = true;
+  getUserPageList(pageDto.value, qform.value).then((res) => {
     loading.value = false;
     total.value = res.pagination.totalCount;
     pageDto.value.page = res.pagination.page;
     userList.value = res.data.map((item) => {
       return {
-        userId: Number(item.id),
+        userId: item.id,
         userName: item.name,
         email: "574427343@qq.com",
         status: 1,

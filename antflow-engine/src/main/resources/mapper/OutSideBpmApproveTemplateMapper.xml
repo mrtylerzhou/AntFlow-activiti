@@ -65,4 +65,13 @@
         order by a.create_time desc
     </select>
 
+    <select id="selectRoleApiUrlByConfId" resultType="java.lang.String">
+        select
+            api_url
+        from t_out_side_bpm_approve_template a
+        left join t_bpmn_conf b on a.application_id = b.app_id
+        where a.is_del = 0
+        and b.id = #{confId}
+        and a.approve_type_id = 1
+    </select>
 </mapper>

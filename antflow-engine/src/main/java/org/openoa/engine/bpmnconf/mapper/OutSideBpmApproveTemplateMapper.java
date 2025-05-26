@@ -13,4 +13,5 @@ public interface OutSideBpmApproveTemplateMapper extends BaseMapper<OutSideBpmAp
 
     List<OutSideBpmApproveTemplateVo> selectPageList(Page page, OutSideBpmApproveTemplateVo vo);
 
+    String selectRoleApiUrlByConfId(Long confId);
 }

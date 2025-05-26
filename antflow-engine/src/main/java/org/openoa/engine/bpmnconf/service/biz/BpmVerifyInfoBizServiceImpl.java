@@ -14,7 +14,9 @@ import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
@@ -29,6 +31,8 @@ import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openoa.base.constant.enums.ProcessEnum.COMLETE_STATE;
 import static org.openoa.base.constant.enums.ProcessNodeEnum.START_TASK_KEY;
 import static org.openoa.base.constant.enums.ProcessStateEnum.*;
 
@@ -52,6 +57,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.*;
  */
 @Service
 public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoServiceImpl> {
+    private static final Logger log = LoggerFactory.getLogger(BpmVerifyInfoBizServiceImpl.class);
     @Autowired
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
@@ -93,7 +99,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         //query business process info
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
 
-
+        finishFlag=Objects.equals(bpmBusinessProcess.getProcessState(), HANDLED_STATE.getCode());
         if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
             return bpmVerifyInfoVos;
         }
@@ -121,12 +127,15 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         int sort = 0;
 
         //iterate through the verify info
+        //审批拒绝
+        Boolean noApproval = false;
         List<BpmVerifyInfoVo> bpmVerifyInfoSortVos = Lists.newArrayList();
         for (BpmVerifyInfoVo bpmVerifyInfoVo : bpmVerifyInfoVos) {
             if (bpmVerifyInfoVo.getVerifyStatus() == 3 || bpmVerifyInfoVo.getVerifyStatus() == 6) {
                 bpmVerifyInfoVo.setTaskName(lastHistoricTaskInstance.getName());
 
                 bpmVerifyInfoVo.setVerifyStatusName("审批拒绝");
+                noApproval = true; //有审批拒绝，则流程结束
             }
 
             if (bpmVerifyInfoVo.getVerifyStatus() == 5) {
@@ -218,17 +227,18 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
             taskVo.setElementId(lastHistoricTaskInstance.getTaskDefinitionKey());
         }
 
-        Integer processState = bpmBusinessProcess.getProcessState();
-
-        Integer endVerifyStatus = 100;
-        if (processState != REJECT_STATE.getCode() || processState != END_STATE.getCode()) {
-            if (!finishFlag) {
-                //追加流程记录
+        //追加流程记录
+        if (!finishFlag) {
+            if(!noApproval){
+                //当节点没有审批拒绝时，才追加流程记录
                 addBpmVerifyInfoVo(processNumber, sort, bpmVerifyInfoVos, historicProcessInstance, taskVo);
             }
-            if (processState == HANDLING_STATE.getCode()) {
-                endVerifyStatus = 0;
-            }
+        }
+
+
+        Integer endVerifyStatus = 100;
+        if (bpmBusinessProcess.getProcessState() == COMLETE_STATE.getCode()) {
+            endVerifyStatus = 0;
         }
 
         bpmVerifyInfoVos.add(BpmVerifyInfoVo.builder().taskName("流程结束").verifyStatus(endVerifyStatus).build());

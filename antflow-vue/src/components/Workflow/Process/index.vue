@@ -32,6 +32,7 @@ import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
 import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/zoom.js";
+import { flattenMapTreeToList } from '@/utils/flow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
@@ -61,13 +62,17 @@ onMounted(async () => {
  * 判断流程中是否有审批节点 Demo 预览需要，项目中不使用可以去掉这步验证
  * @param treeNode 
  */
-const validateIsExistApproveNode = (treeNode) => {
-    if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效审批人节点，实际项目中不需要可以去掉" };
-    if (treeNode.nodeType == 4) {
-        return { isSuccess: true, msg: "" };
+const validateIsExistApproveNode = (treeNode) => { 
+    if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" }; 
+    const nodeArray = flattenMapTreeToList(treeNode); 
+    const isExist = nodeArray.some(node => {
+        return node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 7;
+    });
+    if (!isExist) {
+        return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" };
     }
     else {
-        return validateIsExistApproveNode(treeNode.childNode);
+        return { isSuccess: true, msg: "" };
     }
 }
 /**

@@ -38,8 +38,8 @@ public class OutSideBpmCallbackUrlConf {
     /**
      * bpmn confi id
      */
-    @TableField("bpmn_conf_id")
-    private Long bpmnConfId;
+    @TableField("application_id")
+    private Long applicationId;
     @TableField("form_code")
     private String formCode;
     /**

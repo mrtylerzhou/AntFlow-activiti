@@ -7,7 +7,7 @@
                 </div>
             </template>
             <el-row :gutter="5">
-                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in worlflowList">
+                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
                     <el-card shadow="always" class="card-col" @click="handleStart(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -28,21 +28,24 @@
             <template v-slot:header>
                 <div class="clearfix">
                     <span>低代码表单(LF)
-                        <el-tooltip placement="right" >
-                            <template #content> 
-                                <span> 
-                                    <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】" type="success" effect="dark"  :closable="false" /> 
-                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】" type="success" effect="dark"  :closable="false" /> 
+                        <el-tooltip placement="right">
+                            <template #content>
+                                <span>
+                                    <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增" type="success"
+                                        effect="dark" :closable="false" />
+                                    <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】"
+                                        type="success" effect="dark" :closable="false" />
+                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】"
+                                        type="success" effect="dark" :closable="false" />
                                 </span>
                             </template>
                             <el-icon><question-filled /></el-icon>
-                        </el-tooltip>  
+                        </el-tooltip>
                     </span>
                 </div>
             </template>
             <el-row :gutter="5">
-                <el-col :lg="6" :md="8"  :sm="12" :xs="24"  v-for="(item, index) in lfFlowList">
+                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
                     <el-card shadow="always" class="card-col" @click="handleStart(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -50,7 +53,7 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title"> 
+                            <div class="card-title">
                                 <a>{{ item.title }}</a>
                                 <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
@@ -71,18 +74,18 @@
                         第三方流程[1]
                         <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
                             <el-icon><question-filled /></el-icon>
-                        </el-tooltip> 
+                        </el-tooltip>
                         <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
-                            <a href="http://117.72.70.166/ruoyi/#/hr/leavetime" target="_blank">
+                            <a href="http://14.103.207.27/ruoyi/#/hr/leavetime" target="_blank">
                                 <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
                             </a>
-                        </el-tooltip> 
-                   
+                        </el-tooltip>
+
                     </span>
                 </div>
             </template>
             <el-row :gutter="5">
-                <el-col :lg="6" :md="8"  :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
+                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
                     <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
                         <div slot="title">
                             <div class="card-icon">
@@ -90,7 +93,7 @@
                                     <img :src="item.IconUrl" />
                                 </el-avatar>
                             </div>
-                            <div class="card-title"> 
+                            <div class="card-title">
                                 <a>{{ item.title }}</a>
                                 <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
                             </div>
@@ -117,24 +120,24 @@ let lfFlowList = ref([]);
 let outsideFlowList = ref([]);
 const lfTotal = ref(0);
 const outsideTotal = ref(0);
-const data = reactive({ 
+const data = reactive({
     lfPageDto: {
         page: 1,
         pageSize: 12
     },
     lfVO: {
-        processState:1,
+        processState: 1,
         description: undefined
     },
     outsidePage: {
         page: 1,
         pageSize: 12
     },
-    outsideVO: { 
+    outsideVO: {
         description: undefined
-    }  
+    }
 });
-const { lfPageDto, lfVO,outsidePage,outsideVO } = toRefs(data);
+const { lfPageDto, lfVO, outsidePage, outsideVO } = toRefs(data);
 
 let statusColor = {
     "LEAVE_WMA": 'leave',
@@ -149,13 +152,13 @@ onMounted(async () => {
     proxy.$modal.loading();
     await getDIYFormCodeList();
     proxy.$modal.closeLoading();
-    await getLFFormCodePageList(); 
-    await getOutSideFormCodeList(); 
+    await getLFFormCodePageList();
+    await getOutSideFormCodeList();
 })
 /**
  * 获取自定义表单FormCode List
  */
-async  function getDIYFormCodeList(){
+async function getDIYFormCodeList() {
     await getDIYFromCodeData().then((res) => {
         if (res.code == 200) {
             const totalData = res.data.map(c => {
@@ -163,11 +166,11 @@ async  function getDIYFormCodeList(){
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
-                    hasChooseApprove:c.hasStarUserChooseModule,
+                    hasChooseApprove: c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
                     IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
-            }); 
+            });
             worlflowList.value = totalData;
         }
     })
@@ -175,21 +178,21 @@ async  function getDIYFormCodeList(){
 /**
  * 获取低代码表单FormCode Page List
  */
-async  function getLFFormCodePageList(){ 
-    await getLFActiveFormCodePageList(lfPageDto.value,lfVO.value).then((res) => {
+async function getLFFormCodePageList() {
+    await getLFActiveFormCodePageList(lfPageDto.value, lfVO.value).then((res) => {
         if (res.code == 200) {
             const totalData = res.data.map(c => {
                 return {
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
-                    hasChooseApprove:c.hasStarUserChooseModule,
+                    hasChooseApprove: c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
                     IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
                 }
             });
-            lfFlowList.value = totalData;  
-            lfTotal.value = res.pagination.totalCount; 
+            lfFlowList.value = totalData;
+            lfTotal.value = res.pagination.totalCount;
         }
     });
 }
@@ -197,22 +200,22 @@ async  function getLFFormCodePageList(){
 /**
  * 获取三方接入FormCode Page List
  */
-async function getOutSideFormCodeList() { 
-    await getOutSideFormCodePageList(outsidePage.value,outsideVO.value).then((res) => {
-        if (res.code == 200) { 
+async function getOutSideFormCodeList() {
+    await getOutSideFormCodePageList(outsidePage.value, outsideVO.value).then((res) => {
+        if (res.code == 200) {
             const totalData = res.data.map(c => {
                 return {
                     formCode: c.formCode,
                     title: c.bpmnName,
                     formType: 'outside',
                     applicationId: c.applicationId,
-                    hasChooseApprove:false,
-                    description:c.bpmnName + c.remark + '流程办理',
+                    hasChooseApprove: false,
+                    description: c.bpmnName + c.remark + '流程办理',
                     IconUrl: getAssetsFile("jiejing")
                 }
-            }); 
-            outsideFlowList.value = totalData;   
-            outsideTotal.value = res.pagination.totalCount; 
+            });
+            outsideFlowList.value = totalData;
+            outsideTotal.value = res.pagination.totalCount;
         }
     });
 }
@@ -226,13 +229,13 @@ function handleStart(row) {
     const obj = { path: '/startFlow/index', query: params };
     proxy.$tab.openPage(obj);
 }
-function handleOutSide(row) { 
+function handleOutSide(row) {
     const params = {
         ft: row.formType,
         fc: row.formCode,
         appid: row.applicationId,
         ha: row.hasChooseApprove,
-        fcname:  encodeURIComponent(row.title) 
+        fcname: encodeURIComponent(row.title)
     };
     const obj = { path: '/startOutside/index', query: params };
     proxy.$tab.openPage(obj);
@@ -260,9 +263,11 @@ function handleFlow(row) {
     }
 
 }
-.el-card{
+
+.el-card {
     margin-bottom: 5px !important;
 }
+
 .card-title {
     float: left;
     margin-left: 15px;

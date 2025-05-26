@@ -1,10 +1,12 @@
 package org.openoa.engine.lowflow.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
@@ -15,10 +17,12 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.engine.bpmnconf.mapper.LFMainMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
@@ -29,7 +33,6 @@ import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -204,7 +207,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         if(CollectionUtils.isEmpty(fieldConfMap)){
             throw  new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
-        List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId);
+        List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId,formCode);
         mainFieldService.saveBatch(mainFields);
         vo.setBusinessId(mainId.toString());
         vo.setProcessDigest(vo.getRemark());
@@ -230,7 +233,26 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         String formCode = vo.getFormCode();
         Long confId = vo.getBpmnConfVo().getId();
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
-        if(CollectionUtils.isEmpty(lfMainFields)){
+	    // 如果vo.getLfFields()里面有lfMainFields没有的元素，那么就将没有的元素save到LFMainField表中
+	    Map<String, Object> submitLfFields = vo.getLfFields();
+	    if (ObjectUtils.isNotEmpty(submitLfFields)) {
+		    Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
+		    if (ObjectUtils.isEmpty(lfFormdataFieldMap)) {
+			    Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+			    allFieldConfMap.put(confId,name2SelfMap);
+		    }
+		    Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
+		    if (ObjectUtils.isEmpty(fieldConfMap)) {
+			    throw new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
+		    }
+		    List<LFMainField> mainFields = LFMainField.parseFromMap(submitLfFields, fieldConfMap, mainId, vo.getFormCode());
+		    if (CollectionUtils.isNotEmpty(mainFields)) {
+			    // 根据fieldId过滤掉已存在表里的数据lfMainFields
+			    mainFields.removeIf(mainField -> lfMainFields.stream().anyMatch(ori -> ori.getFieldId().equals(mainField.getFieldId())));
+			    mainFieldService.saveBatch(mainFields);
+		    }
+	    }
+		if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         for (LFMainField field : lfMainFields){
