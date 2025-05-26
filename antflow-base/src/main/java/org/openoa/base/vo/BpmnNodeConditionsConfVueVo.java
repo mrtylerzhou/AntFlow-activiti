@@ -25,5 +25,10 @@ public class BpmnNodeConditionsConfVueVo {
     private Boolean multiple;
     private Integer multipleLimit;
     private String fixedDownBoxValue;
-
+    /**
+     * 0 for and,1 for or
+     * @see org.openoa.base.constant.enums.ConditionRelationShipEnum
+     */
+    private Integer condRelation;
+    private Integer condGroup;
 }

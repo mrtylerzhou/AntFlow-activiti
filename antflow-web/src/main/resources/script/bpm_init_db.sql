@@ -270,6 +270,9 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
     `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine ConditionTypeEnum',
      `condition_param_name`  varchar(50)             NOT NULL COMMENT 'param field name',
     `condition_param_jsom`    text                NOT NULL COMMENT 'paramJSON',
+    `operator`                int                 null,
+    `cond_relation`           int                 null comment 'condition''s relations,0 for and and 1 for or',
+    `cond_group  `            int                 null comment 'group that a condition belongs to',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`             varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -1689,8 +1692,7 @@ comment '流程动态条件选择条件记录表';
 create index indx_process_number
     on t_bpm_dynamic_condition_choosen (process_number);
 
-alter table t_bpmn_node_conditions_param_conf
-	add operator int null after condition_param_jsom;
+
 
 
 CREATE TABLE `t_bpmn_node_customize_conf` (
