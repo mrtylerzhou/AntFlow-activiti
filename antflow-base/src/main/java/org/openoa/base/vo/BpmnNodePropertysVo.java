@@ -86,7 +86,7 @@ public class BpmnNodePropertysVo implements Serializable{
      * condition conf vo
      */
     private BpmnNodeConditionsConfBaseVo conditionsConf;
-    private List<BpmnNodeConditionsConfVueVo> conditionList;
+    private List<List<BpmnNodeConditionsConfVueVo>> conditionList;
     /**
      * config table type
      */

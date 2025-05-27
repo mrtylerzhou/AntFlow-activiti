@@ -26,6 +26,7 @@ public class BpmnNodeConditionsConfBaseVo {
      * condition param
      */
     private List<Integer> conditionParamTypes;
+    private List<List<Integer>>groupedConditionParamTypes;
 
     /**
      * is default condition 0 for no 1 for yes

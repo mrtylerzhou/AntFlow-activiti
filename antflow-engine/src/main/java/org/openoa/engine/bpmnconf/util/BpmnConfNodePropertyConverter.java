@@ -33,129 +33,137 @@ public class BpmnConfNodePropertyConverter {
         if(propertysVo==null){
             throw new JiMuBizException("node has no property!");
         }
-        List<BpmnNodeConditionsConfVueVo> newModels = propertysVo.getConditionList();
+
 
         Integer isDefault = propertysVo.getIsDefault();
-        if(ObjectUtils.isEmpty(newModels)&&Objects.equals(isDefault,0)){
-            throw new JiMuBizException("input nodes is empty");
-        }
+
         BpmnNodeConditionsConfBaseVo result=new BpmnNodeConditionsConfBaseVo();
         //outer common property
         result.setIsDefault(propertysVo.getIsDefault());
         result.setSort(propertysVo.getSort());
-        List<Integer> conditionTypes=new ArrayList<>(newModels.size());
+        List<Integer> conditionTypes=new ArrayList<>();
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
         Map<String,Object> wrapperResult=new HashMap<>();
         boolean isLowCodeFlow = false;
-        for (BpmnNodeConditionsConfVueVo newModel : newModels) {
-            String columnId = newModel.getColumnId();
-            if(columnId==null){
-                throw new JiMuBizException("each and every node must have a columnId value");
-            }
+        List<List<BpmnNodeConditionsConfVueVo>> groupedNewModels = propertysVo.getConditionList();
+        if(ObjectUtils.isEmpty(groupedNewModels)&&Objects.equals(isDefault,0)){
+            throw new JiMuBizException("input nodes is empty");
+        }
 
-            int columnIdInt = Integer.parseInt(columnId);
-            //select控件多选特殊处理 columnId =10000 改为 10004
-            if (strEnumCode == columnIdInt){
-                if (newModel.getMultiple() != null && newModel.getMultiple()){
-                    columnIdInt =  ConditionTypeEnum.CONDITION_TYPE_LF_COLLECTION_CONDITION.getCode();
+        int index=0;
+        for (List<BpmnNodeConditionsConfVueVo> newModels : groupedNewModels) {
+            index++;
+            for (BpmnNodeConditionsConfVueVo newModel : newModels) {
+                newModel.setCondGroup(index);
+                String columnId = newModel.getColumnId();
+                if(columnId==null){
+                    throw new JiMuBizException("each and every node must have a columnId value");
                 }
-            }
-            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
-            if(enumByCode==null){
-                throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
-            }
-            conditionTypes.add(columnIdInt);
-            String fieldName = enumByCode.getFieldName();
-            String columnDbname = newModel.getColumnDbname();
-            if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
-                //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
-                if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
-                    throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
-                }
-            }
-            Integer fieldType = enumByCode.getFieldType();
-            Class<?> fieldCls = enumByCode.getFieldCls();
-            if(fieldType==1){//list
-                String fixedDownBoxValue = newModel.getFixedDownBoxValue();
-                List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
-                String zdy1 = newModel.getZdy1();
-                if (zdy1.startsWith("[")&& zdy1.endsWith("]")){
-                    zdy1 = zdy1.substring(1,zdy1.length() -1);
-                }
-                String[] keys = zdy1.split(",");
-                List<String> keysList = Arrays.asList(keys);
-                List<Object> values = new ArrayList<>(keys.length);
-                keysList.forEach(key->{
-                    BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.stream().filter(x->x.getKey().equals(key)).findFirst().get();
-                    if(fieldCls.equals(String.class)){
-                        values.add(baseKeyValueStruVo.getKey());
-                    }else{
-                        Object parsedObject = JSON.parseObject(baseKeyValueStruVo.getKey(), fieldCls);
-                        values.add(parsedObject);
-                    }
-                });
-                Object valueOrWrapper=null;
-                if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                    wrapperResult.put(columnDbname,values);
-                    valueOrWrapper=wrapperResult;
-                }
-                Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
-            }else{
-                String zdy1 = newModel.getZdy1();
-                String zdy2=newModel.getZdy2();
 
-                Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                String opt1 = newModel.getOpt1();
-                String opt2=newModel.getOpt2();
-                Integer optType = newModel.getOptType();
-                if(optType!=null){
-                    JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
-                    if(symbol==null){
-                        throw new JiMuBizException(String.format("condition optype of %d is undefined!",optType));
+                int columnIdInt = Integer.parseInt(columnId);
+                //select控件多选特殊处理 columnId =10000 改为 10004
+                if (strEnumCode == columnIdInt){
+                    if (newModel.getMultiple() != null && newModel.getMultiple()){
+                        columnIdInt =  ConditionTypeEnum.CONDITION_TYPE_LF_COLLECTION_CONDITION.getCode();
                     }
-                    Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
-                    ReflectionUtils.setField(opField,result,symbol.getCode());
                 }
-                if(String.class.isAssignableFrom(fieldCls)){
+                ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
+                if(enumByCode==null){
+                    throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
+                }
+                conditionTypes.add(columnIdInt);
+                String fieldName = enumByCode.getFieldName();
+                String columnDbname = newModel.getColumnDbname();
+                if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
+                    //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
+                    if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
+                        throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+                    }
+                }
+                Integer fieldType = enumByCode.getFieldType();
+                Class<?> fieldCls = enumByCode.getFieldCls();
+                if(fieldType==1){//list
+                    String fixedDownBoxValue = newModel.getFixedDownBoxValue();
+                    List<BaseKeyValueStruVo> valueStruVoList = JSON.parseArray(fixedDownBoxValue,BaseKeyValueStruVo.class);
+                    String zdy1 = newModel.getZdy1();
+                    if (zdy1.startsWith("[")&& zdy1.endsWith("]")){
+                        zdy1 = zdy1.substring(1,zdy1.length() -1);
+                    }
+                    String[] keys = zdy1.split(",");
+                    List<String> keysList = Arrays.asList(keys);
+                    List<Object> values = new ArrayList<>(keys.length);
+                    keysList.forEach(key->{
+                        BaseKeyValueStruVo baseKeyValueStruVo = valueStruVoList.stream().filter(x->x.getKey().equals(key)).findFirst().get();
+                        if(fieldCls.equals(String.class)){
+                            values.add(baseKeyValueStruVo.getKey());
+                        }else{
+                            Object parsedObject = JSON.parseObject(baseKeyValueStruVo.getKey(), fieldCls);
+                            values.add(parsedObject);
+                        }
+                    });
                     Object valueOrWrapper=null;
-                    //处理多值first<b<second这种类型
-                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
-                       zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
-                    }
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        wrapperResult.put(columnDbname,zdy1);
+                        wrapperResult.put(columnDbname,values);
                         valueOrWrapper=wrapperResult;
                     }
-                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
+                    Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
+                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
                 }else{
-                    Object valueOrWrapper=null;
-                    Object actualValue=null;
-                    Object zdy2Value=null;
-                    actualValue= JSON.parseObject(zdy1,fieldCls);
-                    if (!StringUtils.isEmpty(zdy2)){
-                        zdy2Value=JSON.parseObject(zdy2,fieldCls);
+                    String zdy1 = newModel.getZdy1();
+                    String zdy2=newModel.getZdy2();
+
+                    Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
+                    String opt1 = newModel.getOpt1();
+                    String opt2=newModel.getOpt2();
+                    Integer optType = newModel.getOptType();
+                    if(optType!=null){
+                        JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
+                        if(symbol==null){
+                            throw new JiMuBizException(String.format("condition optype of %d is undefined!",optType));
+                        }
+                        Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
+                        ReflectionUtils.setField(opField,result,symbol.getCode());
                     }
-                    if(JudgeOperatorEnum.binaryOperator().contains(optType)){
-                        zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                    if(String.class.isAssignableFrom(fieldCls)){
+                        Object valueOrWrapper=null;
+                        //处理多值first<b<second这种类型
+                        if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                            zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                        }
+                        if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                            wrapperResult.put(columnDbname,zdy1);
+                            valueOrWrapper=wrapperResult;
+                        }
+                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
+                    }else{
+                        Object valueOrWrapper=null;
+                        Object actualValue=null;
+                        Object zdy2Value=null;
+                        actualValue= JSON.parseObject(zdy1,fieldCls);
+                        if (!StringUtils.isEmpty(zdy2)){
+                            zdy2Value=JSON.parseObject(zdy2,fieldCls);
+                        }
+                        if(JudgeOperatorEnum.binaryOperator().contains(optType)){
+                            zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                        }
+                        if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                            isLowCodeFlow=true;
+                            wrapperResult.put(columnDbname,actualValue);
+                            valueOrWrapper=wrapperResult;
+                        }else {
+                            ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
+                        }
                     }
-                    if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                        isLowCodeFlow=true;
-                        wrapperResult.put(columnDbname,actualValue);
-                        valueOrWrapper=wrapperResult;
-                    }else {
-                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
-                    }
+
                 }
 
             }
-
         }
         if(isLowCodeFlow){
             Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
             ReflectionUtils.setField(field, result, wrapperResult);
         }
-        String extJson = JSON.toJSONString(newModels);
+        String extJson = JSON.toJSONString(groupedNewModels);
         result.setExtJson(extJson);
         result.setConditionParamTypes(conditionTypes);
         return result;
