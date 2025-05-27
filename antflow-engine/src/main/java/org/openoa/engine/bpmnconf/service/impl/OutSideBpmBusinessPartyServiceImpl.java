@@ -29,6 +29,7 @@ import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -237,6 +238,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
      *
      * @param vo
      */
+    @Transactional(rollbackFor = Exception.class)
     public void edit(OutSideBpmBusinessPartyVo vo) {
 
         //check whether the data is repeated
