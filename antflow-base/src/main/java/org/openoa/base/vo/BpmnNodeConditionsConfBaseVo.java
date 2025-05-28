@@ -26,7 +26,7 @@ public class BpmnNodeConditionsConfBaseVo {
      * condition param
      */
     private List<Integer> conditionParamTypes;
-    private List<List<Integer>>groupedConditionParamTypes;
+    private Map<Integer,List<Integer>>groupedConditionParamTypes;
 
     /**
      * is default condition 0 for no 1 for yes
@@ -81,6 +81,7 @@ public class BpmnNodeConditionsConfBaseVo {
      */
     private Integer numberOperator;
     private List<Integer> numberOperatorList=new ArrayList<>();
+    private Map<Integer,List<Integer>> groupedNumberOperatorListMap=new HashMap<>();
     private String extJson;
 
     //===============>>third paryt process<<===================
@@ -115,5 +116,7 @@ public class BpmnNodeConditionsConfBaseVo {
      * node code flow conditions
      */
     private Map<String,Object> lfConditions;
+
+    Map<Integer, Map<String,Object>> groupedLfConditionsMap;
     private String expression;
 }

@@ -42,6 +42,7 @@ public class BpmnConfNodePropertyConverter {
         result.setIsDefault(propertysVo.getIsDefault());
         result.setSort(propertysVo.getSort());
         List<Integer> conditionTypes=new ArrayList<>();
+        Map<Integer,List<Integer>> groupedConditionTypes=new HashMap<>();
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
         Map<String,Object> wrapperResult=new HashMap<>();
         boolean isLowCodeFlow = false;
@@ -53,6 +54,7 @@ public class BpmnConfNodePropertyConverter {
         int index=0;
         for (List<BpmnNodeConditionsConfVueVo> newModels : groupedNewModels) {
             index++;
+            List<Integer> currentGroupConditionTypes=new ArrayList<>();
             for (BpmnNodeConditionsConfVueVo newModel : newModels) {
                 newModel.setCondGroup(index);
                 String columnId = newModel.getColumnId();
@@ -72,6 +74,7 @@ public class BpmnConfNodePropertyConverter {
                     throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
                 }
                 conditionTypes.add(columnIdInt);
+                currentGroupConditionTypes.add(columnIdInt);
                 String fieldName = enumByCode.getFieldName();
                 String columnDbname = newModel.getColumnDbname();
                 if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
@@ -158,6 +161,7 @@ public class BpmnConfNodePropertyConverter {
                 }
 
             }
+            groupedConditionTypes.put(index,currentGroupConditionTypes);
         }
         if(isLowCodeFlow){
             Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
@@ -166,6 +170,7 @@ public class BpmnConfNodePropertyConverter {
         String extJson = JSON.toJSONString(groupedNewModels);
         result.setExtJson(extJson);
         result.setConditionParamTypes(conditionTypes);
+        result.setGroupedConditionParamTypes(groupedConditionTypes);
         return result;
     }
     public static List<BpmnNodeConditionsConfVueVo> toVue3Model(BpmnNodeConditionsConfBaseVo baseVo){
