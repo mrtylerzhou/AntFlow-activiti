@@ -192,7 +192,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         List<BpmnNodeConditionsConfVueVo> bpmnNodeConditionsConfVueVos = BpmnConfNodePropertyConverter.toVue3Model(bpmnNodeConditionsConfBaseVo);
         Map<String, BpmnNodeConditionsConfVueVo> voMap = bpmnNodeConditionsConfVueVos.stream().collect(Collectors.toMap(BpmnNodeConditionsConfVueVo::getColumnDbname, v -> v, (k1, k2) -> k1));
 
-        List<BpmnNodeConditionsConfVueVo> extFields = extFieldsGroup.stream().flatMap(a -> a.stream()).collect(Collectors.toList());
+        List<BpmnNodeConditionsConfVueVo> extFields = extFieldsGroup.stream().flatMap(Collection::stream).collect(Collectors.toList());
         for (BpmnNodeConditionsConfVueVo extField : extFields) {
             String columnDbname = extField.getColumnDbname();
             boolean lowCodeFlow = ConditionTypeEnum.isLowCodeFlow(ConditionTypeEnum.getEnumByCode(Integer.parseInt(extField.getColumnId())));
