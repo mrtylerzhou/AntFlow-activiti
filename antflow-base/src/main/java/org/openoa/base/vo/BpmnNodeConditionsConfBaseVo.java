@@ -82,6 +82,7 @@ public class BpmnNodeConditionsConfBaseVo {
     private Integer numberOperator;
     private List<Integer> numberOperatorList=new ArrayList<>();
     private Map<Integer,List<Integer>> groupedNumberOperatorListMap=new HashMap<>();
+    private Map<Integer,Integer> groupedCondRelations=new HashMap<>();
     private String extJson;
 
     //===============>>third paryt process<<===================

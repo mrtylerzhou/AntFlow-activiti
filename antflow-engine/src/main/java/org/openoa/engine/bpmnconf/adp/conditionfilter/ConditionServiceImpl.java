@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.interf.ConditionService;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.confentity.BpmDynamicConditionChoosen;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,35 +36,55 @@ public class ConditionServiceImpl implements ConditionService {
     public boolean checkMatchCondition(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfBaseVo conditionsConf
             , BpmnStartConditionsVo bpmnStartConditionsVo,boolean isDynamicConditionGateway) {
         String nodeId=bpmnNodeVo.getNodeId();
-        List<Integer> conditionParamTypeList = conditionsConf.getConditionParamTypes();
-        if (CollectionUtils.isEmpty(conditionParamTypeList)) {
+        Map<Integer, List<Integer>> groupedConditionParamTypes = conditionsConf.getGroupedConditionParamTypes();
+        if(CollectionUtils.isEmpty(groupedConditionParamTypes)){
             return false;
         }
-        conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
         boolean result = true;
-        int index=0;
-        for (Integer integer : conditionParamTypeList) {
-            ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
-            if (conditionTypeEnum == null) {
-                log.info("condition type is null,type:{}", integer);
-                result = false;
+        for (Map.Entry<Integer, List<Integer>> conditionTypeEntry : groupedConditionParamTypes.entrySet()) {
+            Integer currentGroup = conditionTypeEntry.getKey();
+            Integer condRelation=conditionsConf.getGroupedCondRelations().get(currentGroup);
+            boolean currentGroupResult=true;
+            if(condRelation==null){
+                throw new JiMuBizException("logic error,please contact the Administrator");
+            }
+            List<Integer> conditionParamTypeList=conditionTypeEntry.getValue();
+            if (CollectionUtils.isEmpty(conditionParamTypeList)) {
+                result=false;
                 break;
             }
-            try {
-                if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index)) {
-                    result = false;
-                    break;
-                }
-            } catch (JiMuBizException e) {
-                log.info("condiiton judge business exception:" + e.getMessage());
-                throw e;
-            } catch (Exception e) {
-                log.error("conditionJudgeClass instantiate failure", e);
-                throw  e;
-            }
-            index++;
+            conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
 
+            int index=0;
+            for (Integer integer : conditionParamTypeList) {
+                ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
+                if (conditionTypeEnum == null) {
+                    log.info("condition type is null,type:{}", integer);
+                    throw new JiMuBizException("logic error,please contact the Administrator");
+                }
+                try {
+                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index)) {
+                        currentGroupResult = false;
+                        //如果是且关系,有一个条件判断为false则终止判断
+                        if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
+                            break;
+                        }
+                    }
+                } catch (JiMuBizException e) {
+                    log.info("condiiton judge business exception:" + e.getMessage());
+                    throw e;
+                } catch (Exception e) {
+                    log.error("conditionJudgeClass instantiate failure", e);
+                    throw  e;
+                }
+                index++;
+            }
+            result = currentGroupResult;
+            if(!result){//条件组之间为且关系,如果有一个条件组评估为false,则立刻返回false
+               break;
+            }
         }
+
         //关于默认条件,默认条件不记在表内,
         //1.如果之前是默认条件,本次不是默认,则迁移预校验会查不到,也能说明条件发生了变化,没问题.如果两次都是默认条件,则说明条件没有变化,没问题
         //2.如果之前不是默认条件,本次变成了默认条件,库里也会查不到,说明条件发生了变化,没问题

@@ -103,7 +103,15 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                     .map(BpmnNodeConditionsParamConf::getConditionParamType)
                     .collect(Collectors.toList()));
             bpmnNodeConditionsConfBaseVo.setGroupedConditionParamTypes(nodeConditionsParamConfs
-                    .stream()
+                    .stream().peek(a->{
+                        Integer condGroup = a.getCondGroup();
+                        Integer condRelation = a.getCondRelation();
+                       /* if(condGroup==null||condRelation==null){
+                            throw new JiMuBizException("logic error,please contact the Administrator");
+                        }*/
+                        Map<Integer, Integer> groupedCondRelations = bpmnNodeConditionsConfBaseVo.getGroupedCondRelations();
+                        groupedCondRelations.put(condGroup,condRelation);
+                    })
                     .collect(Collectors.groupingBy(BpmnNodeConditionsParamConf::getCondGroup,
                                     Collectors.mapping(BpmnNodeConditionsParamConf::getConditionParamType, Collectors.toList()))));
 
@@ -303,6 +311,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                                 .conditionParamJsom(conditionParamJson)
                                 .operator(numberOperator)
                                 .condGroup(extField.getCondGroup())
+                                .condRelation(extField.getCondRelation())
                                 .createUser(SecurityUtils.getLogInEmpNameSafe())
                                 .createTime(new Date())
                                 .build());
@@ -315,6 +324,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                                     .conditionParamName(ConditionTypeEnum.CONDITION_TYPE_NUMBER_OPERATOR.getFieldName())
                                     .conditionParamJsom(numberOperator.toString())
                                     .condGroup(extField.getCondGroup())
+                                    .condRelation(extField.getCondRelation())
                                     .createUser(SecurityUtils.getLogInEmpNameSafe())
                                     .createTime(new Date())
                                     .build());
