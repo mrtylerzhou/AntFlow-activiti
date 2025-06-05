@@ -8,6 +8,7 @@
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-base</artifactId>
     <version>0.96.0</version>
+    <name>antflow-base</name>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

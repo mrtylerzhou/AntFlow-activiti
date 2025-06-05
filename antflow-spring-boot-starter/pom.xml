@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
+    <name>antflow-spring-boot-starter</name>
     <version>${antflow.version}</version>
     <properties>
 
