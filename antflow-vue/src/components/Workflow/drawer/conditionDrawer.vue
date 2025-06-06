@@ -19,125 +19,136 @@
         <div class="demo-drawer__content">
             <div class="condition_content drawer_content">
                 <p class="tip">当审批单同时满足以下条件时进入此流程</p>
-                <ul>
-                    <li v-for="(item, index) in originalConfigData.conditionList" :key="index" style="float: left;">
-                        <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
-                        <div v-if="item.type == 1">
-                            <p :class="originalConfigData.nodeApproveList.length > 0 ? 'selected_list' : ''"
-                                @click.self="addConditionRole" style="cursor:text">
-                                <span v-for="(item1, index1) in originalConfigData.nodeApproveList" :key="index1">
-                                    {{ item1.name }}<img src="@/assets/images/add-close1.png"
-                                        @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
-                                </span>
-                                <input type="text" placeholder="请选择具体人员/角色/部门"
-                                    v-if="originalConfigData.nodeApproveList.length == 0" @click="addConditionRole">
-                            </p>
+
+                <el-card class="mb10" style="max-width: 680px">
+                    <template #header>
+                        <div class="card-header">
+                            <div style="float: left;">
+                                <span>条件组{{ 1 }}</span>
+                            </div>
+                            <div @click="deleteConditionGroup(1)" style="float: right;">
+                                <el-icon class="branch-delete-icon"><el-icon-delete /></el-icon>
+                            </div>
                         </div>
-                        <div v-else-if="item.fieldTypeName == 'input'">
-                            <p class="check_box">
-                                <input v-model="item.optType" hidden>
-                                <input type="text" :placeholder="'请输入' + item.showName" v-model="item.zdy1">
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'date'">
-                            <p>
-                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
-                                    @change="changeOptType(item)"
-                                    v-model="item.optType">
-                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
-                                        :value="itemOpt.value" />
-                                </el-select>
-                                <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
-                                    :placeholder="'请选择' + item.showName" format="YYYY-MM-DD" />
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'time'">
-                            <p>
-                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
-                                    @change="changeOptType(item)"
-                                    v-model="item.optType">
-                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
-                                        :value="itemOpt.value" />
-                                </el-select>
-                                <el-time-picker v-if="item.optType != 6" v-model="item.zdy1"
-                                    :placeholder="'请选择' + item.showName" />
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'switch'">
-                            <p class="check_box">
-                                <el-switch v-model="item.zdy1" />
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'radio'">
-                            <p class="check_box">
-                                {{ item.fieldTypeName }}
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'checkbox'">
-                            <p class="check_box">
-                                <a :class="$func.toggleStrClass(item, item1.key) && 'active'"
-                                    @click="toStrChecked(item, item1.key)"
-                                    v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)" :key="index1">{{
-                                        item1.value }}</a>
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'select' && item.multiple">
-                            <p class="check_box" v-if="item.fixedDownBoxValue">
-                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1" multiple
-                                    :multiple-limit="item.multipleLimit">
-                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
-                                        :label="itemOpt.value" :value="itemOpt.key" />
-                                </el-select>
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'select' && !item.multiple">
-                            <p class="check_box" v-if="item.fixedDownBoxValue">
-                                <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1">
-                                    <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)" :key="itemOpt.key"
-                                        :label="itemOpt.value" :value="itemOpt.key" />
-                                </el-select>
-                            </p>
-                        </div>
-                        <div v-else-if="item.fieldTypeName == 'input-number'">
-                            <p>
-                                <el-select :style="'width:' + (item.optType == 6 ? 370 : 120) + 'px'"
-                                    @change="changeOptType(item)"
-                                    v-model="item.optType">
-                                    <el-option v-for="itemOpt in optTypes" :key="itemOpt.value" :label="itemOpt.label"
-                                        :value="itemOpt.value" />
-                                </el-select>
-                                <input v-if="item.optType != 6" style="width:250px;" type="text"
-                                    :placeholder="'请输入' + item.showName" v-model="item.zdy1">
-                            </p>
-                            <p v-if="item.optType == 6">
-                                <input type="text" style="width:75px;" class="mr_10" v-model="item.zdy1">
-                                <el-select style="width:60px;" v-model="item.opt1">
-                                    <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
-                                        :value="itemOpt.value" />
-                                </el-select>
-                                <span class="ellipsis"
-                                    style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
-                                    item.showName }}</span>
-                                <el-select style="width:60px;" class="ml_10" v-model="item.opt2">
-                                    <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
-                                        :value="itemOpt.value" />
-                                </el-select>
-                                <input type="text" style="width:75px;" v-model="item.zdy2">
-                            </p>
-                        </div>
-                        <div v-else>
-                            <p class="check_box">
-                                <input v-model="item.optType" hidden>
-                                <input type="text" :placeholder="'请输入' + item.showName" v-model="item.zdy1">
-                            </p>
-                        </div>
-                        <a v-if="item.type == 1"
-                            @click="originalConfigData.nodeApproveList = []; $func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
-                        <a v-if="item.type == 2"
-                            @click="$func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
-                    </li>
-                </ul>
-                <el-button type="primary" @click="addCondition">添加条件</el-button>
+                    </template>
+                    <ul>
+                        <li v-for="(item, index) in originalConfigData.conditionList" :key="index" style="float: left;">
+                            <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
+                            <div v-if="item.type == 1">
+                                <p :class="originalConfigData.nodeApproveList.length > 0 ? 'selected_list' : ''"
+                                    @click.self="addConditionRole" style="cursor:text">
+                                    <span v-for="(item1, index1) in originalConfigData.nodeApproveList" :key="index1">
+                                        {{ item1.name }}<img src="@/assets/images/add-close1.png"
+                                            @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
+                                    </span>
+                                    <input type="text" placeholder="请选择具体人员/角色/部门"
+                                        v-if="originalConfigData.nodeApproveList.length == 0" @click="addConditionRole">
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'input'">
+                                <p class="check_box">
+                                    <input v-model="item.optType" hidden>
+                                    <input type="text" :placeholder="'请输入' + item.showName" v-model="item.zdy1">
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'date'">
+                                <p>
+                                    <el-select :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                        @change="changeOptType(item)" v-model="item.optType">
+                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                    </el-select>
+                                    <el-date-picker v-if="item.optType != 6" v-model="item.zdy1" type="date"
+                                        :placeholder="'请选择' + item.showName" format="YYYY-MM-DD" />
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'time'">
+                                <p>
+                                    <el-select :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                        @change="changeOptType(item)" v-model="item.optType">
+                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                    </el-select>
+                                    <el-time-picker v-if="item.optType != 6" v-model="item.zdy1"
+                                        :placeholder="'请选择' + item.showName" />
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'switch'">
+                                <p class="check_box">
+                                    <el-switch v-model="item.zdy1" />
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'radio'">
+                                <p class="check_box">
+                                    {{ item.fieldTypeName }}
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'checkbox'">
+                                <p class="check_box">
+                                    <a :class="$func.toggleStrClass(item, item1.key) && 'active'"
+                                        @click="toStrChecked(item, item1.key)"
+                                        v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)" :key="index1">{{
+                                            item1.value }}</a>
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'select' && item.multiple">
+                                <p class="check_box" v-if="item.fixedDownBoxValue">
+                                    <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1" multiple
+                                        :multiple-limit="item.multipleLimit">
+                                        <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
+                                            :key="itemOpt.key" :label="itemOpt.value" :value="itemOpt.key" />
+                                    </el-select>
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'select' && !item.multiple">
+                                <p class="check_box" v-if="item.fixedDownBoxValue">
+                                    <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1">
+                                        <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
+                                            :key="itemOpt.key" :label="itemOpt.value" :value="itemOpt.key" />
+                                    </el-select>
+                                </p>
+                            </div>
+                            <div v-else-if="item.fieldTypeName == 'input-number'">
+                                <p>
+                                    <el-select :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                        @change="changeOptType(item)" v-model="item.optType">
+                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                    </el-select>
+                                    <input v-if="item.optType != 6" style="width:220px;" type="text"
+                                        :placeholder="'请输入' + item.showName" v-model="item.zdy1">
+                                </p>
+                                <p v-if="item.optType == 6">
+                                    <input type="text" style="width:75px;" class="mr_10" v-model="item.zdy1">
+                                    <el-select style="width:60px;" v-model="item.opt1">
+                                        <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
+                                            :value="itemOpt.value" />
+                                    </el-select>
+                                    <span class="ellipsis"
+                                        style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
+                                            item.showName }}</span>
+                                    <el-select style="width:60px;" class="ml_10" v-model="item.opt2">
+                                        <el-option v-for="itemOpt in opt1s" :key="itemOpt.value" :label="itemOpt.label"
+                                            :value="itemOpt.value" />
+                                    </el-select>
+                                    <input type="text" style="width:75px;" v-model="item.zdy2">
+                                </p>
+                            </div>
+                            <div v-else>
+                                <p class="check_box">
+                                    <input v-model="item.optType" hidden>
+                                    <input type="text" :placeholder="'请输入' + item.showName" v-model="item.zdy1">
+                                </p>
+                            </div>
+                            <a v-if="item.type == 1"
+                                @click="originalConfigData.nodeApproveList = []; $func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
+                            <a v-if="item.type == 2"
+                                @click="$func.removeEle(originalConfigData.conditionList, item, 'formId')">删除</a>
+                        </li>
+                    </ul>
+                    <el-button type="primary" @click="addCondition">添加条件</el-button>
+                </el-card>
+                <!-- <el-button type="primary" @click="addCondition">添加条件</el-button> -->
                 <el-dialog title="选择条件" v-model="conditionVisible" :width="480" append-to-body class="condition_list">
                     <p>请选择用来区分审批流程的条件字段</p>
                     <p class="check_box">
@@ -153,7 +164,12 @@
                         <el-button type="primary" @click="sureCondition">确 定</el-button>
                     </template>
                 </el-dialog>
+
+                <el-button style="width: 100%" type="info" icon="el-icon-plus" text bg @click="addConditionGroup">
+                    添加条件组
+                </el-button>
             </div>
+
             <div class="demo-drawer__footer clear">
                 <el-button type="primary" @click="saveCondition">确 定</el-button>
                 <el-button @click="closeDrawer">取 消</el-button>
@@ -264,7 +280,7 @@ const loadLFFormCondition = () => {
                         }
                     });
                     optionGroup = optionGroup.filter(c => c);
-                } 
+                }
                 return {
                     formId: index + 1,
                     columnId: condition_columnTypeMap.get(item.fieldTypeName),
@@ -331,7 +347,7 @@ const saveCondition = () => {
     conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
     conditionsConfig.value.conditionNodes.map((item, index) => {
         item.priorityLevel = index + 1,
-            convertConditionNodeValue(item.conditionList,false)
+            convertConditionNodeValue(item.conditionList, false)
     });
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
@@ -353,9 +369,9 @@ const closeDrawer = (val) => {
     setCondition(false)
 }
 /**格式化控件值 */
-const convertConditionNodeValue = (data,isPreview=true) => {
+const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isArrayEmpty(data)) return;
-    for (let item of data) { 
+    for (let item of data) {
         if (item.fieldTypeName == 'radio') {//单选radio
             item.zdy1 = parseInt(item.zdy1)
         }
@@ -368,7 +384,7 @@ const convertConditionNodeValue = (data,isPreview=true) => {
                 if (!isPreview) {
                     item.zdy1 = JSON.stringify(item.zdy1)
                 }
-            } 
+            }
         }
         if (item.fieldTypeName == 'select' && !item.multiple) {//select单选
             item.zdy1 = parseInt(item.zdy1)
@@ -382,19 +398,29 @@ const convertConditionNodeValue = (data,isPreview=true) => {
         /**适配后端设计 */
         if (item.optType == '6') {//数字控件
             //提交转换
-            if(item.opt1 == '≤'&& item.opt2 == '<'){
-                item.optType='7' 
-            }else if(item.opt1 == '<'&& item.opt2 == '≤'){
-                item.optType='8'
-            }else if(item.opt1 == '≤'&& item.opt2 == '≤'){
-                item.optType='9' 
-            }else{
-                item.optType='6' 
+            if (item.opt1 == '≤' && item.opt2 == '<') {
+                item.optType = '7'
+            } else if (item.opt1 == '<' && item.opt2 == '≤') {
+                item.optType = '8'
+            } else if (item.opt1 == '≤' && item.opt2 == '≤') {
+                item.optType = '9'
+            } else {
+                item.optType = '6'
             }
-        }else if(item.optType == '7' || item.optType == '8' || item.optType == '9'){
-            item.optType='6'//显示转换
-        } 
+        } else if (item.optType == '7' || item.optType == '8' || item.optType == '9') {
+            item.optType = '6'//显示转换
+        }
     }
+}
+
+/*添加条件组 */
+const addConditionGroup = () => {
+    conditionList.value.push([]);
+}
+/*删除条件组 */
+
+const deleteConditionGroup = (index) => {
+    conditionList.value.splice(index, 1)
 }
 </script>
 <style scoped lang="scss">
@@ -414,13 +440,11 @@ const convertConditionNodeValue = (data,isPreview=true) => {
     }
 
     .condition_content {
-        padding: 20px 20px 0;
+        padding: 5px 5px 0;
 
         p.tip {
-            margin: 20px 0;
-            width: 610px;
             text-indent: 17px;
-            line-height: 50px;
+            line-height: 30px;
             background: rgba(241, 249, 255, 1);
             border: 1px solid rgba(64, 163, 247, 1);
             color: #46a6fe;
@@ -428,7 +452,7 @@ const convertConditionNodeValue = (data,isPreview=true) => {
         }
 
         ul {
-            max-height:calc(68vh);
+            max-height: 178px;
             overflow-y: scroll;
             margin-bottom: 20px;
 
@@ -438,7 +462,7 @@ const convertConditionNodeValue = (data,isPreview=true) => {
                 &>span {
                     float: left;
                     margin-right: 5px;
-                    width: 110px;
+                    width: 100px;
                     line-height: 65px;
                     text-align: right;
                     color: #0857a1;
@@ -447,7 +471,7 @@ const convertConditionNodeValue = (data,isPreview=true) => {
 
                 &>div {
                     display: inline-block;
-                    width: 370px;
+                    width: 350px;
 
                     &>p:not(:last-child) {
                         margin-bottom: 10px;
@@ -498,7 +522,7 @@ const convertConditionNodeValue = (data,isPreview=true) => {
         }
 
         .el-button {
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
     }
 }
