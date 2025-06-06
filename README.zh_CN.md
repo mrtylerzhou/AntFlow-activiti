@@ -111,6 +111,10 @@ npm run dev
 
 ##  捐赠支持
 😀 你可以请作者喝杯咖啡表示鼓励
+
+- 有捐赠的小伙伴（金额不限）可以联系作者领取一份 **独家提升开发技能的文档** 
+- 加QQ574427343或者邮件到 574427343@qq.com邮箱 *注明 领取开发技能提升文档*
+
 <table>
     <tr>
         <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/wxpay.jpg"/></td>
