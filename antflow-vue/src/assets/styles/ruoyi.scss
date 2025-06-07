@@ -11,11 +11,27 @@
 .pr5 {
   padding-right: 5px;
 }
+.pl5 {
+  padding-left: 5px;
+}
+.pb10 {
+  padding-bottom: 10px;
+}
+.pt10 {
+  padding-top: 10px;
+}
+
+.pr10 {
+  padding-right: 10px;
+}
+
+.pl10 {
+  padding-left: 10px;
+}
 
 .pb5 {
   padding-bottom: 5px;
 }
-
 .mt5 {
   margin-top: 5px;
 }
@@ -67,6 +83,17 @@
 .ml20 {
   margin-left: 20px;
 }
+.l {
+  float: left;
+}
+
+.r {
+  float: right;
+}
+
+.clickable {
+  cursor: pointer;
+}
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
   font-family: inherit;
@@ -74,7 +101,12 @@
   line-height: 1.1;
   color: inherit;
 }
-
+.el-main {
+  --el-main-padding: 0px !important;
+}
+.el-switch{
+  height: 22px !important;
+}
 .el-form .el-form-item__label {
   font-weight: 700;
 }

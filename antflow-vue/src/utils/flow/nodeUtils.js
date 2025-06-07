@@ -16,7 +16,8 @@ export class NodeUtils {
   static idGenerator() {
     let qutient = new Date() - new Date("2024-05-01");
     qutient += Math.ceil(Math.random() * 1000); // 防止重複
-    const chars = "0123456789ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
+    const chars =
+      "0123456789ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
     const charArr = chars.split("");
     const radix = chars.length;
     const res = [];
@@ -35,13 +36,13 @@ export class NodeUtils {
       nodeId: this.idGenerator(),
       nodeName: "审核人",
       nodeDisplayName: "审核人",
-      nodeType: 4,//节点类型 4、审批人
+      nodeType: 4, //节点类型 4、审批人
       nodeFrom: "",
       nodeTo: [],
       setType: 5, //审批人类型 5、指定人员
-      signType: 1,//审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
-      isSignUp: 0,//是否加批 0:否，1:是
-      directorLevel: 1, 
+      signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
+      isSignUp: 0, //是否加批 0:否，1:是
+      directorLevel: 1,
       noHeaderAction: 1,
       childNode: child,
       error: true,
@@ -52,12 +53,12 @@ export class NodeUtils {
       lfFieldControlVOs: [],
       buttons: {
         startPage: [1],
-        approvalPage: [3, 4,18,21],
+        approvalPage: [3, 4, 18, 21],
         viewPage: [0],
       },
       nodeApproveList: [],
     };
-    return approveNode; 
+    return approveNode;
   }
   /**
    * 创建抄送人对象
@@ -71,7 +72,7 @@ export class NodeUtils {
       nodeType: 6,
       nodeFrom: "",
       nodeTo: [],
-      setType: 5,//仅支持选择人员
+      setType: 5, //仅支持选择人员
       error: true,
       ccFlag: 1,
       childNode: child,
@@ -98,68 +99,68 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       childNode: null,
-      isDynamicCondition: false,//true 动态条件 false 非动态条件
-      isParallel: false,//true 是并行条件 false 非并行条件 
+      isDynamicCondition: false, //true 动态条件 false 非动态条件
+      isParallel: false, //true 是并行条件 false 非并行条件
       error: false,
       property: null,
       conditionNodes: [
-        this.createConditionNode("条件1", child,1, 0),
-        this.createConditionNode("条件2", null,2,1),
+        this.createConditionNode("条件1", child, 1, 0),
+        this.createConditionNode("条件2", null, 2, 1),
       ],
     };
     return gatewayNode;
   }
-    /**
+  /**
    * 创建动态网关对象
    * @returns object
    */
-    static createDynamicConditionWayNode(child) {
-      let gatewayNode = {
-        nodeId: this.idGenerator(),
-        nodeName: "动态网关",
-        nodeType: 2,
-        nodeFrom: "",
-        nodeTo: [],
-        childNode: null,
-        isDynamicCondition: true,//true 动态条件 false 非动态条件
-        isParallel: false,//true 是并行条件 false 非并行条件 
-        error: false,
-        property: null,
-        conditionNodes: [
-          this.createConditionNode("动态条件1", child,1,0),
-          this.createConditionNode("动态条件2", null,2, 1),
-        ],
-      };
-      return gatewayNode;
-    }
-     /**
+  static createDynamicConditionWayNode(child) {
+    let gatewayNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "动态网关",
+      nodeType: 2,
+      nodeFrom: "",
+      nodeTo: [],
+      childNode: null,
+      isDynamicCondition: true, //true 动态条件 false 非动态条件
+      isParallel: false, //true 是并行条件 false 非并行条件
+      error: false,
+      property: null,
+      conditionNodes: [
+        this.createConditionNode("动态条件1", child, 1, 0),
+        this.createConditionNode("动态条件2", null, 2, 1),
+      ],
+    };
+    return gatewayNode;
+  }
+  /**
    * 创建条件并行网关对象
    * @returns object
    */
-     static createParallelConditionWayNode(child) {
-      let gatewayNode = {
-        nodeId: this.idGenerator(),
-        nodeName: "条件并行网关",
-        nodeType: 2,
-        nodeFrom: "",
-        nodeTo: [],
-        childNode: this.createParallelNode("条件并行聚合审批人", null,1, 0),        
-        isDynamicCondition: false,//true 动态条件 false 非动态条件
-        isParallel: true,//true 是并行条件 false 非并行条件 
-        error: false,
-        property: null,
-        conditionNodes: [
-          this.createConditionNode("并行条件1", child,1,0),
-          this.createConditionNode("并行条件2", null,2, 0),
-        ],
-      };
-      return gatewayNode;
-    }
+  static createParallelConditionWayNode(child) {
+    let gatewayNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件并行网关",
+      nodeType: 2,
+      nodeFrom: "",
+      nodeTo: [],
+      childNode: this.createParallelNode("条件并行聚合审批人", null, 1, 0),
+      isDynamicCondition: false, //true 动态条件 false 非动态条件
+      isParallel: true, //true 是并行条件 false 非并行条件
+      error: false,
+      property: null,
+      conditionNodes: [
+        this.createConditionNode("并行条件1", child, 1, 0),
+        this.createConditionNode("并行条件2", null, 2, 0),
+      ],
+    };
+    return gatewayNode;
+  }
   /**
    * 创建条件对象
    * @returns object
    */
-  static createConditionNode(name, childNode,priority,isDefault) {
+  static createConditionNode(name, childNode, priority, isDefault) {
     let conditionNode = {
       nodeId: this.idGenerator(),
       nodeName: name || "条件1",
@@ -168,11 +169,12 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       priorityLevel: priority,
-      conditionList: [],
+      conditionList: [[{ condRelation: false }]], //条件关系 0：且 1：或
       nodeApproveList: [],
       error: true,
       childNode: childNode,
       isDefault: isDefault || 0,
+      groupRelation: false, //条件组关系 0：且 1：或
     };
     return conditionNode;
   }
@@ -183,7 +185,7 @@ export class NodeUtils {
    */
   static createStartNode() {
     let startObj = {
-      "data":{}
+      data: {},
     };
     let startNode = {
       bpmnCode: null,
@@ -225,7 +227,7 @@ export class NodeUtils {
             viewPage: null,
           },
           templateVos: null,
-          approveRemindVo: null, 
+          approveRemindVo: null,
           conditionNodes: [],
         },
       ],
@@ -234,27 +236,39 @@ export class NodeUtils {
     return startObj;
   }
 
- /**
-  * 条件判断对象
-  * @param {*} formId  条件表单Id
-  * @param {*} columnId 条件判断id
-  * @param {*} type 类型 1，发起人 2，其他表单条件
-  * @param {*} showName 显示名称.
-  * @param {*} showType //1,值类型（>,>=,<,<=,=）,2单选下拉, 3多选(checkbox) 其他
-  * @param {*} columnName  DB字段名称 
-  * @param {*} columnType  DB字段类型
-  * @param {*} fixedDownBoxValue 条件选项
-  * @returns 
-  */
-  static createJudgeNode(formId, columnId,type ,showName,showType,  columnName, columnType,fieldTypeName,multiple,multipleLimit, fixedDownBoxValue) {
+  /**
+   * 条件判断对象
+   * @param {*} formId  条件表单Id
+   * @param {*} columnId 条件判断id
+   * @param {*} type 类型 1，发起人 2，其他表单条件
+   * @param {*} showName 显示名称.
+   * @param {*} showType //1,值类型（>,>=,<,<=,=）,2单选下拉, 3多选(checkbox) 其他
+   * @param {*} columnName  DB字段名称
+   * @param {*} columnType  DB字段类型
+   * @param {*} fixedDownBoxValue 条件选项
+   * @returns
+   */
+  static createJudgeNode(
+    formId,
+    columnId,
+    type,
+    showName,
+    showType,
+    columnName,
+    columnType,
+    fieldTypeName,
+    multiple,
+    multipleLimit,
+    fixedDownBoxValue
+  ) {
     let judgeNode = {
-      formId: formId,                    
+      formId: formId,
       columnId: columnId,
       showType: showType,
       type: type, //1，发起人 2，其他表单条件
       showName: showName,
       optType: "5",
-      zdy1:fieldTypeName == 'switch'?"1":"",
+      zdy1: fieldTypeName == "switch" ? "1" : "",
       opt1: "<",
       zdy2: "",
       opt2: "<",
@@ -262,29 +276,29 @@ export class NodeUtils {
       columnType: columnType,
       fieldTypeName: fieldTypeName,
       multiple: multiple,
-      multipleLimit:multipleLimit,
-      fixedDownBoxValue: fixedDownBoxValue
-    }
+      multipleLimit: multipleLimit,
+      fixedDownBoxValue: fixedDownBoxValue,
+    };
     return judgeNode;
   }
 
-/**
- * 创建并行网关对象
- * @returns object
- */
-  static createParallelWayNode(child){
+  /**
+   * 创建并行网关对象
+   * @returns object
+   */
+  static createParallelWayNode(child) {
     let parallelwayNode = {
       nodeId: this.idGenerator(),
       nodeName: "并行审核网关",
       nodeType: 7,
       nodeFrom: "",
       nodeTo: [],
-      childNode: this.createParallelNode("并行聚合节点", null,1, 0),
+      childNode: this.createParallelNode("并行聚合节点", null, 1, 0),
       error: false,
       property: null,
       parallelNodes: [
-        this.createParallelNode("并行审核人1", child,1, 0),
-        this.createParallelNode("并行审核人2", null,2, 0),
+        this.createParallelNode("并行审核人1", child, 1, 0),
+        this.createParallelNode("并行审核人2", null, 2, 0),
       ],
     };
     return parallelwayNode;
@@ -297,104 +311,103 @@ export class NodeUtils {
     let parallelNode = {
       nodeId: this.idGenerator(),
       nodeName: name || "并行审核人1",
-      nodeDisplayName: '',
-      nodeType: 4,//节点类型 4、审批人
+      nodeDisplayName: "",
+      nodeType: 4, //节点类型 4、审批人
       nodeFrom: "",
       nodeTo: [],
-      priorityLevel: priority, 
+      priorityLevel: priority,
       nodeApproveList: [],
       setType: 5, //审批人类型 5、指定人员
-      signType: 1,//审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
-      isSignUp: 0,//是否加批 0:否，1:是
+      signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
+      isSignUp: 0, //是否加批 0:否，1:是
       noHeaderAction: 1,
       lfFieldControlVOs: [],
       property: {
-        afterSignUpWay: 2,//是否回到加批人 1:是，2:否
-        signUpType: 1,//加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
+        afterSignUpWay: 2, //是否回到加批人 1:是，2:否
+        signUpType: 1, //加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
       },
       buttons: {
         startPage: [1],
-        approvalPage:[3, 4,18,21],
-        viewPage: [0]
+        approvalPage: [3, 4, 18, 21],
+        viewPage: [0],
       },
       error: true,
       childNode: childNode,
       isDefault: isDefault || 0,
-    }; 
+    };
     return parallelNode;
   }
 
   /**
    * 三方接入条件对象
-   * @param {*} conditionValue 
-   * @returns 
+   * @param {*} conditionValue
+   * @returns
    */
-  static createOutsideConditionNode(conditionValue){
-      let outsideConditionNode ={
-            formId: "9999",//固定值
-            columnId: "9999",//固定值
-            showType: "2",//固定值
-            showName: "条件",//固定值
-            columnName: "templateMarks",
-            columnType: "String",//固定值
-            fieldTypeName: "select", //固定值
-            fixedDownBoxValue: conditionValue,
-        }
+  static createOutsideConditionNode(conditionValue) {
+    let outsideConditionNode = {
+      formId: "9999", //固定值
+      columnId: "9999", //固定值
+      showType: "2", //固定值
+      showName: "条件", //固定值
+      columnName: "templateMarks",
+      columnType: "String", //固定值
+      fieldTypeName: "select", //固定值
+      fixedDownBoxValue: conditionValue,
+    };
     return outsideConditionNode;
-  } 
+  }
 }
 
 /**
  * 添模拟数据
  */
 export function getMockData() {
-    let startNode = "";//NodeUtils.createNode("start", ""); 
-    return startNode;
-  }
-  
+  let startNode = ""; //NodeUtils.createNode("start", "");
+  return startNode;
+}
 
-  /**
-   * 展平树结构
-   * @param {Object} treeData  - 节点数据
-   * @returns Array - 节点数组
-   */
-  export function flattenMapTreeToList(treeData) {
-    let nodeData = []; 
-    function traverse(node) {
-      if (!node && !node.hasOwnProperty("nodeType")) {
-        return nodeData;
-      }
-      if (node.nodeType == 2) {
-        if (node.childNode) {
-          node.childNode.nodeFrom = node.nodeId;
-          traverse(node.childNode);
-        }
-        if (!isEmptyArray(node.conditionNodes)) {
-          for (let child of node.conditionNodes) {
-            child.nodeFrom = node.nodeId;
-            traverse(child);
-          }
-          node.nodeTo = node.conditionNodes.map((item) => item.nodeId); 
-        }
-      } else if (node.nodeType == 7) {
-        if (node.childNode) {
-          node.childNode.nodeFrom = node.nodeId;
-          traverse(node.childNode);
-        }
-        if (!isEmptyArray(node.parallelNodes)) {
-          for (let child of node.parallelNodes) {
-            child.nodeFrom = node.nodeId;
-            traverse(child);
-          }
-          node.nodeTo = node.parallelNodes.map((item) => item.nodeId); 
-        }
-      } else if (node.childNode) {
-        node.nodeTo = [node.childNode.nodeId];
+/**
+ * 展平树结构
+ * @param {Object} treeData  - 节点数据
+ * @returns Array - 节点数组
+ */
+export function flattenMapTreeToList(treeData) {
+  let nodeData = [];
+  function traverse(node) {
+    if (!node && !node.hasOwnProperty("nodeType")) {
+      return nodeData;
+    }
+    if (node.nodeType == 2) {
+      if (node.childNode) {
         node.childNode.nodeFrom = node.nodeId;
         traverse(node.childNode);
-      } 
-      nodeData.push(node);
+      }
+      if (!isEmptyArray(node.conditionNodes)) {
+        for (let child of node.conditionNodes) {
+          child.nodeFrom = node.nodeId;
+          traverse(child);
+        }
+        node.nodeTo = node.conditionNodes.map((item) => item.nodeId);
+      }
+    } else if (node.nodeType == 7) {
+      if (node.childNode) {
+        node.childNode.nodeFrom = node.nodeId;
+        traverse(node.childNode);
+      }
+      if (!isEmptyArray(node.parallelNodes)) {
+        for (let child of node.parallelNodes) {
+          child.nodeFrom = node.nodeId;
+          traverse(child);
+        }
+        node.nodeTo = node.parallelNodes.map((item) => item.nodeId);
+      }
+    } else if (node.childNode) {
+      node.nodeTo = [node.childNode.nodeId];
+      node.childNode.nodeFrom = node.nodeId;
+      traverse(node.childNode);
     }
-    traverse(treeData);
-    return nodeData;
+    nodeData.push(node);
   }
+  traverse(treeData);
+  return nodeData;
+}

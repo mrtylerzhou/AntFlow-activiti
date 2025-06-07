@@ -19,7 +19,7 @@
 .demo-drawer__content {
     display: flex !important;
     flex-direction: column !important;
-    height: calc(-61px + 100vh) !important;
+    height: calc(-100px + 100vh) !important;
 }
 
 .drawer_content {
@@ -35,8 +35,11 @@
 .demo-drawer__footer {
     padding: 10px 30px !important;
     border-top: 1px solid #F2F2F2 !important;
+    position: fixed;
+    bottom: 0; 
+    width: 680px;
 }
-
+ 
 .demo-drawer__footer .el-button {
     float: right !important;
     margin-right: 10px !important;
