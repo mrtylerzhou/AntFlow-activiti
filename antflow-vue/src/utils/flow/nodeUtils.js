@@ -169,7 +169,7 @@ export class NodeUtils {
       nodeFrom: "",
       nodeTo: [],
       priorityLevel: priority,
-      conditionList: [[{ condRelation: false }]], //条件关系 0：且 1：或
+      conditionList: [[]], //条件关系 0：且 1：或
       nodeApproveList: [],
       error: true,
       childNode: childNode,

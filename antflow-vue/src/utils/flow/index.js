@@ -138,9 +138,9 @@ All.prototype = {
       .filter((item) => item.columnId && item.columnId !== 0);
     if (flatArray.length == 0) {
       return index == nodeConfig.conditionNodes.length - 1 &&
-        nodeConfig.conditionNodes[index].conditionList.filter(
-          (item) => item.columnId && item.columnId !== 0
-        ).length == 0
+        nodeConfig.conditionNodes[index].conditionList
+          .reduce((acc, val) => acc.concat(val), [])
+          .filter((item) => item.columnId && item.columnId !== 0).length == 0
         ? "其他条件进入此流程"
         : "请设置条件";
     }
@@ -160,6 +160,7 @@ All.prototype = {
   getConditionStr(conditionArray) {
     let str = "";
     for (let condition of conditionArray) {
+      console.log("condition=======", condition);
       var {
         columnId,
         showName,
@@ -170,13 +171,15 @@ All.prototype = {
         opt2,
         fieldTypeName,
         fixedDownBoxValue,
+        condRelation, //条件关系
       } = condition;
+      const relationTip = condRelation == false ? " 且 " : " 或 ";
       if (fieldTypeName == "input") {
         if (zdy1) {
-          str += showName + "：" + zdy1 + " 并且 ";
+          str += showName + "：" + zdy1 + relationTip;
         }
       } else if (fieldTypeName == "switch") {
-        str += showName + "：" + zdy1 + " 并且 ";
+        str += showName + "：" + zdy1 + relationTip;
       } else if (fieldTypeName == "radio") {
         // if (zdy1) {
         //     str += showName + '：' + zdy1 + " 并且 "
@@ -190,7 +193,7 @@ All.prototype = {
               showName +
               "属于：" +
               this.getCheckboxStr(zdy1, JSON.parse(fixedDownBoxValue)) +
-              " 并且 ";
+              relationTip;
           }
         }
       } else if (fieldTypeName == "select") {
@@ -203,13 +206,13 @@ All.prototype = {
                 showName +
                 "：" +
                 this.getSelectStr(zdy1, JSON.parse(fixedDownBoxValue)) +
-                " 并且 ";
+                relationTip;
             } else {
               str +=
                 showName +
                 "：" +
                 this.getMultipleSelectStr(zdy1, JSON.parse(fixedDownBoxValue)) +
-                " 并且 ";
+                relationTip;
             }
           }
         }
@@ -219,7 +222,7 @@ All.prototype = {
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
             "{y}-{m}-{d}"
-          )} 并且 `;
+          )} ${relationTip} `;
         }
       } else if (fieldTypeName == "time") {
         if (zdy1) {
@@ -227,14 +230,14 @@ All.prototype = {
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
             "{h}:{i}:{s}"
-          )} 并且 `;
+          )} ${relationTip} `;
         }
       } else if (fieldTypeName == "input-number") {
         if (optType < 6 && zdy1) {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
-          str += `${showName} ${optTypeStr} ${zdy1} 并且 `;
+          str += `${showName} ${optTypeStr} ${zdy1} ${relationTip} `;
         } else if (optType >= 6 && zdy1 && zdy2) {
-          str += `${zdy1} ${opt1} ${showName} ${opt2} ${zdy2} 并且 `;
+          str += `${zdy1} ${opt1} ${showName} ${opt2} ${zdy2} ${relationTip} `;
         }
       } else {
         str += null;

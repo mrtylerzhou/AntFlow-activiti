@@ -1,7 +1,15 @@
 // import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data.js'
 import { hrbpOptions } from "@/utils/flow/const";
-const isEmptyArray = (data) => Array.isArray(data) ? data.length === 0 : false;
-const isEmpty = (data) =>data === null || data === undefined || data == "" || data == "" || data == "{}" || data == "[]" || data == "null";
+const isEmptyArray = (data) =>
+  Array.isArray(data) ? data.length === 0 : false;
+const isEmpty = (data) =>
+  data === null ||
+  data === undefined ||
+  data == "" ||
+  data == "" ||
+  data == "{}" ||
+  data == "[]" ||
+  data == "null";
 export class FormatDisplayUtils {
   /**
    * 格式化显示数据
@@ -22,7 +30,7 @@ export class FormatDisplayUtils {
    * @param { Object } nodeData - 源节点数据
    * @returns Object
    */
-  static createNodeDisplay(nodeData) { 
+  static createNodeDisplay(nodeData) {
     if (!nodeData) return;
     if (isEmptyArray(nodeData)) return;
     let displayObj = {
@@ -114,7 +122,10 @@ export class FormatDisplayUtils {
           if (3 == itemNode.nodeType) {
             node.conditionNodes.push(itemNode);
           } else if (4 == itemNode.nodeType) {
-            let isTrueParallelNode = this.isParallelChildNode(itemNode, parmData); 
+            let isTrueParallelNode = this.isParallelChildNode(
+              itemNode,
+              parmData
+            );
             if (isTrueParallelNode == false) {
               node.childNode = itemNode;
             } else {
@@ -144,7 +155,7 @@ export class FormatDisplayUtils {
    * @param {*} parmData
    * @returns
    */
-  static isParallelChildNode(currentNode, parmData) { 
+  static isParallelChildNode(currentNode, parmData) {
     for (let node of parmData) {
       if (currentNode.nodeFrom == node.nodeId) {
         if (node.nodeType != 7) {
@@ -158,8 +169,8 @@ export class FormatDisplayUtils {
   }
   /**
    * 格式api返回的数组
-   * @param {*} nodeList 
-   * @returns 
+   * @param {*} nodeList
+   * @returns
    */
   static formatDisplayStructNodeList(nodeList) {
     if (!nodeList) return;
@@ -168,6 +179,7 @@ export class FormatDisplayUtils {
       if (node.nodeType == 3) {
         node.priorityLevel = node.property.sort;
         node.isDefault = node.property.isDefault;
+        node.groupRelation = node.property.groupRelation;
         Object.assign(node, { conditionList: [] });
         node.conditionList = node.property.conditionList
           ? node.property.conditionList

@@ -32,9 +32,10 @@
                                         <div class="l">
                                             <span>条件组{{ conditionGroupIdx + 1 }}</span>
                                         </div>
-                                        <div class="l pl10">
+                                        <div class="l pl10" v-if="conditionGroupArray[conditionGroupIdx]">
                                             <el-text class="ml10" type="warning">组内条件关系：
-                                                且<el-switch v-model="conditionGroupArray[0].condRelation" />或
+                                                且<el-switch
+                                                    v-model="conditionGroupArray[conditionGroupIdx].condRelation" />或
                                             </el-text>
                                         </div>
                                         <div @click="deleteConditionGroup(conditionGroupIdx)" class="r clickable">
@@ -250,7 +251,7 @@ let visible = computed({
 watch(conditionsConfig1, (val) => {
     conditionsConfig.value = val.value;
     priorityLevel.value = val.priorityLevel
-    originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [[{ condRelation: false }]] }
+    originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [[]] }
     convertConditionNodeValue(originalConfigData.value.conditionList);
 });
 
@@ -392,6 +393,11 @@ const saveCondition = () => {
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
         conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
         conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
+        const defaultCond = i == conditionsConfig.value.conditionNodes.length - 1 &&
+            conditionsConfig.value.conditionNodes[i].conditionList.flat().filter(
+                (item) => item.columnId && item.columnId !== 0
+            ).length == 0
+        conditionsConfig.value.conditionNodes[i].isDefault = defaultCond ? 1 : 0
     }
     setConditionsConfig({
         value: conditionsConfig.value,
@@ -414,7 +420,6 @@ const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isArrayEmpty(data)) return;
     for (let itemArray of data) {
         let condRelationItem = itemArray.filter(item => item.condRelation)[0]?.condRelation || false;
-        //console.log("condRelationItem==", condRelationItem)
         for (let item of itemArray) {
             if (proxy.isObjEmpty(item.fieldTypeName)) {
                 continue;
@@ -465,7 +470,7 @@ const convertConditionNodeValue = (data, isPreview = true) => {
 /*添加条件组 */
 const addConditionGroup = () => {
     originalConfigData.value.conditionList = originalConfigData.value.conditionList ?? [];
-    originalConfigData.value.conditionList.push([{ condRelation: false }]);
+    originalConfigData.value.conditionList.push([]);
 }
 /*删除条件组 */
 
