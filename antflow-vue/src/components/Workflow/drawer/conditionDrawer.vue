@@ -464,16 +464,12 @@ const convertConditionNodeValue = (data, isPreview = true) => {
 
 /*添加条件组 */
 const addConditionGroup = () => {
-    // console.log("index=添加条件组==")
-    // console.log("originalConfigData.value==添加条件组==", JSON.stringify(originalConfigData.value))
-    console.log("originalConfigData.value.conditionList==", JSON.stringify(originalConfigData.value.conditionList))
     originalConfigData.value.conditionList = originalConfigData.value.conditionList ?? [];
     originalConfigData.value.conditionList.push([{ condRelation: false }]);
 }
 /*删除条件组 */
 
 const deleteConditionGroup = (index) => {
-    //console.log("index=删除==", index)
     originalConfigData.value.conditionList.splice(index, 1)
 }
 </script>
