@@ -54,7 +54,7 @@ const advanceHandleFormData = () => {
   }
 }
 /**表单字段权限控制 */
-const handlerFn = (w) => { 
+const handlerFn = (w) => {
   w.options.hidden = false;//字段都隐藏，隐藏后表单字段不会自动补位
   const numberFields = ['number', 'select', 'radio'];
   if (numberFields.includes(w.type)) {
@@ -62,12 +62,12 @@ const handlerFn = (w) => {
       formData[w.options.name] = Number(formData[w.options.name]);
     }
   }
-  if (props.showSubmit) { 
+  if (props.showSubmit) {
     w.options.disabled = false;
     w.options.readonly = false;
   }
-  else if (!isEmpty(props.lfFieldPerm)) { 
-    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; }); 
+  else if (!isEmpty(props.lfFieldPerm)) {
+    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });
     if (info) {
       if (info.perm == 'R') {
         w.options.disabled = true;
@@ -80,12 +80,12 @@ const handlerFn = (w) => {
         delete w.options.format;
         delete w.options.valueFormat;
         w.options.disabled = true;
-      } else { 
+      } else {
         w.options.disabled = false;
         w.options.readonly = true;
       }
     }
-  }else{ 
+  } else {
     w.options.disabled = false;
     w.options.readonly = false;
   }
@@ -126,7 +126,9 @@ onBeforeMount(() => {
 })
 const submitForm = () => {
   vFormRef.value.getFormData().then(res => {
-    //console.log("Form Validation===", JSON.stringify(res))
+    //replaceEmptyStringWithNull(res);
+    //res["select81554"] = null;
+    //console.log("Form Validation===", JSON.stringify(res, null, 2))
     proxy.$emit("handleBizBtn", JSON.stringify(res))
   }).catch(error => {
     proxy.$modal.msgError(error);
@@ -180,6 +182,19 @@ const chooseApprovers = (data) => {
   formData.approversValid = data.nodeVaild;
 }
 
+/* 替换空字符串为null*/
+const replaceEmptyStringWithNull = (obj) => {
+  if (obj && typeof obj === 'object') {
+    Object.keys(obj).forEach(key => {
+      if (obj[key] === "") {
+        obj[key] = null;
+      } else if (typeof obj[key] === 'object') {
+        replaceEmptyStringWithNull(obj[key]);
+      }
+    });
+  }
+  return obj;
+}
 defineExpose({
   handleValidate,
   getFromData

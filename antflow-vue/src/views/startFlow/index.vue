@@ -116,18 +116,21 @@ const startTest = async (param) => {
         }
         else {
             let bizFrom = JSON.parse(param);
+            if (isLFFlow && isLFFlow == true) {
+                bizFrom = {};
+            }
             bizFrom.formCode = flowCode || '';
             bizFrom.operationType = 1;//operationType 1发起 3 审批 
             bizFrom.isLowCodeFlow = false;
             bizFrom.lfFields = null;
-            if (isLFFlow && isLFFlow == true) {    
+            if (isLFFlow && isLFFlow == true) {
                 bizFrom.isLowCodeFlow = true;
                 const _formData = await formRef.value.getFromData();
                 let lfFormdata = JSON.parse(_formData);
                 bizFrom.approversList = lfFormdata.approversList;
-                bizFrom.approversValid = lfFormdata.approversValid;         
+                bizFrom.approversValid = lfFormdata.approversValid;
                 bizFrom.lfFields = lfFormdata;
-            } 
+            }
             proxy.$modal.loading();
             processOperation(bizFrom).then((res) => {
                 if (res.code == 200) {
@@ -139,10 +142,10 @@ const startTest = async (param) => {
                 }
                 proxy.$modal.closeLoading();
             });
-        } 
+        }
     }).catch((r) => {
         activeName.value = "createFrom";
-    }) 
+    })
 }
 /** 关闭按钮 */
 function close() {
