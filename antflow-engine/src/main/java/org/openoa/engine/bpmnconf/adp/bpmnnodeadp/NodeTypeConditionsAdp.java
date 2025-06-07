@@ -4,17 +4,15 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
-import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsConf;
@@ -87,6 +85,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
             setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
             bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
             bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
+            bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
             return bpmnNodeVo;
         }
 
@@ -218,6 +217,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         }
         bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
         bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
+        bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
         bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
         return bpmnNodeVo;
     }
@@ -251,6 +251,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         bpmnNodeConditionsConf.setBpmnNodeId(bpmnNodeVo.getId());
         bpmnNodeConditionsConf.setIsDefault(bpmnNodeConditionsConfBaseVo.getIsDefault());
         bpmnNodeConditionsConf.setSort(bpmnNodeConditionsConfBaseVo.getSort());
+        bpmnNodeConditionsConf.setGroupRelation(bpmnNodeConditionsConfBaseVo.getGroupRelation());
         bpmnNodeConditionsConf.setExtJson(bpmnNodeConditionsConfBaseVo.getExtJson());
         bpmnNodeConditionsConf.setCreateTime(new Date());
         bpmnNodeConditionsConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
@@ -311,7 +312,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                                 .conditionParamJsom(conditionParamJson)
                                 .operator(numberOperator)
                                 .condGroup(extField.getCondGroup())
-                                .condRelation(extField.getCondRelation())
+                                .condRelation(ConditionRelationShipEnum.getCodeByValue(extField.getCondRelation()))
                                 .createUser(SecurityUtils.getLogInEmpNameSafe())
                                 .createTime(new Date())
                                 .build());
@@ -324,7 +325,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                                     .conditionParamName(ConditionTypeEnum.CONDITION_TYPE_NUMBER_OPERATOR.getFieldName())
                                     .conditionParamJsom(numberOperator.toString())
                                     .condGroup(extField.getCondGroup())
-                                    .condRelation(extField.getCondRelation())
+                                    .condRelation(ConditionRelationShipEnum.getCodeByValue(extField.getCondRelation()))
                                     .createUser(SecurityUtils.getLogInEmpNameSafe())
                                     .createTime(new Date())
                                     .build());

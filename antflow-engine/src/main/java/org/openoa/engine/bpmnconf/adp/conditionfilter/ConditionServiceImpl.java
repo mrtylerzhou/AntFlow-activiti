@@ -41,6 +41,7 @@ public class ConditionServiceImpl implements ConditionService {
             return false;
         }
         boolean result = true;
+        Integer groupRelation = conditionsConf.getGroupRelation();
         for (Map.Entry<Integer, List<Integer>> conditionTypeEntry : groupedConditionParamTypes.entrySet()) {
             Integer currentGroup = conditionTypeEntry.getKey();
             Integer condRelation=conditionsConf.getGroupedCondRelations().get(currentGroup);
@@ -80,7 +81,7 @@ public class ConditionServiceImpl implements ConditionService {
                 index++;
             }
             result = currentGroupResult;
-            if(!result){//条件组之间为且关系,如果有一个条件组评估为false,则立刻返回false
+            if(groupRelation==ConditionRelationShipEnum.AND.getCode()){//条件组之间如果为且关系,如果有一个条件组评估为false,则立刻返回false
                break;
             }
         }

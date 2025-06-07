@@ -37,6 +37,7 @@ public class BpmnNodeConditionsConfBaseVo {
      * condtion priority
      */
     private Integer sort;
+    private Integer groupRelation;
 
     /**
      * condition template mark

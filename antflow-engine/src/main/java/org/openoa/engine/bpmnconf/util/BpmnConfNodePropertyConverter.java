@@ -8,6 +8,7 @@ import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.util.DateUtil;
 import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
@@ -41,6 +42,7 @@ public class BpmnConfNodePropertyConverter {
         //outer common property
         result.setIsDefault(propertysVo.getIsDefault());
         result.setSort(propertysVo.getSort());
+        result.setGroupRelation(ConditionRelationShipEnum.getCodeByValue(propertysVo.getGroupRelation()));
         List<Integer> conditionTypes=new ArrayList<>();
         Map<Integer,List<Integer>> groupedConditionTypes=new HashMap<>();
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
