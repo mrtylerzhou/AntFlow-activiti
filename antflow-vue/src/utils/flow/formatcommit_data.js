@@ -284,12 +284,14 @@ export class FormatUtils {
           conditionList: node.conditionList,
           sort: node.priorityLevel,
           isDefault: node.isDefault,
+          groupRelation: node.groupRelation,
         };
         Object.assign(node, {
           property: {},
         });
         node.property = conditionObj;
         delete node.conditionList;
+        delete node.groupRelation;
       }
 
       if (node.nodeType == 4 || node.nodeType == 6) {

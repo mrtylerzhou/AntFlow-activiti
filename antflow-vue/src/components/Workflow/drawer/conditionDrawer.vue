@@ -413,10 +413,13 @@ const closeDrawer = (val) => {
 const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isArrayEmpty(data)) return;
     for (let itemArray of data) {
+        let condRelationItem = itemArray.filter(item => item.condRelation)[0]?.condRelation || false;
+        //console.log("condRelationItem==", condRelationItem)
         for (let item of itemArray) {
             if (proxy.isObjEmpty(item.fieldTypeName)) {
                 continue;
             }
+            item.condRelation = condRelationItem;
             if (item.fieldTypeName == 'radio') {//单选radio
                 item.zdy1 = parseInt(item.zdy1)
             }
