@@ -981,6 +981,8 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_son           int                                null comment 'Whether it is a child application (0: No, 1: Yes)',
     look_url         varchar(500)                       null comment 'URL for viewing the application',
     submit_url       varchar(500)                       null comment 'URL for submitting the application',
+    user_request_uri varchar(500)                       null comment 'get  user info',
+    role_request_uri varchar(500)                       null comment 'get Role info',
     condition_url    varchar(500)                       null comment 'URL for accessing conditions or rules related to the application',
     parent_id        int                                null comment 'Parent application ID (if this is a child application)',
     application_url  varchar(500)                       null comment 'Main URL of the application',
