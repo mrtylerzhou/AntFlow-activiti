@@ -21,7 +21,8 @@
                 <div class="demo-drawer__content">
                     <div class="condition_content drawer_content">
                         <p class="tip">当审批单满足以下条件时进入此流程
-                            <el-text class="ml10" type="warning">条件组关系：
+                            <el-text class="ml10" type="warning"
+                                v-if="originalConfigData.conditionList.length > 1">条件组关系：
                                 且<el-switch v-model="originalConfigData.groupRelation" />或
                             </el-text>
                         </p>
@@ -32,7 +33,7 @@
                                         <div class="l">
                                             <span>条件组{{ conditionGroupIdx + 1 }}</span>
                                         </div>
-                                        <div class="l pl10" v-if="conditionGroupArray[conditionGroupIdx]">
+                                        <div class="l pl10" v-if="conditionGroupArray.length > 1">
                                             <el-text class="ml10" type="warning">组内条件关系：
                                                 且<el-switch
                                                     v-model="conditionGroupArray[conditionGroupIdx].condRelation" />或
