@@ -37,6 +37,8 @@ public class BpmnNodeConditionsConf {
      */
     @TableField("is_default")
     private Integer isDefault;
+    @TableField("group_relation")
+    private Integer groupRelation;
     /**
      * priority
      */

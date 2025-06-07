@@ -146,4 +146,8 @@ public class BpmnNodePropertysVo implements Serializable{
      * condition's priority
      */
     private Integer sort;
+    /** 0 for and 1 for or,default to or
+     * @see org.openoa.base.constant.enums.ConditionRelationShipEnum
+     */
+    private Boolean groupRelation=true;
 }
