@@ -1673,6 +1673,7 @@ CREATE TABLE `t_bpmn_node_customize_conf` (
 
 -- ----------------------------
 -- Records of t_user
+--表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
 --关于用户表demo数据的使用说明
 --t_user,t_role,t_department表都是测试数据,实际使用中,一般用户系统里面都会有基本的用户表,角色表,部门表,审批的时候用户可以根据实际情况去使用或者关联使用自己已有系统的表,选择出来的数据结构符合BaseIdTranStruVo结构即可,即有id和name两个字段
 --初次使用时,用户可以先初始化demo表,看一下流程是否满足自己的业务需求,然后逐步改sql,满足自己的业务需求.Antflow demo里审批人规则特别多,实际上用户可能只需要一个或者多个规则(一般指定人员,直属领导,直接角色就满足了),根据需求实现部分即可,像hrbp有的公司根本没有这个概念,自然也没必要实现
@@ -1739,6 +1740,7 @@ INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (18, 16, 4);
 
 -- ----------------------------
 -- Records of t_department
+--表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
 -- ----------------------------
 INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (1, '一级部门', NULL, NULL, '/1', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (2, '二级部门', NULL, 3, '/1/2', 2, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
