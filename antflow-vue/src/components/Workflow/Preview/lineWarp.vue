@@ -6,21 +6,22 @@
 -->
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')" :data-node-key="nodeConfig.nodeId">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')"
+            :data-node-key="nodeConfig.nodeId">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
             </div>
             <div class="content">
-                <div v-html="nodeConfig.nodeDisplayName" class="text"></div> 
+                <div v-html="nodeConfig.nodeDisplayName" class="text"></div>
             </div>
-        </div>  
-        <div class="pixel-line"></div>  
+        </div>
+        <div class="pixel-line"></div>
     </div>
     <!--并行审批分支-->
     <div class="branch-wrap" v-if="nodeConfig.nodeType == 7">
         <div class="branch-box-wrap">
-            <div class="branch-box"> 
+            <div class="branch-box">
                 <button class="add-branch">并行审批</button>
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
@@ -31,9 +32,7 @@
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
                                 <div class="content">
-                                    <div class="text"> 
-                                        {{ item.nodeDisplayName }}
-                                    </div>
+                                    <div v-html="item.nodeDisplayName" class="text"></div>
                                 </div>
                             </div>
                         </div>
@@ -55,33 +54,35 @@
     </div>
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
-<script setup> 
-import { bgColors } from '@/utils/flow/const' 
+<script setup>
+import { bgColors } from '@/utils/flow/const'
 let props = defineProps({
     nodeConfig: {
         type: Object,
         default: () => ({}),
     }
-});  
-onMounted(() => { 
-    const elementList = document.getElementsByClassName("node-wrap-box"); 
-    for(let element of  elementList) {
-        const customNodeKey= element.getAttribute('data-node-key');     
-        if(customNodeKey == props.nodeConfig.currentNodeId){ 
-            element.classList.toggle("current-node"); 
-        } 
+});
+onMounted(() => {
+    const elementList = document.getElementsByClassName("node-wrap-box");
+    for (let element of elementList) {
+        const customNodeKey = element.getAttribute('data-node-key');
+        if (customNodeKey == props.nodeConfig.currentNodeId) {
+            element.classList.toggle("current-node");
+        }
     }
-}); 
+});
 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss"; 
+@import "@/assets/styles/flow/workflow.scss";
+
 .pixel-line {
     width: 2px;
     height: 50px;
-    background-color: #cacaca; 
+    background-color: #cacaca;
 }
+
 .end-node-circle {
     width: 20px;
     height: 20px;
@@ -89,17 +90,20 @@ onMounted(() => {
     border-radius: 50%;
     background: #dbdcdc
 }
+
 .line-through {
     text-decoration: line-through
 }
-.testtt { 
-    width: 2px; 
+
+.testtt {
+    width: 2px;
     border-style: solid;
     border-width: 8px 6px 4px;
     border-color: #cacaca transparent transparent;
     background: #f5f5f7;
 }
-.current-node {   
-    border: 3px solid #1890ff;    
+
+.current-node {
+    border: 3px solid #1890ff;
 }
 </style>

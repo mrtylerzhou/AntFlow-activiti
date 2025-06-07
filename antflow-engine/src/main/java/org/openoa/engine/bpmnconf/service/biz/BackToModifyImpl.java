@@ -184,8 +184,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     .createUser(vo.getStartUserId())
                     .build());
         }
-        boolean userTaskParallel = ProcessDefinitionUtils.isUserTaskParallel(taskData.getProcessInstanceId(), backToNodeKey);
-        if (ProcessDefinitionUtils.isUserTaskParallel(taskData) && userTaskParallel) {
+        //boolean userTaskParallel = ProcessDefinitionUtils.isUserTaskParallel(taskData.getProcessInstanceId(), backToNodeKey);
+        if (ProcessDefinitionUtils.isUserTaskParallel(taskData)) {
             TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId(), bpmVariableMultiplayerService);
             try {
                 List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey).stream().distinct().collect(Collectors.toList());

@@ -131,7 +131,7 @@ public class ProcessConstants extends ProcessServiceFactory {
             throw new JiMuBizException("taskId不为空,流程实例Id不存在!");
         }
         List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).orderByTaskCreateTime().desc().list();
-        HistoricTaskInstance historicTaskInstance = list.stream().filter(a -> !taskDefKey.equals(a.getTaskDefinitionKey())).findFirst().orElse(null);
+        HistoricTaskInstance historicTaskInstance = list.stream().filter(a ->a.getEndTime()!=null&& !taskDefKey.equals(a.getTaskDefinitionKey())).findFirst().orElse(null);
         return historicTaskInstance;
     }
 }
