@@ -62,7 +62,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
             //userEntrust.setSender( SecurityUtils.getLogInEmpIdSafe().intValue());
             userEntrust.setSender(dataVo.getSender());
             if (idsVo.getId() != null && idsVo.getId() > 0) {
-                //插入
+                //更新
                 UserEntrust userEntrustCheck = mapper.selectById(idsVo.getId());
                 if (userEntrustCheck == null) {
                     throw new JiMuBizException("300001", "更新的记录不存在");
@@ -70,12 +70,12 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 userEntrust.setId(idsVo.getId());
                 userEntrust.setPowerId(userEntrustCheck.getPowerId());
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-                //mapper.update(userEntrust);
+                mapper.updateById(userEntrust);
             } else if (idsVo.getPowerId() != null) {
                 if (userEntrust.getReceiverId() == null) {
                     throw new JiMuBizException("300002", "请选择委托对象");
                 }
-                //更新
+                //插入
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 userEntrust.setPowerId(idsVo.getPowerId());
                 mapper.insert(userEntrust);
