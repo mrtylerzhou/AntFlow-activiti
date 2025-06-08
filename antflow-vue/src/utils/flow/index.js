@@ -160,7 +160,6 @@ All.prototype = {
   getConditionStr(conditionArray) {
     let str = "";
     for (let condition of conditionArray) {
-      console.log("condition=======", condition);
       var {
         columnId,
         showName,
