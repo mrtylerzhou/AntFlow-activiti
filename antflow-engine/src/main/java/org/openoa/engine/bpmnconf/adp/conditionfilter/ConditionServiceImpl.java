@@ -70,6 +70,12 @@ public class ConditionServiceImpl implements ConditionService {
                         if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
                             break;
                         }
+                    }else {
+                        //如果是或关系,有一个条件判断为true则终止判断
+                        currentGroupResult=true;
+                        if(condRelation.equals(ConditionRelationShipEnum.OR.getCode())){
+                            break;
+                        }
                     }
                 } catch (JiMuBizException e) {
                     log.info("condiiton judge business exception:" + e.getMessage());
