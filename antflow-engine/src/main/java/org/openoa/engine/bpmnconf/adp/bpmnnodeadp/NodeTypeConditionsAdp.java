@@ -79,13 +79,13 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         bpmnNodeConditionsConfBaseVo.setIsDefault(bpmnNodeConditionsConf.getIsDefault());
         bpmnNodeConditionsConfBaseVo.setSort(bpmnNodeConditionsConf.getSort());
         bpmnNodeConditionsConfBaseVo.setExtJson(extJson);
+        bpmnNodeConditionsConfBaseVo.setGroupRelation(bpmnNodeConditionsConf.getGroupRelation());
 
         // if the condition node is default condition then assign the condition node configuration and return
         if (Objects.equals(bpmnNodeConditionsConf.getIsDefault(), 1)) {
             setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
             bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
             bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
-            bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
             return bpmnNodeVo;
         }
 
