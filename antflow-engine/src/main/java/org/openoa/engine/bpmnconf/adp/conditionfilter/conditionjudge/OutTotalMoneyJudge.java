@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Slf4j
 public class OutTotalMoneyJudge extends AbstractComparableJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
         if (Strings.isNullOrEmpty(conditionsConf.getOutTotalMoney()) ||Strings.isNullOrEmpty(bpmnStartConditionsVo.getOutTotalMoney())) {
 
             log.info("process's out total money is empty");

@@ -37,7 +37,7 @@ public class BpmnConfNodePropertyConverter {
 
 
         Integer isDefault = propertysVo.getIsDefault();
-
+        Map<Integer, Map<String,Object>> groupedLfConditionsMap=new HashMap<>();
         BpmnNodeConditionsConfBaseVo result=new BpmnNodeConditionsConfBaseVo();
         //outer common property
         result.setIsDefault(propertysVo.getIsDefault());
@@ -46,7 +46,7 @@ public class BpmnConfNodePropertyConverter {
         List<Integer> conditionTypes=new ArrayList<>();
         Map<Integer,List<Integer>> groupedConditionTypes=new HashMap<>();
         Integer strEnumCode = ConditionTypeEnum.CONDITION_TYPE_LF_STR_CONDITION.getCode();
-        Map<String,Object> wrapperResult=new HashMap<>();
+
         boolean isLowCodeFlow = false;
         List<List<BpmnNodeConditionsConfVueVo>> groupedNewModels = propertysVo.getConditionList();
         if(ObjectUtils.isEmpty(groupedNewModels)&&Objects.equals(isDefault,0)){
@@ -55,6 +55,7 @@ public class BpmnConfNodePropertyConverter {
 
         int index=0;
         for (List<BpmnNodeConditionsConfVueVo> newModels : groupedNewModels) {
+            Map<String,Object> wrapperResult=new HashMap<>();
             index++;
             List<Integer> currentGroupConditionTypes=new ArrayList<>();
             for (BpmnNodeConditionsConfVueVo newModel : newModels) {
@@ -108,11 +109,15 @@ public class BpmnConfNodePropertyConverter {
                     });
                     Object valueOrWrapper=null;
                     if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        isLowCodeFlow=true;
                         wrapperResult.put(columnDbname,values);
                         valueOrWrapper=wrapperResult;
+                        groupedLfConditionsMap.put(index,wrapperResult);
+                    }else{
+                        Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
+                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
                     }
-                    Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                    ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:values);
+
                 }else{
                     String zdy1 = newModel.getZdy1();
                     String zdy2=newModel.getZdy2();
@@ -136,10 +141,13 @@ public class BpmnConfNodePropertyConverter {
                             zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                         }
                         if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                            isLowCodeFlow=true;
                             wrapperResult.put(columnDbname,zdy1);
                             valueOrWrapper=wrapperResult;
+                            groupedLfConditionsMap.put(index,wrapperResult);
+                        }else{
+                            ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                         }
-                        ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:zdy1);
                     }else{
                         Object valueOrWrapper=null;
                         Object actualValue=null;
@@ -155,6 +163,7 @@ public class BpmnConfNodePropertyConverter {
                             isLowCodeFlow=true;
                             wrapperResult.put(columnDbname,actualValue);
                             valueOrWrapper=wrapperResult;
+                            groupedLfConditionsMap.put(index,wrapperResult);
                         }else {
                             ReflectionUtils.setField(field, result, valueOrWrapper!=null?valueOrWrapper:actualValue);
                         }
@@ -166,8 +175,7 @@ public class BpmnConfNodePropertyConverter {
             groupedConditionTypes.put(index,currentGroupConditionTypes);
         }
         if(isLowCodeFlow){
-            Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
-            ReflectionUtils.setField(field, result, wrapperResult);
+            result.setGroupedLfConditionsMap(groupedLfConditionsMap);
         }
         String extJson = JSON.toJSONString(groupedNewModels);
         result.setExtJson(extJson);

@@ -15,7 +15,7 @@ import java.util.function.BiPredicate;
 @Slf4j
 public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
         //a是数据库里存的集合,b是用户传过来的集合(或者单个值),遍历a,b,如果b在a里,则返回true
         TriplePredict<Object,Object,Integer> predicate=(a, b,c)->{
           if(!(a instanceof Iterable)){
@@ -43,6 +43,6 @@ public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
             }
             return false;
         };
-        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate,index);
+        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate,index,group);
     }
 }

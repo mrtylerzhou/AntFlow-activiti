@@ -64,7 +64,7 @@ public class ConditionServiceImpl implements ConditionService {
                     throw new JiMuBizException("logic error,please contact the Administrator");
                 }
                 try {
-                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index)) {
+                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index,currentGroup)) {
                         currentGroupResult = false;
                         //如果是且关系,有一个条件判断为false则终止判断
                         if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
@@ -87,8 +87,11 @@ public class ConditionServiceImpl implements ConditionService {
                 index++;
             }
             result = currentGroupResult;
-            if(groupRelation==ConditionRelationShipEnum.AND.getCode()){//条件组之间如果为且关系,如果有一个条件组评估为false,则立刻返回false
+            if(groupRelation==ConditionRelationShipEnum.AND.getCode()&&!result){//条件组之间如果为且关系,如果有一个条件组评估为false,则立刻返回false
                break;
+            }
+            if(groupRelation==ConditionRelationShipEnum.OR.getCode()&&result){//条件组之间如果为或关系,如果有一个条件组评估为true,则立刻返回true
+                break;
             }
         }
 

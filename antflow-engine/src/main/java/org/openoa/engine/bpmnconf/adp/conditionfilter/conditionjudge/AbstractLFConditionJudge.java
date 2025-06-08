@@ -16,8 +16,9 @@ import java.util.function.BiPredicate;
 
 public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
 
-    protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate,int currentIndex) {
-        Map<String, Object> lfConditionsFromDb = conditionsConf.getLfConditions();
+    protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate,int currentIndex,int currentGroup) {
+        Map<Integer, Map<String, Object>> groupedLfConditionsMap = conditionsConf.getGroupedLfConditionsMap();
+        Map<String, Object> lfConditionsFromDb = groupedLfConditionsMap.get(currentGroup);
         Map<String, Object> lfConditionsFromUser = bpmnStartConditionsVo.getLfConditions();
         if (CollectionUtils.isEmpty(lfConditionsFromDb)) {
 

@@ -114,10 +114,11 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                     .collect(Collectors.groupingBy(BpmnNodeConditionsParamConf::getCondGroup,
                                     Collectors.mapping(BpmnNodeConditionsParamConf::getConditionParamType, Collectors.toList()))));
 
-            Map<String,Object> wrappedValue=null;
+
             Map<Integer, Map<String,Object>> groupedWrappedValue=new HashMap<>();
             boolean isLowCodeFlow=false;
             for (BpmnNodeConditionsParamConf nodeConditionsParamConf : nodeConditionsParamConfs) {
+                Map<String,Object> wrappedValue=null;
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum
                         .getEnumByCode(nodeConditionsParamConf.getConditionParamType());
                 if(conditionTypeEnum==null){
@@ -187,8 +188,6 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                 }
             }
             if(isLowCodeFlow){
-                Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME,true);
-                ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo,  wrappedValue);
                 bpmnNodeConditionsConfBaseVo.setGroupedLfConditionsMap(groupedWrappedValue);
             }
 
@@ -276,7 +275,9 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
 
             List<List<BpmnNodeConditionsConfVueVo>> extFieldsArray = JSON.parseObject(extJson, new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {
             });
+            int index=0;
             for (List<BpmnNodeConditionsConfVueVo> extFields : extFieldsArray) {
+                index++;
                 for (BpmnNodeConditionsConfVueVo extField : extFields) {
                     String columnId = extField.getColumnId();
                     String columnDbname = extField.getColumnDbname();
@@ -284,7 +285,13 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                     if(conditionTypeEnum==null){
                         throw new JiMuBizException(Strings.lenientFormat("can not get node ConditionTypeEnum by code:%s",columnId));
                     }
-                    Object conditionParam = ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);
+                    Object conditionParam = null;
+                    if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                        Map<Integer, Map<String, Object>> groupedLfConditionsMap = bpmnNodeConditionsConfBaseVo.getGroupedLfConditionsMap();
+                        conditionParam = groupedLfConditionsMap.get(index);
+                    }else{
+                        conditionParam= ReflectionUtils.getField(FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true), bpmnNodeConditionsConfBaseVo);
+                    }
                     if (!ObjectUtils.isEmpty(conditionParam)) {
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
                             Map<String, Object> containerWrapper = (Map<String, Object>) conditionParam;

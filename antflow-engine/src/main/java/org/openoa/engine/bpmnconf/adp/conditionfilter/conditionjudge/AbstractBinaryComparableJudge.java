@@ -17,7 +17,7 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
     private static final Logger log = LoggerFactory.getLogger(AbstractBinaryComparableJudge.class);
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
         String fieldNameInDb = fieldNameInDb();
         String fieldNameActual=fieldNameInStartConditions();
         String fieldValueInDb = null;

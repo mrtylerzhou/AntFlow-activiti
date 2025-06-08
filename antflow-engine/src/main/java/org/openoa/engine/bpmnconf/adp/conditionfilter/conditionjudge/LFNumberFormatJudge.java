@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 @Slf4j
 public class LFNumberFormatJudge extends AbstractLFConditionJudge{
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
 
        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,(a,b,c)->{
            String[] split = a.toString().split(",");
@@ -24,7 +24,7 @@ public class LFNumberFormatJudge extends AbstractLFConditionJudge{
            }
            BigDecimal userValue = NumberUtils.toScaledBigDecimal(b.toString(), 2, RoundingMode.HALF_UP);
            return super.compareJudge(valueinDbBig1,valueinDbBig2,userValue,c);
-       },index);
+       },index,group);
     }
 
 }

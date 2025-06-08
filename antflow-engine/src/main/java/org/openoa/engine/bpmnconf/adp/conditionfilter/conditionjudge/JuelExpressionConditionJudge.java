@@ -11,7 +11,7 @@ import java.util.Map;
 @Service
 public class JuelExpressionConditionJudge implements ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int index,int group) {
         String expression = conditionsConf.getExpression();
         return JuelEvaluator.evaluate(expression, bpmnStartConditionsVo);
     }
