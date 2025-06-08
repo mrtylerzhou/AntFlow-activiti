@@ -28,7 +28,6 @@
                         <div class="condition-node-box">
                             <div class="node-wrap-box" :data-node-key="item.nodeId">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
-                                    <span class="iconfont"></span>
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
                                 <div class="content">
