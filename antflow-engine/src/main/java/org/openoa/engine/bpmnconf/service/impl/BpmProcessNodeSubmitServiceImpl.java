@@ -97,11 +97,12 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     .backType(0)
                     .createUser(task.getAssignee())
                     .build());
-
+            boolean nextElementParallelGateway=false;
             PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
             if (nextElement != null) {
                 String type = (String) nextElement.getProperty("type");
                 if ("parallelGateway".equals(type)) {
+                    nextElementParallelGateway=true;
                     List<Task> tasks = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
                     List<String> currentTaskDefKeys = tasks.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
                     if(currentTaskDefKeys.size()<=1){
@@ -120,6 +121,10 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
                     taskService.complete(task.getId(), varMap);
                 }
             } else {
+               if(nextElementParallelGateway &&(processNodeSubmit.getBackType()==1||processNodeSubmit.getBackType()==2)){
+                   taskService.complete(task.getId(), varMap);
+                   return;
+               }
                 // node disagree type（1：back to previous node submit next node 2：back to initiator submit next node
                 // 3. back to initiator submit next node 4. back to history node submit next node 5. back to history node submit back node
                 switch (processNodeSubmit.getBackType()) {

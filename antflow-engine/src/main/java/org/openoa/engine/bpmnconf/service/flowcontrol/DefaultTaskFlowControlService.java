@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.RuntimeServiceImpl;
@@ -9,6 +10,7 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
@@ -74,7 +76,9 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	public List<String> moveTo(String currentTaskDefKey,String targetTaskDefinitionKey) throws Exception
 	{
 		List<Task> currentTasks = getCurrentTasks();
-		return moveTo(currentTasks,currentTaskDefKey, targetTaskDefinitionKey);
+		moveTo(currentTasks,currentTaskDefKey, targetTaskDefinitionKey);
+		List<String> otherParallTaskDefKeys = currentTasks.stream().map(TaskInfo::getTaskDefinitionKey).filter(a -> !a.equals(currentTaskDefKey)).collect(Collectors.toList());
+		return otherParallTaskDefKeys;
 	}
 
 
@@ -106,17 +110,24 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	private List<String> moveTov2(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
 	{
 
-		String processNumber = currentTaskEntitys.get(0).getProcessDefinitionId().split(":")[0];
+		Map<String, Object> variables = _processEngine.getTaskService()
+				.getVariables(currentTaskEntitys.get(0).getId());
+
+		String processNumber = variables.get("processNumber").toString();
 		for (Task currentTaskEntity : currentTaskEntitys) {
 
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
 				String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
 				List<BaseIdTranStruVo> assigneeByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
-				String variableVal = assigneeByElementId.get(0).getId();
+				String variableVal = "startUser".equals(variableName)?variables.get("startUser").toString():
+						assigneeByElementId.get(0).getId();
 				int index = variableName.indexOf("List");
-				String newVarName=variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+				String newVarName="startUser".equals(variableName)?variableName:
+						variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
+			}else{
+				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 			}
 
 		}
