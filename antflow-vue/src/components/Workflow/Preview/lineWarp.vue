@@ -54,7 +54,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
-import { bgColors } from '@/utils/flow/const'
+import { bgColors } from '@/utils/antflow/const'
 let props = defineProps({
     nodeConfig: {
         type: Object,

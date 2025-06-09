@@ -62,92 +62,92 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"; 
-import { getBpmnConflistPage,getEffectiveBpmn } from "@/api/workflow"; 
-const { proxy } = getCurrentInstance(); 
+import { ref, onMounted } from "vue";
+import { getBpmnConflistPage, getEffectiveBpmn } from "@/api/workflow/index";
+const { proxy } = getCurrentInstance();
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
 const data = reactive({
-  form: {},
-  pageDto: {
-     page: 1,
-     pageSize: 10
-  },
-  taskMgmtVO: { 
-     effectiveStatus: undefined,
-     isOutSideProcess : 1,
-     bpmnCode: undefined,
-     bpmnName: undefined
-  },
-  rules: {
-     bpmnCode: [{ required: true, message: "流程编号不能为空", trigger: "blur" }],
-     bpmnName: [{ required: true, message: "流程名称不能为空", trigger: "blur" }],
-  }
+   form: {},
+   pageDto: {
+      page: 1,
+      pageSize: 10
+   },
+   taskMgmtVO: {
+      effectiveStatus: undefined,
+      isOutSideProcess: 1,
+      bpmnCode: undefined,
+      bpmnName: undefined
+   },
+   rules: {
+      bpmnCode: [{ required: true, message: "流程编号不能为空", trigger: "blur" }],
+      bpmnName: [{ required: true, message: "流程名称不能为空", trigger: "blur" }],
+   }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
-onMounted(async() => { 
-  getList(); 
-}) 
+onMounted(async () => {
+   getList();
+})
 /** 查询列表 */
 function getList() {
-  loading.value = true;
-  getBpmnConflistPage(pageDto.value,taskMgmtVO.value).then(response => {
-     let res = response.data;
-     configList.value = res.data;
-     total.value = res.pagination.totalCount;
-     loading.value = false;
-  }); 
+   loading.value = true;
+   getBpmnConflistPage(pageDto.value, taskMgmtVO.value).then(response => {
+      let res = response.data;
+      configList.value = res.data;
+      total.value = res.pagination.totalCount;
+      loading.value = false;
+   });
 }
 /**流程复制&编辑 */
-const handleEdit =  (row) => {
-  const params ={
-     id: row.id
-  };
-  const obj = {path: "/outsideMgt/outsideDesign",query:params};
-  proxy.$tab.openPage(obj);
+const handleEdit = (row) => {
+   const params = {
+      id: row.id
+   };
+   const obj = { path: "/outsideMgt/outsideDesign", query: params };
+   proxy.$tab.openPage(obj);
 }
 /**流程启用 */
 const effectiveById = async (data) => {
    if (data.formCode == 'RUOYI_RYQJLC') {
-       proxy.$modal.msgError("若依请假流程【管理员专用】禁止操作");
-       return;
+      proxy.$modal.msgError("若依请假流程【管理员专用】禁止操作");
+      return;
    }
    await getEffectiveBpmn(data).then(async (res) => {
-       if (res.code == 200) {
-           getList();
-           proxy.$modal.msgSuccess("操作成功"); 
-       } else {
-         proxy.$modal.msgError("操作失败"); 
-       }
+      if (res.code == 200) {
+         getList();
+         proxy.$modal.msgSuccess("操作成功");
+      } else {
+         proxy.$modal.msgError("操作失败");
+      }
    });
 
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  pageDto.value.page = 1;
-  getList();
+   pageDto.value.page = 1;
+   getList();
 }
- 
+
 /** 重置按钮操作 */
 function resetQuery() {
-  taskMgmtVO.value = {
-     isOutSideProcess : 1,
-     bpmnCode: undefined,
-     bpmnName: undefined
- };
-  proxy.resetForm("queryRef");
-  handleQuery();
+   taskMgmtVO.value = {
+      isOutSideProcess: 1,
+      bpmnCode: undefined,
+      bpmnName: undefined
+   };
+   proxy.resetForm("queryRef");
+   handleQuery();
 }
- 
+
 /** 预览 */
-function handlePreview(row) { 
-  const params ={
-     id: row.id
-  };
-  const obj = {path: "/outsideMgt/preview",query:params};
-  proxy.$tab.openPage(obj);
+function handlePreview(row) {
+   const params = {
+      id: row.id
+   };
+   const obj = { path: "/outsideMgt/preview", query: params };
+   proxy.$tab.openPage(obj);
 }
 
 </script>

@@ -3,7 +3,8 @@
     <div class="query-box">
       <el-form :model="vo" ref="queryRef" :inline="true" v-show="showSearch">
         <el-form-item label="业务表单名称" prop="remark">
-          <el-input v-model="vo.remark" placeholder="请输入关键字" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          <el-input v-model="vo.remark" placeholder="请输入关键字" clearable style="width: 200px"
+            @keyup.enter="handleQuery" />
         </el-form-item>
 
         <el-form-item>
@@ -45,26 +46,26 @@
       </el-table>
       <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
         @pagination="getList" />
-    </div>  
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import {
-  getApplicationsPageList, 
-  getApplicationDetail, 
+  getApplicationsPageList,
+  getApplicationDetail,
   getCallbackUrlConfList,
   getApproveTemplatelist
-} from "@/api/outsideApi"; 
+} from "@/api/workflow/outsideApi";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
 const total = ref(0);
-const open = ref(false); 
-const title = ref(""); 
-const data = reactive({ 
+const open = ref(false);
+const title = ref("");
+const data = reactive({
   appForm: {},
   page: {
     page: 1,
@@ -74,11 +75,11 @@ const data = reactive({
     remark: undefined
   }
 });
-const { page, vo, appForm } = toRefs(data); 
+const { page, vo, appForm } = toRefs(data);
 onMounted(async () => {
-  getList(); 
+  getList();
 })
- 
+
 /** 查询注册业务表单列表 */
 function getList() {
   loading.value = true;
@@ -94,11 +95,11 @@ function getList() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   single.value = selection.length != 1;
-  multiple.value = !selection.length; 
+  multiple.value = !selection.length;
 }
- 
+
 /** 修改按钮操作 */
-function handleEdit(row) { 
+function handleEdit(row) {
   const id = row.id;
   if (id == 1 || id == 2) {
     proxy.$modal.msgError("演示数据不允许修改操作！");
@@ -115,7 +116,7 @@ function handleEdit(row) {
   });
   proxy.$modal.closeLoading();
 }
- 
+
 /** 重置按钮操作 */
 function resetQuery() {
   vo.value = {};
@@ -131,11 +132,11 @@ function handleQuery() {
 function handleDelete(row) {
   proxy.$modal.msgError("演示环境不允许删除操作！");
 }
-const settingPage = (row) => { 
+const settingPage = (row) => {
   const params = {
     appId: row.id,
     appName: encodeURIComponent(row.name),
-    pId: row.businessPartyId, 
+    pId: row.businessPartyId,
     pName: encodeURIComponent(row.businessName),
     fc: row.processKey
   };
@@ -146,7 +147,7 @@ const settingPage = (row) => {
 async function handleFlowDesign(row) {
   proxy.$modal.loading();
   const resultCheckApprove = await checkApproveConfig(row);
-  const resultCheckCallback = await checkCallBackConfig(row); 
+  const resultCheckCallback = await checkCallBackConfig(row);
   if (!resultCheckApprove) {
     proxy.$modal.closeLoading();
     proxy.$modal.msgError("请先设置审批人");

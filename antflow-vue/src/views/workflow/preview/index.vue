@@ -18,7 +18,8 @@
           </el-col>
           <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
             <div v-if="processConfig" class="component">
-              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
+              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
+                :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
               </component>
             </div>
           </el-col>
@@ -36,10 +37,10 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { getApiWorkFlowData } from "@/api/workflow";
+import { getApiWorkFlowData } from "@/api/workflow/index";
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 
 const { proxy } = getCurrentInstance();
@@ -88,7 +89,7 @@ const init = async () => {
 
 </script>
 
-<style scoped lang="scss"> 
+<style scoped lang="scss">
 .task-title {
   display: flex;
   justify-content: space-between;

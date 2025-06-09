@@ -1,5 +1,5 @@
 <template>
-    <div v-if="activityList" >
+    <div v-if="activityList">
         <div>
             <div style="margin-bottom: 25px;display: flex; justify-content: center;align-items: Center;">
                 <p style="margin-left: 10px;"><span class="dotPrimary"></span> 通过</p>
@@ -23,19 +23,19 @@
                     </el-collapse>
                 </el-timeline-item>
             </el-timeline>
-        </div> 
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { approveButtonColor } from '@/utils/flow/const'; 
-import { getBpmVerifyInfoVos } from '@/api/workflow';
-  
+import { approveButtonColor } from '@/utils/antflow/const';
+import { getBpmVerifyInfoVos } from '@/api/workflow/index';
+
 let activityList = ref(null);
 
-onMounted(async () => { 
-    await getPreviewData(); 
+onMounted(async () => {
+    await getPreviewData();
 })
 const getPreviewData = async () => {
     let param = {
@@ -53,29 +53,35 @@ const getPreviewData = async () => {
         })
     };
 };
- 
+
 </script>
-<style  lang="scss"> 
+<style lang="scss">
 .el-timeline {
     --el-timeline-node-size-normal: 25px !important;
     --el-timeline-node-size-large: 25px !important;
 }
+
 .el-timeline-item {
     padding-bottom: 0px !important;
-} 
+}
+
 .el-timeline-item__node--normal {
     left: -8px !important;
 }
+
 .el-timeline-item__node--large {
     left: -8px !important;
 }
-.el-timeline-item__wrapper { 
+
+.el-timeline-item__wrapper {
     top: -10px !important;
 }
-.el-tabs--border-card  {
-    min-width: 800px  !important;
+
+.el-tabs--border-card {
+    min-width: 800px !important;
     min-height: 550px !important;
 }
+
 .dotPrimary {
     height: 15px;
     width: 15px;
@@ -107,6 +113,4 @@ const getPreviewData = async () => {
     border-radius: 50%;
     display: inline-block;
 }
-
-
 </style>

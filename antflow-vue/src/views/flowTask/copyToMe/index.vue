@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { getCopyToMelistPage } from "@/api/workflow";
+import { getCopyToMelistPage } from "@/api/workflow/index";
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();

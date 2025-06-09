@@ -1,13 +1,5 @@
 import { parseTime } from "@/utils/ruoyi";
-const isEmpty = (data) =>
-  data === null ||
-  data === undefined ||
-  data == "" ||
-  data == "" ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
-const isEmptyArray = (data) => (Array.isArray(data) ? data.length === 0 : true);
+import { isEmpty, isEmptyArray } from "@/utils/antflow/nodeUtils";
 function All() {}
 All.prototype = {
   arrToStr(arr) {
@@ -153,14 +145,12 @@ All.prototype = {
         str = str + (groupRelation == false ? " 且 " : " 或 ");
       }
     }
-    //console.log("str=======", str);
     return str;
   },
 
   getConditionStr(conditionArray) {
     let str = "";
     for (let condition of conditionArray) {
-      console.log("condition=======", condition);
       var {
         columnId,
         showName,
@@ -243,7 +233,9 @@ All.prototype = {
         str += null;
       }
     }
-    return str ? str.substring(0, str.length - 4) : "请设置条件";
+    str = this.removeLastIndexOfAnd(str);
+    str = this.removeLastIndexOfOR(str);
+    return str && str.length > 0 ? str : "请设置条件";
   },
   copyerStr(nodeConfig) {
     if (nodeConfig.nodeApproveList.length != 0) {
@@ -259,6 +251,22 @@ All.prototype = {
     return a.some((item) => {
       return item == key;
     });
+  },
+
+  removeLastIndexOfAnd(str) {
+    let lastIndexOfAnd = str.lastIndexOf("且");
+    if (lastIndexOfAnd !== -1) {
+      str = str.slice(0, lastIndexOfAnd) + str.slice(lastIndexOfAnd + 1);
+    }
+    return str;
+  },
+
+  removeLastIndexOfOR(str) {
+    let lastIndexOfOR = str.lastIndexOf("或");
+    if (lastIndexOfOR !== -1) {
+      str = str.slice(0, lastIndexOfOR) + str.slice(lastIndexOfOR + 1);
+    }
+    return str;
   },
 };
 

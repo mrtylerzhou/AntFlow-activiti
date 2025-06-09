@@ -17,7 +17,7 @@
          </el-form>
          <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-               <el-button type="success" plain icon="Promotion" @click="handleshowFlow">发起请求</el-button>
+               <el-button type="success" plain icon="Promotion" @click="handleTaskCenter">发起请求</el-button>
             </el-col>
          </el-row>
       </div>
@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { getMyRequestlistPage } from "@/api/workflow";
+import { getMyRequestlistPage } from "@/api/workflow/index";
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();
@@ -122,8 +122,8 @@ async function getList() {
 }
 
 /** 发起请求 */
-function handleshowFlow() {
-   router.push({ path: "/showFlow" });
+function handleTaskCenter() {
+   router.push({ path: "/taskCenter" });
 }
 /** 搜索按钮操作 */
 function handleQuery() {

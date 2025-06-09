@@ -2,10 +2,10 @@
   <div class="form-container">
     <el-form ref="ruleFormRef" :model="form" label-width="auto" style="max-width: 600px; margin: auto">
       <el-form-item label="项目标识" prop="businessPartyMark">
-        <el-input v-model="form.businessPartyMark" :disabled="true" :style="{ width: '100%' }" />   
+        <el-input v-model="form.businessPartyMark" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="项目名称" prop="businessPartyName">
-        <el-input v-model="form.businessPartyName" :disabled="true" :style="{ width: '100%' }" />   
+        <el-input v-model="form.businessPartyName" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="应用标识" prop="formCode">
         <template #label>
@@ -16,7 +16,7 @@
             应用标识
           </span>
         </template>
-        <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" /> 
+        <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="应用名称" prop="bpmnName">
         <template #label>
@@ -39,20 +39,20 @@
         <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
           :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
       </el-form-item>
- 
+
     </el-form>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, getCurrentInstance } from "vue";
-import { getApproveTemplatelist } from "@/api/outsideApi";
-import { NodeUtils } from "@/utils/flow/nodeUtils"; 
+import { getApproveTemplatelist } from "@/api/workflow/outsideApi";
+import { NodeUtils } from "@/utils/antflow/nodeUtils";
 import { useStore } from "@/store/modules/outsideflow";
 let store = useStore();
 const { query } = useRoute();
 const { proxy } = getCurrentInstance();
-const emit = defineEmits(["nextChange"]); 
+const emit = defineEmits(["nextChange"]);
 let props = defineProps({
   basicData: {
     type: Object,
@@ -75,7 +75,7 @@ let duplicateOptions = [
     label: "后去重",
     value: 3,
   },
-]; 
+];
 let form = reactive({
   bpmnCode: generatorID,
   bpmnName: undefined,
@@ -94,31 +94,31 @@ onMounted(async () => {
     form.bpmnCode = props.basicData.bpmnCode;
     form.formCode = props.basicData.formCode;
     form.businessPartyId = props.basicData.businessPartyId;
-    form.appId = props.basicData.appId; 
+    form.appId = props.basicData.appId;
     form.businessPartyName = props.basicData.businessPartyName;
     form.businessPartyMark = props.basicData.businessPartyMark;
     form.remark = props.basicData.remark;
     form.deduplicationType = props.basicData.deduplicationType;
   }
-  else{ 
+  else {
     form.bpmnCode = generatorID;
     form.appId = query.appid;
     form.formCode = query.fc;
-    form.bpmnName = decodeURIComponent(query.fcname); 
+    form.bpmnName = decodeURIComponent(query.fcname);
     form.businessPartyId = query.bizid;
     form.businessPartyName = decodeURIComponent(query.bizname);
     form.businessPartyMark = query.bizcode;
-    form.deduplicationType=1;    
+    form.deduplicationType = 1;
   }
-}); 
+});
 
-watch(() => form.appId, (newVal) => { 
-  getApproveTemplatelist(newVal).then(response => { 
-    store.setBasideFormConfig({ 
-          appdId: newVal,
-          formCode: form.formCode,
-          configList: response.data, 
-        });
+watch(() => form.appId, (newVal) => {
+  getApproveTemplatelist(newVal).then(response => {
+    store.setBasideFormConfig({
+      appdId: newVal,
+      formCode: form.formCode,
+      configList: response.data,
+    });
   }).catch(() => {
     console.log(`获取${formCode}审批模板配置信息失败`);
   });
@@ -136,8 +136,8 @@ const getData = () => {
       resolve({ formData: form }); // TODO 提交表单
     });
   });
-}; 
- 
+};
+
 defineExpose({
   getData,
 });

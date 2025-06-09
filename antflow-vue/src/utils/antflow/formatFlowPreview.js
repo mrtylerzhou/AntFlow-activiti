@@ -1,18 +1,7 @@
 // import { FormatUtils } from '@/utils/formatFlowPreview'
-const isEmptyArray = (data) =>
-  Array.isArray(data)
-    ? data.length === 0
-    : data === null || data === undefined || data == ""
-    ? true
-    : false;
-const isEmpty = (data) =>
-  data === null ||
-  data === undefined ||
-  data == "" ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
-export class FormatUtils {
+import { isEmpty, isEmptyArray } from "@/utils/antflow/nodeUtils";
+
+export class FormatPreviewUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
    * @param param

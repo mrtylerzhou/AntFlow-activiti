@@ -1,9 +1,11 @@
 <template>
     <div class="app-container">
         <div class="fd-nav">
-            <div class="fd-nav-left"> 
+            <div class="fd-nav-left">
                 <div class="fd-nav-title">
-                    <el-icon><HomeFilled /></el-icon>
+                    <el-icon>
+                        <HomeFilled />
+                    </el-icon>
                     {{ title }}
                 </div>
             </div>
@@ -44,18 +46,18 @@ import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
 import BasicSetting from "@/components/Workflow/outsideSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
-import DynamicForm from "@/components/DynamicForm/index.vue";
+import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
-import { FormatUtils } from '@/utils/flow/formatcommit_data';
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
-import { NodeUtils } from '@/utils/flow/nodeUtils';
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
+import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
+import { NodeUtils } from '@/utils/antflow/nodeUtils';
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
 const { proxy } = getCurrentInstance()
 const { query } = useRoute();
 const basicSetting = ref(null);
 const formDesign = ref(null);
 const processDesign = ref(null);
-let lfFormDataConfig= ref(null);
+let lfFormDataConfig = ref(null);
 let activeStep = ref("basicSetting");
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
@@ -69,25 +71,24 @@ const changeSteps = (item) => {
 
 let processConfig = ref(null);
 let nodeConfig = ref(null);
-let title = ref(''); 
+let title = ref('');
 let viewJson = ref(false);
 let jsonTitle = ref('');
 onMounted(async () => {
     let mockjson = {};
-    proxy.$modal.loading(); 
+    proxy.$modal.loading();
     if (query.id && query.id != 0) {
         mockjson = await getApiWorkFlowData({ id: query.id });
     } else {
         mockjson = NodeUtils.createStartNode();
     }
-    let data = FormatDisplayUtils.getToTree(mockjson.data); 
+    let data = FormatDisplayUtils.getToTree(mockjson.data);
     proxy.$modal.closeLoading();
     processConfig.value = data;
-    title.value = proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(query.bizname):data?.bpmnName; 
+    title.value = proxy.isObjEmpty(data?.bpmnName) ? decodeURIComponent(query.bizname) : data?.bpmnName;
     nodeConfig.value = data?.nodeConfig;
-    lfFormDataConfig.value = data?.lfFormData??'';
+    lfFormDataConfig.value = data?.lfFormData ?? '';
 });
-
 
 const publish = () => {
     const step1 = basicSetting.value.getData();
@@ -102,7 +103,7 @@ const publish = () => {
             let lowcodeformData = res[1].formData;
             //console.log("提交到API=data===formData=============================",JSON.stringify(formData)); 
             Object.assign(basicData, { lfFormData: JSON.stringify(lowcodeformData) });
-            var nodes = FormatUtils.formatSettings(res[2].formData);
+            var nodes = FormatCommitUtils.formatSettings(res[2].formData);
             Object.assign(basicData, { nodes: nodes });
             return basicData;
         })
@@ -129,19 +130,21 @@ const publish = () => {
         });
 };
 const previewJson = () => {
-   viewJson.value = true;
-   jsonTitle.value = "预览JSON";
+    viewJson.value = true;
+    jsonTitle.value = "预览JSON";
 }
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss"; 
+@import "@/assets/styles/flow/workflow.scss";
+
 .app-container {
     position: relative;
     background-color: #f5f5f7;
     min-height: calc(100vh - 115px);
     padding-top: 15px;
     overflow: auto;
-} 
+}
+
 .step-tab {
     display: flex;
     justify-content: center;
@@ -156,7 +159,6 @@ const previewJson = () => {
 .fd-nav {
     background: #00CED1;
 }
-
 
 .fd-nav .step {
     width: 140px;

@@ -100,7 +100,7 @@
 
         </div>
       </template>
-    </el-dialog> 
+    </el-dialog>
     <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
   </div>
 </template>
@@ -108,15 +108,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import appForm from "../outsideApp/form.vue";
-import { getBusinessPartyList, setBusinessParty, getBusinessPartyDetail } from "@/api/outsideApi";
+import { getBusinessPartyList, setBusinessParty, getBusinessPartyDetail } from "@/api/workflow/outsideApi";
 const { proxy } = getCurrentInstance();
 const list = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
-const total = ref(0); 
+const total = ref(0);
 const open = ref(false);
 let openAddApp = ref(false);
-const title = ref(""); 
+const title = ref("");
 const data = reactive({
   appData: {},
   form: {
@@ -141,7 +141,7 @@ const data = reactive({
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
-const { page, vo, form, rules,appData } = toRefs(data);
+const { page, vo, form, rules, appData } = toRefs(data);
 
 onMounted(async () => {
   getList();
@@ -217,11 +217,11 @@ function handleEdit(row) {
  * 新增应用
  * @param row 
  */
-function handleAddApp(row) { 
+function handleAddApp(row) {
   appData.value.applyType = '2';
   appData.value.isSon = '1';
   appData.value.businessName = row.name;
-  appData.value.businessCode = row.businessPartyMark; 
+  appData.value.businessCode = row.businessPartyMark;
   openAddApp.value = true;
 }
 

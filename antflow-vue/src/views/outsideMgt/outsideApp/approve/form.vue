@@ -69,8 +69,8 @@
 </template>
 <script setup>
 import { computed, reactive, getCurrentInstance, watch } from "vue";
-import { setApproveTemplate } from "@/api/outsideApi";
-import { getDynamicsList } from "@/api/mock";
+import { setApproveTemplate } from "@/api/workflow/outsideApi";
+import { getDynamicsList } from "@/api/workflow/mock";
 const { proxy } = getCurrentInstance();
 let props = defineProps({
   visible: {

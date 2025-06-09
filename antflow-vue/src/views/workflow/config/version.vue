@@ -68,7 +68,7 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { getBpmnConflistPage, getEffectiveBpmn } from "@/api/workflow";
+import { getBpmnConflistPage, getEffectiveBpmn } from "@/api/workflow/index";
 const { query } = useRoute();
 const { proxy } = getCurrentInstance();
 const configList = ref([]);
@@ -152,29 +152,31 @@ const backPage = () => {
 }
 </script>
 <style lang="scss" scoped>
-.marquee-container { 
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative; 
-    font-size: 18px;
-  }
+.marquee-container {
+   overflow: hidden;
+   white-space: nowrap;
+   position: relative;
+   font-size: 18px;
+}
 
-  .marquee-text {
-    display: inline-block;
-    animation: marquee 10s linear infinite;
-  }
+.marquee-text {
+   display: inline-block;
+   animation: marquee 10s linear infinite;
+}
 
-  .marquee-container:hover .marquee-text {
-    transform: translateX(0);
-    animation-play-state: paused; /* 鼠标悬停时暂停动画 */ 
-  }
+.marquee-container:hover .marquee-text {
+   transform: translateX(0);
+   animation-play-state: paused;
+   /* 鼠标悬停时暂停动画 */
+}
 
-  @keyframes marquee {
-    from {
+@keyframes marquee {
+   from {
       transform: translateX(100%);
-    }
-    to {
+   }
+
+   to {
       transform: translateX(-100%);
-    }
-  }
+   }
+}
 </style>

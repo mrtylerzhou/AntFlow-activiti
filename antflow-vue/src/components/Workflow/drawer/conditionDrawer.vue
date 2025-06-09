@@ -182,23 +182,6 @@
                                     v-if="originalConfigData.groupRelation == true">或满足</el-text>
                             </div>
                         </div>
-                        <!-- <el-button type="primary" @click="addCondition">添加条件</el-button> -->
-                        <el-dialog title="选择条件" v-model="conditionVisible" :width="480" append-to-body
-                            class="condition_list">
-                            <p>请选择用来区分审批流程的条件字段</p>
-                            <p class="check_box">
-                                <template v-for="(item, index) in conditions" :key="index">
-                                    <a :class="$func.toggleClass(conditionList, item, 'formId') && 'active'"
-                                        @click="$func.toChecked(conditionList, item, 'formId')">{{ item?.showName }}</a>
-                                    <br v-if="(index + 1) % 3 == 0" />
-                                </template>
-                            </p>
-                            <template #footer>
-                                <el-button @click="conditionVisible = false">取 消</el-button>
-                                <el-button type="primary" @click="sureCondition">确 定</el-button>
-                            </template>
-                        </el-dialog>
-
                         <el-button style="width: 100%" type="info" icon="el-icon-plus" text bg
                             @click="addConditionGroup">
                             添加条件组
@@ -212,17 +195,16 @@
             </el-main>
         </el-container>
     </el-drawer>
+    <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
+import ConditionDialog from "../dialog/selectConditionDialog.vue";
 import { useStore } from '@/store/modules/workflow'
-import { optTypes, opt1s, condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/flow/const'
-import $func from '@/utils/flow/index'
-import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getConditions } from '@/api/mock'
+import { optTypes, opt1s } from '@/utils/antflow/const'
+import $func from '@/utils/antflow/index'
+
 const { proxy } = getCurrentInstance()
-const route = useRoute()
-const routePath = route.path || ''
 let store = useStore()
 let { setCondition, setConditionsConfig } = store
 let conditionVisible = ref(false)
@@ -230,19 +212,11 @@ let conditionRoleVisible = ref(false)
 let conditionsConfig = ref(null)
 let originalConfigData = ref({})
 let priorityLevel = ref('')
-let conditions = ref([])//添加条件弹框显示
-let conditionList = ref([])//添加条件弹框显示>是否选中
-let checkedList = ref([])
-let tableId = computed(() => store.tableId)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 let conditionDrawer = computed(() => store.conditionDrawer)
-let lowCodeFormFields = {}
-
 let activeGroupIdx = ref(0)
-
 let visible = computed({
     get() {
-        lowCodeFormFields = store.lowCodeFormField;
         return conditionDrawer.value
     },
     set() {
@@ -255,6 +229,55 @@ watch(conditionsConfig1, (val) => {
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [[]] }
     convertConditionNodeValue(originalConfigData.value.conditionList);
 });
+
+/**添加条件 */
+const addCondition = async (index) => {
+    activeGroupIdx.value = index;
+    conditionVisible.value = true;
+}
+/**条件抽屉的确认 */
+const saveCondition = () => {
+    //console.log("conditionsConfig.value.conditionNodes=====", JSON.stringify(conditionsConfig.value.conditionNodes)); 
+    var a = conditionsConfig.value.conditionNodes.splice(priorityLevel.value - 1, 1)//截取旧下标
+    conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
+    conditionsConfig.value.conditionNodes.map((item, index) => {
+        item.priorityLevel = index + 1,
+            convertConditionNodeValue(item.conditionList, false)
+    });
+    for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
+        conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
+        conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
+        const defaultCond = i == conditionsConfig.value.conditionNodes.length - 1 &&
+            conditionsConfig.value.conditionNodes[i].conditionList.flat().filter(
+                (item) => item.columnId && item.columnId !== 0
+            ).length == 0
+        conditionsConfig.value.conditionNodes[i].isDefault = defaultCond ? 1 : 0
+    }
+    setConditionsConfig({
+        value: conditionsConfig.value,
+        flag: true,
+        id: conditionsConfig1.value.id
+    })
+    closeDrawer()
+}
+/**添加条件角色 */
+const addConditionRole = () => {
+    conditionRoleVisible.value = true;
+}
+/**关闭抽屉 */
+const closeDrawer = (val) => {
+    setCondition(false)
+}
+/*添加条件组 */
+const addConditionGroup = () => {
+    originalConfigData.value.conditionList = originalConfigData.value.conditionList ?? [];
+    originalConfigData.value.conditionList.push([]);
+}
+/*删除条件组 */
+
+const deleteConditionGroup = (index) => {
+    originalConfigData.value.conditionList.splice(index, 1)
+}
 
 /**值类型条件改变 */
 const changeOptType = (item) => {
@@ -289,133 +312,6 @@ const removeStrEle = (item, key) => {
     item.zdy1 = a.toString()
 }
 
-/**过滤空值 */
-const nullableFilter = (elm) => {
-    return (elm != null && elm !== false && elm !== "");
-}
-/**自定义表单条件加载 */
-const loadDIYFormCondition = () => {
-    return new Promise(async (resolve, reject) => {
-        let { data } = await getConditions({ tableId: tableId.value });
-        resolve(data);
-        reject([]);
-    });
-}
-/**低代码表单条件加载 */
-const loadLFFormCondition = () => {
-    return new Promise((resolve, reject) => {
-        let conditionArr = [];
-        if (!lowCodeFormFields.hasOwnProperty("formFields")) {
-            resolve(conditionArr);
-        }
-        conditionArr = lowCodeFormFields.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
-            if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
-                let optionGroup = [];
-                if (item.optionItems) {
-                    optionGroup = item.optionItems.map(c => {
-                        let convertValue = parseInt(c.value);
-                        if (!isNaN(convertValue)) {
-                            return { key: convertValue, value: c.label }
-                        }
-                    });
-                    optionGroup = optionGroup.filter(c => c);
-                }
-                return {
-                    formId: index + 1,
-                    columnId: condition_columnTypeMap.get(item.fieldTypeName),
-                    showType: condition_filedTypeMap.get(item.fieldTypeName),
-                    showName: item.label,
-                    columnName: item.name,
-                    columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
-                    fieldTypeName: item.fieldTypeName,
-                    multiple: item.multiple,
-                    multipleLimit: item.multipleLimit,
-                    fixedDownBoxValue: JSON.stringify(optionGroup)
-                }
-            }
-        })
-        conditionArr = conditionArr.filter(nullableFilter);
-        resolve(conditionArr);
-        reject([]);
-    });
-};
-/**添加条件 */
-const addCondition = async (index) => {
-    activeGroupIdx.value = index;
-    conditionList.value = [];
-    conditionVisible.value = true;
-    conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-    if (originalConfigData.value.conditionList) {
-        for (var i = 0; i < originalConfigData.value.conditionList[index].length; i++) {
-            var { formId, columnId } = originalConfigData.value.conditionList[index][i];
-            if (columnId == 0) {
-                conditionList.value.push({ formId: formId, columnId: 0 })
-            } else {
-                conditionList.value.push(conditions.value.filter(item => { return item.formId == formId; })[0])
-            }
-        }
-    }
-    conditionList.value = conditionList.value.filter(item => { return item; })
-}
-/**选择条件后确认 */
-
-const sureCondition = () => {
-    for (var i = 0; i < conditionList.value.length; i++) {
-        var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue } = conditionList.value[i];
-        if ($func.toggleClass(originalConfigData.value.conditionList[activeGroupIdx.value], conditionList.value[i], "formId")) {
-            continue;
-        }
-        const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue);
-        if (columnId == 0) {
-            originalConfigData.value.nodeApproveList = [];
-            originalConfigData.value.conditionList[activeGroupIdx.value].push({ formId: formId, columnId: columnId, type: 1, showName: '发起人' });
-        } else {
-            originalConfigData.value.conditionList[activeGroupIdx.value].push(judgeObj)
-        }
-    }
-    for (let i = originalConfigData.value.conditionList[activeGroupIdx.value].length - 1; i >= 0; i--) {
-        if (!$func.toggleClass(conditionList.value, originalConfigData.value.conditionList[activeGroupIdx.value][i], "formId")) {
-            originalConfigData.value.conditionList[activeGroupIdx.value].splice(i, 1);
-        }
-    }
-    originalConfigData.value.conditionList[activeGroupIdx.value].sort(function (a, b) { return a.columnId - b.columnId; });
-    conditionVisible.value = false;
-}
-
-/**条件抽屉的确认 */
-const saveCondition = () => {
-    //console.log("conditionsConfig.value.conditionNodes=====", JSON.stringify(conditionsConfig.value.conditionNodes)); 
-    var a = conditionsConfig.value.conditionNodes.splice(priorityLevel.value - 1, 1)//截取旧下标
-    conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
-    conditionsConfig.value.conditionNodes.map((item, index) => {
-        item.priorityLevel = index + 1,
-            convertConditionNodeValue(item.conditionList, false)
-    });
-    for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
-        conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
-        conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
-        const defaultCond = i == conditionsConfig.value.conditionNodes.length - 1 &&
-            conditionsConfig.value.conditionNodes[i].conditionList.flat().filter(
-                (item) => item.columnId && item.columnId !== 0
-            ).length == 0
-        conditionsConfig.value.conditionNodes[i].isDefault = defaultCond ? 1 : 0
-    }
-    setConditionsConfig({
-        value: conditionsConfig.value,
-        flag: true,
-        id: conditionsConfig1.value.id
-    })
-    closeDrawer()
-}
-/**添加条件角色 */
-const addConditionRole = () => {
-    conditionRoleVisible.value = true;
-    checkedList.value = originalConfigData.value.nodeApproveList
-}
-/**关闭抽屉 */
-const closeDrawer = (val) => {
-    setCondition(false)
-}
 /**格式化控件值 */
 const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isArrayEmpty(data)) return;
@@ -466,18 +362,7 @@ const convertConditionNodeValue = (data, isPreview = true) => {
             }
         }
     }
-}
-
-/*添加条件组 */
-const addConditionGroup = () => {
-    originalConfigData.value.conditionList = originalConfigData.value.conditionList ?? [];
-    originalConfigData.value.conditionList.push([]);
-}
-/*删除条件组 */
-
-const deleteConditionGroup = (index) => {
-    originalConfigData.value.conditionList.splice(index, 1)
-}
+} 
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
@@ -581,22 +466,6 @@ const deleteConditionGroup = (index) => {
 
         .el-button {
             margin-bottom: 5px;
-        }
-    }
-}
-
-.condition_list {
-    .el-dialog__body {
-        padding: 16px 26px;
-    }
-
-    p {
-        color: #666666;
-        margin-bottom: 10px;
-
-        &>.check_box {
-            margin-bottom: 0;
-            line-height: 36px;
         }
     }
 }

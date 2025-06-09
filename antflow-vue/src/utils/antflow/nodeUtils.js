@@ -1,13 +1,18 @@
-//import { NodeUtils } from '@/utils/flow/nodeUtils'
-const isEmpty = (data) =>
+//import { NodeUtils } from '@/utils/antflow/nodeUtils'
+export const isEmpty = (data) =>
   data === null ||
   data === undefined ||
   data == "" ||
-  data == "" ||
+  data == {} ||
   data == "{}" ||
   data == "[]" ||
   data == "null";
-const isEmptyArray = (data) => (Array.isArray(data) ? data.length === 0 : true);
+export const isEmptyArray = (data) =>
+  Array.isArray(data)
+    ? data.length === 0
+    : data === null || data === undefined || data == ""
+    ? true
+    : false;
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
@@ -200,7 +205,7 @@ export class NodeUtils {
       isDel: 0,
       nodes: [
         {
-          confId: 35,
+          confId: 1,
           nodeId: "Gb2",
           nodeType: 1,
           nodeProperty: 1,
@@ -267,7 +272,7 @@ export class NodeUtils {
       showType: showType,
       type: type, //1，发起人 2，其他表单条件
       showName: showName,
-      optType: "5",
+      optType: 5,
       zdy1: fieldTypeName == "switch" ? "1" : "",
       opt1: "<",
       zdy2: "",

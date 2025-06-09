@@ -6,21 +6,22 @@
 -->
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
-        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node not-allowed' : '')" :data-node-key="nodeConfig.nodeId" @click="handleChecked(nodeConfig)">
+        <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node not-allowed' : '')"
+            :data-node-key="nodeConfig.nodeId" @click="handleChecked(nodeConfig)">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
             </div>
             <div class="content">
-                <div v-html="nodeConfig.nodeDisplayName" class="text"></div> 
+                <div v-html="nodeConfig.nodeDisplayName" class="text"></div>
             </div>
-        </div>  
-        <div class="pixel-line"></div>  
+        </div>
+        <div class="pixel-line"></div>
     </div>
     <!--并行审批分支-->
     <div class="branch-wrap" v-if="nodeConfig.nodeType == 7">
         <div class="branch-box-wrap">
-            <div class="branch-box"> 
+            <div class="branch-box">
                 <button class="add-branch">并行审批</button>
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
@@ -31,7 +32,7 @@
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
                                 <div class="content">
-                                    <div class="text"> 
+                                    <div class="text">
                                         {{ item.nodeDisplayName }}
                                     </div>
                                 </div>
@@ -55,10 +56,10 @@
     </div>
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
-<script setup> 
+<script setup>
 import { onMounted } from 'vue';
-import { bgColors } from '@/utils/flow/const'  
-import { useStore } from '@/store/modules/workflow';   
+import { bgColors } from '@/utils/antflow/const'
+import { useStore } from '@/store/modules/workflow';
 let store = useStore();
 let { setApproveChooseFlowNodeConfig } = store;
 let props = defineProps({
@@ -66,65 +67,67 @@ let props = defineProps({
         type: Object,
         default: () => ({}),
     }
-});   
-  
+});
+
 onMounted(() => {
-    const elementList = document.getElementsByClassName("node-wrap-box"); 
-    for(let element of  elementList) {
-        const customNodeKey= element.getAttribute('data-node-key');      
+    const elementList = document.getElementsByClassName("node-wrap-box");
+    for (let element of elementList) {
+        const customNodeKey = element.getAttribute('data-node-key');
         element.classList.remove("checked-node");
-        if(props.nodeConfig.afterNodeIds.indexOf(customNodeKey) >-1){
-            element.classList.toggle("not-allowed"); 
+        if (props.nodeConfig.afterNodeIds.indexOf(customNodeKey) > -1) {
+            element.classList.toggle("not-allowed");
             continue;
         }
-        if(customNodeKey == props.nodeConfig.currentNodeId){
-            element.classList.toggle("not-allowed"); 
-            element.classList.toggle("active"); 
+        if (customNodeKey == props.nodeConfig.currentNodeId) {
+            element.classList.toggle("not-allowed");
+            element.classList.toggle("active");
             continue;
-        } 
+        }
     }
-}); 
+});
 
-const handleChecked = (item)=>{  
-    const elementList = document.getElementsByClassName("node-wrap-box");  
-    if(props.nodeConfig.afterNodeIds.indexOf(item.nodeId) >-1){ 
-            return;
-    }
-    if(props.nodeConfig.currentNodeId == item.nodeId){ 
-            return;
-    }
-    if('Gb2' == item.nodeId){ 
+const handleChecked = (item) => {
+    const elementList = document.getElementsByClassName("node-wrap-box");
+    if (props.nodeConfig.afterNodeIds.indexOf(item.nodeId) > -1) {
         return;
-    } 
-    for(let element of  elementList) {  
-        const customNodeKey= element.getAttribute('data-node-key');    
-        if(element.classList.contains('not-allowed')) {   
+    }
+    if (props.nodeConfig.currentNodeId == item.nodeId) {
+        return;
+    }
+    if ('Gb2' == item.nodeId) {
+        return;
+    }
+    for (let element of elementList) {
+        const customNodeKey = element.getAttribute('data-node-key');
+        if (element.classList.contains('not-allowed')) {
             continue;
-        } 
-        if(customNodeKey == item.nodeId) {   
+        }
+        if (customNodeKey == item.nodeId) {
             element.classList.toggle("checked-node");
-        }else{
+        } else {
             element.classList.remove("checked-node");
             continue;
         }
-    } 
-    setApproveChooseFlowNodeConfig({ 
+    }
+    setApproveChooseFlowNodeConfig({
         visible: false,
-        nodeId: String(item.Id), 
-        nodeName: item.nodeName, 
-        nodeDisplayName:  item.nodeDisplayName, 
+        nodeId: String(item.Id),
+        nodeName: item.nodeName,
+        nodeDisplayName: item.nodeDisplayName,
     });
-} 
+}
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 // active
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss"; 
+@import "@/assets/styles/flow/workflow.scss";
+
 .pixel-line {
     width: 2px;
     height: 50px;
-    background-color: #cacaca; 
+    background-color: #cacaca;
 }
+
 .end-node-circle {
     width: 20px;
     height: 20px;
@@ -132,18 +135,20 @@ const handleChecked = (item)=>{
     border-radius: 50%;
     background: #dbdcdc
 }
+
 .line-through {
     text-decoration: line-through
 }
-.checked-node {   
-    border: 5px solid #13ce66;    
+
+.checked-node {
+    border: 5px solid #13ce66;
 }
 
-.current-node {   
-    border: 5px solid #1890ff;    
+.current-node {
+    border: 5px solid #1890ff;
 }
 
-.not-allowed{
+.not-allowed {
     cursor: not-allowed;
     opacity: 0.9;
     background-color: #cacaca;

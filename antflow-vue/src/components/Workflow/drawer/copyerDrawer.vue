@@ -44,8 +44,8 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import selectUserDialog from '../dialog/selectUserDialog.vue'
-import FormPermConf from "../config/FormPermConf.vue"
-import $func from '@/utils/flow/index'
+import FormPermConf from "../permConfig/FormPermConf.vue"
+import $func from '@/utils/antflow/index'
 import { useStore } from '@/store/modules/workflow'
 let copyerConfig = ref({})
 let ccSelfSelectFlag = ref([])

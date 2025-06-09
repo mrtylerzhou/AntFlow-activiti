@@ -129,8 +129,8 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow.js";
-import { getUsers } from "@/api/mock.js";
+import { getEntrustListPage, setEntrust, getDIYFromCodeData } from "@/api/workflow/index";
+import { getUsers } from "@/api/workflow/mock.js";
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false);

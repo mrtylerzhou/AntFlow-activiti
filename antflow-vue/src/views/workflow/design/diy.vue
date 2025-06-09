@@ -8,7 +8,7 @@
                     </el-icon>
                     {{ title }}
                 </div>
-            </div> 
+            </div>
             <div class="fd-nav-center">
                 <div class="step-tab">
                     <div v-for="(item, index) in steps" :key="index" class="step"
@@ -40,14 +40,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
-import { FormatUtils } from '@/utils/flow/formatcommit_data';
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
-import { NodeUtils } from '@/utils/flow/nodeUtils';
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
+import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
+import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
-//import { getWorkFlowData } from '@/api/mock.js';
+//import { getWorkFlowData } from '@/api/workflow/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
 const basicSetting = ref(null);
@@ -78,10 +78,10 @@ onMounted(async () => {
     } else {
         mockjson = NodeUtils.createStartNode();
     }
-    let data = FormatDisplayUtils.getToTree(mockjson.data); 
+    let data = FormatDisplayUtils.getToTree(mockjson.data);
     proxy.$modal.closeLoading();
     processConfig.value = data;
-    title.value =  proxy.isObjEmpty(data?.bpmnName)?decodeURIComponent(route.query.fcname??''):data?.bpmnName;  
+    title.value = proxy.isObjEmpty(data?.bpmnName) ? decodeURIComponent(route.query.fcname ?? '') : data?.bpmnName;
     nodeConfig.value = data?.nodeConfig;
 });
 
@@ -94,7 +94,7 @@ const publish = () => {
         .then((res) => {
             //proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
             let basicData = res[0].formData;
-            var nodes = FormatUtils.formatSettings(res[1].formData);
+            var nodes = FormatCommitUtils.formatSettings(res[1].formData);
             Object.assign(basicData, { nodes: nodes });
             console.log("New===Json==========", JSON.stringify(basicData));
             return basicData;
@@ -103,18 +103,18 @@ const publish = () => {
             setApiWorkFlowData(data).then((resLog) => {
                 proxy.$modal.closeLoading();
                 if (resLog.code == 200) {
-                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据"); 
+                    proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
                     let obj = { path: "flow-version", query: { formCode: data.formCode } };
                     proxy.$tab.openPage(obj);
                 } else {
                     proxy.$modal.msgError("提交到API返回失败" + JSON.stringify(resLog.errMsg));
                 }
             })
-        }) 
+        })
         .catch((err) => {
             proxy.$modal.closeLoading();
             if (err) {
-                console.log("设置失败" + JSON.stringify(err)); 
+                console.log("设置失败" + JSON.stringify(err));
             }
         });
 };

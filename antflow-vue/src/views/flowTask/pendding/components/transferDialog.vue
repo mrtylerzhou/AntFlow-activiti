@@ -26,7 +26,7 @@
 <script setup>
 import { computed, onMounted, ref, getCurrentInstance } from 'vue';
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-import { getUsers } from "@/api/mock.js";
+import { getUsers } from "@/api/workflow/mock.js";
 const { proxy } = getCurrentInstance()
 let props = defineProps({
   visible: {
@@ -60,8 +60,8 @@ let visibleDialog = computed({
 });
 
 let rules = {
-  selectList: [{ required: true, message: '', trigger:  ['change','blur']}],
-  remark: [{ required: true, message: '请输入备注', trigger:  ['change','blur'] }]
+  selectList: [{ required: true, message: '', trigger: ['change', 'blur'] }],
+  remark: [{ required: true, message: '请输入备注', trigger: ['change', 'blur'] }]
 };
 onMounted(async () => {
   reset();

@@ -63,7 +63,7 @@
   </el-dialog>
 </template>
 <script setup>
-import { addApplication } from "@/api/outsideApi";
+import { addApplication } from "@/api/workflow/outsideApi";
 import { computed } from "vue";
 const { proxy } = getCurrentInstance();
 let props = defineProps({
