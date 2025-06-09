@@ -273,7 +273,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
     `condition_param_jsom`    text                NOT NULL COMMENT 'paramJSON',
     `operator`                int                 null,
     `cond_relation`           int                 null comment 'condition''s relations,0 for and and 1 for or',
-    `cond_group  `            int                 null comment 'group that a condition belongs to',
+    `cond_group`            int                 null comment 'group that a condition belongs to',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`             varchar(50)                  DEFAULT '' COMMENT 'as its name says',
