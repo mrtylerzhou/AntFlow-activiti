@@ -1,15 +1,7 @@
 // import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data.js'
 import { hrbpOptions } from "@/utils/flow/const";
-const isEmptyArray = (data) =>
-  Array.isArray(data) ? data.length === 0 : false;
-const isEmpty = (data) =>
-  data === null ||
-  data === undefined ||
-  data == "" ||
-  data == "" ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
+import { isEmpty, isEmptyArray } from "@/utils/flow/nodeUtils";
+
 export class FormatDisplayUtils {
   /**
    * 格式化显示数据

@@ -8,7 +8,11 @@ export const isEmpty = (data) =>
   data == "[]" ||
   data == "null";
 export const isEmptyArray = (data) =>
-  Array.isArray(data) ? data.length === 0 : true;
+  Array.isArray(data)
+    ? data.length === 0
+    : data === null || data === undefined || data == ""
+    ? true
+    : false;
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
