@@ -44,7 +44,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
 import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
-import { FormatUtils } from '@/utils/flow/formatcommit_data';
+import { FormatCommitUtils } from '@/utils/flow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
 import { NodeUtils } from '@/utils/flow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
@@ -56,19 +56,15 @@ const route = useRoute();
 const basicSetting = ref(null);
 const processDesign = ref(null);
 const formDesign = ref(null);
-
 let activeStep = ref("basicSetting"); // 激活的步骤面板
-
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
     { label: "表单设计", key: "formDesign" },
     { label: "流程设计", key: "processDesign" },
 ]);
-
 const changeSteps = (item) => {
     activeStep.value = item.key;
 };
-
 let processConfig = ref(null);
 let nodeConfig = ref(null);
 let lfFormDataConfig = ref(null);
@@ -104,16 +100,15 @@ const publish = () => {
         .then((res) => {
             //proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
             let basicData = res[0].formData;
-            basicData.isLowCodeFlow = 1; // 1代表低代码表单
+            basicData.isLowCodeFlow = 1; // 1代表低代码表单 
             let lowcodeformData = res[1].formData;
-            //console.log("提交到API=data===formData=============================",JSON.stringify(formData)); 
             Object.assign(basicData, { lfFormData: JSON.stringify(lowcodeformData) });
-            var nodes = FormatUtils.formatSettings(res[2].formData);
+            var nodes = FormatCommitUtils.formatSettings(res[2].formData);
             Object.assign(basicData, { nodes: nodes });
             return basicData;
         })
         .then((data) => {
-            //console.log("提交到API=====data=", JSON.stringify(data));
+            //console.log("提交到API===success=", JSON.stringify(data));
             setApiWorkFlowData(data).then((resLog) => {
                 proxy.$modal.closeLoading();
                 if (resLog.code == 200) {

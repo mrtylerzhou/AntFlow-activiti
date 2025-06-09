@@ -1,5 +1,5 @@
 //import { NodeUtils } from '@/utils/flow/nodeUtils'
-const isEmpty = (data) =>
+export const isEmpty = (data) =>
   data === null ||
   data === undefined ||
   data == "" ||
@@ -7,7 +7,8 @@ const isEmpty = (data) =>
   data == "{}" ||
   data == "[]" ||
   data == "null";
-const isEmptyArray = (data) => (Array.isArray(data) ? data.length === 0 : true);
+export const isEmptyArray = (data) =>
+  Array.isArray(data) ? data.length === 0 : true;
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
