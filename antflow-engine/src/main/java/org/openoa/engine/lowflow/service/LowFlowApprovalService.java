@@ -149,21 +149,21 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                         break;
                     case NUMBER:
                         if(LFControlTypeEnum.SELECT.getName().equals(currentFieldProp.getFieldName())){
-                            Object parse = JSON.parse(field.getFieldValue());
-                            if (parse==null){
-                               actualValue="";//select默认值为空字符串
-                           }else if(parse instanceof JSONArray){
-                                actualValue=JSON.parseArray(field.getFieldValue());
-                           }else{
-                              try {
-                                  actualValue=Integer.parseInt(field.getFieldValue());
-                              }catch (Exception e){
-                                  log.info("field value is not a number,field name:{},formcode:{},confId:{}",fieldName,formCode,confId);
-                                  actualValue=field.getFieldValue();
-                              }
+                           try {
+                               Object parse = JSON.parse(field.getFieldValue());
+                               if (parse==null){
+                                   actualValue="";//select默认值为空字符串
+                               }else if(parse instanceof JSONArray){
+                                   actualValue=JSON.parseArray(field.getFieldValue());
+                               }else{
+                                   actualValue=parse;
+                               }
+                           }catch (Exception e){//如果本身是字符串类型,不能反序列化,直接取原来值
+                               log.warn("field value can not be parsed to number,fieldName:{},formCode:{},confId:{}",fieldName,formCode,confId);
+                               actualValue=field.getFieldValue();
                            }
-                        }else{
-                            actualValue=Integer.parseInt(field.getFieldValue());
+                        }else{//以上对select做了特殊处理,如果不是select,直接取值
+                            actualValue=field.getFieldValueNumber();
                         }
                         break;
                     case DATE_TIME:

@@ -16,6 +16,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.springframework.util.CollectionUtils;
 
 import java.io.PipedReader;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Data
