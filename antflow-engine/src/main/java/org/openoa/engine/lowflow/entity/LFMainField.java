@@ -1,10 +1,13 @@
 package org.openoa.engine.lowflow.entity;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.annotation.*;
 import com.google.common.base.Strings;
 import lombok.Data;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.DateUtil;
@@ -118,8 +121,12 @@ public class LFMainField {
                 mainField.setFieldValue(fieldValueStr);
                 break;
             case NUMBER:
-                Integer fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Integer.parseInt(fieldValueStr) : null;
-                mainField.setFieldValue(String.valueOf(fieldValueNumber));
+               if(LFControlTypeEnum.SELECT.getName().equals(fieldConfig.getFieldName())){
+                   mainField.setFieldValue(fieldValueStr);
+               }else{
+                   Double fieldValueNumber = !StringUtils.isEmpty(fieldValueStr) ? Double.parseDouble(fieldValueStr) : null;
+                   mainField.setFieldValueNumber(fieldValueNumber);
+               }
                 break;
             case DATE:
             case DATE_TIME:
