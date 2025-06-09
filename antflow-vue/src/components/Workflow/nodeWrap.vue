@@ -105,7 +105,8 @@
 
                                 <div class="content" @click="setNodeInfo(index)">
                                     <div class="text">
-                                        <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{ defaultText }}</span>
+                                        <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{ defaultText
+                                        }}</span>
                                         {{ item.nodeDisplayName }}
                                     </div>
                                     <i class="anticon anticon-right arrow"></i>
@@ -280,7 +281,7 @@ const addTerm = () => {
     if (props.nodeConfig.nodeType == 2) {
         const len = props.nodeConfig.conditionNodes.length;
         const fistConditionNode = props.nodeConfig;
-        console.log('props.nodeConfig==', JSON.stringify(props.nodeConfig))
+        //console.log('props.nodeConfig==', JSON.stringify(props.nodeConfig))
         const n_name = resetConditionNodesTitle(fistConditionNode, len);
         props.nodeConfig.conditionNodes.push(NodeUtils.createConditionNode(n_name, null, len, 0));
         resetConditionNodesErr()

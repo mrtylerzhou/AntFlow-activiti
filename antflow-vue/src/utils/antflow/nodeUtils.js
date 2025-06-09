@@ -3,7 +3,7 @@ export const isEmpty = (data) =>
   data === null ||
   data === undefined ||
   data == "" ||
-  data == "" ||
+  data == {} ||
   data == "{}" ||
   data == "[]" ||
   data == "null";
@@ -205,7 +205,7 @@ export class NodeUtils {
       isDel: 0,
       nodes: [
         {
-          confId: 35,
+          confId: 1,
           nodeId: "Gb2",
           nodeType: 1,
           nodeProperty: 1,
@@ -272,7 +272,7 @@ export class NodeUtils {
       showType: showType,
       type: type, //1，发起人 2，其他表单条件
       showName: showName,
-      optType: "5",
+      optType: 5,
       zdy1: fieldTypeName == "switch" ? "1" : "",
       opt1: "<",
       zdy2: "",

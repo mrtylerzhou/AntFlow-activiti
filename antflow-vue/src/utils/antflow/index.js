@@ -1,13 +1,5 @@
 import { parseTime } from "@/utils/ruoyi";
-const isEmpty = (data) =>
-  data === null ||
-  data === undefined ||
-  data == "" ||
-  data == "" ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
-const isEmptyArray = (data) => (Array.isArray(data) ? data.length === 0 : true);
+import { isEmpty, isEmptyArray } from "@/utils/antflow/nodeUtils";
 function All() {}
 All.prototype = {
   arrToStr(arr) {
@@ -153,7 +145,6 @@ All.prototype = {
         str = str + (groupRelation == false ? " 且 " : " 或 ");
       }
     }
-    //console.log("str=======", str);
     return str;
   },
 
@@ -242,7 +233,9 @@ All.prototype = {
         str += null;
       }
     }
-    return str ? str.substring(0, str.length - 4) : "请设置条件";
+    return str && str.length > 0
+      ? str.substring(0, str.length - 2)
+      : "请设置条件";
   },
   copyerStr(nodeConfig) {
     if (nodeConfig.nodeApproveList.length != 0) {
