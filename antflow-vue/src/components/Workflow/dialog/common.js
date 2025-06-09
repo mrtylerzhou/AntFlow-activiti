@@ -5,7 +5,7 @@
  * @FilePath: /ant-flow/src/components/dialog/common.js
  */
 import { ref } from "vue";
-import { getRoles, getDepartments, getEmployees } from "@/api/mock.js";
+import { getRoles, getDepartments, getEmployees } from "@/api/workflow/mock.js";
 export let searchVal = ref("");
 export let departments = ref({
   titleDepartments: [],

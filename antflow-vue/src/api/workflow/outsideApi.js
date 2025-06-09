@@ -23,8 +23,8 @@ const headers = {
  */
 export function getOutSideFormCodePageList(page, vo) {
   let data = {
-    "pageDto": page,
-    "entity": vo
+    pageDto: page,
+    entity: vo,
   };
   return http.post(`${baseUrl}/outSide/getOutSideFormCodePageList`, data, {
     headers,
@@ -33,8 +33,8 @@ export function getOutSideFormCodePageList(page, vo) {
 
 /**
  * 获取审批数据
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
  */
 export function getApiWorkFlowData(data) {
   return http.get(`${baseUrl}/bpmnConf/detail/${data.id}`, { headers });
@@ -57,8 +57,8 @@ export function setApiWorkFlowData(data) {
  */
 export function getBusinessPartyList(page, vo) {
   let data = {
-    "pageDto": page,
-    "entity": vo
+    pageDto: page,
+    entity: vo,
   };
   return http.post(`${baseUrl}/outSideBpm/businessParty/listPage`, data, {
     headers,
@@ -93,9 +93,9 @@ export function setBusinessParty(data) {
  */
 export function getApplicationsPageList(page, vo) {
   let data = {
-    "pageDto": page,
-    "entity": vo
-  }; 
+    pageDto: page,
+    entity: vo,
+  };
   return http.post(
     `${baseUrl}/outSideBpm/businessParty/applicationsPageList`,
     data,
@@ -214,7 +214,7 @@ export function setApproveTemplate(data) {
  * @param {*} data 
  * @returns 
  */
-export function processSubmit(data) { 
+export function processSubmit(data) {
   return http.post(`${baseUrl}/outSide/processSubmit`, data, { headers });
 }
 /**
@@ -222,14 +222,18 @@ export function processSubmit(data) {
  * @param {*} data
  * @returns
  */
-export function callbackUrlConf(data) { 
-  return http.post(`${baseUrl}/outSideBpm/callbackUrlConf/edit`, data, { headers });
+export function callbackUrlConf(data) {
+  return http.post(`${baseUrl}/outSideBpm/callbackUrlConf/edit`, data, {
+    headers,
+  });
 }
 /**
  * 回调地址列表
  * @param {*} applicationId
  * @returns
  */
-export function getCallbackUrlConfList(formCode) { 
-  return http.get(`${baseUrl}/outSideBpm/callbackUrlConf/list/${formCode}`,{ headers });
+export function getCallbackUrlConfList(formCode) {
+  return http.get(`${baseUrl}/outSideBpm/callbackUrlConf/list/${formCode}`, {
+    headers,
+  });
 }

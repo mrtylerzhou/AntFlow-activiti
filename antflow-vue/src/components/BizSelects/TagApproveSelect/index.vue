@@ -28,7 +28,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { getStartUserChooseModules } from '@/api/workflow';
+import { getStartUserChooseModules } from '@/api/workflow/index';
 import chooseApproveUser from './chooseApproveDialog.vue';
 const emits = defineEmits(['chooseApprove']);
 const props = defineProps({

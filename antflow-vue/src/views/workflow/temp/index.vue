@@ -53,8 +53,10 @@
                         </el-table-column>
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="Promotion" @click="handleLFDesign(scope.row)">设计流程</el-button>
-                                <el-button link type="warning" icon="Operation" @click="handleVersion(scope.row)">流程版本</el-button>
+                                <el-button link type="primary" icon="Promotion"
+                                    @click="handleLFDesign(scope.row)">设计流程</el-button>
+                                <el-button link type="warning" icon="Operation"
+                                    @click="handleVersion(scope.row)">流程版本</el-button>
                                 <el-button link type="success" icon="ZoomIn"
                                     @click="handleLFTemp(scope.row)">查看表单</el-button>
                                 <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
@@ -72,8 +74,7 @@
                 <div class="query-box">
                     <el-row :gutter="10" class="mb8">
                         <el-col :span="1.5">
-                            <el-button type="primary" plain icon="CirclePlus"
-                                @click="handleDIYTemp">新增(DIY)</el-button>
+                            <el-button type="primary" plain icon="CirclePlus" @click="handleDIYTemp">新增(DIY)</el-button>
                         </el-col>
                         <right-toolbar v-model:showSearch="showSearch" @queryTable="getDIYList"
                             :columns="columns"></right-toolbar>
@@ -101,9 +102,12 @@
                         </el-table-column>
                         <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="Promotion" @click="handleDIYDesign(scope.row)">设计流程</el-button>
-                                <el-button link type="warning" icon="Operation" @click="handleVersion(scope.row)">流程版本</el-button>
-                                <el-button link type="success" icon="ZoomIn" @click="handleLFTemp(scope.row)">查看表单</el-button> 
+                                <el-button link type="primary" icon="Promotion"
+                                    @click="handleDIYDesign(scope.row)">设计流程</el-button>
+                                <el-button link type="warning" icon="Operation"
+                                    @click="handleVersion(scope.row)">流程版本</el-button>
+                                <el-button link type="success" icon="ZoomIn"
+                                    @click="handleLFTemp(scope.row)">查看表单</el-button>
                                 <!--<el-button link type="danger" icon="Delete"
                                     @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
@@ -164,8 +168,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getDIYFromCodeData } from "@/api/workflow";
-import { getLowCodeFromCodeData, createLFFormCode, getLFFormCodePageList } from '@/api/lowcodeApi';
+import { getDIYFromCodeData } from "@/api/workflow/index";
+import { getLowCodeFromCodeData, createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 const DIYList = ref([]);
@@ -297,25 +301,25 @@ const handleLFTemp = async (row) => {
 }
 
 async function handleDIYDesign(row) {
-  proxy.$modal.loading(); 
-  const param = { 
-    fcname: encodeURIComponent(row.value),  
-    fc: row.key
-  };
-  proxy.$modal.closeLoading();
-  const obj = { path: "/workflow/diy-design", query: param };
-  proxy.$tab.openPage(obj);
+    proxy.$modal.loading();
+    const param = {
+        fcname: encodeURIComponent(row.value),
+        fc: row.key
+    };
+    proxy.$modal.closeLoading();
+    const obj = { path: "/workflow/diy-design", query: param };
+    proxy.$tab.openPage(obj);
 }
 
 async function handleLFDesign(row) {
-  proxy.$modal.loading(); 
-  const param = { 
-    fcname: encodeURIComponent(row.value),  
-    fc: row.key
-  };
-  proxy.$modal.closeLoading();
-  const obj = { path: "/workflow/lf-design", query: param };
-  proxy.$tab.openPage(obj);
+    proxy.$modal.loading();
+    const param = {
+        fcname: encodeURIComponent(row.value),
+        fc: row.key
+    };
+    proxy.$modal.closeLoading();
+    const obj = { path: "/workflow/lf-design", query: param };
+    proxy.$tab.openPage(obj);
 }
 /**
  * 跳转到版本管理

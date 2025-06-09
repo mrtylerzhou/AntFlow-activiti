@@ -5,25 +5,26 @@
  * @FilePath: /flow/src/components/dialog/roleDialog.vue
 -->
 <template>
-   <el-dialog title="选择角色" v-model="visibleDialog" style="width: 680px !important;"  append-to-body class="promoter_person">
-      <div class="person_body clear">
-          <div class="person_tree l">
-              <input type="text" placeholder="搜索角色" v-model="searchVal">
-              <selectBox :list="list" />
-          </div>
-          <selectResult :total="total" @del="delList" :list="resList"/>
+  <el-dialog title="选择角色" v-model="visibleDialog" style="width: 680px !important;" append-to-body
+    class="promoter_person">
+    <div class="person_body clear">
+      <div class="person_tree l">
+        <input type="text" placeholder="搜索角色" v-model="searchVal">
+        <selectBox :list="list" />
       </div>
-      <template #footer>
-          <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="saveDialog">确 定</el-button>
-      </template>
+      <selectResult :total="total" @del="delList" :list="resList" />
+    </div>
+    <template #footer>
+      <el-button @click="closeDialog">取 消</el-button>
+      <el-button type="primary" @click="saveDialog">确 定</el-button>
+    </template>
   </el-dialog>
 </template>
 <script setup>
 import selectBox from '../selectBox.vue';
 import selectResult from '../selectResult.vue';
 import { computed, watch, ref } from 'vue'
-import $func from '@/utils/flow/index.js'
+import $func from '@/utils/antflow/index.js'
 import { roles, getRoleList, searchVal } from './common'
 let props = defineProps({
   visible: {
@@ -91,6 +92,6 @@ const closeDialog = () => {
 }
 </script>
 
-<style scoped lang="scss"> 
+<style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
 </style>

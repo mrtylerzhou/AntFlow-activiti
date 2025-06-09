@@ -27,9 +27,9 @@
 <script setup>
 import { ref, getCurrentInstance, onMounted } from 'vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
-import { getLowCodeFromCodeData } from '@/api/lowcodeApi';
+import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
-import { processSubmit } from "@/api/outsideApi";
+import { processSubmit } from "@/api/workflow/outsideApi";
 import cache from "@/plugins/cache";
 const { proxy } = getCurrentInstance();
 const route = useRoute();

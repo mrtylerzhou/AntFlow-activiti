@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { getPenddinglistPage } from "@/api/workflow";
+import { getPenddinglistPage } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
 let { setPreviewDrawerConfig } = store
@@ -79,9 +79,9 @@ const data = reactive({
    form: {},
    pageDto: {
       page: 1,
-      pageSize: 10 
+      pageSize: 10
    },
-   taskMgmtVO: { 
+   taskMgmtVO: {
       processNumber: undefined,
       processTypeName: undefined
    },
@@ -112,26 +112,26 @@ function handleQuery() {
    getList();
 }
 /** 修改按钮操作 */
-function handleApproveBtn(row) {  
+function handleApproveBtn(row) {
    const params = {
       formCode: row.processKey,
       processNumber: row.processNumber,
-      taskId:  row.taskId,
+      taskId: row.taskId,
       isOutSideAccess: row.isOutSideProcess,
       isLowCodeFlow: row.isLowCodeFlow,
    };
-   setPreviewDrawerConfig(params); 
+   setPreviewDrawerConfig(params);
    // 关闭指定页签
-   const obj = { path: "pendding/approve", query: params }; 
-   proxy.$tab.openPage(obj); 
+   const obj = { path: "pendding/approve", query: params };
+   proxy.$tab.openPage(obj);
    // proxy.$tab.closeOpenPage(obj); 
 }
 function resetQuery() {
    taskMgmtVO.value = {
       processNumber: undefined,
       processTypeName: undefined
-  };
-  handleQuery();
+   };
+   handleQuery();
 }
 getList();
 </script>

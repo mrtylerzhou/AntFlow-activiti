@@ -15,7 +15,7 @@
                   <el-option label="禁用" value="0" />
                   <el-option label="启动" value="1" />
                </el-select>
-            </el-form-item> --> 
+            </el-form-item> -->
             <el-form-item>
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -69,9 +69,9 @@
                </template>
             </el-table-column>
             <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
-               <template #default="scope"> 
+               <template #default="scope">
                   <el-button link type="success" @click="handleCopy(scope.row)">复制</el-button>
-                  <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button>  
+                  <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button>
                </template>
             </el-table-column>
          </el-table>
@@ -83,8 +83,8 @@
 
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { getBpmnConflistPage } from "@/api/workflow"; 
-const { proxy } = getCurrentInstance(); 
+import { getBpmnConflistPage } from "@/api/workflow/index";
+const { proxy } = getCurrentInstance();
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
@@ -106,10 +106,10 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 onMounted(async () => {
-   loading.value = true; 
+   loading.value = true;
    await getList();
    loading.value = false;
-}) 
+})
 /** 查询列表 */
 const getList = async () => {
    await getBpmnConflistPage(pageDto.value, taskMgmtVO.value).then(response => {
@@ -121,7 +121,7 @@ const getList = async () => {
       proxy.$modal.msgError("加载列表失败:" + r.message);
    });
 }
- 
+
 const handleVersion = async (row) => {
    const params = {
       formCode: row.formCode
@@ -135,7 +135,7 @@ function handleQuery() {
    pageDto.value.page = 1;
    getList();
 }
- 
+
 /** 重置按钮操作 */
 function resetQuery() {
    taskMgmtVO.value = {
@@ -145,12 +145,12 @@ function resetQuery() {
    };
    proxy.resetForm("queryRef");
    handleQuery();
-} 
+}
 /**
  * 复制操作
  * @param row
  */
- const handleCopy = (row) => {
+const handleCopy = (row) => {
    const params = {
       id: row.id,
       copy: 1,

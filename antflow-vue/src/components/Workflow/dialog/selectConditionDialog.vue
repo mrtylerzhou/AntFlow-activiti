@@ -17,11 +17,11 @@
 
 <script setup name="selectConditionDialog">
 import { watch } from "vue"
-import { getConditions } from '@/api/mock'
+import { getConditions } from '@/api/workflow/mock'
 import { useStore } from '@/store/modules/workflow'
-import { NodeUtils } from '@/utils/flow/nodeUtils'
-import $func from '@/utils/flow/index'
-import { condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/flow/const'
+import { NodeUtils } from '@/utils/antflow/nodeUtils'
+import $func from '@/utils/antflow/index'
+import { condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/antflow/const'
 const route = useRoute()
 const routePath = route.path || ''
 const store = useStore()

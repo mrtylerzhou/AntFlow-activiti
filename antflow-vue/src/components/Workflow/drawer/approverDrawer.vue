@@ -30,7 +30,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
+                                        }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -44,7 +44,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
+                                        }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -144,7 +144,7 @@
                                 <span class="opt-description">
                                     只需一名审批人同意或拒绝即可
                                 </span>
-                            </el-radio> 
+                            </el-radio>
                             <el-radio :value="9" class="auth-btn" border>
                                 【回到加批人】
                                 <span class="opt-description">
@@ -172,8 +172,8 @@
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue';
-import $func from '@/utils/flow/index';
-import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/flow/const';
+import $func from '@/utils/antflow/index';
+import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import roleDialog from '../dialog/roleDialog.vue';
@@ -195,17 +195,17 @@ let checkApprovalPageBtns = ref([]);
 let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
-let approvalBtnSubOption =  ref(1);
- 
+let approvalBtnSubOption = ref(1);
+
 let formItems = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
-let approverDrawer = computed(() => store.approverDrawer) ;
+let approverDrawer = computed(() => store.approverDrawer);
 let visible = computed({
     get() {
-        handleTabClick({ paneName: "approverStep" }) 
+        handleTabClick({ paneName: "approverStep" })
         return approverDrawer.value
     },
     set() {
@@ -213,29 +213,29 @@ let visible = computed({
     }
 });
 /**页面加载监听事件 */
-watch(approverConfig1, (val) => {  
+watch(approverConfig1, (val) => {
     if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
         let currParallel = val.value.parallelNodes[val.value.index]
         approverConfig.value = currParallel;
-        formItems.value = currParallel.lfFieldControlVOs || []; 
-        checkApprovalPageBtns.value = currParallel.buttons?.approvalPage; 
+        formItems.value = currParallel.lfFieldControlVOs || [];
+        checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
     }
     else {
         approverConfig.value = val.value;
-        formItems.value = val.value.lfFieldControlVOs || []; 
-        checkApprovalPageBtns.value = val.value.buttons?.approvalPage; 
-    }  
+        formItems.value = val.value.lfFieldControlVOs || [];
+        checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+    }
 });
-  
+
 /**监听 approverConfig 对象*/
-watch(approverConfig, (val) => { 
-    approvalPageBtns.value = val.buttons?.approvalPage; 
+watch(approverConfig, (val) => {
+    approvalPageBtns.value = val.buttons?.approvalPage;
     if (val.nodeProperty == 6) {//nodeProperty == 6 指 HRBP
         checkedHRBP.value = val.property.hrbpConfType
-    }  
-    if(approverConfig.value?.property?.afterSignUpWay == 1){
+    }
+    if (approverConfig.value?.property?.afterSignUpWay == 1) {
         approvalBtnSubOption.value = 9;//审批完之后，会回到本节点的审批人再次审批
-    }else {
+    } else {
         approvalBtnSubOption.value = approverConfig.value?.property?.signUpType;
     }
 }, { deep: true });
@@ -251,7 +251,7 @@ watch(checkedHRBP, (val) => {
     }
 });
 /**选择审批人类型更改事件 */
-const changeType = (val) => { 
+const changeType = (val) => {
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
     approverConfig.value.noHeaderAction = 2;
@@ -281,9 +281,9 @@ const sureRoleApprover = (data) => {
     approverRoleVisible.value = false;
 }
 /**处理权限按钮变更事件 */
-const handleCheckedButtonsChange = (val) => { 
-    if(proxy.isObjEmpty(approvalPageBtns)) return;
-    if(proxy.isArrayEmpty(approvalPageBtns.value)) return; 
+const handleCheckedButtonsChange = (val) => {
+    if (proxy.isObjEmpty(approvalPageBtns)) return;
+    if (proxy.isArrayEmpty(approvalPageBtns.value)) return;
     const index = approvalPageBtns.value.indexOf(val);
     index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
     const isAddStep = approvalPageBtns.value.indexOf(19);
@@ -291,16 +291,16 @@ const handleCheckedButtonsChange = (val) => {
         approverConfig.value.isSignUp = 1;
     } else {
         approverConfig.value.isSignUp = 0;
-    }  
+    }
 }
- 
+
 /**处理加批按钮 子操作 */
-const handleApprovalBtnSubOption = (val) => {  
+const handleApprovalBtnSubOption = (val) => {
     //signType 指的是当前节点审批方式 1:会签，2:或签，3:顺序会签
     //signUpType 指的是加批审批操作 1:顺序会签，2:会签，3:或签 
     //val加批类型 1:顺序会签，2:会签，3:或签 特别 9指: 回到加批人，则afterSignUpWay赋值为1，signUpType赋值为1
     approverConfig.value.property.afterSignUpWay = val && val == 9 ? 1 : 2;
-    approverConfig.value.property.signUpType = val && val == 9 ? 1 : val;  
+    approverConfig.value.property.signUpType = val && val == 9 ? 1 : val;
 }
 const handleTabClick = (tab, event) => {
     activeName.value = tab.paneName;
@@ -332,6 +332,7 @@ const closeDrawer = () => {
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/flow/dialog.scss";
+
 .el-drawer__header {
     margin-bottom: 5px !important;
 }
@@ -447,5 +448,5 @@ const closeDrawer = () => {
     margin-top: 6px;
     width: 95%;
     height: 45px;
-} 
+}
 </style>

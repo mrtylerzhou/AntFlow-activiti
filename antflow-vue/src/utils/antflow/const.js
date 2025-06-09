@@ -2,7 +2,7 @@
  * @Date: 2024-09-21 22:05:32
  * @LastEditors: LDH 574427343@qq.com
  * @LastEditTime: 2024-09-21 22:05:32
- * @FilePath: /src/utils/flow/const.js
+ * @FilePath: /src/utils/antflow/const.js
  */
 
 export let bgColors = [

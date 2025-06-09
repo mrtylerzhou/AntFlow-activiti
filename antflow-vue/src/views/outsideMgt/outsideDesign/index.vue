@@ -48,10 +48,10 @@ import BasicSetting from "@/components/Workflow/outsideSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
-import { FormatCommitUtils } from '@/utils/flow/formatcommit_data';
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
-import { NodeUtils } from '@/utils/flow/nodeUtils';
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
+import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
+import { NodeUtils } from '@/utils/antflow/nodeUtils';
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
 const { proxy } = getCurrentInstance()
 const { query } = useRoute();
 const basicSetting = ref(null);

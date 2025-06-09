@@ -55,8 +55,8 @@
 </template>
 <script setup>
 import { computed, reactive, getCurrentInstance, watch } from "vue";
-import { callbackUrlConf } from "@/api/outsideApi";
-import { getDynamicsList } from "@/api/mock";
+import { callbackUrlConf } from "@/api/workflow/outsideApi";
+import { getDynamicsList } from "@/api/workflow/mock";
 const { proxy } = getCurrentInstance();
 let props = defineProps({
   visible: {

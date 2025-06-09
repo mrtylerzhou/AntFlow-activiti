@@ -4,14 +4,14 @@
   "data": [
     {
       "path": "",
-      "redirect": "/showFlow",
+      "redirect": "/taskCenter",
       "component": "Layout",
       "children": [
         {
-          "name": "showFlow",
-          "path": "/showFlow",
+          "name": "taskCenter",
+          "path": "/taskCenter",
           "hidden": false,
-          "component": "showFlow/index",
+          "component": "taskCenter/index",
           "meta": {
             "title": "发起请求",
             "icon": "guide",

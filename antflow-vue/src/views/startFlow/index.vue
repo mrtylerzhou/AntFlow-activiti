@@ -27,8 +27,8 @@
 <script setup>
 import { ref, getCurrentInstance, onMounted } from 'vue'
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue'
-import { processOperation } from '@/api/workflow'
-import { getLowCodeFromCodeData } from '@/api/lowcodeApi'
+import { processOperation } from '@/api/workflow/index'
+import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi'
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 
 const { proxy } = getCurrentInstance()

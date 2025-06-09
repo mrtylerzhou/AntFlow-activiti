@@ -9,7 +9,7 @@
                 <el-form-item label="流程模板编号" prop="powerId">
                     <el-input v-model="taskMgmtVO.powerId" placeholder="请输入关键字" clearable style="width: 200px"
                         @keyup.enter="handleQuery" />
-                </el-form-item> 
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                     <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -45,7 +45,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getUserEntrustListPage } from "@/api/workflow";
+import { getUserEntrustListPage } from "@/api/workflow/index";
 const { proxy } = getCurrentInstance();
 const entrustList = ref([]);
 const loading = ref(false);

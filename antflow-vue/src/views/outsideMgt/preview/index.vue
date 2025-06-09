@@ -39,10 +39,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getApiWorkFlowData } from "@/api/outsideApi"
+import { getApiWorkFlowData } from "@/api/workflow/outsideApi"
 import BasicSetting from "@/components/Workflow/outsideSetting/index.vue"
 import Process from "@/components/Workflow/Process/index.vue"
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data'
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data'
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
 const { proxy } = getCurrentInstance()
 const route = useRoute()

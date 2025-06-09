@@ -20,10 +20,10 @@
                             <el-col :span="24" class="my-col" v-if="baseTabShow">
                                 <div v-if="componentLoaded" class="component">
                                     <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
-                                        :isPreview="false" :lfFormData="lfFormDataConfig"
-                                        :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
+                                        :isPreview="false" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
+                                        :lfFieldPerm="lfFieldControlVOs">
                                     </component>
-                                </div> 
+                                </div>
                             </el-col>
                         </el-row>
                     </div>
@@ -52,12 +52,12 @@
 import { ref, watch } from 'vue';
 import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
-import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue'; 
+import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import transferDialog from './components/transferDialog.vue';
 import approveDialog from './components/approveDialog.vue';
 import repulseDialog from './components/repulseDialog.vue';
-import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/flow/const';
-import { getViewBusinessProcess, processOperation } from '@/api/workflow';
+import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/antflow/const';
+import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { query } = useRoute();
 const { proxy } = getCurrentInstance();
@@ -71,14 +71,14 @@ const isLowCodeFlow = query?.isLowCodeFlow
 const taskId = query?.taskId;
 
 const activeName = ref('baseTab');
-let baseTabShow = ref(true); 
+let baseTabShow = ref(true);
 let openApproveDialog = ref(false);
 let repulseDialogVisible = ref(false);
 let approveDialogTitle = ref("审批");
 let dialogVisible = ref(false);
 let dialogTitle = ref('');
 let isMultiple = ref(false);//false 转办，true 加批
-let approvalButtons = ref([]);  
+let approvalButtons = ref([]);
 let loadedComponent = ref(null);
 let componentData = ref(null);
 let componentLoaded = ref(false);
@@ -207,7 +207,7 @@ const preview = async () => {
         isOutSideAccessProc: isOutSideAccess,
         isLowCodeFlow: isLowCodeFlow
     });
-    proxy.$modal.loading(); 
+    proxy.$modal.loading();
     await getViewBusinessProcess(queryParams.value).then(async (response) => {
         if (response.code == 200) {
             //显示审批按钮
@@ -225,7 +225,7 @@ const preview = async () => {
                 lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                 lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
                 loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;  
+                componentLoaded.value = true;
             } else {//自定义表单
                 componentData.value = response.data;
                 loadedComponent.value = await loadDIYComponent(formCode);
@@ -323,7 +323,7 @@ const handleTabClick = async (tab, event) => {
 }
 
 .approve {
-    width: 100%; 
+    width: 100%;
     position: relative;
     padding: 0px 10px 10px 10px;
     box-sizing: border-box;
@@ -332,7 +332,7 @@ const handleTabClick = async (tab, event) => {
 }
 
 .my-col {
-    border: 1px solid #ebeef5;  
+    border: 1px solid #ebeef5;
 }
 
 .my-form {

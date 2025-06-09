@@ -201,8 +201,8 @@
 import { ref, watch, computed } from 'vue'
 import ConditionDialog from "../dialog/selectConditionDialog.vue";
 import { useStore } from '@/store/modules/workflow'
-import { optTypes, opt1s } from '@/utils/flow/const'
-import $func from '@/utils/flow/index'
+import { optTypes, opt1s } from '@/utils/antflow/const'
+import $func from '@/utils/antflow/index'
 
 const { proxy } = getCurrentInstance()
 let store = useStore()

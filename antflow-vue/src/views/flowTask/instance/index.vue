@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { getAllProcesslistPage } from "@/api/workflow";
+import { getAllProcesslistPage } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 const { proxy } = getCurrentInstance();

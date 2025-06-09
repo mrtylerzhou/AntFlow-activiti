@@ -40,14 +40,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow';
-import { FormatCommitUtils } from '@/utils/flow/formatcommit_data';
-import { FormatDisplayUtils } from '@/utils/flow/formatdisplay_data';
-import { NodeUtils } from '@/utils/flow/nodeUtils';
+import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
+import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
+import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
-//import { getWorkFlowData } from '@/api/mock.js';
+//import { getWorkFlowData } from '@/api/workflow/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
 const basicSetting = ref(null);

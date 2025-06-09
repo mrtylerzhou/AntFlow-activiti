@@ -26,8 +26,8 @@
 </template>
 <script setup>
 import LineWarp from './lineWarp.vue';
-import { getFlowPreview } from '@/api/workflow';
-import { FormatPreviewUtils } from '@/utils/flow/formatFlowPreview';
+import { getFlowPreview } from '@/api/workflow/index';
+import { FormatPreviewUtils } from '@/utils/antflow/formatFlowPreview';
 import { useStore } from '@/store/modules/workflow';
 import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/zoom.js';
 const { proxy } = getCurrentInstance();
