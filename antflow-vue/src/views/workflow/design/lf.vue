@@ -49,7 +49,7 @@ import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
-import DynamicForm from "@/components/DynamicForm/index.vue";
+import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 const { proxy } = getCurrentInstance()
 const route = useRoute();

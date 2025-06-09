@@ -30,7 +30,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                        }}
+                                    }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -44,7 +44,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                        }}
+                                    }}
                                         <img src="@/assets/images/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
@@ -177,7 +177,7 @@ import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/antflow/cons
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import roleDialog from '../dialog/roleDialog.vue';
-import FormPermConf from "../config/FormPermConf.vue";
+import FormPermConf from "../permConfig/FormPermConf.vue";
 const { proxy } = getCurrentInstance();
 let store = useStore()
 let props = defineProps({

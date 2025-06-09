@@ -46,7 +46,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
 import BasicSetting from "@/components/Workflow/outsideSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
-import DynamicForm from "@/components/DynamicForm/index.vue";
+import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';

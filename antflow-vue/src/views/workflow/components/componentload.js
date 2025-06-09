@@ -1,7 +1,7 @@
 import { markRaw } from "vue";
 import { bizFormMaps } from "@/utils/antflow/const";
 const modules = import.meta.glob("./forms/*.vue"); // 动态引入组件
-import FormRender from "@/components/DynamicForm/formRender.vue"; // 低代码表单渲染组件
+import FormRender from "@/components/Workflow/DynamicForm/formRender.vue"; // 低代码表单渲染组件
 /**
  * 动态加载自定义（DIY）表单组件
  */

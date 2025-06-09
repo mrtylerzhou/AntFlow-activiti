@@ -233,9 +233,9 @@ All.prototype = {
         str += null;
       }
     }
-    return str && str.length > 0
-      ? str.substring(0, str.length - 2)
-      : "请设置条件";
+    str = this.removeLastIndexOfAnd(str);
+    str = this.removeLastIndexOfOR(str);
+    return str && str.length > 0 ? str : "请设置条件";
   },
   copyerStr(nodeConfig) {
     if (nodeConfig.nodeApproveList.length != 0) {
@@ -251,6 +251,22 @@ All.prototype = {
     return a.some((item) => {
       return item == key;
     });
+  },
+
+  removeLastIndexOfAnd(str) {
+    let lastIndexOfAnd = str.lastIndexOf("且");
+    if (lastIndexOfAnd !== -1) {
+      str = str.slice(0, lastIndexOfAnd) + str.slice(lastIndexOfAnd + 1);
+    }
+    return str;
+  },
+
+  removeLastIndexOfOR(str) {
+    let lastIndexOfOR = str.lastIndexOf("或");
+    if (lastIndexOfOR !== -1) {
+      str = str.slice(0, lastIndexOfOR) + str.slice(lastIndexOfOR + 1);
+    }
+    return str;
   },
 };
 
