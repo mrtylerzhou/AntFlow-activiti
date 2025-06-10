@@ -245,8 +245,9 @@ const saveCondition = () => {
             convertConditionNodeValue(item.conditionList, false)
     });
     for (var i = 0; i < conditionsConfig.value.conditionNodes.length; i++) {
-        conditionsConfig.value.conditionNodes[i].error = $func.conditionStr(conditionsConfig.value, i) == "请设置条件" && i != conditionsConfig.value.conditionNodes.length - 1
-        conditionsConfig.value.conditionNodes[i].nodeDisplayName = $func.conditionStr(conditionsConfig.value, i);
+        const conditionNodeTitleStr = $func.conditionStr(conditionsConfig.value, i);
+        conditionsConfig.value.conditionNodes[i].error = conditionNodeTitleStr.indexOf("请设置条件") >= 0 ? true : false;
+        conditionsConfig.value.conditionNodes[i].nodeDisplayName = conditionNodeTitleStr;
         const defaultCond = i == conditionsConfig.value.conditionNodes.length - 1 &&
             conditionsConfig.value.conditionNodes[i].conditionList.flat().filter(
                 (item) => item.columnId && item.columnId !== 0
