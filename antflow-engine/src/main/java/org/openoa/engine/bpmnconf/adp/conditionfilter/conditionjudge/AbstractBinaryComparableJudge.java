@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  * 为支持1<a<2这种类型的比较设计的,如果是普通的单值比较,请使用AbstractComparableJudge,第二个参数值为null即可
@@ -31,7 +32,7 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
         Integer theOperatorType = conditionsConf.getNumberOperator();
         try {
             fieldValueInDb =  FieldUtils.readField(conditionsConf, fieldNameInDb, true).toString();
-            fieldValueActual = FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true).toString();
+            fieldValueActual = Optional.ofNullable(FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true)).orElse(0).toString();
             fieldValueActualbig = new BigDecimal(fieldValueActual);
 
             if(JudgeOperatorEnum.binaryOperator().contains(theOperatorType)){
