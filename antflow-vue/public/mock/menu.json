@@ -40,7 +40,7 @@
           "name": "MyTask",
           "path": "mytask",
           "hidden": false,
-          "component": "flowTask/mytask/index",
+          "component": "workflow/flowTask/mytask/index",
           "meta": {
             "title": "我的发起",
             "icon": "",
@@ -52,7 +52,7 @@
           "name": "PenddingTask",
           "path": "pendding",
           "hidden": false,
-          "component": "flowTask/pendding/index",
+          "component": "workflow/flowTask/pendding/index",
           "meta": {
             "title": "待办任务",
             "icon": "",
@@ -64,7 +64,7 @@
           "name": "ApprovedTask",
           "path": "approved",
           "hidden": false,
-          "component": "flowTask/approved/index",
+          "component": "workflow/flowTask/approved/index",
           "meta": {
             "title": "已办任务",
             "icon": "",
@@ -76,7 +76,7 @@
           "name": "CopyToMeTask",
           "path": "CopyToMe",
           "hidden": false,
-          "component": "flowTask/copyToMe/index",
+          "component": "workflow/flowTask/copyToMe/index",
           "meta": {
             "title": "抄送到我",
             "icon": "",
@@ -88,7 +88,7 @@
           "name": "approve",
           "path": "pendding/approve",
           "hidden": true,
-          "component": "flowTask/pendding/approve",
+          "component": "workflow/flowTask/pendding/approve",
           "meta": {
             "title": "流程审批",
             "icon": "",
@@ -116,7 +116,7 @@
           "name": "flowInstance",
           "path": "instance",
           "hidden": false,
-          "component": "flowTask/instance/index",
+          "component": "workflow/flowTask/instance/index",
           "meta": {
             "title": "流程实例",
             "icon": "",
@@ -240,7 +240,7 @@
           "name": "flowentrustsetting",
           "path": "setting",
           "hidden": false,
-          "component": "flowEntrust/setting/index",
+          "component": "workflow/flowEntrust/setting/index",
           "meta": {
             "title": "委托设置",
             "icon": "",
@@ -252,7 +252,7 @@
           "name": "flowentrustlist",
           "path": "list",
           "hidden": false,
-          "component": "flowEntrust/list/index",
+          "component": "workflow/flowEntrust/list/index",
           "meta": {
             "title": "委托列表",
             "icon": "",
@@ -292,7 +292,7 @@
           "name": "outsideJoin",
           "path": "outsideJoin",
           "hidden": false,
-          "component": "outsideMgt/outsideJoin/index",
+          "component": "workflow/outsideMgt/outsideJoin/index",
           "meta": {
             "title": "项目管理",
             "icon": "",
@@ -304,7 +304,7 @@
           "name": "outsideApp",
           "path": "outsideApp",
           "hidden": false,
-          "component": "outsideMgt/outsideApp/index",
+          "component": "workflow/outsideMgt/outsideApp/index",
           "meta": {
             "title": "应用管理",
             "icon": "",
@@ -316,7 +316,7 @@
           "name": "outsideTemp",
           "path": "outsideTemp",
           "hidden": false,
-          "component": "outsideMgt/outsideTemp/index",
+          "component": "workflow/outsideMgt/outsideTemp/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -328,7 +328,7 @@
           "name": "outsideDesign",
           "path": "outsideDesign",
           "hidden": true,
-          "component": "outsideMgt/outsideDesign/index",
+          "component": "workflow/outsideMgt/outsideDesign/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -340,7 +340,7 @@
           "name": "outsideflowPreview",
           "path": "preview",
           "hidden": true,
-          "component": "outsideMgt/preview/index",
+          "component": "workflow/outsideMgt/preview/index",
           "meta": {
             "title": "三方流程模板预览",
             "icon": "",
@@ -352,7 +352,7 @@
           "name": "app-setting",
           "path": "app-setting",
           "hidden": true,
-          "component": "outsideMgt/outsideApp/Setting/index",
+          "component": "workflow/outsideMgt/outsideApp/Setting/index",
           "meta": {
             "title": "应用设置",
             "icon": "",
