@@ -1,6 +1,7 @@
 package org.openoa.engine.lowflow.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -9,6 +10,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
@@ -146,7 +148,23 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                       }
                         break;
                     case NUMBER:
-                       actualValue=Integer.parseInt(field.getFieldValue());;
+                        if(LFControlTypeEnum.SELECT.getName().equals(currentFieldProp.getFieldName())){
+                           try {
+                               Object parse = JSON.parse(field.getFieldValue());
+                               if (parse==null){
+                                   actualValue="";//select默认值为空字符串
+                               }else if(parse instanceof JSONArray){
+                                   actualValue=JSON.parseArray(field.getFieldValue());
+                               }else{
+                                   actualValue=parse;
+                               }
+                           }catch (Exception e){//如果本身是字符串类型,不能反序列化,直接取原来值
+                               log.warn("field value can not be parsed to number,fieldName:{},formCode:{},confId:{}",fieldName,formCode,confId);
+                               actualValue=field.getFieldValue();
+                           }
+                        }else{//以上对select做了特殊处理,如果不是select,直接取值
+                            actualValue=field.getFieldValueNumber();
+                        }
                         break;
                     case DATE_TIME:
                        actualValue=DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
