@@ -15,7 +15,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-@TableName("third_party_account_apply")
+@TableName("t_biz_account_apply")
 public class ThirdPartyAccountApply {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
