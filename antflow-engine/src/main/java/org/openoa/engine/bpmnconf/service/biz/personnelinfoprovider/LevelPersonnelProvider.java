@@ -16,7 +16,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class LevelPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
     @Override
@@ -31,13 +31,7 @@ public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
         Integer assignLevelGrade = propertysVo.getAssignLevelGrade();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryLeaderByEmployeeIdAndLevel(startUserId, assignLevelGrade);
 
-        ArrayList<String> userIds = new ArrayList<>();
-        String failFastInfo = "";
-        if(baseIdTranStruVo!=null){
-            userIds.add(baseIdTranStruVo.getId());
-        }else {
-            failFastInfo = String.format("未能根据发起人Id:%s查询到层级为%s的领导", startUserId, assignLevelGrade);
-        }
-        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
+
+        return  super.provideAssigneeList(bpmnNodeVo,Lists.newArrayList(baseIdTranStruVo));
     }
 }

@@ -23,20 +23,11 @@ import java.util.List;
  * @Date 2024/7/18 7:02
  * @Version 1.0
  */
-public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelProviderService, MissAssigneeProcessing {
+public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelProviderService {
     @Autowired
     private AssigneeVoBuildUtils assigneeVoBuildUtils;
-    @Autowired
-    private BpmnProcessAdminProvider bpmnProcessAdminProvider;
-   protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo bpmnNodeVo, Collection<String> assignees,String failFastInfo) {
-       if(CollectionUtils.isEmpty(assignees)){
-           if (bpmnNodeVo.getMissingAssigneeDealWay()!=null) {
-               assignees.add(processMissAssignee(bpmnNodeVo.getMissingAssigneeDealWay()));
-           }else {
-               throw new JiMuBizException(failFastInfo);
-           }
 
-       }
+   protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo bpmnNodeVo, Collection<BaseIdTranStruVo> assignees) {
        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
            if(CollectionUtils.isEmpty(emplList)){
@@ -44,19 +35,8 @@ public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelPro
            }
            return assigneeVoBuildUtils.buildVOs(emplList,bpmnNodeVo.getNodeName(),false);
        }
-       return assigneeVoBuildUtils.buildVos(assignees,bpmnNodeVo.getNodeName(),false);
+       return assigneeVoBuildUtils.buildVOs(assignees,bpmnNodeVo.getNodeName(),false);
     }
-    @Override
-    public String processMissAssignee(Integer processingWay){
-        MissingAssigneeProcessStragtegyEnum processingStrategy = MissingAssigneeProcessStragtegyEnum.getByCode(processingWay);
-        switch (processingStrategy){
-            case SKIP:
-               return AFSpecialAssigneeEnum.TO_BE_REMOVED.getId();
-            case TRANSFER_TO_ADMIN:
-                BaseIdTranStruVo processAdminAndOutsideProcess = bpmnProcessAdminProvider.provideProcessAdminInfo();
-                return processAdminAndOutsideProcess.getId();
-            default:
-                throw new JiMuBizException("not support miss assignee processing strategy");
-        }
-    }
+
+
 }

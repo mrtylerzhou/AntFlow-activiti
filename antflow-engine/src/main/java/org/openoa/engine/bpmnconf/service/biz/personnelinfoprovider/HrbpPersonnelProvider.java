@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.collect.Lists;
-import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class HrbpPersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class HrbpPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
     @Override
@@ -24,13 +23,6 @@ public class HrbpPersonnelProvider extends AbstractNodeAssigneeVoProvider{
         String startUserId = startConditionsVo.getStartUserId();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeHrpbByEmployeeId(startUserId);
 
-        ArrayList<String> userIds = new ArrayList<>();
-        String failFastInfo = "";
-        if(baseIdTranStruVo!=null){
-            userIds.add(baseIdTranStruVo.getId());
-        }else {
-            failFastInfo = String.format("未能根据发起人Id:%s查询到HRBP", startUserId);
-        }
-        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
+        return  super.provideAssigneeList(bpmnNodeVo, Lists.newArrayList(baseIdTranStruVo));
     }
 }
