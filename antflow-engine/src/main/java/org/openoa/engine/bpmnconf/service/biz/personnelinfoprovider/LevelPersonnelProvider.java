@@ -30,10 +30,14 @@ public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
         Integer assignLevelType = propertysVo.getAssignLevelType();
         Integer assignLevelGrade = propertysVo.getAssignLevelGrade();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryLeaderByEmployeeIdAndLevel(startUserId, assignLevelGrade);
-        if(baseIdTranStruVo==null){
-            throw new JiMuBizException("未能根据发起人和指定层级找到审批人信息");
+
+        ArrayList<String> userIds = new ArrayList<>();
+        String failFastInfo = "";
+        if(baseIdTranStruVo!=null){
+            userIds.add(baseIdTranStruVo.getId());
+        }else {
+            failFastInfo = String.format("未能根据发起人Id:%s查询到层级为%s的领导", startUserId, assignLevelGrade);
         }
-        ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId().toString());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
     }
 }

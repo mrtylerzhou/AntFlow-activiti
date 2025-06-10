@@ -23,11 +23,14 @@ public class HrbpPersonnelProvider extends AbstractNodeAssigneeVoProvider{
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeHrpbByEmployeeId(startUserId);
-        if(baseIdTranStruVo==null){
-            throw new JiMuBizException("发起人HRBP不存在");
-        }
 
-        ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId().toString());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+        ArrayList<String> userIds = new ArrayList<>();
+        String failFastInfo = "";
+        if(baseIdTranStruVo!=null){
+            userIds.add(baseIdTranStruVo.getId());
+        }else {
+            failFastInfo = String.format("未能根据发起人Id:%s查询到HRBP", startUserId);
+        }
+        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
     }
 }
