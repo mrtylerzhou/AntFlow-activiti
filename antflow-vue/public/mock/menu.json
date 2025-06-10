@@ -11,7 +11,7 @@
           "name": "taskCenter",
           "path": "/taskCenter",
           "hidden": false,
-          "component": "taskCenter/index",
+          "component": "workflow/taskCenter/index",
           "meta": {
             "title": "发起请求",
             "icon": "guide",
@@ -125,10 +125,10 @@
           }
         },
         {
-          "name": "flowtemp",
-          "path": "flowtemp",
+          "name": "flowCategory",
+          "path": "flowCategory",
           "hidden": false,
-          "component": "workflow/temp/index",
+          "component": "workflow/flowCategory/index",
           "meta": {
             "title": "流程类型",
             "icon": "",
@@ -137,10 +137,10 @@
           }
         },
         {
-          "name": "flowConfig",
-          "path": "config",
+          "name": "flowList",
+          "path": "flowList",
           "hidden": false,
-          "component": "workflow/config/index",
+          "component": "workflow/flowList/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -152,7 +152,7 @@
           "name": "lf-FlowDesign",
           "path": "lf-design",
           "hidden": true,
-          "component": "workflow/design/lf",
+          "component": "workflow/flowDesign/lf",
           "meta": {
             "title": "低代码表单流程设计",
             "icon": "",
@@ -164,7 +164,7 @@
           "name": "diy-FlowDesign",
           "path": "diy-design",
           "hidden": true,
-          "component": "workflow/design/diy",
+          "component": "workflow/flowDesign/diy",
           "meta": {
             "title": "自定义表单流程设计",
             "icon": "",
@@ -174,9 +174,9 @@
         },
         {
           "name": "flowPreview",
-          "path": "preview",
+          "path": "flowPreview",
           "hidden": true,
-          "component": "workflow/preview/index",
+          "component": "workflow/flowPreview/index",
           "meta": {
             "title": "流程模板预览",
             "icon": "",
@@ -188,7 +188,7 @@
           "name": "startFlow",
           "path": "/startFlow/index",
           "hidden": true,
-          "component": "startFlow/index",
+          "component": "workflow/startFlow/index",
           "meta": {
             "title": "发起申请流程",
             "icon": "",
@@ -200,7 +200,7 @@
           "name": "startOutside",
           "path": "/startOutside/index",
           "hidden": true,
-          "component": "startOutside/index",
+          "component": "workflow/startOutside/index",
           "meta": {
             "title": "业务方表单发起测试",
             "icon": "",
@@ -212,7 +212,7 @@
           "name": "version",
           "path": "flow-version",
           "hidden": true,
-          "component": "workflow/config/version",
+          "component": "workflow/flowList/version",
           "meta": {
             "title": "版本管理",
             "icon": "",

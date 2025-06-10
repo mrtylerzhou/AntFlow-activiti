@@ -142,12 +142,12 @@ function handlePreview(row) {
    const params = {
       id: row.id
    };
-   const obj = { path: "/workflow/preview", query: params };
+   const obj = { path: "/workflow/flowPreview", query: params };
    proxy.$tab.openPage(obj);
 }
 /**  返回按钮操作 */
 const backPage = () => {
-   const obj = { path: "/workflow/config" };
+   const obj = { path: "/workflow/flowCategory" };
    proxy.$tab.openPage(obj);
 }
 </script>
