@@ -4,7 +4,7 @@
         <el-dialog :title="title" v-model="openVisible" width="550px" append-to-body>
             <el-form :model="approveForm" :rules="rules" ref="approveFormRef" label-width="130px" label-position="top"
                 style="margin: 0 20px;">
-                <el-row>  
+                <el-row>
                     <el-col :span="24">
                         <el-form-item label="备注/说明" prop="remark">
                             <el-input v-model="approveForm.remark" type="textarea" placeholder="请输入审批备注"
@@ -13,29 +13,31 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <div class="mb-4" v-if="title === '同意'"> 
-                    <el-button type="primary" plain round v-for="btnTxt in quickAnswerOK" @click="approveForm.remark = btnTxt">
-                    {{ btnTxt }}
-                    </el-button>  
+                <div class="mb-4" v-if="title === '同意'">
+                    <el-button type="primary" plain round v-for="btnTxt in quickAnswerOK"
+                        @click="approveForm.remark = btnTxt">
+                        {{ btnTxt }}
+                    </el-button>
                 </div>
-                <div class="mb-4" v-else="quickAnswerOK.length > 0"> 
-                    <el-button type="danger" plain round v-for="btnTxt in quickAnswerNO" @click="approveForm.remark = btnTxt">
-                    {{ btnTxt }}
-                    </el-button>  
+                <div class="mb-4" v-if="title === '不同意'">
+                    <el-button type="danger" plain round v-for="btnTxt in quickAnswerNO"
+                        @click="approveForm.remark = btnTxt">
+                        {{ btnTxt }}
+                    </el-button>
                 </div>
             </el-form>
-        
+
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="openVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="clickSubmit(approveFormRef)">确 定</el-button>  
+                    <el-button type="primary" @click="clickSubmit(approveFormRef)">确 定</el-button>
                 </div>
             </template>
         </el-dialog>
     </div>
 </template>
 <script setup>
-import { ref } from 'vue' 
+import { ref } from 'vue'
 let props = defineProps({
     title: {
         type: String,
@@ -45,18 +47,18 @@ let props = defineProps({
         type: Boolean,
         default: false,
     }
-});   
-const emits = defineEmits(['update:visible','clickConfirm']);  
+});
+const emits = defineEmits(['update:visible', 'clickConfirm']);
 let openVisible = computed({
-  get() { 
-    return props.visible
-  },
-  set(val) { 
-    emits('update:visible', val)
-  }
-}) 
+    get() {
+        return props.visible
+    },
+    set(val) {
+        emits('update:visible', val)
+    }
+})
 const approveFormRef = ref(null);
-const approveForm = reactive({ 
+const approveForm = reactive({
     remark: ''
 });
 
@@ -64,15 +66,15 @@ const quickAnswerOK = ["同意", "好的", "OK", "通过", "已核实"];
 
 const quickAnswerNO = ["不同意", "NO", "材料不足", "无法核实", "理由不充分", "已拒绝"];
 
-let rules = { 
+let rules = {
     remark: [{
         required: true,
         message: '请输入备注',
-        trigger: ['change','blur']
+        trigger: ['change', 'blur']
     }]
 };
 
-const clickSubmit = (approveFormRef) => { 
+const clickSubmit = (approveFormRef) => {
     if (!approveFormRef) return;
     approveFormRef.validate(async (valid) => {
         if (valid) {

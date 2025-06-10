@@ -25,6 +25,7 @@ import { condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTy
 const route = useRoute()
 const routePath = route.path || ''
 const store = useStore()
+let tableId = computed(() => store.tableId)
 let lowCodeFormFields = computed(() => store.lowCodeFormField)
 let configData = ref(null);
 let conditionsConfig1 = computed(() => store.conditionsConfig1)

@@ -269,7 +269,7 @@ function submitForm() {
                 }
                 proxy.$modal.msgSuccess("新增成功");
                 openForm.value = false;
-                getDIYList();
+                getLFPageList();
             });
         }
     });
