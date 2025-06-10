@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
@@ -67,7 +68,7 @@ public class CustomizePersonnelProvider implements BpmnPersonnelProviderService 
         }else{
             //set zero
             BpmnNodeParamsAssigneeVo vo = new BpmnNodeParamsAssigneeVo();
-            vo.setAssignee("0");
+            vo.setAssignee(AFSpecialAssigneeEnum.TO_BE_REMOVED.getId());
             emList.add(vo);
         }
         return emList;

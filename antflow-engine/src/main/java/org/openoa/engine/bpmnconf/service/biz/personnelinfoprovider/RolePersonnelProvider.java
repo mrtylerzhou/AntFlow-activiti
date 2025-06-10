@@ -88,11 +88,11 @@ public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
         }
         List<String> roleIds = propertysVo.getRoleIds();
         Map<String, String> roleEmployeeInfo = roleInfoProvider.provideRoleEmployeeInfo(roleIds);
-        if(CollectionUtils.isEmpty(roleEmployeeInfo)){
-            log.warn("can not find specified roles info via roleIds:{}",roleIds);
-            throw new JiMuBizException("can not find specified roles info via roleIds");
-        }
         ArrayList<String> userIds = new ArrayList<>(roleEmployeeInfo.keySet());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+        String failFastInfo = "";
+        if(CollectionUtils.isEmpty(roleEmployeeInfo)){
+            failFastInfo = String.format("未能根据角色Id:%s查询到人员信息", roleIds);
+        }
+        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
     }
 }

@@ -25,7 +25,14 @@ public class DirectLeaderPersonnelProvider extends AbstractNodeAssigneeVoProvide
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeDirectLeaderById(startUserId);
-        ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+        ArrayList<String> userIds = new ArrayList<>();
+        String failFastInfo = "";
+        if(baseIdTranStruVo!=null){
+            userIds.add(baseIdTranStruVo.getId());
+        }else {
+            failFastInfo = String.format("未能根据发起人Id:%s查询到直接领导", startUserId);
+        }
+
+        return  super.provideAssigneeList(bpmnNodeVo,userIds,failFastInfo);
     }
 }
