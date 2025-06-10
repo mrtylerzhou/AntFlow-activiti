@@ -51,7 +51,7 @@ let emits = defineEmits(['del'])
 </script>
 
 <style scoped lang="scss">  
-@import "@/assets/styles/flow/dialog.scss";
+@import "@/assets/styles/antflow/dialog.scss";
 .select-result {
   width: 320px;
   height: 100%;

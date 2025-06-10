@@ -81,7 +81,7 @@ function zoomReset() {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/styles/flow/workflow.scss";
+@import "@/assets/styles/antflow/workflow.scss";
 
 .end-node-circle {
     width: 20px;

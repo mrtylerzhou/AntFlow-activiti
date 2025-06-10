@@ -211,5 +211,5 @@ defineExpose({
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
+@import "@/assets/styles/antflow/workflow.scss";
 </style>

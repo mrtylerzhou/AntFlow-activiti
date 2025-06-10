@@ -38,7 +38,7 @@ const props = defineProps({
 }) 
 </script>
 <style scoped lang="scss">  
-@import "@/assets/styles/flow/dialog.scss"; 
+@import "@/assets/styles/antflow/dialog.scss"; 
 .select-box {
   height: 440px;
   overflow-y: auto; 

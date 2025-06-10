@@ -331,7 +331,7 @@ const closeDrawer = () => {
 } 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/dialog.scss";
+@import "@/assets/styles/antflow/dialog.scss";
 
 .el-drawer__header {
     margin-bottom: 5px !important;

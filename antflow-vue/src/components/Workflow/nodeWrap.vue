@@ -454,7 +454,7 @@ const arrTransfer = (index, type = 1) => {
 };
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
+@import "@/assets/styles/antflow/workflow.scss";
 
 .error_tip {
     position: absolute;

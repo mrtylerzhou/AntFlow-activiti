@@ -365,7 +365,7 @@ const convertConditionNodeValue = (data, isPreview = true) => {
 } 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/dialog.scss";
+@import "@/assets/styles/antflow/dialog.scss";
 
 .set_condition {
     .priority_level {
