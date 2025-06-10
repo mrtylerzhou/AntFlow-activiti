@@ -190,8 +190,11 @@ let showText = computed(() => {
 const resetConditionNodesErr = () => {
     for (var i = 0; i < props.nodeConfig.conditionNodes.length; i++) {
         let conditionTitle = $func.conditionStr(props.nodeConfig, i);
-        props.nodeConfig.conditionNodes[i].error = conditionTitle == "请设置条件" && i != props.nodeConfig.conditionNodes.length - 1;
-        props.nodeConfig.conditionNodes[i].isDefault = 0;
+        props.nodeConfig.conditionNodes[i].error = conditionTitle.indexOf("请设置条件");
+        const defaultCond = i == props.nodeConfig.conditionNodes.length - 1 && props.nodeConfig.conditionNodes[i].conditionList.flat().filter(
+            (item) => item.columnId && item.columnId !== 0
+        ).length == 0;
+        props.nodeConfig.conditionNodes[i].isDefault = defaultCond ? 1 : 0;
         props.nodeConfig.conditionNodes[i].nodeDisplayName = proxy.isObjEmpty(conditionTitle) ? props.nodeConfig.conditionNodes[i].nodeDisplayName : conditionTitle;
     }
     let maxLen = props.nodeConfig.conditionNodes.length - 1;
