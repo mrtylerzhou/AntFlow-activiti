@@ -129,7 +129,7 @@ const reErr = ({ childNode }) => {
         else if (nodeType == 2) {
             reErr(childNode);
             for (var i = 0; i < conditionNodes.length; i++) {
-                if (conditionNodes[i].error) {
+                if (conditionNodes[i].error == true) {
                     tipList.value.push({ name: conditionNodes[i].nodeName, nodeType: "条件" });
                 }
                 reErr(conditionNodes[i]);
