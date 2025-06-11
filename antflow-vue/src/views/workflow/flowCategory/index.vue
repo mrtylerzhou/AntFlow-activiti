@@ -326,7 +326,6 @@ async function handleLFDesign(row) {
  * @param row 
  */
 const handleVersion = async (row) => {
-    console.log(row);
     const params = {
         formCode: row.key
     };
