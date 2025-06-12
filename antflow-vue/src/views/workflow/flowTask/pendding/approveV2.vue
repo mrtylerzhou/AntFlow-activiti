@@ -14,28 +14,37 @@
 
                 <el-main>
                     <el-scrollbar>
-                        <div class="list-flex-cards" @click="toggleActive()">
-                            <el-card class="item-card" v-for="item in 40">
+                        <div v-loading="loading" class="list-flex-cards" @click="toggleActive()">
+                            <el-card class="item-card" v-for="item in dataList" :key="item.id">
                                 <div class="card-content pointer">
                                     <div>
-                                        <p class="card-title">请假申请</p>
-                                        <p class="card-detail">请假原因：
-                                            <span class="card-reason">感冒了需要请假感冒了需要请冒了需要请假感冒了需要请假</span>
+                                        <p class="card-title">
+                                            {{ item.processTypeName }}
+                                        </p>
+                                        <p class="card-detail">
+                                            <span>描述：</span>
+                                            <span class="card-reason">{{ item.description }}</span>
                                         </p>
                                         <div class="card-time">
-                                            <span>开始时间：</span>
-                                            <span class="card-time-value">2025-06-12 09:00</span>
+                                            <span>审批状态：</span>
+                                            <span class="card-time-value">{{ item.taskState }}</span>
                                         </div>
                                         <div class="card-time">
-                                            <span>结束时间：</span>
-                                            <span class="card-time-value">2025-06-12 18:00</span>
+                                            <span>发起时间：</span>
+                                            <span class="card-time-value">
+                                                {{ parseTime(item.createTime, '{y}-{m}-{d} {h}: {i}') }}</span>
                                         </div>
                                     </div>
-                                    <p>
-                                        <el-avatar :size="20"
-                                            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
-                                        </el-avatar>
-                                        <span class="card-username">张三</span>
+                                    <p class="card-user">
+                                        <span>
+                                            <el-avatar :size="20"
+                                                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+                                            </el-avatar>
+                                        </span>
+                                        <span class="card-username">{{ item.actualName }}</span>
+                                        <span>
+                                            <el-tag type="success">{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}</el-tag>
+                                        </span>
                                     </p>
                                 </div>
                             </el-card>
@@ -72,16 +81,47 @@
 
 <script setup>
 import { ref } from 'vue'
-const item = {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-}
-const tableData = ref(Array.from({ length: 200 }).fill(item))
+import { getPenddinglistPage } from "@/api/workflow/index";
+const dataList = ref([]);
+const loading = ref(true);
+const showSearch = ref(true);
+const total = ref(0);
 
-const getList = () => {
-    console.log('getList')
+const data = reactive({
+    form: {},
+    pageDto: {
+        page: 1,
+        pageSize: 10
+    },
+    taskMgmtVO: {
+        processNumber: undefined,
+        processTypeName: undefined
+    },
+    rules: {
+        bpmnCode: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
+        bpmnName: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
+    }
+});
+const { pageDto, taskMgmtVO } = toRefs(data);
+
+onMounted(async () => {
+    await getList();
+});
+
+/** 查询岗位列表 */
+async function getList() {
+    loading.value = true;
+    await getPenddinglistPage(pageDto.value, taskMgmtVO.value).then(response => {
+        dataList.value = response.data;
+        total.value = response.pagination.totalCount;
+        loading.value = false;
+    }).catch((r) => {
+        loading.value = false;
+        console.log(r);
+        proxy.$modal.msgError("加载列表失败:" + r.message);
+    });
 }
+
 const toggleActive = () => {
     console.log('Card clicked');
 }
@@ -194,24 +234,24 @@ const toggleActive = () => {
 }
 
 .card-detail {
-    font-size: 12px;
+    display: flex;
+    align-items: center;
     color: #666;
-    margin-bottom: 2px;
+    font-size: 12px;
 }
 
-.card-reason {
+.card-detail .card-reason {
     color: #fa541c;
     font-weight: 500;
-    margin-left: 2px;
-
-    width: 200px;
-    /* 设置你需要的宽度 */
+    max-width: 200px;
+    /* 根据需要调整宽度 */
     white-space: nowrap;
     /* 不换行 */
     overflow: hidden;
     /* 超出隐藏 */
     text-overflow: ellipsis;
     /* 超出显示省略号 */
+    margin-left: 4px;
     display: block;
     /* 或 inline-block，根据需要 */
 }
@@ -229,6 +269,11 @@ const toggleActive = () => {
     color: #409eff;
     font-weight: 500;
     margin-left: 2px;
+}
+
+.card-user {
+    display: flex;
+    align-items: center;
 }
 
 .card-username {
