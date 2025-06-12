@@ -95,6 +95,18 @@
             "noCache": true,
             "link": null
           }
+        },
+        {
+          "name": "approveV2",
+          "path": "/approveV2",
+          "hidden": true,
+          "component": "workflow/flowTask/pendding/approveV2",
+          "meta": {
+            "title": "流程审批V2",
+            "icon": "",
+            "noCache": true,
+            "link": null
+          }
         }
       ]
     },
