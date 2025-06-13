@@ -11,14 +11,22 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
+import { ref, reactive, getCurrentInstance, onBeforeMount, onMounted } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import { useStore } from '@/store/modules/workflow';
+let store = useStore();
+let formRenderConfig = computed(() => store.formRenderConfig)
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
-const isEmptyArray = data => Array.isArray(data) ? data.length === 0 : true;
 const { proxy } = getCurrentInstance();
-const route = useRoute();
-const formCode = route.query?.formCode ?? '';
-const hasChooseApprove = route.query?.hasChooseApprove ?? 'false';
+const formCode = formRenderConfig.value?.formCode ?? '';
+const hasChooseApprove = formRenderConfig.value?.hasChooseApprove ?? 'false';
+
+const aaa = () => {
+  console.log("formRenderConfig.value====", JSON.stringify(formRenderConfig.value));
+}
+onMounted(() => {
+  aaa();
+});
 let props = defineProps({
   lfFormData: {//业务表单字段
     type: String,

@@ -1,7 +1,7 @@
- export const useStore = defineStore('store', {
+export const useStore = defineStore("store", {
   state: () => ({
-    userId: '',
-    tableId: '',
+    userId: "",
+    tableId: "",
     isTried: false,
     promoterDrawer: false,
     flowPermission1: {},
@@ -17,52 +17,56 @@
     instanceViewConfig1: {},
     lowCodeFormField: {},
     approveChooseFlowNode: {},
+    formRenderConfig: {},
   }),
   actions: {
     setUserId(payload) {
-      this.userId = payload
+      this.userId = payload;
     },
     setTableId(payload) {
-      this.tableId = payload
+      this.tableId = payload;
     },
     setIsTried(payload) {
-      this.isTried = payload
+      this.isTried = payload;
     },
     setPromoter(payload) {
-      this.promoterDrawer = payload
+      this.promoterDrawer = payload;
     },
     setFlowPermission(payload) {
-      this.flowPermission1 = payload
+      this.flowPermission1 = payload;
     },
     setApprover(payload) {
-      this.approverDrawer = payload
+      this.approverDrawer = payload;
     },
     setApproverConfig(payload) {
-      this.approverConfig1 = payload
+      this.approverConfig1 = payload;
     },
     setCopyer(payload) {
-      this.copyerDrawer = payload
+      this.copyerDrawer = payload;
     },
     setCopyerConfig(payload) {
-      this.copyerConfig1 = payload
+      this.copyerConfig1 = payload;
     },
     setCondition(payload) {
-      this.conditionDrawer = payload
+      this.conditionDrawer = payload;
     },
     setConditionsConfig(payload) {
-      this.conditionsConfig1 = payload
+      this.conditionsConfig1 = payload;
     },
     setPreviewDrawer(payload) {
-      this.previewDrawer = payload
+      this.previewDrawer = payload;
     },
     setPreviewDrawerConfig(payload) {
-      this.instanceViewConfig1 = payload
+      this.instanceViewConfig1 = payload;
     },
     setLowCodeFormField(payload) {
-      this.lowCodeFormField = payload
-    }, 
+      this.lowCodeFormField = payload;
+    },
     setApproveChooseFlowNodeConfig(payload) {
-      this.approveChooseFlowNode = payload
-    }
-  }
-})
+      this.approveChooseFlowNode = payload;
+    },
+    setFormRenderConfig(payload) {
+      this.formRenderConfig = payload;
+    },
+  },
+});

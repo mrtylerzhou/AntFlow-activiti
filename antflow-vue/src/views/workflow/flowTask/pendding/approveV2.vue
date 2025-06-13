@@ -11,11 +11,13 @@
                         </el-input>
                     </div>
                 </el-header>
-
                 <el-main>
                     <el-scrollbar>
-                        <div v-loading="loading" class="list-flex-cards" @click="toggleActive()">
-                            <el-card class="item-card" v-for="item in dataList" :key="item.id">
+                        <div v-loading="loading" class="list-flex-cards">
+                            <span v-if="dataList.length === 0" class="empty-text">暂无待办任务</span>
+                            <el-card v-if="dataList.length > 0" v-for="(item, index) in dataList" :key="item.id"
+                                @click="toggleActive(item, index)"
+                                :class="['item-card', { active: activeIndex === index }]">
                                 <div class="card-content pointer">
                                     <div>
                                         <p class="card-title">
@@ -25,17 +27,17 @@
                                             <span>描述：</span>
                                             <span class="card-reason">{{ item.description }}</span>
                                         </p>
-                                        <div class="card-time">
+                                        <p class="card-time">
                                             <span>审批状态：</span>
                                             <span class="card-time-value">{{ item.taskState }}</span>
-                                        </div>
-                                        <div class="card-time">
+                                        </p>
+                                        <p class="card-time">
                                             <span>发起时间：</span>
                                             <span class="card-time-value">
                                                 {{ parseTime(item.createTime, '{y}-{m}-{d} {h}: {i}') }}</span>
-                                        </div>
+                                        </p>
                                     </div>
-                                    <p class="card-user">
+                                    <div class="card-user">
                                         <span>
                                             <el-avatar :size="20"
                                                 src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
@@ -45,47 +47,60 @@
                                         <span>
                                             <el-tag type="success">{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}</el-tag>
                                         </span>
-                                    </p>
+                                    </div>
                                 </div>
                             </el-card>
                         </div>
                     </el-scrollbar>
                 </el-main>
-
             </el-container>
         </el-aside>
-        <el-container class="layout-middle">
-            <el-header>
-                <div class="toolbar">
-                    <el-button type="primary">同意</el-button>
-                    <el-button type="success">拒绝</el-button>
-                    <el-button type="danger">退回修改</el-button>
+        <el-container>
+            <div class="layout-middle">
+                <el-empty v-if="!formData" description="这里空空的" />
+                <div class="form-content" v-if="formData">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="表单信息" name="baseTab">
+                            <div v-if="activeName === 'baseTab'">
+                                <ApporveForm v-model:formData="formData"> </ApporveForm>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="审批记录" name="flowStep">
+                            <div v-if="activeName === 'flowStep'">
+                                <FlowStepTable />
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="流程预览" name="flowReview">
+                            <div v-if="activeName === 'flowReview'">
+                                <ReviewWarp />
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </div>
-            </el-header>
-            <el-main>
-                <el-scrollbar>
-                    <div class="form-content">
-                        CSS 如何在点击一个元素后保持 :active 的样式
-                        在本文中，我们将介绍如何在点击一个元素后保持 :active 的样式。在CSS中，:active 伪类表示元素在被激活（点击或按下）时的样式。默认情况下，当鼠标点击一个元素后，:active
-                        样式会立即消失。然而，有时我们希望保持这个样式，以提供更好的用户体验。
-                        一种常见的方法是使用JavaScript来实现保持 :active 样式的效果。我们可以通过在点击事件中添加或删除一个类来控制元素的样式。下面是一个简单的示例：
-                        HTML
-                        在上面的示例中，我们通过使用classList.toggle() 方法，在按钮被点击时添加或移除了一个名为 “active” 的类。这个类定义了 :active
-                        样式的样式规则，即背景颜色为红色，文本颜色为白色。这样一来，当按钮被点击后，:active 样式就会一直保持。
-                    </div>
-                </el-scrollbar>
-            </el-main>
+            </div>
         </el-container>
     </el-container>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import cache from '@/plugins/cache';
+import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
+import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
+import ApporveForm from "./components/approveForm.vue";
 import { getPenddinglistPage } from "@/api/workflow/index";
+import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/antflow/const';
+const { query } = useRoute();
+const { proxy } = getCurrentInstance();
+import { useStore } from '@/store/modules/workflow';
+let store = useStore();
+let { setPreviewDrawerConfig, setFormRenderConfig } = store;
+const activeIndex = ref(null);
+const activeName = ref('baseTab');
 const dataList = ref([]);
 const loading = ref(true);
-const showSearch = ref(true);
 const total = ref(0);
+const formData = ref(null);
 
 const data = reactive({
     form: {},
@@ -122,8 +137,24 @@ async function getList() {
     });
 }
 
-const toggleActive = () => {
-    console.log('Card clicked');
+const toggleActive = (data, index) => {
+    activeIndex.value = index;
+    formData.value = {
+        formCode: data.processCode,
+        processNumber: data.processNumber,
+        taskId: data.taskId,
+        isOutSideAccess: data.isOutSideProcess,
+        isLowCodeFlow: data.isLowCodeFlow,
+    };
+    console.log("formData.value====", JSON.stringify(formData.value));
+    setPreviewDrawerConfig(formData.value);
+    setFormRenderConfig({
+        formCode: data.processCode,
+    });
+}
+
+const handleClick = (tab, event) => {
+    activeName.value = tab.paneName;
 }
 </script>
 
@@ -135,6 +166,20 @@ const toggleActive = () => {
     font-size: 100%;
     vertical-align: baseline;
     font-size: 12px;
+    line-height: 2.0;
+}
+
+.empty-text {
+    display: block;
+    /* 让span独占一行 */
+    text-align: center;
+    /* 水平居中 */
+    width: 100%;
+    /* 占满父容器宽度 */
+    color: #888;
+    /* 可选，设置字体颜色 */
+    margin: 20px 0;
+    /* 可选，增加上下间距 */
 }
 
 .layout-setup .el-aside {
@@ -169,20 +214,9 @@ const toggleActive = () => {
 .layout-middle {
     margin-right: 10px;
     margin-top: 10px;
-}
-
-.layout-middle .el-header {
-    box-shadow: var(--el-box-shadow-light);
-    background-color: #fff;
-    border-bottom: 1px solid #000;
-}
-
-.layout-middle .toolbar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    right: 20px;
+    width: 100%;
+    height: calc(-95px + 100vh);
+    background-color: #f2f3f4f5;
 }
 
 .layout-middle .form-content {
@@ -190,8 +224,13 @@ const toggleActive = () => {
     border-bottom: 10px;
     margin-top: 2px;
     background-color: #fff;
-    height: calc(-170px + 100vh);
-    font-size: 14px;
+    height: calc(-97px + 100vh);
+    width: 100%;
+    padding: 10px;
+}
+
+.layout-middle .form-content .content-tabs {
+    padding: 10px;
 }
 
 .list-flex-cards {
@@ -210,7 +249,6 @@ const toggleActive = () => {
     display: flex;
     flex-direction: column;
     border-radius: 20px;
-    min-height: 140px;
     box-sizing: border-box;
     transition: box-shadow 0.2s;
 }
