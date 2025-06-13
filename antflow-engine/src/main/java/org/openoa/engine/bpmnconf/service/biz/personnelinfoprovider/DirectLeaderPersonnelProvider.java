@@ -18,7 +18,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class DirectLeaderPersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class DirectLeaderPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
     @Override
