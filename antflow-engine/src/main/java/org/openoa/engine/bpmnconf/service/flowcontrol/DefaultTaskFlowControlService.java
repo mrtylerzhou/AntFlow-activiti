@@ -122,8 +122,13 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				String variableVal = "startUser".equals(variableName)?variables.get("startUser").toString():
 						assigneeByElementId.get(0).getId();
 				int index = variableName.indexOf("List");
-				String newVarName="startUser".equals(variableName)?variableName:
-						variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+				String newVarName="";
+				if(index!=-1){
+					newVarName="startUser".equals(variableName)?variableName:
+							variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+				}else{
+					newVarName=variableName+"s";
+				}
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
 			}else{
