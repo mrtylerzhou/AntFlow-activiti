@@ -50,10 +50,6 @@ let props = defineProps({
 });
 
 const formCode = props.formData?.formCode;
-const processNumber = props.formData?.processNumber;
-const isOutSideAccess = props.formData?.isOutSideAccess;
-const isLowCodeFlow = props.formData?.isLowCodeFlow
-const taskId = props.formData?.taskId;
 
 const activeName = ref('baseTab');
 let openApproveDialog = ref(false);
@@ -90,16 +86,15 @@ watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
 });
-// watch(() => props.formData, async (val) => {
-
-//     setFormRenderConfig({
-//         formCode: formCode
-//     });
-//     await preview();
-// });
+watchEffect(() => props.formData, async (val) => {
+    console.log('formData========val=======', JSON.stringify(val));
+    // setFormRenderConfig({
+    //     formCode: formCode
+    // });
+    // await preview();
+});
 
 onMounted(async () => {
-    console.log('instanceViewConfig===============', JSON.stringify(instanceViewConfig.value));
     approvalButtons.value = approvalPageButtons.filter((c) => {
         return c.type == 'default';
     });

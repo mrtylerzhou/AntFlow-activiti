@@ -16,7 +16,7 @@
                         <div v-loading="loading" class="list-flex-cards">
                             <span v-if="dataList.length === 0" class="empty-text">暂无待办任务</span>
                             <el-card v-if="dataList.length > 0" v-for="(item, index) in dataList" :key="item.id"
-                                @click="toggleActive(item, index)"
+                                @click="toggleFlowActive(item, index)"
                                 :class="['item-card', { active: activeIndex === index }]">
                                 <div class="card-content pointer">
                                     <div>
@@ -57,12 +57,12 @@
         </el-aside>
         <el-container>
             <div class="layout-middle">
-                <el-empty v-if="!formData" description="这里空空的" />
-                <div class="form-content" v-if="formData">
+                <el-empty v-if="!approveFormData" description="这里空空的" />
+                <div class="form-content" v-if="approveFormData">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="表单信息" name="baseTab">
                             <div v-if="activeName === 'baseTab'">
-                                <ApporveForm v-model:formData="formData"> </ApporveForm>
+                                <ApporveForm :formData="approveFormData"> </ApporveForm>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="审批记录" name="flowStep">
@@ -89,7 +89,6 @@ import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
 import { getPenddinglistPage } from "@/api/workflow/index";
-import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/antflow/const';
 const { query } = useRoute();
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
@@ -100,7 +99,7 @@ const activeName = ref('baseTab');
 const dataList = ref([]);
 const loading = ref(true);
 const total = ref(0);
-const formData = ref(null);
+const approveFormData = ref(null);
 
 const data = reactive({
     form: {},
@@ -137,20 +136,20 @@ async function getList() {
     });
 }
 
-const toggleActive = (data, index) => {
+const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
-    formData.value = {
+    approveFormData.value = {
         formCode: data.processCode,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
         isLowCodeFlow: data.isLowCodeFlow,
     };
-    console.log("formData.value====", JSON.stringify(formData.value));
-    setPreviewDrawerConfig(formData.value);
-    setFormRenderConfig({
-        formCode: data.processCode,
-    });
+    console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
+    setPreviewDrawerConfig(approveFormData.value);
+    // setFormRenderConfig({
+    //     formCode: data.processCode,
+    // });
 }
 
 const handleClick = (tab, event) => {
