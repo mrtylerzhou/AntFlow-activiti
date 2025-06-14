@@ -86,7 +86,9 @@ let leaveTypeOptions = [{
     "value": 4
 }];
 /**定义表单字段和预览，根据实际业务表单修改*/
-const form = reactive({ ...props.previewData });
+
+const { leaveType, beginDate, endDate, leaveHour, userId, userName, remark } = props.previewData;
+const form = reactive({ leaveType, beginDate, endDate, leaveHour, userId, userName, remark });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     beginDate: [{

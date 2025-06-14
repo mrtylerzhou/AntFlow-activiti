@@ -65,7 +65,8 @@ let props = defineProps({
 const ruleFormRef = ref(null);
 
 /**定义表单字段和预览，根据实际业务表单修改*/
-const form = reactive({ RefundType: 1, ...props.previewData });
+const { refundUserName, refundDate, refundMoney, remark } = props.previewData;
+const form = reactive({ RefundType: 1, refundUserName, refundDate, refundMoney, remark });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{

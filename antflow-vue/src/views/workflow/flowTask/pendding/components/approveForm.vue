@@ -55,7 +55,7 @@ let lfFieldControlVOs = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 
-let approveSubData = reactive({});
+let approveSubData = ref(null);
 
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
@@ -63,12 +63,12 @@ watch(handleClickType, (val) => {
 }, { deep: true });
 
 watch(() => instanceViewConfig.value, async (newVal) => {
-    approveSubData = { ...instanceViewConfig.value };
+    approveSubData.value = { ...instanceViewConfig.value };
     await preview(newVal);
 }, { deep: true });
 
 onMounted(async () => {
-    approveSubData = { ...instanceViewConfig.value };
+    approveSubData.value = { ...instanceViewConfig.value };
     await preview(instanceViewConfig.value);
 });
 /**
@@ -103,28 +103,50 @@ const clickApproveSubmit = async (btnType) => {
  * @param type 
  */
 const approveSubmit = async (param) => {
-    approveSubData.approvalComment = param.remark;
-    approveSubData.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = param.remark;
+    approveSubData.value.operationType = handleClickType.value;
     if (handleClickType.value == approvalButtonConf.resubmit || handleClickType.value == approvalButtonConf.agree) {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.isLowCodeFlow == true) {
-                        approveSubData.lfFields = JSON.parse(data); //低代码表单字段
+                    if (approveSubData.value.isLowCodeFlow == true) {
+                        approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
-                        Object.assign(approveSubData, componentFormData);
+                        approveSubData.value = { ...approveSubData.value, ...componentFormData };
                     }
                 });
             }
         });
     };
     if (handleClickType.value == approvalButtonConf.repulse) {//退回操作
-        approveSubData.backToModifyType = Number(param.backToModifyType);
-        approveSubData.backToNodeId = Number(param.backToNodeId);
+        approveSubData.value.backToModifyType = Number(param.backToModifyType);
+        approveSubData.value.backToNodeId = Number(param.backToNodeId);
     }
-    //console.log('approveSubData==========', JSON.stringify(approveSubData));
-    await approveProcess(approveSubData);//业务处理
+    await approveProcess(approveSubData.value);//业务处理
+}
+/**
+ * 审批
+ * @param param 
+ */
+const approveProcess = async (param) => {
+    proxy.$modal.confirm('确定完成操作吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        dialogVisible.value = false;
+        proxy.$modal.loading();
+        await processOperation(param).then((res) => {
+            if (res.code == 200) {
+                proxy.$modal.msgSuccess("审批成功");
+                close();
+            } else {
+                proxy.$modal.msgError("审批失败:" + res.errMsg);
+            }
+        });
+        proxy.$modal.closeLoading();
+    }).catch(() => { });
 }
 /**
  * 承办操作确定
@@ -132,14 +154,14 @@ const approveSubmit = async (param) => {
  * @param type 
  */
 const approveUndertakeSubmit = async () => {
-    approveSubData.approvalComment = "承办";
-    approveSubData.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = "承办";
+    approveSubData.value.operationType = handleClickType.value;
     proxy.$modal.confirm('确定完成操作吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        await processOperation(approveSubData).then((resData) => {
+        await processOperation(approveSubData.value).then((resData) => {
             if (resData.code == 200) {
                 proxy.$modal.msgSuccess("承办成功");
 
@@ -196,42 +218,19 @@ const preview = async (viewData) => {
  * 确定Dialog 弹框
  */
 const sureDialogBtn = async (data) => {
-    approveSubData.operationType = handleClickType.value;
-    approveSubData.approvalComment = data.remark;
+    approveSubData.value.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = data.remark;
     if (!isMultiple.value) {
         data.selectList.unshift({
             id: cache.session.get('userId'),
             name: decodeURIComponent(cache.session.get('userName')),
         });
-        approveSubData.userInfos = data.selectList;
+        approveSubData.value.userInfos = data.selectList;
     } else {
-        approveSubData.signUpUsers = data.selectList;
+        approveSubData.value.signUpUsers = data.selectList;
     }
     //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
-    await approveProcess(approveSubData);
-}
-/**
- * 审批
- * @param param 
- */
-const approveProcess = async (param) => {
-    proxy.$modal.confirm('确定完成操作吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async () => {
-        dialogVisible.value = false;
-        proxy.$modal.loading();
-        await processOperation(param).then((res) => {
-            if (res.code == 200) {
-                proxy.$modal.msgSuccess("审批成功");
-                close();
-            } else {
-                proxy.$modal.msgError("审批失败:" + res.errMsg);
-            }
-        });
-        proxy.$modal.closeLoading();
-    }).catch(() => { });
+    await approveProcess(approveSubData.value);
 }
 /**
  * 选人员Dialog 弹框

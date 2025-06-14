@@ -65,7 +65,8 @@ let accountTypeOptions = [{
     "value": 3
 }];
 /**定义表单字段和预览，根据实际业务表单修改*/
-const form = reactive({ ...props.previewData });
+const { accountType, remark } = props.previewData;
+const form = reactive({ accountType, remark });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
