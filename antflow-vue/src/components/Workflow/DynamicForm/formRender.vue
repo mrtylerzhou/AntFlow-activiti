@@ -14,8 +14,8 @@
 import { ref, reactive, getCurrentInstance, onBeforeMount, onMounted, watch } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 import { useStore } from '@/store/modules/workflow';
-let store = useStore();
-let formRenderConfig = computed(() => store.formRenderConfig)
+const store = useStore();
+const formRenderConfig = computed(() => store.formRenderConfig)
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const { proxy } = getCurrentInstance();
 const { formCode, hasChooseApprove = false } = formRenderConfig.value;

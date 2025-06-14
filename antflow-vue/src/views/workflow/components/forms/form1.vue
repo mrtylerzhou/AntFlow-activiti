@@ -24,17 +24,19 @@
                 </el-col>
             </el-row>
         </el-form>
-        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
+            @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();
-const route = useRoute();
-const formCode = route.query?.formCode ?? '';
-const hasChooseApprove = route.query?.hasChooseApprove ??'false';
+const store = useStore();
+const formRenderConfig = computed(() => store.formRenderConfig)
+const { formCode, hasChooseApprove = false } = formRenderConfig.value;
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
@@ -61,12 +63,9 @@ let accountTypeOptions = [{
 }, {
     "label": "阿里云",
     "value": 3
-}]; 
+}];
 /**定义表单字段和预览，根据实际业务表单修改*/
-const form = reactive({
-    accountType: props.previewData?.accountType ?? '',
-    remark: props.previewData?.remark ?? ''
-})
+const form = reactive({ ...props.previewData });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     remark: [{
@@ -80,13 +79,13 @@ let rules = {
         trigger: 'change'
     }],
 };
- 
+
 /**以下是通用方法不需要修改 views/startFlow/index.vue中调用*/
 
 /**自选审批人 */
 const chooseApprovers = (data) => {
     //console.log('data=========',JSON.stringify(data));
-    form.approversList = data.approvers; 
+    form.approversList = data.approvers;
     form.approversValid = data.nodeVaild;
 }
 
@@ -101,24 +100,24 @@ const getFromData = () => {
 }
 
 const handleSubmit = () => {
-    handleValidate().then((isValid) => { 
+    handleValidate().then((isValid) => {
         if (isValid) {
             proxy.$emit("handleBizBtn", JSON.stringify(form))
         }
     });
 }
-const handleValidate = () => {  
+const handleValidate = () => {
     return proxy.$refs['ruleFormRef'].validate((valid) => {
         if (!valid) {
             return Promise.reject(false);
-        }  
-        else if(hasChooseApprove == 'true'){    
-            if (!form.approversValid || form.approversValid == false) {  
-                proxy.$modal.msgError('请选择自选审批人'); 
-                return Promise.reject(false);
-            }  
         }
-        else{
+        else if (hasChooseApprove == 'true') {
+            if (!form.approversValid || form.approversValid == false) {
+                proxy.$modal.msgError('请选择自选审批人');
+                return Promise.reject(false);
+            }
+        }
+        else {
             return Promise.resolve(true);
         }
     });
@@ -143,5 +142,4 @@ defineExpose({
     right: 0;
     margin: auto;
 }
-
 </style>

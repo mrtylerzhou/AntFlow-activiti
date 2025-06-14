@@ -147,9 +147,6 @@ const toggleFlowActive = (data, index) => {
     };
     //console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
     setPreviewDrawerConfig({ ...approveFormData.value });
-    setFormRenderConfig({
-        formCode: data.processCode,
-    });
 }
 
 const handleClick = (tab, event) => {
