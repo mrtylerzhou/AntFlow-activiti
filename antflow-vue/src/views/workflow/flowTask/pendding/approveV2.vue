@@ -57,12 +57,12 @@
         </el-aside>
         <el-container>
             <div class="layout-middle">
-                <el-empty v-if="!approveFormData" description="这里空空的" />
+                <el-empty v-if="!approveFormData" description="这里空空的,请点击左侧代办列表" />
                 <div class="form-content" v-if="approveFormData">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="表单信息" name="baseTab">
                             <div v-if="activeName === 'baseTab'">
-                                <ApporveForm :formData="approveFormData"> </ApporveForm>
+                                <ApporveForm />
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="审批记录" name="flowStep">
@@ -84,7 +84,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import cache from '@/plugins/cache';
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
@@ -139,17 +138,18 @@ async function getList() {
 const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
     approveFormData.value = {
+        ...approveFormData.value,
         formCode: data.processCode,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
         isLowCodeFlow: data.isLowCodeFlow,
     };
-    console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
-    setPreviewDrawerConfig(approveFormData.value);
-    // setFormRenderConfig({
-    //     formCode: data.processCode,
-    // });
+    //console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
+    setPreviewDrawerConfig({ ...approveFormData.value });
+    setFormRenderConfig({
+        formCode: data.processCode,
+    });
 }
 
 const handleClick = (tab, event) => {
