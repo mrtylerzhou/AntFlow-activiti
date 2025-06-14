@@ -421,6 +421,18 @@
     <delete id="deleteExecutionById">
         delete  from ACT_RU_EXECUTION where ID_ = #{executionId}
     </delete>
+    <delete id="deleteTaskByProcinstIdAndTaskDefKeys">
+        delete  from ACT_RU_TASK where PROC_INST_ID_=#{procInstId} and TASK_DEF_KEY_ in
+        <foreach collection="taskDefKeys" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteTaskByTaskIds">
+        delete  from ACT_RU_TASK where ID_ in
+        <foreach collection="taskIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 
     <!--query whether current process resource is exist-->
     <select id="findProcessModel" resultType="java.lang.Integer">
