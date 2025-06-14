@@ -10,9 +10,9 @@
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
-                    <component ref="componentFormRef" :is="loadedComponent" :previewData="componentData"
-                        :isPreview="false" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
-                        :lfFieldPerm="lfFieldControlVOs">
+                    <component ref="componentFormRef" :key="componentData.processKey" :is="loadedComponent"
+                        :previewData="componentData" :isPreview="false" :lfFormData="lfFormDataConfig"
+                        :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
                     </component>
                 </div>
             </el-scrollbar>
@@ -26,31 +26,18 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import cache from '@/plugins/cache';
 import transferDialog from './transferDialog.vue';
 import approveDialog from './approveDialog.vue';
 import repulseDialog from './repulseDialog.vue';
-import { approveButtonColor, approvalPageButtons, approvalButtonConf } from '@/utils/antflow/const';
+import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
-let { setFormRenderConfig, instanceViewConfig1 } = store;
-let formRenderConfig = computed(() => store.formRenderConfig)
 let instanceViewConfig = computed(() => store.instanceViewConfig1)
-
-let props = defineProps({
-    formData: {
-        required: true,
-        type: Object,
-        default: null,
-    }
-});
-
-const formCode = props.formData?.formCode;
-
 const activeName = ref('baseTab');
 let openApproveDialog = ref(false);
 let repulseDialogVisible = ref(false);
@@ -68,37 +55,21 @@ let lfFieldControlVOs = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 
-const approveSubData = reactive({
-    taskId: props.formData?.taskId,
-    processNumber: props.formData?.processNumber,
-    formCode: props.formData?.formCode,
-    isOutSideAccessProc: props.formData?.isOutSideAccess,
-    outSideType: 2,
-    isLowCodeFlow: props.formData?.isLowCodeFlow,
-    lfFields: null, //低代码表单字段
-});
-
-onBeforeMount(async () => {
-    await preview();
-})
+let approveSubData = reactive({});
 
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
-});
-watchEffect(() => props.formData, async (val) => {
-    console.log('formData========val=======', JSON.stringify(val));
-    // setFormRenderConfig({
-    //     formCode: formCode
-    // });
-    // await preview();
-});
+}, { deep: true });
+
+watch(() => instanceViewConfig.value, async (newVal) => {
+    approveSubData = { ...instanceViewConfig.value };
+    await preview(newVal);
+}, { deep: true });
 
 onMounted(async () => {
-    approvalButtons.value = approvalPageButtons.filter((c) => {
-        return c.type == 'default';
-    });
-    await preview();
+    approveSubData = { ...instanceViewConfig.value };
+    await preview(instanceViewConfig.value);
 });
 /**
  * 点击页面审批操作按钮
@@ -184,17 +155,11 @@ const approveUndertakeSubmit = async () => {
 /**
  * 表单预览
  */
-const preview = async () => {
+const preview = async (viewData) => {
     let queryParams = {
-        formCode: approveSubData.formCode,
-        processNumber: approveSubData.processNumber,
-        type: 2,
-        isOutSideAccessProc: approveSubData.isOutSideAccessProc,
-        isLowCodeFlow: approveSubData.isLowCodeFlow
+        ...viewData,
+        type: 2
     };
-
-    console.log('instanceViewConfig======watch=========', JSON.stringify(instanceViewConfig.value));
-
     proxy.$modal.loading();
     await getViewBusinessProcess(queryParams).then(async (response) => {
         if (response.code == 200) {
@@ -208,7 +173,7 @@ const preview = async () => {
                 });
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
-            if (approveSubData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
+            if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
                 lfFormDataConfig.value = response.data.lfFormData;
                 lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                 lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
@@ -216,7 +181,7 @@ const preview = async () => {
                 componentLoaded.value = true;
             } else {//自定义表单
                 componentData.value = response.data;
-                loadedComponent.value = await loadDIYComponent(formCode);
+                loadedComponent.value = await loadDIYComponent(viewData.formCode);
                 componentLoaded.value = true;
             }
         } else {
@@ -226,31 +191,7 @@ const preview = async () => {
         proxy.$modal.closeLoading();
     });
 }
-/**
- * 数组去重
- * @param arr 
- */
-function uniqueByMap(arr) {
-    if (!Array.isArray(arr)) {
-        return
-    }
-    const res = new Map();
-    return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
-}
 
-/**
- * 关闭当前审批页
- */
-const close = () => {
-    const obj = { path: "/flowTask/pendding" };
-    proxy.$tab.closeOpenPage(obj);
-}
-/**
- * 选人员Dialog 弹框
- */
-const addUserDialog = () => {
-    dialogVisible.value = true;
-}
 /**
  * 确定Dialog 弹框
  */
@@ -292,13 +233,39 @@ const approveProcess = async (param) => {
         proxy.$modal.closeLoading();
     }).catch(() => { });
 }
-
+/**
+ * 选人员Dialog 弹框
+ */
+const addUserDialog = () => {
+    dialogVisible.value = true;
+}
 const handleTabClick = async (tab, event) => {
     activeName.value = tab.paneName;
     if (tab.paneName == 'baseTab') {
         preview();
     }
 };
+
+/**
+ * 数组去重
+ * @param arr 
+ */
+function uniqueByMap(arr) {
+    if (!Array.isArray(arr)) {
+        return
+    }
+    const res = new Map();
+    return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
+}
+
+/**
+ * 关闭当前审批页
+ */
+const close = () => {
+    const obj = { path: "/flowTask/pendding" };
+    proxy.$tab.closeOpenPage(obj);
+}
+
 </script>
 <style lang="scss" scoped>
 .component {
