@@ -196,7 +196,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
                 if(tasks.size()>1){
                     Task firstTask = tasks.get(0);
-                    List<String> otherNewTaskIds = tasks.stream().filter(a -> !a.getId().equals(firstTask.getId())).map(a->a.getId()).collect(Collectors.toList());
+                    List<String> otherNewTaskIds = tasks.stream().map(TaskInfo::getId).distinct().filter(id -> !id.equals(firstTask.getId())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), otherNewTaskIds);
                     taskMgmtMapper.deleteTaskByTaskIds(otherNewTaskIds);
                 }
