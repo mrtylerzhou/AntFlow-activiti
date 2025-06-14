@@ -9,7 +9,7 @@
             <el-form :model="qform" ref="queryRef" :inline="true">
               <el-form-item label="用户名称" prop="description">
                 <el-input v-model="qform.description" placeholder="请输入用户名称" clearable style="width: 150px"
-                  size="default" @keyup.enter="handleQuery" />
+                  size="default" @keyup.enter.native="handleQuery" />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" size="default" @click="handleQuery">搜索</el-button>
@@ -22,7 +22,12 @@
                     @click="handleSelectUser(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
+              <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true">
+                <template #default="scope">
+                  <el-avatar size="small">{{ scope.row.userName.substring(0, 1) }}</el-avatar>
+                  {{ scope.row.userName }}
+                </template>
+              </el-table-column>
               <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" />
               <el-table-column label="状态" align="center" prop="status">
                 <template #default="scope">
@@ -46,7 +51,12 @@
               <el-button link type="primary" size="default" icon="Delete" @click="handleRemove(scope.row)" />
             </template>
           </el-table-column>
-          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
+          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true">
+            <template #default="scope">
+              <el-avatar size="small">{{ scope.row.userName.substring(0, 1) }}</el-avatar>
+              {{ scope.row.userName }}
+            </template>
+          </el-table-column>
         </el-table>
       </el-col>
 
@@ -192,5 +202,9 @@ const handleClose = () => {
   padding: 2px 13px;
   background-color: rgb(197.7, 225.9, 255);
   border-left: 5px solid #1890ff;
+}
+
+.el-avatar {
+  background-color: #1890ff;
 }
 </style>

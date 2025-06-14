@@ -4,9 +4,10 @@
             <el-container>
                 <el-header>
                     <div class="toolbar">
-                        <el-input placeholder="请输入关键字" clearable style="width: 200px">
+                        <el-input v-model="taskMgmtVO.processNumber" placeholder="请输入关键字" clearable
+                            style="width: 200px">
                             <template #append>
-                                <el-button icon="Search" />
+                                <el-button icon="Search" @click="handleQuery" />
                             </template>
                         </el-input>
                     </div>
@@ -50,6 +51,14 @@
                                     </div>
                                 </div>
                             </el-card>
+                            <div style="width: 100%;" v-if="dataList.length >= pageDto.pageSize">
+                                <el-button :loading="loadingMore" type="primary" style="width: 100%;"
+                                    @click.prevent="loadMoreFlowList('after')">下一页</el-button>
+                            </div>
+                            <!-- <div style="width: 50%;" v-if="dataList.length < pageDto.pageSize">
+                                <el-button :loading="loadingMore" type="primary" style="width: 100%;"
+                                    @click.prevent="loadMoreFlowList('before')">上一页</el-button>
+                            </div> -->
                         </div>
                     </el-scrollbar>
                 </el-main>
@@ -88,15 +97,15 @@ import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
 import { getPenddinglistPage } from "@/api/workflow/index";
-const { query } = useRoute();
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
-let { setPreviewDrawerConfig, setFormRenderConfig } = store;
+let { setPreviewDrawerConfig } = store;
 const activeIndex = ref(null);
 const activeName = ref('baseTab');
 const dataList = ref([]);
 const loading = ref(true);
+const loadingMore = ref(false);
 const total = ref(0);
 const approveFormData = ref(null);
 
@@ -104,7 +113,7 @@ const data = reactive({
     form: {},
     pageDto: {
         page: 1,
-        pageSize: 10
+        pageSize: 5
     },
     taskMgmtVO: {
         processNumber: undefined,
@@ -120,7 +129,11 @@ const { pageDto, taskMgmtVO } = toRefs(data);
 onMounted(async () => {
     await getList();
 });
-
+/** 搜索按钮操作 */
+async function handleQuery() {
+    pageDto.value.page = 1;
+    await getList();
+}
 /** 查询岗位列表 */
 async function getList() {
     loading.value = true;
@@ -135,6 +148,18 @@ async function getList() {
     });
 }
 
+const loadMoreFlowList = async (type) => {
+    loadingMore.value = true;
+    if (type === 'after') {
+        pageDto.value.page++;
+    } else {
+        pageDto.value.page--;
+    }
+    await getList();
+    toggleFlowActive(dataList.value[0], 0);
+    loadingMore.value = false;
+}
+
 const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
     approveFormData.value = {
@@ -147,6 +172,7 @@ const toggleFlowActive = (data, index) => {
     };
     //console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
     setPreviewDrawerConfig({ ...approveFormData.value });
+    activeName.value = 'baseTab';
 }
 
 const handleClick = (tab, event) => {
