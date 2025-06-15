@@ -45,6 +45,9 @@
                                             </el-avatar>
                                             {{ item.actualName }}
                                         </span>
+                                        <span class="card-user-runtime">
+                                            {{ getDateDiff(item.runTime) }}
+                                        </span>
                                     </div>
                                 </div>
                             </el-card>
@@ -95,6 +98,7 @@ import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
 import { getPenddinglistPage } from "@/api/workflow/index";
+import { getDateDiff } from "@/utils/antflow/hsharpUtils";
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
@@ -342,12 +346,20 @@ const handleClick = (tab, event) => {
 .card-user {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .card-username {
     font-size: 12px;
     font-weight: 500;
     color: #222;
-    margin-left: 2px;
+}
+
+.card-user-runtime {
+    font-size: 12px;
+    font-weight: 500;
+    color: #222;
+    margin-left: auto;
+    /* 添加这一行来将元素推到右边 */
 }
 </style>
