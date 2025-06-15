@@ -66,9 +66,6 @@
 
 <script setup>
 import { getPenddinglistPage } from "@/api/workflow/index";
-import { useStore } from '@/store/modules/workflow'
-let store = useStore()
-let { setPreviewDrawerConfig } = store
 const { proxy } = getCurrentInstance();
 const dataList = ref([]);
 const loading = ref(true);
@@ -120,11 +117,9 @@ function handleApproveBtn(row) {
       isOutSideAccess: row.isOutSideProcess,
       isLowCodeFlow: row.isLowCodeFlow,
    };
-   setPreviewDrawerConfig(params);
    // 关闭指定页签
    const obj = { path: "pendding/approve", query: params };
    proxy.$tab.openPage(obj);
-   // proxy.$tab.closeOpenPage(obj); 
 }
 function resetQuery() {
    taskMgmtVO.value = {

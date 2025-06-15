@@ -57,6 +57,13 @@ const handleClickType = ref(null);
 
 let approveSubData = ref(null);
 
+let props = defineProps({
+    approveFormData: {
+        type: Object,
+        required: true,
+        default: () => { }
+    }
+});
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
@@ -68,9 +75,10 @@ watch(() => instanceViewConfig.value, async (newVal) => {
 }, { deep: true });
 
 onMounted(async () => {
-    approveSubData.value = { ...instanceViewConfig.value };
+    approveSubData.value = { ...props.approveFormData };
     await preview(instanceViewConfig.value);
 });
+
 /**
  * 点击页面审批操作按钮
  */
@@ -168,9 +176,9 @@ const approveUndertakeSubmit = async () => {
             } else {
                 proxy.$modal.msgError("承办失败:" + resData.errMsg);
             }
-
-        }).then(() => {
-            handleTabClick({ paneName: "baseTab" });
+        }).then(async () => {
+            await preview(approveSubData.value);
+            activeName.value = "baseTab";
         });
     });
 }
@@ -195,16 +203,20 @@ const preview = async (viewData) => {
                 });
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
-            if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
-                lfFormDataConfig.value = response.data.lfFormData;
-                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
-                lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
-                loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;
-            } else {//自定义表单
-                componentData.value = response.data;
-                loadedComponent.value = await loadDIYComponent(viewData.formCode);
-                componentLoaded.value = true;
+            try {
+                if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
+                    lfFormDataConfig.value = response.data.lfFormData;
+                    lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
+                    lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
+                    loadedComponent.value = await loadLFComponent();
+                    componentLoaded.value = true;
+                } else {//自定义表单
+                    componentData.value = response.data;
+                    loadedComponent.value = await loadDIYComponent(viewData.formCode);
+                    componentLoaded.value = true;
+                }
+            } catch (error) {
+                close();
             }
         } else {
             proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
@@ -238,13 +250,6 @@ const sureDialogBtn = async (data) => {
 const addUserDialog = () => {
     dialogVisible.value = true;
 }
-const handleTabClick = async (tab, event) => {
-    activeName.value = tab.paneName;
-    if (tab.paneName == 'baseTab') {
-        preview();
-    }
-};
-
 /**
  * 数组去重
  * @param arr 

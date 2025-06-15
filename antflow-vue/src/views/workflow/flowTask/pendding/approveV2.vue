@@ -67,12 +67,12 @@
         </el-aside>
         <el-container>
             <div class="layout-middle">
-                <el-empty v-if="!approveFormData" description="这里空空的,请点击左侧代办列表" />
-                <div class="form-content" v-if="approveFormData">
+                <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
+                <div class="form-content" v-if="approveFormDataConfig">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="表单信息" name="baseTab">
                             <div v-if="activeName === 'baseTab'">
-                                <ApporveForm />
+                                <ApporveForm :approveFormData="approveFormDataConfig" />
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="审批记录" name="flowStep">
@@ -108,8 +108,7 @@ const dataList = ref([]);
 const loading = ref(true);
 const loadingMore = ref(false);
 const total = ref(0);
-const approveFormData = ref(null);
-
+const approveFormDataConfig = ref(null);
 const data = reactive({
     form: {},
     pageDto: {
@@ -163,16 +162,16 @@ const loadMoreFlowList = async (type) => {
 
 const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
-    approveFormData.value = {
-        ...approveFormData.value,
+    approveFormDataConfig.value = {
+        ...approveFormDataConfig.value,
         formCode: data.processCode,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
         isLowCodeFlow: data.isLowCodeFlow,
     };
-    //console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
-    setPreviewDrawerConfig({ ...approveFormData.value });
+    //console.log("approveFormDataConfig.value====", JSON.stringify(approveFormDataConfig.value));
+    setPreviewDrawerConfig({ ...approveFormDataConfig.value });
     activeName.value = 'baseTab';
 }
 
