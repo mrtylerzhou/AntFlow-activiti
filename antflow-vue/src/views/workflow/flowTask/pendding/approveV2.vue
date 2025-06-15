@@ -22,10 +22,10 @@
                                 <div class="card-content pointer">
                                     <div>
                                         <p class="card-title">
-                                            {{ item.processTypeName }}
+                                            [{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}] {{ item.processTypeName }}
                                         </p>
                                         <p class="card-detail">
-                                            <span>描述：</span>
+                                            <span style="width: 40px;">描述：</span>
                                             <span class="card-reason">{{ item.description }}</span>
                                         </p>
                                         <p class="card-time">
@@ -39,14 +39,11 @@
                                         </p>
                                     </div>
                                     <div class="card-user">
-                                        <span>
-                                            <el-avatar :size="20"
-                                                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+                                        <span class="card-username">
+                                            <el-avatar v-if="item.actualName" :size="18">
+                                                {{ item.actualName.substring(0, 1) }}
                                             </el-avatar>
-                                        </span>
-                                        <span class="card-username">{{ item.actualName }}</span>
-                                        <span>
-                                            <el-tag type="success">{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}</el-tag>
+                                            {{ item.actualName }}
                                         </span>
                                     </div>
                                 </div>
@@ -291,17 +288,28 @@ const handleClick = (tab, event) => {
     letter-spacing: 1px;
     border-left: 3px solid var(--current-color);
     padding-left: 8px;
+    max-width: 200px;
+    /* 根据需要调整宽度 */
+    white-space: nowrap;
+    /* 不换行 */
+    overflow: hidden;
+    /* 超出隐藏 */
+    text-overflow: ellipsis;
+    /* 超出显示省略号 */
+    margin-left: 4px;
+    display: block;
+    /* 或 inline-block，根据需要 */
 }
 
 .card-detail {
     display: flex;
     align-items: center;
-    color: #666;
+    color: #222;
     font-size: 12px;
 }
 
 .card-detail .card-reason {
-    color: #fa541c;
+    color: #222;
     font-weight: 500;
     max-width: 200px;
     /* 根据需要调整宽度 */
@@ -318,7 +326,7 @@ const handleClick = (tab, event) => {
 
 .card-time {
     font-size: 13px;
-    color: #888;
+    color: #222;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -326,7 +334,7 @@ const handleClick = (tab, event) => {
 }
 
 .card-time-value {
-    color: #409eff;
+    color: #222;
     font-weight: 500;
     margin-left: 2px;
 }
@@ -339,7 +347,7 @@ const handleClick = (tab, event) => {
 .card-username {
     font-size: 12px;
     font-weight: 500;
-    color: #888;
+    color: #222;
     margin-left: 2px;
 }
 </style>

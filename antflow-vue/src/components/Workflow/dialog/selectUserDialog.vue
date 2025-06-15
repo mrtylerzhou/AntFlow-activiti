@@ -203,8 +203,4 @@ const handleClose = () => {
   background-color: rgb(197.7, 225.9, 255);
   border-left: 5px solid #1890ff;
 }
-
-.el-avatar {
-  background-color: #1890ff;
-}
 </style>
