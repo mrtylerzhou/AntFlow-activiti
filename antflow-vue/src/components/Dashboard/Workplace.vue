@@ -114,10 +114,7 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 import { getDIYFromCodeData } from "@/api/workflow/index"
 import { getLFActiveFormCodePageList } from "@/api/workflow/lowcodeApi"
 import { getOutSideFormCodePageList } from "@/api/workflow/outsideApi"
-import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();
-const store = useStore();
-const { setFormRenderConfig } = store;
 let worlflowList = ref([]);
 let lfFlowList = ref([]);
 let outsideFlowList = ref([]);
@@ -229,7 +226,6 @@ function handleStart(row) {
         formCode: row.formCode,
         hasChooseApprove: row.hasChooseApprove
     };
-    setFormRenderConfig({ ...params });
     const obj = { path: '/startFlow/index', query: params };
     proxy.$tab.openPage(obj);
 }
@@ -241,7 +237,6 @@ function handleOutSide(row) {
         ha: row.hasChooseApprove,
         fcname: encodeURIComponent(row.title)
     };
-    setFormRenderConfig({ ...params });
     const obj = { path: '/startOutside/index', query: params };
     proxy.$tab.openPage(obj);
 }

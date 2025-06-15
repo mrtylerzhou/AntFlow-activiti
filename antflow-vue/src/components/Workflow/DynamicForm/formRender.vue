@@ -11,15 +11,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, onBeforeMount, onMounted, watch } from 'vue';
+import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
-import { useStore } from '@/store/modules/workflow';
-const store = useStore();
-const formRenderConfig = computed(() => store.formRenderConfig)
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const { proxy } = getCurrentInstance();
-const { formCode, hasChooseApprove = false } = formRenderConfig.value;
-
+const route = useRoute();
+const formCode = route.query?.formCode ?? '';
+const hasChooseApprove = route.query?.hasChooseApprove ?? 'false';
 // watch(() => formRenderConfig.value, () => {
 //   console.log("formCode====", JSON.stringify(formCode));
 //   console.log("hasChooseApprove====", JSON.stringify(hasChooseApprove));

@@ -36,11 +36,10 @@
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
-import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();
-const store = useStore();
-const formRenderConfig = computed(() => store.formRenderConfig)
-const { formCode, hasChooseApprove = false } = formRenderConfig.value;
+const route = useRoute();
+const formCode = route.query?.formCode ?? '';
+const hasChooseApprove = route.query?.hasChooseApprove ?? 'false';
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
