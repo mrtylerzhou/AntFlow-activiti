@@ -10,7 +10,7 @@
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
-                    <component ref="componentFormRef" :key="componentData.processKey" :is="loadedComponent"
+                    <component ref="componentFormRef" :key="approveSubData.taskId" :is="loadedComponent"
                         :previewData="componentData" :isPreview="false" :lfFormData="lfFormDataConfig"
                         :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
                     </component>
