@@ -51,14 +51,15 @@
                                     </div>
                                 </div>
                             </el-card>
-                            <div style="width: 100%;" v-if="dataList.length >= pageDto.pageSize">
-                                <el-button :loading="loadingMore" type="primary" style="width: 100%;"
-                                    @click.prevent="loadMoreFlowList('after')">下一页</el-button>
-                            </div>
-                            <!-- <div style="width: 50%;" v-if="dataList.length < pageDto.pageSize">
-                                <el-button :loading="loadingMore" type="primary" style="width: 100%;"
+                            <div style="width: 100%;">
+                                <el-button :loading="loadingMore" :disabled="pageDto.page == 1" type="primary"
+                                    style="width: 45%;float: left;"
                                     @click.prevent="loadMoreFlowList('before')">上一页</el-button>
-                            </div> -->
+                                <el-button :loading="loadingMore" :disabled="pageDto.page * pageDto.pageSize >= total"
+                                    type="primary" style="width: 45%;float: right;"
+                                    @click.prevent="loadMoreFlowList('after')">下一页</el-button>
+
+                            </div>
                         </div>
                     </el-scrollbar>
                 </el-main>
@@ -153,11 +154,11 @@ const loadMoreFlowList = async (type) => {
     if (type === 'after') {
         pageDto.value.page++;
     } else {
-        pageDto.value.page--;
+        pageDto.value.page = pageDto.value.page > 1 ? pageDto.value.page - 1 : 1;
     }
     await getList();
-    toggleFlowActive(dataList.value[0], 0);
     loadingMore.value = false;
+    toggleFlowActive(dataList.value[0], 0);
 }
 
 const toggleFlowActive = (data, index) => {
