@@ -51,7 +51,7 @@
                   <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
                   <el-button link type="primary" icon="Edit" @click="handleApproveBtn(scope.row)">审批</el-button>
                </template>

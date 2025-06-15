@@ -51,7 +51,8 @@
                                 <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
+                        <el-table-column label="操作" fixed="right" width="320" align="center"
+                            class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-button link type="primary" icon="Promotion"
                                     @click="handleLFDesign(scope.row)">设计流程</el-button>
@@ -100,7 +101,8 @@
                                 <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="320" align="center" class-name="small-padding fixed-width">
+                        <el-table-column label="操作" fixed="right" width="320" align="center"
+                            class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-button link type="primary" icon="Promotion"
                                     @click="handleDIYDesign(scope.row)">设计流程</el-button>

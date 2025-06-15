@@ -17,7 +17,7 @@
       <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
         <el-table-column type="selection" align="center" width="35" />
         <el-table-column label="项目标识" align="center" prop="businessCode" width="150" />
-        <el-table-column label="项目名称" align="center" prop="businessName" width="220" />
+        <el-table-column label="项目名称" align="center" prop="businessName" />
         <el-table-column align="center" prop="processKey" width="280">
           <template #header>
             <span>
@@ -28,14 +28,14 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="应用名称" align="center" prop="name" width="220" />
+        <el-table-column label="应用名称" align="center" prop="name" />
         <el-table-column label="业务类型" align="center" prop="applyTypeName" width="120" />
         <el-table-column label="创建时间" align="center" prop="createTime" width="150">
           <template #default="scope">
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="260" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button link type="primary" icon="Setting" @click="settingPage(scope.row)">设置</el-button>
