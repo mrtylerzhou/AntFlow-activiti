@@ -25,7 +25,8 @@
                 </el-col>
                 <el-col :span="24">
                     <el-form-item label="请假时长" prop="leaveHour">
-                        <el-input-number v-model="form.leaveHour"  style="width: 220px;" :min="1" :max="100" placeholder="请输入时长" />
+                        <el-input-number v-model="form.leaveHour" style="width: 220px;" :min="1" :max="100"
+                            placeholder="请输入时长" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -37,12 +38,13 @@
                 </el-col>
                 <el-col :span="24" v-if="!props.isPreview && props.showSubmit">
                     <el-form-item>
-                        <el-button type="primary"  @click="handleSubmit">提交</el-button>
+                        <el-button type="primary" @click="handleSubmit">提交</el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
         </el-form>
-        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
+            @chooseApprove="chooseApprovers" />
     </div>
 </template>
 
@@ -52,7 +54,7 @@ import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue
 const { proxy } = getCurrentInstance();
 const route = useRoute();
 const formCode = route.query?.formCode ?? '';
-const hasChooseApprove = route.query?.hasChooseApprove ??'false';
+const hasChooseApprove = route.query?.hasChooseApprove ?? 'false';
 /**传参不需要修改*/
 let props = defineProps({
     previewData: {
@@ -67,7 +69,7 @@ let props = defineProps({
         type: Boolean,
         default: true,
     }
-}); 
+});
 const ruleFormRef = ref(null)
 let leaveTypeOptions = [{
     "label": "年假",
@@ -83,15 +85,9 @@ let leaveTypeOptions = [{
     "value": 4
 }];
 /**定义表单字段和预览，根据实际业务表单修改*/
-const form = reactive({
-    leaveType: props.previewData?.leaveType??1,
-    beginDate:props.previewData?.beginDate??"",
-    endDate: props.previewData?.endDate??"",
-    leaveHour: props.previewData?.leaveHour??0,
-    userName:props.previewData?.leaveUserName?? "",
-    userId:props.previewData?.leaveUserId?? "",
-    remark: props.previewData?.remark??""
-})
+
+const { leaveType, beginDate, endDate, leaveHour, userId, userName, remark } = props.previewData;
+const form = reactive({ leaveType, beginDate, endDate, leaveHour, userId, userName, remark });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {
     beginDate: [{
@@ -129,7 +125,7 @@ const disabledEndDate = (time) => {
 /**以下是通用方法不需要修改 views/startFlow/index.vue中调用*/
 /**自选审批人 */
 const chooseApprovers = (data) => {
-    form.approversList = data.approvers; 
+    form.approversList = data.approvers;
     form.approversValid = data.nodeVaild;
 }
 
@@ -150,18 +146,18 @@ const handleSubmit = () => {
     });
 }
 
-const handleValidate = () => { 
+const handleValidate = () => {
     return proxy.$refs['ruleFormRef'].validate((valid) => {
         if (!valid) {
             return Promise.reject(false);
-        }  
-        else if(hasChooseApprove == 'true'){    
-            if (!form.approversValid || form.approversValid == false) {  
-                proxy.$modal.msgError('请选择自选审批人'); 
-                return Promise.reject(false);
-            }  
         }
-        else{
+        else if (hasChooseApprove == 'true') {
+            if (!form.approversValid || form.approversValid == false) {
+                proxy.$modal.msgError('请选择自选审批人');
+                return Promise.reject(false);
+            }
+        }
+        else {
             return Promise.resolve(true);
         }
     });
@@ -175,11 +171,12 @@ defineExpose({
 .disableClss {
     pointer-events: none;
 }
+
 .form-container {
     background: white !important;
     padding: 30px;
     max-width: 750px;
-    min-height:  95%;
+    min-height: 95%;
     left: 0;
     bottom: 0;
     right: 0;

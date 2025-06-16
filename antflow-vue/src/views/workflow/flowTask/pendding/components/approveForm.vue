@@ -10,7 +10,7 @@
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
-                    <component ref="componentFormRef" :key="componentData.processKey" :is="loadedComponent"
+                    <component ref="componentFormRef" :key="approveSubData.taskId" :is="loadedComponent"
                         :previewData="componentData" :isPreview="false" :lfFormData="lfFormDataConfig"
                         :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
                     </component>
@@ -55,22 +55,30 @@ let lfFieldControlVOs = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 
-let approveSubData = reactive({});
+let approveSubData = ref(null);
 
+let props = defineProps({
+    approveFormData: {
+        type: Object,
+        required: true,
+        default: () => { }
+    }
+});
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
 }, { deep: true });
 
 watch(() => instanceViewConfig.value, async (newVal) => {
-    approveSubData = { ...instanceViewConfig.value };
+    approveSubData.value = { ...instanceViewConfig.value };
     await preview(newVal);
 }, { deep: true });
 
 onMounted(async () => {
-    approveSubData = { ...instanceViewConfig.value };
+    approveSubData.value = { ...props.approveFormData };
     await preview(instanceViewConfig.value);
 });
+
 /**
  * 点击页面审批操作按钮
  */
@@ -103,112 +111,27 @@ const clickApproveSubmit = async (btnType) => {
  * @param type 
  */
 const approveSubmit = async (param) => {
-    approveSubData.approvalComment = param.remark;
-    approveSubData.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = param.remark;
+    approveSubData.value.operationType = handleClickType.value;
     if (handleClickType.value == approvalButtonConf.resubmit || handleClickType.value == approvalButtonConf.agree) {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.isLowCodeFlow == true) {
-                        approveSubData.lfFields = JSON.parse(data); //低代码表单字段
+                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {
+                        approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
-                        Object.assign(approveSubData, componentFormData);
+                        approveSubData.value = { ...approveSubData.value, ...componentFormData };
                     }
                 });
             }
         });
     };
     if (handleClickType.value == approvalButtonConf.repulse) {//退回操作
-        approveSubData.backToModifyType = Number(param.backToModifyType);
-        approveSubData.backToNodeId = Number(param.backToNodeId);
+        approveSubData.value.backToModifyType = Number(param.backToModifyType);
+        approveSubData.value.backToNodeId = Number(param.backToNodeId);
     }
-    //console.log('approveSubData==========', JSON.stringify(approveSubData));
-    await approveProcess(approveSubData);//业务处理
-}
-/**
- * 承办操作确定
- * @param param 
- * @param type 
- */
-const approveUndertakeSubmit = async () => {
-    approveSubData.approvalComment = "承办";
-    approveSubData.operationType = handleClickType.value;
-    proxy.$modal.confirm('确定完成操作吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async () => {
-        await processOperation(approveSubData).then((resData) => {
-            if (resData.code == 200) {
-                proxy.$modal.msgSuccess("承办成功");
-
-            } else {
-                proxy.$modal.msgError("承办失败:" + resData.errMsg);
-            }
-
-        }).then(() => {
-            handleTabClick({ paneName: "baseTab" });
-        });
-    });
-}
-/**
- * 表单预览
- */
-const preview = async (viewData) => {
-    let queryParams = {
-        ...viewData,
-        type: 2
-    };
-    proxy.$modal.loading();
-    await getViewBusinessProcess(queryParams).then(async (response) => {
-        if (response.code == 200) {
-            //显示审批按钮
-            let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
-            if (Array.isArray(auditButtons) && auditButtons.length > 0) {
-                approvalButtons.value = auditButtons.map(c => {
-                    return { value: c.buttonType, label: c.name };
-                }).sort(function (a, b) {
-                    return a.value - b.value
-                });
-                approvalButtons.value = uniqueByMap(approvalButtons.value);
-            }
-            if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
-                lfFormDataConfig.value = response.data.lfFormData;
-                lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
-                lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
-                loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;
-            } else {//自定义表单
-                componentData.value = response.data;
-                loadedComponent.value = await loadDIYComponent(viewData.formCode);
-                componentLoaded.value = true;
-            }
-        } else {
-            proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
-            close();
-        }
-        proxy.$modal.closeLoading();
-    });
-}
-
-/**
- * 确定Dialog 弹框
- */
-const sureDialogBtn = async (data) => {
-    approveSubData.operationType = handleClickType.value;
-    approveSubData.approvalComment = data.remark;
-    if (!isMultiple.value) {
-        data.selectList.unshift({
-            id: cache.session.get('userId'),
-            name: decodeURIComponent(cache.session.get('userName')),
-        });
-        approveSubData.userInfos = data.selectList;
-    } else {
-        approveSubData.signUpUsers = data.selectList;
-    }
-    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
-    await approveProcess(approveSubData);
+    await approveProcess(approveSubData.value);//业务处理
 }
 /**
  * 审批
@@ -234,18 +157,99 @@ const approveProcess = async (param) => {
     }).catch(() => { });
 }
 /**
+ * 承办操作确定
+ * @param param 
+ * @param type 
+ */
+const approveUndertakeSubmit = async () => {
+    approveSubData.value.approvalComment = "承办";
+    approveSubData.value.operationType = handleClickType.value;
+    proxy.$modal.confirm('确定完成操作吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        await processOperation(approveSubData.value).then((resData) => {
+            if (resData.code == 200) {
+                proxy.$modal.msgSuccess("承办成功");
+
+            } else {
+                proxy.$modal.msgError("承办失败:" + resData.errMsg);
+            }
+        }).then(async () => {
+            await preview(approveSubData.value);
+            activeName.value = "baseTab";
+        });
+    });
+}
+/**
+ * 表单预览
+ */
+const preview = async (viewData) => {
+    let queryParams = {
+        ...viewData,
+        type: 2
+    };
+    proxy.$modal.loading();
+    await getViewBusinessProcess(queryParams).then(async (response) => {
+        if (response.code == 200) {
+            //显示审批按钮
+            let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
+            if (Array.isArray(auditButtons) && auditButtons.length > 0) {
+                approvalButtons.value = auditButtons.map(c => {
+                    return { value: c.buttonType, label: c.name };
+                }).sort(function (a, b) {
+                    return a.value - b.value
+                });
+                approvalButtons.value = uniqueByMap(approvalButtons.value);
+            }
+            try {
+                if (viewData.isLowCodeFlow == true || viewData.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
+                    lfFormDataConfig.value = response.data.lfFormData;
+                    lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
+                    lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
+                    loadedComponent.value = await loadLFComponent();
+                    componentLoaded.value = true;
+                } else {//自定义表单
+                    componentData.value = response.data;
+                    loadedComponent.value = await loadDIYComponent(viewData.formCode);
+                    componentLoaded.value = true;
+                }
+            } catch (error) {
+                //close();
+            }
+        } else {
+            proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
+            close();
+        }
+        proxy.$modal.closeLoading();
+    });
+}
+
+/**
+ * 确定Dialog 弹框
+ */
+const sureDialogBtn = async (data) => {
+    approveSubData.value.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = data.remark;
+    if (!isMultiple.value) {
+        data.selectList.unshift({
+            id: cache.session.get('userId'),
+            name: decodeURIComponent(cache.session.get('userName')),
+        });
+        approveSubData.value.userInfos = data.selectList;
+    } else {
+        approveSubData.value.signUpUsers = data.selectList;
+    }
+    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    await approveProcess(approveSubData.value);
+}
+/**
  * 选人员Dialog 弹框
  */
 const addUserDialog = () => {
     dialogVisible.value = true;
 }
-const handleTabClick = async (tab, event) => {
-    activeName.value = tab.paneName;
-    if (tab.paneName == 'baseTab') {
-        preview();
-    }
-};
-
 /**
  * 数组去重
  * @param arr 

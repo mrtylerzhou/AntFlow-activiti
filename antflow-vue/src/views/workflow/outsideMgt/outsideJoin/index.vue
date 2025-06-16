@@ -38,7 +38,7 @@
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="260" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)">新增APP</el-button>
             <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>

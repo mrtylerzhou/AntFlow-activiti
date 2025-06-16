@@ -51,7 +51,7 @@
                   <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" fixed="right" width="150" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
                   <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
                   <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>

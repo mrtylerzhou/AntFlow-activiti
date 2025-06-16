@@ -4,9 +4,10 @@
             <el-container>
                 <el-header>
                     <div class="toolbar">
-                        <el-input placeholder="请输入关键字" clearable style="width: 200px">
+                        <el-input v-model="taskMgmtVO.processNumber" placeholder="请输入关键字" clearable
+                            style="width: 200px">
                             <template #append>
-                                <el-button icon="Search" />
+                                <el-button icon="Search" @click="handleQuery" />
                             </template>
                         </el-input>
                     </div>
@@ -21,10 +22,10 @@
                                 <div class="card-content pointer">
                                     <div>
                                         <p class="card-title">
-                                            {{ item.processTypeName }}
+                                            [{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}] {{ item.processTypeName }}
                                         </p>
                                         <p class="card-detail">
-                                            <span>描述：</span>
+                                            <span style="width: 40px;">描述：</span>
                                             <span class="card-reason">{{ item.description }}</span>
                                         </p>
                                         <p class="card-time">
@@ -38,18 +39,27 @@
                                         </p>
                                     </div>
                                     <div class="card-user">
-                                        <span>
-                                            <el-avatar :size="20"
-                                                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+                                        <span class="card-username">
+                                            <el-avatar v-if="item.actualName" :size="18">
+                                                {{ item.actualName.substring(0, 1) }}
                                             </el-avatar>
+                                            {{ item.actualName }}
                                         </span>
-                                        <span class="card-username">{{ item.actualName }}</span>
-                                        <span>
-                                            <el-tag type="success">{{ item.isLowCodeFlow ? 'LF' : 'DIY' }}</el-tag>
+                                        <span class="card-user-runtime">
+                                            {{ getDateDiff(item.runTime) }}
                                         </span>
                                     </div>
                                 </div>
                             </el-card>
+                            <div style="width: 100%;">
+                                <el-button :loading="loadingMore" :disabled="pageDto.page == 1" type="primary"
+                                    style="width: 45%;float: left;"
+                                    @click.prevent="loadMoreFlowList('before')">上一页</el-button>
+                                <el-button :loading="loadingMore" :disabled="pageDto.page * pageDto.pageSize >= total"
+                                    type="primary" style="width: 45%;float: right;"
+                                    @click.prevent="loadMoreFlowList('after')">下一页</el-button>
+
+                            </div>
                         </div>
                     </el-scrollbar>
                 </el-main>
@@ -57,12 +67,12 @@
         </el-aside>
         <el-container>
             <div class="layout-middle">
-                <el-empty v-if="!approveFormData" description="这里空空的,请点击左侧代办列表" />
-                <div class="form-content" v-if="approveFormData">
+                <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
+                <div class="form-content" v-if="approveFormDataConfig">
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="表单信息" name="baseTab">
                             <div v-if="activeName === 'baseTab'">
-                                <ApporveForm />
+                                <ApporveForm :approveFormData="approveFormDataConfig" />
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="审批记录" name="flowStep">
@@ -88,23 +98,23 @@ import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
 import { getPenddinglistPage } from "@/api/workflow/index";
-const { query } = useRoute();
+import { getDateDiff } from "@/utils/antflow/hsharpUtils";
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
-let { setPreviewDrawerConfig, setFormRenderConfig } = store;
+let { setPreviewDrawerConfig } = store;
 const activeIndex = ref(null);
 const activeName = ref('baseTab');
 const dataList = ref([]);
 const loading = ref(true);
+const loadingMore = ref(false);
 const total = ref(0);
-const approveFormData = ref(null);
-
+const approveFormDataConfig = ref(null);
 const data = reactive({
     form: {},
     pageDto: {
         page: 1,
-        pageSize: 10
+        pageSize: 5
     },
     taskMgmtVO: {
         processNumber: undefined,
@@ -120,7 +130,11 @@ const { pageDto, taskMgmtVO } = toRefs(data);
 onMounted(async () => {
     await getList();
 });
-
+/** 搜索按钮操作 */
+async function handleQuery() {
+    pageDto.value.page = 1;
+    await getList();
+}
 /** 查询岗位列表 */
 async function getList() {
     loading.value = true;
@@ -135,21 +149,31 @@ async function getList() {
     });
 }
 
+const loadMoreFlowList = async (type) => {
+    loadingMore.value = true;
+    if (type === 'after') {
+        pageDto.value.page++;
+    } else {
+        pageDto.value.page = pageDto.value.page > 1 ? pageDto.value.page - 1 : 1;
+    }
+    await getList();
+    loadingMore.value = false;
+    toggleFlowActive(dataList.value[0], 0);
+}
+
 const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
-    approveFormData.value = {
-        ...approveFormData.value,
+    approveFormDataConfig.value = {
+        ...approveFormDataConfig.value,
         formCode: data.processCode,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
         isLowCodeFlow: data.isLowCodeFlow,
     };
-    //console.log("approveFormData.value====", JSON.stringify(approveFormData.value));
-    setPreviewDrawerConfig({ ...approveFormData.value });
-    setFormRenderConfig({
-        formCode: data.processCode,
-    });
+    //console.log("approveFormDataConfig.value====", JSON.stringify(approveFormDataConfig.value));
+    setPreviewDrawerConfig({ ...approveFormDataConfig.value });
+    activeName.value = 'baseTab';
 }
 
 const handleClick = (tab, event) => {
@@ -268,17 +292,28 @@ const handleClick = (tab, event) => {
     letter-spacing: 1px;
     border-left: 3px solid var(--current-color);
     padding-left: 8px;
+    max-width: 200px;
+    /* 根据需要调整宽度 */
+    white-space: nowrap;
+    /* 不换行 */
+    overflow: hidden;
+    /* 超出隐藏 */
+    text-overflow: ellipsis;
+    /* 超出显示省略号 */
+    margin-left: 4px;
+    display: block;
+    /* 或 inline-block，根据需要 */
 }
 
 .card-detail {
     display: flex;
     align-items: center;
-    color: #666;
+    color: #222;
     font-size: 12px;
 }
 
 .card-detail .card-reason {
-    color: #fa541c;
+    color: #222;
     font-weight: 500;
     max-width: 200px;
     /* 根据需要调整宽度 */
@@ -295,7 +330,7 @@ const handleClick = (tab, event) => {
 
 .card-time {
     font-size: 13px;
-    color: #888;
+    color: #222;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -303,7 +338,7 @@ const handleClick = (tab, event) => {
 }
 
 .card-time-value {
-    color: #409eff;
+    color: #222;
     font-weight: 500;
     margin-left: 2px;
 }
@@ -311,12 +346,20 @@ const handleClick = (tab, event) => {
 .card-user {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .card-username {
     font-size: 12px;
     font-weight: 500;
-    color: #888;
-    margin-left: 2px;
+    color: #222;
+}
+
+.card-user-runtime {
+    font-size: 12px;
+    font-weight: 500;
+    color: #222;
+    margin-left: auto;
+    /* 添加这一行来将元素推到右边 */
 }
 </style>

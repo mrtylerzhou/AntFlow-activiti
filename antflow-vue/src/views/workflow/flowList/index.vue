@@ -68,7 +68,7 @@
                   <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" fixed="right" width="150" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
                   <el-button link type="success" @click="handleCopy(scope.row)">复制</el-button>
                   <el-button link type="primary" @click="handleVersion(scope.row)">版本管理</el-button>
