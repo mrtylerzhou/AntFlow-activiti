@@ -193,77 +193,85 @@ public class BpmnConfNodePropertyConverter {
             return  new ArrayList<>();
         }
         List<BpmnNodeConditionsConfVueVo> results=new ArrayList<>();
-        List<Integer> conditionParamTypes = baseVo.getConditionParamTypes();
+
+        Map<Integer, List<Integer>> groupedConditionParamTypes = baseVo.getGroupedConditionParamTypes();
         String extJson = baseVo.getExtJson();
-        List<BpmnNodeConditionsConfVueVo> flatVOs=null;
+        Map<Integer, List<BpmnNodeConditionsConfVueVo>> groupedConditionsConf=new HashMap<>();
         if(!StringUtils.isEmpty(extJson)){
             List<List<BpmnNodeConditionsConfVueVo>> extFieldsArray = JSON.parseObject(extJson, new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {
             });
-            flatVOs= extFieldsArray.stream().flatMap(Collection::stream).collect(Collectors.toList());
+            groupedConditionsConf = extFieldsArray.stream().flatMap(Collection::stream).collect(Collectors.groupingBy(BpmnNodeConditionsConfVueVo::getCondGroup));
         }
-        int index=0;
-        for (Integer conditionParamType : conditionParamTypes) {
-            index++;
-            BpmnNodeConditionsConfVueVo vueVo=new BpmnNodeConditionsConfVueVo();
-            ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(conditionParamType);
-            vueVo.setColumnDbname(enumByCode.getFieldName());
-            Integer fieldType = enumByCode.getFieldType();
-            vueVo.setShowName(enumByCode.getDesc());
-            if(fieldType==1){
 
-                Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
-                Map<String,Collection<?>> wrappedValues=null;
-                List objects =new ArrayList();
-                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)) {
-                    //低代码多值条件是固定的,{"key":["a","b"]
-                    wrappedValues =(Map<String,Collection<?>>)ReflectionUtils.getField(field, baseVo);
-                    Collection<Collection<?>> values = wrappedValues.values();
-                    for (Collection<?> value : values) {
-                        objects.addAll(value);
-                    }
-                }else{
-                    objects = (List<?>) ReflectionUtils.getField(field, baseVo);
-                }
-                String join = Joiner.on(",").join(objects);
-                vueVo.setZdy1(join);
-                Field extField = null;
-                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                    extField=field;
-                }else{
-                    extField= FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
-                }
+        for (Map.Entry<Integer, List<Integer>> integerListEntry : groupedConditionParamTypes.entrySet()) {
+            Integer group = integerListEntry.getKey();
+            List<BpmnNodeConditionsConfVueVo> bpmnNodeConditionsConfVueVos = groupedConditionsConf.get(group);
+            List<Integer> conditionParamTypes = integerListEntry.getValue();
+            int index=0;
+            for (Integer conditionParamType : conditionParamTypes) {
+                index++;
+                BpmnNodeConditionsConfVueVo vueVo=new BpmnNodeConditionsConfVueVo();
+                ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(conditionParamType);
+                vueVo.setColumnDbname(enumByCode.getFieldName());
+                Integer fieldType = enumByCode.getFieldType();
+                vueVo.setShowName(enumByCode.getDesc());
+                if(fieldType==1){
 
-
-                List<BaseIdTranStruVo> extFields = null;
-                if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-
-                    if(!CollectionUtils.isEmpty(flatVOs)){
-                        String fixedDownBoxValue = flatVOs.get(index-1).getFixedDownBoxValue();
-                        if(!StringUtils.isEmpty(fixedDownBoxValue)){
-                            vueVo.setFixedDownBoxValue(fixedDownBoxValue);
+                    Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName(),true);
+                    Map<String,Collection<?>> wrappedValues=null;
+                    List objects =new ArrayList();
+                    if (ConditionTypeEnum.isLowCodeFlow(enumByCode)) {
+                        //低代码多值条件是固定的,{"key":["a","b"]
+                        wrappedValues =(Map<String,Collection<?>>)ReflectionUtils.getField(field, baseVo);
+                        Collection<Collection<?>> values = wrappedValues.values();
+                        for (Collection<?> value : values) {
+                            objects.addAll(value);
                         }
+                    }else{
+                        objects = (List<?>) ReflectionUtils.getField(field, baseVo);
                     }
-                }else{
-                    extFields= (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
-                }
-                if(CollectionUtils.isEmpty(extFields)){
-                    continue;
-                }
-                List<BaseKeyValueStruVo> keyValuePairVos=new ArrayList<>();
-                for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
-                    BaseKeyValueStruVo keyValuePairVo=new BaseKeyValueStruVo();
-                    keyValuePairVo.setKey(baseIdTranStruVo.getId());
-                    keyValuePairVo.setValue(baseIdTranStruVo.getName());
-                    keyValuePairVos.add(keyValuePairVo);
-                }
-                String extJsonx = JSON.toJSONString(keyValuePairVos);
-                vueVo.setFixedDownBoxValue(extJsonx);
+                    String join = Joiner.on(",").join(objects);
+                    vueVo.setZdy1(join);
+                    Field extField = null;
+                    if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+                        extField=field;
+                    }else{
+                        extField= FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, enumByCode.getFieldName()+"List",true);
+                    }
 
-            }else{
-                //todo
+
+                    List<BaseIdTranStruVo> extFields = null;
+                    if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
+
+                        if(!CollectionUtils.isEmpty(bpmnNodeConditionsConfVueVos)){
+                            String fixedDownBoxValue = bpmnNodeConditionsConfVueVos.get(index-1).getFixedDownBoxValue();
+                            if(!StringUtils.isEmpty(fixedDownBoxValue)){
+                                vueVo.setFixedDownBoxValue(fixedDownBoxValue);
+                            }
+                        }
+                    }else{
+                        extFields= (List<BaseIdTranStruVo>) ReflectionUtils.getField(extField, baseVo);
+                    }
+                    if(CollectionUtils.isEmpty(extFields)){
+                        continue;
+                    }
+                    List<BaseKeyValueStruVo> keyValuePairVos=new ArrayList<>();
+                    for (BaseIdTranStruVo baseIdTranStruVo : extFields) {
+                        BaseKeyValueStruVo keyValuePairVo=new BaseKeyValueStruVo();
+                        keyValuePairVo.setKey(baseIdTranStruVo.getId());
+                        keyValuePairVo.setValue(baseIdTranStruVo.getName());
+                        keyValuePairVos.add(keyValuePairVo);
+                    }
+                    String extJsonx = JSON.toJSONString(keyValuePairVos);
+                    vueVo.setFixedDownBoxValue(extJsonx);
+
+                }else{
+                    //todo
+                }
+                results.add(vueVo);
             }
-            results.add(vueVo);
         }
+
         return results;
     }
 }
