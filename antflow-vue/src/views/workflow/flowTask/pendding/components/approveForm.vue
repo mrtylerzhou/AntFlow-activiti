@@ -204,7 +204,7 @@ const preview = async (viewData) => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
             try {
-                if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
+                if (viewData.isLowCodeFlow == true || viewData.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
                     lfFormDataConfig.value = response.data.lfFormData;
                     lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                     lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
@@ -216,7 +216,7 @@ const preview = async (viewData) => {
                     componentLoaded.value = true;
                 }
             } catch (error) {
-                close();
+                //close();
             }
         } else {
             proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
