@@ -26,12 +26,18 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
             missingAssigneeDealWay==null){
             throw new JiMuBizException("存在未找到审批人的节点,且未配置处理方式");
         }
-        emplList.add(processMissAssignee(missingAssigneeDealWay));
+        if(missingAssigneeDealWay!=null){
+            BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
+            emplList.add(baseIdTranStruVo);
+        }
         return super.provideAssigneeList(nodeVo, emplList);
     }
     @Override
     public BaseIdTranStruVo processMissAssignee(Integer processingWay){
         MissingAssigneeProcessStragtegyEnum processingStrategy = MissingAssigneeProcessStragtegyEnum.getByCode(processingWay);
+        if(processingStrategy==null){
+            return null;
+        }
         switch (processingStrategy){
             case SKIP:
                 return BaseIdTranStruVo.builder().id(AFSpecialAssigneeEnum.TO_BE_REMOVED.getId()).name(AFSpecialAssigneeEnum.TO_BE_REMOVED.getDesc()).build();
