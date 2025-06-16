@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author TylerZhou
@@ -192,7 +194,16 @@ public class BpmnConfNodePropertyConverter {
         }
         List<BpmnNodeConditionsConfVueVo> results=new ArrayList<>();
         List<Integer> conditionParamTypes = baseVo.getConditionParamTypes();
+        String extJson = baseVo.getExtJson();
+        List<BpmnNodeConditionsConfVueVo> flatVOs=null;
+        if(!StringUtils.isEmpty(extJson)){
+            List<List<BpmnNodeConditionsConfVueVo>> extFieldsArray = JSON.parseObject(extJson, new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {
+            });
+            flatVOs= extFieldsArray.stream().flatMap(Collection::stream).collect(Collectors.toList());
+        }
+        int index=0;
         for (Integer conditionParamType : conditionParamTypes) {
+            index++;
             BpmnNodeConditionsConfVueVo vueVo=new BpmnNodeConditionsConfVueVo();
             ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(conditionParamType);
             vueVo.setColumnDbname(enumByCode.getFieldName());
@@ -225,13 +236,11 @@ public class BpmnConfNodePropertyConverter {
 
                 List<BaseIdTranStruVo> extFields = null;
                 if (ConditionTypeEnum.isLowCodeFlow(enumByCode)){
-                    String extJson = baseVo.getExtJson();
-                    if(!StringUtils.isEmpty(extJson)){
-                        JSONArray jsonArray = JSON.parseArray(extJson);
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        Object fixedDownBoxValue = jsonObject.get("fixedDownBoxValue");
-                        if(fixedDownBoxValue!=null){
-                            vueVo.setFixedDownBoxValue(fixedDownBoxValue.toString());
+
+                    if(!CollectionUtils.isEmpty(flatVOs)){
+                        String fixedDownBoxValue = flatVOs.get(index-1).getFixedDownBoxValue();
+                        if(!StringUtils.isEmpty(fixedDownBoxValue)){
+                            vueVo.setFixedDownBoxValue(fixedDownBoxValue);
                         }
                     }
                 }else{
@@ -247,8 +256,8 @@ public class BpmnConfNodePropertyConverter {
                     keyValuePairVo.setValue(baseIdTranStruVo.getName());
                     keyValuePairVos.add(keyValuePairVo);
                 }
-                String extJson = JSON.toJSONString(keyValuePairVos);
-                vueVo.setFixedDownBoxValue(extJson);
+                String extJsonx = JSON.toJSONString(keyValuePairVos);
+                vueVo.setFixedDownBoxValue(extJsonx);
 
             }else{
                 //todo
