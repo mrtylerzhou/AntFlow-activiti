@@ -1,6 +1,6 @@
 <template>
   <!-- 选择用户 -->
-  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px !important" :before-close="handleClose"
+  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px;height: 550px;" :before-close="handleClose"
     append-to-body>
     <el-form :model="qform" ref="queryRef" :inline="true">
       <el-form-item label="用户名称" prop="description">
