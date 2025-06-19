@@ -14,12 +14,10 @@
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
-         </el-form>
-         <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
+            <el-form-item style="float: right;">
                <el-button type="success" plain icon="Promotion" @click="handleTaskCenter">发起请求</el-button>
-            </el-col>
-         </el-row>
+            </el-form-item>
+         </el-form>
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="dataList">
