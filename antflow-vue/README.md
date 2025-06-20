@@ -6,7 +6,7 @@
  
 ## 平台简介
 
-- 在线预览 &nbsp;&nbsp; [预览入口](http://14.103.207.27/admin/) &nbsp;&nbsp;&nbsp; [系统操作手册](https://gitee.com/tylerzhou/Antflow/wikis/)
+- 在线预览 &nbsp;&nbsp; [预览入口](http://antflow.top/admin/) &nbsp;&nbsp;&nbsp; [系统操作手册](https://gitee.com/tylerzhou/Antflow/wikis/)
 - 预览功能以及 API 介绍文档来啦(持续完善中...) [wiki](https://gitee.com/tylerzhou/Antflow/wikis/)
 - 开源设计器地址 [Gitee 仓库](https://gitee.com/ldhnet/AntFlow-Designer) | [GitHub 仓库](https://github.com/ldhnet/AntFlow-Designer) | [GitCode 仓库](https://gitcode.com/ldhnet/FlowDesigner/overview)
 

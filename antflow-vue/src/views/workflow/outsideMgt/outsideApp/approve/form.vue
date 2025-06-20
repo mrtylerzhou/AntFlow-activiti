@@ -126,10 +126,10 @@ watch(() => props.bizformData, (val) => {
 function selectTypeChanged() {
   if (form.value.approveTypeId == 1) {
     form.value.approveTypeName = "指定人员";
-    form.value.apiUrl = "http://14.103.207.27:7001/user/getUser";
+    form.value.apiUrl = "http://antflow.top:7001/user/getUser";
   } else {
     form.value.approveTypeName = "指定角色";
-    form.value.apiUrl = "http://14.103.207.27:7001/user/getRoleInfo";
+    form.value.apiUrl = "http://antflow.top:7001/user/getRoleInfo";
   }
 }
 
