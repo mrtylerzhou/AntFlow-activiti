@@ -147,7 +147,7 @@ function handlePreview(row) {
 }
 /**  返回按钮操作 */
 const backPage = () => {
-   const obj = { path: "/workflow/flowCategory" };
+   const obj = { path: "/workflow/flowList" };
    proxy.$tab.openPage(obj);
 }
 </script>
