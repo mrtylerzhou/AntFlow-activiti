@@ -177,4 +177,9 @@ public class BpmnConfVo {
     private Integer type;
     private String lfFormData;
     private Long lfFormDataId;
+
+    /**
+     * print
+     */
+    private String printData;
 }

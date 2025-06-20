@@ -20,6 +20,11 @@
             <ReviewWarp />
           </div>
         </el-tab-pane>
+          <el-tab-pane label="打印模板" name="printReview">
+              <div v-if="printReviewShow">
+                  <PrintWarp />
+              </div>
+          </el-tab-pane>
       </el-tabs>
       <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/back-close.png"></label>
     </el-drawer>
@@ -33,6 +38,7 @@ import { useStore } from '@/store/modules/workflow'
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue" 
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
+import PrintWarp from "@/components/Workflow/Preview/printWarp.vue"
 let store = useStore()
 let { setPreviewDrawer } = store
 let previewDrawer = computed(() => store.previewDrawer) 
@@ -40,6 +46,7 @@ const activeName = ref('baseTab')
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
 let flowReviewShow = ref(false);
+let printReviewShow = ref(false);
 let visible = computed({
   get() {
     return previewDrawer.value
@@ -56,6 +63,8 @@ const handleTabClick = (tab, event) => {
     flowStepShow.value = true; 
   } else if (tab.paneName == 'flowReview') { 
     flowReviewShow.value = true;
+  } else if (tab.paneName == 'printReview') {
+      printReviewShow.value = true;
   }
 }
 /**

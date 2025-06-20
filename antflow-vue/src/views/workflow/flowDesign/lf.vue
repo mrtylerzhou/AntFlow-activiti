@@ -30,11 +30,14 @@
         <div v-if="processConfig" v-show="activeStep === 'basicSetting'">
             <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps" :flowType="'LF'" />
         </div>
-        <div v-show="activeStep === 'formDesign'" aria-hidden="true">
-            <DynamicForm ref="formDesign" :lfFormData="lfFormDataConfig" />
+        <div v-show="activeStep === 'formDesign'"  aria-hidden="true">
+            <DynamicForm  ref="formDesign" :lfFormData="lfFormDataConfig" @formDataChange="onFormDataChange" @fieldDataChange="onFieldDataChange" />
         </div>
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
             <Process ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
+        </div>
+        <div v-show="activeStep === 'printDesign'"  aria-hidden="true">
+            <PrintSetting ref="printDesign" :printData="printData" :lfFormData="lfFormDataConfig" :formDesignRef="formDesign"  />
         </div>
         <jsonDialog v-model:visible="viewJson" :title="jsonTitle" :modelValue="nodeConfig" />
     </div>
@@ -50,17 +53,20 @@ import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
+import PrintSetting from "@/components/PrintDesign/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 const { proxy } = getCurrentInstance()
 const route = useRoute();
 const basicSetting = ref(null);
 const processDesign = ref(null);
 const formDesign = ref(null);
+const printDesign = ref(null)
 let activeStep = ref("basicSetting"); // 激活的步骤面板
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
     { label: "表单设计", key: "formDesign" },
     { label: "流程设计", key: "processDesign" },
+    { label: "打印设置", key: "printDesign" },
 ]);
 const changeSteps = (item) => {
     activeStep.value = item.key;
@@ -68,7 +74,12 @@ const changeSteps = (item) => {
 let processConfig = ref(null);
 let nodeConfig = ref(null);
 let lfFormDataConfig = ref(null);
+let printData= ref(null);
 let title = ref('');
+
+// 添加表单数据状态
+let currentFormJson = ref(null);
+let currentFormFields = ref(null);
 
 let viewJson = ref(false);
 let jsonTitle = ref('');
@@ -131,6 +142,28 @@ const previewJson = () => {
     viewJson.value = true;
     jsonTitle.value = "预览JSON";
 }
+
+const onFormDataChange = (newData) => {
+    // 更新当前表单JSON数据
+    currentFormJson.value = newData;
+    console.log("Form data changed:", newData);
+
+    // 如果PrintDesign组件存在，更新其数据
+    if (printDesign.value && printDesign.value.updateFormData) {
+        printDesign.value.updateFormData(newData);
+    }
+};
+
+const onFieldDataChange = (fieldData) => {
+    // 更新当前表单字段数据
+    currentFormFields.value = fieldData;
+    console.log("Field data changed:", fieldData);
+
+    // 如果PrintDesign组件存在，更新其字段数据
+    if (printDesign.value && printDesign.value.updateFieldData) {
+        printDesign.value.updateFieldData(fieldData);
+    }
+};
 </script>
 <style scoped lang="scss">
 @import "@/assets/styles/antflow/workflow.scss";

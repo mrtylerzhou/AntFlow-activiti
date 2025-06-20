@@ -1445,6 +1445,7 @@ create table t_bpmn_conf_lf_formdata
 	id bigint auto_increment,
 	bpmn_conf_id bigint not null,
 	formdata longtext null,
+	printdata longtext null,
 	is_del tinyint default 0 not null,
 	create_user varchar(255) null,
 	create_time timestamp default current_timestamp,

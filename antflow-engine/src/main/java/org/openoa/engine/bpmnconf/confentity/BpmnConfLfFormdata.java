@@ -33,7 +33,13 @@ public class BpmnConfLfFormdata implements Serializable {
      * 表单数据（JSON格式）  
      */  
     @TableField("formdata")  
-    private String formdata;  
+    private String formdata;
+
+    /**
+     * 打印数据（html格式）
+     */
+    @TableField("printdata")
+    private String printdata;
   
     /**  
      * 逻辑删除标记（0：未删除，1：已删除）  

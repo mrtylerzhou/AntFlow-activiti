@@ -6,6 +6,7 @@ import locale from "element-plus/es/locale/lang/zh-cn";
 import "@/assets/styles/index.scss"; // global css
 import VForm3 from "@/./lib/vForm/designer.umd.js";
 import "./lib/vForm/designer.style.css";
+import VueUeditorWrap from 'vue-ueditor-wrap';
 
 import App from "./App";
 import store from "./store";
@@ -82,6 +83,7 @@ app.component("addNode", addNode);
 app.use(router);
 app.use(store);
 app.use(plugins);
+app.use(VueUeditorWrap)
 app.use(elementIcons);
 app.component("svg-icon", SvgIcon);
 app.use(VForm3); //全局注册VForm3，同时注册了v-form-designer、v-form-render等组件

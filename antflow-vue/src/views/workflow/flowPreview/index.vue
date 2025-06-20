@@ -9,6 +9,7 @@
           <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
           <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
           <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
+          <el-tab-pane label="打印模板预览" name="print"></el-tab-pane>
         </el-tabs>
         <el-row>
           <el-col :span="24" v-if="activeTab === 'flowForm'" class="item">
@@ -28,6 +29,11 @@
               <Process ref="processDesign" :processData="nodeConfig" />
             </div>
           </el-col>
+            <el-col :span="24" v-if="activeTab === 'print'" class="item">
+                <div v-if="printData" class="flow">
+                    <PrintSetting ref="printDesign" :printData="printData" />
+                </div>
+            </el-col>
         </el-row>
       </div>
     </div>
@@ -42,6 +48,7 @@ import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import PrintSetting from "@/components/PrintDesign/index.vue";
 
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -54,6 +61,8 @@ let title = ref('')
 let id = route.query?.id
 let loadedComponent = ref(null)
 let componentLoaded = ref(null)
+let printData = ref(null)
+let printDesign = ref(null)
 
 /** 关闭按钮 */
 function close() {
@@ -74,6 +83,7 @@ const init = async () => {
   processConfig.value = data;
   title.value = data?.bpmnName;
   nodeConfig.value = data?.nodeConfig;
+    printData.value = data?.printData;
   if (data.isLowCodeFlow == '1') {//低代码表单
     lfFormDataConfig.value = data?.lfFormData
     lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);

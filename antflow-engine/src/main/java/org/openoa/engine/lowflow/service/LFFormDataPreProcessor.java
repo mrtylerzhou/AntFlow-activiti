@@ -45,6 +45,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         lfFormdata.setBpmnConfId(confId);
         lfFormdata.setFormdata(lfForm);
         lfFormdata.setCreateUser(SecurityUtils.getLogInEmpName());
+        lfFormdata.setPrintdata(confVo.getPrintData());
         lfFormdataService.save(lfFormdata);
         confVo.setLfFormDataId(lfFormdata.getId());
         FormConfigWrapper formConfigWrapper = JSON.parseObject(lfForm, FormConfigWrapper.class);
@@ -78,6 +79,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         confVo.setLfFormData(lfFormdata.getFormdata());
         confVo.setLfFormDataId(lfFormdata.getId());
+        confVo.setPrintData(lfFormdata.getPrintdata());
     }
 
     private void parseWidgetListRecursively(List<FormConfigWrapper.LFWidget> widgetList,Long confId,Long formDataId,List<BpmnConfLfFormdataField> result){

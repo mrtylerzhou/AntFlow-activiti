@@ -10,4 +10,5 @@ public class UDLFApplyVo extends BusinessDataVo {
    private String remark;
    private Map<String,Object> lfFields;
    private String lfFormData;;
+   private String printData;
 }

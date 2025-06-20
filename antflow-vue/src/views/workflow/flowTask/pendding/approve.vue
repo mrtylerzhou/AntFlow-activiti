@@ -21,6 +21,11 @@
                         <ReviewWarp />
                     </div>
                 </el-tab-pane>
+                <el-tab-pane label="打印模板" name="printReview">
+                    <div v-if="activeName === 'printReview'">
+                        <PrintWarp/>
+                    </div>
+                </el-tab-pane>
             </el-tabs>
         </div>
     </div>
@@ -33,6 +38,7 @@ import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
 const { query } = useRoute();
 import { useStore } from '@/store/modules/workflow';
+import PrintWarp from "@/components/Workflow/Preview/printWarp.vue"
 let store = useStore();
 let { setPreviewDrawerConfig } = store;
 const formCode = query?.formCode;

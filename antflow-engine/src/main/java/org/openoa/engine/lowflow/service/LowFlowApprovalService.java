@@ -197,6 +197,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         vo.setLfFormData(lfFormdata.getFormdata());
+        vo.setPrintData(lfFormdata.getPrintdata());
         return vo;
     }
 

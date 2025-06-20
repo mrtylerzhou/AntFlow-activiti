@@ -18,6 +18,9 @@ let props = defineProps({
     default: null,
   }
 });
+
+const emit = defineEmits(['formDataChange', 'fieldDataChange']);
+
 let lfFormDataConf = computed(() => props.lfFormData)
 const formDesign = ref(null)
 let formField = {};
@@ -27,6 +30,17 @@ const observer = new MutationObserver(() => {
   if (ObjectUtils.isObjectChanged(formField, returnFiled)) {
     formField = returnFiled;
     store.setLowCodeFormField(formField);
+
+    // 发射字段数据变化事件
+    emit('fieldDataChange', formField);
+
+    // 获取并发射表单JSON数据变化事件
+      try {
+          const formJson = formDesign.value.getFormJson();
+          emit('formDataChange', formJson);
+      } catch (error) {
+          console.error('获取表单JSON数据失败:', error);
+      }
   }
 });
 
