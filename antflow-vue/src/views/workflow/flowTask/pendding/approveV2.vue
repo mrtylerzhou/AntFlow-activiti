@@ -40,10 +40,10 @@
                                     </div>
                                     <div class="card-user">
                                         <span class="card-username">
-                                            <el-avatar v-if="item.actualName" :size="18">
-                                                {{ item.actualName.substring(0, 1) }}
+                                            <el-avatar v-if="item.userName" :size="18">
+                                                {{ item.userName.substring(0, 1) }}
                                             </el-avatar>
-                                            {{ item.actualName }}
+                                            {{ item.userName }}
                                         </span>
                                         <span class="card-user-runtime">
                                             {{ getDateDiff(item.runTime) }}
