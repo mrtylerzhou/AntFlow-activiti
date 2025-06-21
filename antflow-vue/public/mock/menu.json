@@ -275,15 +275,15 @@
       ]
     },
     {
-      "name": "http://14.103.207.27:7001/doc.html",
-      "path": "http://14.103.207.27:7001/doc.html",
+      "name": "http://antflow.top:7001/doc.html",
+      "path": "http://antflow.top:7001/doc.html",
       "hidden": true,
       "component": "Layout",
       "meta": {
         "title": "接口文档",
         "icon": "swagger",
         "noCache": false,
-        "link": "http://14.103.207.27:7001/doc.html"
+        "link": "http://antflow.top:7001/doc.html"
       }
     },
     {

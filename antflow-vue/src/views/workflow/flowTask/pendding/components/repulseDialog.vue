@@ -71,13 +71,12 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="19" v-if="chooseNodeVisible">
-                        <el-form-item label="审批节点" prop="backToNodeId">
+                        <el-form-item label="审批节点" prop="backToNodeId">    
                             <TagFlowNodeSelect v-model:value="repulseForm.backToNodeId" :flowNode="checkedFlowNode">
-                                <template #append>
-                                    <el-button class="append-add" type="default" icon="Search"
-                                        @click="handleChooseNode" />
+                                <template #append> 
+                                    <el-button class="append-add" type="default" icon="Search" @click="handleChooseNode" />
                                 </template>
-                            </TagFlowNodeSelect>
+                            </TagFlowNodeSelect>   
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
@@ -88,17 +87,16 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <div class="mb-4">
-                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList"
-                        @click="repulseForm.remark = btnTxt">
-                        {{ btnTxt }}
-                    </el-button>
+                <div class="mb-4"> 
+                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList" @click="repulseForm.remark = btnTxt">
+                    {{ btnTxt }}
+                    </el-button>  
                 </div>
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="openVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="clickSubmit(repulseFormRef)">确 定</el-button>
+                    <el-button type="primary" @click="clickSubmit(repulseFormRef)">确 定</el-button>       
                 </div>
             </template>
         </el-dialog>
@@ -111,7 +109,7 @@
 import { ref } from 'vue';
 import ReviewWarp from './chooseFlowNode/reviewWarp.vue';
 import TagFlowNodeSelect from './TagFlowNodeSelect/index.vue';
-import { useStore } from '@/store/modules/workflow';
+import { useStore } from '@/store/modules/workflow';   
 let store = useStore();
 let { setApproveChooseFlowNodeConfig } = store;
 let props = defineProps({
@@ -125,33 +123,28 @@ let checkedFlowNode = ref(null);
 const repulseFormRef = ref(null);
 const repulseForm = reactive({
     backToModifyType: 3,
-    backToNodeId: '',
+    backToNodeId:'',
     remark: ''
 });
-/**
- * 打开dialog
- */
-let openVisible = computed({
-    get() {
-        return props.visible
-    },
-    set(val) {
-        emits('update:visible', val)
-    }
-});
-/**
- * 打开选择节点dialog
- */
+
 let openFlowNodeVisible = computed({
     get() {
         return store.approveChooseFlowNode.visible
     },
-    set() {
-        repulseForm.backToNodeId = store.approveChooseFlowNode.nodeId;
+    set() { 
+        repulseForm.backToNodeId = store.approveChooseFlowNode.nodeId; 
         checkedFlowNode.value = store.approveChooseFlowNode;
     }
-});
-/**选中退回节点 */
+})
+
+let openVisible = computed({
+    get() {
+        return props.visible
+    },
+    set(val) { 
+        emits('update:visible', val)
+    }
+})
 const chooseNodeVisible = computed({
     get() {
         return repulseForm.backToModifyType == 4 || repulseForm.backToModifyType == 5
@@ -169,40 +162,39 @@ let rules = {
     backToModifyType: [{
         required: true,
         message: '请选择退回类型',
-        trigger: ['change', 'blur']
+        trigger: ['change','blur']
     }],
     backToNodeId: [{
         required: true,
         message: '请选择审批节点',
-        trigger: ['change', 'blur']
+        trigger: ['change','blur']
     }],
     remark: [{
         required: true,
         message: '请输入备注',
-        trigger: ['change', 'blur']
+        trigger:['change','blur']
     }]
 };
-/**确认弹框 */
+
 const clickSubmit = (repulseFormRef) => {
     if (!repulseFormRef) return;
     repulseFormRef.validate(async (valid) => {
         if (valid) {
-            emits('update:visible', false)
+            openVisible = false;
             emits('clickConfirm', repulseForm)
         }
     });
-}
-/**选中节点后事件 */
-const handleChooseNode = () => {
+} 
+
+const handleChooseNode = () => { 
     setApproveChooseFlowNodeConfig({
         visible: true
     });
 }
-/**选中节点后关闭弹框 */
-const handleFlowNodeClose = () => {
+const handleFlowNodeClose = () => {  
     setApproveChooseFlowNodeConfig({
         visible: false
     });
 }
 
-</script>
+</script> 

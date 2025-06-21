@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
-        <el-tabs v-model="activeName" class="card-box" @tab-click="handleClickTab">
-            <el-tab-pane label="流程分类(LF)" name="LFTab">
+        <el-tabs v-model="activeName" @tab-click="handleClickTab" style="padding: 0px 10px">
+            <el-tab-pane label="流程分类(LF)" name="LFTab" style="height: 80vh;">
                 <div class="query-box">
                     <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
                         <el-form-item label="关键字" prop="description">
@@ -12,15 +12,13 @@
                         <el-form-item>
                             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+                            <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">新增(LF)</el-button>
+                        </el-form-item>
+                        <el-form-item style="float: right;">
+                            <right-toolbar v-model:showSearch="showSearch" @queryTable="getLFPageList"
+                                :columns="columns"></right-toolbar>
                         </el-form-item>
                     </el-form>
-                    <el-row :gutter="10" class="mb8">
-                        <el-col :span="1.5">
-                            <el-button type="success" plain icon="CirclePlus" @click="createLFTemp">新增(LF)</el-button>
-                        </el-col>
-                        <right-toolbar v-model:showSearch="showSearch" @queryTable="getLFPageList"
-                            :columns="columns"></right-toolbar>
-                    </el-row>
                 </div>
                 <div class="table-box">
                     <el-table v-loading="loading" :data="LFPageList" height="60vh">
@@ -66,12 +64,12 @@
                             </template>
                         </el-table-column>
                     </el-table>
-                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
-                        v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
                 </div>
+                <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
+                    v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
             </el-tab-pane>
 
-            <el-tab-pane label="流程分类(DIY)" name="DIYTab">
+            <el-tab-pane label="流程分类(DIY)" name="DIYTab" style="height: 80vh;">
                 <div class="query-box">
                     <el-row :gutter="10" class="mb8">
                         <el-col :span="1.5">

@@ -29,7 +29,7 @@ import LineWarp from './lineWarp.vue';
 import { getFlowPreview } from '@/api/workflow/index';
 import { FormatPreviewUtils } from '@/utils/antflow/formatFlowPreview';
 import { useStore } from '@/store/modules/workflow';
-import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/antflow/zoom.js';
+import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/zoom.js';
 const { proxy } = getCurrentInstance();
 let store = useStore();
 const antflowDesignRef = ref(null);

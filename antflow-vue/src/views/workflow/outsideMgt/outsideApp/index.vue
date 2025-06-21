@@ -44,9 +44,9 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-        @pagination="getList" />
     </div>
+    <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+      @pagination="getList" />
   </div>
 </template>
 

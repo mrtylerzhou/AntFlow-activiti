@@ -46,63 +46,63 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-        @pagination="getList" />
     </div>
-    <!-- 添加或修改委托对话框 -->
-    <el-dialog :title="title" v-model="open" width="550px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;"
-        label-position="top">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item prop="businessPartyMark">
-              <template #label>
-                <span>
-                  <el-tooltip content="项目唯一标识" placement="top">
-                    <el-icon><question-filled /></el-icon>
-                  </el-tooltip>
-                  项目标识
-                </span>
-              </template>
-              <el-input v-model="form.businessPartyMark" placeholder="请输入项目标识" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="项目名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入项目名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="接入类型" prop="accessType">
-              <el-radio-group v-model="form.accessType">
-                <el-radio value="1" :disabled=true>嵌入式</el-radio>
-                <el-radio value="0">调入式</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="cancel">取 消</el-button>
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-
-        </div>
-      </template>
-    </el-dialog>
-    <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+      @pagination="getList" />
   </div>
+  <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
+  <!-- 添加或修改委托对话框 -->
+  <el-dialog :title="title" v-model="open" width="550px" append-to-body>
+    <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;"
+      label-position="top">
+      <el-row>
+        <el-col :span="24">
+          <el-form-item prop="businessPartyMark">
+            <template #label>
+              <span>
+                <el-tooltip content="项目唯一标识" placement="top">
+                  <el-icon><question-filled /></el-icon>
+                </el-tooltip>
+                项目标识
+              </span>
+            </template>
+            <el-input v-model="form.businessPartyMark" placeholder="请输入项目标识" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="项目名称" prop="name">
+            <el-input v-model="form.name" placeholder="请输入项目名称" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="接入类型" prop="accessType">
+            <el-radio-group v-model="form.accessType">
+              <el-radio value="1" :disabled=true>嵌入式</el-radio>
+              <el-radio value="0">调入式</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="备注">
+            <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>

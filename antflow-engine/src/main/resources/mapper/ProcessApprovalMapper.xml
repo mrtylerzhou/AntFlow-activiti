@@ -145,7 +145,7 @@
                  SELECT t.PROC_INST_ID_    AS processInstanceId,
                         b.PROCESSINESS_KEY AS processKey,
                         b.create_user      AS userId,
-                        b.user_name        As userName,
+                        b.user_name        AS userName,
                         b.CREATE_TIME      AS createTime,
                         b.BUSINESS_ID      AS businessId,
                         b.description      AS description,

@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.base.util;
 
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.entity.Employee;

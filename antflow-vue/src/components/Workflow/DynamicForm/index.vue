@@ -9,7 +9,7 @@
 
 <script setup>
 import { ref, onUnmounted, onMounted, computed, watch } from 'vue'
-import { ObjectUtils } from '@/utils/antflow/ObjectUtils'
+import { ObjectUtils } from '@/utils/ObjectUtils'
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
 let props = defineProps({

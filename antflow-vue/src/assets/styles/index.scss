@@ -124,12 +124,13 @@ aside {
 
 //main-container全局样式
 .app-container {
-  margin: 10px 10px 10px 10px;
-  // height: 100%;
+  margin: 10px 10px 10px 10px; 
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
+  height: calc(86vh);
+  background-color: #fff;
 }
 
 .components-container {
@@ -138,14 +139,14 @@ aside {
 }
 
 .query-box {
-  padding: 10px;
-  margin-bottom: 5px;
+  padding-top: 20px; 
+  padding-left: 10px;
+  padding-right: 10px;
   background-color: #fff;
 }
 .table-box {
-  padding: 10px;
-  margin-top: 5px;
-  background-color: #fff;
+  padding: 10px; 
+  background-color: #fff;  
 }
 .text-center {
   text-align: center;

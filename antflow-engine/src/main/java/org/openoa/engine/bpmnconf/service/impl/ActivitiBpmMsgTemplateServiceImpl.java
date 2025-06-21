@@ -12,6 +12,7 @@ import org.openoa.base.constant.enums.MsgNoticeTypeEnum;
 import org.openoa.base.constant.enums.NoticeReplaceEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.Employee;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 import org.openoa.base.vo.UserMsgBathVo;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ActivitiBpmMsgTemplateServiceImpl {
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     @Autowired

@@ -7,10 +7,10 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.entity.UserMessage;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.MessageServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -449,7 +449,7 @@ public class UserMsgUtils {
             return false;
         }
 
-        EmployeeServiceImpl bean = SpringBeanUtils.getBean(EmployeeServiceImpl.class);
+        AfUserService bean = SpringBeanUtils.getBean(AfUserService.class);
 
         long count = bean.checkEmployeeEffective(userId);
 

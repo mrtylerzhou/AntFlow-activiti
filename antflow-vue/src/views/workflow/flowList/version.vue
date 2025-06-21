@@ -60,9 +60,9 @@
                </template>
             </el-table-column>
          </el-table>
-         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-            @pagination="getList" />
       </div>
+      <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+         @pagination="getList" />
    </div>
 </template>
 
@@ -147,7 +147,7 @@ function handlePreview(row) {
 }
 /**  返回按钮操作 */
 const backPage = () => {
-   const obj = { path: "/workflow/flowCategory" };
+   const obj = { path: "/workflow/flowList" };
    proxy.$tab.openPage(obj);
 }
 </script>

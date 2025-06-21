@@ -1,6 +1,6 @@
 // ObjectUtils.isObjectChanged(tar1, tar2)
 // ObjectUtils.isObjectChangedSimple(tar1, tar2)
-//import {  ObjectUtils } from '@/utils/antflow/ObjectUtils'
+//import {  ObjectUtils } from '@/utils/ObjectUtils'
 export class ObjectUtils {
     static getDataType(data) {
       const temp = Object.prototype.toString.call(data);

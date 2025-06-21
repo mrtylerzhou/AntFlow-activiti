@@ -27,8 +27,7 @@ public class ProcessRecordInfoVo {
     /***
      *
      */
-    //todo
-    Employee employee;
+    BaseIdTranStruVo employee;
     /***
      * process title
      */

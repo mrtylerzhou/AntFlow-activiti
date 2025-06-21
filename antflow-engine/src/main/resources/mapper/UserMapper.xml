@@ -78,9 +78,6 @@
             <if test="employeeId != null">
                 id = ${employeeId}
             </if>
-            <if test="employeeId == null">
-                1=2
-            </if>
         </where>
     </select>
     <!--此方法主要用于展示查找员工指定层级的领导,这可不是一个普通的功能,比如指定5级,就会顺着找五个层级的所有领导,然后生成五层审批节点(不是在同一个节点上),很多工作流实现起来很麻烦,但是antflow非常方便,

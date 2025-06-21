@@ -12,13 +12,14 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.service.AfUserService;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.openoa.engine.factory.FormFactory;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     @Autowired
     private DepartmentServiceImpl departmentService;
@@ -131,8 +131,8 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         if (ApprovalFormCodeEnum.exist(businessDataVo.getFormCode())) {
             // 被审批人
             processTitlePrefix = Optional
-                    .ofNullable(employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmplId()))
-                    .orElse(new Employee()).getUsername();
+                    .ofNullable(employeeService.getById(bpmnStartConditionsVo.getApprovalEmplId()))
+                    .orElse(new BaseIdTranStruVo()).getName();
         } else {
             //start user
             processTitlePrefix = businessDataVo.getSubmitUser();

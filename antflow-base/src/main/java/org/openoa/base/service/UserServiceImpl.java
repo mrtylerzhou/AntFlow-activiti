@@ -1,7 +1,9 @@
 package org.openoa.base.service;
 
 import com.google.common.collect.Lists;
+import org.openoa.base.entity.Employee;
 import org.openoa.base.mapper.UserMapper;
+import org.openoa.base.util.EmployeeUtil;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,5 +88,36 @@ public class UserServiceImpl implements AfUserService{
     public BaseIdTranStruVo queryEmployeeDirectLeaderById(String employeeId){
         BaseIdTranStruVo baseIdTranStruVo = userMapper.getDirectLeaderByEmployeeId(employeeId);
         return baseIdTranStruVo;
+    }
+
+
+    /**
+     * 此方法主要用于通知系统,参数比较多,但至少要返回邮箱,如果需要手机号通知还需要返回手机号
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getEmployeeDetailById(String id){
+        return userMapper.getEmployeeDetailById(id);
+    }
+
+    /**
+     * 和getEmployeeDetailById类似,但是返回的是集合
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<Employee> getEmployeeDetailByIds(Collection<String> ids){
+        return userMapper.getEmployeeDetailByIds(ids);
+    }
+
+    /**
+     * 返回的是数数量,0代表无有效用户
+     * @param id
+     * @return
+     */
+    @Override
+    public long checkEmployeeEffective(String id){
+        return userMapper.checkEmployeeEffective(id);
     }
 }

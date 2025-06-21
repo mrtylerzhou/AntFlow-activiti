@@ -10,6 +10,7 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -72,7 +73,7 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
     private UserEmailSendMapper userEmailSendMapper;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
 
     public ResultAndPage<UserMessage> page(PageDto pageDto) {

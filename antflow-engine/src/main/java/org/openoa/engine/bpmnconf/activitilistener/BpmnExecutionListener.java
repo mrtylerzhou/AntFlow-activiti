@@ -116,14 +116,12 @@ public class BpmnExecutionListener implements ExecutionListener {
             //如果是外部流程则设置布尔值为true
             isOutside = true;
 
-            //根据业务方Id&流程配置Id查询单个业务方回调接口配置
-            OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
 
             BpmnConfVo bpmnConfVo = new BpmnConfVo();
             BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
 
             //回调通知业务方流程已完成
-            thirdPartyCallBackService.doCallback(Optional.ofNullable(outSideBpmCallbackUrlConf).map(OutSideBpmCallbackUrlConf::getBpmFlowCallbackUrl).orElse(""),
+            thirdPartyCallBackService.doCallback(
                     PROC_FINISH_CALL_BACK, bpmnConfVo, processNumber, businessId,"");
 
         } else {

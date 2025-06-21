@@ -10,16 +10,13 @@ import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.OperationResp;
-import org.openoa.base.vo.SendParam;
-import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.base.vo.UrlParams;
+import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.BpmManualNotify;
 import org.openoa.engine.bpmnconf.mapper.*;
 import org.openoa.engine.bpmnconf.service.impl.BpmTaskconfigServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.bpmnconf.util.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +44,7 @@ public class NotifyServiceImpl {
     private TaskService taskService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     @Autowired
     private BpmFlowrunEntrustMapper bpmFlowrunEntrustMapper;
@@ -110,7 +107,7 @@ public class NotifyServiceImpl {
         try {
             TaskMgmtVO taskMgmtVO = taskMgmtMapper.findByEntryId(entryId);
 
-            Employee startUser = employeeService.qryLiteEmployeeInfoById(taskMgmtVO.getApplyUser());
+            BaseIdTranStruVo startUser = employeeService.getById(taskMgmtVO.getApplyUser());
             //get process def id
             String procDefId = taskMgmtVO.getProcessName().split(":")[0];
             //process's name
@@ -118,7 +115,7 @@ public class NotifyServiceImpl {
             //code
             String code = taskMgmtVO.getProcessNumber().split("_")[0];
             BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().entryId(entryId).build());
-            String title = "您参与的" + processName + bpmBusinessProcess.getBusinessNumber() + "已被" + startUser.getUsername() + "撤销。";
+            String title = "您参与的" + processName + bpmBusinessProcess.getBusinessNumber() + "已被" + startUser.getName() + "撤销。";
             //String content="您参与的"+processName+bpmBusinessProcess.getBusinessNumber()+bpmBusinessProcess.getDescription()+"已被"+startUser.getName() +"撤销。";
             UrlParams urlParams = new UrlParams();
             urlParams.setBusinessId(entryId.split(":")[1]);

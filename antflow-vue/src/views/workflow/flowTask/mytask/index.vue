@@ -14,12 +14,10 @@
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
-         </el-form>
-         <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
+            <el-form-item style="float: right;">
                <el-button type="success" plain icon="Promotion" @click="handleTaskCenter">发起请求</el-button>
-            </el-col>
-         </el-row>
+            </el-form-item>
+         </el-form>
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="dataList">
@@ -58,13 +56,11 @@
                </template>
             </el-table-column>
          </el-table>
-
-         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-            @pagination="getList" />
-         <previewDrawer v-if="visible" />
       </div>
+      <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+         @pagination="getList" />
+      <previewDrawer v-if="visible" />
    </div>
-
 </template>
 
 <script setup>

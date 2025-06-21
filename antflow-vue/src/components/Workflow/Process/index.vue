@@ -31,7 +31,7 @@ import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
-import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
+import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/zoom.js";
 import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let { setIsTried } = useStore()
