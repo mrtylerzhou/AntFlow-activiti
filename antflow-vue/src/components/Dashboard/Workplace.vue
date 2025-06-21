@@ -76,7 +76,7 @@
                             <el-icon><question-filled /></el-icon>
                         </el-tooltip>
                         <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
-                            <a href="http://14.103.207.27/ruoyi/#/hr/leavetime" target="_blank">
+                            <a href="http://antflow.top/ruoyi/#/hr/leavetime" target="_blank">
                                 <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
                             </a>
                         </el-tooltip>
