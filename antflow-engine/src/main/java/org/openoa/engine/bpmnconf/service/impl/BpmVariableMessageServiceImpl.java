@@ -20,7 +20,9 @@ import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.User;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.RoleServiceImpl;
+import org.openoa.base.service.UserServiceImpl;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -68,7 +70,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
     @Autowired
     private RoleServiceImpl roleService;
 
@@ -673,17 +675,17 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         if (ObjectUtils.isEmpty(propertys)) {
                             continue;
                         }
-                        List<String> emplNames = employeeService.qryLiteEmployeeInfoByIds(propertys)
+                        List<String> emplNames = employeeService.queryUserByIds(propertys)
                                 .stream()
-                                .map(Employee::getUsername).collect(Collectors.toList());
+                                .map(BaseIdTranStruVo::getName).collect(Collectors.toList());
                         if (!ObjectUtils.isEmpty(emplNames)) {
                             wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), StringUtils.join(emplNames, ","));
                         }
                     } else {
                        if(!property.toString().equals("0")){
-                           Employee employee = employeeService.qryLiteEmployeeInfoById(property.toString());
+                           BaseIdTranStruVo employee = employeeService.getById(property.toString());
                            if (employee!=null) {
-                               wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
+                               wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getName());
                            }
                        }
                     }

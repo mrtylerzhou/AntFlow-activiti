@@ -5,26 +5,24 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
-import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.EmployeeServiceImpl;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +50,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private HistoryService historyService;
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
     @Autowired
     private BpmnNodeLfFormdataFieldControlServiceImpl bpmnNodeLfFormdataFieldControlService;
     @Autowired
@@ -83,7 +81,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         //set process desc
         processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
 
-        Employee employee = employeeService.qryLiteEmployeeInfoById(bpmBusinessProcess.getCreateUser());
+        BaseIdTranStruVo employee = employeeService.getById(bpmBusinessProcess.getCreateUser());
         processInfoVo.setEmployee(employee);
         processInfoVo.setCreateTime(bpmBusinessProcess.getCreateTime());
         //set start userId

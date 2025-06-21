@@ -14,6 +14,7 @@ import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -52,7 +53,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
     private OutSideBpmBaseServiceImpl outSideBpmBaseService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;

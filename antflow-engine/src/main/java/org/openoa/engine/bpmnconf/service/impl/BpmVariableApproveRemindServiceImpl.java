@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.base.entity.Employee;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
@@ -68,7 +69,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
     @Autowired
     private ProcessBusinessContans processBusinessContans;
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     @Autowired
     private InformationTemplateUtils informationTemplateUtils;

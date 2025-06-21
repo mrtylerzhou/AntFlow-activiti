@@ -13,9 +13,11 @@ import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
@@ -45,7 +47,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     @Autowired
     private BpmProcessApplicationTypeServiceImpl bpmProcessApplicationTypeService;
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
     @Autowired
     private BpmProcessCategoryServiceImpl processCategoryService;
     @Autowired
@@ -208,11 +210,11 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                 .filter(o -> o.getCreateUserId()!=null)
                 .map(BpmProcessAppApplicationVo::getCreateUserId)
                 .collect(Collectors.toList());
-        Map<String, Employee> employeeMap =!CollectionUtils.isEmpty(userIds)
-                ? employeeService.getEmployeeDetailByIds(userIds)
+        Map<String, BaseIdTranStruVo> employeeMap =!CollectionUtils.isEmpty(userIds)
+                ? employeeService.queryUserByIds(userIds)
                 .stream()
                 .collect(Collectors.toMap(
-                        Employee::getId,
+                        BaseIdTranStruVo::getId,
                         v -> v,
                         (v1, v2) -> v1))
                 : Maps.newHashMap();
@@ -278,10 +280,10 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
             }
 
             //set create user
-            Employee employee = Optional
+            BaseIdTranStruVo employee = Optional
                     .ofNullable(employeeMap.get(o.getCreateUserId()))
-                    .orElse(new Employee());
-            o.setCreateUserName(employee.getUsername());
+                    .orElse(new BaseIdTranStruVo());
+            o.setCreateUserName(employee.getName());
 
             if (!StringUtils.isEmpty(o.getLookUrl())) {
                 o.setLookUrl(StringEscapeUtils.unescapeHtml4(o.getLookUrl()));
