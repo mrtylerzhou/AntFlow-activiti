@@ -27,7 +27,7 @@
       <el-table v-loading="loading" :data="list">
         <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="项目名称" align="center" prop="name" v-if="columns[1].visible"
+        <el-table-column label="租户名称" align="center" prop="name" v-if="columns[1].visible"
           :show-overflow-tooltip="true" />
         <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible"
           :show-overflow-tooltip="true" />
@@ -49,60 +49,61 @@
     </div>
     <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
       @pagination="getList" />
-  </div>
-  <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
-  <!-- 添加或修改委托对话框 -->
-  <el-dialog :title="title" v-model="open" width="550px" append-to-body>
-    <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;"
-      label-position="top">
-      <el-row>
-        <el-col :span="24">
-          <el-form-item prop="businessPartyMark">
-            <template #label>
-              <span>
-                <el-tooltip content="项目唯一标识" placement="top">
-                  <el-icon><question-filled /></el-icon>
-                </el-tooltip>
-                项目标识
-              </span>
-            </template>
-            <el-input v-model="form.businessPartyMark" placeholder="请输入项目标识" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-form-item label="项目名称" prop="name">
-            <el-input v-model="form.name" placeholder="请输入项目名称" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-form-item label="接入类型" prop="accessType">
-            <el-radio-group v-model="form.accessType">
-              <el-radio value="1" :disabled=true>嵌入式</el-radio>
-              <el-radio value="0">调入式</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-form-item label="备注">
-            <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
 
-      </div>
-    </template>
-  </el-dialog>
+    <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
+    <!-- 添加或修改委托对话框 -->
+    <el-dialog :title="title" v-model="open" width="550px" append-to-body>
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;"
+        label-position="top">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item prop="businessPartyMark">
+              <template #label>
+                <span>
+                  <el-tooltip content="项目唯一标识" placement="top">
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  项目标识
+                </span>
+              </template>
+              <el-input v-model="form.businessPartyMark" placeholder="请输入项目标识" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="租户名称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入租户名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="接入类型" prop="accessType">
+              <el-radio-group v-model="form.accessType">
+                <el-radio value="1" :disabled=true>嵌入式</el-radio>
+                <el-radio value="0">调入式</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+
+        </div>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup>
@@ -135,17 +136,13 @@ const data = reactive({
       trigger: ['blur', 'change']
     }],
     name: [
-      { required: true, message: '请输入项目名称', trigger: 'blur' },
+      { required: true, message: '请输入租户名称', trigger: 'blur' },
       { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
     ],
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
 const { page, vo, form, rules, appData } = toRefs(data);
-
-onMounted(async () => {
-  getList();
-})
 
 // 列显隐信息
 const columns = ref([
@@ -155,6 +152,10 @@ const columns = ref([
   { key: 3, label: `备注`, visible: true },
   { key: 4, label: `创建时间`, visible: true }
 ]);
+
+onMounted(() => {
+  getList();
+});
 
 /** 查询接入项目列表 */
 function getList() {
