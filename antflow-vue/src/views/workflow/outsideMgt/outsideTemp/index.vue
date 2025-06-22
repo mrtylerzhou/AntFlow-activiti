@@ -86,7 +86,7 @@ const data = reactive({
    }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
-onMounted(async () => {
+onMounted(() => {
    getList();
 })
 /** 查询列表 */

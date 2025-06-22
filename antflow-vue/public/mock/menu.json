@@ -130,7 +130,7 @@
           "hidden": false,
           "component": "workflow/flowTask/instance/index",
           "meta": {
-            "title": "流程实例",
+            "title": "流程监控",
             "icon": "",
             "noCache": false,
             "link": null
@@ -294,7 +294,7 @@
       "component": "Layout",
       "alwaysShow": true,
       "meta": {
-        "title": "业务方管理",
+        "title": "SAAS流程管理",
         "icon": "component",
         "noCache": false,
         "link": null
@@ -306,7 +306,7 @@
           "hidden": false,
           "component": "workflow/outsideMgt/outsideJoin/index",
           "meta": {
-            "title": "项目管理",
+            "title": "SAAS租户管理",
             "icon": "",
             "noCache": false,
             "link": null
