@@ -34,8 +34,8 @@
         t_information_template a
         WHERE
         a.is_del = 0
-        <if test="name != null and name != ''">
-            AND a.name LIKE CONCAT('%',#{name},'%' );
+        <if test="vo.name != null and vo.name != ''">
+            AND a.name LIKE CONCAT('%',#{vo.name},'%' );
 
         </if>
     </select>

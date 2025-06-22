@@ -310,8 +310,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .filter(o -> !StringUtils.isEmpty(o.getAssignee()))
                 .map(HistoricTaskInstance::getAssignee)
+                .filter(assignee -> !StringUtils.isEmpty(assignee))
+                .distinct()
                 .collect(Collectors.toList()));
 
 
