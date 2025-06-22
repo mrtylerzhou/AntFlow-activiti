@@ -11,6 +11,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableApproveRemindServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
@@ -129,7 +130,7 @@ public class InformationTemplateController {
      * @param name name
      * @return resp
      */
-    @GetMapping("/getWildcardCharacte")
+    @GetMapping("/getWildcardCharacter")
     public Result getWildcardCharacter(@RequestParam(required = false) String name) {
         return Result.newSuccessResult(
                 !StringUtils.isEmpty(name)
@@ -152,13 +153,21 @@ public class InformationTemplateController {
                         .collect(Collectors.toList())
         );
     }
+    @GetMapping("/getProcessEvents")
+    public Result getAllProcessEvents(){
+        List<BaseNumIdStruVo> lists=new ArrayList<>();
+        for (EventTypeEnum anEnum : EventTypeEnum.values()) {
+            lists.add(BaseNumIdStruVo.builder().id(anEnum.getCode().longValue()).name(anEnum.getDesc()).build());
+        }
+        return Result.newSuccessResult(lists);
+    }
 
     @GetMapping("/getAllNoticeTypes")
     public Result getAllNoticeTypes(){
         ProcessNoticeEnum[] processNoticeEnums = ProcessNoticeEnum.values();
-        List<BaseIdTranStruVo> lists = new ArrayList<>();
+        List<BaseNumIdStruVo> lists = new ArrayList<>();
         for (ProcessNoticeEnum processNoticeEnum : processNoticeEnums) {
-            lists.add(BaseIdTranStruVo.builder().id(String.valueOf(processNoticeEnum.getCode())).name(processNoticeEnum.getDesc()).build());
+            lists.add(BaseNumIdStruVo.builder().id(((long)processNoticeEnum.getCode())).name(processNoticeEnum.getDesc()).build());
         }
         return Result.newSuccessResult(lists);
     }
@@ -169,11 +178,11 @@ public class InformationTemplateController {
             throw new JiMuBizException("请传入表单编码");
         }
         List<BpmProcessNotice> bpmProcessNotices = processNoticeService.processNoticeList(formCode);
-        List<BaseIdTranStruVo> lists = new ArrayList<>();
+        List<BaseNumIdStruVo> lists = new ArrayList<>();
         for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
             Integer type = bpmProcessNotice.getType();
             String descByCode = ProcessNoticeEnum.getDescByCode(type);
-            lists.add(BaseIdTranStruVo.builder().id(String.valueOf(type)).name(descByCode).build());
+            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).build());
         }
         return Result.newSuccessResult(lists);
     }
