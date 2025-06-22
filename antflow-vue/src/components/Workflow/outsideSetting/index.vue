@@ -4,7 +4,7 @@
       <el-form-item label="项目标识" prop="businessPartyMark">
         <el-input v-model="form.businessPartyMark" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
-      <el-form-item label="项目名称" prop="businessPartyName">
+      <el-form-item label="租户名称" prop="businessPartyName">
         <el-input v-model="form.businessPartyName" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="应用标识" prop="formCode">
