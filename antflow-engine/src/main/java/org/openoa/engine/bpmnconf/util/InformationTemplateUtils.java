@@ -43,7 +43,7 @@ public class InformationTemplateUtils {
             return "";
         }
         for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
-            String pattern= o.getTransfDesc() + "\\(" + o.getCode() + "\\)";
+            String pattern= o.getTransfDesc() /*+ "\\(" + o.getCode() + "\\)"*/;
             String replacement=!ObjectUtils.isEmpty(map.get(o.getCode())) ? map.get(o.getCode()) : "";
             info = info.replaceAll(pattern, replacement);
         }

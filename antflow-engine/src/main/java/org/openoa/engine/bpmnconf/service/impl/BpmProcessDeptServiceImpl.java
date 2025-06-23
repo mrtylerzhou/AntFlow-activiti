@@ -118,6 +118,6 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
 
     public void editProcessConf(BpmProcessDeptVo vo) throws JiMuBizException {
         //todo save process's other info
-        processNoticeService.saveProcessNotice(vo.getProcessCode(), vo.getNotifyTypeIds());
+        processNoticeService.saveProcessNotice(vo.getProcessKey(), vo.getNotifyTypeIds());
     }
 }

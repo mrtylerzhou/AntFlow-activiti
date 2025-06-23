@@ -203,20 +203,10 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (ObjectUtils.isEmpty(bpmVariable)) {
             return false;
         }
-
-        if (vo.getMessageType()!=null&& vo.getMessageType()== 2) {//in node messages
-            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("element_id", vo.getElementId())
-                    .eq("message_type", 2)
-                    .eq("event_type", vo.getEventType())) > 0;
-        } else if (vo.getMessageType()!=null&&vo.getMessageType()==1) {//out of node messages
-            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("message_type", 1)
-                    .eq("event_type", vo.getEventType())) > 0;
-        }
-        return false;
+        return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
+                .eq("variable_id", bpmVariable.getId())
+                .eq("message_type", 1)
+                .eq("event_type", vo.getEventType())) > 0;
     }
 
     /**
@@ -470,9 +460,15 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
             List<BpmVariableMessage> bpmVariableMessages = this.getBaseMapper().selectList(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", vo.getVariableId())
-                    .eq("element_id", vo.getElementId())
-                    .eq("message_type", 2)
                     .eq("event_type", vo.getEventType()));
+            if(!StringUtils.isEmpty(vo.getElementId())){
+                List<BpmVariableMessage> currentNodeVarialbeMessages = bpmVariableMessages
+                        .stream()
+                        .filter(a -> vo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(currentNodeVarialbeMessages)){
+                   bpmVariableMessages=currentNodeVarialbeMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
+                }
+            }
             if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
                 for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
                     doSendTemplateMessages(bpmVariableMessage, vo);
