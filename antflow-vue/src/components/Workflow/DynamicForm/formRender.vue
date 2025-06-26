@@ -128,6 +128,12 @@ onBeforeMount(() => {
   // console.log("showSubmit======", JSON.stringify(props.showSubmit));
   advanceHandleFormData();
 })
+onMounted(() => {
+  vFormRef.value.setFormJson(JSON.parse(props.lfFormData))
+  nextTick(() => {
+    vFormRef.value.setFormData(JSON.parse(props.lfFieldsData))
+  })
+})
 const submitForm = () => {
   vFormRef.value.getFormData().then(res => {
     //replaceEmptyStringWithNull(res);
