@@ -204,16 +204,16 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
             return false;
         }
 
-        if (vo.getMessageType()!=null&& vo.getMessageType()== 1) {//out of node messages
-            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("message_type", 1)
-                    .eq("event_type", vo.getEventType())) > 0;
-        } else if (vo.getMessageType()!=null&&vo.getMessageType()==2) {//in node messages
+        if (vo.getMessageType()!=null&& vo.getMessageType()== 2) {//in node messages
             return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", bpmVariable.getId())
                     .eq("element_id", vo.getElementId())
                     .eq("message_type", 2)
+                    .eq("event_type", vo.getEventType())) > 0;
+        } else if (vo.getMessageType()!=null&&vo.getMessageType()==1) {//out of node messages
+            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
+                    .eq("variable_id", bpmVariable.getId())
+                    .eq("message_type", 1)
                     .eq("event_type", vo.getEventType())) > 0;
         }
         return false;
@@ -310,8 +310,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .filter(o -> !StringUtils.isEmpty(o.getAssignee()))
                 .map(HistoricTaskInstance::getAssignee)
+                .filter(assignee -> !StringUtils.isEmpty(assignee))
+                .distinct()
                 .collect(Collectors.toList()));
 
 

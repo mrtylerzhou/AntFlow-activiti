@@ -71,6 +71,13 @@ public class InformationTemplate {
      * status 0 for enabled and 1 for disabled
      */
     private Integer status;
+
+    /**
+     * @see org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum
+     */
+    private Integer event;
+    @TableField("event_name")
+    private String eventName;
     /**
      * is del 0 for no and 1 for yes
      */

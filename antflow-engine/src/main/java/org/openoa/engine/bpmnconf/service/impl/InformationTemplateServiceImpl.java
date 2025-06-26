@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import org.openoa.base.constant.enums.JumpUrlEnum;
+import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
@@ -12,6 +13,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.DefaultTemplateVo;
 import org.openoa.base.vo.InformationTemplateVo;
 import org.openoa.base.vo.ResultAndPage;
+import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmnApproveRemind;
 import org.openoa.engine.bpmnconf.confentity.BpmnTemplate;
 import org.openoa.engine.bpmnconf.confentity.DefaultTemplate;
@@ -21,6 +23,7 @@ import org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -45,6 +48,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
      *
      * @param informationTemplateVo informationTemplateVo
      */
+    @Transactional
     public void edit(InformationTemplateVo informationTemplateVo) {
         //to check whether the template's name is duplicated
         List<InformationTemplate> list = this.getBaseMapper().selectList(
@@ -83,7 +87,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
                     throw new JiMuBizException("该模板正在使用中，不可禁用！");
                 }
             }
-            informationTemplate.setUpdateUser( SecurityUtils.getLogInEmpIdSafe().toString());
+            informationTemplate.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
         } else {
             //add
             informationTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());

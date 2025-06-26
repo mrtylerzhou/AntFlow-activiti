@@ -19,7 +19,6 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;

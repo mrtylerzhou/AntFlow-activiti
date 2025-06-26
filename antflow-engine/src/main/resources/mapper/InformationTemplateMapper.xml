@@ -15,6 +15,8 @@
         <result column="jump_url" property="jumpUrl"/>
         <result column="remark" property="remark"/>
         <result column="status" property="status"/>
+        <result column="event" property="event"/>
+        <result column="event_name" property="eventName"/>
         <result column="is_del" property="isDel"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
@@ -34,8 +36,8 @@
         t_information_template a
         WHERE
         a.is_del = 0
-        <if test="name != null and name != ''">
-            AND a.name LIKE CONCAT('%',#{name},'%' );
+        <if test="vo.name != null and vo.name != ''">
+            AND a.name LIKE CONCAT('%',#{vo.name},'%' );
 
         </if>
     </select>

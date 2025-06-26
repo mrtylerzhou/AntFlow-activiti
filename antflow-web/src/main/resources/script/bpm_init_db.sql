@@ -141,6 +141,8 @@ CREATE TABLE if not exists `t_information_template`
     `jump_url`       int(11)               DEFAULT NULL COMMENT 'url to jump to',
     `remark`         varchar(200) NOT NULL DEFAULT '' COMMENT 'remark',
     `status`         tinyint(4)   NOT NULL DEFAULT '0' COMMENT 'status 0:in use,1:disabled',
+     `event`          int                                    null,
+    `event_name`     varchar(50) charset utf8               null,
     `is_del`         tinyint(4)   NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_time`    timestamp    NOT NULL     DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user`    varchar(50)          DEFAULT '' COMMENT 'as its name says',

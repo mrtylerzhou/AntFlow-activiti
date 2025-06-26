@@ -64,6 +64,8 @@ public class InformationTemplateVo implements Serializable {
      */
     private Integer status;
     private String statusValue;
+    private Integer event;
+    private String eventName;
     /**
      * 0 for normal 1 for deleted
      */
