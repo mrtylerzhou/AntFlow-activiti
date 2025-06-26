@@ -328,7 +328,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         String[] elementIds = taskVo.getElementId().split(",");
         for (int i = 0; i < elementIds.length; i++) {
             //do append record
-            doAddBpmVerifyInfoVo(sort, elementIds[i], activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId(),i==elementIds.length-1);
+            doAddBpmVerifyInfoVo(sort, elementIds[i], activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId(),i==(elementIds.length-1)&&elementIds.length>1);
         }
 
     }
@@ -384,7 +384,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         //get the netxt pvm activity element
         List<PvmActivity> nextElements = activitiAdditionalInfoService.getNextElementList(elementId, activitiList);
-
+        boolean isCurrentParallelGateway=nextElements.size()>1;
         if (CollectionUtils.isEmpty(nextElements)) {
             return;
         }
@@ -441,15 +441,20 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
 
-        for (PvmActivity nextElement : nextElements) {
+        for (int i = 0; i < nextElements.size(); i++) {
+            PvmActivity nextElement = nextElements.get(i);
+            if (nextElements.size() > 1) {
+                includeParallelGateway = isCurrentParallelGateway&& i == nextElements.size() - 1;
+            }
+
             //get next node's next node,if it still exist,then treat it recursively
             PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
             if (!ObjectUtils.isEmpty(nextNextElement)) {
-                boolean isParallelGateway = ((ActivityImpl) nextNextElement).getActivityBehavior() instanceof ParallelGatewayActivityBehavior;
-                if(!includeParallelGateway&&isParallelGateway){
-                    break;
+                boolean isNextParallelGateway = ((ActivityImpl) nextNextElement).getActivityBehavior() instanceof ParallelGatewayActivityBehavior;
+                if (!includeParallelGateway && isNextParallelGateway) {
+                    continue;
                 }
-                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId,includeParallelGateway);
+                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, variableId, includeParallelGateway);
             }
         }
 
