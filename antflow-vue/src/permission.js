@@ -3,7 +3,7 @@ import { ElMessage } from "element-plus";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { getToken } from "@/utils/auth";
-import { isHttp, isPathMatch } from "@/utils/validate";
+import { isHttp } from "@/utils/validate";
 import { isRelogin } from "@/utils/request";
 import useUserStore from "@/store/modules/user";
 import useSettingsStore from "@/store/modules/settings";
@@ -13,10 +13,6 @@ NProgress.configure({ showSpinner: false });
 
 const whiteList = ["/login", "/register"];
 
-const isWhiteList = (path) => {
-  return whiteList.some((pattern) => isPathMatch(pattern, path));
-};
-
 router.beforeEach((to, from, next) => {
   NProgress.start();
   if (getToken()) {
@@ -25,7 +21,7 @@ router.beforeEach((to, from, next) => {
     if (to.path === "/login") {
       next({ path: "/" });
       NProgress.done();
-    } else if (isWhiteList(to.path)) {
+    } else if (whiteList.indexOf(to.path) !== -1) {
       next();
     } else {
       if (useUserStore().roles.length === 0) {
@@ -51,7 +47,7 @@ router.beforeEach((to, from, next) => {
             useUserStore()
               .logOut()
               .then(() => {
-                ElMessage.error("失败===" + err);
+                ElMessage.error(err);
                 next({ path: "/" });
               });
           });
@@ -61,7 +57,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     // 没有token
-    if (isWhiteList(to.path)) {
+    if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
       next();
     } else {

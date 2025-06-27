@@ -1,7 +1,8 @@
 import router from "@/router";
 import { ElMessageBox } from "element-plus";
 import Cookies from "js-cookie";
-import { login, logout, getInfo } from "@/api/system/login";
+//import { login, logout, getInfo } from "@/api/system/login";
+import { login, getInfo, logout } from "@/api/workflow/mock";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 import { isHttp, isEmpty } from "@/utils/validate";
 import defAva from "@/assets/images/profile.jpg";
