@@ -1,6 +1,6 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
-    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar v-if="!sidebar.hide" class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }">
@@ -14,11 +14,13 @@
 </template>
 
 <script setup>
+import { ElMessageBox } from 'element-plus'
 import { useWindowSize } from '@vueuse/core'
 import Sidebar from './components/Sidebar/index.vue'
 import { AppMain, Navbar, Settings, TagsView } from './components'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
+import { getCurrentVersion } from "@/api/workflow/mock"
 
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme)
@@ -60,6 +62,34 @@ function handleClickOutside() {
 const settingRef = ref(null)
 function setLayout() {
   settingRef.value.openSetting()
+}
+
+const timerCheckVersion = setInterval(() => {
+  checkVersion();
+}, 1000 * 6)
+
+function checkVersion() {
+  const versionSetting = settingsStore.version
+  if (!versionSetting) return
+  getCurrentVersion().then(res => {
+    if (res.version !== versionSetting && res.must) {
+      clearInterval(timerCheckVersion);
+      reloadNotifier(res.version);
+    } else {
+      clearInterval(timerCheckVersion);
+    }
+  })
+}
+function reloadNotifier(version) {
+  ElMessageBox.confirm('检测到有新版本，点击“立即刷新”获取最新版本', '发现新版本', {
+    confirmButtonText: '立即刷新',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    localStorage.setItem('version-setting', version);
+    clearInterval(timerCheckVersion);
+    location.reload(true);
+  }).catch(() => { });
 }
 </script>
 
