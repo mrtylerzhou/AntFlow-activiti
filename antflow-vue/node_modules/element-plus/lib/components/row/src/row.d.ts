@@ -13,5 +13,5 @@ export declare const rowProps: {
         __epPropKey: true;
     };
 };
-export declare type RowProps = ExtractPropTypes<typeof rowProps>;
-export declare type RowInstance = InstanceType<typeof Row>;
+export type RowProps = ExtractPropTypes<typeof rowProps>;
+export type RowInstance = InstanceType<typeof Row> & unknown;

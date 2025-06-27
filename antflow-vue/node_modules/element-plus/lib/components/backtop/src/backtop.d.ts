@@ -29,8 +29,8 @@ export declare const backtopProps: {
         readonly default: 40;
     };
 };
-export declare type BacktopProps = ExtractPropTypes<typeof backtopProps>;
+export type BacktopProps = ExtractPropTypes<typeof backtopProps>;
 export declare const backtopEmits: {
     click: (evt: MouseEvent) => boolean;
 };
-export declare type BacktopEmits = typeof backtopEmits;
+export type BacktopEmits = typeof backtopEmits;

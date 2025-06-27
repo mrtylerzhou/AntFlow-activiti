@@ -5,12 +5,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var dayjs = require('dayjs');
 var lodashUnified = require('lodash-unified');
-require('../../../../hooks/index.js');
-require('../../../../utils/index.js');
 var utils = require('../utils.js');
 var index = require('../../../../hooks/use-locale/index.js');
 var arrays = require('../../../../utils/arrays.js');
 var index$1 = require('../../../../hooks/use-namespace/index.js');
+var shared = require('@vue/shared');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -258,9 +257,6 @@ const useBasicDateTable = (props, emit) => {
         handleDatesPick(newDate, !!cell.selected);
         break;
       }
-      default: {
-        break;
-      }
     }
   };
   const isWeekActive = (cell) => {
@@ -274,7 +270,7 @@ const useBasicDateTable = (props, emit) => {
       newDate = newDate.add(1, "month");
     }
     newDate = newDate.date(Number.parseInt(cell.text, 10));
-    if (props.parsedValue && !Array.isArray(props.parsedValue)) {
+    if (props.parsedValue && !shared.isArray(props.parsedValue)) {
       const dayOffset = (props.parsedValue.day() - firstDayOfWeek + 7) % 7 - 1;
       const weekDate = props.parsedValue.subtract(dayOffset, "day");
       return weekDate.isSame(newDate, "day");

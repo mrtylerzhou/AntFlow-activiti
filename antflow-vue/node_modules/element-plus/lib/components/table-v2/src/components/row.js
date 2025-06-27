@@ -3,12 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var row = require('../row.js');
 var tokens = require('../tokens.js');
 var _private = require('../private.js');
-var types = require('../../../../utils/types.js');
 var shared = require('@vue/shared');
+var types = require('../../../../utils/types.js');
 
 const useTableRow = (props) => {
   const {
@@ -68,7 +67,6 @@ const useTableRow = (props) => {
       }
     });
     if (onRowHover) {
-      ;
       [{
         name: "onMouseleave",
         hovered: false
@@ -208,6 +206,7 @@ const TableV2Row = vue.defineComponent({
     };
   }
 });
+var Row = TableV2Row;
 
-exports["default"] = TableV2Row;
+exports["default"] = Row;
 //# sourceMappingURL=row.js.map

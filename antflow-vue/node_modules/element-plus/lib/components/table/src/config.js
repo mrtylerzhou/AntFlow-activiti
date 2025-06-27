@@ -6,7 +6,8 @@ var vue = require('vue');
 var index = require('../../checkbox/index.js');
 var index$1 = require('../../icon/index.js');
 var iconsVue = require('@element-plus/icons-vue');
-require('../../../utils/index.js');
+var types = require('../../../utils/types.js');
+var shared = require('@vue/shared');
 var objects = require('../../../utils/objects.js');
 
 const defaultClassNames = {
@@ -84,9 +85,9 @@ const cellForced = {
     }) {
       let i = $index + 1;
       const index = column.index;
-      if (typeof index === "number") {
+      if (types.isNumber(index)) {
         i = $index + index;
-      } else if (typeof index === "function") {
+      } else if (shared.isFunction(index)) {
         i = index($index);
       }
       return vue.h("div", {}, [i]);
@@ -173,7 +174,7 @@ function treeCellPrefix({
       style: { "padding-left": `${treeNode.indent}px` }
     }));
   }
-  if (typeof treeNode.expanded === "boolean" && !treeNode.noLazyChildren) {
+  if (types.isBoolean(treeNode.expanded) && !treeNode.noLazyChildren) {
     const expandClasses = [
       ns.e("expand-icon"),
       treeNode.expanded ? ns.em("expand-icon", "expanded") : ""

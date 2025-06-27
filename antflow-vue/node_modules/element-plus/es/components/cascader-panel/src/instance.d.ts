@@ -1,2 +1,2 @@
 import type CascaderPanel from './index.vue';
-export declare type CascaderPanelInstance = InstanceType<typeof CascaderPanel>;
+export type CascaderPanelInstance = InstanceType<typeof CascaderPanel> & unknown;

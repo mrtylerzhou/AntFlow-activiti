@@ -1,10 +1,9 @@
 import { nextTick } from 'vue';
-import { isFunction } from '@vue/shared';
 import { throttle } from 'lodash-unified';
-import '../../../utils/index.mjs';
-import { getOffsetTopDistance } from '../../../utils/dom/position.mjs';
+import { isFunction } from '@vue/shared';
 import { throwError } from '../../../utils/error.mjs';
 import { getScrollContainer } from '../../../utils/dom/scroll.mjs';
+import { getOffsetTopDistance } from '../../../utils/dom/position.mjs';
 
 const SCOPE = "ElInfiniteScroll";
 const CHECK_INTERVAL = 50;

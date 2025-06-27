@@ -11,6 +11,7 @@ const Footer = (props, {
   }, [defaultSlot]);
 };
 Footer.displayName = "ElTableV2Empty";
+var Empty = Footer;
 
-export { Footer as default };
+export { Empty as default };
 //# sourceMappingURL=empty.mjs.map

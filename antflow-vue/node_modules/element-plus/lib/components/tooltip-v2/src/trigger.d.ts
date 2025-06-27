@@ -37,4 +37,4 @@ export declare const tooltipV2TriggerProps: {
         __epPropKey: true;
     };
 };
-export declare type TooltipV2TriggerProps = ExtractPropTypes<typeof tooltipV2TriggerProps>;
+export type TooltipV2TriggerProps = ExtractPropTypes<typeof tooltipV2TriggerProps>;

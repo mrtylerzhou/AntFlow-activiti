@@ -3,14 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var dateTable = require('./date-table.js');
 var useDateTable = require('./use-date-table.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-namespace/index.js');
 
-const _hoisted_1 = { key: 0 };
-const _hoisted_2 = ["onClick"];
 const __default__ = vue.defineComponent({
   name: "DateTable"
 });
@@ -53,10 +50,15 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         cellspacing: "0",
         cellpadding: "0"
       }, [
-        !_ctx.hideHeader ? (vue.openBlock(), vue.createElementBlock("thead", _hoisted_1, [
-          (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(weekDays), (day) => {
-            return vue.openBlock(), vue.createElementBlock("th", { key: day }, vue.toDisplayString(day), 1);
-          }), 128))
+        !_ctx.hideHeader ? (vue.openBlock(), vue.createElementBlock("thead", { key: 0 }, [
+          vue.createElementVNode("tr", null, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(weekDays), (day) => {
+              return vue.openBlock(), vue.createElementBlock("th", {
+                key: day,
+                scope: "col"
+              }, vue.toDisplayString(day), 1);
+            }), 128))
+          ])
         ])) : vue.createCommentVNode("v-if", true),
         vue.createElementVNode("tbody", null, [
           (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(rows), (row, index) => {
@@ -82,7 +84,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
                       vue.createElementVNode("span", null, vue.toDisplayString(cell.text), 1)
                     ])
                   ], 2)
-                ], 10, _hoisted_2);
+                ], 10, ["onClick"]);
               }), 128))
             ], 2);
           }), 128))

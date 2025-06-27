@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../components/index.js');
 var constants = require('../constants.js');
 var _private = require('../private.js');
 var utils = require('../utils.js');
@@ -66,6 +65,7 @@ const HeaderCellRenderer = (props, {
     "sortOrder": sortOrder
   }, null)]);
 };
+var HeaderCell = HeaderCellRenderer;
 
-exports["default"] = HeaderCellRenderer;
+exports["default"] = HeaderCell;
 //# sourceMappingURL=header-cell.js.map

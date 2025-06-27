@@ -22,4 +22,4 @@ export declare function createLoadingComponent(options: LoadingOptionsResolved):
     beforeClose?: import("vue").Ref<(() => boolean) | undefined> | undefined;
     closed?: import("vue").Ref<(() => void) | undefined> | undefined;
 };
-export declare type LoadingInstance = ReturnType<typeof createLoadingComponent>;
+export type LoadingInstance = ReturnType<typeof createLoadingComponent>;

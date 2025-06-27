@@ -68,6 +68,9 @@ var az = {
       noData: "M\u0259lumat yoxdur",
       placeholder: "Se\xE7"
     },
+    mention: {
+      loading: "Y\xFCkl\u0259nir"
+    },
     cascader: {
       noMatch: "N\u0259tic\u0259 tap\u0131lmad\u0131",
       loading: "Y\xFCkl\u0259nir",

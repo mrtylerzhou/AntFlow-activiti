@@ -3,8 +3,8 @@ export declare const SCOPE = "ElInfiniteScroll";
 export declare const CHECK_INTERVAL = 50;
 export declare const DEFAULT_DELAY = 200;
 export declare const DEFAULT_DISTANCE = 0;
-declare type InfiniteScrollCallback = () => void;
-declare type InfiniteScrollEl = HTMLElement & {
+type InfiniteScrollCallback = () => void;
+type InfiniteScrollEl = HTMLElement & {
     [SCOPE]: {
         container: HTMLElement | Window;
         containerEl: HTMLElement;

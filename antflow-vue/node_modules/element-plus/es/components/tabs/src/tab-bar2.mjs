@@ -1,7 +1,5 @@
-import { defineComponent, getCurrentInstance, inject, ref, watch, nextTick, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle } from 'vue';
+import { defineComponent, getCurrentInstance, inject, ref, watch, nextTick, onBeforeUnmount, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle } from 'vue';
 import { useResizeObserver } from '@vueuse/core';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { tabsRootContextKey } from './constants.mjs';
 import { tabBarProps } from './tab-bar.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
@@ -43,9 +41,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         tabSize = $el[`client${capitalize(sizeName)}`];
         const tabStyles = window.getComputedStyle($el);
         if (sizeName === "width") {
-          if (props.tabs.length > 1) {
-            tabSize -= Number.parseFloat(tabStyles.paddingLeft) + Number.parseFloat(tabStyles.paddingRight);
-          }
+          tabSize -= Number.parseFloat(tabStyles.paddingLeft) + Number.parseFloat(tabStyles.paddingRight);
           offset += Number.parseFloat(tabStyles.paddingLeft);
         }
         return false;
@@ -56,11 +52,34 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       };
     };
     const update = () => barStyle.value = getBarStyle();
+    const saveObserver = [];
+    const observerTabs = () => {
+      var _a;
+      saveObserver.forEach((observer) => observer.stop());
+      saveObserver.length = 0;
+      const list = (_a = instance.parent) == null ? void 0 : _a.refs;
+      if (!list)
+        return;
+      for (const key in list) {
+        if (key.startsWith("tab-")) {
+          const _el = list[key];
+          if (_el) {
+            saveObserver.push(useResizeObserver(_el, update));
+          }
+        }
+      }
+    };
     watch(() => props.tabs, async () => {
       await nextTick();
       update();
+      observerTabs();
     }, { immediate: true });
-    useResizeObserver(barRef, () => update());
+    const barObserever = useResizeObserver(barRef, () => update());
+    onBeforeUnmount(() => {
+      saveObserver.forEach((observer) => observer.stop());
+      saveObserver.length = 0;
+      barObserever.stop();
+    });
     expose({
       ref: barRef,
       update

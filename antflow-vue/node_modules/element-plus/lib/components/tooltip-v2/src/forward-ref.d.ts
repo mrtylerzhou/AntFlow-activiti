@@ -1,5 +1,5 @@
 import type { ExtractPropTypes } from 'vue';
-export declare type RefSetter = (el: HTMLElement | null) => void;
+export type RefSetter = (el: HTMLElement | null) => void;
 export declare const forwardRefProps: {
     readonly setRef: {
         readonly type: import("vue").PropType<RefSetter>;
@@ -9,7 +9,7 @@ export declare const forwardRefProps: {
     };
     readonly onlyChild: BooleanConstructor;
 };
-export declare type ForwardRefProps = ExtractPropTypes<typeof forwardRefProps>;
+export type ForwardRefProps = ExtractPropTypes<typeof forwardRefProps>;
 declare const _default: import("vue").DefineComponent<{
     readonly setRef: {
         readonly type: import("vue").PropType<RefSetter>;

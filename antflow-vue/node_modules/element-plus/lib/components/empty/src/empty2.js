@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var imgEmpty = require('./img-empty.js');
 var empty = require('./empty.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
@@ -12,8 +10,6 @@ var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 var style = require('../../../utils/dom/style.js');
 
-const _hoisted_1 = ["src"];
-const _hoisted_2 = { key: 1 };
 const __default__ = vue.defineComponent({
   name: "ElEmpty"
 });
@@ -40,14 +36,14 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             key: 0,
             src: _ctx.image,
             ondragstart: "return false"
-          }, null, 8, _hoisted_1)) : vue.renderSlot(_ctx.$slots, "image", { key: 1 }, () => [
+          }, null, 8, ["src"])) : vue.renderSlot(_ctx.$slots, "image", { key: 1 }, () => [
             vue.createVNode(imgEmpty["default"])
           ])
         ], 6),
         vue.createElementVNode("div", {
           class: vue.normalizeClass(vue.unref(ns).e("description"))
         }, [
-          _ctx.$slots.description ? vue.renderSlot(_ctx.$slots, "description", { key: 0 }) : (vue.openBlock(), vue.createElementBlock("p", _hoisted_2, vue.toDisplayString(vue.unref(emptyDescription)), 1))
+          _ctx.$slots.description ? vue.renderSlot(_ctx.$slots, "description", { key: 0 }) : (vue.openBlock(), vue.createElementBlock("p", { key: 1 }, vue.toDisplayString(vue.unref(emptyDescription)), 1))
         ], 2),
         _ctx.$slots.default ? (vue.openBlock(), vue.createElementBlock("div", {
           key: 0,

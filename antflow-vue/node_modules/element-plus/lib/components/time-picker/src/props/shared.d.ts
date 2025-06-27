@@ -1,8 +1,5 @@
 import type { ExtractPropTypes } from 'vue';
-import type { Dayjs } from 'dayjs';
-export declare type GetDisabledHours = (role: string, comparingDate?: Dayjs) => number[];
-export declare type GetDisabledMinutes = (hour: number, role: string, comparingDate?: Dayjs) => number[];
-export declare type GetDisabledSeconds = (hour: number, minute: number, role: string, comparingDate?: Dayjs) => number[];
+import type { GetDisabledHours, GetDisabledMinutes, GetDisabledSeconds } from '../common/props';
 export declare const disabledTimeListsProps: {
     readonly disabledHours: {
         readonly type: import("vue").PropType<GetDisabledHours>;
@@ -23,10 +20,10 @@ export declare const disabledTimeListsProps: {
         __epPropKey: true;
     };
 };
-export declare type DisabledTimeListsProps = ExtractPropTypes<typeof disabledTimeListsProps>;
+export type DisabledTimeListsProps = ExtractPropTypes<typeof disabledTimeListsProps>;
 export declare const timePanelSharedProps: {
     readonly visible: BooleanConstructor;
     readonly actualVisible: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, undefined, boolean>;
     readonly format: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
 };
-export declare type TimePanelSharedProps = ExtractPropTypes<typeof timePanelSharedProps>;
+export type TimePanelSharedProps = ExtractPropTypes<typeof timePanelSharedProps>;

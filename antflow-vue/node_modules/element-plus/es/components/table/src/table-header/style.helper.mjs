@@ -1,15 +1,15 @@
 import { inject } from 'vue';
-import '../../../../hooks/index.mjs';
 import { getFixedColumnOffset, ensurePosition, getFixedColumnsClass } from '../util.mjs';
 import { TABLE_INJECTION_KEY } from '../tokens.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
+import { isFunction, isString } from '@vue/shared';
 
 function useStyle(props) {
   const parent = inject(TABLE_INJECTION_KEY);
   const ns = useNamespace("table");
   const getHeaderRowStyle = (rowIndex) => {
     const headerRowStyle = parent == null ? void 0 : parent.props.headerRowStyle;
-    if (typeof headerRowStyle === "function") {
+    if (isFunction(headerRowStyle)) {
       return headerRowStyle.call(null, { rowIndex });
     }
     return headerRowStyle;
@@ -17,9 +17,9 @@ function useStyle(props) {
   const getHeaderRowClass = (rowIndex) => {
     const classes = [];
     const headerRowClassName = parent == null ? void 0 : parent.props.headerRowClassName;
-    if (typeof headerRowClassName === "string") {
+    if (isString(headerRowClassName)) {
       classes.push(headerRowClassName);
-    } else if (typeof headerRowClassName === "function") {
+    } else if (isFunction(headerRowClassName)) {
       classes.push(headerRowClassName.call(null, { rowIndex }));
     }
     return classes.join(" ");
@@ -27,7 +27,7 @@ function useStyle(props) {
   const getHeaderCellStyle = (rowIndex, columnIndex, row, column) => {
     var _a;
     let headerCellStyles = (_a = parent == null ? void 0 : parent.props.headerCellStyle) != null ? _a : {};
-    if (typeof headerCellStyles === "function") {
+    if (isFunction(headerCellStyles)) {
       headerCellStyles = headerCellStyles.call(null, {
         rowIndex,
         columnIndex,
@@ -57,9 +57,9 @@ function useStyle(props) {
       classes.push("is-sortable");
     }
     const headerCellClassName = parent == null ? void 0 : parent.props.headerCellClassName;
-    if (typeof headerCellClassName === "string") {
+    if (isString(headerCellClassName)) {
       classes.push(headerCellClassName);
-    } else if (typeof headerCellClassName === "function") {
+    } else if (isFunction(headerCellClassName)) {
       classes.push(headerCellClassName.call(null, {
         rowIndex,
         columnIndex,

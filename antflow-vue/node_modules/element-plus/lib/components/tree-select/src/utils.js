@@ -2,14 +2,16 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var shared = require('@vue/shared');
+
 function isValidValue(val) {
   return val || val === 0;
 }
 function isValidArray(val) {
-  return Array.isArray(val) && val.length;
+  return shared.isArray(val) && val.length;
 }
 function toValidArray(val) {
-  return Array.isArray(val) ? val : isValidValue(val) ? [val] : [];
+  return shared.isArray(val) ? val : isValidValue(val) ? [val] : [];
 }
 function treeFind(treeData, findCallback, getChildren, resultCallback, parent) {
   for (let i = 0; i < treeData.length; i++) {

@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var tinycolor = require('@ctrl/tinycolor');
-require('../../../hooks/index.js');
-require('../../form/index.js');
 var useFormCommonProps = require('../../form/src/hooks/use-form-common-props.js');
 var index = require('../../../hooks/use-namespace/index.js');
 
@@ -17,8 +15,12 @@ function useButtonCustomStyle(props) {
   const ns = index.useNamespace("button");
   return vue.computed(() => {
     let styles = {};
-    const buttonColor = props.color;
+    let buttonColor = props.color;
     if (buttonColor) {
+      const match = buttonColor.match(/var\((.*?)\)/);
+      if (match) {
+        buttonColor = window.getComputedStyle(window.document.documentElement).getPropertyValue(match[1]);
+      }
       const color = new tinycolor.TinyColor(buttonColor);
       const activeBgColor = props.dark ? color.tint(20).toString() : darken(color, 20);
       if (props.plain) {

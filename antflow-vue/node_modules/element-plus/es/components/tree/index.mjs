@@ -1,10 +1,7 @@
 import Tree from './src/tree.mjs';
+import { withInstall } from '../../utils/vue/install.mjs';
 
-Tree.install = (app) => {
-  app.component(Tree.name, Tree);
-};
-const _Tree = Tree;
-const ElTree = _Tree;
+const ElTree = withInstall(Tree);
 
-export { ElTree, _Tree as default };
+export { ElTree, ElTree as default };
 //# sourceMappingURL=index.mjs.map

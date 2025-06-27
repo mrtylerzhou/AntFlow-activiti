@@ -67,6 +67,7 @@ test('Typed Arrays', function (t) {
 		var buffer = new ArrayBuffer(length);
 		var TypedArray = global[typedArray];
 		if (isCallable(TypedArray)) {
+			// @ts-expect-error hush, TS, TAs can take an optional byte offset arg
 			var arr = new TypedArray(buffer, byteOffset);
 			t.equal(typedArrayByteOffset(arr), byteOffset, 'new ' + typedArray + '(new ArrayBuffer(' + length + '), ' + byteOffset + ') is typed array of byte offset ' + byteOffset);
 		} else {

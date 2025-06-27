@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var iconsVue = require('@element-plus/icons-vue');
-require('./props/index.js');
 var runtime = require('./props/runtime.js');
 
 const iconPropType = runtime.definePropType([

@@ -2,6 +2,7 @@
 
 var $BigInt = typeof BigInt !== 'undefined' && BigInt;
 
+/** @type {import('.')} */
 module.exports = function hasNativeBigInts() {
 	return typeof $BigInt === 'function'
 		&& typeof BigInt === 'function'

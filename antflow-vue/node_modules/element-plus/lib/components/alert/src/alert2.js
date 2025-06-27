@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var index$1 = require('../../icon/index.js');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var alert = require('./alert.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var icon = require('../../../utils/vue/icon.js');
@@ -25,13 +23,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const ns = index.useNamespace("alert");
     const visible = vue.ref(true);
     const iconComponent = vue.computed(() => icon.TypeComponentsMap[props.type]);
-    const iconClass = vue.computed(() => [
-      ns.e("icon"),
-      { [ns.is("big")]: !!props.description || !!slots.default }
-    ]);
-    const withDescription = vue.computed(() => {
-      return { "with-description": props.description || slots.default };
-    });
+    const hasDesc = vue.computed(() => !!(props.description || slots.default));
     const close = (evt) => {
       visible.value = false;
       emit("close", evt);
@@ -46,27 +38,29 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             class: vue.normalizeClass([vue.unref(ns).b(), vue.unref(ns).m(_ctx.type), vue.unref(ns).is("center", _ctx.center), vue.unref(ns).is(_ctx.effect)]),
             role: "alert"
           }, [
-            _ctx.showIcon && vue.unref(iconComponent) ? (vue.openBlock(), vue.createBlock(vue.unref(index$1.ElIcon), {
+            _ctx.showIcon && (_ctx.$slots.icon || vue.unref(iconComponent)) ? (vue.openBlock(), vue.createBlock(vue.unref(index$1.ElIcon), {
               key: 0,
-              class: vue.normalizeClass(vue.unref(iconClass))
+              class: vue.normalizeClass([vue.unref(ns).e("icon"), { [vue.unref(ns).is("big")]: vue.unref(hasDesc) }])
             }, {
               default: vue.withCtx(() => [
-                (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(vue.unref(iconComponent))))
+                vue.renderSlot(_ctx.$slots, "icon", {}, () => [
+                  (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(vue.unref(iconComponent))))
+                ])
               ]),
-              _: 1
+              _: 3
             }, 8, ["class"])) : vue.createCommentVNode("v-if", true),
             vue.createElementVNode("div", {
               class: vue.normalizeClass(vue.unref(ns).e("content"))
             }, [
               _ctx.title || _ctx.$slots.title ? (vue.openBlock(), vue.createElementBlock("span", {
                 key: 0,
-                class: vue.normalizeClass([vue.unref(ns).e("title"), vue.unref(withDescription)])
+                class: vue.normalizeClass([vue.unref(ns).e("title"), { "with-description": vue.unref(hasDesc) }])
               }, [
                 vue.renderSlot(_ctx.$slots, "title", {}, () => [
                   vue.createTextVNode(vue.toDisplayString(_ctx.title), 1)
                 ])
               ], 2)) : vue.createCommentVNode("v-if", true),
-              _ctx.$slots.default || _ctx.description ? (vue.openBlock(), vue.createElementBlock("p", {
+              vue.unref(hasDesc) ? (vue.openBlock(), vue.createElementBlock("p", {
                 key: 1,
                 class: vue.normalizeClass(vue.unref(ns).e("description"))
               }, [

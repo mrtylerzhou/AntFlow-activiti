@@ -1,5 +1,5 @@
 import { ref, getCurrentInstance, watch, nextTick } from 'vue';
-import { SetOperationEnum, NODE_CHECK, NODE_CHECK_CHANGE } from '../virtual-tree.mjs';
+import { NODE_CHECK, NODE_CHECK_CHANGE, SetOperationEnum } from '../virtual-tree.mjs';
 
 function useCheck(props, tree) {
   const checkedKeys = ref(/* @__PURE__ */ new Set());
@@ -56,7 +56,7 @@ function useCheck(props, tree) {
   };
   const isChecked = (node) => checkedKeys.value.has(node.key);
   const isIndeterminate = (node) => indeterminateKeys.value.has(node.key);
-  const toggleCheckbox = (node, isChecked2, nodeClick = true) => {
+  const toggleCheckbox = (node, isChecked2, nodeClick = true, immediateUpdate = true) => {
     const checkedKeySet = checkedKeys.value;
     const toggle = (node2, checked) => {
       checkedKeySet[checked ? SetOperationEnum.ADD : SetOperationEnum.DELETE](node2.key);
@@ -70,7 +70,9 @@ function useCheck(props, tree) {
       }
     };
     toggle(node, isChecked2);
-    updateCheckedKeys();
+    if (immediateUpdate) {
+      updateCheckedKeys();
+    }
     if (nodeClick) {
       afterNodeCheck(node, isChecked2);
     }
@@ -152,13 +154,14 @@ function useCheck(props, tree) {
   function _setCheckedKeys(keys) {
     if (tree == null ? void 0 : tree.value) {
       const { treeNodeMap } = tree.value;
-      if (props.showCheckbox && treeNodeMap && keys) {
+      if (props.showCheckbox && treeNodeMap && (keys == null ? void 0 : keys.length) > 0) {
         for (const key of keys) {
           const node = treeNodeMap.get(key);
           if (node && !isChecked(node)) {
-            toggleCheckbox(node, true, false);
+            toggleCheckbox(node, true, false, false);
           }
         }
+        updateCheckedKeys();
       }
     }
   }

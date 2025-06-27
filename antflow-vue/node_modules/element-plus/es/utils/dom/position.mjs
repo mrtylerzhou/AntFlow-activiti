@@ -1,4 +1,3 @@
-import '../browser.mjs';
 import { isClient } from '@vueuse/core';
 
 const isInContainer = (el, container) => {

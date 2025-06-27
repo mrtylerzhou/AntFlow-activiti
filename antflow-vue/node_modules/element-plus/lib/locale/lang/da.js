@@ -72,6 +72,9 @@ var da = {
       noData: "Ingen data",
       placeholder: "V\xE6lg"
     },
+    mention: {
+      loading: "Henter"
+    },
     cascader: {
       noMatch: "Ingen matchende data",
       loading: "Henter",

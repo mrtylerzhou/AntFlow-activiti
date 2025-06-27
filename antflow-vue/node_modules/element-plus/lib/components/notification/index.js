@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var notify = require('./src/notify.js');
 var notification = require('./src/notification.js');
 var install = require('../../utils/vue/install.js');

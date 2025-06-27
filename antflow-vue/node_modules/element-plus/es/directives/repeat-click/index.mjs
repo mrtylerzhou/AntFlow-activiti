@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import { isFunction } from '@vue/shared';
 
 const REPEAT_INTERVAL = 100;

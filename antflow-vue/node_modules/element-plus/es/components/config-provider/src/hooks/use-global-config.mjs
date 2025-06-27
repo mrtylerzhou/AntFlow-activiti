@@ -1,12 +1,11 @@
 import { ref, getCurrentInstance, inject, computed, unref, provide } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import { configProviderContextKey } from '../constants.mjs';
 import { useNamespace, defaultNamespace, namespaceContextKey } from '../../../../hooks/use-namespace/index.mjs';
-import { useLocale, localeContextKey } from '../../../../hooks/use-locale/index.mjs';
 import { useZIndex, defaultInitialZIndex, zIndexContextKey } from '../../../../hooks/use-z-index/index.mjs';
-import { debugWarn } from '../../../../utils/error.mjs';
+import { useLocale, localeContextKey } from '../../../../hooks/use-locale/index.mjs';
 import { SIZE_INJECTION_KEY } from '../../../../hooks/use-size/index.mjs';
+import { emptyValuesContextKey } from '../../../../hooks/use-empty-values/index.mjs';
+import { debugWarn } from '../../../../utils/error.mjs';
 import { keysOf } from '../../../../utils/objects.mjs';
 
 const globalConfig = ref();
@@ -69,6 +68,10 @@ const provideGlobalConfig = (config, app, global = false) => {
   provideFn(SIZE_INJECTION_KEY, {
     size: computed(() => context.value.size || "")
   });
+  provideFn(emptyValuesContextKey, computed(() => ({
+    emptyValues: context.value.emptyValues,
+    valueOnClear: context.value.valueOnClear
+  })));
   if (global || !globalConfig.value) {
     globalConfig.value = context.value;
   }

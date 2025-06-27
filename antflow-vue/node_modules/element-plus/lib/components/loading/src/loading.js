@@ -3,10 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../config-provider/index.js');
-var style = require('../../../utils/dom/style.js');
 var useGlobalConfig = require('../../config-provider/src/hooks/use-global-config.js');
+var style = require('../../../utils/dom/style.js');
 
 function createLoadingComponent(options) {
   let afterLeaveTimer;
@@ -47,7 +45,7 @@ function createLoadingComponent(options) {
       return;
     afterLeaveFlag.value = true;
     clearTimeout(afterLeaveTimer);
-    afterLeaveTimer = window.setTimeout(handleAfterLeave, 400);
+    afterLeaveTimer = setTimeout(handleAfterLeave, 400);
     data.visible = false;
     (_a = options.closed) == null ? void 0 : _a.call(options);
   }

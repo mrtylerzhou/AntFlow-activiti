@@ -1,12 +1,10 @@
 import { defineComponent, getCurrentInstance, ref, computed, unref, inject, resolveComponent, openBlock, createBlock, withCtx, createVNode, mergeProps, renderSlot } from 'vue';
-import '../../roving-focus-group/index.mjs';
-import '../../../utils/index.mjs';
+import ElRovingFocusItem from '../../roving-focus-group/src/roving-focus-item.mjs';
 import ElDropdownItemImpl from './dropdown-item-impl.mjs';
 import { useDropdown } from './useDropdown.mjs';
 import { ElCollectionItem, dropdownItemProps } from './dropdown.mjs';
 import { DROPDOWN_INJECTION_KEY } from './tokens.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
-import ElRovingFocusItem from '../../roving-focus-group/src/roving-focus-item.mjs';
 import { composeEventHandlers, whenMouse } from '../../../utils/dom/event.mjs';
 
 const _sfc_main = defineComponent({
@@ -48,9 +46,7 @@ const _sfc_main = defineComponent({
     const handlePointerLeave = composeEventHandlers((e) => {
       emit("pointerleave", e);
       return e.defaultPrevented;
-    }, whenMouse((e) => {
-      onItemLeave(e);
-    }));
+    }, whenMouse(onItemLeave));
     const handleClick = composeEventHandlers((e) => {
       if (props.disabled) {
         return;
@@ -68,9 +64,7 @@ const _sfc_main = defineComponent({
       }
       (_c = elDropdown.commandHandler) == null ? void 0 : _c.call(elDropdown, props.command, _instance, e);
     });
-    const propsAndAttrs = computed(() => {
-      return { ...props, ...attrs };
-    });
+    const propsAndAttrs = computed(() => ({ ...props, ...attrs }));
     return {
       handleClick,
       handlePointerMove,

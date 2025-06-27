@@ -1,10 +1,7 @@
 import CollapseTransition from './src/collapse-transition.mjs';
+import { withInstall } from '../../utils/vue/install.mjs';
 
-CollapseTransition.install = (app) => {
-  app.component(CollapseTransition.name, CollapseTransition);
-};
-const _CollapseTransition = CollapseTransition;
-const ElCollapseTransition = _CollapseTransition;
+const ElCollapseTransition = withInstall(CollapseTransition);
 
-export { ElCollapseTransition, _CollapseTransition as default };
+export { ElCollapseTransition, ElCollapseTransition as default };
 //# sourceMappingURL=index.mjs.map

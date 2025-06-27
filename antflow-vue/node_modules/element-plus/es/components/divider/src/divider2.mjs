@@ -1,5 +1,4 @@
 import { defineComponent, computed, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle, renderSlot, createCommentVNode } from 'vue';
-import '../../../hooks/index.mjs';
 import { dividerProps } from './divider.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';

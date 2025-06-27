@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var aria = require('../../../utils/dom/aria.js');
 
 const getMenuIndex = (el) => {

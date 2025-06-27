@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
 var constants = require('./constants.js');
 var forwardRef = require('./forward-ref.js');
 var trigger = require('./trigger.js');

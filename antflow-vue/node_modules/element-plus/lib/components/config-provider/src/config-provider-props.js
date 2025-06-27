@@ -2,11 +2,9 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
+var index$1 = require('../../../hooks/use-empty-values/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var index = require('../../../hooks/use-size/index.js');
-var index$1 = require('../../../hooks/use-empty-values/index.js');
 
 const configProviderProps = runtime.buildProps({
   a11y: {

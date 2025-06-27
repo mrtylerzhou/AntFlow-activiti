@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
 var shared = require('@vue/shared');
 
 const hsv2hsl = function(hue, sat, val) {
@@ -13,10 +12,10 @@ const hsv2hsl = function(hue, sat, val) {
   ];
 };
 const isOnePointZero = function(n) {
-  return typeof n === "string" && n.includes(".") && Number.parseFloat(n) === 1;
+  return shared.isString(n) && n.includes(".") && Number.parseFloat(n) === 1;
 };
 const isPercentage = function(n) {
-  return typeof n === "string" && n.includes("%");
+  return shared.isString(n) && n.includes("%");
 };
 const bound01 = function(value, max) {
   if (isOnePointZero(value))
@@ -159,7 +158,6 @@ class Color {
       }
       return;
     }
-    ;
     this[`_${prop}`] = value;
     this.doOnChange();
   }

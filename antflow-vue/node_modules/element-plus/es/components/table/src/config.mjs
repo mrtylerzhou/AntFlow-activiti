@@ -2,7 +2,8 @@ import { h } from 'vue';
 import { ElCheckbox } from '../../checkbox/index.mjs';
 import { ElIcon } from '../../icon/index.mjs';
 import { ArrowRight, Loading } from '@element-plus/icons-vue';
-import '../../../utils/index.mjs';
+import { isNumber, isBoolean } from '../../../utils/types.mjs';
+import { isFunction } from '@vue/shared';
 import { getProp } from '../../../utils/objects.mjs';
 
 const defaultClassNames = {
@@ -80,9 +81,9 @@ const cellForced = {
     }) {
       let i = $index + 1;
       const index = column.index;
-      if (typeof index === "number") {
+      if (isNumber(index)) {
         i = $index + index;
-      } else if (typeof index === "function") {
+      } else if (isFunction(index)) {
         i = index($index);
       }
       return h("div", {}, [i]);
@@ -169,7 +170,7 @@ function treeCellPrefix({
       style: { "padding-left": `${treeNode.indent}px` }
     }));
   }
-  if (typeof treeNode.expanded === "boolean" && !treeNode.noLazyChildren) {
+  if (isBoolean(treeNode.expanded) && !treeNode.noLazyChildren) {
     const expandClasses = [
       ns.e("expand-icon"),
       treeNode.expanded ? ns.em("expand-icon", "expanded") : ""

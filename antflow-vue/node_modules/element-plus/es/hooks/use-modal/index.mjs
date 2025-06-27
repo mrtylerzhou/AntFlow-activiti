@@ -1,6 +1,5 @@
 import { watch } from 'vue';
 import { isClient, useEventListener } from '@vueuse/core';
-import '../../constants/index.mjs';
 import { EVENT_CODE } from '../../constants/aria.mjs';
 
 const modalStack = [];

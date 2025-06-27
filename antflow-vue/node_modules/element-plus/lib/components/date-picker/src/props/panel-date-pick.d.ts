@@ -15,12 +15,13 @@ export declare const panelDatePickProps: {
     };
     readonly format: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly type: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => ("year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") & {}) | (() => "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") | ((new (...args: any[]) => ("year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") & {}) | (() => "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange"))[], "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange", unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | (() => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | ((new (...args: any[]) => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | (() => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange"))[], "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange", unknown>>;
         readonly required: true;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly dateFormat: StringConstructor;
     readonly timeFormat: StringConstructor;
+    readonly showNow: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
 };
-export declare type PanelDatePickProps = ExtractPropTypes<typeof panelDatePickProps>;
+export type PanelDatePickProps = ExtractPropTypes<typeof panelDatePickProps>;

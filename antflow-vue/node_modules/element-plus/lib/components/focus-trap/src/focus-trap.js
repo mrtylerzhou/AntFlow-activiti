@@ -4,9 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../constants/index.js');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var utils = require('./utils.js');
 var tokens = require('./tokens.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
@@ -58,9 +55,9 @@ const _sfc_main = vue.defineComponent({
         return;
       if (focusLayer.paused)
         return;
-      const { key, altKey, ctrlKey, metaKey, currentTarget, shiftKey } = e;
+      const { code, altKey, ctrlKey, metaKey, currentTarget, shiftKey } = e;
       const { loop } = props;
-      const isTabbing = key === aria.EVENT_CODE.tab && !altKey && !ctrlKey && !metaKey;
+      const isTabbing = code === aria.EVENT_CODE.tab && !altKey && !ctrlKey && !metaKey;
       const currentFocusingEl = document.activeElement;
       if (isTabbing && currentFocusingEl) {
         const container = currentTarget;
@@ -243,6 +240,12 @@ const _sfc_main = vue.defineComponent({
     vue.onBeforeUnmount(() => {
       if (props.trapped) {
         stopTrap();
+      }
+      if (forwardRef.value) {
+        forwardRef.value.removeEventListener("keydown", onKeydown);
+        forwardRef.value.removeEventListener("focusin", onFocusIn);
+        forwardRef.value.removeEventListener("focusout", onFocusOut);
+        forwardRef.value = void 0;
       }
     });
     return {

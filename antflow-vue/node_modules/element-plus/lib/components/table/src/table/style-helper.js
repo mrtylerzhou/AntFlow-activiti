@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../form/index.js');
 var useFormCommonProps = require('../../../form/src/hooks/use-form-common-props.js');
 
 function useStyle(props, layout, store, table) {
@@ -78,6 +77,8 @@ function useStyle(props, layout, store, table) {
       layout.updateElsHeight();
     }
     layout.updateColumnsWidth();
+    if (typeof window === "undefined")
+      return;
     requestAnimationFrame(syncPosition);
   };
   vue.onMounted(async () => {
@@ -228,19 +229,6 @@ function useStyle(props, layout, store, table) {
       height
     };
   });
-  const tableInnerStyle = vue.computed(() => {
-    if (props.height) {
-      return {
-        height: !Number.isNaN(Number(props.height)) ? `${props.height}px` : props.height
-      };
-    }
-    if (props.maxHeight) {
-      return {
-        maxHeight: !Number.isNaN(Number(props.maxHeight)) ? `${props.maxHeight}px` : props.maxHeight
-      };
-    }
-    return {};
-  });
   const scrollbarStyle = vue.computed(() => {
     if (props.height) {
       return {
@@ -292,7 +280,6 @@ function useStyle(props, layout, store, table) {
     tableBodyStyles,
     tableLayout,
     scrollbarViewStyle,
-    tableInnerStyle,
     scrollbarStyle
   };
 }

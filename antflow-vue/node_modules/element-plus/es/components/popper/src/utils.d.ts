@@ -42,7 +42,7 @@ export declare const buildPopperOptions: (props: PopperCoreConfigProps, modifier
             fallbackPlacements?: undefined;
         };
     })[];
-    placement: "auto" | "top" | "bottom" | "left" | "auto-start" | "auto-end" | "right" | "top-start" | "top-end" | "bottom-start" | "bottom-end" | "right-start" | "right-end" | "left-start" | "left-end";
+    placement: "top" | "bottom" | "left" | "right" | "auto" | "auto-start" | "auto-end" | "top-start" | "top-end" | "bottom-start" | "bottom-end" | "right-start" | "right-end" | "left-start" | "left-end";
     strategy: "fixed" | "absolute";
     onFirstUpdate?: ((arg0: Partial<import("@popperjs/core").State>) => void) | undefined;
 };

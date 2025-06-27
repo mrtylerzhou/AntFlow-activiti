@@ -1,7 +1,5 @@
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
-import { EVENT_CODE } from '../../../../constants/aria.mjs';
 import { triggerEvent } from '../../../../utils/dom/aria.mjs';
+import { EVENT_CODE } from '../../../../constants/aria.mjs';
 
 class SubMenu {
   constructor(parent, domNode) {
@@ -21,7 +19,6 @@ class SubMenu {
     } else if (idx < 0) {
       idx = this.subMenuItems.length - 1;
     }
-    ;
     this.subMenuItems[idx].focus();
     this.subIndex = idx;
   }
@@ -46,6 +43,7 @@ class SubMenu {
             break;
           }
           case EVENT_CODE.enter:
+          case EVENT_CODE.numpadEnter:
           case EVENT_CODE.space: {
             prevDef = true;
             event.currentTarget.click();

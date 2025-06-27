@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
 var types = require('../../utils/types.js');
 var core = require('@vueuse/core');
 var error = require('../../utils/error.js');

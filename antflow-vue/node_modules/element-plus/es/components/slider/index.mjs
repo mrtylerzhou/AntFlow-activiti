@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Slider from './src/slider2.mjs';
 export { sliderEmits, sliderProps } from './src/slider.mjs';
 export { sliderContextKey } from './src/constants.mjs';

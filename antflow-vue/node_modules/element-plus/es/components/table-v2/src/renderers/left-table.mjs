@@ -1,5 +1,5 @@
-import { isVNode, createVNode, mergeProps } from 'vue';
-import TableGrid from '../table-grid.mjs';
+import { createVNode, mergeProps, isVNode } from 'vue';
+import Table from '../table-grid.mjs';
 
 function _isSlot(s) {
   return typeof s === "function" || Object.prototype.toString.call(s) === "[object Object]" && !isVNode(s);
@@ -13,12 +13,13 @@ const LeftTable = (props, {
     leftTableRef,
     ...rest
   } = props;
-  return createVNode(TableGrid, mergeProps({
+  return createVNode(Table, mergeProps({
     "ref": leftTableRef
   }, rest), _isSlot(slots) ? slots : {
     default: () => [slots]
   });
 };
+var LeftTable$1 = LeftTable;
 
-export { LeftTable as default };
+export { LeftTable$1 as default };
 //# sourceMappingURL=left-table.mjs.map

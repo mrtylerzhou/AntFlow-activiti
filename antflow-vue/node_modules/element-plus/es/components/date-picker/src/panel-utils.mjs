@@ -1,6 +1,7 @@
 import DatePickPanel from './date-picker-com/panel-date-pick.mjs';
 import DateRangePickPanel from './date-picker-com/panel-date-range.mjs';
 import MonthRangePickPanel from './date-picker-com/panel-month-range.mjs';
+import YearRangePickPanel from './date-picker-com/panel-year-range.mjs';
 
 const getPanel = function(type) {
   switch (type) {
@@ -10,6 +11,9 @@ const getPanel = function(type) {
     }
     case "monthrange": {
       return MonthRangePickPanel;
+    }
+    case "yearrange": {
+      return YearRangePickPanel;
     }
     default: {
       return DatePickPanel;

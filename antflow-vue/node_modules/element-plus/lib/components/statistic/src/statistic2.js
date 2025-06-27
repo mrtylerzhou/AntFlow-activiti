@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var statistic = require('./statistic.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-namespace/index.js');
@@ -24,7 +22,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       const { value, formatter, precision, decimalSeparator, groupSeparator } = props;
       if (shared.isFunction(formatter))
         return formatter(value);
-      if (!types.isNumber(value))
+      if (!types.isNumber(value) || Number.isNaN(value))
         return value;
       let [integer, decimal = ""] = String(value).split(".");
       decimal = decimal.padEnd(precision, "0").slice(0, precision > 0 ? precision : 0);

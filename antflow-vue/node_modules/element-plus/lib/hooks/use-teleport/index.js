@@ -3,10 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
-require('../../utils/index.js');
-var core = require('@vueuse/core');
 var globalNode = require('../../utils/vue/global-node.js');
+var core = require('@vueuse/core');
+var shared = require('@vue/shared');
 
 const useTeleport = (contentRenderer, appendToBody) => {
   const isTeleportVisible = vue.ref(false);

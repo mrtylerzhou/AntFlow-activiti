@@ -3,7 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
+var layoutObserver = require('../layout-observer.js');
+var tokens = require('../tokens.js');
 var styleHelper = require('./style-helper.js');
 var index = require('../../../../hooks/use-namespace/index.js');
 
@@ -32,10 +33,14 @@ var TableFooter = vue.defineComponent({
     }
   },
   setup(props) {
-    const { getCellClasses, getCellStyles, columns } = styleHelper["default"](props);
+    const parent = vue.inject(tokens.TABLE_INJECTION_KEY);
     const ns = index.useNamespace("table");
+    const { getCellClasses, getCellStyles, columns } = styleHelper["default"](props);
+    const { onScrollableChange, onColumnsChange } = layoutObserver["default"](parent);
     return {
       ns,
+      onScrollableChange,
+      onColumnsChange,
       getCellClasses,
       getCellStyles,
       columns

@@ -1,5 +1,4 @@
 import { computed } from 'vue';
-import '../../../../hooks/index.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 
 const useMonthRangeHeader = ({

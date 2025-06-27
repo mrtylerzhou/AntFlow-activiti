@@ -68,6 +68,9 @@ var nbNo = {
       noData: "Ingen resulater",
       placeholder: "Velg"
     },
+    mention: {
+      loading: "Laster"
+    },
     cascader: {
       noMatch: "Ingen samsvarende resultater",
       loading: "Laster",

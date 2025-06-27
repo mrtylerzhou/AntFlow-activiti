@@ -1,5 +1,4 @@
-import '../../../../utils/index.mjs';
-import { hasOwn } from '@vue/shared';
+import { hasOwn, isString } from '@vue/shared';
 
 const hsv2hsl = function(hue, sat, val) {
   return [
@@ -9,10 +8,10 @@ const hsv2hsl = function(hue, sat, val) {
   ];
 };
 const isOnePointZero = function(n) {
-  return typeof n === "string" && n.includes(".") && Number.parseFloat(n) === 1;
+  return isString(n) && n.includes(".") && Number.parseFloat(n) === 1;
 };
 const isPercentage = function(n) {
-  return typeof n === "string" && n.includes("%");
+  return isString(n) && n.includes("%");
 };
 const bound01 = function(value, max) {
   if (isOnePointZero(value))
@@ -155,7 +154,6 @@ class Color {
       }
       return;
     }
-    ;
     this[`_${prop}`] = value;
     this.doOnChange();
   }

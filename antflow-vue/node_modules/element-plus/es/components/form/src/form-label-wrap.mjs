@@ -1,7 +1,5 @@
-import { defineComponent, inject, ref, nextTick, onMounted, onBeforeUnmount, onUpdated, watch, computed, createVNode, Fragment } from 'vue';
+import { defineComponent, inject, ref, onMounted, onBeforeUnmount, onUpdated, watch, computed, createVNode, Fragment, nextTick } from 'vue';
 import { useResizeObserver } from '@vueuse/core';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { formContextKey, formItemContextKey } from './constants.mjs';
 import { throwError } from '../../../utils/error.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
@@ -73,7 +71,8 @@ var FormLabelWrap = defineComponent({
         const style = {};
         if (hasLabel && autoLabelWidth && autoLabelWidth !== "auto") {
           const marginWidth = Math.max(0, Number.parseInt(autoLabelWidth, 10) - computedWidth.value);
-          const marginPosition = formContext.labelPosition === "left" ? "marginRight" : "marginLeft";
+          const labelPosition = formItemContext.labelPosition || formContext.labelPosition;
+          const marginPosition = labelPosition === "left" ? "marginRight" : "marginLeft";
           if (marginWidth) {
             style[marginPosition] = `${marginWidth}px`;
           }

@@ -1,5 +1,4 @@
 import { defineComponent, openBlock, createBlock, Transition, mergeProps, unref, toHandlers, withCtx, renderSlot } from 'vue';
-import '../../../hooks/index.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 

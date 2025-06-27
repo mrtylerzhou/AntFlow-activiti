@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { isNumber } from '../../../utils/types.mjs';
 
 const timeUnits = [

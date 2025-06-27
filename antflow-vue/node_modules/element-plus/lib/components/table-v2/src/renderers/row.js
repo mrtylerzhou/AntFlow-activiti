@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../components/index.js');
 var utils = require('../utils.js');
 var row = require('../components/row.js');
 
@@ -96,6 +95,7 @@ const RowRenderer = (props, {
     default: () => [slots]
   });
 };
+var Row = RowRenderer;
 
-exports["default"] = RowRenderer;
+exports["default"] = Row;
 //# sourceMappingURL=row.js.map

@@ -4,4 +4,4 @@ export declare const useCheckboxModel: (props: CheckboxProps) => {
     isGroup: import("vue").ComputedRef<boolean>;
     isLimitExceeded: import("vue").Ref<boolean>;
 };
-export declare type CheckboxModel = ReturnType<typeof useCheckboxModel>;
+export type CheckboxModel = ReturnType<typeof useCheckboxModel>;

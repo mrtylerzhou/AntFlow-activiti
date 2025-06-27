@@ -12,4 +12,4 @@ export declare const panelTimePickerProps: {
     readonly actualVisible: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, undefined, boolean>;
     readonly format: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
 };
-export declare type PanelTimePickerProps = ExtractPropTypes<typeof panelTimePickerProps>;
+export type PanelTimePickerProps = ExtractPropTypes<typeof panelTimePickerProps>;

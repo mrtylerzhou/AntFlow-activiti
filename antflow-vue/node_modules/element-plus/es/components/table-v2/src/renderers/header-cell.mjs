@@ -1,9 +1,8 @@
 import { createVNode, renderSlot, mergeProps } from 'vue';
-import '../components/index.mjs';
 import { oppositeOrderMap, SortOrder, Alignment } from '../constants.mjs';
 import { placeholderSign } from '../private.mjs';
 import { enforceUnit, componentToSlot, tryCall } from '../utils.mjs';
-import HeaderCell from '../components/header-cell.mjs';
+import HeaderCell$1 from '../components/header-cell.mjs';
 import SortIcon from '../components/sort-icon.mjs';
 
 const HeaderCellRenderer = (props, {
@@ -32,7 +31,7 @@ const HeaderCellRenderer = (props, {
     class: ns.e("header-cell-text")
   };
   const columnCellRenderer = componentToSlot(headerCellRenderer);
-  const Cell = columnCellRenderer ? columnCellRenderer(cellProps) : renderSlot(slots, "default", cellProps, () => [createVNode(HeaderCell, cellProps, null)]);
+  const Cell = columnCellRenderer ? columnCellRenderer(cellProps) : renderSlot(slots, "default", cellProps, () => [createVNode(HeaderCell$1, cellProps, null)]);
   const {
     sortBy,
     sortState,
@@ -62,6 +61,7 @@ const HeaderCellRenderer = (props, {
     "sortOrder": sortOrder
   }, null)]);
 };
+var HeaderCell = HeaderCellRenderer;
 
-export { HeaderCellRenderer as default };
+export { HeaderCell as default };
 //# sourceMappingURL=header-cell.mjs.map

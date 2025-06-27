@@ -1,7 +1,6 @@
 'use strict';
 
 require('../../base/style/index.js');
-require('../../input/style/index.js');
 require('../../tag/style/index.js');
 require('../../option/style/index.js');
 require('../../option-group/style/index.js');

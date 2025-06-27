@@ -2,9 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../constants/index.js');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var index = require('../../../hooks/use-size/index.js');
 var index$1 = require('../../../hooks/use-aria/index.js');
 var event = require('../../../constants/event.js');
@@ -48,10 +45,6 @@ const checkboxProps = {
     default: void 0
   },
   id: {
-    type: String,
-    default: void 0
-  },
-  controls: {
     type: String,
     default: void 0
   },

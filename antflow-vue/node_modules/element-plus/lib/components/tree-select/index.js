@@ -3,13 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var treeSelect = require('./src/tree-select.js');
+var install = require('../../utils/vue/install.js');
 
-treeSelect["default"].install = (app) => {
-  app.component(treeSelect["default"].name, treeSelect["default"]);
-};
-const _TreeSelect = treeSelect["default"];
-const ElTreeSelect = _TreeSelect;
+const ElTreeSelect = install.withInstall(treeSelect["default"]);
 
 exports.ElTreeSelect = ElTreeSelect;
-exports["default"] = _TreeSelect;
+exports["default"] = ElTreeSelect;
 //# sourceMappingURL=index.js.map

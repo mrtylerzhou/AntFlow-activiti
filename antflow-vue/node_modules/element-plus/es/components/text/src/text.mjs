@@ -1,5 +1,3 @@
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { componentSizes } from '../../../constants/size.mjs';
 
@@ -14,9 +12,7 @@ const textProps = buildProps({
     values: componentSizes,
     default: ""
   },
-  truncated: {
-    type: Boolean
-  },
+  truncated: Boolean,
   lineClamp: {
     type: [String, Number]
   },

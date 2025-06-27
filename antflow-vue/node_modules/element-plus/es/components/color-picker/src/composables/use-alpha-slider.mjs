@@ -1,20 +1,25 @@
-import { getCurrentInstance, shallowRef, ref, onMounted, watch, computed } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
+import { getCurrentInstance, shallowRef, computed, ref, onMounted, watch } from 'vue';
 import { draggable } from '../utils/draggable.mjs';
 import { getClientXY } from '../../../../utils/dom/position.mjs';
+import { useLocale } from '../../../../hooks/use-locale/index.mjs';
+import { EVENT_CODE } from '../../../../constants/aria.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { addUnit } from '../../../../utils/dom/style.mjs';
 
 const useAlphaSlider = (props) => {
   const instance = getCurrentInstance();
+  const { t } = useLocale();
   const thumb = shallowRef();
   const bar = shallowRef();
+  const alpha = computed(() => props.color.get("alpha"));
+  const alphaLabel = computed(() => t("el.colorpicker.alphaLabel"));
   function handleClick(event) {
+    var _a;
     const target = event.target;
     if (target !== thumb.value) {
       handleDrag(event);
     }
+    (_a = thumb.value) == null ? void 0 : _a.focus();
   }
   function handleDrag(event) {
     if (!bar.value || !thumb.value)
@@ -34,11 +39,37 @@ const useAlphaSlider = (props) => {
       props.color.set("alpha", Math.round((top - thumb.value.offsetHeight / 2) / (rect.height - thumb.value.offsetHeight) * 100));
     }
   }
+  function handleKeydown(event) {
+    const { code, shiftKey } = event;
+    const step = shiftKey ? 10 : 1;
+    switch (code) {
+      case EVENT_CODE.left:
+      case EVENT_CODE.down:
+        event.preventDefault();
+        event.stopPropagation();
+        incrementPosition(-step);
+        break;
+      case EVENT_CODE.right:
+      case EVENT_CODE.up:
+        event.preventDefault();
+        event.stopPropagation();
+        incrementPosition(step);
+        break;
+    }
+  }
+  function incrementPosition(step) {
+    let next = alpha.value + step;
+    next = next < 0 ? 0 : next > 100 ? 100 : next;
+    props.color.set("alpha", next);
+  }
   return {
     thumb,
     bar,
+    alpha,
+    alphaLabel,
     handleDrag,
-    handleClick
+    handleClick,
+    handleKeydown
   };
 };
 const useAlphaSliderDOM = (props, {

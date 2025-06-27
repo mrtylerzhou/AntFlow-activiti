@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../constants/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var size = require('../../../constants/size.js');
 
@@ -18,9 +16,7 @@ const textProps = runtime.buildProps({
     values: size.componentSizes,
     default: ""
   },
-  truncated: {
-    type: Boolean
-  },
+  truncated: Boolean,
   lineClamp: {
     type: [String, Number]
   },

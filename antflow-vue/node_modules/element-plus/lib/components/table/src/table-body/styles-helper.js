@@ -3,17 +3,17 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
 var util = require('../util.js');
 var tokens = require('../tokens.js');
 var index = require('../../../../hooks/use-namespace/index.js');
+var shared = require('@vue/shared');
 
 function useStyles(props) {
   const parent = vue.inject(tokens.TABLE_INJECTION_KEY);
   const ns = index.useNamespace("table");
   const getRowStyle = (row, rowIndex) => {
     const rowStyle = parent == null ? void 0 : parent.props.rowStyle;
-    if (typeof rowStyle === "function") {
+    if (shared.isFunction(rowStyle)) {
       return rowStyle.call(null, {
         row,
         rowIndex
@@ -30,9 +30,9 @@ function useStyles(props) {
       classes.push(ns.em("row", "striped"));
     }
     const rowClassName = parent == null ? void 0 : parent.props.rowClassName;
-    if (typeof rowClassName === "string") {
+    if (shared.isString(rowClassName)) {
       classes.push(rowClassName);
-    } else if (typeof rowClassName === "function") {
+    } else if (shared.isFunction(rowClassName)) {
       classes.push(rowClassName.call(null, {
         row,
         rowIndex
@@ -43,7 +43,7 @@ function useStyles(props) {
   const getCellStyle = (rowIndex, columnIndex, row, column) => {
     const cellStyle = parent == null ? void 0 : parent.props.cellStyle;
     let cellStyles = cellStyle != null ? cellStyle : {};
-    if (typeof cellStyle === "function") {
+    if (shared.isFunction(cellStyle)) {
       cellStyles = cellStyle.call(null, {
         rowIndex,
         columnIndex,
@@ -60,9 +60,9 @@ function useStyles(props) {
     const fixedClasses = util.getFixedColumnsClass(ns.b(), columnIndex, props == null ? void 0 : props.fixed, props.store, void 0, offset);
     const classes = [column.id, column.align, column.className, ...fixedClasses];
     const cellClassName = parent == null ? void 0 : parent.props.cellClassName;
-    if (typeof cellClassName === "string") {
+    if (shared.isString(cellClassName)) {
       classes.push(cellClassName);
-    } else if (typeof cellClassName === "function") {
+    } else if (shared.isFunction(cellClassName)) {
       classes.push(cellClassName.call(null, {
         rowIndex,
         columnIndex,
@@ -77,17 +77,17 @@ function useStyles(props) {
     let rowspan = 1;
     let colspan = 1;
     const fn = parent == null ? void 0 : parent.props.spanMethod;
-    if (typeof fn === "function") {
+    if (shared.isFunction(fn)) {
       const result = fn({
         row,
         column,
         rowIndex,
         columnIndex
       });
-      if (Array.isArray(result)) {
+      if (shared.isArray(result)) {
         rowspan = result[0];
         colspan = result[1];
-      } else if (typeof result === "object") {
+      } else if (shared.isObject(result)) {
         rowspan = result.rowspan;
         colspan = result.colspan;
       }

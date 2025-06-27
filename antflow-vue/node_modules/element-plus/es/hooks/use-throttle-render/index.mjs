@@ -1,25 +1,43 @@
 import { ref, onMounted, watch } from 'vue';
+import { isNumber, isUndefined } from '../../utils/types.mjs';
+import { isObject } from '@vue/shared';
 
 const useThrottleRender = (loading, throttle = 0) => {
   if (throttle === 0)
     return loading;
-  const throttled = ref(false);
-  let timeoutHandle = 0;
-  const dispatchThrottling = () => {
+  const initVal = isObject(throttle) && Boolean(throttle.initVal);
+  const throttled = ref(initVal);
+  let timeoutHandle = null;
+  const dispatchThrottling = (timer) => {
+    if (isUndefined(timer)) {
+      throttled.value = loading.value;
+      return;
+    }
     if (timeoutHandle) {
       clearTimeout(timeoutHandle);
     }
-    timeoutHandle = window.setTimeout(() => {
+    timeoutHandle = setTimeout(() => {
       throttled.value = loading.value;
-    }, throttle);
+    }, timer);
   };
-  onMounted(dispatchThrottling);
-  watch(() => loading.value, (val) => {
-    if (val) {
-      dispatchThrottling();
+  const dispatcher = (type) => {
+    if (type === "leading") {
+      if (isNumber(throttle)) {
+        dispatchThrottling(throttle);
+      } else {
+        dispatchThrottling(throttle.leading);
+      }
     } else {
-      throttled.value = val;
+      if (isObject(throttle)) {
+        dispatchThrottling(throttle.trailing);
+      } else {
+        throttled.value = false;
+      }
     }
+  };
+  onMounted(() => dispatcher("leading"));
+  watch(() => loading.value, (val) => {
+    dispatcher(val ? "leading" : "trailing");
   });
   return throttled;
 };

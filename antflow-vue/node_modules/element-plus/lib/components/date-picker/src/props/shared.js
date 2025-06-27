@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
 var runtime = require('../../../../utils/vue/props/runtime.js');
 var date = require('../../../../constants/date.js');
 var shared = require('@vue/shared');
@@ -14,6 +12,7 @@ const selectionModes = [
   "year",
   "years",
   "month",
+  "months",
   "week",
   "range"
 ];
@@ -49,7 +48,11 @@ const panelSharedProps = runtime.buildProps({
     values: date.datePickTypes
   },
   dateFormat: String,
-  timeFormat: String
+  timeFormat: String,
+  showNow: {
+    type: Boolean,
+    default: true
+  }
 });
 const panelRangeSharedProps = runtime.buildProps({
   unlinkPanels: Boolean,

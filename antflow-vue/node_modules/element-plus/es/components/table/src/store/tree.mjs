@@ -1,5 +1,7 @@
-import { ref, getCurrentInstance, computed, unref, watch } from 'vue';
+import { ref, getCurrentInstance, computed, watch, unref } from 'vue';
 import { getRowIdentity, walkTreeNode } from '../util.mjs';
+import { isArray } from '@vue/shared';
+import { isUndefined } from '../../../../utils/types.mjs';
 
 function useTree(watcherData) {
   const expandRowKeys = ref([]);
@@ -9,6 +11,7 @@ function useTree(watcherData) {
   const lazyTreeNodeMap = ref({});
   const lazyColumnIdentifier = ref("hasChildren");
   const childrenColumnName = ref("children");
+  const checkStrictly = ref(false);
   const instance = getCurrentInstance();
   const normalizedData = computed(() => {
     if (!watcherData.rowKey.value)
@@ -42,7 +45,7 @@ function useTree(watcherData) {
     const res = {};
     walkTreeNode(data, (parent, children, level) => {
       const parentId = getRowIdentity(parent, rowKey);
-      if (Array.isArray(children)) {
+      if (isArray(children)) {
         res[parentId] = {
           children: children.map((row) => getRowIdentity(row, rowKey)),
           level
@@ -130,6 +133,9 @@ function useTree(watcherData) {
     expandRowKeys.value = value;
     updateTreeData();
   };
+  const isUseLazy = (data) => {
+    return lazy.value && data && "loaded" in data && !data.loaded;
+  };
   const toggleTreeExpansion = (row, expanded) => {
     instance.store.assertRowKey();
     const rowKey = watcherData.rowKey.value;
@@ -137,11 +143,12 @@ function useTree(watcherData) {
     const data = id && treeData.value[id];
     if (id && data && "expanded" in data) {
       const oldExpanded = data.expanded;
-      expanded = typeof expanded === "undefined" ? !data.expanded : expanded;
+      expanded = isUndefined(expanded) ? !data.expanded : expanded;
       treeData.value[id].expanded = expanded;
       if (oldExpanded !== expanded) {
         instance.emit("expand-change", row, expanded);
       }
+      isUseLazy(data) && loadData(row, id, data);
       instance.store.updateTableScrollY();
     }
   };
@@ -150,7 +157,7 @@ function useTree(watcherData) {
     const rowKey = watcherData.rowKey.value;
     const id = getRowIdentity(row, rowKey);
     const data = treeData.value[id];
-    if (lazy.value && data && "loaded" in data && !data.loaded) {
+    if (isUseLazy(data)) {
       loadData(row, id, data);
     } else {
       toggleTreeExpansion(row, void 0);
@@ -161,7 +168,7 @@ function useTree(watcherData) {
     if (load && !treeData.value[key].loaded) {
       treeData.value[key].loading = true;
       load(row, treeNode, (data) => {
-        if (!Array.isArray(data)) {
+        if (!isArray(data)) {
           throw new TypeError("[ElTable] data must be an array");
         }
         treeData.value[key].loading = false;
@@ -174,12 +181,23 @@ function useTree(watcherData) {
       });
     }
   };
+  const updateKeyChildren = (key, data) => {
+    const { lazy: lazy2, rowKey } = instance.props;
+    if (!lazy2)
+      return;
+    if (!rowKey)
+      throw new Error("[Table] rowKey is required in updateKeyChild");
+    if (lazyTreeNodeMap.value[key]) {
+      lazyTreeNodeMap.value[key] = data;
+    }
+  };
   return {
     loadData,
     loadOrToggle,
     toggleTreeExpansion,
     updateTreeExpandKeys,
     updateTreeData,
+    updateKeyChildren,
     normalize,
     states: {
       expandRowKeys,
@@ -188,7 +206,8 @@ function useTree(watcherData) {
       lazy,
       lazyTreeNodeMap,
       lazyColumnIdentifier,
-      childrenColumnName
+      childrenColumnName,
+      checkStrictly
     }
   };
 }

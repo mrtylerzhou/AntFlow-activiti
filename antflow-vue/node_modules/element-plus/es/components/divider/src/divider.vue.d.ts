@@ -1,42 +1,23 @@
-import type { CSSProperties } from 'vue';
-declare const _default: import("vue").DefineComponent<{
-    readonly direction: import("../../../utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", unknown, "horizontal", boolean>;
-    readonly contentPosition: import("../../../utils").EpPropFinalized<StringConstructor, "center" | "left" | "right", unknown, "center", boolean>;
-    readonly borderStyle: import("../../../utils").EpPropFinalized<(new (...args: any[]) => string & {}) | (() => string) | ((new (...args: any[]) => string & {}) | (() => string))[], unknown, unknown, "solid", boolean>;
-}, {
-    props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-        readonly direction: import("../../../utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", unknown, "horizontal", boolean>;
-        readonly contentPosition: import("../../../utils").EpPropFinalized<StringConstructor, "center" | "left" | "right", unknown, "center", boolean>;
-        readonly borderStyle: import("../../../utils").EpPropFinalized<(new (...args: any[]) => string & {}) | (() => string) | ((new (...args: any[]) => string & {}) | (() => string))[], unknown, unknown, "solid", boolean>;
-    }>> & {
-        [x: string & `on${string}`]: ((...args: any[]) => any) | ((...args: unknown[]) => any) | undefined;
-    }>>;
-    ns: {
-        namespace: import("vue").ComputedRef<string>;
-        b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-        is: {
-            (name: string, state: boolean | undefined): string;
-            (name: string): string;
-        };
-        cssVar: (object: Record<string, string>) => Record<string, string>;
-        cssVarName: (name: string) => string;
-        cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-        cssVarBlockName: (name: string) => string;
-    };
-    dividerStyle: import("vue").ComputedRef<CSSProperties>;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
-    readonly direction: import("../../../utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", unknown, "horizontal", boolean>;
-    readonly contentPosition: import("../../../utils").EpPropFinalized<StringConstructor, "center" | "left" | "right", unknown, "center", boolean>;
-    readonly borderStyle: import("../../../utils").EpPropFinalized<(new (...args: any[]) => string & {}) | (() => string) | ((new (...args: any[]) => string & {}) | (() => string))[], unknown, unknown, "solid", boolean>;
+declare function __VLS_template(): {
+    default?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
+    readonly direction: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", unknown, "horizontal", boolean>;
+    readonly contentPosition: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "center" | "left" | "right", unknown, "center", boolean>;
+    readonly borderStyle: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string) | (() => string) | ((new (...args: any[]) => string) | (() => string))[], unknown, unknown, "solid", boolean>;
+}, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    readonly direction: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", unknown, "horizontal", boolean>;
+    readonly contentPosition: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "center" | "left" | "right", unknown, "center", boolean>;
+    readonly borderStyle: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string) | (() => string) | ((new (...args: any[]) => string) | (() => string))[], unknown, unknown, "solid", boolean>;
 }>>, {
-    readonly direction: import("../../../utils").EpPropMergeType<StringConstructor, "vertical" | "horizontal", unknown>;
+    readonly direction: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "horizontal" | "vertical", unknown>;
     readonly borderStyle: string;
-    readonly contentPosition: import("../../../utils").EpPropMergeType<StringConstructor, "center" | "left" | "right", unknown>;
+    readonly contentPosition: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "center" | "left" | "right", unknown>;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

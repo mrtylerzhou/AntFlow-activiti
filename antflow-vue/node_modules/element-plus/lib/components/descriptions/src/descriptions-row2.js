@@ -8,7 +8,6 @@ var token = require('./token.js');
 var descriptionsRow = require('./descriptions-row.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 
-const _hoisted_1 = { key: 1 };
 const __default__ = vue.defineComponent({
   name: "ElDescriptionsRow"
 });
@@ -39,7 +38,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             }, null, 8, ["cell"]);
           }), 128))
         ])
-      ], 64)) : (vue.openBlock(), vue.createElementBlock("tr", _hoisted_1, [
+      ], 64)) : (vue.openBlock(), vue.createElementBlock("tr", { key: 1 }, [
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(_ctx.row, (cell, _index) => {
           return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
             key: `tr3-${_index}`

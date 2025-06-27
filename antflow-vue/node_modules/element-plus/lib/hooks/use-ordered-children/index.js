@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
 var vnode = require('../../utils/vue/vnode.js');
 
 const getOrderedChildren = (vm, childComponentName, children) => {

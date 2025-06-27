@@ -71,6 +71,9 @@ var vi = {
       noData: "Kh\xF4ng t\xECm th\u1EA5y d\u1EEF li\u1EC7u",
       placeholder: "Ch\u1ECDn"
     },
+    mention: {
+      loading: "\u0110ang t\u1EA3i"
+    },
     cascader: {
       noMatch: "D\u1EEF li\u1EC7u kh\xF4ng ph\xF9 h\u1EE3p",
       loading: "\u0110ang t\u1EA3i",

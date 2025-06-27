@@ -1,10 +1,9 @@
-import { isRef, ref, unref, onMounted, watchEffect } from 'vue';
+import { unref, ref, onMounted, watchEffect, isRef } from 'vue';
 import { isClient, unrefElement } from '@vueuse/core';
 import { isNil } from 'lodash-unified';
-import { computePosition, arrow } from '@floating-ui/dom';
-import '../../utils/index.mjs';
-import { buildProps } from '../../utils/vue/props/runtime.mjs';
+import { arrow, computePosition } from '@floating-ui/dom';
 import { keysOf } from '../../utils/objects.mjs';
+import { buildProps } from '../../utils/vue/props/runtime.mjs';
 
 const useFloatingProps = buildProps({});
 const unrefReference = (elRef) => {

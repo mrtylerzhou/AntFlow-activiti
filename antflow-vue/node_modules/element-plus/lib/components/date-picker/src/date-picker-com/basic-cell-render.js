@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
 var constants = require('../constants.js');
 var basicCell = require('../props/basic-cell.js');
 var index = require('../../../../hooks/use-namespace/index.js');
@@ -22,11 +21,14 @@ var ElDatePickerCell = vue.defineComponent({
       } = props;
       return vue.renderSlot(slots, "default", {
         ...cell
-      }, () => [vue.createVNode("div", {
-        "class": ns.b()
-      }, [vue.createVNode("span", {
-        "class": ns.e("text")
-      }, [cell == null ? void 0 : cell.text])])]);
+      }, () => {
+        var _a;
+        return [vue.createVNode("div", {
+          "class": ns.b()
+        }, [vue.createVNode("span", {
+          "class": ns.e("text")
+        }, [(_a = cell == null ? void 0 : cell.renderText) != null ? _a : cell == null ? void 0 : cell.text])])];
+      });
     };
   }
 });

@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Container from './src/container.mjs';
 import Aside from './src/aside.mjs';
 import Footer from './src/footer.mjs';

@@ -3,8 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
+var core = require('@vueuse/core');
 var useCache = require('../hooks/use-cache.js');
 var useWheel = require('../hooks/use-wheel.js');
 var scrollbar = require('../components/scrollbar.js');
@@ -14,7 +13,6 @@ var defaults = require('../defaults.js');
 var index = require('../../../../hooks/use-namespace/index.js');
 var types = require('../../../../utils/types.js');
 var shared = require('@vue/shared');
-var core = require('@vueuse/core');
 
 const createList = ({
   name,
@@ -98,9 +96,11 @@ const createList = ({
         layout: vue.computed(() => props.layout)
       }, (offset) => {
         var _a, _b;
-        ;
         (_b = (_a = scrollbarRef.value).onMouseUp) == null ? void 0 : _b.call(_a);
         scrollTo(Math.min(states.value.scrollOffset + offset, estimatedTotalSize.value - clientSize.value));
+      });
+      core.useEventListener(windowRef, "wheel", onWheel, {
+        passive: false
       });
       const emitEvents = () => {
         const { total } = props;
@@ -262,6 +262,9 @@ const createList = ({
           }
         }
       });
+      vue.onActivated(() => {
+        vue.unref(windowRef).scrollTop = vue.unref(states).scrollOffset;
+      });
       const api = {
         ns,
         clientSize,
@@ -308,7 +311,6 @@ const createList = ({
         total,
         onScroll,
         onScrollbarScroll,
-        onWheel,
         states,
         useIsScrolling,
         windowStyle,
@@ -320,13 +322,12 @@ const createList = ({
       const children = [];
       if (total > 0) {
         for (let i = start; i <= end; i++) {
-          children.push((_a = $slots.default) == null ? void 0 : _a.call($slots, {
+          children.push(vue.h(vue.Fragment, { key: i }, (_a = $slots.default) == null ? void 0 : _a.call($slots, {
             data,
-            key: i,
             index: i,
             isScrolling: useIsScrolling ? states.isScrolling : void 0,
             style: getItemStyle(i)
-          }));
+          })));
         }
       }
       const InnerNode = [
@@ -350,7 +351,6 @@ const createList = ({
         class: [ns.e("window"), className],
         style: windowStyle,
         onScroll,
-        onWheel,
         ref: "windowRef",
         key: 0
       }, !shared.isString(Container) ? { default: () => [InnerNode] } : [InnerNode]);

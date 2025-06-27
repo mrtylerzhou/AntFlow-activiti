@@ -7,7 +7,8 @@ export declare enum TreeOptionsEnum {
     KEY = "id",
     LABEL = "label",
     CHILDREN = "children",
-    DISABLED = "disabled"
+    DISABLED = "disabled",
+    CLASS = ""
 }
 export declare const enum SetOperationEnum {
     ADD = "add",
@@ -27,6 +28,7 @@ export declare const treeProps: {
         readonly label: TreeOptionsEnum.LABEL;
         readonly disabled: TreeOptionsEnum.DISABLED;
         readonly value: TreeOptionsEnum.KEY;
+        readonly class: TreeOptionsEnum.CLASS;
     }>, boolean>;
     readonly highlightCurrent: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
     readonly showCheckbox: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
@@ -36,15 +38,16 @@ export declare const treeProps: {
     readonly indent: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 16, boolean>;
     readonly itemSize: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, number, boolean>;
     readonly icon: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) | ((new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component) | ((new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly expandOnClickNode: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
     readonly checkOnClickNode: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly checkOnClickLeaf: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
     readonly currentNodeKey: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => TreeKey & {}) | (() => TreeKey) | ((new (...args: any[]) => TreeKey & {}) | (() => TreeKey))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number) | (() => TreeKey) | ((new (...args: any[]) => string | number) | (() => TreeKey))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -82,6 +85,7 @@ export declare const treeNodeContentProps: {
     };
 };
 export declare const NODE_CLICK = "node-click";
+export declare const NODE_DROP = "node-drop";
 export declare const NODE_EXPAND = "node-expand";
 export declare const NODE_COLLAPSE = "node-collapse";
 export declare const CURRENT_CHANGE = "current-change";
@@ -90,15 +94,17 @@ export declare const NODE_CHECK_CHANGE = "check-change";
 export declare const NODE_CONTEXTMENU = "node-contextmenu";
 export declare const treeEmits: {
     "node-click": (data: TreeNodeData, node: TreeNode, e: MouseEvent) => MouseEvent;
+    "node-drop": (data: TreeNodeData, node: TreeNode, e: DragEvent) => DragEvent;
     "node-expand": (data: TreeNodeData, node: TreeNode) => TreeNode;
     "node-collapse": (data: TreeNodeData, node: TreeNode) => TreeNode;
     "current-change": (data: TreeNodeData, node: TreeNode) => TreeNode;
     check: (data: TreeNodeData, checkedInfo: CheckedInfo) => CheckedInfo;
     "check-change": (data: TreeNodeData, checked: boolean) => boolean;
-    "node-contextmenu": (event: Event, data: TreeNodeData, node: TreeNode) => TreeNode;
+    "node-contextmenu": (evt: Event, data: TreeNodeData, node: TreeNode) => TreeNode;
 };
 export declare const treeNodeEmits: {
     click: (node: TreeNode, e: MouseEvent) => boolean;
+    drop: (node: TreeNode, e: DragEvent) => boolean;
     toggle: (node: TreeNode) => boolean;
     check: (node: TreeNode, checked: CheckboxValueType) => boolean;
 };

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import type { SetupContext } from 'vue';
 import type { DateCell } from '../date-picker.type';
 import type { BasicDateTableEmits, BasicDateTableProps } from '../props/basic-date-table';
-export declare const useBasicDateTable: (props: BasicDateTableProps, emit: SetupContext<BasicDateTableEmits>['emit']) => {
+export declare const useBasicDateTable: (props: BasicDateTableProps, emit: SetupContext<BasicDateTableEmits>["emit"]) => {
     WEEKS: import("vue").ComputedRef<string[]>;
     rows: import("vue").ComputedRef<{
         column?: number | undefined;
@@ -12,48 +12,48 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
         inRange?: boolean | undefined;
         row?: number | undefined;
         selected?: {
-            clone: () => dayjs.Dayjs;
+            clone: () => Dayjs;
             isValid: () => boolean;
             year: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             month: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             date: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             day: {
-                (): number;
-                (value: number): dayjs.Dayjs;
+                (): 0 | 1 | 2 | 3 | 4 | 5 | 6;
+                (value: number): Dayjs;
             };
             hour: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             minute: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             second: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             millisecond: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
-            set: (unit: dayjs.UnitType, value: number) => dayjs.Dayjs;
+            set: (unit: dayjs.UnitType, value: number) => Dayjs;
             get: (unit: dayjs.UnitType) => number;
-            add: (value: number, unit?: dayjs.ManipulateType | undefined) => dayjs.Dayjs;
-            subtract: (value: number, unit?: dayjs.ManipulateType | undefined) => dayjs.Dayjs;
-            startOf: (unit: dayjs.OpUnitType) => dayjs.Dayjs;
-            endOf: (unit: dayjs.OpUnitType) => dayjs.Dayjs;
-            format: (template?: string | undefined) => string;
-            diff: (date?: string | number | Date | dayjs.Dayjs | null | undefined, unit?: "year" | "years" | "month" | "date" | "dates" | "week" | "D" | "M" | "y" | "weeks" | "months" | "m" | "s" | "day" | "hour" | "minute" | "second" | "millisecond" | "hours" | "minutes" | "seconds" | "milliseconds" | "days" | "d" | "h" | "ms" | "w" | "quarter" | "quarters" | "Q" | undefined, float?: boolean | undefined) => number;
+            add: (value: number, unit?: dayjs.ManipulateType) => Dayjs;
+            subtract: (value: number, unit?: dayjs.ManipulateType) => Dayjs;
+            startOf: (unit: dayjs.OpUnitType) => Dayjs;
+            endOf: (unit: dayjs.OpUnitType) => Dayjs;
+            format: (template?: string) => string;
+            diff: (date?: dayjs.ConfigType, unit?: dayjs.QUnitType | dayjs.OpUnitType, float?: boolean) => number;
             valueOf: () => number;
             unix: () => number;
             daysInMonth: () => number;
@@ -62,30 +62,31 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
             toISOString: () => string;
             toString: () => string;
             utcOffset: () => number;
-            isBefore: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isSame: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isAfter: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
+            isBefore: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isSame: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isAfter: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
             locale: {
                 (): string;
-                (preset: string | ILocale, object?: Partial<ILocale> | undefined): dayjs.Dayjs;
+                (preset: string | ILocale, object?: Partial<ILocale>): Dayjs;
             };
             localeData: () => dayjs.InstanceLocaleDataReturn;
             week: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             weekYear: () => number;
             dayOfYear: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
-            isSameOrAfter: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isSameOrBefore: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
+            isSameOrAfter: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isSameOrBefore: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
         } | undefined;
         isCurrent?: boolean | undefined;
         isSelected?: boolean | undefined;
         start?: boolean | undefined;
         text?: number | undefined;
+        renderText?: string | undefined;
         timestamp?: number | undefined;
         date?: {
             toString: () => string;
@@ -93,15 +94,15 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
             toTimeString: () => string;
             toLocaleString: {
                 (): string;
-                (locales?: string | string[] | undefined, options?: Intl.DateTimeFormatOptions | undefined): string;
+                (locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;
             };
             toLocaleDateString: {
                 (): string;
-                (locales?: string | string[] | undefined, options?: Intl.DateTimeFormatOptions | undefined): string;
+                (locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;
             };
             toLocaleTimeString: {
                 (): string;
-                (locales?: string | string[] | undefined, options?: Intl.DateTimeFormatOptions | undefined): string;
+                (locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;
             };
             valueOf: () => number;
             getTime: () => number;
@@ -125,18 +126,18 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
             setTime: (time: number) => number;
             setMilliseconds: (ms: number) => number;
             setUTCMilliseconds: (ms: number) => number;
-            setSeconds: (sec: number, ms?: number | undefined) => number;
-            setUTCSeconds: (sec: number, ms?: number | undefined) => number;
-            setMinutes: (min: number, sec?: number | undefined, ms?: number | undefined) => number;
-            setUTCMinutes: (min: number, sec?: number | undefined, ms?: number | undefined) => number;
-            setHours: (hours: number, min?: number | undefined, sec?: number | undefined, ms?: number | undefined) => number;
-            setUTCHours: (hours: number, min?: number | undefined, sec?: number | undefined, ms?: number | undefined) => number;
+            setSeconds: (sec: number, ms?: number) => number;
+            setUTCSeconds: (sec: number, ms?: number) => number;
+            setMinutes: (min: number, sec?: number, ms?: number) => number;
+            setUTCMinutes: (min: number, sec?: number, ms?: number) => number;
+            setHours: (hours: number, min?: number, sec?: number, ms?: number) => number;
+            setUTCHours: (hours: number, min?: number, sec?: number, ms?: number) => number;
             setDate: (date: number) => number;
             setUTCDate: (date: number) => number;
-            setMonth: (month: number, date?: number | undefined) => number;
-            setUTCMonth: (month: number, date?: number | undefined) => number;
-            setFullYear: (year: number, month?: number | undefined, date?: number | undefined) => number;
-            setUTCFullYear: (year: number, month?: number | undefined, date?: number | undefined) => number;
+            setMonth: (month: number, date?: number) => number;
+            setUTCMonth: (month: number, date?: number) => number;
+            setFullYear: (year: number, month?: number, date?: number) => number;
+            setUTCFullYear: (year: number, month?: number, date?: number) => number;
             toUTCString: () => string;
             toISOString: () => string;
             toJSON: (key?: any) => string;
@@ -148,48 +149,48 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
             };
         } | undefined;
         dayjs?: {
-            clone: () => dayjs.Dayjs;
+            clone: () => Dayjs;
             isValid: () => boolean;
             year: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             month: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             date: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             day: {
-                (): number;
-                (value: number): dayjs.Dayjs;
+                (): 0 | 1 | 2 | 3 | 4 | 5 | 6;
+                (value: number): Dayjs;
             };
             hour: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             minute: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             second: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             millisecond: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
-            set: (unit: dayjs.UnitType, value: number) => dayjs.Dayjs;
+            set: (unit: dayjs.UnitType, value: number) => Dayjs;
             get: (unit: dayjs.UnitType) => number;
-            add: (value: number, unit?: dayjs.ManipulateType | undefined) => dayjs.Dayjs;
-            subtract: (value: number, unit?: dayjs.ManipulateType | undefined) => dayjs.Dayjs;
-            startOf: (unit: dayjs.OpUnitType) => dayjs.Dayjs;
-            endOf: (unit: dayjs.OpUnitType) => dayjs.Dayjs;
-            format: (template?: string | undefined) => string;
-            diff: (date?: string | number | Date | dayjs.Dayjs | null | undefined, unit?: "year" | "years" | "month" | "date" | "dates" | "week" | "D" | "M" | "y" | "weeks" | "months" | "m" | "s" | "day" | "hour" | "minute" | "second" | "millisecond" | "hours" | "minutes" | "seconds" | "milliseconds" | "days" | "d" | "h" | "ms" | "w" | "quarter" | "quarters" | "Q" | undefined, float?: boolean | undefined) => number;
+            add: (value: number, unit?: dayjs.ManipulateType) => Dayjs;
+            subtract: (value: number, unit?: dayjs.ManipulateType) => Dayjs;
+            startOf: (unit: dayjs.OpUnitType) => Dayjs;
+            endOf: (unit: dayjs.OpUnitType) => Dayjs;
+            format: (template?: string) => string;
+            diff: (date?: dayjs.ConfigType, unit?: dayjs.QUnitType | dayjs.OpUnitType, float?: boolean) => number;
             valueOf: () => number;
             unix: () => number;
             daysInMonth: () => number;
@@ -198,27 +199,27 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
             toISOString: () => string;
             toString: () => string;
             utcOffset: () => number;
-            isBefore: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isSame: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isAfter: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
+            isBefore: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isSame: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isAfter: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
             locale: {
                 (): string;
-                (preset: string | ILocale, object?: Partial<ILocale> | undefined): dayjs.Dayjs;
+                (preset: string | ILocale, object?: Partial<ILocale>): Dayjs;
             };
             localeData: () => dayjs.InstanceLocaleDataReturn;
             week: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
             weekYear: () => number;
             dayOfYear: {
                 (): number;
-                (value: number): dayjs.Dayjs;
+                (value: number): Dayjs;
             };
-            isSameOrAfter: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
-            isSameOrBefore: (date: string | number | Date | dayjs.Dayjs | null | undefined, unit?: dayjs.OpUnitType | undefined) => boolean;
+            isSameOrAfter: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
+            isSameOrBefore: (date?: dayjs.ConfigType, unit?: dayjs.OpUnitType) => boolean;
         } | undefined;
-        type?: ("week" | "normal" | "today" | "prev-month" | "next-month") | undefined;
+        type?: ("normal" | "week" | "today" | "prev-month" | "next-month") | undefined;
     }[][]>;
     tbodyRef: import("vue").Ref<HTMLElement | undefined>;
     currentCellRef: import("vue").Ref<HTMLElement | undefined>;
@@ -232,7 +233,7 @@ export declare const useBasicDateTable: (props: BasicDateTableProps, emit: Setup
     handleMouseMove: (event: MouseEvent) => void;
     handleFocus: (event: FocusEvent) => void;
 };
-export declare const useBasicDateTableDOM: (props: BasicDateTableProps, { isCurrent, isWeekActive, }: Pick<ReturnType<typeof useBasicDateTable>, 'isCurrent' | 'isWeekActive'>) => {
+export declare const useBasicDateTableDOM: (props: BasicDateTableProps, { isCurrent, isWeekActive, }: Pick<ReturnType<typeof useBasicDateTable>, "isCurrent" | "isWeekActive">) => {
     tableKls: import("vue").ComputedRef<(string | {
         'is-week-mode': boolean;
     })[]>;

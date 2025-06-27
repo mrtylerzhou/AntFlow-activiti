@@ -8,23 +8,23 @@ export declare const createCollectionWithScope: (name: string) => {
     ElCollection: {
         name: string;
         setup(): void;
-        __isFragment?: undefined;
-        __isTeleport?: undefined;
-        __isSuspense?: undefined;
-        template?: string | object | undefined;
-        render?: Function | undefined;
-        components?: Record<string, import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>> | undefined;
-        directives?: Record<string, import("vue").Directive<any, any>> | undefined;
-        inheritAttrs?: boolean | undefined;
+        __isFragment?: never;
+        __isTeleport?: never;
+        __isSuspense?: never;
+        template?: string | object;
+        render?: Function;
+        components?: Record<string, import("vue").Component>;
+        directives?: Record<string, import("vue").Directive>;
+        inheritAttrs?: boolean;
         emits?: (import("vue").EmitsOptions & ThisType<void>) | undefined;
-        expose?: string[] | undefined;
+        expose?: string[];
         serverPrefetch?(): Promise<any>;
-        compilerOptions?: import("vue").RuntimeCompilerOptions | undefined;
-        call: (<T, A extends any[]>(this: new (...args: A) => T, thisArg: T, ...args: A) => void) & ((this: unknown, ...args: unknown[]) => never);
+        compilerOptions?: import("vue").RuntimeCompilerOptions;
+        call?: (this: unknown, ...args: unknown[]) => never;
         __defaults?: {} | undefined;
-        compatConfig?: (Partial<Record<import("vue").DeprecationTypes, boolean | "suppress-warning">> & {
-            MODE?: 2 | 3 | ((comp: import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions> | null) => 2 | 3) | undefined;
-        }) | undefined;
+        compatConfig?: Partial<Record<import("vue").DeprecationTypes, boolean | "suppress-warning">> & {
+            MODE?: 2 | 3 | ((comp: import("vue").Component | null) => 2 | 3);
+        };
         data?: ((this: import("vue").CreateComponentPublicInstance<Readonly<import("vue").ExtractPropTypes<{}>>, {}, {}, {}, import("vue").MethodOptions, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, Readonly<import("vue").ExtractPropTypes<{}>>, {}, false, {
             P: {};
             B: {};
@@ -44,23 +44,23 @@ export declare const createCollectionWithScope: (name: string) => {
         methods?: {} | undefined;
         watch?: {
             [x: string]: (string | import("vue").WatchCallback<any, any> | ({
-                handler: string | import("vue").WatchCallback<any, any>;
+                handler: import("vue").WatchCallback | string;
             } & import("vue").WatchOptions<boolean>)) | (string | import("vue").WatchCallback<any, any> | ({
-                handler: string | import("vue").WatchCallback<any, any>;
+                handler: import("vue").WatchCallback | string;
             } & import("vue").WatchOptions<boolean>))[];
-        } | undefined;
-        provide?: import("vue").ComponentProvideOptions | undefined;
-        inject?: (string[] | {
+        };
+        provide?: import("vue").ComponentProvideOptions;
+        inject?: string[] | {
             [x: string]: string | symbol | {
-                from?: string | symbol | undefined;
+                from?: string | symbol;
                 default?: unknown;
             };
             [x: symbol]: string | symbol | {
-                from?: string | symbol | undefined;
+                from?: string | symbol;
                 default?: unknown;
             };
-        }) | undefined;
-        filters?: Record<string, Function> | undefined;
+        };
+        filters?: Record<string, Function>;
         mixins?: import("vue").ComponentOptionsMixin[] | undefined;
         extends?: import("vue").ComponentOptionsMixin | undefined;
         beforeCreate?(): void;
@@ -75,82 +75,50 @@ export declare const createCollectionWithScope: (name: string) => {
         beforeUnmount?(): void;
         destroyed?(): void;
         unmounted?(): void;
-        renderTracked?: ((e: import("vue").DebuggerEvent) => void) | undefined;
-        renderTriggered?: ((e: import("vue").DebuggerEvent) => void) | undefined;
-        errorCaptured?: ((err: unknown, instance: import("vue").ComponentPublicInstance<{}, {}, {}, {}, {}, {}, {}, {}, false, import("vue").ComponentOptionsBase<any, any, any, any, any, any, any, any, any, {}>> | null, info: string) => boolean | void) | undefined;
-        delimiters?: [string, string] | undefined;
+        renderTracked?: (e: import("vue").DebuggerEvent) => void;
+        renderTriggered?: (e: import("vue").DebuggerEvent) => void;
+        errorCaptured?: (err: unknown, instance: import("vue").ComponentPublicInstance | null, info: string) => boolean | void;
+        delimiters?: [string, string];
         __differentiator?: undefined;
-        __isBuiltIn?: boolean | undefined;
-        __file?: string | undefined;
-        __name?: string | undefined;
-        beforeRouteEnter?: import("vue-router").NavigationGuardWithThis<undefined> | undefined;
-        beforeRouteUpdate?: import("vue-router").NavigationGuard | undefined;
-        beforeRouteLeave?: import("vue-router").NavigationGuard | undefined;
-        key?: string | number | symbol | undefined;
-        ref?: import("vue").VNodeRef | undefined;
-        ref_for?: boolean | undefined;
-        ref_key?: string | undefined;
-        onVnodeBeforeMount?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeMounted?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeBeforeUpdate?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeUpdated?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeBeforeUnmount?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeUnmounted?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
+        __isBuiltIn?: boolean;
+        __file?: string;
+        __name?: string;
+        beforeRouteEnter?: import("vue-router").NavigationGuardWithThis<undefined>;
+        beforeRouteUpdate?: import("vue-router").NavigationGuard;
+        beforeRouteLeave?: import("vue-router").NavigationGuard;
+        key?: string | number | symbol;
+        ref?: import("vue").VNodeRef;
+        ref_for?: boolean;
+        ref_key?: string;
+        onVnodeBeforeMount?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeMounted?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeBeforeUpdate?: ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void) | ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void)[];
+        onVnodeUpdated?: ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void) | ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void)[];
+        onVnodeBeforeUnmount?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeUnmounted?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
         class?: unknown;
         style?: unknown;
     };
     ElCollectionItem: {
         name: string;
         setup(_: unknown, { attrs }: SetupContext): void;
-        __isFragment?: undefined;
-        __isTeleport?: undefined;
-        __isSuspense?: undefined;
-        template?: string | object | undefined;
-        render?: Function | undefined;
-        components?: Record<string, import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>> | undefined;
-        directives?: Record<string, import("vue").Directive<any, any>> | undefined;
-        inheritAttrs?: boolean | undefined;
+        __isFragment?: never;
+        __isTeleport?: never;
+        __isSuspense?: never;
+        template?: string | object;
+        render?: Function;
+        components?: Record<string, import("vue").Component>;
+        directives?: Record<string, import("vue").Directive>;
+        inheritAttrs?: boolean;
         emits?: (import("vue").EmitsOptions & ThisType<void>) | undefined;
-        expose?: string[] | undefined;
+        expose?: string[];
         serverPrefetch?(): Promise<any>;
-        compilerOptions?: import("vue").RuntimeCompilerOptions | undefined;
-        call: (<T, A extends any[]>(this: new (...args: A) => T, thisArg: T, ...args: A) => void) & ((this: unknown, ...args: unknown[]) => never);
+        compilerOptions?: import("vue").RuntimeCompilerOptions;
+        call?: (this: unknown, ...args: unknown[]) => never;
         __defaults?: {} | undefined;
-        compatConfig?: (Partial<Record<import("vue").DeprecationTypes, boolean | "suppress-warning">> & {
-            MODE?: 2 | 3 | ((comp: import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions> | null) => 2 | 3) | undefined;
-        }) | undefined;
+        compatConfig?: Partial<Record<import("vue").DeprecationTypes, boolean | "suppress-warning">> & {
+            MODE?: 2 | 3 | ((comp: import("vue").Component | null) => 2 | 3);
+        };
         data?: ((this: import("vue").CreateComponentPublicInstance<Readonly<import("vue").ExtractPropTypes<{}>>, {}, {}, {}, import("vue").MethodOptions, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, Readonly<import("vue").ExtractPropTypes<{}>>, {}, false, {
             P: {};
             B: {};
@@ -170,23 +138,23 @@ export declare const createCollectionWithScope: (name: string) => {
         methods?: {} | undefined;
         watch?: {
             [x: string]: (string | import("vue").WatchCallback<any, any> | ({
-                handler: string | import("vue").WatchCallback<any, any>;
+                handler: import("vue").WatchCallback | string;
             } & import("vue").WatchOptions<boolean>)) | (string | import("vue").WatchCallback<any, any> | ({
-                handler: string | import("vue").WatchCallback<any, any>;
+                handler: import("vue").WatchCallback | string;
             } & import("vue").WatchOptions<boolean>))[];
-        } | undefined;
-        provide?: import("vue").ComponentProvideOptions | undefined;
-        inject?: (string[] | {
+        };
+        provide?: import("vue").ComponentProvideOptions;
+        inject?: string[] | {
             [x: string]: string | symbol | {
-                from?: string | symbol | undefined;
+                from?: string | symbol;
                 default?: unknown;
             };
             [x: symbol]: string | symbol | {
-                from?: string | symbol | undefined;
+                from?: string | symbol;
                 default?: unknown;
             };
-        }) | undefined;
-        filters?: Record<string, Function> | undefined;
+        };
+        filters?: Record<string, Function>;
         mixins?: import("vue").ComponentOptionsMixin[] | undefined;
         extends?: import("vue").ComponentOptionsMixin | undefined;
         beforeCreate?(): void;
@@ -201,59 +169,27 @@ export declare const createCollectionWithScope: (name: string) => {
         beforeUnmount?(): void;
         destroyed?(): void;
         unmounted?(): void;
-        renderTracked?: ((e: import("vue").DebuggerEvent) => void) | undefined;
-        renderTriggered?: ((e: import("vue").DebuggerEvent) => void) | undefined;
-        errorCaptured?: ((err: unknown, instance: import("vue").ComponentPublicInstance<{}, {}, {}, {}, {}, {}, {}, {}, false, import("vue").ComponentOptionsBase<any, any, any, any, any, any, any, any, any, {}>> | null, info: string) => boolean | void) | undefined;
-        delimiters?: [string, string] | undefined;
+        renderTracked?: (e: import("vue").DebuggerEvent) => void;
+        renderTriggered?: (e: import("vue").DebuggerEvent) => void;
+        errorCaptured?: (err: unknown, instance: import("vue").ComponentPublicInstance | null, info: string) => boolean | void;
+        delimiters?: [string, string];
         __differentiator?: undefined;
-        __isBuiltIn?: boolean | undefined;
-        __file?: string | undefined;
-        __name?: string | undefined;
-        beforeRouteEnter?: import("vue-router").NavigationGuardWithThis<undefined> | undefined;
-        beforeRouteUpdate?: import("vue-router").NavigationGuard | undefined;
-        beforeRouteLeave?: import("vue-router").NavigationGuard | undefined;
-        key?: string | number | symbol | undefined;
-        ref?: import("vue").VNodeRef | undefined;
-        ref_for?: boolean | undefined;
-        ref_key?: string | undefined;
-        onVnodeBeforeMount?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeMounted?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeBeforeUpdate?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeUpdated?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>, oldVNode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeBeforeUnmount?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
-        onVnodeUnmounted?: ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void) | ((vnode: import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
-            [key: string]: any;
-        }>) => void)[] | undefined;
+        __isBuiltIn?: boolean;
+        __file?: string;
+        __name?: string;
+        beforeRouteEnter?: import("vue-router").NavigationGuardWithThis<undefined>;
+        beforeRouteUpdate?: import("vue-router").NavigationGuard;
+        beforeRouteLeave?: import("vue-router").NavigationGuard;
+        key?: string | number | symbol;
+        ref?: import("vue").VNodeRef;
+        ref_for?: boolean;
+        ref_key?: string;
+        onVnodeBeforeMount?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeMounted?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeBeforeUpdate?: ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void) | ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void)[];
+        onVnodeUpdated?: ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void) | ((vnode: import("vue").VNode, oldVNode: import("vue").VNode) => void)[];
+        onVnodeBeforeUnmount?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
+        onVnodeUnmounted?: ((vnode: import("vue").VNode) => void) | ((vnode: import("vue").VNode) => void)[];
         class?: unknown;
         style?: unknown;
     };

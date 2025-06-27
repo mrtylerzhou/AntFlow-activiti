@@ -34,6 +34,7 @@ var defaultProps = {
     type: [Boolean, Object],
     default: void 0
   },
+  tooltipFormatter: Function,
   fixed: [Boolean, String],
   formatter: Function,
   selectable: Function,

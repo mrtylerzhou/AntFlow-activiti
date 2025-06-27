@@ -3,9 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../form/index.js');
-require('../../config-provider/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var index = require('../../../hooks/use-deprecated/index.js');
 var useGlobalConfig = require('../../config-provider/src/hooks/use-global-config.js');
@@ -56,6 +53,10 @@ const useButton = (props, emit) => {
     return false;
   });
   const handleClick = (evt) => {
+    if (_disabled.value || props.loading) {
+      evt.stopPropagation();
+      return;
+    }
     if (props.nativeType === "reset") {
       form == null ? void 0 : form.resetFields();
     }

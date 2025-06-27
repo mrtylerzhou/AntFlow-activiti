@@ -1,15 +1,12 @@
-import { defineComponent, useSlots, computed, provide, getCurrentInstance, openBlock, createElementBlock, normalizeClass, unref, createBlock, withCtx, normalizeStyle, createElementVNode, toDisplayString } from 'vue';
-import '../../../hooks/index.mjs';
-import '../../form/index.mjs';
-import '../../virtual-list/index.mjs';
+import { defineComponent, useSlots, computed, provide, getCurrentInstance, openBlock, createElementBlock, normalizeClass, unref, createBlock, withCtx, normalizeStyle, renderSlot, createElementVNode, toDisplayString } from 'vue';
 import { useTree } from './composables/useTree.mjs';
 import ElTreeNode from './tree-node.mjs';
 import { treeProps, treeEmits, ROOT_TREE_INJECTION_KEY } from './virtual-tree.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
+import FixedSizeList from '../../virtual-list/src/components/fixed-size-list.mjs';
 import { formItemContextKey } from '../../form/src/constants.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
-import FixedSizeList from '../../virtual-list/src/components/fixed-size-list.mjs';
 
 const __default__ = defineComponent({
   name: "ElTreeV2"
@@ -36,6 +33,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const {
       flattenTree,
       isNotEmpty,
+      listRef,
       toggleExpand,
       isExpanded,
       isIndeterminate,
@@ -44,6 +42,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       isCurrent,
       isForceHiddenExpandIcon,
       handleNodeClick,
+      handleNodeDrop,
       handleNodeCheck,
       toggleCheckbox,
       getCurrentNode,
@@ -60,7 +59,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       getNode,
       expandNode,
       collapseNode,
-      setExpandedKeys
+      setExpandedKeys,
+      scrollToNode,
+      scrollTo
     } = useTree(props, emit);
     expose({
       toggleCheckbox,
@@ -78,16 +79,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       getNode,
       expandNode,
       collapseNode,
-      setExpandedKeys
+      setExpandedKeys,
+      scrollToNode,
+      scrollTo
     });
     return (_ctx, _cache) => {
-      var _a;
       return openBlock(), createElementBlock("div", {
         class: normalizeClass([unref(ns).b(), { [unref(ns).m("highlight-current")]: _ctx.highlightCurrent }]),
         role: "tree"
       }, [
         unref(isNotEmpty) ? (openBlock(), createBlock(unref(FixedSizeList), {
           key: 0,
+          ref_key: "listRef",
+          ref: listRef,
           "class-name": unref(ns).b("virtual-list"),
           data: unref(flattenTree),
           total: unref(flattenTree).length,
@@ -110,17 +114,23 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               "hidden-expand-icon": unref(isForceHiddenExpandIcon)(data[index]),
               onClick: unref(handleNodeClick),
               onToggle: unref(toggleExpand),
-              onCheck: unref(handleNodeCheck)
-            }, null, 8, ["style", "node", "expanded", "show-checkbox", "checked", "indeterminate", "item-size", "disabled", "current", "hidden-expand-icon", "onClick", "onToggle", "onCheck"]))
+              onCheck: unref(handleNodeCheck),
+              onDrop: unref(handleNodeDrop)
+            }, null, 8, ["style", "node", "expanded", "show-checkbox", "checked", "indeterminate", "item-size", "disabled", "current", "hidden-expand-icon", "onClick", "onToggle", "onCheck", "onDrop"]))
           ]),
           _: 1
         }, 8, ["class-name", "data", "total", "height", "item-size", "perf-mode"])) : (openBlock(), createElementBlock("div", {
           key: 1,
           class: normalizeClass(unref(ns).e("empty-block"))
         }, [
-          createElementVNode("span", {
-            class: normalizeClass(unref(ns).e("empty-text"))
-          }, toDisplayString((_a = _ctx.emptyText) != null ? _a : unref(t)("el.tree.emptyText")), 3)
+          renderSlot(_ctx.$slots, "empty", {}, () => {
+            var _a;
+            return [
+              createElementVNode("span", {
+                class: normalizeClass(unref(ns).e("empty-text"))
+              }, toDisplayString((_a = _ctx.emptyText) != null ? _a : unref(t)("el.tree.emptyText")), 3)
+            ];
+          })
         ], 2))
       ], 2);
     };

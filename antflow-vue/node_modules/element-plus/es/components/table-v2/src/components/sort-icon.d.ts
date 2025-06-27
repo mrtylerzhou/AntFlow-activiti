@@ -1,6 +1,6 @@
 import { SortOrder } from '../constants';
 import type { FunctionalComponent } from 'vue';
-export declare type SortIconProps = {
+export type SortIconProps = {
     sortOrder: SortOrder;
     class?: JSX.IntrinsicAttributes['class'];
 };

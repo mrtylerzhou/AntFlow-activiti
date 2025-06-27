@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import TableV2 from './src/table-v2.mjs';
 export { default as TableV2 } from './src/table-v2.mjs';
 import AutoResizer from './src/components/auto-resizer.mjs';

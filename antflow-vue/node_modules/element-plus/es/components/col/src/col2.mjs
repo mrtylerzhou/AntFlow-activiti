@@ -1,7 +1,4 @@
 import { defineComponent, inject, computed, openBlock, createBlock, resolveDynamicComponent, normalizeClass, unref, normalizeStyle, withCtx, renderSlot } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../row/index.mjs';
 import { colProps } from './col.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { rowContextKey } from '../../row/src/constants.mjs';

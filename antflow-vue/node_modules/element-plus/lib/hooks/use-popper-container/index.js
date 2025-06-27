@@ -3,12 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
 var index = require('../use-namespace/index.js');
 var index$1 = require('../use-id/index.js');
 var core = require('@vueuse/core');
 
-let cachedContainer;
 const usePopperContainerId = () => {
   const namespace = index.useGetDerivedNamespace();
   const idInjection = index$1.useIdInjection();
@@ -32,8 +30,8 @@ const usePopperContainer = () => {
   vue.onBeforeMount(() => {
     if (!core.isClient)
       return;
-    if (process.env.NODE_ENV === "test" || !cachedContainer && !document.body.querySelector(selector.value)) {
-      cachedContainer = createContainer(id.value);
+    if (process.env.NODE_ENV === "test" || !document.body.querySelector(selector.value)) {
+      createContainer(id.value);
     }
   });
   return {

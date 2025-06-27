@@ -3,10 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
-require('../../constants/index.js');
-var aria = require('../../constants/aria.js');
-var aria$1 = require('../../utils/dom/aria.js');
+var aria = require('../../utils/dom/aria.js');
+var aria$1 = require('../../constants/aria.js');
 
 const FOCUSABLE_CHILDREN = "_trap-focus-children";
 const TRAP_FOCUS_HANDLER = "_trap-focus-handler";
@@ -16,7 +14,7 @@ const FOCUS_HANDLER = (e) => {
   if (FOCUS_STACK.length === 0)
     return;
   const focusableElement = FOCUS_STACK[FOCUS_STACK.length - 1][FOCUSABLE_CHILDREN];
-  if (focusableElement.length > 0 && e.code === aria.EVENT_CODE.tab) {
+  if (focusableElement.length > 0 && e.code === aria$1.EVENT_CODE.tab) {
     if (focusableElement.length === 1) {
       e.preventDefault();
       if (document.activeElement !== focusableElement[0]) {
@@ -45,7 +43,7 @@ const FOCUS_HANDLER = (e) => {
 };
 const TrapFocus = {
   beforeMount(el) {
-    el[FOCUSABLE_CHILDREN] = aria$1.obtainAllFocusableElements(el);
+    el[FOCUSABLE_CHILDREN] = aria.obtainAllFocusableElements(el);
     FOCUS_STACK.push(el);
     if (FOCUS_STACK.length <= 1) {
       document.addEventListener("keydown", FOCUS_HANDLER);
@@ -53,7 +51,7 @@ const TrapFocus = {
   },
   updated(el) {
     vue.nextTick(() => {
-      el[FOCUSABLE_CHILDREN] = aria$1.obtainAllFocusableElements(el);
+      el[FOCUSABLE_CHILDREN] = aria.obtainAllFocusableElements(el);
     });
   },
   unmounted() {

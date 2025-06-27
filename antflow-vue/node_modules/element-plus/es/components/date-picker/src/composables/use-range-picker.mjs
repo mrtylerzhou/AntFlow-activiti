@@ -1,6 +1,4 @@
 import { getCurrentInstance, inject, ref, unref, watch } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import { isValidRange, getDefaultValue } from '../utils.mjs';
 import { ROOT_PICKER_INJECTION_KEY } from '../constants.mjs';
 import { useShortcut } from './use-shortcut.mjs';
@@ -42,6 +40,17 @@ const useRangePicker = (props, {
       rangeState.value.endDate = null;
     }
   };
+  const onReset = (parsedValue) => {
+    if (isArray(parsedValue) && parsedValue.length === 2) {
+      const [start, end] = parsedValue;
+      minDate.value = start;
+      leftDate.value = start;
+      maxDate.value = end;
+      onParsedValueChanged(unref(minDate), unref(maxDate));
+    } else {
+      restoreDefault();
+    }
+  };
   const restoreDefault = () => {
     const [start, end] = getDefaultValue(unref(defaultValue), {
       lang: unref(lang),
@@ -58,17 +67,7 @@ const useRangePicker = (props, {
       restoreDefault();
     }
   }, { immediate: true });
-  watch(() => props.parsedValue, (parsedValue) => {
-    if (isArray(parsedValue) && parsedValue.length === 2) {
-      const [start, end] = parsedValue;
-      minDate.value = start;
-      leftDate.value = start;
-      maxDate.value = end;
-      onParsedValueChanged(unref(minDate), unref(maxDate));
-    } else {
-      restoreDefault();
-    }
-  }, { immediate: true });
+  watch(() => props.parsedValue, onReset, { immediate: true });
   return {
     minDate,
     maxDate,
@@ -80,6 +79,7 @@ const useRangePicker = (props, {
     handleRangeConfirm,
     handleShortcutClick,
     onSelect,
+    onReset,
     t
   };
 };

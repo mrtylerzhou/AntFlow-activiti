@@ -1,5 +1,4 @@
 import { getCurrentInstance, watch } from 'vue';
-import '../../../../utils/index.mjs';
 import { parseWidth, parseMinWidth } from '../util.mjs';
 import { hasOwn } from '@vue/shared';
 
@@ -49,7 +48,8 @@ function useWatcher(owner, props_) {
       "className",
       "labelClassName",
       "filterClassName",
-      "showOverflowTooltip"
+      "showOverflowTooltip",
+      "tooltipFormatter"
     ];
     const aliases = {
       property: "prop",

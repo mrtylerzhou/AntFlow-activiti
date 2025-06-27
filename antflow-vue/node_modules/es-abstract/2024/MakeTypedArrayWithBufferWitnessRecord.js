@@ -8,7 +8,7 @@ var IsDetachedBuffer = require('./IsDetachedBuffer');
 var isTypedArray = require('is-typed-array');
 var typedArrayBuffer = require('typed-array-buffer');
 
-// https://tc39.es/ecma262/#sec-maketypedarraywithbufferwitnessrecord
+// https://262.ecma-international.org/15.0/#sec-maketypedarraywithbufferwitnessrecord
 
 module.exports = function MakeTypedArrayWithBufferWitnessRecord(obj, order) {
 	if (!isTypedArray(obj)) {

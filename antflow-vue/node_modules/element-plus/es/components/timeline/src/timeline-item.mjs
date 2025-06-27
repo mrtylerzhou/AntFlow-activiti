@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { iconPropType } from '../../../utils/vue/icon.mjs';
 
@@ -7,14 +6,8 @@ const timelineItemProps = buildProps({
     type: String,
     default: ""
   },
-  hideTimestamp: {
-    type: Boolean,
-    default: false
-  },
-  center: {
-    type: Boolean,
-    default: false
-  },
+  hideTimestamp: Boolean,
+  center: Boolean,
   placement: {
     type: String,
     values: ["top", "bottom"],
@@ -37,10 +30,7 @@ const timelineItemProps = buildProps({
   icon: {
     type: iconPropType
   },
-  hollow: {
-    type: Boolean,
-    default: false
-  }
+  hollow: Boolean
 });
 
 export { timelineItemProps };

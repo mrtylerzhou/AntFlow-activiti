@@ -4,15 +4,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var tabPane = require('./tab-pane.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var error = require('../../../utils/error.js');
 var index = require('../../../hooks/use-namespace/index.js');
 
-const _hoisted_1 = ["id", "aria-hidden", "aria-labelledby"];
 const COMPONENT_NAME = "ElTabPane";
 const __default__ = vue.defineComponent({
   name: COMPONENT_NAME
@@ -53,8 +50,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       index: index$1,
       isClosable
     });
+    tabsRoot.registerPane(pane);
     vue.onMounted(() => {
-      tabsRoot.registerPane(pane);
+      tabsRoot.sortPane(pane);
     });
     vue.onUnmounted(() => {
       tabsRoot.unregisterPane(pane.uid);
@@ -69,7 +67,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         "aria-labelledby": `tab-${vue.unref(paneName)}`
       }, [
         vue.renderSlot(_ctx.$slots, "default")
-      ], 10, _hoisted_1)), [
+      ], 10, ["id", "aria-hidden", "aria-labelledby"])), [
         [vue.vShow, vue.unref(active)]
       ]) : vue.createCommentVNode("v-if", true);
     };

@@ -1,7 +1,5 @@
 import { computed } from 'vue';
 import { TinyColor } from '@ctrl/tinycolor';
-import '../../../hooks/index.mjs';
-import '../../form/index.mjs';
 import { useFormDisabled } from '../../form/src/hooks/use-form-common-props.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
@@ -13,8 +11,12 @@ function useButtonCustomStyle(props) {
   const ns = useNamespace("button");
   return computed(() => {
     let styles = {};
-    const buttonColor = props.color;
+    let buttonColor = props.color;
     if (buttonColor) {
+      const match = buttonColor.match(/var\((.*?)\)/);
+      if (match) {
+        buttonColor = window.getComputedStyle(window.document.documentElement).getPropertyValue(match[1]);
+      }
       const color = new TinyColor(buttonColor);
       const activeBgColor = props.dark ? color.tint(20).toString() : darken(color, 20);
       if (props.plain) {

@@ -4,16 +4,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../directives/index.js');
-require('../../../hooks/index.js');
 var index$4 = require('../../scrollbar/index.js');
 var helper = require('./store/helper.js');
 var tableLayout = require('./table-layout.js');
 var index$1 = require('./table-header/index.js');
 var index$2 = require('./table-body/index.js');
 var index$3 = require('./table-footer/index.js');
-var utilsHelper = require('./table/utils-helper.js');
-var utilsHelper$1 = require('./table-header/utils-helper.js');
+var utilsHelper$1 = require('./table/utils-helper.js');
+var utilsHelper = require('./table-header/utils-helper.js');
 var styleHelper = require('./table/style-helper.js');
 var keyRenderHelper = require('./table/key-render-helper.js');
 var defaults = require('./table/defaults.js');
@@ -57,7 +55,8 @@ const _sfc_main = vue.defineComponent({
     "filter-change",
     "current-change",
     "header-dragend",
-    "expand-change"
+    "expand-change",
+    "scroll"
   ],
   setup(props) {
     const { t } = index$5.useLocale();
@@ -83,8 +82,9 @@ const _sfc_main = vue.defineComponent({
       toggleAllSelection,
       toggleRowExpansion,
       clearSort,
-      sort
-    } = utilsHelper["default"](store);
+      sort,
+      updateKeyChildren
+    } = utilsHelper$1["default"](store);
     const {
       isHidden,
       renderExpanded,
@@ -102,7 +102,6 @@ const _sfc_main = vue.defineComponent({
       tableBodyStyles,
       tableLayout: tableLayout$1,
       scrollbarViewStyle,
-      tableInnerStyle,
       scrollbarStyle
     } = styleHelper["default"](props, layout, store, table);
     const { scrollBarRef, scrollTo, setScrollLeft, setScrollTop } = useScrollbar.useScrollbar();
@@ -115,14 +114,21 @@ const _sfc_main = vue.defineComponent({
       doLayout,
       debouncedUpdateLayout
     };
-    const computedSumText = vue.computed(() => props.sumText || t("el.table.sumText"));
+    const computedSumText = vue.computed(() => {
+      var _a;
+      return (_a = props.sumText) != null ? _a : t("el.table.sumText");
+    });
     const computedEmptyText = vue.computed(() => {
-      return props.emptyText || t("el.table.emptyText");
+      var _a;
+      return (_a = props.emptyText) != null ? _a : t("el.table.emptyText");
     });
     const columns = vue.computed(() => {
-      return utilsHelper$1.convertToRows(store.states.originColumns.value)[0];
+      return utilsHelper.convertToRows(store.states.originColumns.value)[0];
     });
     keyRenderHelper["default"](table);
+    vue.onBeforeUnmount(() => {
+      debouncedUpdateLayout.cancel();
+    });
     return {
       ns,
       layout,
@@ -153,6 +159,7 @@ const _sfc_main = vue.defineComponent({
       clearSort,
       doLayout,
       sort,
+      updateKeyChildren,
       t,
       setDragVisible,
       context: table,
@@ -160,20 +167,15 @@ const _sfc_main = vue.defineComponent({
       computedEmptyText,
       tableLayout: tableLayout$1,
       scrollbarViewStyle,
-      tableInnerStyle,
       scrollbarStyle,
       scrollBarRef,
       scrollTo,
       setScrollLeft,
-      setScrollTop
+      setScrollTop,
+      allowDragLastColumn: props.allowDragLastColumn
     };
   }
 });
-const _hoisted_1 = ["data-prefix"];
-const _hoisted_2 = {
-  ref: "hiddenColumns",
-  class: "hidden-columns"
-};
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_hColgroup = vue.resolveComponent("hColgroup");
   const _component_table_header = vue.resolveComponent("table-header");
@@ -204,13 +206,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]),
     style: vue.normalizeStyle(_ctx.style),
     "data-prefix": _ctx.ns.namespace.value,
-    onMouseleave: _cache[0] || (_cache[0] = (...args) => _ctx.handleMouseLeave && _ctx.handleMouseLeave(...args))
+    onMouseleave: _ctx.handleMouseLeave
   }, [
     vue.createElementVNode("div", {
-      class: vue.normalizeClass(_ctx.ns.e("inner-wrapper")),
-      style: vue.normalizeStyle(_ctx.tableInnerStyle)
+      class: vue.normalizeClass(_ctx.ns.e("inner-wrapper"))
     }, [
-      vue.createElementVNode("div", _hoisted_2, [
+      vue.createElementVNode("div", {
+        ref: "hiddenColumns",
+        class: "hidden-columns"
+      }, [
         vue.renderSlot(_ctx.$slots, "default")
       ], 512),
       _ctx.showHeader && _ctx.tableLayout === "fixed" ? vue.withDirectives((vue.openBlock(), vue.createElementBlock("div", {
@@ -235,8 +239,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             border: _ctx.border,
             "default-sort": _ctx.defaultSort,
             store: _ctx.store,
+            "append-filter-panel-to": _ctx.appendFilterPanelTo,
+            "allow-drag-last-column": _ctx.allowDragLastColumn,
             onSetDragVisible: _ctx.setDragVisible
-          }, null, 8, ["border", "default-sort", "store", "onSetDragVisible"])
+          }, null, 8, ["border", "default-sort", "store", "append-filter-panel-to", "allow-drag-last-column", "onSetDragVisible"])
         ], 6)
       ], 2)), [
         [_directive_mousewheel, _ctx.handleHeaderFooterMousewheel]
@@ -249,7 +255,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ref: "scrollBarRef",
           "view-style": _ctx.scrollbarViewStyle,
           "wrap-style": _ctx.scrollbarStyle,
-          always: _ctx.scrollbarAlwaysOn
+          always: _ctx.scrollbarAlwaysOn,
+          tabindex: _ctx.scrollbarTabindex,
+          onScroll: ($event) => _ctx.$emit("scroll", $event)
         }, {
           default: vue.withCtx(() => [
             vue.createElementVNode("table", {
@@ -274,8 +282,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 border: _ctx.border,
                 "default-sort": _ctx.defaultSort,
                 store: _ctx.store,
+                "append-filter-panel-to": _ctx.appendFilterPanelTo,
                 onSetDragVisible: _ctx.setDragVisible
-              }, null, 8, ["class", "border", "default-sort", "store", "onSetDragVisible"])) : vue.createCommentVNode("v-if", true),
+              }, null, 8, ["class", "border", "default-sort", "store", "append-filter-panel-to", "onSetDragVisible"])) : vue.createCommentVNode("v-if", true),
               vue.createVNode(_component_table_body, {
                 context: _ctx.context,
                 highlight: _ctx.highlightCurrentRow,
@@ -319,7 +328,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ], 2)) : vue.createCommentVNode("v-if", true)
           ]),
           _: 3
-        }, 8, ["view-style", "wrap-style", "always"])
+        }, 8, ["view-style", "wrap-style", "always", "tabindex", "onScroll"])
       ], 2),
       _ctx.showSummary && _ctx.tableLayout === "fixed" ? vue.withDirectives((vue.openBlock(), vue.createElementBlock("div", {
         key: 1,
@@ -353,14 +362,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         key: 2,
         class: vue.normalizeClass(_ctx.ns.e("border-left-patch"))
       }, null, 2)) : vue.createCommentVNode("v-if", true)
-    ], 6),
+    ], 2),
     vue.withDirectives(vue.createElementVNode("div", {
       ref: "resizeProxy",
       class: vue.normalizeClass(_ctx.ns.e("column-resize-proxy"))
     }, null, 2), [
       [vue.vShow, _ctx.resizeProxyVisible]
     ])
-  ], 46, _hoisted_1);
+  ], 46, ["data-prefix", "onMouseleave"]);
 }
 var Table = /* @__PURE__ */ pluginVue_exportHelper["default"](_sfc_main, [["render", _sfc_render], ["__file", "table.vue"]]);
 

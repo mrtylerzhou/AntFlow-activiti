@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var typescript = require('../../../utils/typescript.js');
 var types = require('../../../utils/types.js');
@@ -40,6 +39,10 @@ const imageViewerProps = runtime.buildProps({
   maxScale: {
     type: Number,
     default: 7
+  },
+  showProgress: {
+    type: Boolean,
+    default: false
   },
   crossorigin: {
     type: runtime.definePropType(String)

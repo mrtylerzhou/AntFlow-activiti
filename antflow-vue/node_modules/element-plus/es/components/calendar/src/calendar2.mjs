@@ -1,6 +1,5 @@
 import { defineComponent, computed, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, renderSlot, toDisplayString, createVNode, withCtx, createTextVNode, createCommentVNode, createSlots, normalizeProps, guardReactiveProps, Fragment, renderList, createBlock } from 'vue';
 import { ElButtonGroup, ElButton } from '../../button/index.mjs';
-import '../../../hooks/index.mjs';
 import DateTable from './date-table2.mjs';
 import { useCalendar } from './use-calendar.mjs';
 import { calendarProps, calendarEmits } from './calendar.mjs';
@@ -57,31 +56,31 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 default: withCtx(() => [
                   createVNode(unref(ElButton), {
                     size: "small",
-                    onClick: _cache[0] || (_cache[0] = ($event) => unref(selectDate)("prev-month"))
+                    onClick: ($event) => unref(selectDate)("prev-month")
                   }, {
                     default: withCtx(() => [
                       createTextVNode(toDisplayString(unref(t)("el.datepicker.prevMonth")), 1)
                     ]),
                     _: 1
-                  }),
+                  }, 8, ["onClick"]),
                   createVNode(unref(ElButton), {
                     size: "small",
-                    onClick: _cache[1] || (_cache[1] = ($event) => unref(selectDate)("today"))
+                    onClick: ($event) => unref(selectDate)("today")
                   }, {
                     default: withCtx(() => [
                       createTextVNode(toDisplayString(unref(t)("el.datepicker.today")), 1)
                     ]),
                     _: 1
-                  }),
+                  }, 8, ["onClick"]),
                   createVNode(unref(ElButton), {
                     size: "small",
-                    onClick: _cache[2] || (_cache[2] = ($event) => unref(selectDate)("next-month"))
+                    onClick: ($event) => unref(selectDate)("next-month")
                   }, {
                     default: withCtx(() => [
                       createTextVNode(toDisplayString(unref(t)("el.datepicker.nextMonth")), 1)
                     ]),
                     _: 1
-                  })
+                  }, 8, ["onClick"])
                 ]),
                 _: 1
               })
@@ -96,7 +95,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             date: unref(date),
             "selected-day": unref(realSelectedDay),
             onPick: unref(pickDay)
-          }, createSlots({ _: 2 }, [
+          }, createSlots({
+            _: 2
+          }, [
             _ctx.$slots["date-cell"] ? {
               name: "date-cell",
               fn: withCtx((data) => [
@@ -116,7 +117,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               range: range_,
               "hide-header": index !== 0,
               onPick: unref(pickDay)
-            }, createSlots({ _: 2 }, [
+            }, createSlots({
+              _: 2
+            }, [
               _ctx.$slots["date-cell"] ? {
                 name: "date-cell",
                 fn: withCtx((data) => [

@@ -1,5 +1,3 @@
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
 import SubMenu from './submenu.mjs';
 import { EVENT_CODE } from '../../../../constants/aria.mjs';
 import { triggerEvent } from '../../../../utils/dom/aria.mjs';
@@ -40,6 +38,7 @@ class MenuItem {
           break;
         }
         case EVENT_CODE.enter:
+        case EVENT_CODE.numpadEnter:
         case EVENT_CODE.space: {
           prevDef = true;
           event.currentTarget.click();

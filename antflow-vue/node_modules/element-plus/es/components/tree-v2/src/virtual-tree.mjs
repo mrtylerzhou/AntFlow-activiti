@@ -1,7 +1,7 @@
-import '../../../utils/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../utils/typescript.mjs';
 import { iconPropType } from '../../../utils/vue/icon.mjs';
+import { isBoolean } from '../../../utils/types.mjs';
 
 const ROOT_TREE_INJECTION_KEY = Symbol();
 const EMPTY_NODE = {
@@ -14,6 +14,7 @@ var TreeOptionsEnum = /* @__PURE__ */ ((TreeOptionsEnum2) => {
   TreeOptionsEnum2["LABEL"] = "label";
   TreeOptionsEnum2["CHILDREN"] = "children";
   TreeOptionsEnum2["DISABLED"] = "disabled";
+  TreeOptionsEnum2["CLASS"] = "";
   return TreeOptionsEnum2;
 })(TreeOptionsEnum || {});
 var SetOperationEnum = /* @__PURE__ */ ((SetOperationEnum2) => {
@@ -43,7 +44,8 @@ const treeProps = buildProps({
       children: "children" /* CHILDREN */,
       label: "label" /* LABEL */,
       disabled: "disabled" /* DISABLED */,
-      value: "id" /* KEY */
+      value: "id" /* KEY */,
+      class: "" /* CLASS */
     })
   },
   highlightCurrent: {
@@ -81,6 +83,10 @@ const treeProps = buildProps({
   checkOnClickNode: {
     type: Boolean,
     default: false
+  },
+  checkOnClickLeaf: {
+    type: Boolean,
+    default: true
   },
   currentNodeKey: {
     type: definePropType([String, Number])
@@ -139,6 +145,7 @@ const treeNodeContentProps = buildProps({
   }
 });
 const NODE_CLICK = "node-click";
+const NODE_DROP = "node-drop";
 const NODE_EXPAND = "node-expand";
 const NODE_COLLAPSE = "node-collapse";
 const CURRENT_CHANGE = "current-change";
@@ -147,18 +154,20 @@ const NODE_CHECK_CHANGE = "check-change";
 const NODE_CONTEXTMENU = "node-contextmenu";
 const treeEmits = {
   [NODE_CLICK]: (data, node, e) => data && node && e,
+  [NODE_DROP]: (data, node, e) => data && node && e,
   [NODE_EXPAND]: (data, node) => data && node,
   [NODE_COLLAPSE]: (data, node) => data && node,
   [CURRENT_CHANGE]: (data, node) => data && node,
   [NODE_CHECK]: (data, checkedInfo) => data && checkedInfo,
-  [NODE_CHECK_CHANGE]: (data, checked) => data && typeof checked === "boolean",
-  [NODE_CONTEXTMENU]: (event, data, node) => event && data && node
+  [NODE_CHECK_CHANGE]: (data, checked) => data && isBoolean(checked),
+  [NODE_CONTEXTMENU]: (evt, data, node) => evt && data && node
 };
 const treeNodeEmits = {
   click: (node, e) => !!(node && e),
+  drop: (node, e) => !!(node && e),
   toggle: (node) => !!node,
-  check: (node, checked) => node && typeof checked === "boolean"
+  check: (node, checked) => node && isBoolean(checked)
 };
 
-export { CURRENT_CHANGE, NODE_CHECK, NODE_CHECK_CHANGE, NODE_CLICK, NODE_COLLAPSE, NODE_CONTEXTMENU, NODE_EXPAND, ROOT_TREE_INJECTION_KEY, SetOperationEnum, TreeOptionsEnum, treeEmits, treeNodeContentProps, treeNodeEmits, treeNodeProps, treeProps };
+export { CURRENT_CHANGE, NODE_CHECK, NODE_CHECK_CHANGE, NODE_CLICK, NODE_COLLAPSE, NODE_CONTEXTMENU, NODE_DROP, NODE_EXPAND, ROOT_TREE_INJECTION_KEY, SetOperationEnum, TreeOptionsEnum, treeEmits, treeNodeContentProps, treeNodeEmits, treeNodeProps, treeProps };
 //# sourceMappingURL=virtual-tree.mjs.map

@@ -1,5 +1,4 @@
 import { defineComponent, openBlock, createElementBlock, normalizeClass, unref, createBlock, createCommentVNode } from 'vue';
-import '../../../hooks/index.mjs';
 import { PictureFilled } from '@element-plus/icons-vue';
 import { skeletonItemProps } from './skeleton-item.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';

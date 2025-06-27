@@ -1,4 +1,3 @@
-import '../../../../constants/index.mjs';
 import { usePropsAlias } from './use-props-alias.mjs';
 import { UPDATE_MODEL_EVENT, CHANGE_EVENT } from '../../../../constants/event.mjs';
 

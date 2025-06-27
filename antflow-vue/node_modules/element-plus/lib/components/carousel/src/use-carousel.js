@@ -5,13 +5,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var index = require('../../../hooks/use-ordered-children/index.js');
 var shared = require('@vue/shared');
 var error = require('../../../utils/error.js');
 var vnode = require('../../../utils/vue/vnode.js');
+var event = require('../../../constants/event.js');
 
 const THROTTLE_TIME = 300;
 const useCarousel = (props, emit, componentName) => {
@@ -19,7 +18,7 @@ const useCarousel = (props, emit, componentName) => {
     children: items,
     addChild: addItem,
     removeChild: removeItem
-  } = index.useOrderedChildren(vue.getCurrentInstance(), "ElCarouselItem");
+  } = index.useOrderedChildren(vue.getCurrentInstance(), constants.CAROUSEL_ITEM_NAME);
   const slots = vue.useSlots();
   const activeIndex = vue.ref(-1);
   const timer = vue.ref(null);
@@ -77,6 +76,8 @@ const useCarousel = (props, emit, componentName) => {
       activeIndex.value = activeIndex.value + 1;
     } else if (props.loop) {
       activeIndex.value = 0;
+    } else {
+      isTransitioning.value = false;
     }
   };
   function setActiveItem(index) {
@@ -201,9 +202,8 @@ const useCarousel = (props, emit, componentName) => {
     if (!defaultSlots)
       return null;
     const flatSlots = vnode.flattedChildren(defaultSlots);
-    const carouselItemsName = "ElCarouselItem";
     const normalizeSlots = flatSlots.filter((slot) => {
-      return vue.isVNode(slot) && slot.type.name === carouselItemsName;
+      return vue.isVNode(slot) && slot.type.name === constants.CAROUSEL_ITEM_NAME;
     });
     if ((normalizeSlots == null ? void 0 : normalizeSlots.length) === 2 && props.loop && !isCardType.value) {
       isItemsTwoLength.value = true;
@@ -219,7 +219,7 @@ const useCarousel = (props, emit, componentName) => {
       prev2 = prev2 % 2;
     }
     if (prev2 > -1) {
-      emit("change", current, prev2);
+      emit(event.CHANGE_EVENT, current, prev2);
     }
   });
   vue.watch(() => props.autoplay, (autoplay) => {
@@ -255,6 +255,7 @@ const useCarousel = (props, emit, componentName) => {
     isVertical,
     items,
     loop: props.loop,
+    cardScale: props.cardScale,
     addItem,
     removeItem,
     setActiveItem,

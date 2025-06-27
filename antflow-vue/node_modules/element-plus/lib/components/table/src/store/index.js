@@ -3,7 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
+var lodashUnified = require('lodash-unified');
 var watcher = require('./watcher.js');
 var index = require('../../../../hooks/use-namespace/index.js');
 
@@ -130,7 +130,7 @@ function useStore() {
     changeSortCondition(states, options) {
       const { sortingColumn, sortProp, sortOrder } = states;
       const columnValue = vue.unref(sortingColumn), propValue = vue.unref(sortProp), orderValue = vue.unref(sortOrder);
-      if (orderValue === null) {
+      if (lodashUnified.isNull(orderValue)) {
         states.sortingColumn.value = null;
         states.sortProp.value = null;
       }
@@ -186,11 +186,6 @@ function useStore() {
     commit,
     updateTableScrollY
   };
-}
-class HelperStore {
-  constructor() {
-    this.Return = useStore();
-  }
 }
 
 exports["default"] = useStore;

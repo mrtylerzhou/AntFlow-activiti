@@ -2,19 +2,19 @@ import type { ExtractPropTypes } from 'vue';
 import type { Dayjs } from 'dayjs';
 export declare const basicTimeSpinnerProps: {
     readonly disabledHours: {
-        readonly type: import("vue").PropType<import("../props/shared").GetDisabledHours>;
+        readonly type: import("vue").PropType<import("element-plus").GetDisabledHours>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly disabledMinutes: {
-        readonly type: import("vue").PropType<import("../props/shared").GetDisabledMinutes>;
+        readonly type: import("vue").PropType<import("element-plus").GetDisabledMinutes>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly disabledSeconds: {
-        readonly type: import("vue").PropType<import("../props/shared").GetDisabledSeconds>;
+        readonly type: import("vue").PropType<import("element-plus").GetDisabledSeconds>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -33,6 +33,6 @@ export declare const basicTimeSpinnerProps: {
     };
     readonly showSeconds: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
     readonly arrowControl: BooleanConstructor;
-    readonly amPmMode: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => ("" | "A" | "a") & {}) | (() => "" | "A" | "a") | ((new (...args: any[]) => ("" | "A" | "a") & {}) | (() => "" | "A" | "a"))[], unknown, unknown, "", boolean>;
+    readonly amPmMode: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => "" | "a" | "A") | (() => "" | "a" | "A") | ((new (...args: any[]) => "" | "a" | "A") | (() => "" | "a" | "A"))[], unknown, unknown, "", boolean>;
 };
-export declare type BasicTimeSpinnerProps = ExtractPropTypes<typeof basicTimeSpinnerProps>;
+export type BasicTimeSpinnerProps = ExtractPropTypes<typeof basicTimeSpinnerProps>;

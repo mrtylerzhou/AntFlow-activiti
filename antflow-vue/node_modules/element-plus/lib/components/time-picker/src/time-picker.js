@@ -10,6 +10,7 @@ var picker = require('./common/picker.js');
 var panelTimePick = require('./time-picker-com/panel-time-pick.js');
 var panelTimeRange = require('./time-picker-com/panel-time-range.js');
 var props = require('./common/props.js');
+var event = require('../../../constants/event.js');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -27,20 +28,20 @@ var TimePicker = vue.defineComponent({
       default: false
     }
   },
-  emits: ["update:modelValue"],
+  emits: [event.UPDATE_MODEL_EVENT],
   setup(props, ctx) {
     const commonPicker = vue.ref();
     const [type, Panel] = props.isRange ? ["timerange", panelTimeRange["default"]] : ["time", panelTimePick["default"]];
-    const modelUpdater = (value) => ctx.emit("update:modelValue", value);
+    const modelUpdater = (value) => ctx.emit(event.UPDATE_MODEL_EVENT, value);
     vue.provide("ElPopperOptions", props.popperOptions);
     ctx.expose({
-      focus: (e) => {
+      focus: () => {
         var _a;
-        (_a = commonPicker.value) == null ? void 0 : _a.handleFocusInput(e);
+        (_a = commonPicker.value) == null ? void 0 : _a.focus();
       },
-      blur: (e) => {
+      blur: () => {
         var _a;
-        (_a = commonPicker.value) == null ? void 0 : _a.handleBlurInput(e);
+        (_a = commonPicker.value) == null ? void 0 : _a.blur();
       },
       handleOpen: () => {
         var _a;

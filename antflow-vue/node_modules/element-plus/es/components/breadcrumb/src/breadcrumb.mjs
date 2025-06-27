@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { iconPropType } from '../../../utils/vue/icon.mjs';
 

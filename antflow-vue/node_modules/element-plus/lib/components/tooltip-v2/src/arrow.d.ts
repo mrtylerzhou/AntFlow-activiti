@@ -7,10 +7,10 @@ export declare const tooltipV2ArrowProps: {
 };
 export declare const tooltipV2ArrowSpecialProps: {
     readonly side: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => TooltipV2Sides & {}) | (() => TooltipV2Sides) | ((new (...args: any[]) => TooltipV2Sides & {}) | (() => TooltipV2Sides))[], TooltipV2Sides, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => TooltipV2Sides) | (() => TooltipV2Sides) | ((new (...args: any[]) => TooltipV2Sides) | (() => TooltipV2Sides))[], TooltipV2Sides, unknown>>;
         readonly required: true;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
 };
-export declare type TooltipV2ArrowProps = ExtractPropTypes<typeof tooltipV2ArrowProps>;
+export type TooltipV2ArrowProps = ExtractPropTypes<typeof tooltipV2ArrowProps>;

@@ -3,13 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var collapseTransition = require('./src/collapse-transition.js');
+var install = require('../../utils/vue/install.js');
 
-collapseTransition["default"].install = (app) => {
-  app.component(collapseTransition["default"].name, collapseTransition["default"]);
-};
-const _CollapseTransition = collapseTransition["default"];
-const ElCollapseTransition = _CollapseTransition;
+const ElCollapseTransition = install.withInstall(collapseTransition["default"]);
 
 exports.ElCollapseTransition = ElCollapseTransition;
-exports["default"] = _CollapseTransition;
+exports["default"] = ElCollapseTransition;
 //# sourceMappingURL=index.js.map

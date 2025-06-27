@@ -19,10 +19,6 @@ const RTL = "rtl";
 const RTL_OFFSET_NAG = "negative";
 const RTL_OFFSET_POS_ASC = "positive-ascending";
 const RTL_OFFSET_POS_DESC = "positive-descending";
-const PageKey = {
-  [HORIZONTAL]: "pageX",
-  [VERTICAL]: "pageY"
-};
 const ScrollbarSizeKey = {
   [HORIZONTAL]: "height",
   [VERTICAL]: "width"
@@ -42,7 +38,6 @@ exports.FORWARD = FORWARD;
 exports.HORIZONTAL = HORIZONTAL;
 exports.ITEM_RENDER_EVT = ITEM_RENDER_EVT;
 exports.LTR = LTR;
-exports.PageKey = PageKey;
 exports.RTL = RTL;
 exports.RTL_OFFSET_NAG = RTL_OFFSET_NAG;
 exports.RTL_OFFSET_POS_ASC = RTL_OFFSET_POS_ASC;

@@ -21,6 +21,7 @@ const MainTable = (props, {
     default: () => [slots]
   });
 };
+var MainTable$1 = MainTable;
 
-exports["default"] = MainTable;
+exports["default"] = MainTable$1;
 //# sourceMappingURL=main-table.js.map

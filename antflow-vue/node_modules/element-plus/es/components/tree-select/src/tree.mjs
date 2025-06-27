@@ -1,13 +1,12 @@
-import { watch, nextTick, computed, toRefs } from 'vue';
-import { isEqual, pick } from 'lodash-unified';
-import '../../../constants/index.mjs';
-import '../../../utils/index.mjs';
-import _Tree from '../../tree/index.mjs';
+import { toRefs, computed, nextTick, watch } from 'vue';
+import { pick, isEqual, isNil } from 'lodash-unified';
+import { ElTree } from '../../tree/index.mjs';
 import component from './tree-select-option.mjs';
-import { toValidArray, treeFind, isValidValue, treeEach, isValidArray } from './utils.mjs';
-import { isFunction } from '@vue/shared';
+import { treeEach, toValidArray, treeFind, isValidValue, isValidArray } from './utils.mjs';
 import { escapeStringRegexp } from '../../../utils/strings.mjs';
 import { UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';
+import { isFunction } from '@vue/shared';
+import { isEmpty } from '../../../utils/types.mjs';
 
 const useTree = (props, { attrs, slots, emit }, {
   select,
@@ -61,8 +60,16 @@ const useTree = (props, { attrs, slots, emit }, {
     }, (data) => getNodeValByProp("children", data));
     return options;
   });
+  const getChildCheckedKeys = () => {
+    var _a;
+    return (_a = tree.value) == null ? void 0 : _a.getCheckedKeys().filter((checkedKey) => {
+      var _a2;
+      const node = (_a2 = tree.value) == null ? void 0 : _a2.getNode(checkedKey);
+      return !isNil(node) && isEmpty(node.childNodes);
+    });
+  };
   return {
-    ...pick(toRefs(props), Object.keys(_Tree.props)),
+    ...pick(toRefs(props), Object.keys(ElTree.props)),
     ...attrs,
     nodeKey: key,
     expandOnClickNode: computed(() => {
@@ -75,7 +82,8 @@ const useTree = (props, { attrs, slots, emit }, {
       return h(component, {
         value: getNodeValByProp("value", data),
         label: getNodeValByProp("label", data),
-        disabled: getNodeValByProp("disabled", data)
+        disabled: getNodeValByProp("disabled", data),
+        visible: node.visible
       }, props.renderContent ? () => props.renderContent(h, { node, data, store }) : slots.default ? () => slots.default({ node, data, store }) : void 0);
     },
     filterNodeMethod: (value, data, node) => {
@@ -115,7 +123,8 @@ const useTree = (props, { attrs, slots, emit }, {
         emit(UPDATE_MODEL_EVENT, props.multiple ? checkedKeys : checkedKeys.includes(dataValue) ? dataValue : void 0);
       } else {
         if (props.multiple) {
-          emit(UPDATE_MODEL_EVENT, cachedKeys.concat(tree.value.getCheckedKeys(true)));
+          const childKeys = getChildCheckedKeys();
+          emit(UPDATE_MODEL_EVENT, cachedKeys.concat(childKeys));
         } else {
           const firstLeaf = treeFind([data], (data2) => !isValidArray(getNodeValByProp("children", data2)) && !getNodeValByProp("disabled", data2), (data2) => getNodeValByProp("children", data2));
           const firstLeafKey = firstLeaf ? getNodeValByProp("value", firstLeaf) : void 0;
@@ -135,6 +144,20 @@ const useTree = (props, { attrs, slots, emit }, {
         });
       });
       (_a = select.value) == null ? void 0 : _a.focus();
+    },
+    onNodeExpand: (data, node, e) => {
+      var _a;
+      (_a = attrs.onNodeExpand) == null ? void 0 : _a.call(attrs, data, node, e);
+      nextTick(() => {
+        if (!props.checkStrictly && props.lazy && props.multiple && node.checked) {
+          const dataMap = {};
+          const uncachedCheckedKeys = tree.value.getCheckedKeys();
+          treeEach([tree.value.store.root], (node2) => dataMap[node2.key] = node2, (node2) => node2.childNodes);
+          const cachedKeys = toValidArray(props.modelValue).filter((item) => !(item in dataMap) && !uncachedCheckedKeys.includes(item));
+          const childKeys = getChildCheckedKeys();
+          emit(UPDATE_MODEL_EVENT, cachedKeys.concat(childKeys));
+        }
+      });
     },
     cacheOptions
   };

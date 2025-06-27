@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Avatar from './src/avatar.mjs';
 export { avatarEmits, avatarProps } from './src/avatar2.mjs';
 import { withInstall } from '../../utils/vue/install.mjs';

@@ -1,5 +1,4 @@
 import { defineComponent, provide, h, renderSlot } from 'vue';
-import '../../../hooks/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
 const Timeline = defineComponent({

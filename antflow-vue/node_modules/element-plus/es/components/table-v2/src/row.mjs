@@ -1,8 +1,6 @@
-import '../../../utils/index.mjs';
-import '../../virtual-list/index.mjs';
 import { columns, expandColumnKey, rowKey } from './common.mjs';
-import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { virtualizedGridProps } from '../../virtual-list/src/props.mjs';
+import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
 const tableV2RowProps = buildProps({
   class: String,

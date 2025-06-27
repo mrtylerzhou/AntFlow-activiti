@@ -2,28 +2,36 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../constants/index.js');
-var types = require('../../../utils/types.js');
-var shared = require('@vue/shared');
-var runtime = require('../../../utils/vue/props/runtime.js');
-var typescript = require('../../../utils/typescript.js');
-var event = require('../../../constants/event.js');
+var vue = require('vue');
+var collapse = require('./collapse2.js');
+var useCollapse = require('./use-collapse.js');
+var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 
-const emitChangeFn = (value) => types.isNumber(value) || shared.isString(value) || shared.isArray(value);
-const collapseProps = runtime.buildProps({
-  accordion: Boolean,
-  modelValue: {
-    type: runtime.definePropType([Array, String, Number]),
-    default: () => typescript.mutable([])
+const __default__ = vue.defineComponent({
+  name: "ElCollapse"
+});
+const _sfc_main = /* @__PURE__ */ vue.defineComponent({
+  ...__default__,
+  props: collapse.collapseProps,
+  emits: collapse.collapseEmits,
+  setup(__props, { expose, emit }) {
+    const props = __props;
+    const { activeNames, setActiveNames } = useCollapse.useCollapse(props, emit);
+    const { rootKls } = useCollapse.useCollapseDOM();
+    expose({
+      activeNames,
+      setActiveNames
+    });
+    return (_ctx, _cache) => {
+      return vue.openBlock(), vue.createElementBlock("div", {
+        class: vue.normalizeClass(vue.unref(rootKls))
+      }, [
+        vue.renderSlot(_ctx.$slots, "default")
+      ], 2);
+    };
   }
 });
-const collapseEmits = {
-  [event.UPDATE_MODEL_EVENT]: emitChangeFn,
-  [event.CHANGE_EVENT]: emitChangeFn
-};
+var Collapse = /* @__PURE__ */ pluginVue_exportHelper["default"](_sfc_main, [["__file", "collapse.vue"]]);
 
-exports.collapseEmits = collapseEmits;
-exports.collapseProps = collapseProps;
-exports.emitChangeFn = emitChangeFn;
+exports["default"] = Collapse;
 //# sourceMappingURL=collapse.js.map

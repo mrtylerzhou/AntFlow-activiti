@@ -1,6 +1,6 @@
 import type { InjectionKey, ObjectDirective, Ref } from 'vue';
-declare type ForwardRefSetter = <T>(el: T) => void;
-export declare type ForwardRefInjectionContext = {
+type ForwardRefSetter = <T>(el: T) => void;
+export type ForwardRefInjectionContext = {
     setForwardRef: ForwardRefSetter;
 };
 export declare const FORWARD_REF_INJECTION_KEY: InjectionKey<ForwardRefInjectionContext>;

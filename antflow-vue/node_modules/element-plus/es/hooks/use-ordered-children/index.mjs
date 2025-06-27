@@ -1,5 +1,4 @@
-import { isVNode, shallowRef } from 'vue';
-import '../../utils/index.mjs';
+import { shallowRef, isVNode } from 'vue';
 import { flattedChildren } from '../../utils/vue/vnode.mjs';
 
 const getOrderedChildren = (vm, childComponentName, children) => {

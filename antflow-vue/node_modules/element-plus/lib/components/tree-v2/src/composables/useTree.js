@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var virtualTree = require('../virtual-tree.js');
 var useCheck = require('./useCheck.js');
 var useFilter = require('./useFilter.js');
@@ -13,6 +12,7 @@ function useTree(props, emit) {
   const expandedKeySet = vue.ref(new Set(props.defaultExpandedKeys));
   const currentKey = vue.ref();
   const tree = vue.shallowRef();
+  const listRef = vue.ref();
   vue.watch(() => props.currentNodeKey, (key) => {
     currentKey.value = key;
   }, {
@@ -52,34 +52,26 @@ function useTree(props, emit) {
     return ((_a = props.props) == null ? void 0 : _a.label) || virtualTree.TreeOptionsEnum.LABEL;
   });
   const flattenTree = vue.computed(() => {
+    var _a;
     const expandedKeys = expandedKeySet.value;
     const hiddenKeys = hiddenNodeKeySet.value;
     const flattenNodes = [];
-    const nodes = tree.value && tree.value.treeNodes || [];
-    function traverse() {
-      const stack = [];
-      for (let i = nodes.length - 1; i >= 0; --i) {
-        stack.push(nodes[i]);
-      }
-      while (stack.length) {
-        const node = stack.pop();
-        if (!node)
-          continue;
-        if (!hiddenKeys.has(node.key)) {
-          flattenNodes.push(node);
-        }
-        if (expandedKeys.has(node.key)) {
-          const children = node.children;
-          if (children) {
-            const length = children.length;
-            for (let i = length - 1; i >= 0; --i) {
-              stack.push(children[i]);
-            }
-          }
+    const nodes = ((_a = tree.value) == null ? void 0 : _a.treeNodes) || [];
+    const stack = [];
+    for (let i = nodes.length - 1; i >= 0; --i) {
+      stack.push(nodes[i]);
+    }
+    while (stack.length) {
+      const node = stack.pop();
+      if (hiddenKeys.has(node.key))
+        continue;
+      flattenNodes.push(node);
+      if (node.children && expandedKeys.has(node.key)) {
+        for (let i = node.children.length - 1; i >= 0; --i) {
+          stack.push(node.children[i]);
         }
       }
     }
-    traverse();
     return flattenNodes;
   });
   const isNotEmpty = vue.computed(() => {
@@ -157,7 +149,16 @@ function useTree(props, emit) {
     }
   }
   function setExpandedKeys(keys) {
-    expandedKeySet.value = new Set(keys);
+    const expandedKeys = /* @__PURE__ */ new Set();
+    const nodeMap = tree.value.treeNodeMap;
+    keys.forEach((k) => {
+      let node = nodeMap.get(k);
+      while (node && !expandedKeys.has(node.key)) {
+        expandedKeys.add(node.key);
+        node = node.parent;
+      }
+    });
+    expandedKeySet.value = expandedKeys;
   }
   function handleNodeClick(node, e) {
     emit(virtualTree.NODE_CLICK, node.data, node, e);
@@ -165,9 +166,12 @@ function useTree(props, emit) {
     if (props.expandOnClickNode) {
       toggleExpand(node);
     }
-    if (props.showCheckbox && props.checkOnClickNode && !node.disabled) {
+    if (props.showCheckbox && (props.checkOnClickNode || node.isLeaf && props.checkOnClickLeaf) && !node.disabled) {
       toggleCheckbox(node, !isChecked(node), true);
     }
+  }
+  function handleNodeDrop(node, e) {
+    emit(virtualTree.NODE_DROP, node.data, node, e);
   }
   function handleCurrentChange(node) {
     if (!isCurrent(node)) {
@@ -226,10 +230,21 @@ function useTree(props, emit) {
     const key = shared.isObject(data) ? getKey(data) : data;
     return (_a = tree.value) == null ? void 0 : _a.treeNodeMap.get(key);
   }
+  function scrollToNode(key, strategy = "auto") {
+    const node = getNode(key);
+    if (node && listRef.value) {
+      listRef.value.scrollToItem(flattenTree.value.indexOf(node), strategy);
+    }
+  }
+  function scrollTo(offset) {
+    var _a;
+    (_a = listRef.value) == null ? void 0 : _a.scrollTo(offset);
+  }
   return {
     tree,
     flattenTree,
     isNotEmpty,
+    listRef,
     getKey,
     getChildren,
     toggleExpand,
@@ -241,6 +256,7 @@ function useTree(props, emit) {
     isCurrent,
     isForceHiddenExpandIcon,
     handleNodeClick,
+    handleNodeDrop,
     handleNodeCheck,
     getCurrentNode,
     getCurrentKey,
@@ -256,7 +272,9 @@ function useTree(props, emit) {
     getNode,
     expandNode,
     collapseNode,
-    setExpandedKeys
+    setExpandedKeys,
+    scrollToNode,
+    scrollTo
   };
 }
 

@@ -5,8 +5,8 @@ function useUtils(store) {
   const getSelectionRows = () => {
     return store.getSelectionRows();
   };
-  const toggleRowSelection = (row, selected) => {
-    store.toggleRowSelection(row, selected, false);
+  const toggleRowSelection = (row, selected, ignoreSelectable = true) => {
+    store.toggleRowSelection(row, selected, false, ignoreSelectable);
     store.updateAllSelected();
   };
   const clearSelection = () => {
@@ -27,6 +27,9 @@ function useUtils(store) {
   const sort = (prop, order) => {
     store.commit("sort", { prop, order });
   };
+  const updateKeyChildren = (key, data) => {
+    store.updateKeyChildren(key, data);
+  };
   return {
     setCurrentRow,
     getSelectionRows,
@@ -36,7 +39,8 @@ function useUtils(store) {
     toggleAllSelection,
     toggleRowExpansion,
     clearSort,
-    sort
+    sort,
+    updateKeyChildren
   };
 }
 

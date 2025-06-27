@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../constants/index.js');
 var usePropsAlias = require('./use-props-alias.js');
 var event = require('../../../../constants/event.js');
 

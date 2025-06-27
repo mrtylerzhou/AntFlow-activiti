@@ -3,10 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../constants/index.js');
-require('../../../../utils/index.js');
-var event = require('../../../../constants/event.js');
+var shared = require('@vue/shared');
 var error = require('../../../../utils/error.js');
+var types = require('../../../../utils/types.js');
+var event = require('../../../../constants/event.js');
 
 const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
   const _emit = (val) => {
@@ -26,7 +26,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
       error.throwError("Slider", "min should not be greater than max.");
     }
     const val = props.modelValue;
-    if (props.range && Array.isArray(val)) {
+    if (props.range && shared.isArray(val)) {
       if (val[1] < props.min) {
         _emit([props.min, props.min]);
       } else if (val[0] > props.max) {
@@ -45,7 +45,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
           initData.oldValue = val.slice();
         }
       }
-    } else if (!props.range && typeof val === "number" && !Number.isNaN(val)) {
+    } else if (!props.range && types.isNumber(val) && !Number.isNaN(val)) {
       if (val < props.min) {
         _emit(props.min);
       } else if (val > props.max) {
@@ -68,7 +68,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
     }
   });
   vue.watch(() => props.modelValue, (val, oldVal) => {
-    if (initData.dragging || Array.isArray(val) && Array.isArray(oldVal) && val.every((item, index) => item === oldVal[index]) && initData.firstValue === val[0] && initData.secondValue === val[1]) {
+    if (initData.dragging || shared.isArray(val) && shared.isArray(oldVal) && val.every((item, index) => item === oldVal[index]) && initData.firstValue === val[0] && initData.secondValue === val[1]) {
       return;
     }
     setValues();

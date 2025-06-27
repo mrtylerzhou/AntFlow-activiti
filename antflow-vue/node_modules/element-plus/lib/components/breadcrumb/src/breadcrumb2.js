@@ -3,14 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var breadcrumb = require('./breadcrumb.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 
-const _hoisted_1 = ["aria-label"];
 const __default__ = vue.defineComponent({
   name: "ElBreadcrumb"
 });
@@ -38,7 +36,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         role: "navigation"
       }, [
         vue.renderSlot(_ctx.$slots, "default")
-      ], 10, _hoisted_1);
+      ], 10, ["aria-label"]);
     };
   }
 });

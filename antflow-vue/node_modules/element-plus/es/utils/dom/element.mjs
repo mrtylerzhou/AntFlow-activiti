@@ -1,5 +1,3 @@
-import '../types.mjs';
-import '../browser.mjs';
 import { isClient } from '@vueuse/core';
 import { isString } from '@vue/shared';
 

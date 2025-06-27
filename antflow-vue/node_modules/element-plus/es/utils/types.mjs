@@ -1,7 +1,6 @@
 import { isArray, isObject, isString } from '@vue/shared';
-export { isArray, isDate, isFunction, isObject, isPromise, isString, isSymbol } from '@vue/shared';
+export { isArray, isDate, isFunction, isObject, isPlainObject, isPromise, isString, isSymbol } from '@vue/shared';
 import { isNil } from 'lodash-unified';
-export { isVNode } from 'vue';
 
 const isUndefined = (val) => val === void 0;
 const isBoolean = (val) => typeof val === "boolean";
@@ -12,18 +11,14 @@ const isElement = (e) => {
     return false;
   return e instanceof Element;
 };
-const isPropAbsent = (prop) => {
-  return isNil(prop);
-};
+const isPropAbsent = (prop) => isNil(prop);
 const isStringNumber = (val) => {
   if (!isString(val)) {
     return false;
   }
   return !Number.isNaN(Number(val));
 };
-const isWindow = (val) => {
-  return val === window;
-};
+const isWindow = (val) => val === window;
 
 export { isBoolean, isElement, isEmpty, isNumber, isPropAbsent, isStringNumber, isUndefined, isWindow };
 //# sourceMappingURL=types.mjs.map

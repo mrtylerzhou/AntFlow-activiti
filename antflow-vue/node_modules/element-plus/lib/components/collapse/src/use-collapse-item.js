@@ -3,10 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
-var index = require('../../../hooks/use-namespace/index.js');
 var index$1 = require('../../../hooks/use-id/index.js');
+var index = require('../../../hooks/use-namespace/index.js');
 
 const useCollapseItem = (props) => {
   const collapse = vue.inject(constants.collapseContextKey);

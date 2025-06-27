@@ -1,5 +1,4 @@
-export { isArray, isFunction, isObject, isString, isDate, isPromise, isSymbol, } from '@vue/shared';
-export { isVNode } from 'vue';
+export { isArray, isFunction, isObject, isString, isDate, isPromise, isSymbol, isPlainObject, } from '@vue/shared';
 export declare const isUndefined: (val: any) => val is undefined;
 export declare const isBoolean: (val: any) => val is boolean;
 export declare const isNumber: (val: any) => val is number;

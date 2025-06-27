@@ -1,4 +1,4 @@
-declare type TextAreaHeight = {
+type TextAreaHeight = {
     height: string;
     minHeight?: string;
 };

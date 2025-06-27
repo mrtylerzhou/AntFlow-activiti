@@ -1,6 +1,5 @@
 import { getCurrentInstance, shallowRef, ref, computed, unref } from 'vue';
 import { debounce } from 'lodash-unified';
-import '../../../../utils/index.mjs';
 import { FixedDir } from '../constants.mjs';
 import { isNumber } from '../../../../utils/types.mjs';
 

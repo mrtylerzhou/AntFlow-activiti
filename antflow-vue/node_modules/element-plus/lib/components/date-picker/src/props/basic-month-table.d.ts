@@ -2,7 +2,7 @@ import type { ExtractPropTypes } from 'vue';
 export declare const basicMonthTableProps: {
     selectionMode: import("element-plus/es/utils").EpPropFinalized<StringConstructor, string, unknown, string, boolean>;
     disabledDate: {
-        readonly type: import("vue").PropType<(date: Date) => boolean>;
+        readonly type: import("vue").PropType<import("./shared").DisabledDateType>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -36,4 +36,4 @@ export declare const basicMonthTableProps: {
         selecting: boolean;
     }, boolean>;
 };
-export declare type BasicMonthTableProps = ExtractPropTypes<typeof basicMonthTableProps>;
+export type BasicMonthTableProps = ExtractPropTypes<typeof basicMonthTableProps>;

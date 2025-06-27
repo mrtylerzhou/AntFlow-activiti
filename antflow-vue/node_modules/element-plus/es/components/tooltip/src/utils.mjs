@@ -1,5 +1,4 @@
 import { unref } from 'vue';
-import '../../../utils/index.mjs';
 import { isArray } from '@vue/shared';
 
 const isTriggerType = (trigger, type) => {

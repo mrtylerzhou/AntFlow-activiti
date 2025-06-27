@@ -1,13 +1,12 @@
 import { getCurrentInstance, useSlots, ref, computed, unref, isVNode, watch, shallowRef, onMounted, onBeforeUnmount, provide } from 'vue';
 import { throttle } from 'lodash-unified';
 import { useResizeObserver } from '@vueuse/core';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
-import { carouselContextKey } from './constants.mjs';
+import { CAROUSEL_ITEM_NAME, carouselContextKey } from './constants.mjs';
 import { useOrderedChildren } from '../../../hooks/use-ordered-children/index.mjs';
 import { isString } from '@vue/shared';
 import { debugWarn } from '../../../utils/error.mjs';
 import { flattedChildren } from '../../../utils/vue/vnode.mjs';
+import { CHANGE_EVENT } from '../../../constants/event.mjs';
 
 const THROTTLE_TIME = 300;
 const useCarousel = (props, emit, componentName) => {
@@ -15,7 +14,7 @@ const useCarousel = (props, emit, componentName) => {
     children: items,
     addChild: addItem,
     removeChild: removeItem
-  } = useOrderedChildren(getCurrentInstance(), "ElCarouselItem");
+  } = useOrderedChildren(getCurrentInstance(), CAROUSEL_ITEM_NAME);
   const slots = useSlots();
   const activeIndex = ref(-1);
   const timer = ref(null);
@@ -73,6 +72,8 @@ const useCarousel = (props, emit, componentName) => {
       activeIndex.value = activeIndex.value + 1;
     } else if (props.loop) {
       activeIndex.value = 0;
+    } else {
+      isTransitioning.value = false;
     }
   };
   function setActiveItem(index) {
@@ -197,9 +198,8 @@ const useCarousel = (props, emit, componentName) => {
     if (!defaultSlots)
       return null;
     const flatSlots = flattedChildren(defaultSlots);
-    const carouselItemsName = "ElCarouselItem";
     const normalizeSlots = flatSlots.filter((slot) => {
-      return isVNode(slot) && slot.type.name === carouselItemsName;
+      return isVNode(slot) && slot.type.name === CAROUSEL_ITEM_NAME;
     });
     if ((normalizeSlots == null ? void 0 : normalizeSlots.length) === 2 && props.loop && !isCardType.value) {
       isItemsTwoLength.value = true;
@@ -215,7 +215,7 @@ const useCarousel = (props, emit, componentName) => {
       prev2 = prev2 % 2;
     }
     if (prev2 > -1) {
-      emit("change", current, prev2);
+      emit(CHANGE_EVENT, current, prev2);
     }
   });
   watch(() => props.autoplay, (autoplay) => {
@@ -251,6 +251,7 @@ const useCarousel = (props, emit, componentName) => {
     isVertical,
     items,
     loop: props.loop,
+    cardScale: props.cardScale,
     addItem,
     removeItem,
     setActiveItem,

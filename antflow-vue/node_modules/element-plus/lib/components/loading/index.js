@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var service = require('./src/service.js');
 var directive = require('./src/directive.js');
-require('./src/types.js');
 
 const ElLoading = {
   install(app) {

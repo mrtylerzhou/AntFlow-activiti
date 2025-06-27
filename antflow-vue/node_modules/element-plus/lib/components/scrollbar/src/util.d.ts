@@ -23,6 +23,6 @@ export declare const BAR_MAP: {
         readonly direction: "left";
     };
 };
-export declare const renderThumbStyle: ({ move, size, bar, }: Pick<ThumbProps, "size" | "move"> & {
-    bar: typeof BAR_MAP[keyof typeof BAR_MAP];
+export declare const renderThumbStyle: ({ move, size, bar, }: Pick<ThumbProps, "move" | "size"> & {
+    bar: (typeof BAR_MAP)[keyof typeof BAR_MAP];
 }) => CSSProperties;

@@ -8,9 +8,11 @@ export declare const DEFAULT_FORMATS_DATEPICKER: {
     year: string;
     years: string;
     month: string;
+    months: string;
     datetime: string;
     monthrange: string;
+    yearrange: string;
     daterange: string;
     datetimerange: string;
 };
-export declare type TimeUnit = typeof timeUnits[number];
+export type TimeUnit = typeof timeUnits[number];

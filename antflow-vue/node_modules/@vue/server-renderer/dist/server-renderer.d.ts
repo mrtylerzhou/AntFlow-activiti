@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { VNode, ComponentInternalInstance, App, Slots, Component, ComponentPublicInstance, Directive } from 'vue';
 import { Readable, Writable } from 'node:stream';
 export { includeBooleanAttr as ssrIncludeBooleanAttr } from '@vue/shared';
@@ -58,11 +57,9 @@ export declare const ssrLooseEqual: (a: unknown, b: unknown) => boolean;
 export declare function ssrLooseContain(arr: unknown[], value: unknown): boolean;
 export declare function ssrRenderDynamicModel(type: unknown, model: unknown, value: unknown): string;
 export declare function ssrGetDynamicModelProps(existingProps: any, model: unknown): {
-    checked: boolean;
-    value?: undefined;
+    checked: true;
 } | {
-    value: unknown;
-    checked?: undefined;
+    value: any;
 } | null;
 
 export { renderVNode as ssrRenderVNode };

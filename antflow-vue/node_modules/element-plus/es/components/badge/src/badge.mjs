@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
 const badgeProps = buildProps({
@@ -22,18 +21,12 @@ const badgeProps = buildProps({
     default: true
   },
   color: String,
-  dotStyle: {
-    type: definePropType([String, Object, Array])
-  },
   badgeStyle: {
     type: definePropType([String, Object, Array])
   },
   offset: {
     type: definePropType(Array),
     default: [0, 0]
-  },
-  dotClass: {
-    type: String
   },
   badgeClass: {
     type: String

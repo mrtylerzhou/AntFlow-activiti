@@ -1,7 +1,7 @@
 import type { CascaderConfig, CascaderOption, CascaderProps, CascaderValue } from './node';
 export declare const CommonProps: {
     readonly modelValue: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue) | ((new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (import("./node").CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue) | ((new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (import("./node").CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;

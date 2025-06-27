@@ -3,15 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
-require('../../constants/index.js');
-var aria = require('../../constants/aria.js');
 var core = require('@vueuse/core');
+var aria = require('../../constants/aria.js');
 
 let registeredEscapeHandlers = [];
-const cachedHandler = (e) => {
-  const event = e;
-  if (event.key === aria.EVENT_CODE.esc) {
+const cachedHandler = (event) => {
+  if (event.code === aria.EVENT_CODE.esc) {
     registeredEscapeHandlers.forEach((registeredHandler) => registeredHandler(event));
   }
 };

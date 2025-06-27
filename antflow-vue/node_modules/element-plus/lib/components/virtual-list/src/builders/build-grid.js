@@ -3,8 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
+var core = require('@vueuse/core');
 var scrollbar = require('../components/scrollbar.js');
 var useGridWheel = require('../hooks/use-grid-wheel.js');
 var useCache = require('../hooks/use-cache.js');
@@ -15,7 +14,6 @@ var index = require('../../../../hooks/use-namespace/index.js');
 var types = require('../../../../utils/types.js');
 var scroll = require('../../../../utils/dom/scroll.js');
 var shared = require('@vue/shared');
-var core = require('@vueuse/core');
 
 const createGrid = ({
   name,
@@ -224,6 +222,9 @@ const createGrid = ({
           scrollTop: Math.min(states.value.scrollTop + y, estimatedTotalHeight.value - height)
         });
       });
+      core.useEventListener(windowRef, "wheel", onWheel, {
+        passive: false
+      });
       const scrollTo = ({
         scrollLeft = states.value.scrollLeft,
         scrollTop = states.value.scrollTop
@@ -397,14 +398,14 @@ const createGrid = ({
         if (totalRow > 0 && totalColumn > 0) {
           for (let row = rowStart; row <= rowEnd; row++) {
             for (let column = columnStart; column <= columnEnd; column++) {
-              children.push((_a = slots.default) == null ? void 0 : _a.call(slots, {
+              const key = itemKey({ columnIndex: column, data, rowIndex: row });
+              children.push(vue.h(vue.Fragment, { key }, (_a = slots.default) == null ? void 0 : _a.call(slots, {
                 columnIndex: column,
                 data,
-                key: itemKey({ columnIndex: column, data, rowIndex: row }),
                 isScrolling: useIsScrolling ? vue.unref(states).isScrolling : void 0,
                 style: getItemStyle(row, column),
                 rowIndex: row
-              }));
+              })));
             }
           }
         }
@@ -435,7 +436,6 @@ const createGrid = ({
             class: props.className,
             style: vue.unref(windowStyle),
             onScroll,
-            onWheel,
             ref: windowRef
           }, !shared.isString(Container) ? { default: () => Inner } : Inner),
           horizontalScrollbar,

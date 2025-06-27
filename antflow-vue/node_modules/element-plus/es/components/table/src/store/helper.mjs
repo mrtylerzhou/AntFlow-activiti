@@ -1,6 +1,7 @@
 import { watch } from 'vue';
 import { debounce } from 'lodash-unified';
 import useStore from './index.mjs';
+import { isObject } from '@vue/shared';
 
 const InitialStateMap = {
   rowKey: "rowKey",
@@ -16,6 +17,10 @@ const InitialStateMap = {
   ["treeProps.children"]: {
     key: "childrenColumnName",
     default: "children"
+  },
+  ["treeProps.checkStrictly"]: {
+    key: "checkStrictly",
+    default: false
   }
 };
 function createStore(table, props) {
@@ -40,7 +45,7 @@ function proxyTableProps(store, props) {
 function handleValue(value, propsKey, store) {
   let newVal = value;
   let storeKey = InitialStateMap[propsKey];
-  if (typeof InitialStateMap[propsKey] === "object") {
+  if (isObject(InitialStateMap[propsKey])) {
     storeKey = storeKey.key;
     newVal = newVal || InitialStateMap[propsKey].default;
   }

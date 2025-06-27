@@ -1,4 +1,3 @@
-import '../../../../utils/index.mjs';
 import { cAF, rAF } from '../../../../utils/raf.mjs';
 
 const useGridWheel = ({ atXEndEdge, atXStartEdge, atYEndEdge, atYStartEdge }, onWheelDelta) => {

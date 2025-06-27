@@ -1,15 +1,14 @@
 import type { Dayjs } from 'dayjs';
-import type { GetDisabledHoursState, GetDisabledMinutesState, GetDisabledSecondsState } from '../types';
-import type { GetDisabledHours, GetDisabledMinutes, GetDisabledSeconds } from '../props/shared';
-export declare const getTimeLists: (disabledHours?: GetDisabledHours | undefined, disabledMinutes?: GetDisabledMinutes | undefined, disabledSeconds?: GetDisabledSeconds | undefined) => {
-    getHoursList: (role: string, compare?: Dayjs | undefined) => boolean[];
-    getMinutesList: (hour: number, role: string, compare?: Dayjs | undefined) => boolean[];
-    getSecondsList: (hour: number, minute: number, role: string, compare?: Dayjs | undefined) => boolean[];
+import type { GetDisabledHours, GetDisabledMinutes, GetDisabledSeconds } from '../common/props';
+export declare const getTimeLists: (disabledHours?: GetDisabledHours, disabledMinutes?: GetDisabledMinutes, disabledSeconds?: GetDisabledSeconds) => {
+    getHoursList: (role: string, compare?: Dayjs) => boolean[];
+    getMinutesList: (hour: number, role: string, compare?: Dayjs) => boolean[];
+    getSecondsList: (hour: number, minute: number, role: string, compare?: Dayjs) => boolean[];
 };
 export declare const buildAvailableTimeSlotGetter: (disabledHours: GetDisabledHours, disabledMinutes: GetDisabledMinutes, disabledSeconds: GetDisabledSeconds) => {
-    getAvailableHours: GetDisabledHoursState;
-    getAvailableMinutes: GetDisabledMinutesState;
-    getAvailableSeconds: GetDisabledSecondsState;
+    getAvailableHours: GetDisabledHours;
+    getAvailableMinutes: GetDisabledMinutes;
+    getAvailableSeconds: GetDisabledSeconds;
 };
 export declare const useOldValue: (props: {
     parsedValue?: string | Dayjs | Dayjs[];
@@ -30,7 +29,7 @@ export declare const useOldValue: (props: {
         (value: number): Dayjs;
     };
     day: {
-        (): number;
+        (): 0 | 1 | 2 | 3 | 4 | 5 | 6;
         (value: number): Dayjs;
     };
     hour: {
@@ -51,12 +50,12 @@ export declare const useOldValue: (props: {
     };
     set: (unit: import("dayjs").UnitType, value: number) => Dayjs;
     get: (unit: import("dayjs").UnitType) => number;
-    add: (value: number, unit?: import("dayjs").ManipulateType | undefined) => Dayjs;
-    subtract: (value: number, unit?: import("dayjs").ManipulateType | undefined) => Dayjs;
+    add: (value: number, unit?: import("dayjs").ManipulateType) => Dayjs;
+    subtract: (value: number, unit?: import("dayjs").ManipulateType) => Dayjs;
     startOf: (unit: import("dayjs").OpUnitType) => Dayjs;
     endOf: (unit: import("dayjs").OpUnitType) => Dayjs;
-    format: (template?: string | undefined) => string;
-    diff: (date?: string | number | Date | Dayjs | null | undefined, unit?: "year" | "years" | "month" | "date" | "dates" | "week" | "D" | "M" | "y" | "weeks" | "months" | "m" | "s" | "day" | "hour" | "minute" | "second" | "millisecond" | "hours" | "minutes" | "seconds" | "milliseconds" | "days" | "d" | "h" | "ms" | "w" | "quarter" | "quarters" | "Q" | undefined, float?: boolean | undefined) => number;
+    format: (template?: string) => string;
+    diff: (date?: import("dayjs").ConfigType, unit?: import("dayjs").QUnitType | import("dayjs").OpUnitType, float?: boolean) => number;
     valueOf: () => number;
     unix: () => number;
     daysInMonth: () => number;
@@ -65,12 +64,12 @@ export declare const useOldValue: (props: {
     toISOString: () => string;
     toString: () => string;
     utcOffset: () => number;
-    isBefore: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isSame: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isAfter: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
+    isBefore: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isSame: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isAfter: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
     locale: {
         (): string;
-        (preset: string | ILocale, object?: Partial<ILocale> | undefined): Dayjs;
+        (preset: string | ILocale, object?: Partial<ILocale>): Dayjs;
     };
     localeData: () => import("dayjs").InstanceLocaleDataReturn;
     week: {
@@ -82,8 +81,8 @@ export declare const useOldValue: (props: {
         (): number;
         (value: number): Dayjs;
     };
-    isSameOrAfter: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isSameOrBefore: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
+    isSameOrAfter: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isSameOrBefore: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
 } | {
     clone: () => Dayjs;
     isValid: () => boolean;
@@ -100,7 +99,7 @@ export declare const useOldValue: (props: {
         (value: number): Dayjs;
     };
     day: {
-        (): number;
+        (): 0 | 1 | 2 | 3 | 4 | 5 | 6;
         (value: number): Dayjs;
     };
     hour: {
@@ -121,12 +120,12 @@ export declare const useOldValue: (props: {
     };
     set: (unit: import("dayjs").UnitType, value: number) => Dayjs;
     get: (unit: import("dayjs").UnitType) => number;
-    add: (value: number, unit?: import("dayjs").ManipulateType | undefined) => Dayjs;
-    subtract: (value: number, unit?: import("dayjs").ManipulateType | undefined) => Dayjs;
+    add: (value: number, unit?: import("dayjs").ManipulateType) => Dayjs;
+    subtract: (value: number, unit?: import("dayjs").ManipulateType) => Dayjs;
     startOf: (unit: import("dayjs").OpUnitType) => Dayjs;
     endOf: (unit: import("dayjs").OpUnitType) => Dayjs;
-    format: (template?: string | undefined) => string;
-    diff: (date?: string | number | Date | Dayjs | null | undefined, unit?: "year" | "years" | "month" | "date" | "dates" | "week" | "D" | "M" | "y" | "weeks" | "months" | "m" | "s" | "day" | "hour" | "minute" | "second" | "millisecond" | "hours" | "minutes" | "seconds" | "milliseconds" | "days" | "d" | "h" | "ms" | "w" | "quarter" | "quarters" | "Q" | undefined, float?: boolean | undefined) => number;
+    format: (template?: string) => string;
+    diff: (date?: import("dayjs").ConfigType, unit?: import("dayjs").QUnitType | import("dayjs").OpUnitType, float?: boolean) => number;
     valueOf: () => number;
     unix: () => number;
     daysInMonth: () => number;
@@ -135,12 +134,12 @@ export declare const useOldValue: (props: {
     toISOString: () => string;
     toString: () => string;
     utcOffset: () => number;
-    isBefore: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isSame: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isAfter: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
+    isBefore: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isSame: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isAfter: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
     locale: {
         (): string;
-        (preset: string | ILocale, object?: Partial<ILocale> | undefined): Dayjs;
+        (preset: string | ILocale, object?: Partial<ILocale>): Dayjs;
     };
     localeData: () => import("dayjs").InstanceLocaleDataReturn;
     week: {
@@ -152,6 +151,6 @@ export declare const useOldValue: (props: {
         (): number;
         (value: number): Dayjs;
     };
-    isSameOrAfter: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
-    isSameOrBefore: (date: string | number | Date | Dayjs | null | undefined, unit?: import("dayjs").OpUnitType | undefined) => boolean;
+    isSameOrAfter: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
+    isSameOrBefore: (date?: import("dayjs").ConfigType, unit?: import("dayjs").OpUnitType) => boolean;
 }[] | undefined>;

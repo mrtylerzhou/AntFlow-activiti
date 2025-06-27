@@ -1,7 +1,5 @@
 import { defineComponent, ref, computed, watch, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle, createBlock, withCtx, resolveDynamicComponent, renderSlot } from 'vue';
 import { ElIcon } from '../../icon/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { avatarProps, avatarEmits } from './avatar2.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
@@ -9,7 +7,6 @@ import { isString } from '@vue/shared';
 import { isNumber } from '../../../utils/types.mjs';
 import { addUnit } from '../../../utils/dom/style.mjs';
 
-const _hoisted_1 = ["src", "alt", "srcset"];
 const __default__ = defineComponent({
   name: "ElAvatar"
 });
@@ -58,7 +55,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           srcset: _ctx.srcSet,
           style: normalizeStyle(unref(fitStyle)),
           onError: handleError
-        }, null, 44, _hoisted_1)) : _ctx.icon ? (openBlock(), createBlock(unref(ElIcon), { key: 1 }, {
+        }, null, 44, ["src", "alt", "srcset"])) : _ctx.icon ? (openBlock(), createBlock(unref(ElIcon), { key: 1 }, {
           default: withCtx(() => [
             (openBlock(), createBlock(resolveDynamicComponent(_ctx.icon)))
           ]),

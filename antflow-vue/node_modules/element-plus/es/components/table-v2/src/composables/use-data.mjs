@@ -1,4 +1,5 @@
 import { ref, computed, unref, watch } from 'vue';
+import { isArray } from '@vue/shared';
 
 const useData = (props, { expandedRowKeys, lastRenderedRowIndex, resetAfterIndex }) => {
   const depthMap = ref({});
@@ -16,7 +17,7 @@ const useData = (props, { expandedRowKeys, lastRenderedRowIndex, resetAfterIndex
     while (copy.length > 0) {
       const item = copy.shift();
       array.push(item);
-      if (keysSet.has(item[rowKey]) && Array.isArray(item.children) && item.children.length > 0) {
+      if (keysSet.has(item[rowKey]) && isArray(item.children) && item.children.length > 0) {
         copy = [...item.children, ...copy];
         item.children.forEach((child) => depths[child[rowKey]] = depths[item[rowKey]] + 1);
       }

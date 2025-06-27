@@ -1,8 +1,9 @@
 import { ref, isRef, nextTick } from 'vue';
-import '../../../utils/index.mjs';
+import { isNull } from 'lodash-unified';
 import { parseHeight } from './util.mjs';
-import { hasOwn } from '@vue/shared';
+import { hasOwn, isString } from '@vue/shared';
 import { isClient } from '@vueuse/core';
+import { isNumber } from '../../../utils/types.mjs';
 
 class TableLayout {
   constructor(options) {
@@ -37,7 +38,7 @@ class TableLayout {
   }
   updateScrollY() {
     const height = this.height.value;
-    if (height === null)
+    if (isNull(height))
       return false;
     const scrollBarRef = this.table.refs.scrollBarRef;
     if (this.table.vnode.el && (scrollBarRef == null ? void 0 : scrollBarRef.wrapRef)) {
@@ -57,10 +58,10 @@ class TableLayout {
     this.height.value = Number(value);
     if (!el && (value || value === 0))
       return nextTick(() => this.setHeight(value, prop));
-    if (typeof value === "number") {
+    if (isNumber(value)) {
       el.style[prop] = `${value}px`;
       this.updateElsHeight();
-    } else if (typeof value === "string") {
+    } else if (isString(value)) {
       el.style[prop] = value;
       this.updateElsHeight();
     }
@@ -103,9 +104,9 @@ class TableLayout {
     const bodyWidth = this.table.vnode.el.clientWidth;
     let bodyMinWidth = 0;
     const flattenColumns = this.getFlattenColumns();
-    const flexColumns = flattenColumns.filter((column) => typeof column.width !== "number");
+    const flexColumns = flattenColumns.filter((column) => !isNumber(column.width));
     flattenColumns.forEach((column) => {
-      if (typeof column.width === "number" && column.realWidth)
+      if (isNumber(column.width) && column.realWidth)
         column.realWidth = null;
     });
     if (flexColumns.length > 0 && fit) {

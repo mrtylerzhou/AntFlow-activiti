@@ -1,7 +1,5 @@
-import { defineComponent, getCurrentInstance, provide, computed, resolveComponent, resolveDirective, openBlock, createElementBlock, normalizeClass, normalizeStyle, createElementVNode, renderSlot, withDirectives, createVNode, createCommentVNode, withCtx, createBlock, createTextVNode, toDisplayString, vShow } from 'vue';
+import { defineComponent, getCurrentInstance, provide, computed, onBeforeUnmount, resolveComponent, resolveDirective, openBlock, createElementBlock, normalizeClass, normalizeStyle, createElementVNode, renderSlot, withDirectives, createVNode, createCommentVNode, withCtx, createBlock, createTextVNode, toDisplayString, vShow } from 'vue';
 import { debounce } from 'lodash-unified';
-import '../../../directives/index.mjs';
-import '../../../hooks/index.mjs';
 import { ElScrollbar } from '../../scrollbar/index.mjs';
 import { createStore } from './store/helper.mjs';
 import TableLayout from './table-layout.mjs';
@@ -53,7 +51,8 @@ const _sfc_main = defineComponent({
     "filter-change",
     "current-change",
     "header-dragend",
-    "expand-change"
+    "expand-change",
+    "scroll"
   ],
   setup(props) {
     const { t } = useLocale();
@@ -79,7 +78,8 @@ const _sfc_main = defineComponent({
       toggleAllSelection,
       toggleRowExpansion,
       clearSort,
-      sort
+      sort,
+      updateKeyChildren
     } = useUtils(store);
     const {
       isHidden,
@@ -98,7 +98,6 @@ const _sfc_main = defineComponent({
       tableBodyStyles,
       tableLayout,
       scrollbarViewStyle,
-      tableInnerStyle,
       scrollbarStyle
     } = useStyle(props, layout, store, table);
     const { scrollBarRef, scrollTo, setScrollLeft, setScrollTop } = useScrollbar();
@@ -111,14 +110,21 @@ const _sfc_main = defineComponent({
       doLayout,
       debouncedUpdateLayout
     };
-    const computedSumText = computed(() => props.sumText || t("el.table.sumText"));
+    const computedSumText = computed(() => {
+      var _a;
+      return (_a = props.sumText) != null ? _a : t("el.table.sumText");
+    });
     const computedEmptyText = computed(() => {
-      return props.emptyText || t("el.table.emptyText");
+      var _a;
+      return (_a = props.emptyText) != null ? _a : t("el.table.emptyText");
     });
     const columns = computed(() => {
       return convertToRows(store.states.originColumns.value)[0];
     });
     useKeyRender(table);
+    onBeforeUnmount(() => {
+      debouncedUpdateLayout.cancel();
+    });
     return {
       ns,
       layout,
@@ -149,6 +155,7 @@ const _sfc_main = defineComponent({
       clearSort,
       doLayout,
       sort,
+      updateKeyChildren,
       t,
       setDragVisible,
       context: table,
@@ -156,20 +163,15 @@ const _sfc_main = defineComponent({
       computedEmptyText,
       tableLayout,
       scrollbarViewStyle,
-      tableInnerStyle,
       scrollbarStyle,
       scrollBarRef,
       scrollTo,
       setScrollLeft,
-      setScrollTop
+      setScrollTop,
+      allowDragLastColumn: props.allowDragLastColumn
     };
   }
 });
-const _hoisted_1 = ["data-prefix"];
-const _hoisted_2 = {
-  ref: "hiddenColumns",
-  class: "hidden-columns"
-};
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_hColgroup = resolveComponent("hColgroup");
   const _component_table_header = resolveComponent("table-header");
@@ -200,13 +202,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]),
     style: normalizeStyle(_ctx.style),
     "data-prefix": _ctx.ns.namespace.value,
-    onMouseleave: _cache[0] || (_cache[0] = (...args) => _ctx.handleMouseLeave && _ctx.handleMouseLeave(...args))
+    onMouseleave: _ctx.handleMouseLeave
   }, [
     createElementVNode("div", {
-      class: normalizeClass(_ctx.ns.e("inner-wrapper")),
-      style: normalizeStyle(_ctx.tableInnerStyle)
+      class: normalizeClass(_ctx.ns.e("inner-wrapper"))
     }, [
-      createElementVNode("div", _hoisted_2, [
+      createElementVNode("div", {
+        ref: "hiddenColumns",
+        class: "hidden-columns"
+      }, [
         renderSlot(_ctx.$slots, "default")
       ], 512),
       _ctx.showHeader && _ctx.tableLayout === "fixed" ? withDirectives((openBlock(), createElementBlock("div", {
@@ -231,8 +235,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             border: _ctx.border,
             "default-sort": _ctx.defaultSort,
             store: _ctx.store,
+            "append-filter-panel-to": _ctx.appendFilterPanelTo,
+            "allow-drag-last-column": _ctx.allowDragLastColumn,
             onSetDragVisible: _ctx.setDragVisible
-          }, null, 8, ["border", "default-sort", "store", "onSetDragVisible"])
+          }, null, 8, ["border", "default-sort", "store", "append-filter-panel-to", "allow-drag-last-column", "onSetDragVisible"])
         ], 6)
       ], 2)), [
         [_directive_mousewheel, _ctx.handleHeaderFooterMousewheel]
@@ -245,7 +251,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ref: "scrollBarRef",
           "view-style": _ctx.scrollbarViewStyle,
           "wrap-style": _ctx.scrollbarStyle,
-          always: _ctx.scrollbarAlwaysOn
+          always: _ctx.scrollbarAlwaysOn,
+          tabindex: _ctx.scrollbarTabindex,
+          onScroll: ($event) => _ctx.$emit("scroll", $event)
         }, {
           default: withCtx(() => [
             createElementVNode("table", {
@@ -270,8 +278,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 border: _ctx.border,
                 "default-sort": _ctx.defaultSort,
                 store: _ctx.store,
+                "append-filter-panel-to": _ctx.appendFilterPanelTo,
                 onSetDragVisible: _ctx.setDragVisible
-              }, null, 8, ["class", "border", "default-sort", "store", "onSetDragVisible"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["class", "border", "default-sort", "store", "append-filter-panel-to", "onSetDragVisible"])) : createCommentVNode("v-if", true),
               createVNode(_component_table_body, {
                 context: _ctx.context,
                 highlight: _ctx.highlightCurrentRow,
@@ -315,7 +324,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ], 2)) : createCommentVNode("v-if", true)
           ]),
           _: 3
-        }, 8, ["view-style", "wrap-style", "always"])
+        }, 8, ["view-style", "wrap-style", "always", "tabindex", "onScroll"])
       ], 2),
       _ctx.showSummary && _ctx.tableLayout === "fixed" ? withDirectives((openBlock(), createElementBlock("div", {
         key: 1,
@@ -349,14 +358,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         key: 2,
         class: normalizeClass(_ctx.ns.e("border-left-patch"))
       }, null, 2)) : createCommentVNode("v-if", true)
-    ], 6),
+    ], 2),
     withDirectives(createElementVNode("div", {
       ref: "resizeProxy",
       class: normalizeClass(_ctx.ns.e("column-resize-proxy"))
     }, null, 2), [
       [vShow, _ctx.resizeProxyVisible]
     ])
-  ], 46, _hoisted_1);
+  ], 46, ["data-prefix", "onMouseleave"]);
 }
 var Table = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "table.vue"]]);
 

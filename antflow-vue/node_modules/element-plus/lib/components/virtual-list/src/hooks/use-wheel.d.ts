@@ -5,7 +5,7 @@ interface ListWheelState {
     atEndEdge: ComputedRef<boolean>;
     layout: ComputedRef<LayoutDirection>;
 }
-declare type ListWheelHandler = (offset: number) => void;
+type ListWheelHandler = (offset: number) => void;
 declare const useWheel: ({ atEndEdge, atStartEdge, layout }: ListWheelState, onWheelDelta: ListWheelHandler) => {
     hasReachedEdge: (offset: number) => boolean;
     onWheel: (e: WheelEvent) => void;

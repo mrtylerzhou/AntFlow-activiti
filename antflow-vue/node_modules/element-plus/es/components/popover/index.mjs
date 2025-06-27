@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Popover from './src/popover2.mjs';
 import PopoverDirective, { VPopover } from './src/directive.mjs';
 export { popoverEmits, popoverProps } from './src/popover.mjs';

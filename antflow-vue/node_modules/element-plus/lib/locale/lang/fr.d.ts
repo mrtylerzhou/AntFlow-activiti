@@ -87,6 +87,9 @@ declare const _default: {
             noData: string;
             placeholder: string;
         };
+        mention: {
+            loading: string;
+        };
         cascader: {
             noMatch: string;
             loading: string;
@@ -136,6 +139,11 @@ declare const _default: {
             resetFilter: string;
             clearFilter: string;
             sumText: string;
+        };
+        tour: {
+            next: string;
+            previous: string;
+            finish: string;
         };
         tree: {
             emptyText: string;

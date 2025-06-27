@@ -4,9 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var dayjs = require('dayjs');
-require('../../../../constants/index.js');
-require('../../../../hooks/index.js');
-require('../../../../utils/index.js');
 var panelTimePicker = require('../props/panel-time-picker.js');
 var useTimePanel = require('../composables/use-time-panel.js');
 var useTimePicker = require('../composables/use-time-picker.js');
@@ -163,8 +160,8 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
               vue.createElementVNode("button", {
                 type: "button",
                 class: vue.normalizeClass([vue.unref(ns).be("panel", "btn"), "confirm"]),
-                onClick: _cache[0] || (_cache[0] = ($event) => handleConfirm())
-              }, vue.toDisplayString(vue.unref(t)("el.datepicker.confirm")), 3)
+                onClick: ($event) => handleConfirm()
+              }, vue.toDisplayString(vue.unref(t)("el.datepicker.confirm")), 11, ["onClick"])
             ], 2)
           ], 2)) : vue.createCommentVNode("v-if", true)
         ]),

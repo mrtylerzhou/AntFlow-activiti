@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var icon = require('../../../utils/vue/icon.js');
 
@@ -11,14 +10,8 @@ const timelineItemProps = runtime.buildProps({
     type: String,
     default: ""
   },
-  hideTimestamp: {
-    type: Boolean,
-    default: false
-  },
-  center: {
-    type: Boolean,
-    default: false
-  },
+  hideTimestamp: Boolean,
+  center: Boolean,
   placement: {
     type: String,
     values: ["top", "bottom"],
@@ -41,10 +34,7 @@ const timelineItemProps = runtime.buildProps({
   icon: {
     type: icon.iconPropType
   },
-  hollow: {
-    type: Boolean,
-    default: false
-  }
+  hollow: Boolean
 });
 
 exports.timelineItemProps = timelineItemProps;

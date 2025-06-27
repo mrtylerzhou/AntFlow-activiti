@@ -3,12 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var config = require('../config.js');
 var util = require('../util.js');
 var index = require('../../../../hooks/use-namespace/index.js');
+var types = require('../../../../utils/types.js');
 var error = require('../../../../utils/error.js');
+var shared = require('@vue/shared');
 
 function useRender(props, slots, owner) {
   const instance = vue.getCurrentInstance();
@@ -54,7 +54,7 @@ function useRender(props, slots, owner) {
     if (!column.minWidth) {
       column.minWidth = 80;
     }
-    column.realWidth = Number(column.width === void 0 ? column.minWidth : column.width);
+    column.realWidth = Number(types.isUndefined(column.width) ? column.minWidth : column.width);
     return column;
   };
   const setColumnForcedProps = (column) => {
@@ -62,7 +62,7 @@ function useRender(props, slots, owner) {
     const source = config.cellForced[type] || {};
     Object.keys(source).forEach((prop) => {
       const value = source[prop];
-      if (prop !== "className" && value !== void 0) {
+      if (prop !== "className" && !types.isUndefined(value)) {
         column[prop] = value;
       }
     });
@@ -74,7 +74,7 @@ function useRender(props, slots, owner) {
     return column;
   };
   const checkSubColumn = (children) => {
-    if (Array.isArray(children)) {
+    if (shared.isArray(children)) {
       children.forEach((child) => check(child));
     } else {
       check(children);
@@ -93,6 +93,11 @@ function useRender(props, slots, owner) {
       column.renderHeader = (scope) => {
         instance.columnConfig.value["label"];
         return vue.renderSlot(slots, "header", scope, () => [column.label]);
+      };
+    }
+    if (slots["filter-icon"]) {
+      column.renderFilterIcon = (scope) => {
+        return vue.renderSlot(slots, "filter-icon", scope);
       };
     }
     let originRenderCell = column.renderCell;
@@ -135,7 +140,7 @@ function useRender(props, slots, owner) {
   };
   const getPropsData = (...propsKey) => {
     return propsKey.reduce((prev, cur) => {
-      if (Array.isArray(cur)) {
+      if (shared.isArray(cur)) {
         cur.forEach((key) => {
           prev[key] = props[key];
         });

@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue';
-import '../../../utils/index.mjs';
-import { debugWarn } from '../../../utils/error.mjs';
 import { castArray } from 'lodash-unified';
+import { debugWarn } from '../../../utils/error.mjs';
 
 const SCOPE = "ElForm";
 function useFormLabelWidth() {

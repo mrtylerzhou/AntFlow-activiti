@@ -1,4 +1,3 @@
-import '../../constants/index.mjs';
 import { componentSizeMap } from '../../constants/size.mjs';
 
 const getComponentSize = (size) => {

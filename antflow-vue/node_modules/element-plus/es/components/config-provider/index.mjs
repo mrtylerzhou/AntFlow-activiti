@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import ConfigProvider from './src/config-provider.mjs';
 export { messageConfig } from './src/config-provider.mjs';
 export { configProviderProps } from './src/config-provider-props.mjs';

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
 var error = require('../../utils/error.js');
 
 const useDeprecated = ({ from, replacement, scope, version, ref, type = "API" }, condition) => {

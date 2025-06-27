@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var index = require('../../../hooks/use-namespace/index.js');
 var shared = require('@vue/shared');

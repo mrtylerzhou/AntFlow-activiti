@@ -1,6 +1,6 @@
 import type { Ref } from 'vue';
 import type { UseNamespaceReturn } from '../use-namespace';
-export declare type UseLockScreenOptions = {
+export type UseLockScreenOptions = {
     ns?: UseNamespaceReturn;
 };
 /**

@@ -26,7 +26,7 @@ function useFilter(props, tree) {
     function traverse(nodes2) {
       nodes2.forEach((node) => {
         family.push(node);
-        if (filter == null ? void 0 : filter(query, node.data)) {
+        if (filter == null ? void 0 : filter(query, node.data, node)) {
           family.forEach((member) => {
             expandKeySet.add(member.key);
           });

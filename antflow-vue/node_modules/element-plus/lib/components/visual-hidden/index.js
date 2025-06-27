@@ -2,8 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var visualHidden = require('./src/visual-hidden.js');
-var visualHidden$1 = require('./src/visual-hidden2.js');
+var visualHidden = require('./src/visual-hidden2.js');
+var visualHidden$1 = require('./src/visual-hidden.js');
 
 
 

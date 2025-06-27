@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, nextTick } from 'vue';
+import { defineComponent, getCurrentInstance, nextTick, watch } from 'vue';
 import { ElOption } from '../../select/index.mjs';
 
 const component = defineComponent({
@@ -11,6 +11,13 @@ const component = defineComponent({
       if (!result.select.states.cachedOptions.get(vm.value)) {
         result.select.onOptionCreate(vm);
       }
+    });
+    watch(() => ctx.attrs.visible, (val) => {
+      nextTick(() => {
+        result.states.visible = val;
+      });
+    }, {
+      immediate: true
     });
     return result;
   },

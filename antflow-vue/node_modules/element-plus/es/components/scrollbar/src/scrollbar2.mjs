@@ -1,7 +1,5 @@
-import { defineComponent, ref, computed, watch, nextTick, provide, reactive, onMounted, onUpdated, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, normalizeStyle, createBlock, resolveDynamicComponent, withCtx, renderSlot, createCommentVNode } from 'vue';
+import { defineComponent, ref, computed, watch, nextTick, provide, reactive, onActivated, onMounted, onUpdated, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, normalizeStyle, createBlock, resolveDynamicComponent, withCtx, renderSlot, createCommentVNode } from 'vue';
 import { useResizeObserver, useEventListener } from '@vueuse/core';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import Bar from './bar2.mjs';
 import { scrollbarContextKey } from './constants.mjs';
 import { scrollbarProps, scrollbarEmits } from './scrollbar.mjs';
@@ -25,6 +23,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const ns = useNamespace("scrollbar");
     let stopResizeObserver = void 0;
     let stopResizeListener = void 0;
+    let wrapScrollTop = 0;
+    let wrapScrollLeft = 0;
     const scrollbarRef = ref();
     const wrapRef = ref();
     const resizeRef = ref();
@@ -51,6 +51,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       var _a;
       if (wrapRef.value) {
         (_a = barRef.value) == null ? void 0 : _a.handleScroll(wrapRef.value);
+        wrapScrollTop = wrapRef.value.scrollTop;
+        wrapScrollLeft = wrapRef.value.scrollLeft;
         emit("scroll", {
           scrollTop: wrapRef.value.scrollTop,
           scrollLeft: wrapRef.value.scrollLeft
@@ -87,7 +89,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         stopResizeObserver == null ? void 0 : stopResizeObserver();
         stopResizeListener == null ? void 0 : stopResizeListener();
       } else {
-        ;
         ({ stop: stopResizeObserver } = useResizeObserver(resizeRef, update));
         stopResizeListener = useEventListener("resize", update);
       }
@@ -106,6 +107,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       scrollbarElement: scrollbarRef,
       wrapElement: wrapRef
     }));
+    onActivated(() => {
+      if (wrapRef.value) {
+        wrapRef.value.scrollTop = wrapScrollTop;
+        wrapRef.value.scrollLeft = wrapScrollLeft;
+      }
+    });
     onMounted(() => {
       if (!props.native)
         nextTick(() => {
@@ -132,6 +139,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           ref: wrapRef,
           class: normalizeClass(unref(wrapKls)),
           style: normalizeStyle(unref(wrapStyle)),
+          tabindex: _ctx.tabindex,
           onScroll: handleScroll
         }, [
           (openBlock(), createBlock(resolveDynamicComponent(_ctx.tag), {
@@ -149,7 +157,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             ]),
             _: 3
           }, 8, ["id", "class", "style", "role", "aria-label", "aria-orientation"]))
-        ], 38),
+        ], 46, ["tabindex"]),
         !_ctx.native ? (openBlock(), createBlock(Bar, {
           key: 0,
           ref_key: "barRef",

@@ -9,7 +9,7 @@ var callBind = require('call-bind');
 var isEnumerable = Object.prototype.propertyIsEnumerable;
 var functionsHaveNames = require('functions-have-names')();
 var hasStrictMode = require('has-strict-mode')();
-var getProto = require('es-abstract/helpers/getProto');
+var getProto = require('get-proto');
 
 var runTests = require('./tests');
 

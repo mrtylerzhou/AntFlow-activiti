@@ -2,16 +2,11 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var index = require('../../../hooks/use-size/index.js');
 
 const descriptionProps = runtime.buildProps({
-  border: {
-    type: Boolean,
-    default: false
-  },
+  border: Boolean,
   column: {
     type: Number,
     default: 3
@@ -28,6 +23,10 @@ const descriptionProps = runtime.buildProps({
   },
   extra: {
     type: String,
+    default: ""
+  },
+  labelWidth: {
+    type: [String, Number],
     default: ""
   }
 });

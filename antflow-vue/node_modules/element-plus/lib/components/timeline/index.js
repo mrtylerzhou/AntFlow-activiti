@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var timeline = require('./src/timeline.js');
 var timelineItem$1 = require('./src/timeline-item2.js');
 var timelineItem = require('./src/timeline-item.js');

@@ -5,4 +5,4 @@ export declare function getStyleStr(style: CSSProperties): string;
 /** Returns the ratio of the device's physical pixel resolution to the css pixel resolution */
 export declare function getPixelRatio(): number;
 /** Whether to re-render the watermark */
-export declare const reRendering: (mutation: MutationRecord, watermarkElement?: HTMLElement | undefined) => boolean;
+export declare const reRendering: (mutation: MutationRecord, watermarkElement?: HTMLElement) => boolean;

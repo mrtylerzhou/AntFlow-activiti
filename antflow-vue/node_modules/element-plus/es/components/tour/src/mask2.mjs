@@ -1,15 +1,9 @@
 import { defineComponent, inject, computed, toRef, openBlock, createElementBlock, mergeProps, unref, createElementVNode, normalizeClass, normalizeStyle, createCommentVNode } from 'vue';
-import '../../../hooks/index.mjs';
 import { maskProps } from './mask.mjs';
 import { tourKey } from './helper.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLockscreen } from '../../../hooks/use-lockscreen/index.mjs';
 
-const _hoisted_1 = { style: {
-  width: "100%",
-  height: "100%"
-} };
-const _hoisted_2 = ["d"];
 const __default__ = defineComponent({
   name: "ElTourMask",
   inheritAttrs: false
@@ -66,12 +60,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           pointerEvents: _ctx.pos && _ctx.targetAreaClickable ? "none" : "auto"
         }
       }, _ctx.$attrs), [
-        (openBlock(), createElementBlock("svg", _hoisted_1, [
+        (openBlock(), createElementBlock("svg", { style: {
+          width: "100%",
+          height: "100%"
+        } }, [
           createElementVNode("path", {
             class: normalizeClass(unref(ns).e("hollow")),
             style: normalizeStyle(unref(pathStyle)),
             d: unref(path)
-          }, null, 14, _hoisted_2)
+          }, null, 14, ["d"])
         ]))
       ], 16)) : createCommentVNode("v-if", true);
     };

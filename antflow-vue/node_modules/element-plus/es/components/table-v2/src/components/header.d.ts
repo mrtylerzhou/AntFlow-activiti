@@ -21,7 +21,7 @@ declare const TableV2Header: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
+    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
     readonly rowWidth: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -61,7 +61,7 @@ declare const TableV2Header: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
+    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
     readonly rowWidth: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -82,24 +82,24 @@ declare const TableV2Header: import("vue").DefineComponent<{
         __epPropKey: true;
     };
 }>>, {
-    readonly headerHeight: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown>;
     readonly rowHeight: number;
+    readonly headerHeight: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown>;
 }>;
 export default TableV2Header;
-export declare type TableV2HeaderInstance = InstanceType<typeof TableV2Header> & {
+export type TableV2HeaderInstance = InstanceType<typeof TableV2Header> & {
     /**
      * @description scroll to position based on the provided value
      */
     scrollToLeft: (left?: number) => void;
 };
-export declare type TableV2HeaderRendererParams = {
+export type TableV2HeaderRendererParams = {
     class: string;
     columns: TableV2HeaderProps['columns'];
     columnsStyles: UnwrapRef<UseColumnsReturn['columnsStyles']>;
     headerIndex: number;
     style: CSSProperties;
 };
-export declare type TableV2HeaderRowRendererParams = {
+export type TableV2HeaderRowRendererParams = {
     rowData: any;
     rowIndex: number;
 } & Omit<TableV2HeaderRendererParams, 'headerIndex'>;

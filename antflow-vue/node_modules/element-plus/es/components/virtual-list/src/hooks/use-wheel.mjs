@@ -1,4 +1,3 @@
-import '../../../../utils/index.mjs';
 import { HORIZONTAL, VERTICAL } from '../defaults.mjs';
 import { cAF, rAF } from '../../../../utils/raf.mjs';
 import { isFirefox } from '../../../../utils/browser.mjs';

@@ -1,13 +1,19 @@
 import { computed, unref } from 'vue';
-import '../../../../utils/index.mjs';
 import { SortOrder, oppositeOrderMap } from '../constants.mjs';
 import { placeholderSign } from '../private.mjs';
 import { calcColumnStyle } from './utils.mjs';
 import { isObject } from '@vue/shared';
 
 function useColumns(props, columns, fixed) {
+  const _columns = computed(() => unref(columns).map((column, index) => {
+    var _a, _b;
+    return {
+      ...column,
+      key: (_b = (_a = column.key) != null ? _a : column.dataKey) != null ? _b : index
+    };
+  }));
   const visibleColumns = computed(() => {
-    return unref(columns).filter((column) => !column.hidden);
+    return unref(_columns).filter((column) => !column.hidden);
   });
   const fixedColumnsOnLeft = computed(() => unref(visibleColumns).filter((column) => column.fixed === "left" || column.fixed === true));
   const fixedColumnsOnRight = computed(() => unref(visibleColumns).filter((column) => column.fixed === "right"));
@@ -35,8 +41,7 @@ function useColumns(props, columns, fixed) {
     return unref(fixedColumnsOnLeft).length || unref(fixedColumnsOnRight).length;
   });
   const columnsStyles = computed(() => {
-    const _columns = unref(columns);
-    return _columns.reduce((style, column) => {
+    return unref(_columns).reduce((style, column) => {
       style[column.key] = calcColumnStyle(column, unref(fixed), props.fixed);
       return style;
     }, {});
@@ -45,7 +50,7 @@ function useColumns(props, columns, fixed) {
     return unref(visibleColumns).reduce((width, column) => width + column.width, 0);
   });
   const getColumn = (key) => {
-    return unref(columns).find((column) => column.key === key);
+    return unref(_columns).find((column) => column.key === key);
   };
   const getColumnStyle = (key) => {
     return unref(columnsStyles)[key];
@@ -68,7 +73,7 @@ function useColumns(props, columns, fixed) {
     (_a = props.onColumnSort) == null ? void 0 : _a.call(props, { column: getColumn(key), key, order });
   }
   return {
-    columns,
+    columns: _columns,
     columnsStyles,
     columnsTotalWidth,
     fixedColumnsOnLeft,

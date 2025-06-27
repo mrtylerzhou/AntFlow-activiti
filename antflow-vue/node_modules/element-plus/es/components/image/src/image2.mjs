@@ -1,20 +1,17 @@
-import { defineComponent, useAttrs, ref, computed, nextTick, watch, onMounted, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle, renderSlot, createElementVNode, toDisplayString, Fragment, mergeProps, createCommentVNode, createBlock, withCtx } from 'vue';
+import { defineComponent, useAttrs, computed, ref, watch, onMounted, openBlock, createElementBlock, mergeProps, unref, renderSlot, createElementVNode, normalizeClass, toDisplayString, Fragment, createCommentVNode, createBlock, withCtx, normalizeProps, guardReactiveProps, nextTick } from 'vue';
 import { isClient, useThrottleFn, useEventListener } from '@vueuse/core';
-import '../../../hooks/index.mjs';
+import { fromPairs } from 'lodash-unified';
 import { ElImageViewer } from '../../image-viewer/index.mjs';
-import '../../../utils/index.mjs';
 import { imageProps, imageEmits } from './image.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
+import { isInContainer } from '../../../utils/dom/position.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { useAttrs as useAttrs$1 } from '../../../hooks/use-attrs/index.mjs';
-import { isInContainer } from '../../../utils/dom/position.mjs';
+import { isArray, isString } from '@vue/shared';
 import { isElement } from '../../../utils/types.mjs';
-import { isString } from '@vue/shared';
 import { getScrollContainer } from '../../../utils/dom/scroll.mjs';
 
-const _hoisted_1 = ["src", "loading", "crossorigin"];
-const _hoisted_2 = { key: 0 };
 const __default__ = defineComponent({
   name: "ElImage",
   inheritAttrs: false
@@ -23,13 +20,20 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   ...__default__,
   props: imageProps,
   emits: imageEmits,
-  setup(__props, { emit }) {
+  setup(__props, { expose, emit }) {
     const props = __props;
-    let prevOverflow = "";
     const { t } = useLocale();
     const ns = useNamespace("image");
     const rawAttrs = useAttrs();
-    const attrs = useAttrs$1();
+    const containerAttrs = computed(() => {
+      return fromPairs(Object.entries(rawAttrs).filter(([key]) => /^(data-|on[A-Z])/i.test(key) || ["id", "style"].includes(key)));
+    });
+    const imgAttrs = useAttrs$1({
+      excludeListeners: true,
+      excludeKeys: computed(() => {
+        return Object.keys(containerAttrs.value);
+      })
+    });
     const imageSrc = ref();
     const hasLoadError = ref(false);
     const isLoading = ref(true);
@@ -38,13 +42,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const _scrollContainer = ref();
     const supportLoading = isClient && "loading" in HTMLImageElement.prototype;
     let stopScrollListener;
-    let stopWheelListener;
     const imageKls = computed(() => [
       ns.e("inner"),
       preview.value && ns.e("preview"),
       isLoading.value && ns.is("loading")
     ]);
-    const containerStyle = computed(() => rawAttrs.style);
     const imageStyle = computed(() => {
       const { fit } = props;
       if (isClient && fit) {
@@ -54,7 +56,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     const preview = computed(() => {
       const { previewSrcList } = props;
-      return Array.isArray(previewSrcList) && previewSrcList.length > 0;
+      return isArray(previewSrcList) && previewSrcList.length > 0;
     });
     const imageIndex = computed(() => {
       const { previewSrcList, initialIndex } = props;
@@ -117,31 +119,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       stopScrollListener == null ? void 0 : stopScrollListener();
       _scrollContainer.value = void 0;
     }
-    function wheelHandler(e) {
-      if (!e.ctrlKey)
-        return;
-      if (e.deltaY < 0) {
-        e.preventDefault();
-        return false;
-      } else if (e.deltaY > 0) {
-        e.preventDefault();
-        return false;
-      }
-    }
     function clickHandler() {
       if (!preview.value)
         return;
-      stopWheelListener = useEventListener("wheel", wheelHandler, {
-        passive: false
-      });
-      prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
       showViewer.value = true;
       emit("show");
     }
     function closeViewer() {
-      stopWheelListener == null ? void 0 : stopWheelListener();
-      document.body.style.overflow = prevOverflow;
       showViewer.value = false;
       emit("close");
     }
@@ -165,19 +149,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         loadImage();
       }
     });
+    expose({
+      showPreview: clickHandler
+    });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", {
+      return openBlock(), createElementBlock("div", mergeProps({
         ref_key: "container",
-        ref: container,
-        class: normalizeClass([unref(ns).b(), _ctx.$attrs.class]),
-        style: normalizeStyle(unref(containerStyle))
-      }, [
+        ref: container
+      }, unref(containerAttrs), {
+        class: [unref(ns).b(), _ctx.$attrs.class]
+      }), [
         hasLoadError.value ? renderSlot(_ctx.$slots, "error", { key: 0 }, () => [
           createElementVNode("div", {
             class: normalizeClass(unref(ns).e("error"))
           }, toDisplayString(unref(t)("el.image.error")), 3)
         ]) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-          imageSrc.value !== void 0 ? (openBlock(), createElementBlock("img", mergeProps({ key: 0 }, unref(attrs), {
+          imageSrc.value !== void 0 ? (openBlock(), createElementBlock("img", mergeProps({ key: 0 }, unref(imgAttrs), {
             src: imageSrc.value,
             loading: _ctx.loading,
             style: unref(imageStyle),
@@ -186,7 +173,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             onClick: clickHandler,
             onLoad: handleLoad,
             onError: handleError
-          }), null, 16, _hoisted_1)) : createCommentVNode("v-if", true),
+          }), null, 16, ["src", "loading", "crossorigin"])) : createCommentVNode("v-if", true),
           isLoading.value ? (openBlock(), createElementBlock("div", {
             key: 1,
             class: normalizeClass(unref(ns).e("wrapper"))
@@ -207,22 +194,30 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             "zoom-rate": _ctx.zoomRate,
             "min-scale": _ctx.minScale,
             "max-scale": _ctx.maxScale,
+            "show-progress": _ctx.showProgress,
             "url-list": _ctx.previewSrcList,
+            crossorigin: _ctx.crossorigin,
             "hide-on-click-modal": _ctx.hideOnClickModal,
             teleported: _ctx.previewTeleported,
             "close-on-press-escape": _ctx.closeOnPressEscape,
             onClose: closeViewer,
             onSwitch: switchViewer
           }, {
+            progress: withCtx((progress) => [
+              renderSlot(_ctx.$slots, "progress", normalizeProps(guardReactiveProps(progress)))
+            ]),
+            toolbar: withCtx((toolbar) => [
+              renderSlot(_ctx.$slots, "toolbar", normalizeProps(guardReactiveProps(toolbar)))
+            ]),
             default: withCtx(() => [
-              _ctx.$slots.viewer ? (openBlock(), createElementBlock("div", _hoisted_2, [
+              _ctx.$slots.viewer ? (openBlock(), createElementBlock("div", { key: 0 }, [
                 renderSlot(_ctx.$slots, "viewer")
               ])) : createCommentVNode("v-if", true)
             ]),
             _: 3
-          }, 8, ["z-index", "initial-index", "infinite", "zoom-rate", "min-scale", "max-scale", "url-list", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : createCommentVNode("v-if", true)
+          }, 8, ["z-index", "initial-index", "infinite", "zoom-rate", "min-scale", "max-scale", "show-progress", "url-list", "crossorigin", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : createCommentVNode("v-if", true)
         ], 64)) : createCommentVNode("v-if", true)
-      ], 6);
+      ], 16);
     };
   }
 });

@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'vue';
 import type { Column, KeyType } from './types';
-export declare type AnyColumn = Column<any>;
+export type AnyColumn = Column<any>;
 /**
  * @Note even though we can use `string[] | string` as the type but for
  * convenience here we only use `string` as the acceptable value here.

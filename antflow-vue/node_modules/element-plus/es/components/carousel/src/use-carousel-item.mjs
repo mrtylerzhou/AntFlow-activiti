@@ -1,19 +1,17 @@
 import { inject, getCurrentInstance, ref, unref, onMounted, reactive, onUnmounted } from 'vue';
-import '../../../utils/index.mjs';
-import { carouselContextKey } from './constants.mjs';
+import { carouselContextKey, CAROUSEL_ITEM_NAME } from './constants.mjs';
 import { debugWarn } from '../../../utils/error.mjs';
 import { isUndefined } from '../../../utils/types.mjs';
 
-const useCarouselItem = (props, componentName) => {
+const useCarouselItem = (props) => {
   const carouselContext = inject(carouselContextKey);
   const instance = getCurrentInstance();
   if (!carouselContext) {
-    debugWarn(componentName, "usage: <el-carousel></el-carousel-item></el-carousel>");
+    debugWarn(CAROUSEL_ITEM_NAME, "usage: <el-carousel></el-carousel-item></el-carousel>");
   }
   if (!instance) {
-    debugWarn(componentName, "compositional hook can only be invoked inside setups");
+    debugWarn(CAROUSEL_ITEM_NAME, "compositional hook can only be invoked inside setups");
   }
-  const CARD_SCALE = 0.83;
   const carouselItemRef = ref();
   const hover = ref(false);
   const translate = ref(0);
@@ -22,7 +20,7 @@ const useCarouselItem = (props, componentName) => {
   const ready = ref(false);
   const inStage = ref(false);
   const animating = ref(false);
-  const { isCardType, isVertical } = carouselContext;
+  const { isCardType, isVertical, cardScale } = carouselContext;
   function processIndex(index, activeIndex, length) {
     const lastItemIndex = length - 1;
     const prevItemIndex = activeIndex - 1;
@@ -43,11 +41,11 @@ const useCarouselItem = (props, componentName) => {
     var _a, _b;
     const parentWidth = unref(isVertical) ? ((_a = carouselContext.root.value) == null ? void 0 : _a.offsetHeight) || 0 : ((_b = carouselContext.root.value) == null ? void 0 : _b.offsetWidth) || 0;
     if (inStage.value) {
-      return parentWidth * ((2 - CARD_SCALE) * (index - activeIndex) + 1) / 4;
+      return parentWidth * ((2 - cardScale) * (index - activeIndex) + 1) / 4;
     } else if (index < activeIndex) {
-      return -(1 + CARD_SCALE) * parentWidth / 4;
+      return -(1 + cardScale) * parentWidth / 4;
     } else {
-      return (3 + CARD_SCALE) * parentWidth / 4;
+      return (3 + cardScale) * parentWidth / 4;
     }
   }
   function calcTranslate(index, activeIndex, isVertical2) {
@@ -73,7 +71,7 @@ const useCarouselItem = (props, componentName) => {
     if (_isCardType) {
       inStage.value = Math.round(Math.abs(index - activeIndex)) <= 1;
       translate.value = calcCardTranslate(index, activeIndex);
-      scale.value = unref(active) ? 1 : CARD_SCALE;
+      scale.value = unref(active) ? 1 : cardScale;
     } else {
       translate.value = calcTranslate(index, activeIndex, _isVertical);
     }

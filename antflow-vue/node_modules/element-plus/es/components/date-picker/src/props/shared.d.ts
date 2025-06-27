@@ -1,13 +1,14 @@
 import type { ExtractPropTypes } from 'vue';
 import type { Dayjs } from 'dayjs';
 declare const selectionModes: string[];
-export declare type RangeState = {
+export type RangeState = {
     endDate: null | Dayjs;
     selecting: boolean;
 };
+export type DisabledDateType = (date: Date) => boolean;
 export declare const datePickerSharedProps: {
     readonly disabledDate: {
-        readonly type: import("vue").PropType<(date: Date) => boolean>;
+        readonly type: import("vue").PropType<DisabledDateType>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -43,13 +44,14 @@ export declare const datePickerSharedProps: {
 };
 export declare const panelSharedProps: {
     readonly type: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => ("year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") & {}) | (() => "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") | ((new (...args: any[]) => ("year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange") & {}) | (() => "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange"))[], "year" | "years" | "month" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange", unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | (() => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | ((new (...args: any[]) => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange") | (() => "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange"))[], "year" | "years" | "month" | "months" | "date" | "dates" | "week" | "datetime" | "datetimerange" | "daterange" | "monthrange" | "yearrange", unknown>>;
         readonly required: true;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly dateFormat: StringConstructor;
     readonly timeFormat: StringConstructor;
+    readonly showNow: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
 };
 export declare const panelRangeSharedProps: {
     readonly unlinkPanels: BooleanConstructor;
@@ -60,7 +62,7 @@ export declare const panelRangeSharedProps: {
         __epPropKey: true;
     };
 };
-export declare const selectionModeWithDefault: (mode: typeof selectionModes[number]) => {
+export declare const selectionModeWithDefault: (mode: (typeof selectionModes)[number]) => {
     type: StringConstructor;
     values: string[];
     default: string;
@@ -68,6 +70,6 @@ export declare const selectionModeWithDefault: (mode: typeof selectionModes[numb
 export declare const rangePickerSharedEmits: {
     pick: (range: [Dayjs, Dayjs]) => boolean;
 };
-export declare type RangePickerSharedEmits = typeof rangePickerSharedEmits;
-export declare type PanelRangeSharedProps = ExtractPropTypes<typeof panelRangeSharedProps>;
+export type RangePickerSharedEmits = typeof rangePickerSharedEmits;
+export type PanelRangeSharedProps = ExtractPropTypes<typeof panelRangeSharedProps>;
 export {};

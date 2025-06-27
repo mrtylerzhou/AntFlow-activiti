@@ -3,11 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
-require('../../utils/index.js');
 var runtime = require('../../utils/vue/props/runtime.js');
-var core = require('@vueuse/core');
 var types = require('../../utils/types.js');
+var shared = require('@vue/shared');
+var core = require('@vueuse/core');
 
 const _prop = runtime.buildProp({
   type: runtime.definePropType(Boolean),

@@ -3,15 +3,13 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
-require('../../../utils/index.js');
-require('../../../constants/index.js');
 var item = require('./item.js');
 var useSpace = require('./use-space.js');
+var vnode = require('../../../utils/vue/vnode.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var types = require('../../../utils/types.js');
+var shared = require('@vue/shared');
 var size = require('../../../constants/size.js');
-var vnode = require('../../../utils/vue/vnode.js');
 
 const spaceProps = runtime.buildProps({
   direction: {

@@ -18,6 +18,7 @@ const TableV2Cell = (props, {
 };
 TableV2Cell.displayName = "ElTableV2Cell";
 TableV2Cell.inheritAttrs = false;
+var TableCell = TableV2Cell;
 
-export { TableV2Cell as default };
+export { TableCell as default };
 //# sourceMappingURL=cell.mjs.map

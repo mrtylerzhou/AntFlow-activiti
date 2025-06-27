@@ -1,12 +1,12 @@
 import type { Ref } from 'vue';
-export declare type CollectionItem<T = Record<string, any>> = {
+export type CollectionItem<T = Record<string, any>> = {
     ref: HTMLElement | null;
 } & T;
-export declare type ElCollectionInjectionContext = {
+export type ElCollectionInjectionContext = {
     itemMap: Map<HTMLElement, CollectionItem>;
     getItems: <T>() => CollectionItem<T>[];
-    collectionRef: Ref<HTMLElement | null>;
+    collectionRef: Ref<HTMLElement | undefined>;
 };
-export declare type ElCollectionItemInjectionContext = {
-    collectionItemRef: Ref<HTMLElement | null>;
+export type ElCollectionItemInjectionContext = {
+    collectionItemRef: Ref<HTMLElement | undefined>;
 };

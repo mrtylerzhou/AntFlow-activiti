@@ -5,17 +5,13 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var core = require('@vueuse/core');
 var lodashUnified = require('lodash-unified');
-require('../../../hooks/index.js');
-require('../../../constants/index.js');
-require('../../../utils/index.js');
-require('../../config-provider/index.js');
+var index$3 = require('../../../hooks/use-lockscreen/index.js');
 var index = require('../../../hooks/use-z-index/index.js');
 var index$1 = require('../../../hooks/use-id/index.js');
 var useGlobalConfig = require('../../config-provider/src/hooks/use-global-config.js');
 var index$2 = require('../../../hooks/use-namespace/index.js');
 var style = require('../../../utils/dom/style.js');
 var event = require('../../../constants/event.js');
-var index$3 = require('../../../hooks/use-lockscreen/index.js');
 
 const useDialog = (props, targetRef) => {
   var _a;
@@ -68,7 +64,6 @@ const useDialog = (props, targetRef) => {
     closeTimer == null ? void 0 : closeTimer();
     openTimer == null ? void 0 : openTimer();
     if (props.openDelay && props.openDelay > 0) {
-      ;
       ({ stop: openTimer } = core.useTimeoutFn(() => doOpen(), props.openDelay));
     } else {
       doOpen();
@@ -78,7 +73,6 @@ const useDialog = (props, targetRef) => {
     openTimer == null ? void 0 : openTimer();
     closeTimer == null ? void 0 : closeTimer();
     if (props.closeDelay && props.closeDelay > 0) {
-      ;
       ({ stop: closeTimer } = core.useTimeoutFn(() => doClose(), props.closeDelay));
     } else {
       doClose();
@@ -139,6 +133,8 @@ const useDialog = (props, targetRef) => {
       vue.nextTick(() => {
         emit("open");
         if (targetRef.value) {
+          targetRef.value.parentElement.scrollTop = 0;
+          targetRef.value.parentElement.scrollLeft = 0;
           targetRef.value.scrollTop = 0;
         }
       });

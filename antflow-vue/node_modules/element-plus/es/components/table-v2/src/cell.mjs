@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { column } from './common.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 

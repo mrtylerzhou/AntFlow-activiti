@@ -1,8 +1,7 @@
-import { ref, h, Teleport, onUnmounted } from 'vue';
-import { NOOP } from '@vue/shared';
-import '../../utils/index.mjs';
-import { isClient } from '@vueuse/core';
+import { ref, onUnmounted, h, Teleport } from 'vue';
 import { createGlobalNode, removeGlobalNode } from '../../utils/vue/global-node.mjs';
+import { isClient } from '@vueuse/core';
+import { NOOP } from '@vue/shared';
 
 const useTeleport = (contentRenderer, appendToBody) => {
   const isTeleportVisible = ref(false);

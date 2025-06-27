@@ -1,6 +1,4 @@
-import { inject, computed, unref } from 'vue';
-import '../../utils/index.mjs';
-import '../../constants/index.mjs';
+import { computed, unref, inject } from 'vue';
 import { buildProp } from '../../utils/vue/props/runtime.mjs';
 import { componentSizes } from '../../constants/size.mjs';
 

@@ -1,5 +1,4 @@
 import { Close, SuccessFilled, InfoFilled, WarningFilled, CircleCloseFilled, Loading, CircleCheck, CircleClose } from '@element-plus/icons-vue';
-import './props/index.mjs';
 import { definePropType } from './props/runtime.mjs';
 
 const iconPropType = definePropType([

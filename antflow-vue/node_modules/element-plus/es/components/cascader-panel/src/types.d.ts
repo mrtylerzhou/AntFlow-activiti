@@ -2,15 +2,15 @@ import type { InjectionKey, VNode } from 'vue';
 import type { Nullable } from 'element-plus/es/utils';
 import type { default as CascaderNode, CascaderOption, CascaderProps, ExpandTrigger } from './node';
 export type { CascaderNode, CascaderOption, CascaderProps, ExpandTrigger };
-export declare type CascaderNodeValue = string | number;
-export declare type CascaderNodePathValue = CascaderNodeValue[];
-export declare type CascaderValue = CascaderNodeValue | CascaderNodePathValue | (CascaderNodeValue | CascaderNodePathValue)[];
-export declare type CascaderConfig = Required<CascaderProps>;
-export declare type isDisabled = (data: CascaderOption, node: CascaderNode) => boolean;
-export declare type isLeaf = (data: CascaderOption, node: CascaderNode) => boolean;
-export declare type Resolve = (dataList?: CascaderOption[]) => void;
-export declare type LazyLoad = (node: CascaderNode, resolve: Resolve) => void;
-export declare type RenderLabel = ({ node: CascaderNode, data: CascaderOption, }: {
+export type CascaderNodeValue = string | number;
+export type CascaderNodePathValue = CascaderNodeValue[];
+export type CascaderValue = CascaderNodeValue | CascaderNodePathValue | (CascaderNodeValue | CascaderNodePathValue)[];
+export type CascaderConfig = Required<CascaderProps>;
+export type isDisabled = (data: CascaderOption, node: CascaderNode) => boolean;
+export type isLeaf = (data: CascaderOption, node: CascaderNode) => boolean;
+export type Resolve = (dataList?: CascaderOption[]) => void;
+export type LazyLoad = (node: CascaderNode, resolve: Resolve) => void;
+export type RenderLabel = ({ node: CascaderNode, data: CascaderOption, }: {
     node: any;
     data: any;
 }) => VNode | VNode[];

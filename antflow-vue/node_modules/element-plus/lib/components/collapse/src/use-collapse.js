@@ -3,9 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
-require('../../../constants/index.js');
 var constants = require('./constants.js');
 var lodashUnified = require('lodash-unified');
 var event = require('../../../constants/event.js');

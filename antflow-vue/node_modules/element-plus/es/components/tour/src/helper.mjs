@@ -1,7 +1,6 @@
 import { ref, onMounted, watch, onBeforeUnmount, computed, unref, watchEffect } from 'vue';
-import { offset, flip, shift, arrow, computePosition, autoUpdate, detectOverflow } from '@floating-ui/dom';
-import '../../../utils/index.mjs';
-import { isString, isFunction, isArray } from '@vue/shared';
+import { offset, flip, shift, detectOverflow, arrow, computePosition, autoUpdate } from '@floating-ui/dom';
+import { isArray, isString, isFunction } from '@vue/shared';
 import { isClient } from '@vueuse/core';
 import { keysOf } from '../../../utils/objects.mjs';
 
@@ -24,7 +23,7 @@ const useTarget = (target, open, gap, mergedMask, scrollIntoViewOptions) => {
       posInfo.value = null;
       return;
     }
-    if (!isInViewPort(targetEl) && open.value) {
+    if (!isInViewPort(targetEl)) {
       targetEl.scrollIntoView(scrollIntoViewOptions.value);
     }
     const { left, top, width, height } = targetEl.getBoundingClientRect();

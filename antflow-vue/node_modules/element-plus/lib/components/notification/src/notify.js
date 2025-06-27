@@ -3,12 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
 var notification = require('./notification2.js');
 var notification$1 = require('./notification.js');
 var core = require('@vueuse/core');
-var types = require('../../../utils/types.js');
 var shared = require('@vue/shared');
+var types = require('../../../utils/types.js');
 var error = require('../../../utils/error.js');
 
 const notifications = {
@@ -19,10 +18,10 @@ const notifications = {
 };
 const GAP_SIZE = 16;
 let seed = 1;
-const notify = function(options = {}, context = null) {
+const notify = function(options = {}, context) {
   if (!core.isClient)
     return { close: () => void 0 };
-  if (typeof options === "string" || vue.isVNode(options)) {
+  if (shared.isString(options) || vue.isVNode(options)) {
     options = { message: options };
   }
   const position = options.position || "top-right";
@@ -53,10 +52,8 @@ const notify = function(options = {}, context = null) {
     appendTo = document.body;
   }
   const container = document.createElement("div");
-  const vm = vue.createVNode(notification["default"], props, vue.isVNode(props.message) ? {
-    default: () => props.message
-  } : null);
-  vm.appContext = context != null ? context : notify._context;
+  const vm = vue.createVNode(notification["default"], props, shared.isFunction(props.message) ? props.message : vue.isVNode(props.message) ? () => props.message : null);
+  vm.appContext = types.isUndefined(context) ? notify._context : context;
   vm.props.onDestroy = () => {
     vue.render(null, container);
   };
@@ -65,22 +62,18 @@ const notify = function(options = {}, context = null) {
   appendTo.appendChild(container.firstElementChild);
   return {
     close: () => {
-      ;
       vm.component.exposed.visible.value = false;
     }
   };
 };
 notification$1.notificationTypes.forEach((type) => {
-  notify[type] = (options = {}) => {
-    if (typeof options === "string" || vue.isVNode(options)) {
+  notify[type] = (options = {}, appContext) => {
+    if (shared.isString(options) || vue.isVNode(options)) {
       options = {
         message: options
       };
     }
-    return notify({
-      ...options,
-      type
-    });
+    return notify({ ...options, type }, appContext);
   };
 });
 function close(id, position, userOnClose) {
@@ -110,7 +103,6 @@ function close(id, position, userOnClose) {
 function closeAll() {
   for (const orientedNotifications of Object.values(notifications)) {
     orientedNotifications.forEach(({ vm }) => {
-      ;
       vm.component.exposed.visible.value = false;
     });
   }

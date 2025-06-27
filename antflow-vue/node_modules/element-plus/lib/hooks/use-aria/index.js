@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var lodashUnified = require('lodash-unified');
-require('../../utils/index.js');
 var runtime = require('../../utils/vue/props/runtime.js');
 
 const ariaProps = runtime.buildProps({

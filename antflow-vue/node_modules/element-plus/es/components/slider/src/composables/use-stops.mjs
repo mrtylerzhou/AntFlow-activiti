@@ -1,5 +1,4 @@
 import { computed } from 'vue';
-import '../../../../utils/index.mjs';
 import { debugWarn } from '../../../../utils/error.mjs';
 
 const useStops = (props, initData, minValue, maxValue) => {

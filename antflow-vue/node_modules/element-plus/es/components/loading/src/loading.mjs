@@ -1,8 +1,6 @@
 import { ref, reactive, defineComponent, h, Transition, withCtx, withDirectives, createVNode, vShow, createApp, toRefs } from 'vue';
-import '../../../utils/index.mjs';
-import '../../config-provider/index.mjs';
-import { removeClass } from '../../../utils/dom/style.mjs';
 import { useGlobalComponentSettings } from '../../config-provider/src/hooks/use-global-config.mjs';
+import { removeClass } from '../../../utils/dom/style.mjs';
 
 function createLoadingComponent(options) {
   let afterLeaveTimer;
@@ -43,7 +41,7 @@ function createLoadingComponent(options) {
       return;
     afterLeaveFlag.value = true;
     clearTimeout(afterLeaveTimer);
-    afterLeaveTimer = window.setTimeout(handleAfterLeave, 400);
+    afterLeaveTimer = setTimeout(handleAfterLeave, 400);
     data.visible = false;
     (_a = options.closed) == null ? void 0 : _a.call(options);
   }

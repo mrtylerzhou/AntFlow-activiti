@@ -1,7 +1,6 @@
-import '../../../../utils/index.mjs';
 import createList from '../builders/build-list.mjs';
 import { isHorizontal } from '../utils.mjs';
-import { SMART_ALIGNMENT, AUTO_ALIGNMENT, CENTERED_ALIGNMENT, END_ALIGNMENT, START_ALIGNMENT } from '../defaults.mjs';
+import { AUTO_ALIGNMENT, CENTERED_ALIGNMENT, END_ALIGNMENT, START_ALIGNMENT, SMART_ALIGNMENT } from '../defaults.mjs';
 import { isString } from '@vue/shared';
 import { throwError } from '../../../../utils/error.mjs';
 

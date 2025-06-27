@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
+var shared = require('@vue/shared');
 
 const CommonProps = runtime.buildProps({
   modelValue: {

@@ -1,5 +1,4 @@
 import { computed, watch } from 'vue';
-import '../../../../utils/index.mjs';
 import { CHECKED_CHANGE_EVENT } from '../transfer-panel.mjs';
 import { usePropsAlias } from './use-props-alias.mjs';
 import { isFunction } from '@vue/shared';

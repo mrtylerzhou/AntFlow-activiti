@@ -1,5 +1,4 @@
 import { defineComponent, createVNode } from 'vue';
-import '../../../../utils/index.mjs';
 import { tableV2HeaderRowProps } from '../header-row.mjs';
 import { isArray } from '@vue/shared';
 
@@ -45,6 +44,7 @@ const TableV2HeaderRow = defineComponent({
     };
   }
 });
+var HeaderRow = TableV2HeaderRow;
 
-export { TableV2HeaderRow as default };
+export { HeaderRow as default };
 //# sourceMappingURL=header-row.mjs.map

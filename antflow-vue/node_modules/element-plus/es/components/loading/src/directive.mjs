@@ -1,6 +1,6 @@
-import { ref, isRef } from 'vue';
-import { isObject, isString, hyphenate } from '@vue/shared';
+import { isRef, ref } from 'vue';
 import { Loading } from './service.mjs';
+import { isObject, hyphenate, isString } from '@vue/shared';
 
 const INSTANCE_KEY = Symbol("ElLoading");
 const createInstance = (el, binding) => {

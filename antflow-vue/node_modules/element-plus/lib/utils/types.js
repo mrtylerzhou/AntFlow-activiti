@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var shared = require('@vue/shared');
 var lodashUnified = require('lodash-unified');
-var vue = require('vue');
 
 const isUndefined = (val) => val === void 0;
 const isBoolean = (val) => typeof val === "boolean";
@@ -15,18 +14,14 @@ const isElement = (e) => {
     return false;
   return e instanceof Element;
 };
-const isPropAbsent = (prop) => {
-  return lodashUnified.isNil(prop);
-};
+const isPropAbsent = (prop) => lodashUnified.isNil(prop);
 const isStringNumber = (val) => {
   if (!shared.isString(val)) {
     return false;
   }
   return !Number.isNaN(Number(val));
 };
-const isWindow = (val) => {
-  return val === window;
-};
+const isWindow = (val) => val === window;
 
 Object.defineProperty(exports, 'isArray', {
   enumerable: true,
@@ -44,6 +39,10 @@ Object.defineProperty(exports, 'isObject', {
   enumerable: true,
   get: function () { return shared.isObject; }
 });
+Object.defineProperty(exports, 'isPlainObject', {
+  enumerable: true,
+  get: function () { return shared.isPlainObject; }
+});
 Object.defineProperty(exports, 'isPromise', {
   enumerable: true,
   get: function () { return shared.isPromise; }
@@ -55,10 +54,6 @@ Object.defineProperty(exports, 'isString', {
 Object.defineProperty(exports, 'isSymbol', {
   enumerable: true,
   get: function () { return shared.isSymbol; }
-});
-Object.defineProperty(exports, 'isVNode', {
-  enumerable: true,
-  get: function () { return vue.isVNode; }
 });
 exports.isBoolean = isBoolean;
 exports.isElement = isElement;

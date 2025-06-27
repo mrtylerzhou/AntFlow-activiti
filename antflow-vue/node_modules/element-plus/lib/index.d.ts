@@ -4,7 +4,7 @@ export * from 'element-plus/es/constants';
 export * from 'element-plus/es/directives';
 export * from 'element-plus/es/hooks';
 export * from './make-installer';
-export declare const install: (app: import("vue").App<any>, options?: Partial<import("element-plus/es/components").ConfigProviderProps> | undefined) => void;
+export declare const install: (app: import("vue").App, options?: import("element-plus/es/components").ConfigProviderContext) => void;
 export declare const version: string;
 export default installer;
 export { default as dayjs } from 'dayjs';

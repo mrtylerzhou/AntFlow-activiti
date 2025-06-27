@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var dom = require('@floating-ui/dom');
-require('../../../utils/index.js');
 var shared = require('@vue/shared');
 var core = require('@vueuse/core');
 var objects = require('../../../utils/objects.js');
@@ -28,7 +27,7 @@ const useTarget = (target, open, gap, mergedMask, scrollIntoViewOptions) => {
       posInfo.value = null;
       return;
     }
-    if (!isInViewPort(targetEl) && open.value) {
+    if (!isInViewPort(targetEl)) {
       targetEl.scrollIntoView(scrollIntoViewOptions.value);
     }
     const { left, top, width, height } = targetEl.getBoundingClientRect();

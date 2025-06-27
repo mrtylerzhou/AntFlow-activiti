@@ -1,8 +1,4 @@
 import { ref, inject, computed } from 'vue';
-import '../../../constants/index.mjs';
-import '../../form/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { radioGroupKey } from './constants.mjs';
 import { isPropAbsent } from '../../../utils/types.mjs';
 import { UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';

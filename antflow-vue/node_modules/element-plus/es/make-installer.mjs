@@ -1,5 +1,3 @@
-import './components/config-provider/index.mjs';
-import './constants/index.mjs';
 import { version } from './version.mjs';
 import { INSTALLED_KEY } from './constants/key.mjs';
 import { provideGlobalConfig } from './components/config-provider/src/hooks/use-global-config.mjs';

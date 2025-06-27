@@ -12,4 +12,4 @@ export declare const maskProps: {
     };
     targetAreaClickable: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, boolean, boolean>;
 };
-export declare type MaskProps = ExtractPropTypes<typeof maskProps>;
+export type MaskProps = ExtractPropTypes<typeof maskProps>;

@@ -1,24 +1,18 @@
 import { defineComponent, ref, computed, watchEffect, openBlock, createElementBlock, normalizeClass, unref, withKeys, createCommentVNode, createBlock, Fragment, renderList, toDisplayString } from 'vue';
 import { DArrowLeft, MoreFilled, DArrowRight } from '@element-plus/icons-vue';
-import '../../../../hooks/index.mjs';
 import { paginationPagerProps } from './pager.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
+import { CHANGE_EVENT } from '../../../../constants/event.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 
-const _hoisted_1 = ["onKeyup"];
-const _hoisted_2 = ["aria-current", "aria-label", "tabindex"];
-const _hoisted_3 = ["tabindex", "aria-label"];
-const _hoisted_4 = ["aria-current", "aria-label", "tabindex"];
-const _hoisted_5 = ["tabindex", "aria-label"];
-const _hoisted_6 = ["aria-current", "aria-label", "tabindex"];
 const __default__ = defineComponent({
   name: "ElPaginationPager"
 });
 const _sfc_main = /* @__PURE__ */ defineComponent({
   ...__default__,
   props: paginationPagerProps,
-  emits: ["change"],
+  emits: [CHANGE_EVENT],
   setup(__props, { emit }) {
     const props = __props;
     const nsPager = useNamespace("pager");
@@ -114,7 +108,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (target.tagName.toLowerCase() === "li" && Array.from(target.classList).includes("number")) {
         const newPage = Number(target.textContent);
         if (newPage !== props.currentPage) {
-          emit("change", newPage);
+          emit(CHANGE_EVENT, newPage);
         }
       } else if (target.tagName.toLowerCase() === "li" && Array.from(target.classList).includes("more")) {
         onPagerClick(e);
@@ -145,7 +139,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       }
       if (newPage !== currentPage) {
-        emit("change", newPage);
+        emit(CHANGE_EVENT, newPage);
       }
     }
     return (_ctx, _cache) => {
@@ -163,19 +157,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           "aria-current": _ctx.currentPage === 1,
           "aria-label": unref(t)("el.pagination.currentPage", { pager: 1 }),
           tabindex: unref(tabindex)
-        }, " 1 ", 10, _hoisted_2)) : createCommentVNode("v-if", true),
+        }, " 1 ", 10, ["aria-current", "aria-label", "tabindex"])) : createCommentVNode("v-if", true),
         showPrevMore.value ? (openBlock(), createElementBlock("li", {
           key: 1,
           class: normalizeClass(unref(prevMoreKls)),
           tabindex: unref(tabindex),
           "aria-label": unref(t)("el.pagination.prevPages", { pager: _ctx.pagerCount - 2 }),
-          onMouseenter: _cache[0] || (_cache[0] = ($event) => onMouseEnter(true)),
-          onMouseleave: _cache[1] || (_cache[1] = ($event) => quickPrevHover.value = false),
-          onFocus: _cache[2] || (_cache[2] = ($event) => onFocus(true)),
-          onBlur: _cache[3] || (_cache[3] = ($event) => quickPrevFocus.value = false)
+          onMouseenter: ($event) => onMouseEnter(true),
+          onMouseleave: ($event) => quickPrevHover.value = false,
+          onFocus: ($event) => onFocus(true),
+          onBlur: ($event) => quickPrevFocus.value = false
         }, [
           (quickPrevHover.value || quickPrevFocus.value) && !_ctx.disabled ? (openBlock(), createBlock(unref(DArrowLeft), { key: 0 })) : (openBlock(), createBlock(unref(MoreFilled), { key: 1 }))
-        ], 42, _hoisted_3)) : createCommentVNode("v-if", true),
+        ], 42, ["tabindex", "aria-label", "onMouseenter", "onMouseleave", "onFocus", "onBlur"])) : createCommentVNode("v-if", true),
         (openBlock(true), createElementBlock(Fragment, null, renderList(unref(pagers), (pager) => {
           return openBlock(), createElementBlock("li", {
             key: pager,
@@ -186,20 +180,20 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             "aria-current": _ctx.currentPage === pager,
             "aria-label": unref(t)("el.pagination.currentPage", { pager }),
             tabindex: unref(tabindex)
-          }, toDisplayString(pager), 11, _hoisted_4);
+          }, toDisplayString(pager), 11, ["aria-current", "aria-label", "tabindex"]);
         }), 128)),
         showNextMore.value ? (openBlock(), createElementBlock("li", {
           key: 2,
           class: normalizeClass(unref(nextMoreKls)),
           tabindex: unref(tabindex),
           "aria-label": unref(t)("el.pagination.nextPages", { pager: _ctx.pagerCount - 2 }),
-          onMouseenter: _cache[4] || (_cache[4] = ($event) => onMouseEnter()),
-          onMouseleave: _cache[5] || (_cache[5] = ($event) => quickNextHover.value = false),
-          onFocus: _cache[6] || (_cache[6] = ($event) => onFocus()),
-          onBlur: _cache[7] || (_cache[7] = ($event) => quickNextFocus.value = false)
+          onMouseenter: ($event) => onMouseEnter(),
+          onMouseleave: ($event) => quickNextHover.value = false,
+          onFocus: ($event) => onFocus(),
+          onBlur: ($event) => quickNextFocus.value = false
         }, [
           (quickNextHover.value || quickNextFocus.value) && !_ctx.disabled ? (openBlock(), createBlock(unref(DArrowRight), { key: 0 })) : (openBlock(), createBlock(unref(MoreFilled), { key: 1 }))
-        ], 42, _hoisted_5)) : createCommentVNode("v-if", true),
+        ], 42, ["tabindex", "aria-label", "onMouseenter", "onMouseleave", "onFocus", "onBlur"])) : createCommentVNode("v-if", true),
         _ctx.pageCount > 1 ? (openBlock(), createElementBlock("li", {
           key: 3,
           class: normalizeClass([[
@@ -209,8 +203,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           "aria-current": _ctx.currentPage === _ctx.pageCount,
           "aria-label": unref(t)("el.pagination.currentPage", { pager: _ctx.pageCount }),
           tabindex: unref(tabindex)
-        }, toDisplayString(_ctx.pageCount), 11, _hoisted_6)) : createCommentVNode("v-if", true)
-      ], 42, _hoisted_1);
+        }, toDisplayString(_ctx.pageCount), 11, ["aria-current", "aria-label", "tabindex"])) : createCommentVNode("v-if", true)
+      ], 42, ["onKeyup"]);
     };
   }
 });

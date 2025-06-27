@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../time-picker/index.js');
 var utils = require('../../time-picker/src/utils.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var shared = require('@vue/shared');

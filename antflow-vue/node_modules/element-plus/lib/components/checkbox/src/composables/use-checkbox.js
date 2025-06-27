@@ -3,17 +3,14 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../form/index.js');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var useCheckboxDisabled = require('./use-checkbox-disabled.js');
 var useCheckboxEvent = require('./use-checkbox-event.js');
 var useCheckboxModel = require('./use-checkbox-model.js');
 var useCheckboxStatus = require('./use-checkbox-status.js');
 var useFormItem = require('../../../form/src/hooks/use-form-item.js');
-var shared = require('@vue/shared');
 var index = require('../../../../hooks/use-deprecated/index.js');
 var types = require('../../../../utils/types.js');
+var shared = require('@vue/shared');
 
 const useCheckbox = (props, slots) => {
   const { formItem: elFormItem } = useFormItem.useFormItem();
@@ -51,13 +48,6 @@ const useCheckbox = (props, slots) => {
     props.checked && addToStore();
   };
   setStoreValue();
-  index.useDeprecated({
-    from: "controls",
-    replacement: "aria-controls",
-    version: "2.8.0",
-    scope: "el-checkbox",
-    ref: "https://element-plus.org/en-US/component/checkbox.html"
-  }, vue.computed(() => !!props.controls));
   index.useDeprecated({
     from: "label act as value",
     replacement: "value",

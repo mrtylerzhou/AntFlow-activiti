@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../browser.js');
 var core = require('@vueuse/core');
 
 const isInContainer = (el, container) => {

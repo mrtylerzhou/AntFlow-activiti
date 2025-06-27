@@ -1,9 +1,9 @@
-import '../browser.mjs';
+import { isClient } from '@vueuse/core';
 import { easeInOutCubic } from '../easings.mjs';
 import { isWindow } from '../types.mjs';
 import { rAF, cAF } from '../raf.mjs';
 import { getStyle } from './style.mjs';
-import { isClient } from '@vueuse/core';
+import { isFunction } from '@vue/shared';
 
 const isScroll = (el, isVertical) => {
   if (!isClient)
@@ -90,7 +90,7 @@ function animateScrollTo(container, from, to, duration, callback) {
     }
     if (time < duration) {
       handle = rAF(scroll);
-    } else if (typeof callback === "function") {
+    } else if (isFunction(callback)) {
       callback();
     }
   };

@@ -1,12 +1,9 @@
-import { defineComponent, openBlock, createElementBlock, normalizeClass, unref, Fragment, renderList, toDisplayString, createCommentVNode, createElementVNode, renderSlot } from 'vue';
-import '../../../hooks/index.mjs';
+import { defineComponent, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, Fragment, renderList, toDisplayString, createCommentVNode, renderSlot } from 'vue';
 import { dateTableProps, dateTableEmits } from './date-table.mjs';
 import { useDateTable } from './use-date-table.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = { key: 0 };
-const _hoisted_2 = ["onClick"];
 const __default__ = defineComponent({
   name: "DateTable"
 });
@@ -49,10 +46,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         cellspacing: "0",
         cellpadding: "0"
       }, [
-        !_ctx.hideHeader ? (openBlock(), createElementBlock("thead", _hoisted_1, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(weekDays), (day) => {
-            return openBlock(), createElementBlock("th", { key: day }, toDisplayString(day), 1);
-          }), 128))
+        !_ctx.hideHeader ? (openBlock(), createElementBlock("thead", { key: 0 }, [
+          createElementVNode("tr", null, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(unref(weekDays), (day) => {
+              return openBlock(), createElementBlock("th", {
+                key: day,
+                scope: "col"
+              }, toDisplayString(day), 1);
+            }), 128))
+          ])
         ])) : createCommentVNode("v-if", true),
         createElementVNode("tbody", null, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(unref(rows), (row, index) => {
@@ -78,7 +80,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       createElementVNode("span", null, toDisplayString(cell.text), 1)
                     ])
                   ], 2)
-                ], 10, _hoisted_2);
+                ], 10, ["onClick"]);
               }), 128))
             ], 2);
           }), 128))

@@ -72,6 +72,9 @@ var uzUz = {
       noData: "Ma\u02BClumot yo\u02BBq",
       placeholder: "Tanladizngiz"
     },
+    mention: {
+      loading: "Yuklanmoqda"
+    },
     cascader: {
       noMatch: "Mos ma\u02BClumot topilmadi",
       loading: "Yuklanmoqda",

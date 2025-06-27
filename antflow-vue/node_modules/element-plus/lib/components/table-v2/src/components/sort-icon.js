@@ -18,6 +18,7 @@ const SortIcon = (props) => {
     default: () => [sortOrder === constants.SortOrder.ASC ? vue.createVNode(iconsVue.SortUp, null, null) : vue.createVNode(iconsVue.SortDown, null, null)]
   });
 };
+var SortIcon$1 = SortIcon;
 
-exports["default"] = SortIcon;
+exports["default"] = SortIcon$1;
 //# sourceMappingURL=sort-icon.js.map

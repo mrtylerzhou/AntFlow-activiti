@@ -1,12 +1,10 @@
 import { defineComponent, ref, provide, onMounted, openBlock, createElementBlock, normalizeClass, unref, renderSlot } from 'vue';
-import '../../../hooks/index.mjs';
 import { breadcrumbKey } from './constants.mjs';
 import { breadcrumbProps } from './breadcrumb.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = ["aria-label"];
 const __default__ = defineComponent({
   name: "ElBreadcrumb"
 });
@@ -34,7 +32,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         role: "navigation"
       }, [
         renderSlot(_ctx.$slots, "default")
-      ], 10, _hoisted_1);
+      ], 10, ["aria-label"]);
     };
   }
 });

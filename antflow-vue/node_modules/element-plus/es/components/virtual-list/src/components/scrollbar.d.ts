@@ -1,7 +1,7 @@
 declare const ScrollBar: import("vue").DefineComponent<{
     readonly alwaysOn: BooleanConstructor;
     readonly class: StringConstructor;
-    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", never, "vertical", false>;
+    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", never, "vertical", false>;
     readonly total: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -35,7 +35,7 @@ declare const ScrollBar: import("vue").DefineComponent<{
 }>, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("scroll" | "start-move" | "stop-move")[], "scroll" | "start-move" | "stop-move", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly alwaysOn: BooleanConstructor;
     readonly class: StringConstructor;
-    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", never, "vertical", false>;
+    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", never, "vertical", false>;
     readonly total: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -70,7 +70,7 @@ declare const ScrollBar: import("vue").DefineComponent<{
     "onStop-move"?: ((...args: any[]) => any) | undefined;
 }, {
     readonly visible: boolean;
-    readonly layout: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "vertical" | "horizontal", never>;
+    readonly layout: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "horizontal" | "vertical", never>;
     readonly alwaysOn: boolean;
     readonly scrollbarSize: number;
     readonly startGap: number;

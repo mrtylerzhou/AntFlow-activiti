@@ -4,19 +4,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../constants/index.js');
 var index$1 = require('../../icon/index.js');
 var iconsVue = require('@element-plus/icons-vue');
-require('../../../hooks/index.js');
 var tabBar = require('./tab-bar2.js');
 var constants = require('./constants.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var typescript = require('../../../utils/typescript.js');
 var error = require('../../../utils/error.js');
 var index = require('../../../hooks/use-namespace/index.js');
-var strings = require('../../../utils/strings.js');
 var aria = require('../../../constants/aria.js');
+var strings = require('../../../utils/strings.js');
 
 const tabNavProps = runtime.buildProps({
   panes: {
@@ -48,7 +45,6 @@ const TabNav = vue.defineComponent({
     expose,
     emit
   }) {
-    const vm = vue.getCurrentInstance();
     const rootTabs = vue.inject(constants.tabsRootContextKey);
     if (!rootTabs)
       error.throwError(COMPONENT_NAME, `<el-tabs><tab-nav /></el-tabs>`);
@@ -146,31 +142,27 @@ const TabNav = vue.defineComponent({
         }
       }
     };
-    const changeTab = (e) => {
-      const code = e.code;
-      const {
-        up,
-        down,
-        left,
-        right
-      } = aria.EVENT_CODE;
-      if (![up, down, left, right].includes(code))
-        return;
-      const tabList = Array.from(e.currentTarget.querySelectorAll("[role=tab]:not(.is-disabled)"));
-      const currentIndex = tabList.indexOf(e.target);
-      let nextIndex;
-      if (code === left || code === up) {
-        if (currentIndex === 0) {
-          nextIndex = tabList.length - 1;
-        } else {
-          nextIndex = currentIndex - 1;
-        }
-      } else {
-        if (currentIndex < tabList.length - 1) {
-          nextIndex = currentIndex + 1;
-        } else {
-          nextIndex = 0;
-        }
+    const changeTab = (event) => {
+      let step = 0;
+      switch (event.code) {
+        case aria.EVENT_CODE.left:
+        case aria.EVENT_CODE.up:
+          step = -1;
+          break;
+        case aria.EVENT_CODE.right:
+        case aria.EVENT_CODE.down:
+          step = 1;
+          break;
+        default:
+          return;
+      }
+      const tabList = Array.from(event.currentTarget.querySelectorAll("[role=tab]:not(.is-disabled)"));
+      const currentIndex = tabList.indexOf(event.target);
+      let nextIndex = currentIndex + step;
+      if (nextIndex < 0) {
+        nextIndex = tabList.length - 1;
+      } else if (nextIndex >= tabList.length) {
+        nextIndex = 0;
       }
       tabList[nextIndex].focus({
         preventScroll: true
@@ -203,10 +195,6 @@ const TabNav = vue.defineComponent({
     expose({
       scrollToActiveTab,
       removeFocus
-    });
-    vue.watch(() => props.panes, () => vm.update(), {
-      flush: "post",
-      deep: true
     });
     return () => {
       const scrollBtn = scrollable.value ? [vue.createVNode("span", {

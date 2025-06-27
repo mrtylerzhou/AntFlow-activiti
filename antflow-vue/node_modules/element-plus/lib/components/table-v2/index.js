@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var tableV2 = require('./src/table-v2.js');
 var autoResizer$1 = require('./src/components/auto-resizer.js');
 var constants = require('./src/constants.js');

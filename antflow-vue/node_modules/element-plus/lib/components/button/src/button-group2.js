@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var buttonGroup = require('./button-group.js');
 var constants = require('./constants.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
@@ -24,7 +23,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const ns = index.useNamespace("button");
     return (_ctx, _cache) => {
       return vue.openBlock(), vue.createElementBlock("div", {
-        class: vue.normalizeClass(`${vue.unref(ns).b("group")}`)
+        class: vue.normalizeClass(vue.unref(ns).b("group"))
       }, [
         vue.renderSlot(_ctx.$slots, "default")
       ], 2);

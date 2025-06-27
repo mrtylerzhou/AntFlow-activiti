@@ -71,6 +71,9 @@ var eu = {
       noData: "Daturik ez",
       placeholder: "Hautatu"
     },
+    mention: {
+      loading: "Kargatzen"
+    },
     cascader: {
       noMatch: "Bat datorren daturik ez",
       loading: "Kargatzen",

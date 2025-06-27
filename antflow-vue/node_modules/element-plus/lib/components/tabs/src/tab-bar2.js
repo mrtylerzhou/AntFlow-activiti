@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var tabBar = require('./tab-bar.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
@@ -47,9 +45,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         tabSize = $el[`client${strings.capitalize(sizeName)}`];
         const tabStyles = window.getComputedStyle($el);
         if (sizeName === "width") {
-          if (props.tabs.length > 1) {
-            tabSize -= Number.parseFloat(tabStyles.paddingLeft) + Number.parseFloat(tabStyles.paddingRight);
-          }
+          tabSize -= Number.parseFloat(tabStyles.paddingLeft) + Number.parseFloat(tabStyles.paddingRight);
           offset += Number.parseFloat(tabStyles.paddingLeft);
         }
         return false;
@@ -60,11 +56,34 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       };
     };
     const update = () => barStyle.value = getBarStyle();
+    const saveObserver = [];
+    const observerTabs = () => {
+      var _a;
+      saveObserver.forEach((observer) => observer.stop());
+      saveObserver.length = 0;
+      const list = (_a = instance.parent) == null ? void 0 : _a.refs;
+      if (!list)
+        return;
+      for (const key in list) {
+        if (key.startsWith("tab-")) {
+          const _el = list[key];
+          if (_el) {
+            saveObserver.push(core.useResizeObserver(_el, update));
+          }
+        }
+      }
+    };
     vue.watch(() => props.tabs, async () => {
       await vue.nextTick();
       update();
+      observerTabs();
     }, { immediate: true });
-    core.useResizeObserver(barRef, () => update());
+    const barObserever = core.useResizeObserver(barRef, () => update());
+    vue.onBeforeUnmount(() => {
+      saveObserver.forEach((observer) => observer.stop());
+      saveObserver.length = 0;
+      barObserever.stop();
+    });
     expose({
       ref: barRef,
       update

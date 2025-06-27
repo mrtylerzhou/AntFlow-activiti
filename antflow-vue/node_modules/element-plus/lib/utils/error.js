@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('./types.js');
 var shared = require('@vue/shared');
 
 class ElementPlusError extends Error {

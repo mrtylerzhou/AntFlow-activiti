@@ -1,6 +1,4 @@
-import { defineComponent, getCurrentInstance, ref, computed, watch, onMounted, createElementVNode, openBlock, createElementBlock, normalizeClass, normalizeStyle } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
+import { defineComponent, getCurrentInstance, ref, computed, watch, onMounted, openBlock, createElementBlock, normalizeClass, normalizeStyle, createElementVNode } from 'vue';
 import { draggable } from '../utils/draggable.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
@@ -76,10 +74,6 @@ const _sfc_main = defineComponent({
     };
   }
 });
-const _hoisted_1 = /* @__PURE__ */ createElementVNode("div", null, null, -1);
-const _hoisted_2 = [
-  _hoisted_1
-];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.b()),
@@ -99,7 +93,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         top: _ctx.cursorTop + "px",
         left: _ctx.cursorLeft + "px"
       })
-    }, _hoisted_2, 6)
+    }, [
+      createElementVNode("div")
+    ], 6)
   ], 6);
 }
 var SvPanel = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "sv-panel.vue"]]);

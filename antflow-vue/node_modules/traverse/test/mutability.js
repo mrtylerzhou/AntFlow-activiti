@@ -290,3 +290,30 @@ test('stringToObject', function (t) {
 	t.deepEqual(obj, { a: 1, b: 20, c: [3, 40] });
 	t.end();
 });
+
+test('array item removal', function (t) {
+	var obj = [
+		function a() {},
+		function b() {},
+		'a',
+	];
+
+	function cb(x) {
+		if (x !== obj) {
+			// console.log("**", x, typeof x)
+			if (typeof x === 'function') { this.remove(); }
+		}
+	}
+
+	var result = traverse(obj, { immutable: true }).forEach(cb);
+
+	t.equal(obj.length, 3, 'immutable: makes no changes');
+
+	t.deepEqual(result, ['a'], 'immutable result: removes all functions');
+
+	traverse(obj).forEach(cb);
+
+	t.deepEqual(obj, ['a'], 'removes all functions');
+
+	t.end();
+});

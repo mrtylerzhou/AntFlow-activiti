@@ -4,25 +4,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var iconsVue = require('@element-plus/icons-vue');
-require('../../../../hooks/index.js');
 var pager = require('./pager.js');
 var pluginVue_exportHelper = require('../../../../_virtual/plugin-vue_export-helper.js');
+var event = require('../../../../constants/event.js');
 var index = require('../../../../hooks/use-namespace/index.js');
 var index$1 = require('../../../../hooks/use-locale/index.js');
 
-const _hoisted_1 = ["onKeyup"];
-const _hoisted_2 = ["aria-current", "aria-label", "tabindex"];
-const _hoisted_3 = ["tabindex", "aria-label"];
-const _hoisted_4 = ["aria-current", "aria-label", "tabindex"];
-const _hoisted_5 = ["tabindex", "aria-label"];
-const _hoisted_6 = ["aria-current", "aria-label", "tabindex"];
 const __default__ = vue.defineComponent({
   name: "ElPaginationPager"
 });
 const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   ...__default__,
   props: pager.paginationPagerProps,
-  emits: ["change"],
+  emits: [event.CHANGE_EVENT],
   setup(__props, { emit }) {
     const props = __props;
     const nsPager = index.useNamespace("pager");
@@ -118,14 +112,14 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       if (target.tagName.toLowerCase() === "li" && Array.from(target.classList).includes("number")) {
         const newPage = Number(target.textContent);
         if (newPage !== props.currentPage) {
-          emit("change", newPage);
+          emit(event.CHANGE_EVENT, newPage);
         }
       } else if (target.tagName.toLowerCase() === "li" && Array.from(target.classList).includes("more")) {
         onPagerClick(e);
       }
     }
-    function onPagerClick(event) {
-      const target = event.target;
+    function onPagerClick(event$1) {
+      const target = event$1.target;
       if (target.tagName.toLowerCase() === "ul" || props.disabled) {
         return;
       }
@@ -149,7 +143,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         }
       }
       if (newPage !== currentPage) {
-        emit("change", newPage);
+        emit(event.CHANGE_EVENT, newPage);
       }
     }
     return (_ctx, _cache) => {
@@ -167,19 +161,19 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           "aria-current": _ctx.currentPage === 1,
           "aria-label": vue.unref(t)("el.pagination.currentPage", { pager: 1 }),
           tabindex: vue.unref(tabindex)
-        }, " 1 ", 10, _hoisted_2)) : vue.createCommentVNode("v-if", true),
+        }, " 1 ", 10, ["aria-current", "aria-label", "tabindex"])) : vue.createCommentVNode("v-if", true),
         showPrevMore.value ? (vue.openBlock(), vue.createElementBlock("li", {
           key: 1,
           class: vue.normalizeClass(vue.unref(prevMoreKls)),
           tabindex: vue.unref(tabindex),
           "aria-label": vue.unref(t)("el.pagination.prevPages", { pager: _ctx.pagerCount - 2 }),
-          onMouseenter: _cache[0] || (_cache[0] = ($event) => onMouseEnter(true)),
-          onMouseleave: _cache[1] || (_cache[1] = ($event) => quickPrevHover.value = false),
-          onFocus: _cache[2] || (_cache[2] = ($event) => onFocus(true)),
-          onBlur: _cache[3] || (_cache[3] = ($event) => quickPrevFocus.value = false)
+          onMouseenter: ($event) => onMouseEnter(true),
+          onMouseleave: ($event) => quickPrevHover.value = false,
+          onFocus: ($event) => onFocus(true),
+          onBlur: ($event) => quickPrevFocus.value = false
         }, [
           (quickPrevHover.value || quickPrevFocus.value) && !_ctx.disabled ? (vue.openBlock(), vue.createBlock(vue.unref(iconsVue.DArrowLeft), { key: 0 })) : (vue.openBlock(), vue.createBlock(vue.unref(iconsVue.MoreFilled), { key: 1 }))
-        ], 42, _hoisted_3)) : vue.createCommentVNode("v-if", true),
+        ], 42, ["tabindex", "aria-label", "onMouseenter", "onMouseleave", "onFocus", "onBlur"])) : vue.createCommentVNode("v-if", true),
         (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(pagers), (pager) => {
           return vue.openBlock(), vue.createElementBlock("li", {
             key: pager,
@@ -190,20 +184,20 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             "aria-current": _ctx.currentPage === pager,
             "aria-label": vue.unref(t)("el.pagination.currentPage", { pager }),
             tabindex: vue.unref(tabindex)
-          }, vue.toDisplayString(pager), 11, _hoisted_4);
+          }, vue.toDisplayString(pager), 11, ["aria-current", "aria-label", "tabindex"]);
         }), 128)),
         showNextMore.value ? (vue.openBlock(), vue.createElementBlock("li", {
           key: 2,
           class: vue.normalizeClass(vue.unref(nextMoreKls)),
           tabindex: vue.unref(tabindex),
           "aria-label": vue.unref(t)("el.pagination.nextPages", { pager: _ctx.pagerCount - 2 }),
-          onMouseenter: _cache[4] || (_cache[4] = ($event) => onMouseEnter()),
-          onMouseleave: _cache[5] || (_cache[5] = ($event) => quickNextHover.value = false),
-          onFocus: _cache[6] || (_cache[6] = ($event) => onFocus()),
-          onBlur: _cache[7] || (_cache[7] = ($event) => quickNextFocus.value = false)
+          onMouseenter: ($event) => onMouseEnter(),
+          onMouseleave: ($event) => quickNextHover.value = false,
+          onFocus: ($event) => onFocus(),
+          onBlur: ($event) => quickNextFocus.value = false
         }, [
           (quickNextHover.value || quickNextFocus.value) && !_ctx.disabled ? (vue.openBlock(), vue.createBlock(vue.unref(iconsVue.DArrowRight), { key: 0 })) : (vue.openBlock(), vue.createBlock(vue.unref(iconsVue.MoreFilled), { key: 1 }))
-        ], 42, _hoisted_5)) : vue.createCommentVNode("v-if", true),
+        ], 42, ["tabindex", "aria-label", "onMouseenter", "onMouseleave", "onFocus", "onBlur"])) : vue.createCommentVNode("v-if", true),
         _ctx.pageCount > 1 ? (vue.openBlock(), vue.createElementBlock("li", {
           key: 3,
           class: vue.normalizeClass([[
@@ -213,8 +207,8 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           "aria-current": _ctx.currentPage === _ctx.pageCount,
           "aria-label": vue.unref(t)("el.pagination.currentPage", { pager: _ctx.pageCount }),
           tabindex: vue.unref(tabindex)
-        }, vue.toDisplayString(_ctx.pageCount), 11, _hoisted_6)) : vue.createCommentVNode("v-if", true)
-      ], 42, _hoisted_1);
+        }, vue.toDisplayString(_ctx.pageCount), 11, ["aria-current", "aria-label", "tabindex"])) : vue.createCommentVNode("v-if", true)
+      ], 42, ["onKeyup"]);
     };
   }
 });

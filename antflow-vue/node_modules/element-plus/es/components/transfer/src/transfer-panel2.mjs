@@ -1,16 +1,13 @@
 import { defineComponent, useSlots, reactive, computed, toRefs, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, createVNode, isRef, withCtx, createTextVNode, toDisplayString, createBlock, createCommentVNode, withDirectives, Fragment, renderList, vShow, renderSlot } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { ElCheckbox, ElCheckboxGroup } from '../../checkbox/index.mjs';
 import { ElInput } from '../../input/index.mjs';
 import { Search } from '@element-plus/icons-vue';
 import { transferPanelProps, transferPanelEmits } from './transfer-panel.mjs';
-import './composables/index.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
-import { useLocale } from '../../../hooks/use-locale/index.mjs';
-import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { usePropsAlias } from './composables/use-props-alias.mjs';
 import { useCheck } from './composables/use-check.mjs';
+import { useLocale } from '../../../hooks/use-locale/index.mjs';
+import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { isEmpty } from '../../../utils/types.mjs';
 
 const __default__ = defineComponent({
@@ -54,7 +51,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }, [
           createVNode(unref(ElCheckbox), {
             modelValue: unref(allChecked),
-            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => isRef(allChecked) ? allChecked.value = $event : null),
+            "onUpdate:modelValue": ($event) => isRef(allChecked) ? allChecked.value = $event : null,
             indeterminate: unref(isIndeterminate),
             "validate-event": false,
             onChange: unref(handleAllCheckedChange)
@@ -64,7 +61,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               createElementVNode("span", null, toDisplayString(unref(checkedSummary)), 1)
             ]),
             _: 1
-          }, 8, ["modelValue", "indeterminate", "onChange"])
+          }, 8, ["modelValue", "onUpdate:modelValue", "indeterminate", "onChange"])
         ], 2),
         createElementVNode("div", {
           class: normalizeClass([unref(ns).be("panel", "body"), unref(ns).is("with-footer", unref(hasFooter))])
@@ -72,17 +69,17 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           _ctx.filterable ? (openBlock(), createBlock(unref(ElInput), {
             key: 0,
             modelValue: unref(query),
-            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => isRef(query) ? query.value = $event : null),
+            "onUpdate:modelValue": ($event) => isRef(query) ? query.value = $event : null,
             class: normalizeClass(unref(ns).be("panel", "filter")),
             size: "default",
             placeholder: _ctx.placeholder,
             "prefix-icon": unref(Search),
             clearable: "",
             "validate-event": false
-          }, null, 8, ["modelValue", "class", "placeholder", "prefix-icon"])) : createCommentVNode("v-if", true),
+          }, null, 8, ["modelValue", "onUpdate:modelValue", "class", "placeholder", "prefix-icon"])) : createCommentVNode("v-if", true),
           withDirectives(createVNode(unref(ElCheckboxGroup), {
             modelValue: unref(checked),
-            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef(checked) ? checked.value = $event : null),
+            "onUpdate:modelValue": ($event) => isRef(checked) ? checked.value = $event : null,
             "validate-event": false,
             class: normalizeClass([unref(ns).is("filterable", _ctx.filterable), unref(ns).be("panel", "list")])
           }, {
@@ -108,12 +105,16 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               }), 128))
             ]),
             _: 1
-          }, 8, ["modelValue", "class"]), [
+          }, 8, ["modelValue", "onUpdate:modelValue", "class"]), [
             [vShow, !unref(hasNoMatch) && !unref(isEmpty)(_ctx.data)]
           ]),
-          withDirectives(createElementVNode("p", {
+          withDirectives(createElementVNode("div", {
             class: normalizeClass(unref(ns).be("panel", "empty"))
-          }, toDisplayString(unref(hasNoMatch) ? unref(t)("el.transfer.noMatch") : unref(t)("el.transfer.noData")), 3), [
+          }, [
+            renderSlot(_ctx.$slots, "empty", {}, () => [
+              createTextVNode(toDisplayString(unref(hasNoMatch) ? unref(t)("el.transfer.noMatch") : unref(t)("el.transfer.noData")), 1)
+            ])
+          ], 2), [
             [vShow, unref(hasNoMatch) || unref(isEmpty)(_ctx.data)]
           ])
         ], 2),

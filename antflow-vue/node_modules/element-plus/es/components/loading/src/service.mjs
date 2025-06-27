@@ -1,5 +1,4 @@
 import { nextTick } from 'vue';
-import '../../../utils/index.mjs';
 import { createLoadingComponent } from './loading.mjs';
 import { isClient } from '@vueuse/core';
 import { isString } from '@vue/shared';
@@ -58,6 +57,8 @@ const resolveOptions = (options) => {
     lock: (_c = options.lock) != null ? _c : false,
     customClass: options.customClass || "",
     visible: (_d = options.visible) != null ? _d : true,
+    beforeClose: options.beforeClose,
+    closed: options.closed,
     target
   };
 };

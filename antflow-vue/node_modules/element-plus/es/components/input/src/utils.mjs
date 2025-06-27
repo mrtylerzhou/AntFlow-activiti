@@ -1,17 +1,16 @@
-import '../../../utils/index.mjs';
 import { isFirefox } from '../../../utils/browser.mjs';
 import { isNumber } from '../../../utils/types.mjs';
 
 let hiddenTextarea = void 0;
-const HIDDEN_STYLE = `
-  height:0 !important;
-  visibility:hidden !important;
-  ${isFirefox() ? "" : "overflow:hidden !important;"}
-  position:absolute !important;
-  z-index:-1000 !important;
-  top:0 !important;
-  right:0 !important;
-`;
+const HIDDEN_STYLE = {
+  height: "0",
+  visibility: "hidden",
+  overflow: isFirefox() ? "" : "hidden",
+  position: "absolute",
+  "z-index": "-1000",
+  top: "0",
+  right: "0"
+};
 const CONTEXT_STYLE = [
   "letter-spacing",
   "line-height",
@@ -34,7 +33,10 @@ function calculateNodeStyling(targetElement) {
   const boxSizing = style.getPropertyValue("box-sizing");
   const paddingSize = Number.parseFloat(style.getPropertyValue("padding-bottom")) + Number.parseFloat(style.getPropertyValue("padding-top"));
   const borderSize = Number.parseFloat(style.getPropertyValue("border-bottom-width")) + Number.parseFloat(style.getPropertyValue("border-top-width"));
-  const contextStyle = CONTEXT_STYLE.map((name) => `${name}:${style.getPropertyValue(name)}`).join(";");
+  const contextStyle = CONTEXT_STYLE.map((name) => [
+    name,
+    style.getPropertyValue(name)
+  ]);
   return { contextStyle, paddingSize, borderSize, boxSizing };
 }
 function calcTextareaHeight(targetElement, minRows = 1, maxRows) {
@@ -44,7 +46,8 @@ function calcTextareaHeight(targetElement, minRows = 1, maxRows) {
     document.body.appendChild(hiddenTextarea);
   }
   const { paddingSize, borderSize, boxSizing, contextStyle } = calculateNodeStyling(targetElement);
-  hiddenTextarea.setAttribute("style", `${contextStyle};${HIDDEN_STYLE}`);
+  contextStyle.forEach(([key, value]) => hiddenTextarea == null ? void 0 : hiddenTextarea.style.setProperty(key, value));
+  Object.entries(HIDDEN_STYLE).forEach(([key, value]) => hiddenTextarea == null ? void 0 : hiddenTextarea.style.setProperty(key, value, "important"));
   hiddenTextarea.value = targetElement.value || targetElement.placeholder || "";
   let height = hiddenTextarea.scrollHeight;
   const result = {};

@@ -1,5 +1,4 @@
 import '../../base/style/css.mjs';
-import '../../input/style/css.mjs';
 import '../../tag/style/css.mjs';
 import '../../option/style/css.mjs';
 import '../../option-group/style/css.mjs';

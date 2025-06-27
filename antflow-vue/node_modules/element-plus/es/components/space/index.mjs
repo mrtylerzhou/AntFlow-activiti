@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Space from './src/space.mjs';
 export { spaceProps } from './src/space.mjs';
 export { spaceItemProps } from './src/item.mjs';

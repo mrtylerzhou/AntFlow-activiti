@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Timeline from './src/timeline.mjs';
 import TimelineItem from './src/timeline-item2.mjs';
 export { timelineItemProps } from './src/timeline-item.mjs';

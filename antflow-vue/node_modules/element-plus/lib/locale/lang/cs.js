@@ -74,6 +74,9 @@ var cs = {
       noData: "\u017D\xE1dn\xE1 data",
       placeholder: "Vybrat"
     },
+    mention: {
+      loading: "Na\u010D\xEDt\xE1n\xED"
+    },
     cascader: {
       noMatch: "\u017D\xE1dn\xE1 shoda",
       loading: "Na\u010D\xEDt\xE1n\xED",

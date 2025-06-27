@@ -7,12 +7,12 @@ export declare function useGlobalComponentSettings(block: string, sizeFallback?:
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -28,6 +28,6 @@ export declare function useGlobalComponentSettings(block: string, sizeFallback?:
         currentZIndex: import("vue").ComputedRef<number>;
         nextZIndex: () => number;
     };
-    size: import("vue").ComputedRef<"" | "default" | "small" | "large">;
+    size: import("vue").ComputedRef<"small" | "" | "default" | "large">;
 };
-export declare const provideGlobalConfig: (config: MaybeRef<ConfigProviderContext>, app?: App<any> | undefined, global?: boolean) => import("vue").ComputedRef<Partial<import("../config-provider-props").ConfigProviderProps>> | undefined;
+export declare const provideGlobalConfig: (config: MaybeRef<ConfigProviderContext>, app?: App, global?: boolean) => import("vue").ComputedRef<Partial<import("element-plus").ConfigProviderProps>> | undefined;

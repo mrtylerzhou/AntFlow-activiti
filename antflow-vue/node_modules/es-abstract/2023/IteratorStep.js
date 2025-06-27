@@ -5,7 +5,7 @@ var $TypeError = require('es-errors/type');
 var IteratorComplete = require('./IteratorComplete');
 var IteratorNext = require('./IteratorNext');
 
-var isIteratorRecord = require('../helpers/records/iterator-record');
+var isIteratorRecord = require('../helpers/records/iterator-record-2023');
 
 // https://262.ecma-international.org/14.0/#sec-iteratorstep
 

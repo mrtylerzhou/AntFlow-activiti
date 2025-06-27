@@ -1,5 +1,5 @@
 import type { ExtractPropTypes } from 'vue';
-declare type AutoResizeHandler = (event: {
+type AutoResizeHandler = (event: {
     height: number;
     width: number;
 }) => void;
@@ -13,5 +13,5 @@ export declare const autoResizerProps: {
         __epPropKey: true;
     };
 };
-export declare type AutoResizerProps = ExtractPropTypes<typeof autoResizerProps>;
+export type AutoResizerProps = ExtractPropTypes<typeof autoResizerProps>;
 export {};

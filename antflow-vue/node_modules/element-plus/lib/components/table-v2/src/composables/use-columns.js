@@ -3,15 +3,21 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var constants = require('../constants.js');
 var _private = require('../private.js');
 var utils = require('./utils.js');
 var shared = require('@vue/shared');
 
 function useColumns(props, columns, fixed) {
+  const _columns = vue.computed(() => vue.unref(columns).map((column, index) => {
+    var _a, _b;
+    return {
+      ...column,
+      key: (_b = (_a = column.key) != null ? _a : column.dataKey) != null ? _b : index
+    };
+  }));
   const visibleColumns = vue.computed(() => {
-    return vue.unref(columns).filter((column) => !column.hidden);
+    return vue.unref(_columns).filter((column) => !column.hidden);
   });
   const fixedColumnsOnLeft = vue.computed(() => vue.unref(visibleColumns).filter((column) => column.fixed === "left" || column.fixed === true));
   const fixedColumnsOnRight = vue.computed(() => vue.unref(visibleColumns).filter((column) => column.fixed === "right"));
@@ -39,8 +45,7 @@ function useColumns(props, columns, fixed) {
     return vue.unref(fixedColumnsOnLeft).length || vue.unref(fixedColumnsOnRight).length;
   });
   const columnsStyles = vue.computed(() => {
-    const _columns = vue.unref(columns);
-    return _columns.reduce((style, column) => {
+    return vue.unref(_columns).reduce((style, column) => {
       style[column.key] = utils.calcColumnStyle(column, vue.unref(fixed), props.fixed);
       return style;
     }, {});
@@ -49,7 +54,7 @@ function useColumns(props, columns, fixed) {
     return vue.unref(visibleColumns).reduce((width, column) => width + column.width, 0);
   });
   const getColumn = (key) => {
-    return vue.unref(columns).find((column) => column.key === key);
+    return vue.unref(_columns).find((column) => column.key === key);
   };
   const getColumnStyle = (key) => {
     return vue.unref(columnsStyles)[key];
@@ -72,7 +77,7 @@ function useColumns(props, columns, fixed) {
     (_a = props.onColumnSort) == null ? void 0 : _a.call(props, { column: getColumn(key), key, order });
   }
   return {
-    columns,
+    columns: _columns,
     columnsStyles,
     columnsTotalWidth,
     fixedColumnsOnLeft,

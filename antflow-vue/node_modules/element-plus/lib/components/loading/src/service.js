@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
 var loading = require('./loading.js');
 var core = require('@vueuse/core');
 var shared = require('@vue/shared');
@@ -62,6 +61,8 @@ const resolveOptions = (options) => {
     lock: (_c = options.lock) != null ? _c : false,
     customClass: options.customClass || "",
     visible: (_d = options.visible) != null ? _d : true,
+    beforeClose: options.beforeClose,
+    closed: options.closed,
     target
   };
 };

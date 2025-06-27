@@ -4,14 +4,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../../utils/index.js');
-require('../components/index.js');
 var constants = require('../constants.js');
 var _private = require('../private.js');
 var utils = require('../utils.js');
-var shared = require('@vue/shared');
 var cell = require('../components/cell.js');
 var expandIcon = require('../components/expand-icon.js');
+var shared = require('@vue/shared');
 
 const CellRenderer = ({
   columns,
@@ -100,6 +98,7 @@ const CellRenderer = ({
   }), [IconOrPlaceholder, Cell]);
 };
 CellRenderer.inheritAttrs = false;
+var Cell = CellRenderer;
 
-exports["default"] = CellRenderer;
+exports["default"] = Cell;
 //# sourceMappingURL=cell.js.map

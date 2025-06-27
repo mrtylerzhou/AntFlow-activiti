@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var lodashUnified = require('lodash-unified');
-require('../../../utils/index.js');
 var error = require('../../../utils/error.js');
 var shared = require('@vue/shared');
 

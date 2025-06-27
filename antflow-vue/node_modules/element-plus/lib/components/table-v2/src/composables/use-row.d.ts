@@ -5,9 +5,9 @@ import type { FixedDirection, KeyType } from '../types';
 import type { onRowRenderedParams } from '../grid';
 import type { TableGridInstance } from '../table-grid';
 import type { UseNamespaceReturn } from 'element-plus/es/hooks';
-declare type Heights = Record<KeyType, number>;
-declare type GridInstanceRef = Ref<TableGridInstance | undefined>;
-declare type UseRowProps = {
+type Heights = Record<KeyType, number>;
+type GridInstanceRef = Ref<TableGridInstance | undefined>;
+type UseRowProps = {
     mainTableRef: GridInstanceRef;
     leftTableRef: GridInstanceRef;
     rightTableRef: GridInstanceRef;
@@ -27,5 +27,5 @@ export declare const useRow: (props: TableV2Props, { mainTableRef, leftTableRef,
     onRowsRendered: (params: onRowRenderedParams) => void;
     onRowHeightChange: ({ rowKey, height, rowIndex }: RowHeightChangedParams, fixedDir: FixedDirection) => void;
 };
-export declare type UseRowReturn = ReturnType<typeof useRow>;
+export type UseRowReturn = ReturnType<typeof useRow>;
 export {};

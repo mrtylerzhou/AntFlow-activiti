@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var configProvider = require('./src/config-provider.js');
 var configProviderProps = require('./src/config-provider-props.js');
 var constants = require('./src/constants.js');

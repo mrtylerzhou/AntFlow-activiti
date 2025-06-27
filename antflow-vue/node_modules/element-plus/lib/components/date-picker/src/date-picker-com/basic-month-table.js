@@ -4,12 +4,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var dayjs = require('dayjs');
-require('../../../../hooks/index.js');
-require('../../../time-picker/index.js');
-require('../../../../utils/index.js');
 var basicMonthTable = require('../props/basic-month-table.js');
+var utils = require('../utils.js');
+var basicCellRender = require('./basic-cell-render.js');
 var pluginVue_exportHelper = require('../../../../_virtual/plugin-vue_export-helper.js');
-var utils = require('../../../time-picker/src/utils.js');
 var index = require('../../../../hooks/use-namespace/index.js');
 var index$1 = require('../../../../hooks/use-locale/index.js');
 var arrays = require('../../../../utils/arrays.js');
@@ -19,20 +17,12 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 
 var dayjs__default = /*#__PURE__*/_interopDefaultLegacy(dayjs);
 
-const _hoisted_1 = ["aria-label"];
-const _hoisted_2 = ["aria-selected", "aria-label", "tabindex", "onKeydown"];
-const _hoisted_3 = { class: "cell" };
 const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   __name: "basic-month-table",
   props: basicMonthTable.basicMonthTableProps,
   emits: ["changerange", "pick", "select"],
   setup(__props, { expose, emit }) {
     const props = __props;
-    const datesInMonth = (year, month, lang2) => {
-      const firstDay = dayjs__default["default"]().locale(lang2).startOf("month").month(month).year(year);
-      const numOfDays = firstDay.daysInMonth();
-      return utils.rangeArr(numOfDays).map((n) => firstDay.add(n, "day").toDate());
-    };
     const ns = index.useNamespace("month-table");
     const { t, lang } = index$1.useLocale();
     const tbodyRef = vue.ref();
@@ -91,9 +81,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const getCellStyle = (cell) => {
       const style = {};
       const year = props.date.year();
-      const today = new Date();
+      const today = /* @__PURE__ */ new Date();
       const month = cell.text;
-      style.disabled = props.disabledDate ? datesInMonth(year, month, lang.value).every(props.disabledDate) : false;
+      style.disabled = props.disabledDate ? utils.datesInMonth(year, month, lang.value).every(props.disabledDate) : false;
       style.current = arrays.castArray(props.parsedValue).findIndex((date) => dayjs__default["default"].isDayjs(date) && date.year() === year && date.month() === month) >= 0;
       style.today = today.getFullYear() === year && today.getMonth() === month;
       if (cell.inRange) {
@@ -149,7 +139,15 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       const row = target.parentNode.rowIndex;
       const month = row * 4 + column;
       const newDate = props.date.startOf("year").month(month);
-      if (props.selectionMode === "range") {
+      if (props.selectionMode === "months") {
+        if (event.type === "keydown") {
+          emit("pick", arrays.castArray(props.parsedValue), false);
+          return;
+        }
+        const newMonth = utils.getValidDateOfMonth(props.date.year(), month, lang.value, props.disabledDate);
+        const newValue = style.hasClass(target, "current") ? arrays.castArray(props.parsedValue).filter((d) => (d == null ? void 0 : d.year()) !== newMonth.year() || (d == null ? void 0 : d.month()) !== newMonth.month()) : arrays.castArray(props.parsedValue).concat([dayjs__default["default"](newMonth)]);
+        emit("pick", newValue);
+      } else if (props.selectionMode === "range") {
         if (!props.rangeState.selecting) {
           emit("pick", { minDate: newDate, maxDate: null });
           emit("select", true);
@@ -203,15 +201,18 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
                     vue.withKeys(vue.withModifiers(handleMonthTableClick, ["prevent", "stop"]), ["enter"])
                   ]
                 }, [
-                  vue.createElementVNode("div", null, [
-                    vue.createElementVNode("span", _hoisted_3, vue.toDisplayString(vue.unref(t)("el.datepicker.months." + months.value[cell.text])), 1)
-                  ])
-                ], 42, _hoisted_2);
+                  vue.createVNode(vue.unref(basicCellRender["default"]), {
+                    cell: {
+                      ...cell,
+                      renderText: vue.unref(t)("el.datepicker.months." + months.value[cell.text])
+                    }
+                  }, null, 8, ["cell"])
+                ], 42, ["aria-selected", "aria-label", "tabindex", "onKeydown"]);
               }), 128))
             ]);
           }), 128))
         ], 512)
-      ], 42, _hoisted_1);
+      ], 42, ["aria-label"]);
     };
   }
 });

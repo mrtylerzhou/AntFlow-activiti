@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../utils/index.js');
 var error = require('../../utils/error.js');
 
 const DEFAULT_EXCLUDE_KEYS = ["class", "style"];

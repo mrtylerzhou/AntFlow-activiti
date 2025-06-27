@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var index = require('../../../hooks/use-aria/index.js');
 
@@ -28,8 +26,8 @@ const tooltipV2ContentProps = runtime.buildProps({
     default: 5
   },
   effect: {
-    type: String,
-    default: ""
+    type: runtime.definePropType(String),
+    default: "light"
   },
   contentClass: String,
   placement: {
@@ -50,10 +48,7 @@ const tooltipV2ContentProps = runtime.buildProps({
     values: tooltipV2Strategies,
     default: "absolute"
   },
-  showArrow: {
-    type: Boolean,
-    default: false
-  },
+  showArrow: Boolean,
   ...index.useAriaProps(["ariaLabel"])
 });
 

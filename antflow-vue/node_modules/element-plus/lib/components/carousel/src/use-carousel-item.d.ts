@@ -1,5 +1,5 @@
 import type { CarouselItemProps } from './carousel-item';
-export declare const useCarouselItem: (props: CarouselItemProps, componentName: string) => {
+export declare const useCarouselItem: (props: CarouselItemProps) => {
     carouselItemRef: import("vue").Ref<HTMLElement | undefined>;
     active: import("vue").Ref<boolean>;
     animating: import("vue").Ref<boolean>;

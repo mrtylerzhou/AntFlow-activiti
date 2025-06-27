@@ -5,13 +5,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var dayjs = require('dayjs');
 var localeData = require('dayjs/plugin/localeData.js');
-require('../../../hooks/index.js');
-require('../../time-picker/index.js');
-require('../../../constants/index.js');
 var dateTable = require('./date-table.js');
+var date = require('../../../constants/date.js');
 var index = require('../../../hooks/use-locale/index.js');
 var utils = require('../../time-picker/src/utils.js');
-var date = require('../../../constants/date.js');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 

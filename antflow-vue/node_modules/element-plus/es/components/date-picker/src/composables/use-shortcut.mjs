@@ -1,6 +1,5 @@
 import { getCurrentInstance, useAttrs, useSlots } from 'vue';
 import dayjs from 'dayjs';
-import '../../../../utils/index.mjs';
 import { isFunction } from '@vue/shared';
 
 const useShortcut = (lang) => {

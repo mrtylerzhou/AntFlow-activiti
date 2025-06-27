@@ -1,5 +1,4 @@
 import { isVNode, h } from 'vue';
-import '../../../utils/index.mjs';
 import { isArray, isFunction } from '@vue/shared';
 import { addUnit } from '../../../utils/dom/style.mjs';
 
@@ -11,7 +10,6 @@ const tryCall = (fLike, params, defaultRet = {}) => {
   return isFunction(fLike) ? fLike(params) : fLike != null ? fLike : defaultRet;
 };
 const enforceUnit = (style) => {
-  ;
   ["width", "maxWidth", "minWidth", "height"].forEach((key) => {
     style[key] = addUnit(style[key]);
   });

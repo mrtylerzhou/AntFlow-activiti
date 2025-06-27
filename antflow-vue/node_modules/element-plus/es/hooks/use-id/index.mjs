@@ -1,7 +1,6 @@
-import { getCurrentInstance, inject, computed, unref } from 'vue';
-import '../../utils/index.mjs';
+import { getCurrentInstance, inject, unref } from 'vue';
+import { isClient, computedEager } from '@vueuse/core';
 import { useGetDerivedNamespace } from '../use-namespace/index.mjs';
-import { isClient } from '@vueuse/core';
 import { debugWarn } from '../../utils/error.mjs';
 
 const defaultIdInjection = {
@@ -22,7 +21,7 @@ usage: app.provide(ID_INJECTION_KEY, {
 })`);
   }
   const namespace = useGetDerivedNamespace();
-  const idRef = computed(() => unref(deterministicId) || `${namespace.value}-id-${idInjection.prefix}-${idInjection.current++}`);
+  const idRef = computedEager(() => unref(deterministicId) || `${namespace.value}-id-${idInjection.prefix}-${idInjection.current++}`);
   return idRef;
 };
 

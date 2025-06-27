@@ -71,6 +71,9 @@ var bg = {
       noData: "\u041D\u044F\u043C\u0430 \u0434\u0430\u043D\u043D\u0438",
       placeholder: "\u0418\u0437\u0431\u0435\u0440\u0438"
     },
+    mention: {
+      loading: "\u0417\u0430\u0440\u0435\u0436\u0434\u0430\u043D\u0435"
+    },
     cascader: {
       noMatch: "\u041D\u044F\u043C\u0430 \u043D\u0430\u043C\u0435\u0440\u0435\u043D\u0438",
       loading: "\u0417\u0430\u0440\u0435\u0436\u0434\u0430\u043D\u0435",

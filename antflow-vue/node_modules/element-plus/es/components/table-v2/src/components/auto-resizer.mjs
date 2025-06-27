@@ -1,9 +1,7 @@
 import { defineComponent, createVNode } from 'vue';
-import '../../../../hooks/index.mjs';
 import { autoResizerProps } from '../auto-resizer.mjs';
-import '../composables/index.mjs';
-import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { useAutoResize } from '../composables/use-auto-resize.mjs';
+import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 
 const AutoResizer = defineComponent({
   name: "ElAutoResizer",
@@ -34,6 +32,7 @@ const AutoResizer = defineComponent({
     };
   }
 });
+var AutoResizer$1 = AutoResizer;
 
-export { AutoResizer as default };
+export { AutoResizer$1 as default };
 //# sourceMappingURL=auto-resizer.mjs.map

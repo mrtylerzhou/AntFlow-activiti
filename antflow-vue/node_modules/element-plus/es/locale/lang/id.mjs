@@ -68,6 +68,9 @@ var id = {
       noData: "Tidak ada data",
       placeholder: "Pilih"
     },
+    mention: {
+      loading: "Memuat"
+    },
     cascader: {
       noMatch: "Tidak ada data yg cocok",
       loading: "Memuat",

@@ -1,16 +1,15 @@
 import { defineComponent, ref, computed, onMounted, watch, provide, openBlock, createElementBlock, normalizeClass, unref, normalizeStyle, createCommentVNode, createElementVNode, renderSlot } from 'vue';
 import { useEventListener } from '@vueuse/core';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { anchorProps, anchorEmits } from './anchor.mjs';
 import { anchorKey } from './constants.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
-import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { getElement } from '../../../utils/dom/element.mjs';
+import { throttleByRaf } from '../../../utils/throttleByRaf.mjs';
+import { isWindow, isUndefined } from '../../../utils/types.mjs';
 import { getScrollElement, animateScrollTo, getScrollTop } from '../../../utils/dom/scroll.mjs';
 import { getOffsetTopDistance } from '../../../utils/dom/position.mjs';
-import { throttleByRaf } from '../../../utils/throttleByRaf.mjs';
-import { isUndefined, isWindow } from '../../../utils/types.mjs';
+import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
+import { CHANGE_EVENT } from '../../../constants/event.mjs';
 
 const __default__ = defineComponent({
   name: "ElAnchor"
@@ -44,7 +43,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const activeHref = currentAnchor.value;
       if (activeHref !== href) {
         currentAnchor.value = href;
-        emit("change", href);
+        emit(CHANGE_EVENT, href);
       }
     };
     let clearAnimate = null;
@@ -107,7 +106,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         const item = anchorTopList[i];
         const next = anchorTopList[i + 1];
         if (i === 0 && scrollTop === 0) {
-          return "";
+          return props.selectScrollTop ? item.href : "";
         }
         if (item.top <= scrollTop && (!next || next.top > scrollTop)) {
           return item.href;

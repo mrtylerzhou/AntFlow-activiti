@@ -1,6 +1,12 @@
 import type { MenuItemRegistered, MenuProvider } from './types';
-declare const _default: import("vue").DefineComponent<{
-    readonly index: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string & {}) | (() => string | null) | ((new (...args: any[]) => string & {}) | (() => string | null))[], unknown, unknown, null, boolean>;
+declare function __VLS_template(): {
+    title?(_: {}): any;
+    title?(_: {}): any;
+    default?(_: {}): any;
+    default?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
+    readonly index: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string) | (() => string | null) | ((new (...args: any[]) => string) | (() => string | null))[], unknown, unknown, null, boolean>;
     readonly route: {
         readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("vue-router").RouteLocationRaw & {}) | (() => import("vue-router").RouteLocationRaw) | ((new (...args: any[]) => import("vue-router").RouteLocationRaw & {}) | (() => import("vue-router").RouteLocationRaw))[], unknown, unknown>>;
         readonly required: false;
@@ -15,12 +21,12 @@ declare const _default: import("vue").DefineComponent<{
     nsMenu: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -33,12 +39,12 @@ declare const _default: import("vue").DefineComponent<{
     nsMenuItem: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -50,9 +56,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     handleClick: () => void;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
-    click: (item: MenuItemRegistered) => boolean;
+    click: (item: MenuItemRegistered) => void;
 }, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
-    readonly index: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string & {}) | (() => string | null) | ((new (...args: any[]) => string & {}) | (() => string | null))[], unknown, unknown, null, boolean>;
+    readonly index: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string) | (() => string | null) | ((new (...args: any[]) => string) | (() => string | null))[], unknown, unknown, null, boolean>;
     readonly route: {
         readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("vue-router").RouteLocationRaw & {}) | (() => import("vue-router").RouteLocationRaw) | ((new (...args: any[]) => import("vue-router").RouteLocationRaw & {}) | (() => import("vue-router").RouteLocationRaw))[], unknown, unknown>>;
         readonly required: false;
@@ -64,6 +70,12 @@ declare const _default: import("vue").DefineComponent<{
     onClick?: ((item: MenuItemRegistered) => any) | undefined;
 }, {
     readonly disabled: boolean;
-    readonly index: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string & {}) | (() => string | null) | ((new (...args: any[]) => string & {}) | (() => string | null))[], unknown, unknown>;
+    readonly index: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string) | (() => string | null) | ((new (...args: any[]) => string) | (() => string | null))[], unknown, unknown>;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

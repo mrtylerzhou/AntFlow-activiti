@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var defaults = require('./defaults.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var typescript = require('../../../utils/typescript.js');

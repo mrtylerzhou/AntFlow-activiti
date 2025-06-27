@@ -1,8 +1,7 @@
 import { defineComponent, ref, createVNode, Fragment } from 'vue';
-import '../../../utils/index.mjs';
+import { ensureOnlyChild } from '../../../utils/vue/vnode.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { composeRefs } from '../../../utils/vue/refs.mjs';
-import { ensureOnlyChild } from '../../../utils/vue/vnode.mjs';
 
 const forwardRefProps = buildProps({
   setRef: {

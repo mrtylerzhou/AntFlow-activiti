@@ -68,6 +68,9 @@ var hr = {
       noData: "Nema podataka",
       placeholder: "Izaberi"
     },
+    mention: {
+      loading: "U\u010Ditavanje"
+    },
     cascader: {
       noMatch: "Nema prona\u0111enih podataka",
       loading: "U\u010Ditavanje",

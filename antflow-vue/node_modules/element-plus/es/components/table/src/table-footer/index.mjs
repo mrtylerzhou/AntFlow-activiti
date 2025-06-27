@@ -1,5 +1,6 @@
-import { defineComponent, h } from 'vue';
-import '../../../../hooks/index.mjs';
+import { defineComponent, inject, h } from 'vue';
+import useLayoutObserver from '../layout-observer.mjs';
+import { TABLE_INJECTION_KEY } from '../tokens.mjs';
 import useStyle from './style-helper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 
@@ -28,10 +29,14 @@ var TableFooter = defineComponent({
     }
   },
   setup(props) {
-    const { getCellClasses, getCellStyles, columns } = useStyle(props);
+    const parent = inject(TABLE_INJECTION_KEY);
     const ns = useNamespace("table");
+    const { getCellClasses, getCellStyles, columns } = useStyle(props);
+    const { onScrollableChange, onColumnsChange } = useLayoutObserver(parent);
     return {
       ns,
+      onScrollableChange,
+      onColumnsChange,
       getCellClasses,
       getCellStyles,
       columns

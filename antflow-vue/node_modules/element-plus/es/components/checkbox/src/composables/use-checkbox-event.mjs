@@ -1,9 +1,8 @@
-import { inject, getCurrentInstance, nextTick, computed, watch } from 'vue';
-import '../../../form/index.mjs';
-import '../../../../utils/index.mjs';
+import { inject, getCurrentInstance, computed, watch, nextTick } from 'vue';
 import { checkboxGroupContextKey } from '../constants.mjs';
 import { useFormItem } from '../../../form/src/hooks/use-form-item.mjs';
 import { debugWarn } from '../../../../utils/error.mjs';
+import { CHANGE_EVENT } from '../../../../constants/event.mjs';
 
 const useCheckboxEvent = (props, {
   model,
@@ -20,13 +19,13 @@ const useCheckboxEvent = (props, {
     return [true, props.trueValue, props.trueLabel].includes(value) ? (_b = (_a = props.trueValue) != null ? _a : props.trueLabel) != null ? _b : true : (_d = (_c = props.falseValue) != null ? _c : props.falseLabel) != null ? _d : false;
   }
   function emitChangeEvent(checked, e) {
-    emit("change", getLabeledValue(checked), e);
+    emit(CHANGE_EVENT, getLabeledValue(checked), e);
   }
   function handleChange(e) {
     if (isLimitExceeded.value)
       return;
     const target = e.target;
-    emit("change", getLabeledValue(target.checked), e);
+    emit(CHANGE_EVENT, getLabeledValue(target.checked), e);
   }
   async function onClickRoot(e) {
     if (isLimitExceeded.value)

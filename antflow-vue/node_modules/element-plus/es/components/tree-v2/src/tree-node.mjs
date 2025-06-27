@@ -2,13 +2,12 @@ import { defineComponent, inject, computed, openBlock, createElementBlock, norma
 import { ElIcon } from '../../icon/index.mjs';
 import { CaretRight } from '@element-plus/icons-vue';
 import { ElCheckbox } from '../../checkbox/index.mjs';
-import '../../../hooks/index.mjs';
 import ElNodeContent from './tree-node-content.mjs';
 import { treeNodeProps, treeNodeEmits, ROOT_TREE_INJECTION_KEY, NODE_CONTEXTMENU } from './virtual-tree.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
+import { isFunction, isString } from '@vue/shared';
 
-const _hoisted_1 = ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick"];
 const __default__ = defineComponent({
   name: "ElTreeNode"
 });
@@ -28,8 +27,24 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       var _a;
       return (_a = tree == null ? void 0 : tree.props.icon) != null ? _a : CaretRight;
     });
+    const getNodeClass = (node) => {
+      const nodeClassFunc = tree == null ? void 0 : tree.props.props.class;
+      if (!nodeClassFunc)
+        return {};
+      let className;
+      if (isFunction(nodeClassFunc)) {
+        const { data } = node;
+        className = nodeClassFunc(data, node);
+      } else {
+        className = nodeClassFunc;
+      }
+      return isString(className) ? { [className]: true } : className;
+    };
     const handleClick = (e) => {
       emit("click", props.node, e);
+    };
+    const handleDrop = (e) => {
+      emit("drop", props.node, e);
     };
     const handleExpandIconClick = () => {
       emit("toggle", props.node);
@@ -54,7 +69,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           unref(ns).is("expanded", _ctx.expanded),
           unref(ns).is("current", _ctx.current),
           unref(ns).is("focusable", !_ctx.disabled),
-          unref(ns).is("checked", !_ctx.disabled && _ctx.checked)
+          unref(ns).is("checked", !_ctx.disabled && _ctx.checked),
+          getNodeClass(_ctx.node)
         ]),
         role: "treeitem",
         tabindex: "-1",
@@ -63,7 +79,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         "aria-checked": _ctx.checked,
         "data-key": (_a = _ctx.node) == null ? void 0 : _a.key,
         onClick: withModifiers(handleClick, ["stop"]),
-        onContextmenu: handleContextMenu
+        onContextmenu: handleContextMenu,
+        onDragover: withModifiers(() => {
+        }, ["prevent"]),
+        onDragenter: withModifiers(() => {
+        }, ["prevent"]),
+        onDrop: withModifiers(handleDrop, ["stop"])
       }, [
         createElementVNode("div", {
           class: normalizeClass(unref(ns).be("node", "content")),
@@ -95,12 +116,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             indeterminate: _ctx.indeterminate,
             disabled: _ctx.disabled,
             onChange: handleCheckChange,
-            onClick: _cache[0] || (_cache[0] = withModifiers(() => {
-            }, ["stop"]))
-          }, null, 8, ["model-value", "indeterminate", "disabled"])) : createCommentVNode("v-if", true),
+            onClick: withModifiers(() => {
+            }, ["stop"])
+          }, null, 8, ["model-value", "indeterminate", "disabled", "onClick"])) : createCommentVNode("v-if", true),
           createVNode(unref(ElNodeContent), { node: _ctx.node }, null, 8, ["node"])
         ], 6)
-      ], 42, _hoisted_1);
+      ], 42, ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick", "onDragover", "onDragenter", "onDrop"]);
     };
   }
 });

@@ -1,5 +1,4 @@
 import { isClient, unrefElement } from '@vueuse/core';
-import '../../../utils/index.mjs';
 
 const buildPopperOptions = (props, modifiers = []) => {
   const { placement, strategy, popperOptions } = props;

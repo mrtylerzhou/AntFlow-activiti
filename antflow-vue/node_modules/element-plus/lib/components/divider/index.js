@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var divider$1 = require('./src/divider2.js');
 var divider = require('./src/divider.js');
 var install = require('../../utils/vue/install.js');

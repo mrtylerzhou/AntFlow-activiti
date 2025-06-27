@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var transfer$1 = require('./src/transfer2.js');
 var transfer = require('./src/transfer.js');
 var install = require('../../utils/vue/install.js');

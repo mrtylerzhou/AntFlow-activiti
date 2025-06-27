@@ -1,6 +1,5 @@
-import '../../utils/index.mjs';
-import ColorPicker from './src/color-picker.mjs';
-export { colorPickerContextKey, colorPickerEmits, colorPickerProps } from './src/color-picker2.mjs';
+import ColorPicker from './src/color-picker2.mjs';
+export { colorPickerContextKey, colorPickerEmits, colorPickerProps } from './src/color-picker.mjs';
 import { withInstall } from '../../utils/vue/install.mjs';
 
 const ElColorPicker = withInstall(ColorPicker);

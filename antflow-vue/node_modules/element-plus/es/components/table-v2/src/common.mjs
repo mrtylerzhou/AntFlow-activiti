@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../utils/typescript.mjs';
 

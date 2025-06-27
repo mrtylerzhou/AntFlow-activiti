@@ -1,6 +1,5 @@
 import { defineComponent, getCurrentInstance, inject, ref, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, renderSlot, createBlock, withCtx, resolveDynamicComponent, toDisplayString } from 'vue';
 import { ElIcon } from '../../icon/index.mjs';
-import '../../../hooks/index.mjs';
 import { breadcrumbKey } from './constants.mjs';
 import { breadcrumbItemProps } from './breadcrumb-item.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';

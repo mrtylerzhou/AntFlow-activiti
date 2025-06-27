@@ -1,4 +1,3 @@
-import './types.mjs';
 import { isString } from '@vue/shared';
 
 class ElementPlusError extends Error {

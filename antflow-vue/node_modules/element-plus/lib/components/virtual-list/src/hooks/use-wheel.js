@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
 var defaults = require('../defaults.js');
 var raf = require('../../../../utils/raf.js');
 var browser = require('../../../../utils/browser.js');

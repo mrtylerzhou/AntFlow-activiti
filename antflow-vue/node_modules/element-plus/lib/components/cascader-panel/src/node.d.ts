@@ -1,14 +1,14 @@
 import type { VNode } from 'vue';
-export declare type CascaderNodeValue = string | number;
-export declare type CascaderNodePathValue = CascaderNodeValue[];
-export declare type CascaderValue = CascaderNodeValue | CascaderNodePathValue | (CascaderNodeValue | CascaderNodePathValue)[];
-export declare type CascaderConfig = Required<CascaderProps>;
-export declare type ExpandTrigger = 'click' | 'hover';
-export declare type isDisabled = (data: CascaderOption, node: Node) => boolean;
-export declare type isLeaf = (data: CascaderOption, node: Node) => boolean;
-export declare type Resolve = (dataList?: CascaderOption[]) => void;
-export declare type LazyLoad = (node: Node, resolve: Resolve) => void;
-export declare type RenderLabel = ({ node: Node, data: CascaderOption, }: {
+export type CascaderNodeValue = string | number;
+export type CascaderNodePathValue = CascaderNodeValue[];
+export type CascaderValue = CascaderNodeValue | CascaderNodePathValue | (CascaderNodeValue | CascaderNodePathValue)[];
+export type CascaderConfig = Required<CascaderProps>;
+export type ExpandTrigger = 'click' | 'hover';
+export type isDisabled = (data: CascaderOption, node: Node) => boolean;
+export type isLeaf = (data: CascaderOption, node: Node) => boolean;
+export type Resolve = (dataList?: CascaderOption[]) => void;
+export type LazyLoad = (node: Node, resolve: Resolve) => void;
+export type RenderLabel = ({ node: Node, data: CascaderOption, }: {
     node: any;
     data: any;
 }) => VNode | VNode[];
@@ -33,8 +33,8 @@ export interface CascaderProps {
     leaf?: string | isLeaf;
     hoverThreshold?: number;
 }
-export declare type Nullable<T> = null | T;
-declare type ChildrenData = CascaderOption[] | undefined;
+export type Nullable<T> = null | T;
+type ChildrenData = CascaderOption[] | undefined;
 declare class Node {
     readonly data: Nullable<CascaderOption>;
     readonly config: CascaderConfig;

@@ -1,11 +1,9 @@
-import '../../../utils/index.mjs';
-import '../../virtual-list/index.mjs';
 import { rowKey, columns, dataType, fixedDataType, expandKeys, classType, requiredNumber } from './common.mjs';
 import { tableV2RowProps } from './row.mjs';
 import { tableV2HeaderProps } from './header.mjs';
 import { tableV2GridProps } from './grid.mjs';
-import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { virtualizedGridProps, virtualizedScrollbarProps } from '../../virtual-list/src/props.mjs';
+import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
 const tableV2Props = buildProps({
   cache: tableV2GridProps.cache,

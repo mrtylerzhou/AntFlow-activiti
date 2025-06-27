@@ -13,7 +13,7 @@ export declare const usePopperContent: (props: PopperContentProps) => {
         elements?: {
             reference: Element | import("@popperjs/core").VirtualElement;
             popper: HTMLElement;
-            arrow?: HTMLElement | undefined;
+            arrow?: HTMLElement;
         } | undefined;
         options?: import("@popperjs/core").OptionsGeneric<any> | undefined;
         placement?: import("@popperjs/core").Placement | undefined;
@@ -21,8 +21,8 @@ export declare const usePopperContent: (props: PopperContentProps) => {
         orderedModifiers?: Modifier<any, any>[] | undefined;
         rects?: import("@popperjs/core").StateRects | undefined;
         scrollParents?: {
-            reference: (Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport)[];
-            popper: (Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport)[];
+            reference: Array<Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport>;
+            popper: Array<Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport>;
         } | undefined;
         styles?: {
             [key: string]: Partial<CSSStyleDeclaration>;
@@ -35,24 +35,24 @@ export declare const usePopperContent: (props: PopperContentProps) => {
         modifiersData?: {
             [key: string]: any;
             arrow?: {
-                x?: number | undefined;
-                y?: number | undefined;
+                x?: number;
+                y?: number;
                 centerOffset: number;
-            } | undefined;
+            };
             hide?: {
                 isReferenceHidden: boolean;
                 hasPopperEscaped: boolean;
                 referenceClippingOffsets: import("@popperjs/core").SideObject;
                 popperEscapeOffsets: import("@popperjs/core").SideObject;
-            } | undefined;
+            };
             offset?: {
-                auto?: import("@popperjs/core").Offsets | undefined;
                 top?: import("@popperjs/core").Offsets | undefined;
                 bottom?: import("@popperjs/core").Offsets | undefined;
                 left?: import("@popperjs/core").Offsets | undefined;
+                right?: import("@popperjs/core").Offsets | undefined;
+                auto?: import("@popperjs/core").Offsets | undefined;
                 "auto-start"?: import("@popperjs/core").Offsets | undefined;
                 "auto-end"?: import("@popperjs/core").Offsets | undefined;
-                right?: import("@popperjs/core").Offsets | undefined;
                 "top-start"?: import("@popperjs/core").Offsets | undefined;
                 "top-end"?: import("@popperjs/core").Offsets | undefined;
                 "bottom-start"?: import("@popperjs/core").Offsets | undefined;
@@ -61,9 +61,9 @@ export declare const usePopperContent: (props: PopperContentProps) => {
                 "right-end"?: import("@popperjs/core").Offsets | undefined;
                 "left-start"?: import("@popperjs/core").Offsets | undefined;
                 "left-end"?: import("@popperjs/core").Offsets | undefined;
-            } | undefined;
-            preventOverflow?: import("@popperjs/core").Offsets | undefined;
-            popperOffsets?: import("@popperjs/core").Offsets | undefined;
+            };
+            preventOverflow?: import("@popperjs/core").Offsets;
+            popperOffsets?: import("@popperjs/core").Offsets;
         } | undefined;
         reset?: boolean | undefined;
     }>;
@@ -74,4 +74,4 @@ export declare const usePopperContent: (props: PopperContentProps) => {
     forceUpdate: () => void | undefined;
     update: () => Promise<Partial<import("@popperjs/core").State>> | undefined;
 };
-export declare type UsePopperContentReturn = ReturnType<typeof usePopperContent>;
+export type UsePopperContentReturn = ReturnType<typeof usePopperContent>;

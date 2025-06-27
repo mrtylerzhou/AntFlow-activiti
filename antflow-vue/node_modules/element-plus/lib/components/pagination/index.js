@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var pagination = require('./src/pagination.js');
 var constants = require('./src/constants.js');
 var install = require('../../utils/vue/install.js');

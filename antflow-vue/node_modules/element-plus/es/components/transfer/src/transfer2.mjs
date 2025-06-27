@@ -1,26 +1,20 @@
-import { defineComponent, useSlots, reactive, ref, computed, watch, h, openBlock, createElementBlock, normalizeClass, unref, createVNode, withCtx, renderSlot, createElementVNode, toDisplayString, createCommentVNode } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
+import { defineComponent, useSlots, reactive, ref, computed, watch, h, Comment, openBlock, createElementBlock, normalizeClass, unref, createVNode, withCtx, renderSlot, createElementVNode, toDisplayString, createCommentVNode } from 'vue';
 import { ElButton } from '../../button/index.mjs';
 import { ElIcon } from '../../icon/index.mjs';
-import '../../form/index.mjs';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { transferProps, transferEmits } from './transfer.mjs';
-import './composables/index.mjs';
 import TransferPanel from './transfer-panel2.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
+import { useComputedData } from './composables/use-computed-data.mjs';
+import { useMove } from './composables/use-move.mjs';
+import { useCheckedChange } from './composables/use-checked-change.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { useFormItem } from '../../form/src/hooks/use-form-item.mjs';
 import { usePropsAlias } from './composables/use-props-alias.mjs';
-import { useComputedData } from './composables/use-computed-data.mjs';
-import { useCheckedChange } from './composables/use-checked-change.mjs';
-import { useMove } from './composables/use-move.mjs';
 import { debugWarn } from '../../../utils/error.mjs';
 import { isEmpty, isUndefined } from '../../../utils/types.mjs';
 
-const _hoisted_1 = { key: 0 };
-const _hoisted_2 = { key: 0 };
 const __default__ = defineComponent({
   name: "ElTransfer"
 });
@@ -65,10 +59,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
     });
     const optionRender = computed(() => (option) => {
+      var _a;
       if (props.renderContent)
         return props.renderContent(h, option);
-      if (slots.default)
-        return slots.default({ option });
+      const defaultSlotVNodes = (((_a = slots.default) == null ? void 0 : _a.call(slots, { option })) || []).filter((node) => node.type !== Comment);
+      if (defaultSlotVNodes.length) {
+        return defaultSlotVNodes;
+      }
       return h("span", option[propsAlias.value.label] || option[propsAlias.value.key]);
     });
     expose({
@@ -94,6 +91,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           props: props.props,
           onCheckedChange: unref(onSourceCheckedChange)
         }, {
+          empty: withCtx(() => [
+            renderSlot(_ctx.$slots, "left-empty")
+          ]),
           default: withCtx(() => [
             renderSlot(_ctx.$slots, "left-footer")
           ]),
@@ -115,7 +115,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ]),
                 _: 1
               }),
-              !unref(isUndefined)(_ctx.buttonTexts[0]) ? (openBlock(), createElementBlock("span", _hoisted_1, toDisplayString(_ctx.buttonTexts[0]), 1)) : createCommentVNode("v-if", true)
+              !unref(isUndefined)(_ctx.buttonTexts[0]) ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(_ctx.buttonTexts[0]), 1)) : createCommentVNode("v-if", true)
             ]),
             _: 1
           }, 8, ["class", "disabled", "onClick"]),
@@ -126,7 +126,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             onClick: unref(addToRight)
           }, {
             default: withCtx(() => [
-              !unref(isUndefined)(_ctx.buttonTexts[1]) ? (openBlock(), createElementBlock("span", _hoisted_2, toDisplayString(_ctx.buttonTexts[1]), 1)) : createCommentVNode("v-if", true),
+              !unref(isUndefined)(_ctx.buttonTexts[1]) ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(_ctx.buttonTexts[1]), 1)) : createCommentVNode("v-if", true),
               createVNode(unref(ElIcon), null, {
                 default: withCtx(() => [
                   createVNode(unref(ArrowRight))
@@ -151,6 +151,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           props: props.props,
           onCheckedChange: unref(onTargetCheckedChange)
         }, {
+          empty: withCtx(() => [
+            renderSlot(_ctx.$slots, "right-empty")
+          ]),
           default: withCtx(() => [
             renderSlot(_ctx.$slots, "right-footer")
           ]),

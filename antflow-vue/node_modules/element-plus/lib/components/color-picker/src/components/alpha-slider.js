@@ -16,7 +16,15 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   props: alphaSlider.alphaSliderProps,
   setup(__props, { expose }) {
     const props = __props;
-    const { bar, thumb, handleDrag, handleClick } = useAlphaSlider.useAlphaSlider(props);
+    const {
+      alpha,
+      alphaLabel,
+      bar,
+      thumb,
+      handleDrag,
+      handleClick,
+      handleKeydown
+    } = useAlphaSlider.useAlphaSlider(props);
     const { rootKls, barKls, barStyle, thumbKls, thumbStyle, update } = useAlphaSlider.useAlphaSliderDOM(props, {
       bar,
       thumb,
@@ -36,14 +44,22 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           ref: bar,
           class: vue.normalizeClass(vue.unref(barKls)),
           style: vue.normalizeStyle(vue.unref(barStyle)),
-          onClick: _cache[0] || (_cache[0] = (...args) => vue.unref(handleClick) && vue.unref(handleClick)(...args))
-        }, null, 6),
+          onClick: vue.unref(handleClick)
+        }, null, 14, ["onClick"]),
         vue.createElementVNode("div", {
           ref_key: "thumb",
           ref: thumb,
           class: vue.normalizeClass(vue.unref(thumbKls)),
-          style: vue.normalizeStyle(vue.unref(thumbStyle))
-        }, null, 6)
+          style: vue.normalizeStyle(vue.unref(thumbStyle)),
+          "aria-label": vue.unref(alphaLabel),
+          "aria-valuenow": vue.unref(alpha),
+          "aria-orientation": _ctx.vertical ? "vertical" : "horizontal",
+          "aria-valuemin": "0",
+          "aria-valuemax": "100",
+          role: "slider",
+          tabindex: "0",
+          onKeydown: vue.unref(handleKeydown)
+        }, null, 46, ["aria-label", "aria-valuenow", "aria-orientation", "onKeydown"])
       ], 2);
     };
   }

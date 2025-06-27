@@ -1,7 +1,6 @@
-import { isVNode, createVNode, mergeProps } from 'vue';
-import '../components/index.mjs';
+import { createVNode, mergeProps, isVNode } from 'vue';
 import { tryCall } from '../utils.mjs';
-import TableV2Row from '../components/row.mjs';
+import Row$1 from '../components/row.mjs';
 
 function _isSlot(s) {
   return typeof s === "function" || Object.prototype.toString.call(s) === "[object Object]" && !isVNode(s);
@@ -83,7 +82,7 @@ const RowRenderer = (props, {
       rowIndex
     });
   };
-  return createVNode(TableV2Row, mergeProps(_rowProps, {
+  return createVNode(Row$1, mergeProps(_rowProps, {
     "onRowExpand": onRowExpanded,
     "onMouseenter": handlerMosueEnter,
     "onMouseleave": handlerMouseLeave,
@@ -92,6 +91,7 @@ const RowRenderer = (props, {
     default: () => [slots]
   });
 };
+var Row = RowRenderer;
 
-export { RowRenderer as default };
+export { Row as default };
 //# sourceMappingURL=row.mjs.map

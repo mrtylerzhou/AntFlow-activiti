@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
 
 const buildPopperOptions = (props, modifiers = []) => {
   const { placement, strategy, popperOptions } = props;

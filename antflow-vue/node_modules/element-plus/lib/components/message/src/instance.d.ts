@@ -1,7 +1,7 @@
 import type { ComponentInternalInstance, VNode } from 'vue';
 import type { Mutable } from 'element-plus/es/utils';
 import type { MessageHandler, MessageProps } from './message';
-export declare type MessageContext = {
+export type MessageContext = {
     id: string;
     vnode: VNode;
     handler: MessageHandler;

@@ -1,4 +1,4 @@
-import type { CSSProperties, Ref } from 'vue';
+import type { Ref } from 'vue';
 export interface IStepsProps {
     space: number | string;
     active: number;
@@ -20,150 +20,40 @@ export interface IStepsInject {
     addStep: (item: StepItemState) => void;
     removeStep: (uid: number) => void;
 }
-declare const _default: import("vue").DefineComponent<{
+declare function __VLS_template(): {
+    icon?(_: {}): any;
+    title?(_: {}): any;
+    description?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
     readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly icon: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) | ((new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component) | ((new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly description: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly status: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "success" | "error" | "wait" | "finish" | "process", unknown, "", boolean>;
-}, {
-    props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-        readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-        readonly icon: {
-            readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) | ((new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>))[], unknown, unknown>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly description: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-        readonly status: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "success" | "error" | "wait" | "finish" | "process", unknown, "", boolean>;
-    }>> & {
-        [x: string & `on${string}`]: ((...args: any[]) => any) | ((...args: unknown[]) => any) | undefined;
-    }>>;
-    ns: {
-        namespace: import("vue").ComputedRef<string>;
-        b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-        is: {
-            (name: string, state: boolean | undefined): string;
-            (name: string): string;
-        };
-        cssVar: (object: Record<string, string>) => Record<string, string>;
-        cssVarName: (name: string) => string;
-        cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-        cssVarBlockName: (name: string) => string;
-    };
-    index: Ref<number>;
-    lineStyle: Ref<{}>;
-    internalStatus: Ref<string>;
-    parent: IStepsInject;
-    currentInstance: import("vue").ComponentInternalInstance | null;
-    currentStatus: import("vue").ComputedRef<string>;
-    prevStatus: import("vue").ComputedRef<string>;
-    isCenter: import("vue").ComputedRef<boolean>;
-    isVertical: import("vue").ComputedRef<boolean>;
-    isSimple: import("vue").ComputedRef<boolean>;
-    stepsCount: import("vue").ComputedRef<number>;
-    isLast: import("vue").ComputedRef<boolean>;
-    space: import("vue").ComputedRef<string | number>;
-    containerKls: import("vue").ComputedRef<string[]>;
-    style: import("vue").ComputedRef<CSSProperties>;
-    setIndex: (val: number) => void;
-    calcProgress: (status: string) => void;
-    updateStatus: (activeIndex: number) => void;
-    stepItemState: {
-        uid: number;
-        currentStatus: string;
-        setIndex: (val: number) => void;
-        calcProgress: (status: string) => void;
-    };
-    ElIcon: import("element-plus/es/utils").SFCWithInstall<import("vue").DefineComponent<{
-        readonly size: {
-            readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | number) & {}) | (() => string | number) | ((new (...args: any[]) => (string | number) & {}) | (() => string | number))[], unknown, unknown>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly color: {
-            readonly type: import("vue").PropType<string>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-    }, {
-        props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-            readonly size: {
-                readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | number) & {}) | (() => string | number) | ((new (...args: any[]) => (string | number) & {}) | (() => string | number))[], unknown, unknown>>;
-                readonly required: false;
-                readonly validator: ((val: unknown) => boolean) | undefined;
-                __epPropKey: true;
-            };
-            readonly color: {
-                readonly type: import("vue").PropType<string>;
-                readonly required: false;
-                readonly validator: ((val: unknown) => boolean) | undefined;
-                __epPropKey: true;
-            };
-        }>> & {
-            [x: string & `on${string}`]: ((...args: any[]) => any) | ((...args: unknown[]) => any) | undefined;
-        }>>;
-        ns: {
-            namespace: import("vue").ComputedRef<string>;
-            b: (blockSuffix?: string) => string;
-            e: (element?: string | undefined) => string;
-            m: (modifier?: string | undefined) => string;
-            be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-            em: (element?: string | undefined, modifier?: string | undefined) => string;
-            bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-            bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-            is: {
-                (name: string, state: boolean | undefined): string;
-                (name: string): string;
-            };
-            cssVar: (object: Record<string, string>) => Record<string, string>;
-            cssVarName: (name: string) => string;
-            cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-            cssVarBlockName: (name: string) => string;
-        };
-        style: import("vue").ComputedRef<CSSProperties>;
-    }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
-        readonly size: {
-            readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | number) & {}) | (() => string | number) | ((new (...args: any[]) => (string | number) & {}) | (() => string | number))[], unknown, unknown>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly color: {
-            readonly type: import("vue").PropType<string>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-    }>>, {}>> & Record<string, any>;
-    Check: any;
-    Close: any;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    readonly status: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "wait" | "error" | "finish" | "success" | "process", unknown, "", boolean>;
+}, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly icon: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) | ((new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component) | ((new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly description: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly status: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "success" | "error" | "wait" | "finish" | "process", unknown, "", boolean>;
+    readonly status: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "wait" | "error" | "finish" | "success" | "process", unknown, "", boolean>;
 }>>, {
     readonly title: string;
     readonly description: string;
-    readonly status: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "success" | "error" | "wait" | "finish" | "process", unknown>;
+    readonly status: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "wait" | "error" | "finish" | "success" | "process", unknown>;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

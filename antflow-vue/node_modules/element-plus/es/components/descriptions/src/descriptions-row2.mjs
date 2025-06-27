@@ -4,7 +4,6 @@ import { descriptionsKey } from './token.mjs';
 import { descriptionsRowProps } from './descriptions-row.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 
-const _hoisted_1 = { key: 1 };
 const __default__ = defineComponent({
   name: "ElDescriptionsRow"
 });
@@ -35,7 +34,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             }, null, 8, ["cell"]);
           }), 128))
         ])
-      ], 64)) : (openBlock(), createElementBlock("tr", _hoisted_1, [
+      ], 64)) : (openBlock(), createElementBlock("tr", { key: 1 }, [
         (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.row, (cell, _index) => {
           return openBlock(), createElementBlock(Fragment, {
             key: `tr3-${_index}`

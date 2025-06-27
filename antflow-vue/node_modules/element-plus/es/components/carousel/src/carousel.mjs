@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { isNumber } from '../../../utils/types.mjs';
 
@@ -39,6 +38,10 @@ const carouselProps = buildProps({
     values: ["", "card"],
     default: ""
   },
+  cardScale: {
+    type: Number,
+    default: 0.83
+  },
   loop: {
     type: Boolean,
     default: true
@@ -52,10 +55,7 @@ const carouselProps = buildProps({
     type: Boolean,
     default: true
   },
-  motionBlur: {
-    type: Boolean,
-    default: false
-  }
+  motionBlur: Boolean
 });
 const carouselEmits = {
   change: (current, prev) => [current, prev].every(isNumber)

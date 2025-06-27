@@ -1,6 +1,5 @@
 import { defineComponent, computed, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, normalizeStyle, createBlock, withCtx, resolveDynamicComponent, createCommentVNode, renderSlot, toDisplayString } from 'vue';
 import { ElIcon } from '../../icon/index.mjs';
-import '../../../hooks/index.mjs';
 import { timelineItemProps } from './timeline-item.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';

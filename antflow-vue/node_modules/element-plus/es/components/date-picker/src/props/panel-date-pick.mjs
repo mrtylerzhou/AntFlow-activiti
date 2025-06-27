@@ -1,4 +1,3 @@
-import '../../../../utils/index.mjs';
 import { panelSharedProps } from './shared.mjs';
 import { buildProps, definePropType } from '../../../../utils/vue/props/runtime.mjs';
 

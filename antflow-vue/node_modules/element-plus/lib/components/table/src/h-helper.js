@@ -3,12 +3,13 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
+var types = require('../../../utils/types.js');
 
 function hColgroup(props) {
   const isAuto = props.tableLayout === "auto";
   let columns = props.columns || [];
   if (isAuto) {
-    if (columns.every((column) => column.width === void 0)) {
+    if (columns.every(({ width }) => types.isUndefined(width))) {
       columns = [];
     }
   }

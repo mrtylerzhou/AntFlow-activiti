@@ -1,5 +1,5 @@
 import type { Component } from 'vue';
-export declare const iconPropType: import("vue").PropType<string | Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>>;
+export declare const iconPropType: import("vue").PropType<string | Component>;
 export declare const CloseComponents: {
     Close: any;
 };

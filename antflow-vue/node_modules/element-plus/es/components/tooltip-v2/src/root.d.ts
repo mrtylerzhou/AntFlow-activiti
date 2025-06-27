@@ -1,5 +1,5 @@
 import type { ExtractPropTypes } from 'vue';
-declare type StateUpdater = (state: boolean) => void;
+type StateUpdater = (state: boolean) => void;
 export declare const tooltipV2RootProps: {
     readonly delayDuration: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 300, boolean>;
     readonly defaultOpen: BooleanConstructor;
@@ -17,5 +17,5 @@ export declare const tooltipV2RootProps: {
         __epPropKey: true;
     };
 };
-export declare type TooltipV2RootProps = ExtractPropTypes<typeof tooltipV2RootProps>;
+export type TooltipV2RootProps = ExtractPropTypes<typeof tooltipV2RootProps>;
 export {};

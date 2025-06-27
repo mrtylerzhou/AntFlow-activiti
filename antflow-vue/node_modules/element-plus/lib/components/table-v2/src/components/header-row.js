@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var headerRow = require('../header-row.js');
 var shared = require('@vue/shared');
 
@@ -49,6 +48,7 @@ const TableV2HeaderRow = vue.defineComponent({
     };
   }
 });
+var HeaderRow = TableV2HeaderRow;
 
-exports["default"] = TableV2HeaderRow;
+exports["default"] = HeaderRow;
 //# sourceMappingURL=header-row.js.map

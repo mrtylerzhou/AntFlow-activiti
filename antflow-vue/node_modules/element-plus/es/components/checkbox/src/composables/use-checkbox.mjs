@@ -1,15 +1,12 @@
 import { computed } from 'vue';
-import '../../../form/index.mjs';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import { useCheckboxDisabled } from './use-checkbox-disabled.mjs';
 import { useCheckboxEvent } from './use-checkbox-event.mjs';
 import { useCheckboxModel } from './use-checkbox-model.mjs';
 import { useCheckboxStatus } from './use-checkbox-status.mjs';
 import { useFormItem, useFormItemInputId } from '../../../form/src/hooks/use-form-item.mjs';
-import { isArray } from '@vue/shared';
 import { useDeprecated } from '../../../../hooks/use-deprecated/index.mjs';
 import { isPropAbsent } from '../../../../utils/types.mjs';
+import { isArray } from '@vue/shared';
 
 const useCheckbox = (props, slots) => {
   const { formItem: elFormItem } = useFormItem();
@@ -47,13 +44,6 @@ const useCheckbox = (props, slots) => {
     props.checked && addToStore();
   };
   setStoreValue();
-  useDeprecated({
-    from: "controls",
-    replacement: "aria-controls",
-    version: "2.8.0",
-    scope: "el-checkbox",
-    ref: "https://element-plus.org/en-US/component/checkbox.html"
-  }, computed(() => !!props.controls));
   useDeprecated({
     from: "label act as value",
     replacement: "value",

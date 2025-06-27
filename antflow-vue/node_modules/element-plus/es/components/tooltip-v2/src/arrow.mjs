@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { tooltipV2Sides } from './common.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 

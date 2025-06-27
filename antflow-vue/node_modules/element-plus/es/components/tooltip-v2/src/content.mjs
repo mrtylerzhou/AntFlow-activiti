@@ -1,5 +1,3 @@
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { useAriaProps } from '../../../hooks/use-aria/index.mjs';
 
@@ -24,8 +22,8 @@ const tooltipV2ContentProps = buildProps({
     default: 5
   },
   effect: {
-    type: String,
-    default: ""
+    type: definePropType(String),
+    default: "light"
   },
   contentClass: String,
   placement: {
@@ -46,10 +44,7 @@ const tooltipV2ContentProps = buildProps({
     values: tooltipV2Strategies,
     default: "absolute"
   },
-  showArrow: {
-    type: Boolean,
-    default: false
-  },
+  showArrow: Boolean,
   ...useAriaProps(["ariaLabel"])
 });
 

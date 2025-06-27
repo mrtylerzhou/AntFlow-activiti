@@ -6,7 +6,7 @@ export declare const FOCUS_AFTER_TRAPPED_OPTS: EventInit;
 export declare const FOCUSOUT_PREVENTED_OPTS: EventInit;
 export declare const ON_TRAP_FOCUS_EVT = "focusAfterTrapped";
 export declare const ON_RELEASE_FOCUS_EVT = "focusAfterReleased";
-export declare type FocusTrapInjectionContext = {
+export type FocusTrapInjectionContext = {
     focusTrapRef: Ref<HTMLElement | undefined>;
     onKeydown: (e: KeyboardEvent) => void;
 };

@@ -1,9 +1,8 @@
-import { isFunction } from '@vue/shared';
-import '../../../../utils/index.mjs';
 import createGrid from '../builders/build-grid.mjs';
-import { SMART_ALIGNMENT, AUTO_ALIGNMENT, CENTERED_ALIGNMENT, END_ALIGNMENT, START_ALIGNMENT, DEFAULT_DYNAMIC_LIST_ITEM_SIZE } from '../defaults.mjs';
-import { isUndefined, isNumber } from '../../../../utils/types.mjs';
+import { DEFAULT_DYNAMIC_LIST_ITEM_SIZE, AUTO_ALIGNMENT, CENTERED_ALIGNMENT, END_ALIGNMENT, START_ALIGNMENT, SMART_ALIGNMENT } from '../defaults.mjs';
+import { isFunction } from '@vue/shared';
 import { throwError } from '../../../../utils/error.mjs';
+import { isNumber, isUndefined } from '../../../../utils/types.mjs';
 
 const { max, min, floor } = Math;
 const SCOPE = "ElDynamicSizeGrid";

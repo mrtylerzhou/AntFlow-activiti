@@ -1,5 +1,5 @@
 import type { PropType } from 'vue';
-export declare type CacheOption = {
+export type CacheOption = {
     value: string | number | boolean | object;
     currentLabel: string | number;
     isDisabled: boolean;

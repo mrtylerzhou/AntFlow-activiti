@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../form/index.js');
-require('../../../../utils/index.js');
 var constants = require('../constants.js');
 var types = require('../../../../utils/types.js');
 var useFormCommonProps = require('../../../form/src/hooks/use-form-common-props.js');

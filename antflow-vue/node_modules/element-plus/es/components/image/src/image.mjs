@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../utils/typescript.mjs';
 import { isNumber } from '../../../utils/types.mjs';
@@ -53,6 +52,10 @@ const imageProps = buildProps({
   maxScale: {
     type: Number,
     default: 7
+  },
+  showProgress: {
+    type: Boolean,
+    default: false
   },
   crossorigin: {
     type: definePropType(String)

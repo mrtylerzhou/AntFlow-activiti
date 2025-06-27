@@ -5,13 +5,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var index$2 = require('../../icon/index.js');
 var index$3 = require('../../divider/index.js');
-require('../../../hooks/index.js');
 var pageHeader = require('./page-header.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 
-const _hoisted_1 = ["aria-label"];
 const __default__ = vue.defineComponent({
   name: "ElPageHeader"
 });
@@ -20,25 +18,21 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   props: pageHeader.pageHeaderProps,
   emits: pageHeader.pageHeaderEmits,
   setup(__props, { emit }) {
-    const slots = vue.useSlots();
     const { t } = index.useLocale();
     const ns = index$1.useNamespace("page-header");
-    const kls = vue.computed(() => {
-      return [
-        ns.b(),
-        {
-          [ns.m("has-breadcrumb")]: !!slots.breadcrumb,
-          [ns.m("has-extra")]: !!slots.extra,
-          [ns.is("contentful")]: !!slots.default
-        }
-      ];
-    });
     function handleClick() {
       emit("back");
     }
     return (_ctx, _cache) => {
       return vue.openBlock(), vue.createElementBlock("div", {
-        class: vue.normalizeClass(vue.unref(kls))
+        class: vue.normalizeClass([
+          vue.unref(ns).b(),
+          {
+            [vue.unref(ns).m("has-breadcrumb")]: !!_ctx.$slots.breadcrumb,
+            [vue.unref(ns).m("has-extra")]: !!_ctx.$slots.extra,
+            [vue.unref(ns).is("contentful")]: !!_ctx.$slots.default
+          }
+        ])
       }, [
         _ctx.$slots.breadcrumb ? (vue.openBlock(), vue.createElementBlock("div", {
           key: 0,
@@ -71,7 +65,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
                     _: 1
                   })) : vue.createCommentVNode("v-if", true)
                 ])
-              ], 10, _hoisted_1)) : vue.createCommentVNode("v-if", true),
+              ], 10, ["aria-label"])) : vue.createCommentVNode("v-if", true),
               vue.createElementVNode("div", {
                 class: vue.normalizeClass(vue.unref(ns).e("title"))
               }, [

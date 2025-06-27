@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../hooks/index.js');
 var util = require('../util.js');
 var mapStateHelper = require('./mapState-helper.js');
 var index = require('../../../../hooks/use-namespace/index.js');

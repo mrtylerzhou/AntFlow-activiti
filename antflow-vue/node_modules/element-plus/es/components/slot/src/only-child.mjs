@@ -1,8 +1,6 @@
 import { defineComponent, inject, withDirectives, cloneVNode, Fragment, createVNode, Text, Comment } from 'vue';
-import { NOOP, isObject } from '@vue/shared';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { FORWARD_REF_INJECTION_KEY, useForwardRefDirective } from '../../../hooks/use-forward-ref/index.mjs';
+import { NOOP, isObject } from '@vue/shared';
 import { debugWarn } from '../../../utils/error.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 

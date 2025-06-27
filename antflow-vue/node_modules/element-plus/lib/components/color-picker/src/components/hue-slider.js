@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var draggable = require('../utils/draggable.js');
 var pluginVue_exportHelper = require('../../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../../hooks/use-namespace/index.js');
@@ -118,8 +116,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     vue.createElementVNode("div", {
       ref: "bar",
       class: vue.normalizeClass(_ctx.ns.e("bar")),
-      onClick: _cache[0] || (_cache[0] = (...args) => _ctx.handleClick && _ctx.handleClick(...args))
-    }, null, 2),
+      onClick: _ctx.handleClick
+    }, null, 10, ["onClick"]),
     vue.createElementVNode("div", {
       ref: "thumb",
       class: vue.normalizeClass(_ctx.ns.e("thumb")),

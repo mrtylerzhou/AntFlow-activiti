@@ -3,11 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
 var autoResizer = require('../auto-resizer.js');
-require('../composables/index.js');
-var index = require('../../../../hooks/use-namespace/index.js');
 var useAutoResize = require('../composables/use-auto-resize.js');
+var index = require('../../../../hooks/use-namespace/index.js');
 
 const AutoResizer = vue.defineComponent({
   name: "ElAutoResizer",
@@ -38,6 +36,7 @@ const AutoResizer = vue.defineComponent({
     };
   }
 });
+var AutoResizer$1 = AutoResizer;
 
-exports["default"] = AutoResizer;
+exports["default"] = AutoResizer$1;
 //# sourceMappingURL=auto-resizer.js.map

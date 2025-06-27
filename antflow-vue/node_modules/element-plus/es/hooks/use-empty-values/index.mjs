@@ -1,11 +1,9 @@
-import { ref, computed } from 'vue';
-import '../../components/config-provider/index.mjs';
-import '../../utils/index.mjs';
+import { getCurrentInstance, inject, ref, computed } from 'vue';
 import { buildProps } from '../../utils/vue/props/runtime.mjs';
 import { isFunction } from '@vue/shared';
-import { useGlobalConfig } from '../../components/config-provider/src/hooks/use-global-config.mjs';
 import { debugWarn } from '../../utils/error.mjs';
 
+const emptyValuesContextKey = Symbol("emptyValuesContextKey");
 const SCOPE = "use-empty-values";
 const DEFAULT_EMPTY_VALUES = ["", void 0, null];
 const DEFAULT_VALUE_ON_CLEAR = void 0;
@@ -18,10 +16,7 @@ const useEmptyValuesProps = buildProps({
   }
 });
 const useEmptyValues = (props, defaultValue) => {
-  let config = useGlobalConfig();
-  if (!config.value) {
-    config = ref({});
-  }
+  const config = getCurrentInstance() ? inject(emptyValuesContextKey, ref({})) : ref({});
   const emptyValues = computed(() => props.emptyValues || config.value.emptyValues || DEFAULT_EMPTY_VALUES);
   const valueOnClear = computed(() => {
     if (isFunction(props.valueOnClear)) {
@@ -48,5 +43,5 @@ const useEmptyValues = (props, defaultValue) => {
   };
 };
 
-export { DEFAULT_EMPTY_VALUES, DEFAULT_VALUE_ON_CLEAR, SCOPE, useEmptyValues, useEmptyValuesProps };
+export { DEFAULT_EMPTY_VALUES, DEFAULT_VALUE_ON_CLEAR, SCOPE, emptyValuesContextKey, useEmptyValues, useEmptyValuesProps };
 //# sourceMappingURL=index.mjs.map

@@ -1,15 +1,14 @@
 import { defineComponent, inject, openBlock, createElementBlock, normalizeStyle, normalizeClass, withModifiers, renderSlot, createElementVNode, toDisplayString } from 'vue';
-import '../../../hooks/index.mjs';
 import { useOption } from './useOption.mjs';
 import { useProps } from './useProps.mjs';
-import { OptionProps } from './defaults.mjs';
+import { OptionProps, optionEmits } from './defaults.mjs';
 import { selectV2InjectionKey } from './token.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
 const _sfc_main = defineComponent({
   props: OptionProps,
-  emits: ["select", "hover"],
+  emits: optionEmits,
   setup(props, { emit }) {
     const select = inject(selectV2InjectionKey);
     const ns = useNamespace("select");
@@ -23,7 +22,6 @@ const _sfc_main = defineComponent({
     };
   }
 });
-const _hoisted_1 = ["aria-selected"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("li", {
     "aria-selected": _ctx.selected,
@@ -35,8 +33,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _ctx.ns.is("created", _ctx.created),
       _ctx.ns.is("hovering", _ctx.hovering)
     ]),
-    onMouseenter: _cache[0] || (_cache[0] = (...args) => _ctx.hoverItem && _ctx.hoverItem(...args)),
-    onClick: _cache[1] || (_cache[1] = withModifiers((...args) => _ctx.selectOptionClick && _ctx.selectOptionClick(...args), ["stop"]))
+    onMousemove: _ctx.hoverItem,
+    onClick: withModifiers(_ctx.selectOptionClick, ["stop"])
   }, [
     renderSlot(_ctx.$slots, "default", {
       item: _ctx.item,
@@ -45,7 +43,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, () => [
       createElementVNode("span", null, toDisplayString(_ctx.getLabel(_ctx.item)), 1)
     ])
-  ], 46, _hoisted_1);
+  ], 46, ["aria-selected", "onMousemove", "onClick"]);
 }
 var OptionItem = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "option-item.vue"]]);
 

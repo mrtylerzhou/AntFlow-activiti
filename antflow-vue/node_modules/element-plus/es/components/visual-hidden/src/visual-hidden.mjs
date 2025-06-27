@@ -1,40 +1,11 @@
-import { defineComponent, computed, openBlock, createElementBlock, mergeProps, unref, renderSlot } from 'vue';
-import { visualHiddenProps } from './visual-hidden2.mjs';
-import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
+import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
-const __default__ = defineComponent({
-  name: "ElVisuallyHidden"
-});
-const _sfc_main = /* @__PURE__ */ defineComponent({
-  ...__default__,
-  props: visualHiddenProps,
-  setup(__props) {
-    const props = __props;
-    const computedStyle = computed(() => {
-      return [
-        props.style,
-        {
-          position: "absolute",
-          border: 0,
-          width: 1,
-          height: 1,
-          padding: 0,
-          margin: -1,
-          overflow: "hidden",
-          clip: "rect(0, 0, 0, 0)",
-          whiteSpace: "nowrap",
-          wordWrap: "normal"
-        }
-      ];
-    });
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("span", mergeProps(_ctx.$attrs, { style: unref(computedStyle) }), [
-        renderSlot(_ctx.$slots, "default")
-      ], 16);
-    };
+const visualHiddenProps = buildProps({
+  style: {
+    type: definePropType([String, Object, Array]),
+    default: () => ({})
   }
 });
-var ElVisuallyHidden = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "visual-hidden.vue"]]);
 
-export { ElVisuallyHidden as default };
+export { visualHiddenProps };
 //# sourceMappingURL=visual-hidden.mjs.map

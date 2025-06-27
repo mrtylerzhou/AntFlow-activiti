@@ -5,7 +5,7 @@ import type { ExtractPropTypes } from 'vue';
 export declare const tooltipV2CommonProps: {
     readonly nowrap: BooleanConstructor;
 };
-export declare type TooltipV2CommonProps = ExtractPropTypes<typeof tooltipV2CommonProps>;
+export type TooltipV2CommonProps = ExtractPropTypes<typeof tooltipV2CommonProps>;
 export declare enum TooltipV2Sides {
     top = "top",
     bottom = "bottom",

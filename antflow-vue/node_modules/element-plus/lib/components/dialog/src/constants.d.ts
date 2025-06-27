@@ -1,6 +1,6 @@
 import type { CSSProperties, ComputedRef, InjectionKey, Ref } from 'vue';
 import type { UseNamespaceReturn } from 'element-plus/es/hooks';
-export declare type DialogContext = {
+export type DialogContext = {
     dialogRef: Ref<HTMLElement | undefined>;
     headerRef: Ref<HTMLElement | undefined>;
     bodyId: Ref<string>;

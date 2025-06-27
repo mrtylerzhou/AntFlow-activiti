@@ -1,6 +1,6 @@
 import type { CSSProperties, ComputedRef } from 'vue';
 import type { SliderInitData, SliderProps } from '../slider';
-declare type Stops = {
+type Stops = {
     stops: ComputedRef<number[]>;
     getStopStyle: (position: number) => CSSProperties;
 };

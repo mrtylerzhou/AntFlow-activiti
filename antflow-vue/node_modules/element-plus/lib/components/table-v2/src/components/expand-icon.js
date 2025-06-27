@@ -25,6 +25,7 @@ const ExpandIcon = (props) => {
     default: () => [vue.createVNode(iconsVue.ArrowRight, null, null)]
   });
 };
+var ExpandIcon$1 = ExpandIcon;
 
-exports["default"] = ExpandIcon;
+exports["default"] = ExpandIcon$1;
 //# sourceMappingURL=expand-icon.js.map

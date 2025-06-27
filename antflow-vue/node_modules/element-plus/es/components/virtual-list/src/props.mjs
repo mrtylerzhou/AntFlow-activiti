@@ -1,6 +1,5 @@
-import '../../../utils/index.mjs';
 import { VERTICAL } from './defaults.mjs';
-import { buildProp, definePropType, buildProps } from '../../../utils/vue/props/runtime.mjs';
+import { buildProp, buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../utils/typescript.mjs';
 
 const itemSize = buildProp({

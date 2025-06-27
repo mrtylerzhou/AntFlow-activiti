@@ -1,12 +1,11 @@
 import { ref, computed, unref, watch, nextTick } from 'vue';
 import dayjs from 'dayjs';
 import { flatten } from 'lodash-unified';
-import '../../../../hooks/index.mjs';
-import '../../../../utils/index.mjs';
 import { buildPickerTable } from '../utils.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 import { castArray } from '../../../../utils/arrays.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
+import { isArray } from '@vue/shared';
 
 const isNormalDay = (type = "") => {
   return ["normal", "today"].includes(type);
@@ -250,9 +249,6 @@ const useBasicDateTable = (props, emit) => {
         handleDatesPick(newDate, !!cell.selected);
         break;
       }
-      default: {
-        break;
-      }
     }
   };
   const isWeekActive = (cell) => {
@@ -266,7 +262,7 @@ const useBasicDateTable = (props, emit) => {
       newDate = newDate.add(1, "month");
     }
     newDate = newDate.date(Number.parseInt(cell.text, 10));
-    if (props.parsedValue && !Array.isArray(props.parsedValue)) {
+    if (props.parsedValue && !isArray(props.parsedValue)) {
       const dayOffset = (props.parsedValue.day() - firstDayOfWeek + 7) % 7 - 1;
       const weekDate = props.parsedValue.subtract(dayOffset, "day");
       return weekDate.isSame(newDate, "day");

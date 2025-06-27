@@ -7,7 +7,7 @@ var IteratorNext = require('./IteratorNext');
 
 var isIteratorRecord = require('../helpers/records/iterator-record');
 
-// https://262.ecma-international.org/14.0/#sec-iteratorstep
+// https://262.ecma-international.org/15.0/#sec-iteratorstep
 
 module.exports = function IteratorStep(iteratorRecord) {
 	if (!isIteratorRecord(iteratorRecord)) {

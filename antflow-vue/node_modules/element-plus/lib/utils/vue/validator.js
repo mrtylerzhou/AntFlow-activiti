@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../constants/index.js');
 var size = require('../../constants/size.js');
 var date = require('../../constants/date.js');
 

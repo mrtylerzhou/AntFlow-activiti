@@ -1,6 +1,6 @@
 import type { InjectionKey, Ref } from 'vue';
 import type { UseNamespaceReturn } from 'element-plus/es/hooks';
-export declare type TableV2Context = {
+export type TableV2Context = {
     isScrolling: Ref<boolean>;
     isResetting: Ref<boolean>;
     ns: UseNamespaceReturn;

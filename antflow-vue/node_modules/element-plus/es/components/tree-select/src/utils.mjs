@@ -1,11 +1,13 @@
+import { isArray } from '@vue/shared';
+
 function isValidValue(val) {
   return val || val === 0;
 }
 function isValidArray(val) {
-  return Array.isArray(val) && val.length;
+  return isArray(val) && val.length;
 }
 function toValidArray(val) {
-  return Array.isArray(val) ? val : isValidValue(val) ? [val] : [];
+  return isArray(val) ? val : isValidValue(val) ? [val] : [];
 }
 function treeFind(treeData, findCallback, getChildren, resultCallback, parent) {
   for (let i = 0; i < treeData.length; i++) {

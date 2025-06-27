@@ -13,14 +13,15 @@ export declare const useHandlers: (props: UploadProps, uploadRef: ShallowRef<Upl
         url?: string | undefined;
         raw?: {
             uid: number;
+            isDirectory?: boolean | undefined;
             readonly lastModified: number;
             readonly name: string;
             readonly webkitRelativePath: string;
             readonly size: number;
             readonly type: string;
             arrayBuffer: () => Promise<ArrayBuffer>;
-            slice: (start?: number | undefined, end?: number | undefined, contentType?: string | undefined) => Blob;
-            stream: () => ReadableStream<any>;
+            slice: (start?: number, end?: number, contentType?: string) => Blob;
+            stream: () => ReadableStream<Uint8Array>;
             text: () => Promise<string>;
         } | undefined;
     }[]> | import("vue").WritableComputedRef<UploadFiles>;
@@ -30,7 +31,7 @@ export declare const useHandlers: (props: UploadProps, uploadRef: ShallowRef<Upl
     handleProgress: (evt: import("./upload").UploadProgressEvent, rawFile: UploadRawFile) => void;
     handleStart: (rawFile: UploadRawFile) => void;
     handleSuccess: (response: any, rawFile: UploadRawFile) => unknown;
-    handleRemove: (file: UploadRawFile | UploadFile, rawFile?: UploadRawFile | undefined) => void;
+    handleRemove: (file: UploadFile | UploadRawFile, rawFile?: UploadRawFile) => void;
     submit: () => void;
     revokeFileObjectURL: (file: UploadFile) => void;
 };

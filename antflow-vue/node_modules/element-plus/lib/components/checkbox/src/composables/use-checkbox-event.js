@@ -3,11 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../form/index.js');
-require('../../../../utils/index.js');
 var constants = require('../constants.js');
 var useFormItem = require('../../../form/src/hooks/use-form-item.js');
 var error = require('../../../../utils/error.js');
+var event = require('../../../../constants/event.js');
 
 const useCheckboxEvent = (props, {
   model,
@@ -24,13 +23,13 @@ const useCheckboxEvent = (props, {
     return [true, props.trueValue, props.trueLabel].includes(value) ? (_b = (_a = props.trueValue) != null ? _a : props.trueLabel) != null ? _b : true : (_d = (_c = props.falseValue) != null ? _c : props.falseLabel) != null ? _d : false;
   }
   function emitChangeEvent(checked, e) {
-    emit("change", getLabeledValue(checked), e);
+    emit(event.CHANGE_EVENT, getLabeledValue(checked), e);
   }
   function handleChange(e) {
     if (isLimitExceeded.value)
       return;
     const target = e.target;
-    emit("change", getLabeledValue(target.checked), e);
+    emit(event.CHANGE_EVENT, getLabeledValue(target.checked), e);
   }
   async function onClickRoot(e) {
     if (isLimitExceeded.value)

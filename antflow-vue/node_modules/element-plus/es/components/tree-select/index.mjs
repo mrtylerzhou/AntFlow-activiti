@@ -1,10 +1,7 @@
 import TreeSelect from './src/tree-select.mjs';
+import { withInstall } from '../../utils/vue/install.mjs';
 
-TreeSelect.install = (app) => {
-  app.component(TreeSelect.name, TreeSelect);
-};
-const _TreeSelect = TreeSelect;
-const ElTreeSelect = _TreeSelect;
+const ElTreeSelect = withInstall(TreeSelect);
 
-export { ElTreeSelect, _TreeSelect as default };
+export { ElTreeSelect, ElTreeSelect as default };
 //# sourceMappingURL=index.mjs.map

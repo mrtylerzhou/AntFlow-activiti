@@ -2,12 +2,12 @@ import type { Ref } from 'vue';
 import type { Alignment as ScrollStrategy } from 'element-plus/es/components/virtual-list';
 import type { TableV2Props } from '../table';
 import type { TableGridInstance } from '../table-grid';
-export declare type ScrollPos = {
+export type ScrollPos = {
     scrollLeft: number;
     scrollTop: number;
 };
-declare type GridInstanceRef = Ref<TableGridInstance | undefined>;
-declare type UseScrollBarProps = {
+type GridInstanceRef = Ref<TableGridInstance | undefined>;
+type UseScrollBarProps = {
     mainTableRef: GridInstanceRef;
     leftTableRef: GridInstanceRef;
     rightTableRef: GridInstanceRef;

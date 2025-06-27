@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var shared = require('@vue/shared');
 var types = require('../../../utils/types.js');
@@ -37,6 +36,10 @@ const anchorProps = runtime.buildProps({
   direction: {
     type: runtime.definePropType(String),
     default: "vertical"
+  },
+  selectScrollTop: {
+    type: Boolean,
+    default: false
   }
 });
 const anchorEmits = {

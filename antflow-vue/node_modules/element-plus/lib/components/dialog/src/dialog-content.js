@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var icon = require('../../../utils/vue/icon.js');
 
@@ -15,6 +14,9 @@ const dialogContentProps = runtime.buildProps({
   draggable: Boolean,
   overflow: Boolean,
   fullscreen: Boolean,
+  headerClass: String,
+  bodyClass: String,
+  footerClass: String,
   showClose: {
     type: Boolean,
     default: true

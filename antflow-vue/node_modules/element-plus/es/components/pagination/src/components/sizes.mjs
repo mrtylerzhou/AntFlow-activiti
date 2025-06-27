@@ -1,5 +1,3 @@
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
 import { buildProps, definePropType } from '../../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../../utils/typescript.mjs';
 import { componentSizes } from '../../../../constants/size.mjs';
@@ -21,7 +19,8 @@ const paginationSizesProps = buildProps({
   size: {
     type: String,
     values: componentSizes
-  }
+  },
+  appendSizeTo: String
 });
 
 export { paginationSizesProps };

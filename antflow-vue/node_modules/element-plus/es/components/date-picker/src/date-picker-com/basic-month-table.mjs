@@ -1,30 +1,20 @@
-import { defineComponent, ref, computed, watch, nextTick, openBlock, createElementBlock, unref, normalizeClass, createElementVNode, Fragment, renderList, withKeys, withModifiers, toDisplayString } from 'vue';
+import { defineComponent, ref, computed, watch, nextTick, openBlock, createElementBlock, unref, normalizeClass, createElementVNode, Fragment, renderList, withKeys, withModifiers, createVNode } from 'vue';
 import dayjs from 'dayjs';
-import '../../../../hooks/index.mjs';
-import '../../../time-picker/index.mjs';
-import '../../../../utils/index.mjs';
 import { basicMonthTableProps } from '../props/basic-month-table.mjs';
+import { datesInMonth, getValidDateOfMonth } from '../utils.mjs';
+import ElDatePickerCell from './basic-cell-render.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
-import { rangeArr } from '../../../time-picker/src/utils.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 import { castArray } from '../../../../utils/arrays.mjs';
 import { hasClass } from '../../../../utils/dom/style.mjs';
 
-const _hoisted_1 = ["aria-label"];
-const _hoisted_2 = ["aria-selected", "aria-label", "tabindex", "onKeydown"];
-const _hoisted_3 = { class: "cell" };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "basic-month-table",
   props: basicMonthTableProps,
   emits: ["changerange", "pick", "select"],
   setup(__props, { expose, emit }) {
     const props = __props;
-    const datesInMonth = (year, month, lang2) => {
-      const firstDay = dayjs().locale(lang2).startOf("month").month(month).year(year);
-      const numOfDays = firstDay.daysInMonth();
-      return rangeArr(numOfDays).map((n) => firstDay.add(n, "day").toDate());
-    };
     const ns = useNamespace("month-table");
     const { t, lang } = useLocale();
     const tbodyRef = ref();
@@ -83,7 +73,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const getCellStyle = (cell) => {
       const style = {};
       const year = props.date.year();
-      const today = new Date();
+      const today = /* @__PURE__ */ new Date();
       const month = cell.text;
       style.disabled = props.disabledDate ? datesInMonth(year, month, lang.value).every(props.disabledDate) : false;
       style.current = castArray(props.parsedValue).findIndex((date) => dayjs.isDayjs(date) && date.year() === year && date.month() === month) >= 0;
@@ -141,7 +131,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const row = target.parentNode.rowIndex;
       const month = row * 4 + column;
       const newDate = props.date.startOf("year").month(month);
-      if (props.selectionMode === "range") {
+      if (props.selectionMode === "months") {
+        if (event.type === "keydown") {
+          emit("pick", castArray(props.parsedValue), false);
+          return;
+        }
+        const newMonth = getValidDateOfMonth(props.date.year(), month, lang.value, props.disabledDate);
+        const newValue = hasClass(target, "current") ? castArray(props.parsedValue).filter((d) => (d == null ? void 0 : d.year()) !== newMonth.year() || (d == null ? void 0 : d.month()) !== newMonth.month()) : castArray(props.parsedValue).concat([dayjs(newMonth)]);
+        emit("pick", newValue);
+      } else if (props.selectionMode === "range") {
         if (!props.rangeState.selecting) {
           emit("pick", { minDate: newDate, maxDate: null });
           emit("select", true);
@@ -195,15 +193,18 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                     withKeys(withModifiers(handleMonthTableClick, ["prevent", "stop"]), ["enter"])
                   ]
                 }, [
-                  createElementVNode("div", null, [
-                    createElementVNode("span", _hoisted_3, toDisplayString(unref(t)("el.datepicker.months." + months.value[cell.text])), 1)
-                  ])
-                ], 42, _hoisted_2);
+                  createVNode(unref(ElDatePickerCell), {
+                    cell: {
+                      ...cell,
+                      renderText: unref(t)("el.datepicker.months." + months.value[cell.text])
+                    }
+                  }, null, 8, ["cell"])
+                ], 42, ["aria-selected", "aria-label", "tabindex", "onKeydown"]);
               }), 128))
             ]);
           }), 128))
         ], 512)
-      ], 42, _hoisted_1);
+      ], 42, ["aria-label"]);
     };
   }
 });

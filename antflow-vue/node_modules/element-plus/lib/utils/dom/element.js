@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../types.js');
-require('../browser.js');
 var core = require('@vueuse/core');
 var shared = require('@vue/shared');
 

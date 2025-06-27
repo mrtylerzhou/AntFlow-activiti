@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var dayjs = require('dayjs');
-require('../../../utils/index.js');
-var shared = require('@vue/shared');
 var types = require('../../../utils/types.js');
+var shared = require('@vue/shared');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -70,9 +69,13 @@ const makeList = (total, method) => {
   }
   return arr;
 };
+const dayOrDaysToDate = (dayOrDays) => {
+  return shared.isArray(dayOrDays) ? dayOrDays.map((d) => d.toDate()) : dayOrDays.toDate();
+};
 
 exports.buildTimeList = buildTimeList;
 exports.dateEquals = dateEquals;
+exports.dayOrDaysToDate = dayOrDaysToDate;
 exports.extractDateFormat = extractDateFormat;
 exports.extractTimeFormat = extractTimeFormat;
 exports.formatter = formatter;

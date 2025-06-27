@@ -1,6 +1,3 @@
-import '../../../constants/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { useSizeProp } from '../../../hooks/use-size/index.mjs';
 import { useAriaProps } from '../../../hooks/use-aria/index.mjs';
 import { UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';
@@ -44,10 +41,6 @@ const checkboxProps = {
     default: void 0
   },
   id: {
-    type: String,
-    default: void 0
-  },
-  controls: {
     type: String,
     default: void 0
   },

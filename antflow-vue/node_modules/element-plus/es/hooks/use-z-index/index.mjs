@@ -1,5 +1,4 @@
 import { ref, getCurrentInstance, inject, computed, unref } from 'vue';
-import '../../utils/index.mjs';
 import { isNumber } from '../../utils/types.mjs';
 import { isClient } from '@vueuse/core';
 import { debugWarn } from '../../utils/error.mjs';

@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
 const breadcrumbItemProps = buildProps({
@@ -6,10 +5,7 @@ const breadcrumbItemProps = buildProps({
     type: definePropType([String, Object]),
     default: ""
   },
-  replace: {
-    type: Boolean,
-    default: false
-  }
+  replace: Boolean
 });
 
 export { breadcrumbItemProps };

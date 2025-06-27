@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-var shared = require('@vue/shared');
 var vnode = require('../../../utils/vue/vnode.js');
+var shared = require('@vue/shared');
 
 var ElTourSteps = vue.defineComponent({
   name: "ElTourSteps",

@@ -3,18 +3,15 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var index$2 = require('../../checkbox/index.js');
 var index$3 = require('../../input/index.js');
 var iconsVue = require('@element-plus/icons-vue');
 var transferPanel = require('./transfer-panel.js');
-require('./composables/index.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
-var index = require('../../../hooks/use-locale/index.js');
-var index$1 = require('../../../hooks/use-namespace/index.js');
 var usePropsAlias = require('./composables/use-props-alias.js');
 var useCheck = require('./composables/use-check.js');
+var index = require('../../../hooks/use-locale/index.js');
+var index$1 = require('../../../hooks/use-namespace/index.js');
 var types = require('../../../utils/types.js');
 
 const __default__ = vue.defineComponent({
@@ -58,7 +55,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         }, [
           vue.createVNode(vue.unref(index$2.ElCheckbox), {
             modelValue: vue.unref(allChecked),
-            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.isRef(allChecked) ? allChecked.value = $event : null),
+            "onUpdate:modelValue": ($event) => vue.isRef(allChecked) ? allChecked.value = $event : null,
             indeterminate: vue.unref(isIndeterminate),
             "validate-event": false,
             onChange: vue.unref(handleAllCheckedChange)
@@ -68,7 +65,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
               vue.createElementVNode("span", null, vue.toDisplayString(vue.unref(checkedSummary)), 1)
             ]),
             _: 1
-          }, 8, ["modelValue", "indeterminate", "onChange"])
+          }, 8, ["modelValue", "onUpdate:modelValue", "indeterminate", "onChange"])
         ], 2),
         vue.createElementVNode("div", {
           class: vue.normalizeClass([vue.unref(ns).be("panel", "body"), vue.unref(ns).is("with-footer", vue.unref(hasFooter))])
@@ -76,17 +73,17 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           _ctx.filterable ? (vue.openBlock(), vue.createBlock(vue.unref(index$3.ElInput), {
             key: 0,
             modelValue: vue.unref(query),
-            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => vue.isRef(query) ? query.value = $event : null),
+            "onUpdate:modelValue": ($event) => vue.isRef(query) ? query.value = $event : null,
             class: vue.normalizeClass(vue.unref(ns).be("panel", "filter")),
             size: "default",
             placeholder: _ctx.placeholder,
             "prefix-icon": vue.unref(iconsVue.Search),
             clearable: "",
             "validate-event": false
-          }, null, 8, ["modelValue", "class", "placeholder", "prefix-icon"])) : vue.createCommentVNode("v-if", true),
+          }, null, 8, ["modelValue", "onUpdate:modelValue", "class", "placeholder", "prefix-icon"])) : vue.createCommentVNode("v-if", true),
           vue.withDirectives(vue.createVNode(vue.unref(index$2.ElCheckboxGroup), {
             modelValue: vue.unref(checked),
-            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => vue.isRef(checked) ? checked.value = $event : null),
+            "onUpdate:modelValue": ($event) => vue.isRef(checked) ? checked.value = $event : null,
             "validate-event": false,
             class: vue.normalizeClass([vue.unref(ns).is("filterable", _ctx.filterable), vue.unref(ns).be("panel", "list")])
           }, {
@@ -112,12 +109,16 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
               }), 128))
             ]),
             _: 1
-          }, 8, ["modelValue", "class"]), [
+          }, 8, ["modelValue", "onUpdate:modelValue", "class"]), [
             [vue.vShow, !vue.unref(hasNoMatch) && !vue.unref(types.isEmpty)(_ctx.data)]
           ]),
-          vue.withDirectives(vue.createElementVNode("p", {
+          vue.withDirectives(vue.createElementVNode("div", {
             class: vue.normalizeClass(vue.unref(ns).be("panel", "empty"))
-          }, vue.toDisplayString(vue.unref(hasNoMatch) ? vue.unref(t)("el.transfer.noMatch") : vue.unref(t)("el.transfer.noData")), 3), [
+          }, [
+            vue.renderSlot(_ctx.$slots, "empty", {}, () => [
+              vue.createTextVNode(vue.toDisplayString(vue.unref(hasNoMatch) ? vue.unref(t)("el.transfer.noMatch") : vue.unref(t)("el.transfer.noData")), 1)
+            ])
+          ], 2), [
             [vue.vShow, vue.unref(hasNoMatch) || vue.unref(types.isEmpty)(_ctx.data)]
           ])
         ], 2),

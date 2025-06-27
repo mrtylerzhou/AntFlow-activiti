@@ -1,6 +1,4 @@
 import { ref, getCurrentInstance, inject, computed } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
 import { checkboxGroupContextKey } from '../constants.mjs';
 import { isUndefined } from '../../../../utils/types.mjs';
 import { isArray } from '@vue/shared';

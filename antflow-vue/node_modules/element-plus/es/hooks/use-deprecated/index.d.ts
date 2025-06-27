@@ -1,5 +1,5 @@
 import type { MaybeRef } from '@vueuse/core';
-declare type DeprecationParam = {
+type DeprecationParam = {
     from: string;
     replacement: string;
     scope: string;

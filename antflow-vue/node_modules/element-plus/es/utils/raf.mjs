@@ -1,4 +1,3 @@
-import './browser.mjs';
 import { isClient } from '@vueuse/core';
 
 const rAF = (fn) => isClient ? window.requestAnimationFrame(fn) : setTimeout(fn, 16);

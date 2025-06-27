@@ -1,7 +1,7 @@
 import type { SetupContext } from 'vue';
 import type { CarouselItemContext } from './constants';
 import type { CarouselEmits, CarouselProps } from './carousel';
-export declare const useCarousel: (props: CarouselProps, emit: SetupContext<CarouselEmits>['emit'], componentName: string) => {
+export declare const useCarousel: (props: CarouselProps, emit: SetupContext<CarouselEmits>["emit"], componentName: string) => {
     root: import("vue").Ref<HTMLDivElement | undefined>;
     activeIndex: import("vue").Ref<number>;
     arrowDisplay: import("vue").ComputedRef<boolean>;
@@ -19,7 +19,7 @@ export declare const useCarousel: (props: CarouselProps, emit: SetupContext<Caro
         overflow: string;
     }>;
     isItemsTwoLength: import("vue").Ref<boolean>;
-    handleButtonEnter: (arrow: 'left' | 'right') => void;
+    handleButtonEnter: (arrow: "left" | "right") => void;
     handleTransitionEnd: () => void;
     handleButtonLeave: () => void;
     handleIndicatorClick: (index: number) => void;
@@ -28,10 +28,10 @@ export declare const useCarousel: (props: CarouselProps, emit: SetupContext<Caro
     setActiveItem: (index: number | string) => void;
     prev: () => void;
     next: () => void;
-    PlaceholderItem: () => ({
+    PlaceholderItem: () => (import("element-plus/es/utils").VNodeChildAtom | {
         [name: string]: unknown;
-        $stable?: boolean | undefined;
-    } | import("element-plus/es/utils").VNodeChildAtom)[] | null;
+        $stable?: boolean;
+    })[] | null;
     isTwoLengthShow: (index: number) => boolean;
     throttledArrowClick: import("lodash").DebouncedFunc<(index: number) => void>;
     throttledIndicatorHover: import("lodash").DebouncedFunc<(index: number) => void>;

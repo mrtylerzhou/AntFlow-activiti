@@ -1,5 +1,4 @@
 import { defineComponent, provide, reactive, toRef, openBlock, createElementBlock, normalizeClass, unref, renderSlot } from 'vue';
-import '../../../hooks/index.mjs';
 import { buttonGroupProps } from './button-group.mjs';
 import { buttonGroupContextKey } from './constants.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
@@ -20,7 +19,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const ns = useNamespace("button");
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass(`${unref(ns).b("group")}`)
+        class: normalizeClass(unref(ns).b("group"))
       }, [
         renderSlot(_ctx.$slots, "default")
       ], 2);

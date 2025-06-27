@@ -4,21 +4,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../hooks/index.js');
+var lodashUnified = require('lodash-unified');
 var index$3 = require('../../image-viewer/index.js');
-require('../../../utils/index.js');
 var image = require('./image.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
+var position = require('../../../utils/dom/position.js');
 var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 var index$2 = require('../../../hooks/use-attrs/index.js');
-var position = require('../../../utils/dom/position.js');
-var types = require('../../../utils/types.js');
 var shared = require('@vue/shared');
+var types = require('../../../utils/types.js');
 var scroll = require('../../../utils/dom/scroll.js');
 
-const _hoisted_1 = ["src", "loading", "crossorigin"];
-const _hoisted_2 = { key: 0 };
 const __default__ = vue.defineComponent({
   name: "ElImage",
   inheritAttrs: false
@@ -27,13 +24,20 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   ...__default__,
   props: image.imageProps,
   emits: image.imageEmits,
-  setup(__props, { emit }) {
+  setup(__props, { expose, emit }) {
     const props = __props;
-    let prevOverflow = "";
     const { t } = index.useLocale();
     const ns = index$1.useNamespace("image");
     const rawAttrs = vue.useAttrs();
-    const attrs = index$2.useAttrs();
+    const containerAttrs = vue.computed(() => {
+      return lodashUnified.fromPairs(Object.entries(rawAttrs).filter(([key]) => /^(data-|on[A-Z])/i.test(key) || ["id", "style"].includes(key)));
+    });
+    const imgAttrs = index$2.useAttrs({
+      excludeListeners: true,
+      excludeKeys: vue.computed(() => {
+        return Object.keys(containerAttrs.value);
+      })
+    });
     const imageSrc = vue.ref();
     const hasLoadError = vue.ref(false);
     const isLoading = vue.ref(true);
@@ -42,13 +46,11 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const _scrollContainer = vue.ref();
     const supportLoading = core.isClient && "loading" in HTMLImageElement.prototype;
     let stopScrollListener;
-    let stopWheelListener;
     const imageKls = vue.computed(() => [
       ns.e("inner"),
       preview.value && ns.e("preview"),
       isLoading.value && ns.is("loading")
     ]);
-    const containerStyle = vue.computed(() => rawAttrs.style);
     const imageStyle = vue.computed(() => {
       const { fit } = props;
       if (core.isClient && fit) {
@@ -58,7 +60,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     });
     const preview = vue.computed(() => {
       const { previewSrcList } = props;
-      return Array.isArray(previewSrcList) && previewSrcList.length > 0;
+      return shared.isArray(previewSrcList) && previewSrcList.length > 0;
     });
     const imageIndex = vue.computed(() => {
       const { previewSrcList, initialIndex } = props;
@@ -121,31 +123,13 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       stopScrollListener == null ? void 0 : stopScrollListener();
       _scrollContainer.value = void 0;
     }
-    function wheelHandler(e) {
-      if (!e.ctrlKey)
-        return;
-      if (e.deltaY < 0) {
-        e.preventDefault();
-        return false;
-      } else if (e.deltaY > 0) {
-        e.preventDefault();
-        return false;
-      }
-    }
     function clickHandler() {
       if (!preview.value)
         return;
-      stopWheelListener = core.useEventListener("wheel", wheelHandler, {
-        passive: false
-      });
-      prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
       showViewer.value = true;
       emit("show");
     }
     function closeViewer() {
-      stopWheelListener == null ? void 0 : stopWheelListener();
-      document.body.style.overflow = prevOverflow;
       showViewer.value = false;
       emit("close");
     }
@@ -169,19 +153,22 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         loadImage();
       }
     });
+    expose({
+      showPreview: clickHandler
+    });
     return (_ctx, _cache) => {
-      return vue.openBlock(), vue.createElementBlock("div", {
+      return vue.openBlock(), vue.createElementBlock("div", vue.mergeProps({
         ref_key: "container",
-        ref: container,
-        class: vue.normalizeClass([vue.unref(ns).b(), _ctx.$attrs.class]),
-        style: vue.normalizeStyle(vue.unref(containerStyle))
-      }, [
+        ref: container
+      }, vue.unref(containerAttrs), {
+        class: [vue.unref(ns).b(), _ctx.$attrs.class]
+      }), [
         hasLoadError.value ? vue.renderSlot(_ctx.$slots, "error", { key: 0 }, () => [
           vue.createElementVNode("div", {
             class: vue.normalizeClass(vue.unref(ns).e("error"))
           }, vue.toDisplayString(vue.unref(t)("el.image.error")), 3)
         ]) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 1 }, [
-          imageSrc.value !== void 0 ? (vue.openBlock(), vue.createElementBlock("img", vue.mergeProps({ key: 0 }, vue.unref(attrs), {
+          imageSrc.value !== void 0 ? (vue.openBlock(), vue.createElementBlock("img", vue.mergeProps({ key: 0 }, vue.unref(imgAttrs), {
             src: imageSrc.value,
             loading: _ctx.loading,
             style: vue.unref(imageStyle),
@@ -190,7 +177,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             onClick: clickHandler,
             onLoad: handleLoad,
             onError: handleError
-          }), null, 16, _hoisted_1)) : vue.createCommentVNode("v-if", true),
+          }), null, 16, ["src", "loading", "crossorigin"])) : vue.createCommentVNode("v-if", true),
           isLoading.value ? (vue.openBlock(), vue.createElementBlock("div", {
             key: 1,
             class: vue.normalizeClass(vue.unref(ns).e("wrapper"))
@@ -211,22 +198,30 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             "zoom-rate": _ctx.zoomRate,
             "min-scale": _ctx.minScale,
             "max-scale": _ctx.maxScale,
+            "show-progress": _ctx.showProgress,
             "url-list": _ctx.previewSrcList,
+            crossorigin: _ctx.crossorigin,
             "hide-on-click-modal": _ctx.hideOnClickModal,
             teleported: _ctx.previewTeleported,
             "close-on-press-escape": _ctx.closeOnPressEscape,
             onClose: closeViewer,
             onSwitch: switchViewer
           }, {
+            progress: vue.withCtx((progress) => [
+              vue.renderSlot(_ctx.$slots, "progress", vue.normalizeProps(vue.guardReactiveProps(progress)))
+            ]),
+            toolbar: vue.withCtx((toolbar) => [
+              vue.renderSlot(_ctx.$slots, "toolbar", vue.normalizeProps(vue.guardReactiveProps(toolbar)))
+            ]),
             default: vue.withCtx(() => [
-              _ctx.$slots.viewer ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_2, [
+              _ctx.$slots.viewer ? (vue.openBlock(), vue.createElementBlock("div", { key: 0 }, [
                 vue.renderSlot(_ctx.$slots, "viewer")
               ])) : vue.createCommentVNode("v-if", true)
             ]),
             _: 3
-          }, 8, ["z-index", "initial-index", "infinite", "zoom-rate", "min-scale", "max-scale", "url-list", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : vue.createCommentVNode("v-if", true)
+          }, 8, ["z-index", "initial-index", "infinite", "zoom-rate", "min-scale", "max-scale", "show-progress", "url-list", "crossorigin", "hide-on-click-modal", "teleported", "close-on-press-escape"])) : vue.createCommentVNode("v-if", true)
         ], 64)) : vue.createCommentVNode("v-if", true)
-      ], 6);
+      ], 16);
     };
   }
 });

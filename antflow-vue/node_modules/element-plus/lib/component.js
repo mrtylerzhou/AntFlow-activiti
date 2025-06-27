@@ -36,47 +36,49 @@ var index$v = require('./components/image/index.js');
 var index$w = require('./components/image-viewer/index.js');
 var index$x = require('./components/input/index.js');
 var index$y = require('./components/input-number/index.js');
-var index$z = require('./components/link/index.js');
-var index$A = require('./components/menu/index.js');
-var index$B = require('./components/page-header/index.js');
-var index$C = require('./components/pagination/index.js');
-var index$D = require('./components/popconfirm/index.js');
-var index$E = require('./components/popover/index.js');
-var index$F = require('./components/popper/index.js');
-var index$G = require('./components/progress/index.js');
-var index$H = require('./components/radio/index.js');
-var index$I = require('./components/rate/index.js');
-var index$J = require('./components/result/index.js');
-var index$K = require('./components/row/index.js');
-var index$L = require('./components/scrollbar/index.js');
-var index$M = require('./components/select/index.js');
-var index$N = require('./components/select-v2/index.js');
-var index$O = require('./components/skeleton/index.js');
-var index$P = require('./components/slider/index.js');
-var index$Q = require('./components/space/index.js');
-var index$R = require('./components/statistic/index.js');
-var index$S = require('./components/countdown/index.js');
-var index$T = require('./components/steps/index.js');
-var index$U = require('./components/switch/index.js');
-var index$V = require('./components/table/index.js');
+var index$z = require('./components/input-tag/index.js');
+var index$A = require('./components/link/index.js');
+var index$B = require('./components/menu/index.js');
+var index$C = require('./components/page-header/index.js');
+var index$D = require('./components/pagination/index.js');
+var index$E = require('./components/popconfirm/index.js');
+var index$F = require('./components/popover/index.js');
+var index$G = require('./components/popper/index.js');
+var index$H = require('./components/progress/index.js');
+var index$I = require('./components/radio/index.js');
+var index$J = require('./components/rate/index.js');
+var index$K = require('./components/result/index.js');
+var index$L = require('./components/row/index.js');
+var index$M = require('./components/scrollbar/index.js');
+var index$N = require('./components/select/index.js');
+var index$O = require('./components/select-v2/index.js');
+var index$P = require('./components/skeleton/index.js');
+var index$Q = require('./components/slider/index.js');
+var index$R = require('./components/space/index.js');
+var index$S = require('./components/statistic/index.js');
+var index$T = require('./components/countdown/index.js');
+var index$U = require('./components/steps/index.js');
+var index$V = require('./components/switch/index.js');
+var index$W = require('./components/table/index.js');
 var index$3 = require('./components/table-v2/index.js');
-var index$W = require('./components/tabs/index.js');
-var index$X = require('./components/tag/index.js');
-var index$Y = require('./components/text/index.js');
-var index$Z = require('./components/time-picker/index.js');
-var index$_ = require('./components/time-select/index.js');
-var index$$ = require('./components/timeline/index.js');
-var index$10 = require('./components/tooltip/index.js');
-var index$11 = require('./components/tooltip-v2/index.js');
-var index$12 = require('./components/transfer/index.js');
-var index$13 = require('./components/tree/index.js');
-var index$14 = require('./components/tree-select/index.js');
-var index$15 = require('./components/tree-v2/index.js');
-var index$16 = require('./components/upload/index.js');
-var index$17 = require('./components/watermark/index.js');
-var index$18 = require('./components/tour/index.js');
-var index$19 = require('./components/anchor/index.js');
-var index$1a = require('./components/segmented/index.js');
+var index$X = require('./components/tabs/index.js');
+var index$Y = require('./components/tag/index.js');
+var index$Z = require('./components/text/index.js');
+var index$_ = require('./components/time-picker/index.js');
+var index$$ = require('./components/time-select/index.js');
+var index$10 = require('./components/timeline/index.js');
+var index$11 = require('./components/tooltip/index.js');
+var index$12 = require('./components/tooltip-v2/index.js');
+var index$13 = require('./components/transfer/index.js');
+var index$14 = require('./components/tree/index.js');
+var index$15 = require('./components/tree-select/index.js');
+var index$16 = require('./components/tree-v2/index.js');
+var index$17 = require('./components/upload/index.js');
+var index$18 = require('./components/watermark/index.js');
+var index$19 = require('./components/tour/index.js');
+var index$1a = require('./components/anchor/index.js');
+var index$1b = require('./components/segmented/index.js');
+var index$1c = require('./components/mention/index.js');
 
 var Components = [
   index.ElAffix,
@@ -128,61 +130,63 @@ var Components = [
   index$w.ElImageViewer,
   index$x.ElInput,
   index$y.ElInputNumber,
-  index$z.ElLink,
-  index$A.ElMenu,
-  index$A.ElMenuItem,
-  index$A.ElMenuItemGroup,
-  index$A.ElSubMenu,
-  index$B.ElPageHeader,
-  index$C.ElPagination,
-  index$D.ElPopconfirm,
-  index$E.ElPopover,
-  index$F.ElPopper,
-  index$G.ElProgress,
-  index$H.ElRadio,
-  index$H.ElRadioButton,
-  index$H.ElRadioGroup,
-  index$I.ElRate,
-  index$J.ElResult,
-  index$K.ElRow,
-  index$L.ElScrollbar,
-  index$M.ElSelect,
-  index$M.ElOption,
-  index$M.ElOptionGroup,
-  index$N.ElSelectV2,
-  index$O.ElSkeleton,
-  index$O.ElSkeletonItem,
-  index$P.ElSlider,
-  index$Q.ElSpace,
-  index$R.ElStatistic,
-  index$S.ElCountdown,
-  index$T.ElSteps,
-  index$T.ElStep,
-  index$U.ElSwitch,
-  index$V.ElTable,
-  index$V.ElTableColumn,
+  index$z.ElInputTag,
+  index$A.ElLink,
+  index$B.ElMenu,
+  index$B.ElMenuItem,
+  index$B.ElMenuItemGroup,
+  index$B.ElSubMenu,
+  index$C.ElPageHeader,
+  index$D.ElPagination,
+  index$E.ElPopconfirm,
+  index$F.ElPopover,
+  index$G.ElPopper,
+  index$H.ElProgress,
+  index$I.ElRadio,
+  index$I.ElRadioButton,
+  index$I.ElRadioGroup,
+  index$J.ElRate,
+  index$K.ElResult,
+  index$L.ElRow,
+  index$M.ElScrollbar,
+  index$N.ElSelect,
+  index$N.ElOption,
+  index$N.ElOptionGroup,
+  index$O.ElSelectV2,
+  index$P.ElSkeleton,
+  index$P.ElSkeletonItem,
+  index$Q.ElSlider,
+  index$R.ElSpace,
+  index$S.ElStatistic,
+  index$T.ElCountdown,
+  index$U.ElSteps,
+  index$U.ElStep,
+  index$V.ElSwitch,
+  index$W.ElTable,
+  index$W.ElTableColumn,
   index$3.ElTableV2,
-  index$W.ElTabs,
-  index$W.ElTabPane,
-  index$X.ElTag,
-  index$Y.ElText,
-  index$Z.ElTimePicker,
-  index$_.ElTimeSelect,
-  index$$.ElTimeline,
-  index$$.ElTimelineItem,
-  index$10.ElTooltip,
-  index$11.ElTooltipV2,
-  index$12.ElTransfer,
-  index$13.ElTree,
-  index$14.ElTreeSelect,
-  index$15.ElTreeV2,
-  index$16.ElUpload,
-  index$17.ElWatermark,
-  index$18.ElTour,
-  index$18.ElTourStep,
-  index$19.ElAnchor,
-  index$19.ElAnchorLink,
-  index$1a.ElSegmented
+  index$X.ElTabs,
+  index$X.ElTabPane,
+  index$Y.ElTag,
+  index$Z.ElText,
+  index$_.ElTimePicker,
+  index$$.ElTimeSelect,
+  index$10.ElTimeline,
+  index$10.ElTimelineItem,
+  index$11.ElTooltip,
+  index$12.ElTooltipV2,
+  index$13.ElTransfer,
+  index$14.ElTree,
+  index$15.ElTreeSelect,
+  index$16.ElTreeV2,
+  index$17.ElUpload,
+  index$18.ElWatermark,
+  index$19.ElTour,
+  index$19.ElTourStep,
+  index$1a.ElAnchor,
+  index$1a.ElAnchorLink,
+  index$1b.ElSegmented,
+  index$1c.ElMention
 ];
 
 exports["default"] = Components;

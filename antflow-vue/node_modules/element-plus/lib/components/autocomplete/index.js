@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var autocomplete$1 = require('./src/autocomplete2.js');
 var autocomplete = require('./src/autocomplete.js');
 var install = require('../../utils/vue/install.js');

@@ -2,14 +2,12 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../virtual-list/index.js');
 var common = require('./common.js');
 var row = require('./row.js');
 var header = require('./header.js');
 var grid = require('./grid.js');
-var runtime = require('../../../utils/vue/props/runtime.js');
 var props = require('../../virtual-list/src/props.js');
+var runtime = require('../../../utils/vue/props/runtime.js');
 
 const tableV2Props = runtime.buildProps({
   cache: grid.tableV2GridProps.cache,

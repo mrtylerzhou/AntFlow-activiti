@@ -33,9 +33,9 @@ export declare const transferPanelProps: {
         readonly disabled: "disabled";
     }>, boolean>;
 };
-export declare type TransferPanelProps = ExtractPropTypes<typeof transferPanelProps>;
+export type TransferPanelProps = ExtractPropTypes<typeof transferPanelProps>;
 export declare const transferPanelEmits: {
-    "checked-change": (value: TransferKey[], movedKeys?: TransferKey[] | undefined) => boolean;
+    "checked-change": (value: TransferKey[], movedKeys?: TransferKey[]) => boolean;
 };
-export declare type TransferPanelEmits = typeof transferPanelEmits;
-export declare type TransferPanelInstance = InstanceType<typeof TransferPanel>;
+export type TransferPanelEmits = typeof transferPanelEmits;
+export type TransferPanelInstance = InstanceType<typeof TransferPanel> & unknown;

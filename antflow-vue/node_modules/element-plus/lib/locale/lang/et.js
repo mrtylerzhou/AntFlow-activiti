@@ -71,6 +71,9 @@ var et = {
       noData: "Andmed puuduvad",
       placeholder: "Vali"
     },
+    mention: {
+      loading: "Laadimine"
+    },
     cascader: {
       noMatch: "Sobivad andmed puuduvad",
       loading: "Laadimine",

@@ -15,8 +15,8 @@ export declare enum PatchFlags {
     HOISTED = -1,
     BAIL = -2
 }
-export declare type VNodeChildAtom = Exclude<VNodeChild, Array<any>>;
-export declare type RawSlots = Exclude<VNodeNormalizedChildren, Array<any> | null | string>;
+export type VNodeChildAtom = Exclude<VNodeChild, Array<any>>;
+export type RawSlots = Exclude<VNodeNormalizedChildren, Array<any> | null | string>;
 export declare function isFragment(node: VNode): boolean;
 export declare function isFragment(node: unknown): node is VNode;
 export declare function isText(node: VNode): boolean;
@@ -31,12 +31,12 @@ export declare function isTemplate(node: unknown): node is VNode;
  */
 export declare function isValidElementNode(node: VNode): boolean;
 export declare function isValidElementNode(node: unknown): node is VNode;
-export declare const getFirstValidNode: (nodes: VNodeNormalizedChildren, maxDepth?: number) => string | number | boolean | void | VNodeArrayChildren | {
-    [name: string]: unknown;
-    $stable?: boolean | undefined;
-} | VNode<import("vue").RendererNode, import("vue").RendererElement, {
+export declare const getFirstValidNode: (nodes: VNodeNormalizedChildren, maxDepth?: number) => string | number | boolean | void | VNode<import("vue").RendererNode, import("vue").RendererElement, {
     [key: string]: any;
-}> | null | undefined;
+}> | VNodeArrayChildren | {
+    [name: string]: unknown;
+    $stable?: boolean;
+} | null | undefined;
 export declare function renderIf(condition: boolean, ...args: Parameters<typeof createBlock>): VNode<import("vue").RendererNode, import("vue").RendererElement, {
     [key: string]: any;
 }>;
@@ -44,8 +44,8 @@ export declare function renderBlock(...args: Parameters<typeof createBlock>): VN
     [key: string]: any;
 }>;
 export declare const getNormalizedProps: (node: VNode) => Record<string, any>;
-export declare const ensureOnlyChild: (children: VNodeArrayChildren | undefined) => VNodeArrayChildren | (string | number | boolean | void | VNode<import("vue").RendererNode, import("vue").RendererElement, {
+export declare const ensureOnlyChild: (children: VNodeArrayChildren | undefined) => (string | number | boolean | void | VNode<import("vue").RendererNode, import("vue").RendererElement, {
     [key: string]: any;
-}> | null | undefined);
-export declare type FlattenVNodes = Array<VNodeChildAtom | RawSlots>;
+}> | null | undefined) | VNodeArrayChildren;
+export type FlattenVNodes = Array<VNodeChildAtom | RawSlots>;
 export declare const flattedChildren: (children: FlattenVNodes | VNode | VNodeNormalizedChildren) => FlattenVNodes;

@@ -1,4 +1,3 @@
-import '../../../../hooks/index.mjs';
 import { getFixedColumnsClass, getFixedColumnOffset, ensurePosition } from '../util.mjs';
 import useMapState from './mapState-helper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';

@@ -1,24 +1,19 @@
-import { defineComponent, ref, computed, watch, nextTick, openBlock, createElementBlock, unref, normalizeClass, createElementVNode, Fragment, renderList, withKeys, withModifiers, toDisplayString } from 'vue';
+import { defineComponent, ref, computed, watch, nextTick, openBlock, createElementBlock, unref, normalizeClass, createElementVNode, Fragment, renderList, withKeys, withModifiers, createVNode } from 'vue';
 import dayjs from 'dayjs';
-import '../../../../hooks/index.mjs';
-import '../../../time-picker/index.mjs';
-import '../../../../utils/index.mjs';
 import { basicYearTableProps } from '../props/basic-year-table.mjs';
+import { getValidDateOfYear } from '../utils.mjs';
+import ElDatePickerCell from './basic-cell-render.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
-import { rangeArr } from '../../../time-picker/src/utils.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 import { castArray } from '../../../../utils/arrays.mjs';
+import { rangeArr } from '../../../time-picker/src/utils.mjs';
 import { hasClass } from '../../../../utils/dom/style.mjs';
 
-const _hoisted_1 = ["aria-label"];
-const _hoisted_2 = ["aria-selected", "tabindex", "onKeydown"];
-const _hoisted_3 = { class: "cell" };
-const _hoisted_4 = { key: 1 };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "basic-year-table",
   props: basicYearTableProps,
-  emits: ["pick"],
+  emits: ["changerange", "pick", "select"],
   setup(__props, { expose, emit }) {
     const props = __props;
     const datesInYear = (year, lang2) => {
@@ -34,38 +29,133 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const startYear = computed(() => {
       return Math.floor(props.date.year() / 10) * 10;
     });
+    const tableRows = ref([[], [], []]);
+    const lastRow = ref();
+    const lastColumn = ref();
+    const rows = computed(() => {
+      var _a;
+      const rows2 = tableRows.value;
+      const now = dayjs().locale(lang.value).startOf("year");
+      for (let i = 0; i < 3; i++) {
+        const row = rows2[i];
+        for (let j = 0; j < 4; j++) {
+          if (i * 4 + j >= 10) {
+            break;
+          }
+          let cell = row[j];
+          if (!cell) {
+            cell = {
+              row: i,
+              column: j,
+              type: "normal",
+              inRange: false,
+              start: false,
+              end: false,
+              text: -1,
+              disabled: false
+            };
+          }
+          cell.type = "normal";
+          const index = i * 4 + j + startYear.value;
+          const calTime = dayjs().year(index);
+          const calEndDate = props.rangeState.endDate || props.maxDate || props.rangeState.selecting && props.minDate || null;
+          cell.inRange = !!(props.minDate && calTime.isSameOrAfter(props.minDate, "year") && calEndDate && calTime.isSameOrBefore(calEndDate, "year")) || !!(props.minDate && calTime.isSameOrBefore(props.minDate, "year") && calEndDate && calTime.isSameOrAfter(calEndDate, "year"));
+          if ((_a = props.minDate) == null ? void 0 : _a.isSameOrAfter(calEndDate)) {
+            cell.start = !!(calEndDate && calTime.isSame(calEndDate, "year"));
+            cell.end = !!(props.minDate && calTime.isSame(props.minDate, "year"));
+          } else {
+            cell.start = !!(props.minDate && calTime.isSame(props.minDate, "year"));
+            cell.end = !!(calEndDate && calTime.isSame(calEndDate, "year"));
+          }
+          const isToday = now.isSame(calTime);
+          if (isToday) {
+            cell.type = "today";
+          }
+          cell.text = index;
+          const cellDate = calTime.toDate();
+          cell.disabled = props.disabledDate && props.disabledDate(cellDate) || false;
+          row[j] = cell;
+        }
+      }
+      return rows2;
+    });
     const focus = () => {
       var _a;
       (_a = currentCellRef.value) == null ? void 0 : _a.focus();
     };
-    const getCellKls = (year) => {
+    const getCellKls = (cell) => {
       const kls = {};
       const today = dayjs().locale(lang.value);
+      const year = cell.text;
       kls.disabled = props.disabledDate ? datesInYear(year, lang.value).every(props.disabledDate) : false;
-      kls.current = castArray(props.parsedValue).findIndex((d) => d.year() === year) >= 0;
       kls.today = today.year() === year;
+      kls.current = castArray(props.parsedValue).findIndex((d) => d.year() === year) >= 0;
+      if (cell.inRange) {
+        kls["in-range"] = true;
+        if (cell.start) {
+          kls["start-date"] = true;
+        }
+        if (cell.end) {
+          kls["end-date"] = true;
+        }
+      }
       return kls;
     };
-    const isSelectedCell = (year) => {
-      return year === startYear.value && props.date.year() < startYear.value && props.date.year() > startYear.value + 9 || castArray(props.date).findIndex((date) => date.year() === year) >= 0 || castArray(props.parsedValue).findIndex((date) => (date == null ? void 0 : date.year()) === year) >= 0;
+    const isSelectedCell = (cell) => {
+      const year = cell.text;
+      return castArray(props.date).findIndex((date) => date.year() === year) >= 0;
     };
     const handleYearTableClick = (event) => {
-      const clickTarget = event.target;
-      const target = clickTarget.closest("td");
-      if (target && target.textContent) {
-        if (hasClass(target, "disabled"))
-          return;
-        const year = target.textContent || target.innerText;
-        if (props.selectionMode === "years") {
-          if (event.type === "keydown") {
-            emit("pick", castArray(props.parsedValue), false);
-            return;
-          }
-          const newValue = hasClass(target, "current") ? castArray(props.parsedValue).filter((d) => (d == null ? void 0 : d.year()) !== Number(year)) : castArray(props.parsedValue).concat([dayjs(year)]);
-          emit("pick", newValue);
+      var _a;
+      const target = (_a = event.target) == null ? void 0 : _a.closest("td");
+      if (!target || !target.textContent || hasClass(target, "disabled"))
+        return;
+      const column = target.cellIndex;
+      const row = target.parentNode.rowIndex;
+      const selectedYear = row * 4 + column + startYear.value;
+      const newDate = dayjs().year(selectedYear);
+      if (props.selectionMode === "range") {
+        if (!props.rangeState.selecting) {
+          emit("pick", { minDate: newDate, maxDate: null });
+          emit("select", true);
         } else {
-          emit("pick", Number(year));
+          if (props.minDate && newDate >= props.minDate) {
+            emit("pick", { minDate: props.minDate, maxDate: newDate });
+          } else {
+            emit("pick", { minDate: newDate, maxDate: props.minDate });
+          }
+          emit("select", false);
         }
+      } else if (props.selectionMode === "years") {
+        if (event.type === "keydown") {
+          emit("pick", castArray(props.parsedValue), false);
+          return;
+        }
+        const vaildYear = getValidDateOfYear(newDate.startOf("year"), lang.value, props.disabledDate);
+        const newValue = hasClass(target, "current") ? castArray(props.parsedValue).filter((d) => (d == null ? void 0 : d.year()) !== selectedYear) : castArray(props.parsedValue).concat([vaildYear]);
+        emit("pick", newValue);
+      } else {
+        emit("pick", selectedYear);
+      }
+    };
+    const handleMouseMove = (event) => {
+      var _a;
+      if (!props.rangeState.selecting)
+        return;
+      const target = (_a = event.target) == null ? void 0 : _a.closest("td");
+      if (!target)
+        return;
+      const row = target.parentNode.rowIndex;
+      const column = target.cellIndex;
+      if (rows.value[row][column].disabled)
+        return;
+      if (row !== lastRow.value || column !== lastColumn.value) {
+        lastRow.value = row;
+        lastColumn.value = column;
+        emit("changerange", {
+          selecting: true,
+          endDate: dayjs().year(startYear.value).add(row * 4 + column, "year")
+        });
       }
     };
     watch(() => props.date, async () => {
@@ -83,40 +173,36 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         role: "grid",
         "aria-label": unref(t)("el.datepicker.yearTablePrompt"),
         class: normalizeClass(unref(ns).b()),
-        onClick: handleYearTableClick
+        onClick: handleYearTableClick,
+        onMousemove: handleMouseMove
       }, [
         createElementVNode("tbody", {
           ref_key: "tbodyRef",
           ref: tbodyRef
         }, [
-          (openBlock(), createElementBlock(Fragment, null, renderList(3, (_, i) => {
-            return createElementVNode("tr", { key: i }, [
-              (openBlock(), createElementBlock(Fragment, null, renderList(4, (__, j) => {
-                return openBlock(), createElementBlock(Fragment, {
-                  key: i + "_" + j
+          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(rows), (row, rowKey) => {
+            return openBlock(), createElementBlock("tr", { key: rowKey }, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList(row, (cell, cellKey) => {
+                return openBlock(), createElementBlock("td", {
+                  key: `${rowKey}_${cellKey}`,
+                  ref_for: true,
+                  ref: (el) => isSelectedCell(cell) && (currentCellRef.value = el),
+                  class: normalizeClass(["available", getCellKls(cell)]),
+                  "aria-selected": isSelectedCell(cell),
+                  "aria-label": String(cell.text),
+                  tabindex: isSelectedCell(cell) ? 0 : -1,
+                  onKeydown: [
+                    withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["space"]),
+                    withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["enter"])
+                  ]
                 }, [
-                  i * 4 + j < 10 ? (openBlock(), createElementBlock("td", {
-                    key: 0,
-                    ref_for: true,
-                    ref: (el) => isSelectedCell(unref(startYear) + i * 4 + j) && (currentCellRef.value = el),
-                    class: normalizeClass(["available", getCellKls(unref(startYear) + i * 4 + j)]),
-                    "aria-selected": `${isSelectedCell(unref(startYear) + i * 4 + j)}`,
-                    tabindex: isSelectedCell(unref(startYear) + i * 4 + j) ? 0 : -1,
-                    onKeydown: [
-                      withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["space"]),
-                      withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["enter"])
-                    ]
-                  }, [
-                    createElementVNode("div", null, [
-                      createElementVNode("span", _hoisted_3, toDisplayString(unref(startYear) + i * 4 + j), 1)
-                    ])
-                  ], 42, _hoisted_2)) : (openBlock(), createElementBlock("td", _hoisted_4))
-                ], 64);
-              }), 64))
+                  createVNode(unref(ElDatePickerCell), { cell }, null, 8, ["cell"])
+                ], 42, ["aria-selected", "aria-label", "tabindex", "onKeydown"]);
+              }), 128))
             ]);
-          }), 64))
+          }), 128))
         ], 512)
-      ], 10, _hoisted_1);
+      ], 42, ["aria-label"]);
     };
   }
 });

@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var slider$1 = require('./src/slider2.js');
 var slider = require('./src/slider.js');
 var constants = require('./src/constants.js');

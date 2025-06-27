@@ -1,5 +1,4 @@
 import { unref } from 'vue';
-import '../../utils/index.mjs';
 import { useTimeout } from '../use-timeout/index.mjs';
 import { buildProps } from '../../utils/vue/props/runtime.mjs';
 import { isNumber } from '../../utils/types.mjs';

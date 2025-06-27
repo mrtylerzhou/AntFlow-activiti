@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../hooks/index.js');
 var index = require('../../../../hooks/use-size/index.js');
 
 var defaultProps = {
@@ -58,7 +57,8 @@ var defaultProps = {
     default: () => {
       return {
         hasChildren: "hasChildren",
-        children: "children"
+        children: "children",
+        checkStrictly: false
       };
     }
   },
@@ -78,7 +78,21 @@ var defaultProps = {
   },
   scrollbarAlwaysOn: Boolean,
   flexible: Boolean,
-  showOverflowTooltip: [Boolean, Object]
+  showOverflowTooltip: [Boolean, Object],
+  tooltipFormatter: Function,
+  appendFilterPanelTo: String,
+  scrollbarTabindex: {
+    type: [Number, String],
+    default: void 0
+  },
+  allowDragLastColumn: {
+    type: Boolean,
+    default: true
+  },
+  preserveExpandedContent: {
+    type: Boolean,
+    default: false
+  }
 };
 
 exports["default"] = defaultProps;

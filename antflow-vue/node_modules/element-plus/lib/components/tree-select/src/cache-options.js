@@ -3,8 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../select/index.js');
 var token = require('../../select/src/token.js');
+var core = require('@vueuse/core');
 
 var CacheOptions = vue.defineComponent({
   props: {
@@ -23,7 +23,7 @@ var CacheOptions = vue.defineComponent({
         }
       });
       const inputs = ((_a = select.selectRef) == null ? void 0 : _a.querySelectorAll("input")) || [];
-      if (!Array.from(inputs).includes(document.activeElement)) {
+      if (core.isClient && !Array.from(inputs).includes(document.activeElement)) {
         select.setSelected();
       }
     }, { flush: "post", immediate: true });

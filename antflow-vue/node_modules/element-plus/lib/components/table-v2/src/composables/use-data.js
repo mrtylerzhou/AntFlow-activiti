@@ -3,6 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
+var shared = require('@vue/shared');
 
 const useData = (props, { expandedRowKeys, lastRenderedRowIndex, resetAfterIndex }) => {
   const depthMap = vue.ref({});
@@ -20,7 +21,7 @@ const useData = (props, { expandedRowKeys, lastRenderedRowIndex, resetAfterIndex
     while (copy.length > 0) {
       const item = copy.shift();
       array.push(item);
-      if (keysSet.has(item[rowKey]) && Array.isArray(item.children) && item.children.length > 0) {
+      if (keysSet.has(item[rowKey]) && shared.isArray(item.children) && item.children.length > 0) {
         copy = [...item.children, ...copy];
         item.children.forEach((child) => depths[child[rowKey]] = depths[item[rowKey]] + 1);
       }

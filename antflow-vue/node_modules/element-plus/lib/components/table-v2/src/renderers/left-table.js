@@ -23,6 +23,7 @@ const LeftTable = (props, {
     default: () => [slots]
   });
 };
+var LeftTable$1 = LeftTable;
 
-exports["default"] = LeftTable;
+exports["default"] = LeftTable$1;
 //# sourceMappingURL=left-table.js.map

@@ -4,9 +4,9 @@ export declare const popconfirmProps: {
     readonly title: StringConstructor;
     readonly confirmButtonText: StringConstructor;
     readonly cancelButtonText: StringConstructor;
-    readonly confirmButtonType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "default" | "success" | "warning" | "info" | "text" | "primary" | "danger", unknown, "primary", boolean>;
-    readonly cancelButtonType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "default" | "success" | "warning" | "info" | "text" | "primary" | "danger", unknown, "text", boolean>;
-    readonly icon: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) | ((new (...args: any[]) => (string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>) & {}) | (() => string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>))[], unknown, unknown, () => any, boolean>;
+    readonly confirmButtonType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "text" | "default" | "success" | "warning" | "info" | "primary" | "danger", unknown, "primary", boolean>;
+    readonly cancelButtonType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "" | "text" | "default" | "success" | "warning" | "info" | "primary" | "danger", unknown, "text", boolean>;
+    readonly icon: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component) | ((new (...args: any[]) => (string | import("vue").Component) & {}) | (() => string | import("vue").Component))[], unknown, unknown, () => any, boolean>;
     readonly iconColor: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "#f90", boolean>;
     readonly hideIcon: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
     readonly hideAfter: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 200, boolean>;
@@ -24,6 +24,6 @@ export declare const popconfirmEmits: {
      */
     cancel: (e: MouseEvent) => boolean;
 };
-export declare type PopconfirmEmits = typeof popconfirmEmits;
-export declare type PopconfirmProps = ExtractPropTypes<typeof popconfirmProps>;
-export declare type PopconfirmInstance = InstanceType<typeof Popconfirm>;
+export type PopconfirmEmits = typeof popconfirmEmits;
+export type PopconfirmProps = ExtractPropTypes<typeof popconfirmProps>;
+export type PopconfirmInstance = InstanceType<typeof Popconfirm> & unknown;

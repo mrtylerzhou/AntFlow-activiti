@@ -45,14 +45,14 @@ declare const TableV2HeaderRow: import("vue").DefineComponent<{
     };
 }>>, {}>;
 export default TableV2HeaderRow;
-export declare type TableV2HeaderRowCellRendererParams = {
+export type TableV2HeaderRowCellRendererParams = {
     columns: TableV2HeaderRowProps['columns'];
     column: TableV2HeaderRowProps['columns'][number];
     columnIndex: number;
     headerIndex: number;
     style: CSSProperties;
 };
-export declare type TableV2HeaderRowRendererParams = {
+export type TableV2HeaderRowRendererParams = {
     cells: ColumnCellsType;
     columns: TableV2HeaderRowProps['columns'];
     headerIndex: number;

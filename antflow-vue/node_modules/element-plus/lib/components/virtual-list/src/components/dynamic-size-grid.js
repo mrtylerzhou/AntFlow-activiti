@@ -2,12 +2,11 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var shared = require('@vue/shared');
-require('../../../../utils/index.js');
 var buildGrid = require('../builders/build-grid.js');
 var defaults = require('../defaults.js');
-var types = require('../../../../utils/types.js');
+var shared = require('@vue/shared');
 var error = require('../../../../utils/error.js');
+var types = require('../../../../utils/types.js');
 
 const { max, min, floor } = Math;
 const SCOPE = "ElDynamicSizeGrid";

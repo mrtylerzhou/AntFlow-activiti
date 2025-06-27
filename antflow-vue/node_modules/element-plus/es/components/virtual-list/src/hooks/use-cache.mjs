@@ -1,4 +1,4 @@
-import { getCurrentInstance, computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
 import { memoize } from 'lodash-unified';
 import memoOne from 'memoize-one';
 

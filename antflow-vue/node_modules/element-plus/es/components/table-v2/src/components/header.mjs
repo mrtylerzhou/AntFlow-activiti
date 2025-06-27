@@ -1,6 +1,4 @@
-import { defineComponent, ref, computed, unref, nextTick, createVNode } from 'vue';
-import '../../../../hooks/index.mjs';
-import '../../../../utils/index.mjs';
+import { defineComponent, inject, ref, computed, unref, onUpdated, createVNode, nextTick } from 'vue';
 import { tableV2HeaderProps } from '../header.mjs';
 import { enforceUnit } from '../utils.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
@@ -15,6 +13,7 @@ const TableV2Header = defineComponent({
     expose
   }) {
     const ns = useNamespace("table-v2");
+    const scrollLeftInfo = inject("tableV2GridScrollLeft");
     const headerRef = ref();
     const headerStyle = computed(() => enforceUnit({
       width: props.width,
@@ -74,6 +73,11 @@ const TableV2Header = defineComponent({
         });
       });
     };
+    onUpdated(() => {
+      if (scrollLeftInfo == null ? void 0 : scrollLeftInfo.value) {
+        scrollToLeft(scrollLeftInfo.value);
+      }
+    });
     expose({
       scrollToLeft
     });
@@ -92,6 +96,7 @@ const TableV2Header = defineComponent({
     };
   }
 });
+var Header = TableV2Header;
 
-export { TableV2Header as default };
+export { Header as default };
 //# sourceMappingURL=header.mjs.map

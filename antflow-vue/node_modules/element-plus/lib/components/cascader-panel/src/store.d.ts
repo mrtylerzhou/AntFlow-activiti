@@ -11,6 +11,7 @@ export default class Store {
     getFlattedNodes(leafOnly: boolean): Node[];
     appendNode(nodeData: CascaderOption, parentNode?: Node): void;
     appendNodes(nodeDataList: CascaderOption[], parentNode: Node): void;
+    appendAllNodesAndLeafNodes(node: Node): void;
     getNodeByValue(value: CascaderNodeValue | CascaderNodePathValue, leafOnly?: boolean): Nullable<Node>;
     getSameNode(node: Node): Nullable<Node>;
 }

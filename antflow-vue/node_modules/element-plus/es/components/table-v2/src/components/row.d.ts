@@ -60,7 +60,7 @@ declare const TableV2Row: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType) | ((new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType))[], unknown, unknown, "id", boolean>;
     readonly style: {
         readonly type: import("vue").PropType<CSSProperties>;
         readonly required: false;
@@ -127,7 +127,7 @@ declare const TableV2Row: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType) | ((new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType))[], unknown, unknown, "id", boolean>;
     readonly style: {
         readonly type: import("vue").PropType<CSSProperties>;
         readonly required: false;
@@ -135,12 +135,12 @@ declare const TableV2Row: import("vue").DefineComponent<{
         __epPropKey: true;
     };
 }>>, {
-    readonly rowKey: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType) | ((new (...args: any[]) => import("../types").KeyType & {}) | (() => import("../types").KeyType))[], unknown, unknown>;
+    readonly rowKey: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("../types").KeyType))[], unknown, unknown>;
     readonly estimatedRowHeight: number;
     readonly isScrolling: boolean;
 }>;
 export default TableV2Row;
-export declare type TableV2RowCellRenderParam = {
+export type TableV2RowCellRenderParam = {
     column: TableV2RowProps['columns'][number];
     columns: TableV2RowProps['columns'];
     columnIndex: number;

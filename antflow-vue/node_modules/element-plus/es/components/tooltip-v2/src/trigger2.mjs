@@ -1,5 +1,4 @@
 import { defineComponent, inject, watch, onBeforeUnmount, openBlock, createBlock, unref, withCtx, renderSlot, createElementBlock, mergeProps } from 'vue';
-import '../../../utils/index.mjs';
 import { tooltipV2RootKey } from './constants.mjs';
 import ForwardRef from './forward-ref.mjs';
 import { tooltipV2TriggerProps } from './trigger.mjs';

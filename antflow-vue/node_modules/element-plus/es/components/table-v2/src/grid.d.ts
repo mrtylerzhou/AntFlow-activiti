@@ -1,6 +1,6 @@
 import type { ExtractPropTypes } from 'vue';
 import type { ItemSize } from 'element-plus/es/components/virtual-list';
-export declare type onRowRenderedParams = {
+export type onRowRenderedParams = {
     rowCacheStart: number;
     rowCacheEnd: number;
     rowVisibleStart: number;
@@ -50,7 +50,7 @@ export declare const tableV2GridProps: {
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
+    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
     readonly bodyWidth: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -87,7 +87,7 @@ export declare const tableV2GridProps: {
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType) | ((new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
     readonly onRowsRendered: {
         readonly type: import("vue").PropType<(params: onRowRenderedParams) => void>;
         readonly required: false;
@@ -101,4 +101,4 @@ export declare const tableV2GridProps: {
         __epPropKey: true;
     };
 };
-export declare type TableV2GridProps = ExtractPropTypes<typeof tableV2GridProps>;
+export type TableV2GridProps = ExtractPropTypes<typeof tableV2GridProps>;

@@ -4,4 +4,4 @@ export declare const emptyProps: {
     readonly imageSize: NumberConstructor;
     readonly description: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
 };
-export declare type EmptyProps = ExtractPropTypes<typeof emptyProps>;
+export type EmptyProps = ExtractPropTypes<typeof emptyProps>;

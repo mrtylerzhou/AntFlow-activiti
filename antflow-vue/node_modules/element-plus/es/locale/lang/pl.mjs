@@ -68,6 +68,9 @@ var pl = {
       noData: "Brak danych",
       placeholder: "Wybierz"
     },
+    mention: {
+      loading: "\u0141adowanie"
+    },
     cascader: {
       noMatch: "Brak dopasowa\u0144",
       loading: "\u0141adowanie",

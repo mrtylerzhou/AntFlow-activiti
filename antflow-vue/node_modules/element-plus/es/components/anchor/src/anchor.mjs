@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { isString } from '@vue/shared';
 import { isUndefined } from '../../../utils/types.mjs';
@@ -33,6 +32,10 @@ const anchorProps = buildProps({
   direction: {
     type: definePropType(String),
     default: "vertical"
+  },
+  selectScrollTop: {
+    type: Boolean,
+    default: false
   }
 });
 const anchorEmits = {

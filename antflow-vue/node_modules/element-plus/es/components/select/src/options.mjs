@@ -1,8 +1,7 @@
 import { defineComponent, inject } from 'vue';
-import { isArray, isString, isFunction } from '@vue/shared';
 import { isEqual } from 'lodash-unified';
-import '../../../utils/index.mjs';
 import { selectKey } from './token.mjs';
+import { isArray, isString, isFunction } from '@vue/shared';
 
 var ElOptions = defineComponent({
   name: "ElOptions",

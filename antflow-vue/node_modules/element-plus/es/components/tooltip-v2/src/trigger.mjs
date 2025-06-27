@@ -1,5 +1,4 @@
-import '../../../utils/index.mjs';
-import { definePropType, buildProps } from '../../../utils/vue/props/runtime.mjs';
+import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 
 const EventHandler = {
   type: definePropType(Function)

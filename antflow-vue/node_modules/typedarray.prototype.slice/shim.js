@@ -1,7 +1,7 @@
 'use strict';
 
 var define = require('define-properties');
-var getProto = require('es-abstract/helpers/getProto');
+var getProto = require('get-proto');
 
 var getPolyfill = require('./polyfill');
 

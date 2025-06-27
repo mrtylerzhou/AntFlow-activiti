@@ -2,12 +2,12 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../browser.js');
+var core = require('@vueuse/core');
 var easings = require('../easings.js');
 var types = require('../types.js');
 var raf = require('../raf.js');
 var style = require('./style.js');
-var core = require('@vueuse/core');
+var shared = require('@vue/shared');
 
 const isScroll = (el, isVertical) => {
   if (!core.isClient)
@@ -94,7 +94,7 @@ function animateScrollTo(container, from, to, duration, callback) {
     }
     if (time < duration) {
       handle = raf.rAF(scroll);
-    } else if (typeof callback === "function") {
+    } else if (shared.isFunction(callback)) {
       callback();
     }
   };

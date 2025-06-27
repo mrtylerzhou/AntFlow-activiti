@@ -16,7 +16,7 @@ const _sfc_main = vue.defineComponent({
   inheritAttrs: false,
   props: {
     ...index.ElSelect.props,
-    ...index$1["default"].props,
+    ...index$1.ElTree.props,
     cacheData: {
       type: Array,
       default: () => []
@@ -57,7 +57,7 @@ const _sfc_main = vue.defineComponent({
           "insertBefore",
           "insertAfter"
         ]),
-        ...lodashUnified.pick(select$1.value, ["focus", "blur"])
+        ...lodashUnified.pick(select$1.value, ["focus", "blur", "selectedLabel"])
       });
     });
     return () => vue.h(index.ElSelect, vue.reactive({
@@ -67,7 +67,7 @@ const _sfc_main = vue.defineComponent({
       ...slots,
       default: () => [
         vue.h(cacheOptions["default"], { data: cacheOptions$1.value }),
-        vue.h(index$1["default"], vue.reactive({
+        vue.h(index$1.ElTree, vue.reactive({
           ...treeProps,
           ref: (ref2) => tree$1.value = ref2
         }))

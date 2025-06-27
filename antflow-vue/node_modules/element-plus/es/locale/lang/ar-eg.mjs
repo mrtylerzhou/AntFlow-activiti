@@ -77,6 +77,9 @@ var arEg = {
       noData: "\u0644\u0627\u064A\u0648\u062C\u062F \u0628\u064A\u0627\u0646\u0627\u062A",
       placeholder: "\u0625\u062E\u062A\u0631"
     },
+    mention: {
+      loading: "\u062C\u0627\u0631 \u0627\u0644\u062A\u062D\u0645\u064A\u0644"
+    },
     dropdown: {
       toggleDropdown: "\u062A\u0628\u062F\u064A\u0644 \u0627\u0644\u0642\u0627\u0626\u0645\u0629"
     },

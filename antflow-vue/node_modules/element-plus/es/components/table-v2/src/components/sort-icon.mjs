@@ -14,6 +14,7 @@ const SortIcon = (props) => {
     default: () => [sortOrder === SortOrder.ASC ? createVNode(SortUp, null, null) : createVNode(SortDown, null, null)]
   });
 };
+var SortIcon$1 = SortIcon;
 
-export { SortIcon as default };
+export { SortIcon$1 as default };
 //# sourceMappingURL=sort-icon.mjs.map

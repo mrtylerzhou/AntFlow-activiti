@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../constants/index.js');
 var aria = require('../../constants/aria.js');
 
 const modalStack = [];

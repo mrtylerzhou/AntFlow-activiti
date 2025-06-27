@@ -6,9 +6,8 @@ var vue = require('vue');
 var core = require('@vueuse/core');
 var lodashUnified = require('lodash-unified');
 var dom = require('@floating-ui/dom');
-require('../../utils/index.js');
-var runtime = require('../../utils/vue/props/runtime.js');
 var objects = require('../../utils/objects.js');
+var runtime = require('../../utils/vue/props/runtime.js');
 
 const useFloatingProps = runtime.buildProps({});
 const unrefReference = (elRef) => {

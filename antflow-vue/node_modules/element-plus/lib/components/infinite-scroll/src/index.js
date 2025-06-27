@@ -3,12 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
 var lodashUnified = require('lodash-unified');
-require('../../../utils/index.js');
-var position = require('../../../utils/dom/position.js');
+var shared = require('@vue/shared');
 var error = require('../../../utils/error.js');
 var scroll = require('../../../utils/dom/scroll.js');
+var position = require('../../../utils/dom/position.js');
 
 const SCOPE = "ElInfiniteScroll";
 const CHECK_INTERVAL = 50;

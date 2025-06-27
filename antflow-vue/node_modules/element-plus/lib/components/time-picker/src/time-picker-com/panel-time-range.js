@@ -5,9 +5,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var dayjs = require('dayjs');
 var lodashUnified = require('lodash-unified');
-require('../../../../hooks/index.js');
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
 var panelTimeRange = require('../props/panel-time-range.js');
 var useTimePanel = require('../composables/use-time-panel.js');
 var useTimePicker = require('../composables/use-time-picker.js');
@@ -15,14 +12,13 @@ var basicTimeSpinner = require('./basic-time-spinner.js');
 var pluginVue_exportHelper = require('../../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../../hooks/use-locale/index.js');
 var index$1 = require('../../../../hooks/use-namespace/index.js');
-var aria = require('../../../../constants/aria.js');
 var shared = require('@vue/shared');
+var aria = require('../../../../constants/aria.js');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var dayjs__default = /*#__PURE__*/_interopDefaultLegacy(dayjs);
 
-const _hoisted_1 = ["disabled"];
 const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   __name: "panel-time-range",
   props: panelTimeRange.panelTimeRangeProps,
@@ -90,6 +86,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       return parsedDate[0].isSame(result[0]) && parsedDate[1].isSame(result[1]);
     };
     const handleChange = (start, end) => {
+      if (!props.visible) {
+        return;
+      }
       emit("pick", [start, end], true);
     };
     const btnConfirmDisabled = vue.computed(() => {
@@ -278,14 +277,14 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           vue.createElementVNode("button", {
             type: "button",
             class: vue.normalizeClass([vue.unref(nsTime).be("panel", "btn"), "cancel"]),
-            onClick: _cache[0] || (_cache[0] = ($event) => handleCancel())
-          }, vue.toDisplayString(vue.unref(t)("el.datepicker.cancel")), 3),
+            onClick: ($event) => handleCancel()
+          }, vue.toDisplayString(vue.unref(t)("el.datepicker.cancel")), 11, ["onClick"]),
           vue.createElementVNode("button", {
             type: "button",
             class: vue.normalizeClass([vue.unref(nsTime).be("panel", "btn"), "confirm"]),
             disabled: vue.unref(btnConfirmDisabled),
-            onClick: _cache[1] || (_cache[1] = ($event) => handleConfirm())
-          }, vue.toDisplayString(vue.unref(t)("el.datepicker.confirm")), 11, _hoisted_1)
+            onClick: ($event) => handleConfirm()
+          }, vue.toDisplayString(vue.unref(t)("el.datepicker.confirm")), 11, ["disabled", "onClick"])
         ], 2)
       ], 2)) : vue.createCommentVNode("v-if", true);
     };

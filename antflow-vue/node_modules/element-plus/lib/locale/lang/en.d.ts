@@ -9,6 +9,7 @@ declare const _default: {
             clear: string;
             defaultLabel: string;
             description: string;
+            alphaLabel: string;
         };
         datepicker: {
             now: string;
@@ -86,6 +87,9 @@ declare const _default: {
             noMatch: string;
             noData: string;
             placeholder: string;
+        };
+        mention: {
+            loading: string;
         };
         dropdown: {
             toggleDropdown: string;

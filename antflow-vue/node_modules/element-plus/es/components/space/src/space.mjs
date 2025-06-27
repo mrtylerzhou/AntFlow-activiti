@@ -1,13 +1,11 @@
-import { isVNode, defineComponent, createVNode, renderSlot, createTextVNode } from 'vue';
-import { isString, isArray } from '@vue/shared';
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
+import { isVNode, defineComponent, renderSlot, createVNode, createTextVNode } from 'vue';
 import SpaceItem from './item.mjs';
 import { useSpace } from './use-space.mjs';
+import { PatchFlags, isFragment, isValidElementNode } from '../../../utils/vue/vnode.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { isNumber } from '../../../utils/types.mjs';
+import { isString, isArray } from '@vue/shared';
 import { componentSizes } from '../../../constants/size.mjs';
-import { isFragment, PatchFlags, isValidElementNode } from '../../../utils/vue/vnode.mjs';
 
 const spaceProps = buildProps({
   direction: {

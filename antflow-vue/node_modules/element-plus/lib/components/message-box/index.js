@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var messageBox = require('./src/messageBox.js');
-require('./src/message-box.type.js');
 
 const _MessageBox = messageBox["default"];
 _MessageBox.install = (app) => {

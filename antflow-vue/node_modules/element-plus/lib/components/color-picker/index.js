@@ -2,9 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
-var colorPicker$1 = require('./src/color-picker.js');
-var colorPicker = require('./src/color-picker2.js');
+var colorPicker$1 = require('./src/color-picker2.js');
+var colorPicker = require('./src/color-picker.js');
 var install = require('../../utils/vue/install.js');
 
 const ElColorPicker = install.withInstall(colorPicker$1["default"]);

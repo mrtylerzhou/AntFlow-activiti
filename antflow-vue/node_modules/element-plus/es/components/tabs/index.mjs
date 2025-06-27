@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Tabs from './src/tabs.mjs';
 export { tabsEmits, tabsProps } from './src/tabs.mjs';
 import TabPane from './src/tab-pane2.mjs';

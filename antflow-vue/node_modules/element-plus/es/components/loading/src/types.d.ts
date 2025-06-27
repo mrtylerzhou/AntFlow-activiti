@@ -1,5 +1,5 @@
 import type { MaybeRef } from '@vueuse/core';
-export declare type LoadingOptionsResolved = {
+export type LoadingOptionsResolved = {
     parent: LoadingParentElement;
     /**
      * @description background color of the mask
@@ -32,7 +32,7 @@ export declare type LoadingOptionsResolved = {
     beforeClose?: () => boolean;
     closed?: () => void;
 };
-export declare type LoadingOptions = Partial<Omit<LoadingOptionsResolved, 'parent' | 'target'> & {
+export type LoadingOptions = Partial<Omit<LoadingOptionsResolved, 'parent' | 'target'> & {
     /**
      * @description the DOM node Loading needs to cover. Accepts a DOM object or a string. If it's a string, it will be passed to `document.querySelector` to get the corresponding DOM node
      */

@@ -30,13 +30,10 @@ CompletionRecord.prototype['?'] = function ReturnIfAbrupt() {
 	var type = SLOT.get(this, '[[type]]');
 	var value = SLOT.get(this, '[[value]]');
 
-	if (type === 'normal') {
-		return value;
-	}
 	if (type === 'throw') {
 		throw value;
 	}
-	throw new $SyntaxError('Completion Record is not of type "normal" or "throw": other types not supported');
+	return value;
 };
 
 CompletionRecord.prototype['!'] = function assert() {

@@ -1,7 +1,7 @@
 import type { Arrayable } from 'element-plus/es/utils';
 import type { InjectionKey, Ref } from 'vue';
 import type { TooltipTriggerType } from './trigger';
-export declare type ElTooltipInjectionContext = {
+export type ElTooltipInjectionContext = {
     controlled: Ref<boolean>;
     id: Ref<string>;
     open: Ref<boolean>;

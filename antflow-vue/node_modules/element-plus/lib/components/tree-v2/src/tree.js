@@ -3,17 +3,14 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
-require('../../form/index.js');
-require('../../virtual-list/index.js');
 var useTree = require('./composables/useTree.js');
 var treeNode = require('./tree-node.js');
 var virtualTree = require('./virtual-tree.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
+var fixedSizeList = require('../../virtual-list/src/components/fixed-size-list.js');
 var constants = require('../../form/src/constants.js');
 var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
-var fixedSizeList = require('../../virtual-list/src/components/fixed-size-list.js');
 
 const __default__ = vue.defineComponent({
   name: "ElTreeV2"
@@ -40,6 +37,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const {
       flattenTree,
       isNotEmpty,
+      listRef,
       toggleExpand,
       isExpanded,
       isIndeterminate,
@@ -48,6 +46,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       isCurrent,
       isForceHiddenExpandIcon,
       handleNodeClick,
+      handleNodeDrop,
       handleNodeCheck,
       toggleCheckbox,
       getCurrentNode,
@@ -64,7 +63,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       getNode,
       expandNode,
       collapseNode,
-      setExpandedKeys
+      setExpandedKeys,
+      scrollToNode,
+      scrollTo
     } = useTree.useTree(props, emit);
     expose({
       toggleCheckbox,
@@ -82,16 +83,19 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       getNode,
       expandNode,
       collapseNode,
-      setExpandedKeys
+      setExpandedKeys,
+      scrollToNode,
+      scrollTo
     });
     return (_ctx, _cache) => {
-      var _a;
       return vue.openBlock(), vue.createElementBlock("div", {
         class: vue.normalizeClass([vue.unref(ns).b(), { [vue.unref(ns).m("highlight-current")]: _ctx.highlightCurrent }]),
         role: "tree"
       }, [
         vue.unref(isNotEmpty) ? (vue.openBlock(), vue.createBlock(vue.unref(fixedSizeList["default"]), {
           key: 0,
+          ref_key: "listRef",
+          ref: listRef,
           "class-name": vue.unref(ns).b("virtual-list"),
           data: vue.unref(flattenTree),
           total: vue.unref(flattenTree).length,
@@ -114,17 +118,23 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
               "hidden-expand-icon": vue.unref(isForceHiddenExpandIcon)(data[index]),
               onClick: vue.unref(handleNodeClick),
               onToggle: vue.unref(toggleExpand),
-              onCheck: vue.unref(handleNodeCheck)
-            }, null, 8, ["style", "node", "expanded", "show-checkbox", "checked", "indeterminate", "item-size", "disabled", "current", "hidden-expand-icon", "onClick", "onToggle", "onCheck"]))
+              onCheck: vue.unref(handleNodeCheck),
+              onDrop: vue.unref(handleNodeDrop)
+            }, null, 8, ["style", "node", "expanded", "show-checkbox", "checked", "indeterminate", "item-size", "disabled", "current", "hidden-expand-icon", "onClick", "onToggle", "onCheck", "onDrop"]))
           ]),
           _: 1
         }, 8, ["class-name", "data", "total", "height", "item-size", "perf-mode"])) : (vue.openBlock(), vue.createElementBlock("div", {
           key: 1,
           class: vue.normalizeClass(vue.unref(ns).e("empty-block"))
         }, [
-          vue.createElementVNode("span", {
-            class: vue.normalizeClass(vue.unref(ns).e("empty-text"))
-          }, vue.toDisplayString((_a = _ctx.emptyText) != null ? _a : vue.unref(t)("el.tree.emptyText")), 3)
+          vue.renderSlot(_ctx.$slots, "empty", {}, () => {
+            var _a;
+            return [
+              vue.createElementVNode("span", {
+                class: vue.normalizeClass(vue.unref(ns).e("empty-text"))
+              }, vue.toDisplayString((_a = _ctx.emptyText) != null ? _a : vue.unref(t)("el.tree.emptyText")), 3)
+            ];
+          })
         ], 2))
       ], 2);
     };

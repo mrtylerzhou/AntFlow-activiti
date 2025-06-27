@@ -1,7 +1,6 @@
-import { isVNode, createVNode } from 'vue';
-import '../components/index.mjs';
+import { createVNode, isVNode } from 'vue';
 import { tryCall } from '../utils.mjs';
-import TableV2HeaderRow from '../components/header-row.mjs';
+import HeaderRow from '../components/header-row.mjs';
 
 function _isSlot(s) {
   return typeof s === "function" || Object.prototype.toString.call(s) === "[object Object]" && !isVNode(s);
@@ -32,10 +31,11 @@ const HeaderRenderer = ({
     headerIndex,
     style
   };
-  return createVNode(TableV2HeaderRow, extraProps, _isSlot(slots) ? slots : {
+  return createVNode(HeaderRow, extraProps, _isSlot(slots) ? slots : {
     default: () => [slots]
   });
 };
+var Header = HeaderRenderer;
 
-export { HeaderRenderer as default };
+export { Header as default };
 //# sourceMappingURL=header.mjs.map

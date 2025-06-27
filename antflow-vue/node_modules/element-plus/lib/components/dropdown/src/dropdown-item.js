@@ -3,14 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../roving-focus-group/index.js');
-require('../../../utils/index.js');
+var rovingFocusItem = require('../../roving-focus-group/src/roving-focus-item.js');
 var dropdownItemImpl = require('./dropdown-item-impl.js');
 var useDropdown = require('./useDropdown.js');
 var dropdown = require('./dropdown.js');
 var tokens = require('./tokens.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
-var rovingFocusItem = require('../../roving-focus-group/src/roving-focus-item.js');
 var event = require('../../../utils/dom/event.js');
 
 const _sfc_main = vue.defineComponent({
@@ -52,9 +50,7 @@ const _sfc_main = vue.defineComponent({
     const handlePointerLeave = event.composeEventHandlers((e) => {
       emit("pointerleave", e);
       return e.defaultPrevented;
-    }, event.whenMouse((e) => {
-      onItemLeave(e);
-    }));
+    }, event.whenMouse(onItemLeave));
     const handleClick = event.composeEventHandlers((e) => {
       if (props.disabled) {
         return;
@@ -72,9 +68,7 @@ const _sfc_main = vue.defineComponent({
       }
       (_c = elDropdown.commandHandler) == null ? void 0 : _c.call(elDropdown, props.command, _instance, e);
     });
-    const propsAndAttrs = vue.computed(() => {
-      return { ...props, ...attrs };
-    });
+    const propsAndAttrs = vue.computed(() => ({ ...props, ...attrs }));
     return {
       handleClick,
       handlePointerMove,

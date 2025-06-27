@@ -1,6 +1,3 @@
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
-import '../../../hooks/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { useSizeProp } from '../../../hooks/use-size/index.mjs';
 import { UPDATE_MODEL_EVENT, CHANGE_EVENT } from '../../../constants/event.mjs';

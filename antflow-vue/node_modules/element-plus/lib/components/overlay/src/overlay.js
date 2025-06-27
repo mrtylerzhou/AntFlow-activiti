@@ -3,22 +3,17 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
-var runtime = require('../../../utils/vue/props/runtime.js');
-var index = require('../../../hooks/use-namespace/index.js');
 var index$1 = require('../../../hooks/use-same-target/index.js');
 var vnode = require('../../../utils/vue/vnode.js');
+var runtime = require('../../../utils/vue/props/runtime.js');
+var index = require('../../../hooks/use-namespace/index.js');
 
 const overlayProps = runtime.buildProps({
   mask: {
     type: Boolean,
     default: true
   },
-  customMaskEvent: {
-    type: Boolean,
-    default: false
-  },
+  customMaskEvent: Boolean,
   overlayClass: {
     type: runtime.definePropType([
       String,

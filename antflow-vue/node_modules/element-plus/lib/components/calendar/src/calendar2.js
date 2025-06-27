@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var index$2 = require('../../button/index.js');
-require('../../../hooks/index.js');
 var dateTable = require('./date-table2.js');
 var useCalendar = require('./use-calendar.js');
 var calendar = require('./calendar.js');
@@ -61,31 +60,31 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
                 default: vue.withCtx(() => [
                   vue.createVNode(vue.unref(index$2.ElButton), {
                     size: "small",
-                    onClick: _cache[0] || (_cache[0] = ($event) => vue.unref(selectDate)("prev-month"))
+                    onClick: ($event) => vue.unref(selectDate)("prev-month")
                   }, {
                     default: vue.withCtx(() => [
                       vue.createTextVNode(vue.toDisplayString(vue.unref(t)("el.datepicker.prevMonth")), 1)
                     ]),
                     _: 1
-                  }),
+                  }, 8, ["onClick"]),
                   vue.createVNode(vue.unref(index$2.ElButton), {
                     size: "small",
-                    onClick: _cache[1] || (_cache[1] = ($event) => vue.unref(selectDate)("today"))
+                    onClick: ($event) => vue.unref(selectDate)("today")
                   }, {
                     default: vue.withCtx(() => [
                       vue.createTextVNode(vue.toDisplayString(vue.unref(t)("el.datepicker.today")), 1)
                     ]),
                     _: 1
-                  }),
+                  }, 8, ["onClick"]),
                   vue.createVNode(vue.unref(index$2.ElButton), {
                     size: "small",
-                    onClick: _cache[2] || (_cache[2] = ($event) => vue.unref(selectDate)("next-month"))
+                    onClick: ($event) => vue.unref(selectDate)("next-month")
                   }, {
                     default: vue.withCtx(() => [
                       vue.createTextVNode(vue.toDisplayString(vue.unref(t)("el.datepicker.nextMonth")), 1)
                     ]),
                     _: 1
-                  })
+                  }, 8, ["onClick"])
                 ]),
                 _: 1
               })
@@ -100,7 +99,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             date: vue.unref(date),
             "selected-day": vue.unref(realSelectedDay),
             onPick: vue.unref(pickDay)
-          }, vue.createSlots({ _: 2 }, [
+          }, vue.createSlots({
+            _: 2
+          }, [
             _ctx.$slots["date-cell"] ? {
               name: "date-cell",
               fn: vue.withCtx((data) => [
@@ -120,7 +121,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
               range: range_,
               "hide-header": index !== 0,
               onPick: vue.unref(pickDay)
-            }, vue.createSlots({ _: 2 }, [
+            }, vue.createSlots({
+              _: 2
+            }, [
               _ctx.$slots["date-cell"] ? {
                 name: "date-cell",
                 fn: vue.withCtx((data) => [

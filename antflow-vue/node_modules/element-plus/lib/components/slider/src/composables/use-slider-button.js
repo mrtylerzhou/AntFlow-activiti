@@ -4,12 +4,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../../constants/index.js');
+var core = require('@vueuse/core');
 var constants = require('../constants.js');
 var aria = require('../../../../constants/aria.js');
 var event = require('../../../../constants/event.js');
 
-const { left, down, right, up, home, end, pageUp, pageDown } = aria.EVENT_CODE;
 const useTooltip = (props, formatTooltip, showTooltip) => {
   const tooltip = vue.ref();
   const tooltipVisible = vue.ref(false);
@@ -40,6 +39,7 @@ const useSliderButton = (props, initData, emit) => {
     max,
     step,
     showTooltip,
+    persistent,
     precision,
     sliderSize,
     formatTooltip,
@@ -110,20 +110,30 @@ const useSliderButton = (props, initData, emit) => {
   };
   const onKeyDown = (event) => {
     let isPreventDefault = true;
-    if ([left, down].includes(event.key)) {
-      onLeftKeyDown();
-    } else if ([right, up].includes(event.key)) {
-      onRightKeyDown();
-    } else if (event.key === home) {
-      onHomeKeyDown();
-    } else if (event.key === end) {
-      onEndKeyDown();
-    } else if (event.key === pageDown) {
-      onPageDownKeyDown();
-    } else if (event.key === pageUp) {
-      onPageUpKeyDown();
-    } else {
-      isPreventDefault = false;
+    switch (event.code) {
+      case aria.EVENT_CODE.left:
+      case aria.EVENT_CODE.down:
+        onLeftKeyDown();
+        break;
+      case aria.EVENT_CODE.right:
+      case aria.EVENT_CODE.up:
+        onRightKeyDown();
+        break;
+      case aria.EVENT_CODE.home:
+        onHomeKeyDown();
+        break;
+      case aria.EVENT_CODE.end:
+        onEndKeyDown();
+        break;
+      case aria.EVENT_CODE.pageDown:
+        onPageDownKeyDown();
+        break;
+      case aria.EVENT_CODE.pageUp:
+        onPageUpKeyDown();
+        break;
+      default:
+        isPreventDefault = false;
+        break;
     }
     isPreventDefault && event.preventDefault();
   };
@@ -216,12 +226,14 @@ const useSliderButton = (props, initData, emit) => {
   vue.watch(() => initData.dragging, (val) => {
     updateDragging(val);
   });
+  core.useEventListener(button, "touchstart", onButtonDown, { passive: false });
   return {
     disabled,
     button,
     tooltip,
     tooltipVisible,
     showTooltip,
+    persistent,
     wrapperStyle,
     formatValue,
     handleMouseEnter,

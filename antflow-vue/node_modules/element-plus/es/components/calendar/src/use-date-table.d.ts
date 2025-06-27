@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import type { SetupContext } from 'vue';
 import type { Dayjs } from 'dayjs';
 import type { CalendarDateCell, CalendarDateCellType, DateTableEmits, DateTableProps } from './date-table';
-export declare const useDateTable: (props: DateTableProps, emit: SetupContext<DateTableEmits>['emit']) => {
+export declare const useDateTable: (props: DateTableProps, emit: SetupContext<DateTableEmits>["emit"]) => {
     now: dayjs.Dayjs;
     isInRange: import("vue").ComputedRef<boolean>;
     rows: import("vue").ComputedRef<CalendarDateCell[][]>;

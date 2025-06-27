@@ -17,11 +17,12 @@ export declare const paginationSizesProps: {
     readonly disabled: BooleanConstructor;
     readonly teleported: BooleanConstructor;
     readonly size: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "default" | "small" | "large", unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "small" | "default" | "large", unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
+    readonly appendSizeTo: StringConstructor;
 };
-export declare type PaginationSizesProps = ExtractPropTypes<typeof paginationSizesProps>;
-export declare type SizesInstance = InstanceType<typeof Sizes>;
+export type PaginationSizesProps = ExtractPropTypes<typeof paginationSizesProps>;
+export type SizesInstance = InstanceType<typeof Sizes> & unknown;

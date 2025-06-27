@@ -29,14 +29,14 @@ export declare const getDefaultClassName: (type: any) => any;
 export declare const cellForced: {
     selection: {
         renderHeader<T>({ store, column }: {
-            store: any;
+            store: Store<T>;
         }): VNode<import("vue").RendererNode, import("vue").RendererElement, {
             [key: string]: any;
         }>;
-        renderCell<T_1>({ row, column, store, $index, }: {
-            row: T_1;
-            column: TableColumnCtx<T_1>;
-            store: any;
+        renderCell<T>({ row, column, store, $index, }: {
+            row: T;
+            column: TableColumnCtx<T>;
+            store: Store<T>;
             $index: string;
         }): VNode<import("vue").RendererNode, import("vue").RendererElement, {
             [key: string]: any;
@@ -45,11 +45,11 @@ export declare const cellForced: {
         resizable: boolean;
     };
     index: {
-        renderHeader<T_2>({ column }: {
-            column: TableColumnCtx<T_2>;
+        renderHeader<T>({ column }: {
+            column: TableColumnCtx<T>;
         }): string;
-        renderCell<T_3>({ column, $index, }: {
-            column: TableColumnCtx<T_3>;
+        renderCell<T>({ column, $index, }: {
+            column: TableColumnCtx<T>;
             $index: number;
         }): VNode<import("vue").RendererNode, import("vue").RendererElement, {
             [key: string]: any;
@@ -57,12 +57,12 @@ export declare const cellForced: {
         sortable: boolean;
     };
     expand: {
-        renderHeader<T_4>({ column }: {
-            column: TableColumnCtx<T_4>;
+        renderHeader<T>({ column }: {
+            column: TableColumnCtx<T>;
         }): string;
-        renderCell<T_5>({ row, store, expanded, }: {
-            row: T_5;
-            store: any;
+        renderCell<T>({ row, store, expanded, }: {
+            row: T;
+            store: Store<T>;
             expanded: boolean;
         }): VNode<import("vue").RendererNode, import("vue").RendererElement, {
             [key: string]: any;

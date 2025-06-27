@@ -1,5 +1,3 @@
-import '../../../utils/index.mjs';
-import '../../time-picker/index.mjs';
 import { rangeArr } from '../../time-picker/src/utils.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { isObject } from '@vue/shared';

@@ -3,8 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
 var service = require('./service.js');
+var shared = require('@vue/shared');
 
 const INSTANCE_KEY = Symbol("ElLoading");
 const createInstance = (el, binding) => {

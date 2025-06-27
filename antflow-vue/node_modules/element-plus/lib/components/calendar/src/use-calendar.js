@@ -4,11 +4,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var dayjs = require('dayjs');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
-require('../../../constants/index.js');
 var index = require('../../../hooks/use-locale/index.js');
 var event = require('../../../constants/event.js');
+var shared = require('@vue/shared');
 var error = require('../../../utils/error.js');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -58,7 +56,7 @@ const useCalendar = (props, emit, componentName) => {
     }
   });
   const validatedRange = vue.computed(() => {
-    if (!props.range)
+    if (!props.range || !shared.isArray(props.range) || props.range.length !== 2 || props.range.some((item) => !shared.isDate(item)))
       return [];
     const rangeArrDayjs = props.range.map((_) => dayjs__default["default"](_).locale(lang.value));
     const [startDayjs, endDayjs] = rangeArrDayjs;

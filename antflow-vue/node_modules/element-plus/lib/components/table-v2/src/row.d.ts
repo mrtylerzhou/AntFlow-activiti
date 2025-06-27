@@ -1,28 +1,28 @@
 import type { CSSProperties, ExtractPropTypes } from 'vue';
 import type { FixedDirection, KeyType, RowCommonParams } from './types';
-export declare type RowExpandParams = {
+export type RowExpandParams = {
     expanded: boolean;
     rowKey: KeyType;
 } & RowCommonParams;
-export declare type RowHoverParams = {
+export type RowHoverParams = {
     event: MouseEvent;
     hovered: boolean;
     rowKey: KeyType;
 } & RowCommonParams;
-export declare type RowEventHandlerParams = {
+export type RowEventHandlerParams = {
     rowKey: KeyType;
     event: Event;
 } & RowCommonParams;
-export declare type RowHeightChangedParams = {
+export type RowHeightChangedParams = {
     rowKey: KeyType;
     height: number;
     rowIndex: number;
 };
-export declare type RowExpandHandler = (params: RowExpandParams) => void;
-export declare type RowHoverHandler = (params: RowHoverParams) => void;
-export declare type RowEventHandler = (params: RowEventHandlerParams) => void;
-export declare type RowHeightChangeHandler = (row: RowHeightChangedParams, fixedDirection: boolean | FixedDirection | undefined) => void;
-export declare type RowEventHandlers = {
+export type RowExpandHandler = (params: RowExpandParams) => void;
+export type RowHoverHandler = (params: RowHoverParams) => void;
+export type RowEventHandler = (params: RowEventHandlerParams) => void;
+export type RowHeightChangeHandler = (row: RowHeightChangedParams, fixedDirection: boolean | FixedDirection | undefined) => void;
+export type RowEventHandlers = {
     onClick?: RowEventHandler;
     onContextmenu?: RowEventHandler;
     onDblclick?: RowEventHandler;
@@ -89,7 +89,7 @@ export declare const tableV2RowProps: {
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => KeyType & {}) | (() => KeyType) | ((new (...args: any[]) => KeyType & {}) | (() => KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => KeyType))[], unknown, unknown, "id", boolean>;
     readonly style: {
         readonly type: import("vue").PropType<CSSProperties>;
         readonly required: false;
@@ -97,4 +97,4 @@ export declare const tableV2RowProps: {
         __epPropKey: true;
     };
 };
-export declare type TableV2RowProps = ExtractPropTypes<typeof tableV2RowProps>;
+export type TableV2RowProps = ExtractPropTypes<typeof tableV2RowProps>;

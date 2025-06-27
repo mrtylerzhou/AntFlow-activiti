@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var bar = require('./bar2.js');
 var constants = require('./constants.js');
 var scrollbar = require('./scrollbar.js');
@@ -29,6 +27,8 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     const ns = index.useNamespace("scrollbar");
     let stopResizeObserver = void 0;
     let stopResizeListener = void 0;
+    let wrapScrollTop = 0;
+    let wrapScrollLeft = 0;
     const scrollbarRef = vue.ref();
     const wrapRef = vue.ref();
     const resizeRef = vue.ref();
@@ -55,6 +55,8 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       var _a;
       if (wrapRef.value) {
         (_a = barRef.value) == null ? void 0 : _a.handleScroll(wrapRef.value);
+        wrapScrollTop = wrapRef.value.scrollTop;
+        wrapScrollLeft = wrapRef.value.scrollLeft;
         emit("scroll", {
           scrollTop: wrapRef.value.scrollTop,
           scrollLeft: wrapRef.value.scrollLeft
@@ -91,7 +93,6 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         stopResizeObserver == null ? void 0 : stopResizeObserver();
         stopResizeListener == null ? void 0 : stopResizeListener();
       } else {
-        ;
         ({ stop: stopResizeObserver } = core.useResizeObserver(resizeRef, update));
         stopResizeListener = core.useEventListener("resize", update);
       }
@@ -110,6 +111,12 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       scrollbarElement: scrollbarRef,
       wrapElement: wrapRef
     }));
+    vue.onActivated(() => {
+      if (wrapRef.value) {
+        wrapRef.value.scrollTop = wrapScrollTop;
+        wrapRef.value.scrollLeft = wrapScrollLeft;
+      }
+    });
     vue.onMounted(() => {
       if (!props.native)
         vue.nextTick(() => {
@@ -136,6 +143,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           ref: wrapRef,
           class: vue.normalizeClass(vue.unref(wrapKls)),
           style: vue.normalizeStyle(vue.unref(wrapStyle)),
+          tabindex: _ctx.tabindex,
           onScroll: handleScroll
         }, [
           (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(_ctx.tag), {
@@ -153,7 +161,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             ]),
             _: 3
           }, 8, ["id", "class", "style", "role", "aria-label", "aria-orientation"]))
-        ], 38),
+        ], 46, ["tabindex"]),
         !_ctx.native ? (vue.openBlock(), vue.createBlock(bar["default"], {
           key: 0,
           ref_key: "barRef",

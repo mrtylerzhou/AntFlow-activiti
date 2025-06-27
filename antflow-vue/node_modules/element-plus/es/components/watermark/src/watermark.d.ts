@@ -15,7 +15,7 @@ export declare const watermarkProps: {
     readonly width: NumberConstructor;
     readonly height: NumberConstructor;
     readonly image: StringConstructor;
-    readonly content: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (string | string[]) & {}) | (() => string | string[]) | ((new (...args: any[]) => (string | string[]) & {}) | (() => string | string[]))[], unknown, unknown, "Element Plus", boolean>;
+    readonly content: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | string[]) | (() => string | string[]) | ((new (...args: any[]) => string | string[]) | (() => string | string[]))[], unknown, unknown, "Element Plus", boolean>;
     readonly font: {
         readonly type: import("vue").PropType<WatermarkFontType>;
         readonly required: false;
@@ -30,5 +30,5 @@ export declare const watermarkProps: {
         __epPropKey: true;
     };
 };
-export declare type WatermarkProps = ExtractPropTypes<typeof watermarkProps>;
-export declare type WatermarkInstance = InstanceType<typeof Watermark>;
+export type WatermarkProps = ExtractPropTypes<typeof watermarkProps>;
+export type WatermarkInstance = InstanceType<typeof Watermark> & unknown;

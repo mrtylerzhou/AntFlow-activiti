@@ -1,38 +1,21 @@
-declare const _default: import("vue").DefineComponent<{
-    readonly disabled: import("../../../utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
-}, {
-    COMPONENT_NAME: string;
-    emit: (event: "file", file: File[]) => void;
-    uploaderContext: import("./constants").UploadContext;
-    ns: {
-        namespace: import("vue").ComputedRef<string>;
-        b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-        is: {
-            (name: string, state: boolean | undefined): string;
-            (name: string): string;
-        };
-        cssVar: (object: Record<string, string>) => Record<string, string>;
-        cssVarName: (name: string) => string;
-        cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-        cssVarBlockName: (name: string) => string;
-    };
-    dragover: import("vue").Ref<boolean>;
-    disabled: import("vue").ComputedRef<boolean>;
-    onDrop: (e: DragEvent) => void;
-    onDragover: () => void;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
-    file: (file: File[]) => boolean;
+declare function __VLS_template(): {
+    default?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
+    readonly disabled: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+}, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
+    file: (file: File[]) => void;
 }, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
-    readonly disabled: import("../../../utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly disabled: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
 }>> & {
     onFile?: ((file: File[]) => any) | undefined;
 }, {
-    readonly disabled: import("../../../utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
+    readonly disabled: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

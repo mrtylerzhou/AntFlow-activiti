@@ -1,5 +1,5 @@
 import type { CSSProperties, FunctionalComponent } from 'vue';
-declare type EmptyRendererProps = {
+type EmptyRendererProps = {
     class?: JSX.IntrinsicAttributes['class'];
     style?: CSSProperties;
 };

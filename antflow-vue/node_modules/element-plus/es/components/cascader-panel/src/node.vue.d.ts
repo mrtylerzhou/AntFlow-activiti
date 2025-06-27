@@ -1,5 +1,6 @@
 import type { default as CascaderNode } from './node';
 import type { PropType } from 'vue';
+import type { CheckboxValueType } from 'element-plus/es/components/checkbox';
 declare const _default: import("vue").DefineComponent<{
     node: {
         type: PropType<CascaderNode>;
@@ -20,12 +21,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -39,7 +40,7 @@ declare const _default: import("vue").DefineComponent<{
     handleExpand: () => void;
     handleClick: () => void;
     handleCheck: (checked: boolean) => void;
-    handleSelectCheck: (checked: boolean) => void;
+    handleSelectCheck: (checked: CheckboxValueType | undefined) => void;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "expand"[], "expand", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     node: {
         type: PropType<CascaderNode>;

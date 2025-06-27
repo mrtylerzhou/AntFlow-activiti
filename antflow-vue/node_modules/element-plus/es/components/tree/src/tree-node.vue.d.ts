@@ -1,7 +1,7 @@
 import Node from './model/node';
 import type { ComponentInternalInstance, PropType } from 'vue';
-import type { Nullable } from 'element-plus/es/utils';
 import type { RootTreeType, TreeNodeData, TreeOptionProps } from './tree.type';
+import type { CheckboxValueType } from 'element-plus/es/components/checkbox';
 declare const _default: import("vue").DefineComponent<{
     node: {
         type: typeof Node;
@@ -22,12 +22,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -37,19 +37,21 @@ declare const _default: import("vue").DefineComponent<{
         cssVarBlock: (object: Record<string, string>) => Record<string, string>;
         cssVarBlockName: (name: string) => string;
     };
-    node$: import("vue").Ref<Nullable<HTMLElement>>;
-    tree: RootTreeType | undefined;
+    node$: import("vue").Ref<HTMLElement | undefined>;
+    tree: RootTreeType;
     expanded: import("vue").Ref<boolean>;
     childNodeRendered: import("vue").Ref<boolean>;
-    oldChecked: import("vue").Ref<boolean>;
-    oldIndeterminate: import("vue").Ref<boolean>;
+    oldChecked: import("vue").Ref<boolean | undefined>;
+    oldIndeterminate: import("vue").Ref<boolean | undefined>;
     getNodeKey: (node: Node) => any;
-    getNodeClass: (node: Node) => any;
+    getNodeClass: (node: Node) => {
+        [key: string]: boolean;
+    };
     handleSelectChange: (checked: boolean, indeterminate: boolean) => void;
     handleClick: (e: MouseEvent) => void;
     handleContextMenu: (event: Event) => void;
     handleExpandIconClick: () => void;
-    handleCheckChange: (value: any, ev: any) => void;
+    handleCheckChange: (value: CheckboxValueType) => void;
     handleChildNodeExpand: (nodeData: TreeNodeData, node: Node, instance: ComponentInternalInstance) => void;
     handleDragStart: (event: DragEvent) => void;
     handleDragOver: (event: DragEvent) => void;

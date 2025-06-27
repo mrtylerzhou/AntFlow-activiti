@@ -1,6 +1,6 @@
 import type { PropType } from 'vue';
 import type { Store } from '../store';
-import type { ColumnCls, ColumnStyle, Table } from '../table/defaults';
+import type { ColumnCls, ColumnStyle, DefaultRow, Table } from '../table/defaults';
 import type { TableOverflowTooltipOptions } from '../util';
 interface TableBodyProps<T> {
     store: Store<T>;
@@ -16,19 +16,19 @@ interface TableBodyProps<T> {
 declare const defaultProps: {
     store: {
         required: boolean;
-        type: PropType<any>;
+        type: PropType<TableBodyProps<DefaultRow>["store"]>;
     };
     stripe: BooleanConstructor;
     tooltipEffect: StringConstructor;
     tooltipOptions: {
-        type: PropType<Partial<Pick<import("../../..").ElTooltipProps, "offset" | "effect" | "placement" | "popperClass" | "showAfter" | "hideAfter" | "popperOptions" | "enterable" | "appendTo" | "transition" | "showArrow">> | undefined>;
+        type: PropType<TableBodyProps<DefaultRow>["tooltipOptions"]>;
     };
     context: {
         default: () => {};
-        type: PropType<Table<any>>;
+        type: PropType<TableBodyProps<DefaultRow>["context"]>;
     };
-    rowClassName: PropType<ColumnCls<any>>;
-    rowStyle: PropType<ColumnStyle<any>>;
+    rowClassName: PropType<TableBodyProps<DefaultRow>["rowClassName"]>;
+    rowStyle: PropType<TableBodyProps<DefaultRow>["rowStyle"]>;
     fixed: {
         type: StringConstructor;
         default: string;

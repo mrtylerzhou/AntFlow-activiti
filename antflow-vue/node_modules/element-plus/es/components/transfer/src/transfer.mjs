@@ -1,6 +1,4 @@
 import { isNil } from 'lodash-unified';
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { mutable } from '../../../utils/typescript.mjs';
 import { isArray } from '@vue/shared';

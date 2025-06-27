@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var container = require('./src/container.js');
 var aside = require('./src/aside.js');
 var footer = require('./src/footer.js');

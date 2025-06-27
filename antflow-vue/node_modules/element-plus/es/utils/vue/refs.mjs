@@ -1,4 +1,3 @@
-import '../types.mjs';
 import { isFunction } from '@vue/shared';
 
 const composeRefs = (...refs) => {

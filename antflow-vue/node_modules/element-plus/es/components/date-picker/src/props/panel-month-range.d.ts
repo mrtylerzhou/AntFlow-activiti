@@ -9,4 +9,4 @@ export declare const panelMonthRangeProps: {
     };
 };
 export declare const panelMonthRangeEmits: string[];
-export declare type PanelMonthRangeProps = ExtractPropTypes<typeof panelMonthRangeProps>;
+export type PanelMonthRangeProps = ExtractPropTypes<typeof panelMonthRangeProps>;

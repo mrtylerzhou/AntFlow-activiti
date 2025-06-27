@@ -12,5 +12,5 @@ export declare const tabPaneProps: {
     readonly disabled: BooleanConstructor;
     readonly lazy: BooleanConstructor;
 };
-export declare type TabPaneProps = ExtractPropTypes<typeof tabPaneProps>;
-export declare type TabPaneInstance = InstanceType<typeof TabPane>;
+export type TabPaneProps = ExtractPropTypes<typeof tabPaneProps>;
+export type TabPaneInstance = InstanceType<typeof TabPane> & unknown;

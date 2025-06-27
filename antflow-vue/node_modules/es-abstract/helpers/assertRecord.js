@@ -7,7 +7,7 @@ var $SyntaxError = require('es-errors/syntax');
 
 var isMatchRecord = require('./records/match-record');
 var isPropertyDescriptor = require('./records/property-descriptor');
-var isIteratorRecord = require('./records/iterator-record');
+var isIteratorRecord = require('./records/iterator-record-2023');
 var isPromiseCapabilityRecord = require('./records/promise-capability-record');
 var isAsyncGeneratorRequestRecord = require('./records/async-generator-request-record');
 var isRegExpRecord = require('./records/regexp-record');

@@ -1,41 +1,12 @@
-import { createElementVNode, defineComponent, computed, unref, openBlock, createElementBlock, normalizeClass, withModifiers, createBlock, Transition, withCtx, withDirectives, createVNode, vShow, createCommentVNode, normalizeStyle, renderSlot, Fragment, renderList, toDisplayString } from 'vue';
+import { defineComponent, computed, unref, openBlock, createElementBlock, normalizeClass, withModifiers, createBlock, Transition, withCtx, withDirectives, createElementVNode, createVNode, vShow, createCommentVNode, normalizeStyle, renderSlot, Fragment, renderList, toDisplayString } from 'vue';
 import { ElIcon } from '../../icon/index.mjs';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
-import '../../../hooks/index.mjs';
 import { carouselProps, carouselEmits } from './carousel.mjs';
 import { useCarousel } from './use-carousel.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 
-const _hoisted_1 = ["aria-label"];
-const _hoisted_2 = ["aria-label"];
-const _hoisted_3 = ["onMouseenter", "onClick"];
-const _hoisted_4 = ["aria-label"];
-const _hoisted_5 = { key: 0 };
-const _hoisted_6 = {
-  key: 3,
-  xmlns: "http://www.w3.org/2000/svg",
-  version: "1.1",
-  style: { "display": "none" }
-};
-const _hoisted_7 = /* @__PURE__ */ createElementVNode("defs", null, [
-  /* @__PURE__ */ createElementVNode("filter", { id: "elCarouselHorizontal" }, [
-    /* @__PURE__ */ createElementVNode("feGaussianBlur", {
-      in: "SourceGraphic",
-      stdDeviation: "12,0"
-    })
-  ]),
-  /* @__PURE__ */ createElementVNode("filter", { id: "elCarouselVertical" }, [
-    /* @__PURE__ */ createElementVNode("feGaussianBlur", {
-      in: "SourceGraphic",
-      stdDeviation: "0,10"
-    })
-  ])
-], -1);
-const _hoisted_8 = [
-  _hoisted_7
-];
 const COMPONENT_NAME = "ElCarousel";
 const __default__ = defineComponent({
   name: COMPONENT_NAME
@@ -82,7 +53,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     const carouselContainer = computed(() => {
       const classes = [ns.e("container")];
-      if (props.motionBlur && unref(isTransitioning)) {
+      if (props.motionBlur && unref(isTransitioning) && items.value.length > 1) {
         classes.push(unref(isVertical) ? `${ns.namespace.value}-transitioning-vertical` : `${ns.namespace.value}-transitioning`);
       }
       return classes;
@@ -101,6 +72,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return classes;
     });
     expose({
+      activeIndex,
       setActiveItem,
       prev,
       next
@@ -110,8 +82,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         ref_key: "root",
         ref: root,
         class: normalizeClass(unref(carouselClasses)),
-        onMouseenter: _cache[7] || (_cache[7] = withModifiers((...args) => unref(handleMouseEnter) && unref(handleMouseEnter)(...args), ["stop"])),
-        onMouseleave: _cache[8] || (_cache[8] = withModifiers((...args) => unref(handleMouseLeave) && unref(handleMouseLeave)(...args), ["stop"]))
+        onMouseenter: withModifiers(unref(handleMouseEnter), ["stop"]),
+        onMouseleave: withModifiers(unref(handleMouseLeave), ["stop"])
       }, [
         unref(arrowDisplay) ? (openBlock(), createBlock(Transition, {
           key: 0,
@@ -123,9 +95,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               type: "button",
               class: normalizeClass([unref(ns).e("arrow"), unref(ns).em("arrow", "left")]),
               "aria-label": unref(t)("el.carousel.leftArrow"),
-              onMouseenter: _cache[0] || (_cache[0] = ($event) => unref(handleButtonEnter)("left")),
-              onMouseleave: _cache[1] || (_cache[1] = (...args) => unref(handleButtonLeave) && unref(handleButtonLeave)(...args)),
-              onClick: _cache[2] || (_cache[2] = withModifiers(($event) => unref(throttledArrowClick)(unref(activeIndex) - 1), ["stop"]))
+              onMouseenter: ($event) => unref(handleButtonEnter)("left"),
+              onMouseleave: unref(handleButtonLeave),
+              onClick: withModifiers(($event) => unref(throttledArrowClick)(unref(activeIndex) - 1), ["stop"])
             }, [
               createVNode(unref(ElIcon), null, {
                 default: withCtx(() => [
@@ -133,7 +105,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ]),
                 _: 1
               })
-            ], 42, _hoisted_1), [
+            ], 42, ["aria-label", "onMouseenter", "onMouseleave", "onClick"]), [
               [
                 vShow,
                 (_ctx.arrow === "always" || unref(hover)) && (props.loop || unref(activeIndex) > 0)
@@ -152,9 +124,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               type: "button",
               class: normalizeClass([unref(ns).e("arrow"), unref(ns).em("arrow", "right")]),
               "aria-label": unref(t)("el.carousel.rightArrow"),
-              onMouseenter: _cache[3] || (_cache[3] = ($event) => unref(handleButtonEnter)("right")),
-              onMouseleave: _cache[4] || (_cache[4] = (...args) => unref(handleButtonLeave) && unref(handleButtonLeave)(...args)),
-              onClick: _cache[5] || (_cache[5] = withModifiers(($event) => unref(throttledArrowClick)(unref(activeIndex) + 1), ["stop"]))
+              onMouseenter: ($event) => unref(handleButtonEnter)("right"),
+              onMouseleave: unref(handleButtonLeave),
+              onClick: withModifiers(($event) => unref(throttledArrowClick)(unref(activeIndex) + 1), ["stop"])
             }, [
               createVNode(unref(ElIcon), null, {
                 default: withCtx(() => [
@@ -162,7 +134,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ]),
                 _: 1
               })
-            ], 42, _hoisted_2), [
+            ], 42, ["aria-label", "onMouseenter", "onMouseleave", "onClick"]), [
               [
                 vShow,
                 (_ctx.arrow === "always" || unref(hover)) && (props.loop || unref(activeIndex) < unref(items).length - 1)
@@ -174,11 +146,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         createElementVNode("div", {
           class: normalizeClass(unref(carouselContainer)),
           style: normalizeStyle(unref(containerStyle)),
-          onTransitionend: _cache[6] || (_cache[6] = (...args) => unref(handleTransitionEnd) && unref(handleTransitionEnd)(...args))
+          onTransitionend: unref(handleTransitionEnd)
         }, [
           createVNode(unref(PlaceholderItem)),
           renderSlot(_ctx.$slots, "default")
-        ], 38),
+        ], 46, ["onTransitionend"]),
         _ctx.indicatorPosition !== "none" ? (openBlock(), createElementBlock("ul", {
           key: 2,
           class: normalizeClass(unref(indicatorsClasses))
@@ -198,15 +170,35 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 class: normalizeClass(unref(ns).e("button")),
                 "aria-label": unref(t)("el.carousel.indicator", { index: index + 1 })
               }, [
-                unref(hasLabel) ? (openBlock(), createElementBlock("span", _hoisted_5, toDisplayString(item.props.label), 1)) : createCommentVNode("v-if", true)
-              ], 10, _hoisted_4)
-            ], 42, _hoisted_3)), [
+                unref(hasLabel) ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(item.props.label), 1)) : createCommentVNode("v-if", true)
+              ], 10, ["aria-label"])
+            ], 42, ["onMouseenter", "onClick"])), [
               [vShow, unref(isTwoLengthShow)(index)]
             ]);
           }), 128))
         ], 2)) : createCommentVNode("v-if", true),
-        props.motionBlur ? (openBlock(), createElementBlock("svg", _hoisted_6, _hoisted_8)) : createCommentVNode("v-if", true)
-      ], 34);
+        props.motionBlur ? (openBlock(), createElementBlock("svg", {
+          key: 3,
+          xmlns: "http://www.w3.org/2000/svg",
+          version: "1.1",
+          style: { "display": "none" }
+        }, [
+          createElementVNode("defs", null, [
+            createElementVNode("filter", { id: "elCarouselHorizontal" }, [
+              createElementVNode("feGaussianBlur", {
+                in: "SourceGraphic",
+                stdDeviation: "12,0"
+              })
+            ]),
+            createElementVNode("filter", { id: "elCarouselVertical" }, [
+              createElementVNode("feGaussianBlur", {
+                in: "SourceGraphic",
+                stdDeviation: "0,10"
+              })
+            ])
+          ])
+        ])) : createCommentVNode("v-if", true)
+      ], 42, ["onMouseenter", "onMouseleave"]);
     };
   }
 });

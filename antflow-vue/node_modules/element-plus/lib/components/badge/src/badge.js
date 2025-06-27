@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 
 const badgeProps = runtime.buildProps({
@@ -26,18 +25,12 @@ const badgeProps = runtime.buildProps({
     default: true
   },
   color: String,
-  dotStyle: {
-    type: runtime.definePropType([String, Object, Array])
-  },
   badgeStyle: {
     type: runtime.definePropType([String, Object, Array])
   },
   offset: {
     type: runtime.definePropType(Array),
     default: [0, 0]
-  },
-  dotClass: {
-    type: String
   },
   badgeClass: {
     type: String

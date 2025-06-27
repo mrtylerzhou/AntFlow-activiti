@@ -1,23 +1,33 @@
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
-import { isNumber } from '../../../utils/types.mjs';
-import { isString, isArray } from '@vue/shared';
-import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
-import { mutable } from '../../../utils/typescript.mjs';
-import { UPDATE_MODEL_EVENT, CHANGE_EVENT } from '../../../constants/event.mjs';
+import { defineComponent, openBlock, createElementBlock, normalizeClass, unref, renderSlot } from 'vue';
+import { collapseProps, collapseEmits } from './collapse2.mjs';
+import { useCollapse, useCollapseDOM } from './use-collapse.mjs';
+import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 
-const emitChangeFn = (value) => isNumber(value) || isString(value) || isArray(value);
-const collapseProps = buildProps({
-  accordion: Boolean,
-  modelValue: {
-    type: definePropType([Array, String, Number]),
-    default: () => mutable([])
+const __default__ = defineComponent({
+  name: "ElCollapse"
+});
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  ...__default__,
+  props: collapseProps,
+  emits: collapseEmits,
+  setup(__props, { expose, emit }) {
+    const props = __props;
+    const { activeNames, setActiveNames } = useCollapse(props, emit);
+    const { rootKls } = useCollapseDOM();
+    expose({
+      activeNames,
+      setActiveNames
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass(unref(rootKls))
+      }, [
+        renderSlot(_ctx.$slots, "default")
+      ], 2);
+    };
   }
 });
-const collapseEmits = {
-  [UPDATE_MODEL_EVENT]: emitChangeFn,
-  [CHANGE_EVENT]: emitChangeFn
-};
+var Collapse = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "collapse.vue"]]);
 
-export { collapseEmits, collapseProps, emitChangeFn };
+export { Collapse as default };
 //# sourceMappingURL=collapse.mjs.map

@@ -37,16 +37,11 @@ function getRTLOffsetType(recalculate = false) {
   }
   return cachedRTLResult;
 }
-const getRelativePos = (e, layout) => {
-  return "touches" in e ? e.touches[0][defaults.PageKey[layout]] : e[defaults.PageKey[layout]];
-};
 function renderThumbStyle({ move, size, bar }, layout) {
   const style = {};
   const translate = `translate${bar.axis}(${move}px)`;
   style[bar.size] = size;
   style.transform = translate;
-  style.msTransform = translate;
-  style.webkitTransform = translate;
   if (layout === "horizontal") {
     style.height = "100%";
   } else {
@@ -56,7 +51,6 @@ function renderThumbStyle({ move, size, bar }, layout) {
 }
 
 exports.getRTLOffsetType = getRTLOffsetType;
-exports.getRelativePos = getRelativePos;
 exports.getScrollDir = getScrollDir;
 exports.isHorizontal = isHorizontal;
 exports.isRTL = isRTL;

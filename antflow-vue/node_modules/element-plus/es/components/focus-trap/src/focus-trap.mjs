@@ -1,9 +1,6 @@
-import { defineComponent, ref, provide, watch, unref, nextTick, onMounted, onBeforeUnmount, renderSlot } from 'vue';
+import { defineComponent, ref, provide, watch, unref, onMounted, onBeforeUnmount, nextTick, renderSlot } from 'vue';
 import { isNil } from 'lodash-unified';
-import '../../../constants/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
-import { useFocusReason, getEdges, createFocusOutPreventedEvent, tryFocus, focusableStack, focusFirstDescendant, obtainAllFocusableElements, isFocusCausedByUserEvent } from './utils.mjs';
+import { useFocusReason, tryFocus, createFocusOutPreventedEvent, getEdges, focusableStack, focusFirstDescendant, obtainAllFocusableElements, isFocusCausedByUserEvent } from './utils.mjs';
 import { ON_TRAP_FOCUS_EVT, ON_RELEASE_FOCUS_EVT, FOCUS_TRAP_INJECTION_KEY, FOCUS_AFTER_TRAPPED, FOCUS_AFTER_TRAPPED_OPTS, FOCUS_AFTER_RELEASED } from './tokens.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useEscapeKeydown } from '../../../hooks/use-escape-keydown/index.mjs';
@@ -54,9 +51,9 @@ const _sfc_main = defineComponent({
         return;
       if (focusLayer.paused)
         return;
-      const { key, altKey, ctrlKey, metaKey, currentTarget, shiftKey } = e;
+      const { code, altKey, ctrlKey, metaKey, currentTarget, shiftKey } = e;
       const { loop } = props;
-      const isTabbing = key === EVENT_CODE.tab && !altKey && !ctrlKey && !metaKey;
+      const isTabbing = code === EVENT_CODE.tab && !altKey && !ctrlKey && !metaKey;
       const currentFocusingEl = document.activeElement;
       if (isTabbing && currentFocusingEl) {
         const container = currentTarget;
@@ -239,6 +236,12 @@ const _sfc_main = defineComponent({
     onBeforeUnmount(() => {
       if (props.trapped) {
         stopTrap();
+      }
+      if (forwardRef.value) {
+        forwardRef.value.removeEventListener("keydown", onKeydown);
+        forwardRef.value.removeEventListener("focusin", onFocusIn);
+        forwardRef.value.removeEventListener("focusout", onFocusOut);
+        forwardRef.value = void 0;
       }
     });
     return {

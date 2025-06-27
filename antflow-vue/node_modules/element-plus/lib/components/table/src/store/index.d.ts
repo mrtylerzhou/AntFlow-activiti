@@ -8,6 +8,6 @@ export default useStore;
 declare class HelperStore<T> {
     Return: any;
 }
-declare type StoreFilter = Record<string, string[]>;
-declare type Store<T> = HelperStore<T>['Return'];
+type StoreFilter = Record<string, string[]>;
+type Store<T> = HelperStore<T>['Return'];
 export type { WatcherPropsData, Store, StoreFilter };

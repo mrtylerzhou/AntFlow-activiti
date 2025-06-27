@@ -1,4 +1,6 @@
-export { camelize, hyphenate, hyphenate as kebabCase, } from '@vue/shared';
+import { camelize, hyphenate } from '@vue/shared';
+export { camelize, hyphenate };
+export declare const kebabCase: (str: string) => string;
 /**
  * fork from {@link https://github.com/sindresorhus/escape-string-regexp}
  */

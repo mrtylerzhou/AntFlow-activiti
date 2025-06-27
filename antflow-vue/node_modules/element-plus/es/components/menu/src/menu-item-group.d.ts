@@ -1,5 +1,8 @@
 import type { ExtractPropTypes } from 'vue';
 export declare const menuItemGroupProps: {
+    /**
+     * @description group title
+     */
     readonly title: StringConstructor;
 };
-export declare type MenuItemGroupProps = ExtractPropTypes<typeof menuItemGroupProps>;
+export type MenuItemGroupProps = ExtractPropTypes<typeof menuItemGroupProps>;

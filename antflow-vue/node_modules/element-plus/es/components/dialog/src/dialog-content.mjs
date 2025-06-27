@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { iconPropType } from '../../../utils/vue/icon.mjs';
 
@@ -11,6 +10,9 @@ const dialogContentProps = buildProps({
   draggable: Boolean,
   overflow: Boolean,
   fullscreen: Boolean,
+  headerClass: String,
+  bodyClass: String,
+  footerClass: String,
   showClose: {
     type: Boolean,
     default: true

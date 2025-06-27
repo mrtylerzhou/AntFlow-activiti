@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var popover$1 = require('./src/popover2.js');
 var directive = require('./src/directive.js');
 var popover = require('./src/popover.js');

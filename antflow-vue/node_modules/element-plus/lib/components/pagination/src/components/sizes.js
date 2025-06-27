@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
 var runtime = require('../../../../utils/vue/props/runtime.js');
 var typescript = require('../../../../utils/typescript.js');
 var size = require('../../../../constants/size.js');
@@ -25,7 +23,8 @@ const paginationSizesProps = runtime.buildProps({
   size: {
     type: String,
     values: size.componentSizes
-  }
+  },
+  appendSizeTo: String
 });
 
 exports.paginationSizesProps = paginationSizesProps;

@@ -1,12 +1,9 @@
 import { defineComponent, computed, ref, reactive, unref, watch, onBeforeUnmount, h, withModifiers } from 'vue';
-import '../../../scrollbar/index.mjs';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import { HORIZONTAL, ScrollbarDirKey, SCROLLBAR_MIN_SIZE } from '../defaults.mjs';
 import { virtualizedScrollbarProps } from '../props.mjs';
 import { renderThumbStyle } from '../utils.mjs';
-import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { BAR_MAP } from '../../../scrollbar/src/util.mjs';
+import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { cAF, rAF } from '../../../../utils/raf.mjs';
 
 const ScrollBar = defineComponent({
@@ -71,7 +68,7 @@ const ScrollBar = defineComponent({
         return;
       onselectstartStore = document.onselectstart;
       document.onselectstart = () => false;
-      thumbEl.addEventListener("touchmove", onMouseMove);
+      thumbEl.addEventListener("touchmove", onMouseMove, { passive: true });
       thumbEl.addEventListener("touchend", onMouseUp);
     };
     const detachEvents = () => {

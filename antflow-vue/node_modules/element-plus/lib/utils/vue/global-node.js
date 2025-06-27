@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../browser.js');
 var core = require('@vueuse/core');
 
 const globalNodes = [];
@@ -12,8 +11,10 @@ function createGlobalNode(id) {
   if (id !== void 0) {
     el.setAttribute("id", id);
   }
-  target.appendChild(el);
-  globalNodes.push(el);
+  if (target) {
+    target.appendChild(el);
+    globalNodes.push(el);
+  }
   return el;
 }
 function removeGlobalNode(el) {
@@ -25,7 +26,7 @@ function changeGlobalNodesTarget(el) {
     return;
   target = el;
   globalNodes.forEach((el2) => {
-    if (el2.contains(target) === false) {
+    if (target && !el2.contains(target)) {
       target.appendChild(el2);
     }
   });

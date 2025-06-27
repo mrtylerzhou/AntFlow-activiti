@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var index$1 = require('../../icon/index.js');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var avatar = require('./avatar2.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-namespace/index.js');
@@ -13,7 +11,6 @@ var shared = require('@vue/shared');
 var types = require('../../../utils/types.js');
 var style = require('../../../utils/dom/style.js');
 
-const _hoisted_1 = ["src", "alt", "srcset"];
 const __default__ = vue.defineComponent({
   name: "ElAvatar"
 });
@@ -62,7 +59,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           srcset: _ctx.srcSet,
           style: vue.normalizeStyle(vue.unref(fitStyle)),
           onError: handleError
-        }, null, 44, _hoisted_1)) : _ctx.icon ? (vue.openBlock(), vue.createBlock(vue.unref(index$1.ElIcon), { key: 1 }, {
+        }, null, 44, ["src", "alt", "srcset"])) : _ctx.icon ? (vue.openBlock(), vue.createBlock(vue.unref(index$1.ElIcon), { key: 1 }, {
           default: vue.withCtx(() => [
             (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(_ctx.icon)))
           ]),

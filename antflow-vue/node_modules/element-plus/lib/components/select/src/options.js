@@ -3,10 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
 var lodashUnified = require('lodash-unified');
-require('../../../utils/index.js');
 var token = require('./token.js');
+var shared = require('@vue/shared');
 
 var ElOptions = vue.defineComponent({
   name: "ElOptions",

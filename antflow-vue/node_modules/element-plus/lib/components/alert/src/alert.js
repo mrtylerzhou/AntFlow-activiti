@@ -2,10 +2,9 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
+var icon = require('../../../utils/vue/icon.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var objects = require('../../../utils/objects.js');
-var icon = require('../../../utils/vue/icon.js');
 
 const alertEffects = ["light", "dark"];
 const alertProps = runtime.buildProps({

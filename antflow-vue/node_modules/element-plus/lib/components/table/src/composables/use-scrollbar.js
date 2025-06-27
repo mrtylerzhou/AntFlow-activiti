@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var types = require('../../../../utils/types.js');
 
 const useScrollbar = () => {

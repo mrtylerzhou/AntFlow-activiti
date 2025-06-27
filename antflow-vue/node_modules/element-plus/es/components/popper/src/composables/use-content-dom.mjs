@@ -1,6 +1,4 @@
 import { computed, unref, ref } from 'vue';
-import '../../../../hooks/index.mjs';
-import '../../../../utils/index.mjs';
 import { useZIndex } from '../../../../hooks/use-z-index/index.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { isNumber } from '../../../../utils/types.mjs';

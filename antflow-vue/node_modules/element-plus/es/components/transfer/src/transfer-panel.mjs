@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { transferProps, transferCheckedChangeFn } from './transfer.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 

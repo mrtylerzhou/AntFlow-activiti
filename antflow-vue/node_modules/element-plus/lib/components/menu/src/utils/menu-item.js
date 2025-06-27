@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
 var submenu = require('./submenu.js');
 var aria = require('../../../../constants/aria.js');
 var aria$1 = require('../../../../utils/dom/aria.js');
@@ -44,6 +42,7 @@ class MenuItem {
           break;
         }
         case aria.EVENT_CODE.enter:
+        case aria.EVENT_CODE.numpadEnter:
         case aria.EVENT_CODE.space: {
           prevDef = true;
           event.currentTarget.click();

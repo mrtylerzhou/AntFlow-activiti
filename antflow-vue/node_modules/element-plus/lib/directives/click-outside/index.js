@@ -2,25 +2,28 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var core = require('@vueuse/core');
+var shared = require('@vue/shared');
 var types = require('../../utils/types.js');
 
 const nodeList = /* @__PURE__ */ new Map();
-let startClick;
 if (core.isClient) {
+  let startClick;
   document.addEventListener("mousedown", (e) => startClick = e);
   document.addEventListener("mouseup", (e) => {
-    for (const handlers of nodeList.values()) {
-      for (const { documentHandler } of handlers) {
-        documentHandler(e, startClick);
+    if (startClick) {
+      for (const handlers of nodeList.values()) {
+        for (const { documentHandler } of handlers) {
+          documentHandler(e, startClick);
+        }
       }
+      startClick = void 0;
     }
   });
 }
 function createDocumentHandler(el, binding) {
   let excludes = [];
-  if (Array.isArray(binding.arg)) {
+  if (shared.isArray(binding.arg)) {
     excludes = binding.arg;
   } else if (types.isElement(binding.arg)) {
     excludes.push(binding.arg);

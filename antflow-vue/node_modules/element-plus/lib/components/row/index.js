@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var row$1 = require('./src/row2.js');
 var row = require('./src/row.js');
 var constants = require('./src/constants.js');

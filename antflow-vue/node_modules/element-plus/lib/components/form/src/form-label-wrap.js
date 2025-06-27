@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var error = require('../../../utils/error.js');
 var index = require('../../../hooks/use-namespace/index.js');
@@ -77,7 +75,8 @@ var FormLabelWrap = vue.defineComponent({
         const style = {};
         if (hasLabel && autoLabelWidth && autoLabelWidth !== "auto") {
           const marginWidth = Math.max(0, Number.parseInt(autoLabelWidth, 10) - computedWidth.value);
-          const marginPosition = formContext.labelPosition === "left" ? "marginRight" : "marginLeft";
+          const labelPosition = formItemContext.labelPosition || formContext.labelPosition;
+          const marginPosition = labelPosition === "left" ? "marginRight" : "marginLeft";
           if (marginWidth) {
             style[marginPosition] = `${marginWidth}px`;
           }

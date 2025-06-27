@@ -1,14 +1,10 @@
 import { defineComponent, useSlots, inject, computed, openBlock, createElementBlock, normalizeClass, unref, withDirectives, isRef, withModifiers, vModelCheckbox, normalizeStyle, renderSlot, createTextVNode, toDisplayString, createCommentVNode } from 'vue';
-import '../../../hooks/index.mjs';
 import { checkboxGroupContextKey } from './constants.mjs';
-import './composables/index.mjs';
 import { checkboxProps, checkboxEmits } from './checkbox.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useCheckbox } from './composables/use-checkbox.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = ["name", "tabindex", "disabled", "true-value", "false-value"];
-const _hoisted_2 = ["name", "tabindex", "disabled", "value"];
 const __default__ = defineComponent({
   name: "ElCheckboxButton"
 });
@@ -50,42 +46,42 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       ];
     });
     return (_ctx, _cache) => {
-      var _a, _b;
+      var _a, _b, _c, _d;
       return openBlock(), createElementBlock("label", {
         class: normalizeClass(unref(labelKls))
       }, [
         _ctx.trueValue || _ctx.falseValue || _ctx.trueLabel || _ctx.falseLabel ? withDirectives((openBlock(), createElementBlock("input", {
           key: 0,
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => isRef(model) ? model.value = $event : null),
+          "onUpdate:modelValue": ($event) => isRef(model) ? model.value = $event : null,
           class: normalizeClass(unref(ns).be("button", "original")),
           type: "checkbox",
           name: _ctx.name,
           tabindex: _ctx.tabindex,
           disabled: unref(isDisabled),
-          "true-value": (_a = _ctx.trueValue) != null ? _a : _ctx.trueLabel,
-          "false-value": (_b = _ctx.falseValue) != null ? _b : _ctx.falseLabel,
-          onChange: _cache[1] || (_cache[1] = (...args) => unref(handleChange) && unref(handleChange)(...args)),
-          onFocus: _cache[2] || (_cache[2] = ($event) => isFocused.value = true),
-          onBlur: _cache[3] || (_cache[3] = ($event) => isFocused.value = false),
-          onClick: _cache[4] || (_cache[4] = withModifiers(() => {
-          }, ["stop"]))
-        }, null, 42, _hoisted_1)), [
+          "true-value": (_b = (_a = _ctx.trueValue) != null ? _a : _ctx.trueLabel) != null ? _b : true,
+          "false-value": (_d = (_c = _ctx.falseValue) != null ? _c : _ctx.falseLabel) != null ? _d : false,
+          onChange: unref(handleChange),
+          onFocus: ($event) => isFocused.value = true,
+          onBlur: ($event) => isFocused.value = false,
+          onClick: withModifiers(() => {
+          }, ["stop"])
+        }, null, 42, ["onUpdate:modelValue", "name", "tabindex", "disabled", "true-value", "false-value", "onChange", "onFocus", "onBlur", "onClick"])), [
           [vModelCheckbox, unref(model)]
         ]) : withDirectives((openBlock(), createElementBlock("input", {
           key: 1,
-          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => isRef(model) ? model.value = $event : null),
+          "onUpdate:modelValue": ($event) => isRef(model) ? model.value = $event : null,
           class: normalizeClass(unref(ns).be("button", "original")),
           type: "checkbox",
           name: _ctx.name,
           tabindex: _ctx.tabindex,
           disabled: unref(isDisabled),
           value: unref(actualValue),
-          onChange: _cache[6] || (_cache[6] = (...args) => unref(handleChange) && unref(handleChange)(...args)),
-          onFocus: _cache[7] || (_cache[7] = ($event) => isFocused.value = true),
-          onBlur: _cache[8] || (_cache[8] = ($event) => isFocused.value = false),
-          onClick: _cache[9] || (_cache[9] = withModifiers(() => {
-          }, ["stop"]))
-        }, null, 42, _hoisted_2)), [
+          onChange: unref(handleChange),
+          onFocus: ($event) => isFocused.value = true,
+          onBlur: ($event) => isFocused.value = false,
+          onClick: withModifiers(() => {
+          }, ["stop"])
+        }, null, 42, ["onUpdate:modelValue", "name", "tabindex", "disabled", "value", "onChange", "onFocus", "onBlur", "onClick"])), [
           [vModelCheckbox, unref(model)]
         ]),
         _ctx.$slots.default || _ctx.label ? (openBlock(), createElementBlock("span", {

@@ -1,8 +1,7 @@
 import { inject, ref, computed, unref } from 'vue';
-import '../../../hooks/index.mjs';
 import { collapseContextKey } from './constants.mjs';
-import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { useIdInjection } from '../../../hooks/use-id/index.mjs';
+import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
 const useCollapseItem = (props) => {
   const collapse = inject(collapseContextKey);

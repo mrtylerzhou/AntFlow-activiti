@@ -1,7 +1,6 @@
 'use strict';
 
 require('../../base/style/css.js');
-require('../../input/style/css.js');
 require('../../tag/style/css.js');
 require('../../option/style/css.js');
 require('../../option-group/style/css.js');

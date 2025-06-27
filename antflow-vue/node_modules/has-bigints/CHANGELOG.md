@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0](https://github.com/inspect-js/has-bigints/compare/v1.0.2...v1.1.0) - 2024-12-18
+
+### Commits
+
+- [meta] use `npmignore` to autogenerate an npmignore file [`a411cea`](https://github.com/inspect-js/has-bigints/commit/a411ceaf68bc297944c1627ec914455843195398)
+- [actions] split out node 10-20, and 20+ [`4515878`](https://github.com/inspect-js/has-bigints/commit/45158780f412a6362d7a6116c552f75e23b4be38)
+- [New] add types [`c888241`](https://github.com/inspect-js/has-bigints/commit/c888241a4fda933a270369419d11ce7f19ea50ce)
+- [actions] update rebase action to use reusable workflow [`6f44338`](https://github.com/inspect-js/has-bigints/commit/6f44338ebca614230de3c87dc82719cf067335a2)
+- [Dev Deps] update `@ljharb/eslint-config`, `auto-changelog`, `npmignore`, `tape` [`ffa1e4d`](https://github.com/inspect-js/has-bigints/commit/ffa1e4daad689075fec091c86d6b53d4432b99ff)
+- [Dev Deps] update `aud`, `tape` [`0f5d096`](https://github.com/inspect-js/has-bigints/commit/0f5d09697b37c182587313e4a9218353f8d3d22b)
+- [meta] add missing `engines.node` [`3f73c71`](https://github.com/inspect-js/has-bigints/commit/3f73c71d7f4f13dfcec5520a51a97fb91645d9db)
+- [Tests] replace `aud` with `npm audit` [`b007efd`](https://github.com/inspect-js/has-bigints/commit/b007efdd11608912a5dcae216748840a746d3517)
+- [Dev Deps] add missing peer dep [`459c612`](https://github.com/inspect-js/has-bigints/commit/459c6126ecff63021664dbb48d19c6b1ddc2db14)
+
 ## [v1.0.2](https://github.com/inspect-js/has-bigints/compare/v1.0.1...v1.0.2) - 2022-04-19
 
 ### Commits

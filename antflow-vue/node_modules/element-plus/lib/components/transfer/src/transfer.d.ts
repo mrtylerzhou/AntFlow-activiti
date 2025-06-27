@@ -1,9 +1,9 @@
 import type { ExtractPropTypes, h as H, VNode } from 'vue';
 import type Transfer from './transfer.vue';
-export declare type TransferKey = string | number;
-export declare type TransferDirection = 'left' | 'right';
-export declare type TransferDataItem = Record<string, any>;
-export declare type renderContent = (h: typeof H, option: TransferDataItem) => VNode | VNode[];
+export type TransferKey = string | number;
+export type TransferDirection = 'left' | 'right';
+export type TransferDataItem = Record<string, any>;
+export type renderContent = (h: typeof H, option: TransferDataItem) => VNode | VNode[];
 export interface TransferFormat {
     noChecked?: string;
     hasChecked?: string;
@@ -49,13 +49,13 @@ export declare const transferProps: {
     readonly targetOrder: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "push" | "unshift" | "original", unknown, "original", boolean>;
     readonly validateEvent: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
 };
-export declare type TransferProps = ExtractPropTypes<typeof transferProps>;
-export declare const transferCheckedChangeFn: (value: TransferKey[], movedKeys?: TransferKey[] | undefined) => boolean;
+export type TransferProps = ExtractPropTypes<typeof transferProps>;
+export declare const transferCheckedChangeFn: (value: TransferKey[], movedKeys?: TransferKey[]) => boolean;
 export declare const transferEmits: {
     change: (value: TransferKey[], direction: TransferDirection, movedKeys: TransferKey[]) => boolean;
     "update:modelValue": (value: TransferKey[]) => boolean;
-    "left-check-change": (value: TransferKey[], movedKeys?: TransferKey[] | undefined) => boolean;
-    "right-check-change": (value: TransferKey[], movedKeys?: TransferKey[] | undefined) => boolean;
+    "left-check-change": (value: TransferKey[], movedKeys?: TransferKey[]) => boolean;
+    "right-check-change": (value: TransferKey[], movedKeys?: TransferKey[]) => boolean;
 };
-export declare type TransferEmits = typeof transferEmits;
-export declare type TransferInstance = InstanceType<typeof Transfer>;
+export type TransferEmits = typeof transferEmits;
+export type TransferInstance = InstanceType<typeof Transfer> & unknown;

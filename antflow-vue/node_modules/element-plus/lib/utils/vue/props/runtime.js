@@ -4,8 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../types.js');
-require('../../objects.js');
 var shared = require('@vue/shared');
 
 const epPropKey = "__epPropKey";

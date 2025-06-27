@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var index = require('../../../hooks/use-namespace/index.js');
 
 const Timeline = vue.defineComponent({

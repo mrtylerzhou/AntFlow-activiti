@@ -2,19 +2,19 @@ import type { VNode } from 'vue';
 declare const _default: import("vue").DefineComponent<{
     store: {
         required: boolean;
-        type: import("vue").PropType<any>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["store"]>;
     };
     stripe: BooleanConstructor;
     tooltipEffect: StringConstructor;
     tooltipOptions: {
-        type: import("vue").PropType<Partial<Pick<import("../../..").ElTooltipProps, "offset" | "effect" | "placement" | "popperClass" | "showAfter" | "hideAfter" | "popperOptions" | "enterable" | "appendTo" | "transition" | "showArrow">> | undefined>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["tooltipOptions"]>;
     };
     context: {
         default: () => {};
-        type: import("vue").PropType<import("../table/defaults").Table<any>>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["context"]>;
     };
-    rowClassName: import("vue").PropType<import("../table/defaults").ColumnCls<any>>;
-    rowStyle: import("vue").PropType<import("../table/defaults").ColumnStyle<any>>;
+    rowClassName: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["rowClassName"]>;
+    rowStyle: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["rowStyle"]>;
     fixed: {
         type: StringConstructor;
         default: string;
@@ -24,12 +24,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -55,19 +55,19 @@ declare const _default: import("vue").DefineComponent<{
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     store: {
         required: boolean;
-        type: import("vue").PropType<any>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["store"]>;
     };
     stripe: BooleanConstructor;
     tooltipEffect: StringConstructor;
     tooltipOptions: {
-        type: import("vue").PropType<Partial<Pick<import("../../..").ElTooltipProps, "offset" | "effect" | "placement" | "popperClass" | "showAfter" | "hideAfter" | "popperOptions" | "enterable" | "appendTo" | "transition" | "showArrow">> | undefined>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["tooltipOptions"]>;
     };
     context: {
         default: () => {};
-        type: import("vue").PropType<import("../table/defaults").Table<any>>;
+        type: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["context"]>;
     };
-    rowClassName: import("vue").PropType<import("../table/defaults").ColumnCls<any>>;
-    rowStyle: import("vue").PropType<import("../table/defaults").ColumnStyle<any>>;
+    rowClassName: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["rowClassName"]>;
+    rowStyle: import("vue").PropType<import("./defaults").TableBodyProps<import("../table/defaults").DefaultRow>["rowStyle"]>;
     fixed: {
         type: StringConstructor;
         default: string;
@@ -75,8 +75,8 @@ declare const _default: import("vue").DefineComponent<{
     highlight: BooleanConstructor;
 }>>, {
     fixed: string;
-    context: import("../table/defaults").Table<any>;
-    stripe: boolean;
     highlight: boolean;
+    context: import("element-plus").Table<any>;
+    stripe: boolean;
 }>;
 export default _default;

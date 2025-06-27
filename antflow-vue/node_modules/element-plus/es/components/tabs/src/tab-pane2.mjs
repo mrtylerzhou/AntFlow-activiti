@@ -1,14 +1,11 @@
 import { defineComponent, getCurrentInstance, useSlots, inject, ref, computed, watch, reactive, onMounted, onUnmounted, unref, withDirectives, openBlock, createElementBlock, normalizeClass, renderSlot, vShow, createCommentVNode } from 'vue';
 import { eagerComputed } from '@vueuse/core';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { tabsRootContextKey } from './constants.mjs';
 import { tabPaneProps } from './tab-pane.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { throwError } from '../../../utils/error.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = ["id", "aria-hidden", "aria-labelledby"];
 const COMPONENT_NAME = "ElTabPane";
 const __default__ = defineComponent({
   name: COMPONENT_NAME
@@ -49,8 +46,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       index,
       isClosable
     });
+    tabsRoot.registerPane(pane);
     onMounted(() => {
-      tabsRoot.registerPane(pane);
+      tabsRoot.sortPane(pane);
     });
     onUnmounted(() => {
       tabsRoot.unregisterPane(pane.uid);
@@ -65,7 +63,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         "aria-labelledby": `tab-${unref(paneName)}`
       }, [
         renderSlot(_ctx.$slots, "default")
-      ], 10, _hoisted_1)), [
+      ], 10, ["id", "aria-hidden", "aria-labelledby"])), [
         [vShow, unref(active)]
       ]) : createCommentVNode("v-if", true);
     };

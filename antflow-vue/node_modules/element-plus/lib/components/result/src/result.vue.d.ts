@@ -1,44 +1,26 @@
-declare const _default: import("vue").DefineComponent<{
-    readonly title: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly subTitle: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly icon: import("../../../utils").EpPropFinalized<StringConstructor, "success" | "warning" | "error" | "info", unknown, "info", boolean>;
-}, {
-    props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-        readonly title: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-        readonly subTitle: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-        readonly icon: import("../../../utils").EpPropFinalized<StringConstructor, "success" | "warning" | "error" | "info", unknown, "info", boolean>;
-    }>> & {
-        [x: string & `on${string}`]: ((...args: any[]) => any) | ((...args: unknown[]) => any) | undefined;
-    }>>;
-    ns: {
-        namespace: import("vue").ComputedRef<string>;
-        b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-        is: {
-            (name: string, state: boolean | undefined): string;
-            (name: string): string;
-        };
-        cssVar: (object: Record<string, string>) => Record<string, string>;
-        cssVarName: (name: string) => string;
-        cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-        cssVarBlockName: (name: string) => string;
-    };
-    resultIcon: import("vue").ComputedRef<{
-        class: "icon-success" | "icon-warning" | "icon-error" | "icon-info";
-        component: import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>;
-    }>;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
-    readonly title: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly subTitle: import("../../../utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly icon: import("../../../utils").EpPropFinalized<StringConstructor, "success" | "warning" | "error" | "info", unknown, "info", boolean>;
+declare function __VLS_template(): {
+    icon?(_: {}): any;
+    title?(_: {}): any;
+    "sub-title"?(_: {}): any;
+    extra?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
+    readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
+    readonly subTitle: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
+    readonly icon: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "error" | "success" | "warning" | "info", unknown, "info", boolean>;
+}, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, Record<string, any>, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
+    readonly subTitle: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
+    readonly icon: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "error" | "success" | "warning" | "info", unknown, "info", boolean>;
 }>>, {
     readonly title: string;
-    readonly icon: import("../../../utils").EpPropMergeType<StringConstructor, "success" | "warning" | "error" | "info", unknown>;
+    readonly icon: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "error" | "success" | "warning" | "info", unknown>;
     readonly subTitle: string;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var useTable = require('./use-table.js');
 var tokens = require('./tokens.js');
 var table = require('./table.js');
@@ -136,6 +135,7 @@ const TableV2 = vue.defineComponent({
         class: ns.e("left"),
         columns: vue.unref(fixedColumnsOnLeft),
         data: _data,
+        fixedData,
         estimatedRowHeight,
         leftTableRef,
         rowHeight,
@@ -159,6 +159,7 @@ const TableV2 = vue.defineComponent({
         class: ns.e("right"),
         columns: vue.unref(fixedColumnsOnRight),
         data: _data,
+        fixedData,
         estimatedRowHeight,
         rightTableRef,
         rowHeight,
@@ -274,6 +275,7 @@ const TableV2 = vue.defineComponent({
     };
   }
 });
+var TableV2$1 = TableV2;
 
-exports["default"] = TableV2;
+exports["default"] = TableV2$1;
 //# sourceMappingURL=table-v2.js.map

@@ -9,5 +9,5 @@ export declare const barProps: {
         __epPropKey: true;
     };
 };
-export declare type BarProps = ExtractPropTypes<typeof barProps>;
-export declare type BarInstance = InstanceType<typeof Bar>;
+export type BarProps = ExtractPropTypes<typeof barProps>;
+export type BarInstance = InstanceType<typeof Bar> & unknown;

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var useOption = require('./useOption.js');
 var useProps = require('./useProps.js');
 var defaults = require('./defaults.js');
@@ -13,7 +12,7 @@ var index = require('../../../hooks/use-namespace/index.js');
 
 const _sfc_main = vue.defineComponent({
   props: defaults.OptionProps,
-  emits: ["select", "hover"],
+  emits: defaults.optionEmits,
   setup(props, { emit }) {
     const select = vue.inject(token.selectV2InjectionKey);
     const ns = index.useNamespace("select");
@@ -27,7 +26,6 @@ const _sfc_main = vue.defineComponent({
     };
   }
 });
-const _hoisted_1 = ["aria-selected"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return vue.openBlock(), vue.createElementBlock("li", {
     "aria-selected": _ctx.selected,
@@ -39,8 +37,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _ctx.ns.is("created", _ctx.created),
       _ctx.ns.is("hovering", _ctx.hovering)
     ]),
-    onMouseenter: _cache[0] || (_cache[0] = (...args) => _ctx.hoverItem && _ctx.hoverItem(...args)),
-    onClick: _cache[1] || (_cache[1] = vue.withModifiers((...args) => _ctx.selectOptionClick && _ctx.selectOptionClick(...args), ["stop"]))
+    onMousemove: _ctx.hoverItem,
+    onClick: vue.withModifiers(_ctx.selectOptionClick, ["stop"])
   }, [
     vue.renderSlot(_ctx.$slots, "default", {
       item: _ctx.item,
@@ -49,7 +47,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     }, () => [
       vue.createElementVNode("span", null, vue.toDisplayString(_ctx.getLabel(_ctx.item)), 1)
     ])
-  ], 46, _hoisted_1);
+  ], 46, ["aria-selected", "onMousemove", "onClick"]);
 }
 var OptionItem = /* @__PURE__ */ pluginVue_exportHelper["default"](_sfc_main, [["render", _sfc_render], ["__file", "option-item.vue"]]);
 

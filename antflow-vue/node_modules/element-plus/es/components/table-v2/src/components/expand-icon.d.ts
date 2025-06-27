@@ -1,6 +1,6 @@
 import type { StyleValue } from 'vue';
 import type { TableV2RowCellRenderParam } from './row';
-declare const ExpandIcon: (props: TableV2RowCellRenderParam['expandIconProps'] & {
+declare const ExpandIcon: (props: TableV2RowCellRenderParam["expandIconProps"] & {
     class?: string | string[];
     style: StyleValue;
     size: number;
@@ -8,4 +8,4 @@ declare const ExpandIcon: (props: TableV2RowCellRenderParam['expandIconProps'] &
     expandable: boolean;
 }) => JSX.Element;
 export default ExpandIcon;
-export declare type ExpandIconInstance = ReturnType<typeof ExpandIcon>;
+export type ExpandIconInstance = ReturnType<typeof ExpandIcon>;

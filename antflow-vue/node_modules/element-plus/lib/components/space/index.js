@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var space = require('./src/space.js');
 var item = require('./src/item.js');
 var useSpace = require('./src/use-space.js');

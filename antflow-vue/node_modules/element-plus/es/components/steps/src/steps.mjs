@@ -1,5 +1,3 @@
-import '../../../constants/index.mjs';
-import '../../../utils/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { CHANGE_EVENT } from '../../../constants/event.mjs';
 import { isNumber } from '../../../utils/types.mjs';

@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var method = require('./src/method.js');
 var message = require('./src/message.js');
 var install = require('../../utils/vue/install.js');

@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-declare type ModalInstance = {
+type ModalInstance = {
     handleClose: () => void;
 };
 export declare const useModal: (instance: ModalInstance, visibleRef: Ref<boolean>) => void;

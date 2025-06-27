@@ -14,6 +14,10 @@ test('has', function (t) {
 	t.equal(traverse(obj).has(['a']), true);
 	t.equal(traverse(obj).has(['a', 2]), false);
 
+	// TODO: change this to `false`
+	t.equal(traverse(undefined).has([]), true, 'traversing a non-object somehow returns true for no paths');
+	t.equal(traverse(undefined).has(['my', 'path']), false, 'traversing a non-object does not have any paths');
+
 	t.test('symbols', { skip: !v.hasSymbols }, function (st) {
 		/* eslint no-restricted-properties: 1 */
 		var globalSymbol = Symbol.for('d');

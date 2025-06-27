@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var transferPanel = require('../transfer-panel.js');
 var usePropsAlias = require('./use-props-alias.js');
 var shared = require('@vue/shared');

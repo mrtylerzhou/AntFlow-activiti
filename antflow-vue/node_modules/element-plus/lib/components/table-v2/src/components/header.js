@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
-require('../../../../utils/index.js');
 var header = require('../header.js');
 var utils = require('../utils.js');
 var index = require('../../../../hooks/use-namespace/index.js');
@@ -19,6 +17,7 @@ const TableV2Header = vue.defineComponent({
     expose
   }) {
     const ns = index.useNamespace("table-v2");
+    const scrollLeftInfo = vue.inject("tableV2GridScrollLeft");
     const headerRef = vue.ref();
     const headerStyle = vue.computed(() => utils.enforceUnit({
       width: props.width,
@@ -78,6 +77,11 @@ const TableV2Header = vue.defineComponent({
         });
       });
     };
+    vue.onUpdated(() => {
+      if (scrollLeftInfo == null ? void 0 : scrollLeftInfo.value) {
+        scrollToLeft(scrollLeftInfo.value);
+      }
+    });
     expose({
       scrollToLeft
     });
@@ -96,6 +100,7 @@ const TableV2Header = vue.defineComponent({
     };
   }
 });
+var Header = TableV2Header;
 
-exports["default"] = TableV2Header;
+exports["default"] = Header;
 //# sourceMappingURL=header.js.map

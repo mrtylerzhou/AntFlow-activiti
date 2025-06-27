@@ -3,10 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-var shared = require('@vue/shared');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var index = require('../../../hooks/use-forward-ref/index.js');
+var shared = require('@vue/shared');
 var error = require('../../../utils/error.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 

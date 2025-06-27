@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../constants/index.js');
-require('../../../hooks/index.js');
 var checkTag = require('./check-tag.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-namespace/index.js');
@@ -20,12 +18,16 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   setup(__props, { emit }) {
     const props = __props;
     const ns = index.useNamespace("check-tag");
+    const isDisabled = vue.computed(() => props.disabled);
     const containerKls = vue.computed(() => [
       ns.b(),
       ns.is("checked", props.checked),
+      ns.is("disabled", isDisabled.value),
       ns.m(props.type || "primary")
     ]);
     const handleChange = () => {
+      if (isDisabled.value)
+        return;
       const checked = !props.checked;
       emit(event.CHANGE_EVENT, checked);
       emit("update:checked", checked);

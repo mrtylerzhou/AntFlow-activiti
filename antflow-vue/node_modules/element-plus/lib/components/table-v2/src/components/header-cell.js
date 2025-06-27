@@ -15,6 +15,7 @@ const HeaderCell = (props, {
 });
 HeaderCell.displayName = "ElTableV2HeaderCell";
 HeaderCell.inheritAttrs = false;
+var HeaderCell$1 = HeaderCell;
 
-exports["default"] = HeaderCell;
+exports["default"] = HeaderCell$1;
 //# sourceMappingURL=header-cell.js.map

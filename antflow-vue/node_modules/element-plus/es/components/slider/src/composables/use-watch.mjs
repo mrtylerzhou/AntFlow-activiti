@@ -1,8 +1,8 @@
 import { watch } from 'vue';
-import '../../../../constants/index.mjs';
-import '../../../../utils/index.mjs';
-import { UPDATE_MODEL_EVENT, INPUT_EVENT } from '../../../../constants/event.mjs';
+import { isArray } from '@vue/shared';
 import { throwError, debugWarn } from '../../../../utils/error.mjs';
+import { isNumber } from '../../../../utils/types.mjs';
+import { UPDATE_MODEL_EVENT, INPUT_EVENT } from '../../../../constants/event.mjs';
 
 const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
   const _emit = (val) => {
@@ -22,7 +22,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
       throwError("Slider", "min should not be greater than max.");
     }
     const val = props.modelValue;
-    if (props.range && Array.isArray(val)) {
+    if (props.range && isArray(val)) {
       if (val[1] < props.min) {
         _emit([props.min, props.min]);
       } else if (val[0] > props.max) {
@@ -41,7 +41,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
           initData.oldValue = val.slice();
         }
       }
-    } else if (!props.range && typeof val === "number" && !Number.isNaN(val)) {
+    } else if (!props.range && isNumber(val) && !Number.isNaN(val)) {
       if (val < props.min) {
         _emit(props.min);
       } else if (val > props.max) {
@@ -64,7 +64,7 @@ const useWatch = (props, initData, minValue, maxValue, emit, elFormItem) => {
     }
   });
   watch(() => props.modelValue, (val, oldVal) => {
-    if (initData.dragging || Array.isArray(val) && Array.isArray(oldVal) && val.every((item, index) => item === oldVal[index]) && initData.firstValue === val[0] && initData.secondValue === val[1]) {
+    if (initData.dragging || isArray(val) && isArray(oldVal) && val.every((item, index) => item === oldVal[index]) && initData.firstValue === val[0] && initData.secondValue === val[1]) {
       return;
     }
     setValues();

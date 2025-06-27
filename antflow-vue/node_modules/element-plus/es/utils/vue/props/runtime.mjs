@@ -1,7 +1,5 @@
 import { warn } from 'vue';
 import { fromPairs } from 'lodash-unified';
-import '../../types.mjs';
-import '../../objects.mjs';
 import { isObject, hasOwn } from '@vue/shared';
 
 const epPropKey = "__epPropKey";

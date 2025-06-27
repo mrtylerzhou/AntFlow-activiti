@@ -3,17 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var mask = require('./mask.js');
 var helper = require('./helper.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-lockscreen/index.js');
 
-const _hoisted_1 = { style: {
-  width: "100%",
-  height: "100%"
-} };
-const _hoisted_2 = ["d"];
 const __default__ = vue.defineComponent({
   name: "ElTourMask",
   inheritAttrs: false
@@ -70,12 +64,15 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           pointerEvents: _ctx.pos && _ctx.targetAreaClickable ? "none" : "auto"
         }
       }, _ctx.$attrs), [
-        (vue.openBlock(), vue.createElementBlock("svg", _hoisted_1, [
+        (vue.openBlock(), vue.createElementBlock("svg", { style: {
+          width: "100%",
+          height: "100%"
+        } }, [
           vue.createElementVNode("path", {
             class: vue.normalizeClass(vue.unref(ns).e("hollow")),
             style: vue.normalizeStyle(vue.unref(pathStyle)),
             d: vue.unref(path)
-          }, null, 14, _hoisted_2)
+          }, null, 14, ["d"])
         ]))
       ], 16)) : vue.createCommentVNode("v-if", true);
     };

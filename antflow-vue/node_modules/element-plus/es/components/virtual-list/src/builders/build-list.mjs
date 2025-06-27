@@ -1,16 +1,14 @@
-import { defineComponent, getCurrentInstance, ref, computed, unref, nextTick, onMounted, onUpdated, resolveDynamicComponent, h } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
+import { defineComponent, getCurrentInstance, ref, computed, unref, onMounted, onUpdated, onActivated, resolveDynamicComponent, h, Fragment, nextTick } from 'vue';
+import { useEventListener, isClient } from '@vueuse/core';
 import { useCache } from '../hooks/use-cache.mjs';
 import useWheel from '../hooks/use-wheel.mjs';
 import ScrollBar from '../components/scrollbar.mjs';
-import { isHorizontal, getScrollDir, getRTLOffsetType } from '../utils.mjs';
+import { isHorizontal, getRTLOffsetType, getScrollDir } from '../utils.mjs';
 import { virtualizedListProps } from '../props.mjs';
-import { ITEM_RENDER_EVT, SCROLL_EVT, BACKWARD, FORWARD, RTL, RTL_OFFSET_POS_DESC, RTL_OFFSET_NAG, AUTO_ALIGNMENT, HORIZONTAL, RTL_OFFSET_POS_ASC } from '../defaults.mjs';
+import { ITEM_RENDER_EVT, SCROLL_EVT, HORIZONTAL, RTL, RTL_OFFSET_POS_ASC, RTL_OFFSET_NAG, BACKWARD, FORWARD, AUTO_ALIGNMENT, RTL_OFFSET_POS_DESC } from '../defaults.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { isNumber } from '../../../../utils/types.mjs';
-import { hasOwn, isString } from '@vue/shared';
-import { isClient } from '@vueuse/core';
+import { isString, hasOwn } from '@vue/shared';
 
 const createList = ({
   name,
@@ -94,9 +92,11 @@ const createList = ({
         layout: computed(() => props.layout)
       }, (offset) => {
         var _a, _b;
-        ;
         (_b = (_a = scrollbarRef.value).onMouseUp) == null ? void 0 : _b.call(_a);
         scrollTo(Math.min(states.value.scrollOffset + offset, estimatedTotalSize.value - clientSize.value));
+      });
+      useEventListener(windowRef, "wheel", onWheel, {
+        passive: false
       });
       const emitEvents = () => {
         const { total } = props;
@@ -258,6 +258,9 @@ const createList = ({
           }
         }
       });
+      onActivated(() => {
+        unref(windowRef).scrollTop = unref(states).scrollOffset;
+      });
       const api = {
         ns,
         clientSize,
@@ -304,7 +307,6 @@ const createList = ({
         total,
         onScroll,
         onScrollbarScroll,
-        onWheel,
         states,
         useIsScrolling,
         windowStyle,
@@ -316,13 +318,12 @@ const createList = ({
       const children = [];
       if (total > 0) {
         for (let i = start; i <= end; i++) {
-          children.push((_a = $slots.default) == null ? void 0 : _a.call($slots, {
+          children.push(h(Fragment, { key: i }, (_a = $slots.default) == null ? void 0 : _a.call($slots, {
             data,
-            key: i,
             index: i,
             isScrolling: useIsScrolling ? states.isScrolling : void 0,
             style: getItemStyle(i)
-          }));
+          })));
         }
       }
       const InnerNode = [
@@ -346,7 +347,6 @@ const createList = ({
         class: [ns.e("window"), className],
         style: windowStyle,
         onScroll,
-        onWheel,
         ref: "windowRef",
         key: 0
       }, !isString(Container) ? { default: () => [InnerNode] } : [InnerNode]);

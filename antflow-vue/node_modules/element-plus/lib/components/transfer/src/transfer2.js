@@ -3,28 +3,22 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-require('../../../hooks/index.js');
 var index$2 = require('../../button/index.js');
 var index$3 = require('../../icon/index.js');
-require('../../form/index.js');
 var iconsVue = require('@element-plus/icons-vue');
 var transfer = require('./transfer.js');
-require('./composables/index.js');
 var transferPanel = require('./transfer-panel2.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
+var useComputedData = require('./composables/use-computed-data.js');
+var useMove = require('./composables/use-move.js');
+var useCheckedChange = require('./composables/use-checked-change.js');
 var index = require('../../../hooks/use-locale/index.js');
 var index$1 = require('../../../hooks/use-namespace/index.js');
 var useFormItem = require('../../form/src/hooks/use-form-item.js');
 var usePropsAlias = require('./composables/use-props-alias.js');
-var useComputedData = require('./composables/use-computed-data.js');
-var useCheckedChange = require('./composables/use-checked-change.js');
-var useMove = require('./composables/use-move.js');
 var error = require('../../../utils/error.js');
 var types = require('../../../utils/types.js');
 
-const _hoisted_1 = { key: 0 };
-const _hoisted_2 = { key: 0 };
 const __default__ = vue.defineComponent({
   name: "ElTransfer"
 });
@@ -69,10 +63,13 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       }
     });
     const optionRender = vue.computed(() => (option) => {
+      var _a;
       if (props.renderContent)
         return props.renderContent(vue.h, option);
-      if (slots.default)
-        return slots.default({ option });
+      const defaultSlotVNodes = (((_a = slots.default) == null ? void 0 : _a.call(slots, { option })) || []).filter((node) => node.type !== vue.Comment);
+      if (defaultSlotVNodes.length) {
+        return defaultSlotVNodes;
+      }
       return vue.h("span", option[propsAlias.value.label] || option[propsAlias.value.key]);
     });
     expose({
@@ -98,6 +95,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           props: props.props,
           onCheckedChange: vue.unref(onSourceCheckedChange)
         }, {
+          empty: vue.withCtx(() => [
+            vue.renderSlot(_ctx.$slots, "left-empty")
+          ]),
           default: vue.withCtx(() => [
             vue.renderSlot(_ctx.$slots, "left-footer")
           ]),
@@ -119,7 +119,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
                 ]),
                 _: 1
               }),
-              !vue.unref(types.isUndefined)(_ctx.buttonTexts[0]) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_1, vue.toDisplayString(_ctx.buttonTexts[0]), 1)) : vue.createCommentVNode("v-if", true)
+              !vue.unref(types.isUndefined)(_ctx.buttonTexts[0]) ? (vue.openBlock(), vue.createElementBlock("span", { key: 0 }, vue.toDisplayString(_ctx.buttonTexts[0]), 1)) : vue.createCommentVNode("v-if", true)
             ]),
             _: 1
           }, 8, ["class", "disabled", "onClick"]),
@@ -130,7 +130,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             onClick: vue.unref(addToRight)
           }, {
             default: vue.withCtx(() => [
-              !vue.unref(types.isUndefined)(_ctx.buttonTexts[1]) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_2, vue.toDisplayString(_ctx.buttonTexts[1]), 1)) : vue.createCommentVNode("v-if", true),
+              !vue.unref(types.isUndefined)(_ctx.buttonTexts[1]) ? (vue.openBlock(), vue.createElementBlock("span", { key: 0 }, vue.toDisplayString(_ctx.buttonTexts[1]), 1)) : vue.createCommentVNode("v-if", true),
               vue.createVNode(vue.unref(index$3.ElIcon), null, {
                 default: vue.withCtx(() => [
                   vue.createVNode(vue.unref(iconsVue.ArrowRight))
@@ -155,6 +155,9 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           props: props.props,
           onCheckedChange: vue.unref(onTargetCheckedChange)
         }, {
+          empty: vue.withCtx(() => [
+            vue.renderSlot(_ctx.$slots, "right-empty")
+          ]),
           default: vue.withCtx(() => [
             vue.renderSlot(_ctx.$slots, "right-footer")
           ]),

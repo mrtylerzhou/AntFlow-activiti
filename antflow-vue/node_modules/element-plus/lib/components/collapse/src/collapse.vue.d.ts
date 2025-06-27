@@ -1,29 +1,31 @@
-declare const _default: import("vue").DefineComponent<{
+declare function __VLS_template(): {
+    default?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
     readonly accordion: BooleanConstructor;
-    readonly modelValue: import("../../../utils").EpPropFinalized<(new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown, () => [], boolean>;
+    readonly modelValue: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown, () => [], boolean>;
 }, {
-    props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-        readonly accordion: BooleanConstructor;
-        readonly modelValue: import("../../../utils").EpPropFinalized<(new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown, () => [], boolean>;
-    }>> & {
-        onChange?: ((value: import("./collapse").CollapseModelValue) => any) | undefined;
-        "onUpdate:modelValue"?: ((value: import("./collapse").CollapseModelValue) => any) | undefined;
-    }>>;
-    emit: ((event: "update:modelValue", value: import("./collapse").CollapseModelValue) => void) & ((event: "change", value: import("./collapse").CollapseModelValue) => void);
+    /** @description active names */
     activeNames: import("vue").Ref<(string | number)[]>;
+    /** @description set active names */
     setActiveNames: (_activeNames: import("./collapse").CollapseActiveName[]) => void;
-    rootKls: import("vue").ComputedRef<string>;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
-    "update:modelValue": (value: import("./collapse").CollapseModelValue) => boolean;
-    change: (value: import("./collapse").CollapseModelValue) => boolean;
+    "update:modelValue": (value: import("./collapse").CollapseModelValue) => void;
+    change: (value: import("./collapse").CollapseModelValue) => void;
 }, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly accordion: BooleanConstructor;
-    readonly modelValue: import("../../../utils").EpPropFinalized<(new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown, () => [], boolean>;
+    readonly modelValue: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown, () => [], boolean>;
 }>> & {
-    onChange?: ((value: import("./collapse").CollapseModelValue) => any) | undefined;
     "onUpdate:modelValue"?: ((value: import("./collapse").CollapseModelValue) => any) | undefined;
+    onChange?: ((value: import("./collapse").CollapseModelValue) => any) | undefined;
 }, {
-    readonly modelValue: import("../../../utils").EpPropMergeType<(new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => import("./collapse").CollapseModelValue & {}) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown>;
+    readonly modelValue: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue) | ((new (...args: any[]) => string | number | import("./collapse").CollapseActiveName[]) | (() => import("./collapse").CollapseModelValue))[], unknown, unknown>;
     readonly accordion: boolean;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

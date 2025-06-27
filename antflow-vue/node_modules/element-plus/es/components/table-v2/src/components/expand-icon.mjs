@@ -21,6 +21,7 @@ const ExpandIcon = (props) => {
     default: () => [createVNode(ArrowRight, null, null)]
   });
 };
+var ExpandIcon$1 = ExpandIcon;
 
-export { ExpandIcon as default };
+export { ExpandIcon$1 as default };
 //# sourceMappingURL=expand-icon.mjs.map

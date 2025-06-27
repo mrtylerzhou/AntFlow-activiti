@@ -71,6 +71,9 @@ var fi = {
       noData: "Ei tietoja",
       placeholder: "Valitse"
     },
+    mention: {
+      loading: "Lataa"
+    },
     cascader: {
       noMatch: "Ei vastaavia tietoja",
       loading: "Lataa",

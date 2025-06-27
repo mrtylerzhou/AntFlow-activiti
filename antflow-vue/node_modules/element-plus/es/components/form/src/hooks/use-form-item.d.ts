@@ -4,15 +4,15 @@ export declare const useFormItem: () => {
     form: import("../types").FormContext | undefined;
     formItem: FormItemContext | undefined;
 };
-export declare type IUseFormItemInputCommonProps = {
+export type IUseFormItemInputCommonProps = {
     id?: string;
     label?: string | number | boolean | Record<string, any>;
     ariaLabel?: string | number | boolean | Record<string, any>;
 };
 export declare const useFormItemInputId: (props: Partial<IUseFormItemInputCommonProps>, { formItemContext, disableIdGeneration, disableIdManagement, }: {
-    formItemContext?: FormItemContext | undefined;
-    disableIdGeneration?: Ref<boolean> | ComputedRef<boolean> | undefined;
-    disableIdManagement?: Ref<boolean> | ComputedRef<boolean> | undefined;
+    formItemContext?: FormItemContext;
+    disableIdGeneration?: ComputedRef<boolean> | Ref<boolean>;
+    disableIdManagement?: ComputedRef<boolean> | Ref<boolean>;
 }) => {
     isLabeledByFormItem: ComputedRef<boolean>;
     inputId: Ref<string | undefined>;

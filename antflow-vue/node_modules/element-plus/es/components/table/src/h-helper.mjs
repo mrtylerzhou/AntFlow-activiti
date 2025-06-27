@@ -1,10 +1,11 @@
 import { h } from 'vue';
+import { isUndefined } from '../../../utils/types.mjs';
 
 function hColgroup(props) {
   const isAuto = props.tableLayout === "auto";
   let columns = props.columns || [];
   if (isAuto) {
-    if (columns.every((column) => column.width === void 0)) {
+    if (columns.every(({ width }) => isUndefined(width))) {
       columns = [];
     }
   }

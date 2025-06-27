@@ -4,12 +4,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../../utils/index.js');
 var util = require('../util.js');
 var tokens = require('../tokens.js');
 var style = require('../../../../utils/dom/style.js');
 
-function isGreaterThan(a, b, epsilon = 0.01) {
+function isGreaterThan(a, b, epsilon = 0.03) {
   return a - b > epsilon;
 }
 function useEvents(props) {
@@ -72,12 +71,13 @@ function useEvents(props) {
     }
   };
   const handleCellMouseEnter = (event, row, tooltipOptions) => {
-    var _a;
+    var _a, _b, _c;
     const table = parent;
     const cell = util.getCell(event);
     const namespace = (_a = table == null ? void 0 : table.vnode.el) == null ? void 0 : _a.dataset.prefix;
+    let column;
     if (cell) {
-      const column = util.getColumnByCell({
+      column = util.getColumnByCell({
         columns: props.store.states.columns.value
       }, cell, namespace);
       if (cell.rowSpan > 1) {
@@ -96,21 +96,15 @@ function useEvents(props) {
     const range = document.createRange();
     range.setStart(cellChild, 0);
     range.setEnd(cellChild, cellChild.childNodes.length);
-    let { width: rangeWidth, height: rangeHeight } = range.getBoundingClientRect();
-    const offsetWidth = rangeWidth - Math.floor(rangeWidth);
+    const { width: rangeWidth, height: rangeHeight } = range.getBoundingClientRect();
     const { width: cellChildWidth, height: cellChildHeight } = cellChild.getBoundingClientRect();
-    if (offsetWidth < 1e-3) {
-      rangeWidth = Math.floor(rangeWidth);
-    }
-    const offsetHeight = rangeHeight - Math.floor(rangeHeight);
-    if (offsetHeight < 1e-3) {
-      rangeHeight = Math.floor(rangeHeight);
-    }
     const { top, left, right, bottom } = getPadding(cellChild);
     const horizontalPadding = left + right;
     const verticalPadding = top + bottom;
     if (isGreaterThan(rangeWidth + horizontalPadding, cellChildWidth) || isGreaterThan(rangeHeight + verticalPadding, cellChildHeight) || isGreaterThan(cellChild.scrollWidth, cellChildWidth)) {
-      util.createTablePopper(tooltipOptions, cell.innerText || cell.textContent, cell, table);
+      util.createTablePopper(tooltipOptions, cell.innerText || cell.textContent, row, column, cell, table);
+    } else if (((_b = util.removePopper) == null ? void 0 : _b.trigger) === cell) {
+      (_c = util.removePopper) == null ? void 0 : _c();
     }
   };
   const handleCellMouseLeave = (event) => {

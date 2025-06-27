@@ -1,11 +1,8 @@
 import { defineComponent, inject, ref, computed, openBlock, createBlock, Transition, unref, withCtx, createElementBlock, normalizeClass, createElementVNode, createVNode, toDisplayString, createCommentVNode } from 'vue';
 import dayjs from 'dayjs';
-import '../../../../constants/index.mjs';
-import '../../../../hooks/index.mjs';
-import '../../../../utils/index.mjs';
 import { panelTimePickerProps } from '../props/panel-time-picker.mjs';
 import { useTimePanel } from '../composables/use-time-panel.mjs';
-import { buildAvailableTimeSlotGetter, useOldValue } from '../composables/use-time-picker.mjs';
+import { useOldValue, buildAvailableTimeSlotGetter } from '../composables/use-time-picker.mjs';
 import TimeSpinner from './basic-time-spinner.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
@@ -155,8 +152,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               createElementVNode("button", {
                 type: "button",
                 class: normalizeClass([unref(ns).be("panel", "btn"), "confirm"]),
-                onClick: _cache[0] || (_cache[0] = ($event) => handleConfirm())
-              }, toDisplayString(unref(t)("el.datepicker.confirm")), 3)
+                onClick: ($event) => handleConfirm()
+              }, toDisplayString(unref(t)("el.datepicker.confirm")), 11, ["onClick"])
             ], 2)
           ], 2)) : createCommentVNode("v-if", true)
         ]),

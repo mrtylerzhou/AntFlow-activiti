@@ -1,20 +1,18 @@
-import { ref, computed, unref, defineComponent, inject, createVNode } from 'vue';
-import '../../virtual-list/index.mjs';
-import '../../../utils/index.mjs';
-import './components/index.mjs';
+import { defineComponent, inject, provide, unref, createVNode, ref, computed, watch } from 'vue';
 import { TableV2InjectionKey } from './tokens.mjs';
 import { tableV2GridProps } from './grid.mjs';
 import { sum } from './utils.mjs';
-import { isObject } from '@vue/shared';
-import { isNumber } from '../../../utils/types.mjs';
+import Header from './components/header.mjs';
 import DynamicSizeGrid from '../../virtual-list/src/components/dynamic-size-grid.mjs';
 import FixedSizeGrid from '../../virtual-list/src/components/fixed-size-grid.mjs';
-import TableV2Header from './components/header.mjs';
+import { isObject } from '@vue/shared';
+import { isNumber } from '../../../utils/types.mjs';
 
 const COMPONENT_NAME = "ElTableV2Grid";
 const useTableGrid = (props) => {
   const headerRef = ref();
   const bodyRef = ref();
+  const scrollLeft = ref(0);
   const totalHeight = computed(() => {
     const {
       data,
@@ -70,9 +68,11 @@ const useTableGrid = (props) => {
     const body$ = unref(bodyRef);
     if (isObject(leftOrOptions)) {
       header$ == null ? void 0 : header$.scrollToLeft(leftOrOptions.scrollLeft);
+      scrollLeft.value = leftOrOptions.scrollLeft;
       body$ == null ? void 0 : body$.scrollTo(leftOrOptions);
     } else {
       header$ == null ? void 0 : header$.scrollToLeft(leftOrOptions);
+      scrollLeft.value = leftOrOptions;
       body$ == null ? void 0 : body$.scrollTo({
         scrollLeft: leftOrOptions,
         scrollTop: top
@@ -94,6 +94,13 @@ const useTableGrid = (props) => {
     (_a = unref(bodyRef)) == null ? void 0 : _a.$forceUpdate();
     (_b = unref(headerRef)) == null ? void 0 : _b.$forceUpdate();
   }
+  watch(() => props.bodyWidth, () => {
+    var _a;
+    if (isNumber(props.estimatedRowHeight))
+      (_a = bodyRef.value) == null ? void 0 : _a.resetAfter({
+        columnIndex: 0
+      }, false);
+  });
   return {
     bodyRef,
     forceUpdate,
@@ -108,7 +115,8 @@ const useTableGrid = (props) => {
     resetAfterRowIndex,
     scrollTo,
     scrollToTop,
-    scrollToRow
+    scrollToRow,
+    scrollLeft
   };
 };
 const TableGrid = defineComponent({
@@ -135,8 +143,10 @@ const TableGrid = defineComponent({
       resetAfterRowIndex,
       scrollTo,
       scrollToTop,
-      scrollToRow
+      scrollToRow,
+      scrollLeft
     } = useTableGrid(props);
+    provide("tableV2GridScrollLeft", scrollLeft);
     expose({
       forceUpdate,
       totalHeight,
@@ -204,7 +214,7 @@ const TableGrid = defineComponent({
             rowData
           });
         }
-      }), unref(hasHeader) && createVNode(TableV2Header, {
+      }), unref(hasHeader) && createVNode(Header, {
         "ref": headerRef,
         "class": ns.e("header-wrapper"),
         "columns": columns,
@@ -222,6 +232,7 @@ const TableGrid = defineComponent({
     };
   }
 });
+var Table = TableGrid;
 
-export { TableGrid as default };
+export { Table as default };
 //# sourceMappingURL=table-grid.mjs.map

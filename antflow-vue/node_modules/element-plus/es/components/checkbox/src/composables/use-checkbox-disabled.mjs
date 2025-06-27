@@ -1,6 +1,4 @@
 import { inject, computed } from 'vue';
-import '../../../form/index.mjs';
-import '../../../../utils/index.mjs';
 import { checkboxGroupContextKey } from '../constants.mjs';
 import { isUndefined } from '../../../../utils/types.mjs';
 import { useFormDisabled } from '../../../form/src/hooks/use-form-common-props.mjs';

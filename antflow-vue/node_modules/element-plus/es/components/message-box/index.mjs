@@ -1,5 +1,4 @@
 import MessageBox from './src/messageBox.mjs';
-import './src/message-box.type.mjs';
 
 const _MessageBox = MessageBox;
 _MessageBox.install = (app) => {

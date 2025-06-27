@@ -10,7 +10,7 @@ export declare const IconComponentMap: Record<typeof IconMap[keyof typeof IconMa
 export declare const resultProps: {
     readonly title: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly subTitle: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly icon: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "success" | "warning" | "error" | "info", unknown, "info", boolean>;
+    readonly icon: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "error" | "success" | "warning" | "info", unknown, "info", boolean>;
 };
-export declare type ResultProps = ExtractPropTypes<typeof resultProps>;
-export declare type ResultInstance = InstanceType<typeof Result>;
+export type ResultProps = ExtractPropTypes<typeof resultProps>;
+export type ResultInstance = InstanceType<typeof Result> & unknown;

@@ -3,22 +3,20 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../virtual-list/index.js');
-require('../../../utils/index.js');
-require('./components/index.js');
 var tokens = require('./tokens.js');
 var grid = require('./grid.js');
 var utils = require('./utils.js');
-var shared = require('@vue/shared');
-var types = require('../../../utils/types.js');
+var header = require('./components/header.js');
 var dynamicSizeGrid = require('../../virtual-list/src/components/dynamic-size-grid.js');
 var fixedSizeGrid = require('../../virtual-list/src/components/fixed-size-grid.js');
-var header = require('./components/header.js');
+var shared = require('@vue/shared');
+var types = require('../../../utils/types.js');
 
 const COMPONENT_NAME = "ElTableV2Grid";
 const useTableGrid = (props) => {
   const headerRef = vue.ref();
   const bodyRef = vue.ref();
+  const scrollLeft = vue.ref(0);
   const totalHeight = vue.computed(() => {
     const {
       data,
@@ -74,9 +72,11 @@ const useTableGrid = (props) => {
     const body$ = vue.unref(bodyRef);
     if (shared.isObject(leftOrOptions)) {
       header$ == null ? void 0 : header$.scrollToLeft(leftOrOptions.scrollLeft);
+      scrollLeft.value = leftOrOptions.scrollLeft;
       body$ == null ? void 0 : body$.scrollTo(leftOrOptions);
     } else {
       header$ == null ? void 0 : header$.scrollToLeft(leftOrOptions);
+      scrollLeft.value = leftOrOptions;
       body$ == null ? void 0 : body$.scrollTo({
         scrollLeft: leftOrOptions,
         scrollTop: top
@@ -98,6 +98,13 @@ const useTableGrid = (props) => {
     (_a = vue.unref(bodyRef)) == null ? void 0 : _a.$forceUpdate();
     (_b = vue.unref(headerRef)) == null ? void 0 : _b.$forceUpdate();
   }
+  vue.watch(() => props.bodyWidth, () => {
+    var _a;
+    if (types.isNumber(props.estimatedRowHeight))
+      (_a = bodyRef.value) == null ? void 0 : _a.resetAfter({
+        columnIndex: 0
+      }, false);
+  });
   return {
     bodyRef,
     forceUpdate,
@@ -112,7 +119,8 @@ const useTableGrid = (props) => {
     resetAfterRowIndex,
     scrollTo,
     scrollToTop,
-    scrollToRow
+    scrollToRow,
+    scrollLeft
   };
 };
 const TableGrid = vue.defineComponent({
@@ -139,8 +147,10 @@ const TableGrid = vue.defineComponent({
       resetAfterRowIndex,
       scrollTo,
       scrollToTop,
-      scrollToRow
+      scrollToRow,
+      scrollLeft
     } = useTableGrid(props);
+    vue.provide("tableV2GridScrollLeft", scrollLeft);
     expose({
       forceUpdate,
       totalHeight,
@@ -226,6 +236,7 @@ const TableGrid = vue.defineComponent({
     };
   }
 });
+var Table = TableGrid;
 
-exports["default"] = TableGrid;
+exports["default"] = Table;
 //# sourceMappingURL=table-grid.js.map

@@ -2,10 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../constants/index.js');
-var shared = require('@vue/shared');
 var runtime = require('../../../utils/vue/props/runtime.js');
+var shared = require('@vue/shared');
 var event = require('../../../constants/event.js');
 
 const isValidRange = (range) => shared.isArray(range) && range.length === 2 && range.every((item) => shared.isDate(item));

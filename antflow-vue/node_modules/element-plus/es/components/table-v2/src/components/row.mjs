@@ -1,10 +1,9 @@
-import { inject, ref, computed, unref, nextTick, onMounted, defineComponent, createVNode, mergeProps } from 'vue';
-import '../../../../utils/index.mjs';
+import { defineComponent, unref, createVNode, mergeProps, inject, ref, computed, onMounted, nextTick } from 'vue';
 import { tableV2RowProps } from '../row.mjs';
 import { TableV2InjectionKey } from '../tokens.mjs';
 import { placeholderSign } from '../private.mjs';
+import { isArray, isFunction } from '@vue/shared';
 import { isNumber } from '../../../../utils/types.mjs';
-import { isFunction, isArray } from '@vue/shared';
 
 const useTableRow = (props) => {
   const {
@@ -64,7 +63,6 @@ const useTableRow = (props) => {
       }
     });
     if (onRowHover) {
-      ;
       [{
         name: "onMouseleave",
         hovered: false
@@ -204,6 +202,7 @@ const TableV2Row = defineComponent({
     };
   }
 });
+var Row = TableV2Row;
 
-export { TableV2Row as default };
+export { Row as default };
 //# sourceMappingURL=row.mjs.map

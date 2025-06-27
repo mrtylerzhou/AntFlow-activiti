@@ -18,9 +18,10 @@ This package implements the [es-shim API](https://github.com/es-shims/api) inter
 Most common usage:
 ```js
 var flags = require('regexp.prototype.flags');
+var assert = require('assert');
 
 assert(flags(/a/) === '');
-assert(flags(new RegExp('a') === '');
+assert(flags(new RegExp('a')) === '');
 assert(flags(/a/mig) === 'gim');
 assert(flags(new RegExp('a', 'mig')) === 'gim');
 
@@ -29,7 +30,7 @@ if (!RegExp.prototype.flags) {
 }
 
 assert(flags(/a/) === /a/.flags);
-assert(flags(new RegExp('a') === new RegExp('a').flags);
+assert(flags(new RegExp('a')) === new RegExp('a').flags);
 assert(flags(/a/mig) === /a/mig.flags);
 assert(flags(new RegExp('a', 'mig')) === new RegExp('a', 'mig').flags);
 ```

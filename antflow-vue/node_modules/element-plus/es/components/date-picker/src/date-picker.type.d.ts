@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs';
-export declare type IDatePickerType = 'year' | 'years' | 'month' | 'date' | 'dates' | 'week' | 'datetime' | 'datetimerange' | 'daterange' | 'monthrange';
-declare type DateCellType = 'normal' | 'today' | 'week' | 'next-month' | 'prev-month';
+export declare type IDatePickerType = 'year' | 'years' | 'month' | 'months' | 'date' | 'dates' | 'week' | 'datetime' | 'datetimerange' | 'daterange' | 'monthrange' | 'yearrange';
+type DateCellType = 'normal' | 'today' | 'week' | 'next-month' | 'prev-month';
 export interface DateCell {
     column?: number;
     customClass?: string;
@@ -13,6 +13,7 @@ export interface DateCell {
     isSelected?: boolean;
     start?: boolean;
     text?: number;
+    renderText?: string;
     timestamp?: number;
     date?: Date;
     dayjs?: Dayjs;

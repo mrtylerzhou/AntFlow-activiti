@@ -4,24 +4,21 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var index$1 = require('../../button/index.js');
-require('../../../directives/index.js');
-require('../../../hooks/index.js');
 var index$2 = require('../../input/index.js');
 var index$3 = require('../../overlay/index.js');
-require('../../../utils/index.js');
 var index$4 = require('../../icon/index.js');
-require('../../focus-trap/index.js');
-require('../../config-provider/index.js');
+var iconsVue = require('@element-plus/icons-vue');
+var focusTrap = require('../../focus-trap/src/focus-trap.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../directives/trap-focus/index.js');
-var focusTrap = require('../../focus-trap/src/focus-trap.js');
 var icon = require('../../../utils/vue/icon.js');
 var validator = require('../../../utils/vue/validator.js');
 var useGlobalConfig = require('../../config-provider/src/hooks/use-global-config.js');
 var index$5 = require('../../../hooks/use-id/index.js');
 var index$6 = require('../../../hooks/use-draggable/index.js');
-var index$7 = require('../../../hooks/use-same-target/index.js');
-var index$8 = require('../../../hooks/use-lockscreen/index.js');
+var shared = require('@vue/shared');
+var index$7 = require('../../../hooks/use-lockscreen/index.js');
+var index$8 = require('../../../hooks/use-same-target/index.js');
 
 const _sfc_main = vue.defineComponent({
   name: "ElMessageBox",
@@ -106,13 +103,14 @@ const _sfc_main = vue.defineComponent({
       dangerouslyUseHTMLString: false,
       distinguishCancelAndClose: false,
       icon: "",
+      closeIcon: "",
       inputPattern: null,
       inputPlaceholder: "",
       inputType: "text",
-      inputValue: null,
-      inputValidator: null,
+      inputValue: "",
+      inputValidator: void 0,
       inputErrorMessage: "",
-      message: null,
+      message: "",
       modalFade: true,
       modalClass: "",
       showCancelButton: false,
@@ -123,6 +121,8 @@ const _sfc_main = vue.defineComponent({
       action: "",
       confirmButtonLoading: false,
       cancelButtonLoading: false,
+      confirmButtonLoadingIcon: vue.markRaw(iconsVue.Loading),
+      cancelButtonLoadingIcon: vue.markRaw(iconsVue.Loading),
       confirmButtonDisabled: false,
       editorErrorMessage: "",
       validateError: false,
@@ -134,7 +134,10 @@ const _sfc_main = vue.defineComponent({
     });
     const contentId = index$5.useId();
     const inputId = index$5.useId();
-    const iconComponent = vue.computed(() => state.icon || icon.TypeComponentsMap[state.type] || "");
+    const iconComponent = vue.computed(() => {
+      const type = state.type;
+      return state.icon || type && icon.TypeComponentsMap[type] || "";
+    });
     const hasMessage = vue.computed(() => !!state.message);
     const rootRef = vue.ref();
     const headerRef = vue.ref();
@@ -144,7 +147,7 @@ const _sfc_main = vue.defineComponent({
     const confirmButtonClasses = vue.computed(() => state.confirmButtonClass);
     vue.watch(() => state.inputValue, async (val) => {
       await vue.nextTick();
-      if (props.boxType === "prompt" && val !== null) {
+      if (props.boxType === "prompt" && val) {
         validate();
       }
     }, { immediate: true });
@@ -206,7 +209,7 @@ const _sfc_main = vue.defineComponent({
         handleAction(state.distinguishCancelAndClose ? "close" : "cancel");
       }
     };
-    const overlayEvent = index$7.useSameTarget(handleWrapperClick);
+    const overlayEvent = index$8.useSameTarget(handleWrapperClick);
     const handleInputEnter = (e) => {
       if (state.inputType !== "textarea") {
         e.preventDefault();
@@ -234,14 +237,14 @@ const _sfc_main = vue.defineComponent({
           return false;
         }
         const inputValidator = state.inputValidator;
-        if (typeof inputValidator === "function") {
+        if (shared.isFunction(inputValidator)) {
           const validateResult = inputValidator(state.inputValue);
           if (validateResult === false) {
             state.editorErrorMessage = state.inputErrorMessage || t("el.messagebox.error");
             state.validateError = true;
             return false;
           }
-          if (typeof validateResult === "string") {
+          if (shared.isString(validateResult)) {
             state.editorErrorMessage = validateResult;
             state.validateError = true;
             return false;
@@ -253,8 +256,9 @@ const _sfc_main = vue.defineComponent({
       return true;
     };
     const getInputElement = () => {
-      const inputRefs = inputRef.value.$refs;
-      return inputRefs.input || inputRefs.textarea;
+      var _a, _b;
+      const inputRefs = (_a = inputRef.value) == null ? void 0 : _a.$refs;
+      return (_b = inputRefs == null ? void 0 : inputRefs.input) != null ? _b : inputRefs == null ? void 0 : inputRefs.textarea;
     };
     const handleClose = () => {
       handleAction("close");
@@ -265,7 +269,7 @@ const _sfc_main = vue.defineComponent({
       }
     };
     if (props.lockScroll) {
-      index$8.useLockscreen(visible);
+      index$7.useLockscreen(visible);
     }
     return {
       ...vue.toRefs(state),
@@ -294,19 +298,15 @@ const _sfc_main = vue.defineComponent({
     };
   }
 });
-const _hoisted_1 = ["aria-label", "aria-describedby"];
-const _hoisted_2 = ["aria-label"];
-const _hoisted_3 = ["id"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = vue.resolveComponent("el-icon");
-  const _component_close = vue.resolveComponent("close");
   const _component_el_input = vue.resolveComponent("el-input");
   const _component_el_button = vue.resolveComponent("el-button");
   const _component_el_focus_trap = vue.resolveComponent("el-focus-trap");
   const _component_el_overlay = vue.resolveComponent("el-overlay");
   return vue.openBlock(), vue.createBlock(vue.Transition, {
     name: "fade-in-linear",
-    onAfterLeave: _cache[11] || (_cache[11] = ($event) => _ctx.$emit("vanish")),
+    onAfterLeave: ($event) => _ctx.$emit("vanish"),
     persisted: ""
   }, {
     default: vue.withCtx(() => [
@@ -322,9 +322,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "aria-modal": "true",
             "aria-describedby": !_ctx.showInput ? _ctx.contentId : void 0,
             class: vue.normalizeClass(`${_ctx.ns.namespace.value}-overlay-message-box`),
-            onClick: _cache[8] || (_cache[8] = (...args) => _ctx.overlayEvent.onClick && _ctx.overlayEvent.onClick(...args)),
-            onMousedown: _cache[9] || (_cache[9] = (...args) => _ctx.overlayEvent.onMousedown && _ctx.overlayEvent.onMousedown(...args)),
-            onMouseup: _cache[10] || (_cache[10] = (...args) => _ctx.overlayEvent.onMouseup && _ctx.overlayEvent.onMouseup(...args))
+            onClick: _ctx.overlayEvent.onClick,
+            onMousedown: _ctx.overlayEvent.onMousedown,
+            onMouseup: _ctx.overlayEvent.onMouseup
           }, [
             vue.createVNode(_component_el_focus_trap, {
               loop: "",
@@ -344,8 +344,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   ]),
                   style: vue.normalizeStyle(_ctx.customStyle),
                   tabindex: "-1",
-                  onClick: _cache[7] || (_cache[7] = vue.withModifiers(() => {
-                  }, ["stop"]))
+                  onClick: vue.withModifiers(() => {
+                  }, ["stop"])
                 }, [
                   _ctx.title !== null && _ctx.title !== void 0 ? (vue.openBlock(), vue.createElementBlock("div", {
                     key: 0,
@@ -371,18 +371,18 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       type: "button",
                       class: vue.normalizeClass(_ctx.ns.e("headerbtn")),
                       "aria-label": _ctx.t("el.messagebox.close"),
-                      onClick: _cache[0] || (_cache[0] = ($event) => _ctx.handleAction(_ctx.distinguishCancelAndClose ? "close" : "cancel")),
-                      onKeydown: _cache[1] || (_cache[1] = vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction(_ctx.distinguishCancelAndClose ? "close" : "cancel"), ["prevent"]), ["enter"]))
+                      onClick: ($event) => _ctx.handleAction(_ctx.distinguishCancelAndClose ? "close" : "cancel"),
+                      onKeydown: vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction(_ctx.distinguishCancelAndClose ? "close" : "cancel"), ["prevent"]), ["enter"])
                     }, [
                       vue.createVNode(_component_el_icon, {
                         class: vue.normalizeClass(_ctx.ns.e("close"))
                       }, {
                         default: vue.withCtx(() => [
-                          vue.createVNode(_component_close)
+                          (vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(_ctx.closeIcon || "close")))
                         ]),
                         _: 1
                       }, 8, ["class"])
-                    ], 42, _hoisted_2)) : vue.createCommentVNode("v-if", true)
+                    ], 42, ["aria-label", "onClick", "onKeydown"])) : vue.createCommentVNode("v-if", true)
                   ], 2)) : vue.createCommentVNode("v-if", true),
                   vue.createElementVNode("div", {
                     id: _ctx.contentId,
@@ -428,13 +428,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         id: _ctx.inputId,
                         ref: "inputRef",
                         modelValue: _ctx.inputValue,
-                        "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.inputValue = $event),
+                        "onUpdate:modelValue": ($event) => _ctx.inputValue = $event,
                         type: _ctx.inputType,
                         placeholder: _ctx.inputPlaceholder,
                         "aria-invalid": _ctx.validateError,
                         class: vue.normalizeClass({ invalid: _ctx.validateError }),
                         onKeydown: vue.withKeys(_ctx.handleInputEnter, ["enter"])
-                      }, null, 8, ["id", "modelValue", "type", "placeholder", "aria-invalid", "class", "onKeydown"]),
+                      }, null, 8, ["id", "modelValue", "onUpdate:modelValue", "type", "placeholder", "aria-invalid", "class", "onKeydown"]),
                       vue.createElementVNode("div", {
                         class: vue.normalizeClass(_ctx.ns.e("errormsg")),
                         style: vue.normalizeStyle({
@@ -444,48 +444,50 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     ], 2), [
                       [vue.vShow, _ctx.showInput]
                     ])
-                  ], 10, _hoisted_3),
+                  ], 10, ["id"]),
                   vue.createElementVNode("div", {
                     class: vue.normalizeClass(_ctx.ns.e("btns"))
                   }, [
                     _ctx.showCancelButton ? (vue.openBlock(), vue.createBlock(_component_el_button, {
                       key: 0,
                       loading: _ctx.cancelButtonLoading,
+                      "loading-icon": _ctx.cancelButtonLoadingIcon,
                       class: vue.normalizeClass([_ctx.cancelButtonClass]),
                       round: _ctx.roundButton,
                       size: _ctx.btnSize,
-                      onClick: _cache[3] || (_cache[3] = ($event) => _ctx.handleAction("cancel")),
-                      onKeydown: _cache[4] || (_cache[4] = vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction("cancel"), ["prevent"]), ["enter"]))
+                      onClick: ($event) => _ctx.handleAction("cancel"),
+                      onKeydown: vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction("cancel"), ["prevent"]), ["enter"])
                     }, {
                       default: vue.withCtx(() => [
                         vue.createTextVNode(vue.toDisplayString(_ctx.cancelButtonText || _ctx.t("el.messagebox.cancel")), 1)
                       ]),
                       _: 1
-                    }, 8, ["loading", "class", "round", "size"])) : vue.createCommentVNode("v-if", true),
+                    }, 8, ["loading", "loading-icon", "class", "round", "size", "onClick", "onKeydown"])) : vue.createCommentVNode("v-if", true),
                     vue.withDirectives(vue.createVNode(_component_el_button, {
                       ref: "confirmRef",
                       type: "primary",
                       loading: _ctx.confirmButtonLoading,
+                      "loading-icon": _ctx.confirmButtonLoadingIcon,
                       class: vue.normalizeClass([_ctx.confirmButtonClasses]),
                       round: _ctx.roundButton,
                       disabled: _ctx.confirmButtonDisabled,
                       size: _ctx.btnSize,
-                      onClick: _cache[5] || (_cache[5] = ($event) => _ctx.handleAction("confirm")),
-                      onKeydown: _cache[6] || (_cache[6] = vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction("confirm"), ["prevent"]), ["enter"]))
+                      onClick: ($event) => _ctx.handleAction("confirm"),
+                      onKeydown: vue.withKeys(vue.withModifiers(($event) => _ctx.handleAction("confirm"), ["prevent"]), ["enter"])
                     }, {
                       default: vue.withCtx(() => [
                         vue.createTextVNode(vue.toDisplayString(_ctx.confirmButtonText || _ctx.t("el.messagebox.confirm")), 1)
                       ]),
                       _: 1
-                    }, 8, ["loading", "class", "round", "disabled", "size"]), [
+                    }, 8, ["loading", "loading-icon", "class", "round", "disabled", "size", "onClick", "onKeydown"]), [
                       [vue.vShow, _ctx.showConfirmButton]
                     ])
                   ], 2)
-                ], 6)
+                ], 14, ["onClick"])
               ]),
               _: 3
             }, 8, ["trapped", "focus-trap-el", "focus-start-el", "onReleaseRequested"])
-          ], 42, _hoisted_1)
+          ], 42, ["aria-label", "aria-describedby", "onClick", "onMousedown", "onMouseup"])
         ]),
         _: 3
       }, 8, ["z-index", "overlay-class", "mask"]), [
@@ -493,7 +495,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ])
     ]),
     _: 3
-  });
+  }, 8, ["onAfterLeave"]);
 }
 var MessageBoxConstructor = /* @__PURE__ */ pluginVue_exportHelper["default"](_sfc_main, [["render", _sfc_render], ["__file", "index.vue"]]);
 

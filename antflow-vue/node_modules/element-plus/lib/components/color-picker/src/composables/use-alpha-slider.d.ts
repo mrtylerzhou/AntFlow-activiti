@@ -2,10 +2,13 @@ import type { AlphaSliderProps } from '../props/alpha-slider';
 export declare const useAlphaSlider: (props: AlphaSliderProps) => {
     thumb: import("vue").ShallowRef<HTMLElement | undefined>;
     bar: import("vue").ShallowRef<HTMLElement | undefined>;
+    alpha: import("vue").ComputedRef<any>;
+    alphaLabel: import("vue").ComputedRef<string>;
     handleDrag: (event: MouseEvent | TouchEvent) => void;
     handleClick: (event: MouseEvent | TouchEvent) => void;
+    handleKeydown: (event: KeyboardEvent) => void;
 };
-export declare const useAlphaSliderDOM: (props: AlphaSliderProps, { bar, thumb, handleDrag, }: Pick<ReturnType<typeof useAlphaSlider>, 'bar' | 'thumb' | 'handleDrag'>) => {
+export declare const useAlphaSliderDOM: (props: AlphaSliderProps, { bar, thumb, handleDrag, }: Pick<ReturnType<typeof useAlphaSlider>, "bar" | "thumb" | "handleDrag">) => {
     rootKls: import("vue").ComputedRef<string[]>;
     barKls: import("vue").ComputedRef<string>;
     barStyle: import("vue").ComputedRef<{

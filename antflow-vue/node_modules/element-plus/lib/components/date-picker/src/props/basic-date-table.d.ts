@@ -10,7 +10,7 @@ export declare const basicDateTableProps: {
     readonly showWeekNumber: BooleanConstructor;
     readonly selectionMode: import("element-plus/es/utils").EpPropFinalized<StringConstructor, string, unknown, string, boolean>;
     readonly disabledDate: {
-        readonly type: import("vue").PropType<(date: Date) => boolean>;
+        readonly type: import("vue").PropType<import("./shared").DisabledDateType>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -45,19 +45,20 @@ export declare const basicDateTableProps: {
     }, boolean>;
 };
 export declare const basicDateTableEmits: string[];
-export declare type BasicDateTableProps = ExtractPropTypes<typeof basicDateTableProps>;
-export declare type BasicDateTableEmits = typeof basicDateTableEmits;
-export declare type RangePickerEmits = {
+export type BasicDateTableProps = ExtractPropTypes<typeof basicDateTableProps>;
+export type BasicDateTableEmits = typeof basicDateTableEmits;
+export type RangePickerEmits = {
     minDate: Dayjs;
     maxDate: null;
 };
-export declare type DatePickerEmits = Dayjs;
-export declare type DatesPickerEmits = Dayjs[];
-export declare type YearsPickerEmits = Dayjs[];
-export declare type WeekPickerEmits = {
+export type DatePickerEmits = Dayjs;
+export type DatesPickerEmits = Dayjs[];
+export type MonthsPickerEmits = Dayjs[];
+export type YearsPickerEmits = Dayjs[];
+export type WeekPickerEmits = {
     year: number;
     week: number;
     value: string;
     date: Dayjs;
 };
-export declare type DateTableEmits = RangePickerEmits | DatePickerEmits | DatesPickerEmits | WeekPickerEmits;
+export type DateTableEmits = RangePickerEmits | DatePickerEmits | DatesPickerEmits | WeekPickerEmits;

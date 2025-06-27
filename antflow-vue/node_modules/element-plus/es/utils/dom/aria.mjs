@@ -12,7 +12,7 @@ const isFocusable = (element) => {
   if (element.tabIndex > 0 || element.tabIndex === 0 && element.getAttribute("tabIndex") !== null) {
     return true;
   }
-  if (element.disabled) {
+  if (element.tabIndex < 0 || element.hasAttribute("disabled") || element.getAttribute("aria-disabled") === "true") {
     return false;
   }
   switch (element.nodeName) {

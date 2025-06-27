@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var layoutObserver = require('../layout-observer.js');
 var util = require('../util.js');
 var tokens = require('../tokens.js');

@@ -1,17 +1,15 @@
-import { defineComponent, getCurrentInstance, ref, computed, unref, nextTick, onMounted, h, resolveDynamicComponent } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
+import { defineComponent, getCurrentInstance, ref, computed, unref, onMounted, nextTick, resolveDynamicComponent, h, Fragment } from 'vue';
+import { useEventListener, isClient } from '@vueuse/core';
 import ScrollBar from '../components/scrollbar.mjs';
 import { useGridWheel } from '../hooks/use-grid-wheel.mjs';
 import { useCache } from '../hooks/use-cache.mjs';
 import { virtualizedGridProps } from '../props.mjs';
-import { isRTL, getRTLOffsetType, getScrollDir } from '../utils.mjs';
-import { ITEM_RENDER_EVT, SCROLL_EVT, FORWARD, BACKWARD, RTL_OFFSET_POS_DESC, RTL_OFFSET_NAG, AUTO_ALIGNMENT, RTL, RTL_OFFSET_POS_ASC } from '../defaults.mjs';
+import { getScrollDir, getRTLOffsetType, isRTL } from '../utils.mjs';
+import { ITEM_RENDER_EVT, SCROLL_EVT, FORWARD, BACKWARD, AUTO_ALIGNMENT, RTL, RTL_OFFSET_POS_ASC, RTL_OFFSET_NAG, RTL_OFFSET_POS_DESC } from '../defaults.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 import { isNumber } from '../../../../utils/types.mjs';
 import { getScrollBarWidth } from '../../../../utils/dom/scroll.mjs';
-import { hasOwn, isString } from '@vue/shared';
-import { isClient } from '@vueuse/core';
+import { isString, hasOwn } from '@vue/shared';
 
 const createGrid = ({
   name,
@@ -220,6 +218,9 @@ const createGrid = ({
           scrollTop: Math.min(states.value.scrollTop + y, estimatedTotalHeight.value - height)
         });
       });
+      useEventListener(windowRef, "wheel", onWheel, {
+        passive: false
+      });
       const scrollTo = ({
         scrollLeft = states.value.scrollLeft,
         scrollTop = states.value.scrollTop
@@ -393,14 +394,14 @@ const createGrid = ({
         if (totalRow > 0 && totalColumn > 0) {
           for (let row = rowStart; row <= rowEnd; row++) {
             for (let column = columnStart; column <= columnEnd; column++) {
-              children.push((_a = slots.default) == null ? void 0 : _a.call(slots, {
+              const key = itemKey({ columnIndex: column, data, rowIndex: row });
+              children.push(h(Fragment, { key }, (_a = slots.default) == null ? void 0 : _a.call(slots, {
                 columnIndex: column,
                 data,
-                key: itemKey({ columnIndex: column, data, rowIndex: row }),
                 isScrolling: useIsScrolling ? unref(states).isScrolling : void 0,
                 style: getItemStyle(row, column),
                 rowIndex: row
-              }));
+              })));
             }
           }
         }
@@ -431,7 +432,6 @@ const createGrid = ({
             class: props.className,
             style: unref(windowStyle),
             onScroll,
-            onWheel,
             ref: windowRef
           }, !isString(Container) ? { default: () => Inner } : Inner),
           horizontalScrollbar,

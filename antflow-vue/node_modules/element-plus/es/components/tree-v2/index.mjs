@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import TreeV2 from './src/tree.mjs';
 import { withInstall } from '../../utils/vue/install.mjs';
 

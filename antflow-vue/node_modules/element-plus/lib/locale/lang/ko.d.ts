@@ -76,6 +76,9 @@ declare const _default: {
             noData: string;
             placeholder: string;
         };
+        mention: {
+            loading: string;
+        };
         dropdown: {
             toggleDropdown: string;
         };

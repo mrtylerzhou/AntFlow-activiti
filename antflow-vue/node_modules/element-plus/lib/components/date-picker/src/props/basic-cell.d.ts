@@ -8,4 +8,4 @@ export declare const basicCellProps: {
         __epPropKey: true;
     };
 };
-export declare type BasicCellProps = ExtractPropTypes<typeof basicCellProps>;
+export type BasicCellProps = ExtractPropTypes<typeof basicCellProps>;

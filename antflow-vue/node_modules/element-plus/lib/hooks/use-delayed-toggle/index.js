@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
 var index = require('../use-timeout/index.js');
 var runtime = require('../../utils/vue/props/runtime.js');
 var types = require('../../utils/types.js');

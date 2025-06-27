@@ -11,5 +11,5 @@ export declare const paginationPagerProps: {
     readonly pagerCount: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 7, boolean>;
     readonly disabled: BooleanConstructor;
 };
-export declare type PaginationPagerProps = ExtractPropTypes<typeof paginationPagerProps>;
-export declare type PagerInstance = InstanceType<typeof Pager>;
+export type PaginationPagerProps = ExtractPropTypes<typeof paginationPagerProps>;
+export type PagerInstance = InstanceType<typeof Pager> & unknown;

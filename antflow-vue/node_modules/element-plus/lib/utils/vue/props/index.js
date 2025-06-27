@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('./util.js');
-require('./types.js');
 var runtime = require('./runtime.js');
 
 

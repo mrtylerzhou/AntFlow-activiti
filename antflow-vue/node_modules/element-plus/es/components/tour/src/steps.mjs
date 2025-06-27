@@ -1,7 +1,6 @@
 import { defineComponent } from 'vue';
-import '../../../utils/index.mjs';
-import { isArray } from '@vue/shared';
 import { flattedChildren } from '../../../utils/vue/vnode.mjs';
+import { isArray } from '@vue/shared';
 
 var ElTourSteps = defineComponent({
   name: "ElTourSteps",

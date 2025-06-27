@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var draggable = require('../utils/draggable.js');
 var pluginVue_exportHelper = require('../../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../../hooks/use-namespace/index.js');
@@ -80,10 +78,6 @@ const _sfc_main = vue.defineComponent({
     };
   }
 });
-const _hoisted_1 = /* @__PURE__ */ vue.createElementVNode("div", null, null, -1);
-const _hoisted_2 = [
-  _hoisted_1
-];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return vue.openBlock(), vue.createElementBlock("div", {
     class: vue.normalizeClass(_ctx.ns.b()),
@@ -103,7 +97,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         top: _ctx.cursorTop + "px",
         left: _ctx.cursorLeft + "px"
       })
-    }, _hoisted_2, 6)
+    }, [
+      vue.createElementVNode("div")
+    ], 6)
   ], 6);
 }
 var SvPanel = /* @__PURE__ */ pluginVue_exportHelper["default"](_sfc_main, [["render", _sfc_render], ["__file", "sv-panel.vue"]]);

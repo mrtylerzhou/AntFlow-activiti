@@ -1,6 +1,6 @@
 import type { Component, ExtractPropTypes } from 'vue';
 import type ImageViewer from './image-viewer.vue';
-export declare type ImageViewerAction = 'zoomIn' | 'zoomOut' | 'clockwise' | 'anticlockwise';
+export type ImageViewerAction = 'zoomIn' | 'zoomOut' | 'clockwise' | 'anticlockwise';
 export declare const imageViewerProps: {
     readonly urlList: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string[]) | (() => string[]) | ((new (...args: any[]) => string[]) | (() => string[]))[], unknown, unknown, () => [], boolean>;
     readonly zIndex: {
@@ -17,22 +17,23 @@ export declare const imageViewerProps: {
     readonly zoomRate: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 1.2, boolean>;
     readonly minScale: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 0.2, boolean>;
     readonly maxScale: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, unknown, unknown, 7, boolean>;
+    readonly showProgress: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
     readonly crossorigin: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => ("" | "anonymous" | "use-credentials") & {}) | (() => "" | "anonymous" | "use-credentials") | ((new (...args: any[]) => ("" | "anonymous" | "use-credentials") & {}) | (() => "" | "anonymous" | "use-credentials"))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => "" | "anonymous" | "use-credentials") | (() => "" | "anonymous" | "use-credentials") | ((new (...args: any[]) => "" | "anonymous" | "use-credentials") | (() => "" | "anonymous" | "use-credentials"))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
 };
-export declare type ImageViewerProps = ExtractPropTypes<typeof imageViewerProps>;
+export type ImageViewerProps = ExtractPropTypes<typeof imageViewerProps>;
 export declare const imageViewerEmits: {
     close: () => boolean;
     switch: (index: number) => boolean;
     rotate: (deg: number) => boolean;
 };
-export declare type ImageViewerEmits = typeof imageViewerEmits;
+export type ImageViewerEmits = typeof imageViewerEmits;
 export interface ImageViewerMode {
     name: string;
     icon: Component;
 }
-export declare type ImageViewerInstance = InstanceType<typeof ImageViewer>;
+export type ImageViewerInstance = InstanceType<typeof ImageViewer> & unknown;

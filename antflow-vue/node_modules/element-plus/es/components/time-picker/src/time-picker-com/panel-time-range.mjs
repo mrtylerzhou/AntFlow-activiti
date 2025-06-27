@@ -1,9 +1,6 @@
-import { defineComponent, inject, computed, ref, unref, openBlock, createElementBlock, normalizeClass, createElementVNode, toDisplayString, createVNode, createCommentVNode } from 'vue';
+import { defineComponent, inject, computed, ref, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, toDisplayString, createVNode, createCommentVNode } from 'vue';
 import dayjs from 'dayjs';
 import { union } from 'lodash-unified';
-import '../../../../hooks/index.mjs';
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
 import { panelTimeRangeProps } from '../props/panel-time-range.mjs';
 import { useTimePanel } from '../composables/use-time-panel.mjs';
 import { useOldValue, buildAvailableTimeSlotGetter } from '../composables/use-time-picker.mjs';
@@ -11,10 +8,9 @@ import TimeSpinner from './basic-time-spinner.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
-import { EVENT_CODE } from '../../../../constants/aria.mjs';
 import { isArray } from '@vue/shared';
+import { EVENT_CODE } from '../../../../constants/aria.mjs';
 
-const _hoisted_1 = ["disabled"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "panel-time-range",
   props: panelTimeRangeProps,
@@ -82,6 +78,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return parsedDate[0].isSame(result[0]) && parsedDate[1].isSame(result[1]);
     };
     const handleChange = (start, end) => {
+      if (!props.visible) {
+        return;
+      }
       emit("pick", [start, end], true);
     };
     const btnConfirmDisabled = computed(() => {
@@ -270,14 +269,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           createElementVNode("button", {
             type: "button",
             class: normalizeClass([unref(nsTime).be("panel", "btn"), "cancel"]),
-            onClick: _cache[0] || (_cache[0] = ($event) => handleCancel())
-          }, toDisplayString(unref(t)("el.datepicker.cancel")), 3),
+            onClick: ($event) => handleCancel()
+          }, toDisplayString(unref(t)("el.datepicker.cancel")), 11, ["onClick"]),
           createElementVNode("button", {
             type: "button",
             class: normalizeClass([unref(nsTime).be("panel", "btn"), "confirm"]),
             disabled: unref(btnConfirmDisabled),
-            onClick: _cache[1] || (_cache[1] = ($event) => handleConfirm())
-          }, toDisplayString(unref(t)("el.datepicker.confirm")), 11, _hoisted_1)
+            onClick: ($event) => handleConfirm()
+          }, toDisplayString(unref(t)("el.datepicker.confirm")), 11, ["disabled", "onClick"])
         ], 2)
       ], 2)) : createCommentVNode("v-if", true);
     };

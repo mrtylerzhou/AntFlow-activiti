@@ -2,13 +2,15 @@ const datePickTypes = [
   "year",
   "years",
   "month",
+  "months",
   "date",
   "dates",
   "week",
   "datetime",
   "datetimerange",
   "daterange",
-  "monthrange"
+  "monthrange",
+  "yearrange"
 ];
 const WEEK_DAYS = [
   "sun",

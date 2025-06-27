@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { CircleCheckFilled, WarningFilled, CircleCloseFilled, InfoFilled } from '@element-plus/icons-vue';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 

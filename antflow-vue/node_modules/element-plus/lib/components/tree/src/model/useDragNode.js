@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var index = require('../../../../hooks/use-namespace/index.js');
+var shared = require('@vue/shared');
 var style = require('../../../../utils/dom/style.js');
 
 const dragEventsKey = Symbol("dragEvents");
@@ -19,7 +18,7 @@ function useDragNodeHandler({ props, ctx, el$, dropIndicator$, store }) {
     dropType: null
   });
   const treeNodeDragStart = ({ event, treeNode }) => {
-    if (typeof props.allowDrag === "function" && !props.allowDrag(treeNode.node)) {
+    if (shared.isFunction(props.allowDrag) && !props.allowDrag(treeNode.node)) {
       event.preventDefault();
       return false;
     }
@@ -44,7 +43,7 @@ function useDragNodeHandler({ props, ctx, el$, dropIndicator$, store }) {
     let dropInner = true;
     let dropNext = true;
     let userAllowDropInner = true;
-    if (typeof props.allowDrop === "function") {
+    if (shared.isFunction(props.allowDrop)) {
       dropPrev = props.allowDrop(draggingNode.node, dropNode.node, "prev");
       userAllowDropInner = dropInner = props.allowDrop(draggingNode.node, dropNode.node, "inner");
       dropNext = props.allowDrop(draggingNode.node, dropNode.node, "next");
@@ -113,7 +112,9 @@ function useDragNodeHandler({ props, ctx, el$, dropIndicator$, store }) {
   const treeNodeDragEnd = (event) => {
     const { draggingNode, dropType, dropNode } = dragState.value;
     event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = "move";
+    }
     if (draggingNode && dropNode) {
       const draggingNodeCopy = { data: draggingNode.node.data };
       if (dropType !== "none") {

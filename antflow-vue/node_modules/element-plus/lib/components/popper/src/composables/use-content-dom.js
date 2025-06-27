@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
-require('../../../../utils/index.js');
 var index = require('../../../../hooks/use-z-index/index.js');
 var index$1 = require('../../../../hooks/use-namespace/index.js');
 var types = require('../../../../utils/types.js');

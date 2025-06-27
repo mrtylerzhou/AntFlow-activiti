@@ -1,7 +1,7 @@
 import type { Ref, ToRefs } from 'vue';
 import type { Middleware, Placement, SideObject, Strategy, VirtualElement } from '@floating-ui/dom';
 export declare const useFloatingProps: {};
-export declare type UseFloatingProps = ToRefs<{
+export type UseFloatingProps = ToRefs<{
     middleware: Array<Middleware>;
     placement: Placement;
     strategy: Strategy;
@@ -26,14 +26,14 @@ export declare const useFloating: ({ middleware, placement, strategy, }: UseFloa
             index?: number | undefined;
             overflows: {
                 placement: Placement;
-                overflows: number[];
+                overflows: Array<number>;
             }[];
         } | undefined;
         flip?: {
             index?: number | undefined;
             overflows: {
                 placement: Placement;
-                overflows: number[];
+                overflows: Array<number>;
             }[];
         } | undefined;
         hide?: {
@@ -62,7 +62,7 @@ export declare const useFloating: ({ middleware, placement, strategy, }: UseFloa
         } | undefined;
     }>;
 };
-export declare type ArrowMiddlewareProps = {
+export type ArrowMiddlewareProps = {
     arrowRef: Ref<HTMLElement | null | undefined>;
     padding?: number | SideObject;
 };

@@ -1,13 +1,11 @@
-import { defineComponent, useSlots, computed, openBlock, createElementBlock, normalizeClass, unref, renderSlot, createCommentVNode, createElementVNode, createBlock, withCtx, resolveDynamicComponent, createTextVNode, toDisplayString, createVNode } from 'vue';
+import { defineComponent, openBlock, createElementBlock, normalizeClass, unref, renderSlot, createCommentVNode, createElementVNode, createBlock, withCtx, resolveDynamicComponent, createTextVNode, toDisplayString, createVNode } from 'vue';
 import { ElIcon } from '../../icon/index.mjs';
 import { ElDivider } from '../../divider/index.mjs';
-import '../../../hooks/index.mjs';
 import { pageHeaderProps, pageHeaderEmits } from './page-header.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = ["aria-label"];
 const __default__ = defineComponent({
   name: "ElPageHeader"
 });
@@ -16,25 +14,21 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   props: pageHeaderProps,
   emits: pageHeaderEmits,
   setup(__props, { emit }) {
-    const slots = useSlots();
     const { t } = useLocale();
     const ns = useNamespace("page-header");
-    const kls = computed(() => {
-      return [
-        ns.b(),
-        {
-          [ns.m("has-breadcrumb")]: !!slots.breadcrumb,
-          [ns.m("has-extra")]: !!slots.extra,
-          [ns.is("contentful")]: !!slots.default
-        }
-      ];
-    });
     function handleClick() {
       emit("back");
     }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass(unref(kls))
+        class: normalizeClass([
+          unref(ns).b(),
+          {
+            [unref(ns).m("has-breadcrumb")]: !!_ctx.$slots.breadcrumb,
+            [unref(ns).m("has-extra")]: !!_ctx.$slots.extra,
+            [unref(ns).is("contentful")]: !!_ctx.$slots.default
+          }
+        ])
       }, [
         _ctx.$slots.breadcrumb ? (openBlock(), createElementBlock("div", {
           key: 0,
@@ -67,7 +61,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                     _: 1
                   })) : createCommentVNode("v-if", true)
                 ])
-              ], 10, _hoisted_1)) : createCommentVNode("v-if", true),
+              ], 10, ["aria-label"])) : createCommentVNode("v-if", true),
               createElementVNode("div", {
                 class: normalizeClass(unref(ns).e("title"))
               }, [

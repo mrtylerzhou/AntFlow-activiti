@@ -2,17 +2,13 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../../constants/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var types = require('../../../utils/types.js');
 var event = require('../../../constants/event.js');
 
 const checkTagProps = runtime.buildProps({
-  checked: {
-    type: Boolean,
-    default: false
-  },
+  checked: Boolean,
+  disabled: Boolean,
   type: {
     type: String,
     values: ["primary", "success", "info", "warning", "danger"],

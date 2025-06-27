@@ -1,7 +1,7 @@
 import type Node from './model/node';
 import type { ComponentInternalInstance, PropType } from 'vue';
 import type { Nullable } from 'element-plus/es/utils';
-import type { TreeData, TreeKey, TreeNodeData } from './tree.type';
+import type { TreeComponentProps, TreeData, TreeKey, TreeNodeData } from './tree.type';
 declare const _default: import("vue").DefineComponent<{
     data: {
         type: ArrayConstructor;
@@ -22,6 +22,10 @@ declare const _default: import("vue").DefineComponent<{
         default: boolean;
     };
     checkOnClickNode: BooleanConstructor;
+    checkOnClickLeaf: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     checkDescendants: {
         type: BooleanConstructor;
         default: boolean;
@@ -30,8 +34,8 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
-    defaultCheckedKeys: PropType<TreeKey[]>;
-    defaultExpandedKeys: PropType<TreeKey[]>;
+    defaultCheckedKeys: PropType<TreeComponentProps["defaultCheckedKeys"]>;
+    defaultExpandedKeys: PropType<TreeComponentProps["defaultExpandedKeys"]>;
     currentNodeKey: PropType<string | number>;
     renderContent: FunctionConstructor;
     showCheckbox: {
@@ -45,7 +49,7 @@ declare const _default: import("vue").DefineComponent<{
     allowDrag: FunctionConstructor;
     allowDrop: FunctionConstructor;
     props: {
-        type: PropType<import("./tree.type").TreeOptionProps>;
+        type: PropType<TreeComponentProps["props"]>;
         default: () => {
             children: string;
             label: string;
@@ -57,26 +61,26 @@ declare const _default: import("vue").DefineComponent<{
         default: boolean;
     };
     highlightCurrent: BooleanConstructor;
-    load: PropType<import("./tree.type").LoadFunction>;
-    filterNodeMethod: PropType<import("./tree.type").FilterNodeMethodFunction>;
+    load: PropType<TreeComponentProps["load"]>;
+    filterNodeMethod: PropType<TreeComponentProps["filterNodeMethod"]>;
     accordion: BooleanConstructor;
     indent: {
         type: NumberConstructor;
         default: number;
     };
     icon: {
-        type: PropType<string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>>;
+        type: PropType<string | import("vue").Component>;
     };
 }, {
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -114,17 +118,17 @@ declare const _default: import("vue").DefineComponent<{
             readonly previousSibling: any | null;
             contains: (target: Node, deep?: boolean) => boolean;
             remove: () => void;
-            insertChild: (child?: Node | import("./tree.type").FakeNode | undefined, index?: number | undefined, batch?: boolean | undefined) => void;
-            insertBefore: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
-            insertAfter: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
+            insertChild: (child?: import("./tree.type").FakeNode | Node, index?: number, batch?: boolean) => void;
+            insertBefore: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
+            insertAfter: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
             removeChild: (child: Node) => void;
             removeChildByData: (data: TreeNodeData) => void;
-            expand: (callback?: (() => void) | undefined, expandParent?: boolean | undefined) => void;
+            expand: (callback?: () => void, expandParent?: boolean) => void;
             doCreateChildren: (array: TreeNodeData[], defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
             collapse: () => void;
             shouldLoadData: () => boolean;
             updateLeafState: () => void;
-            setChecked: (value?: string | boolean | undefined, deep?: boolean | undefined, recursion?: boolean | undefined, passValue?: boolean | undefined) => void;
+            setChecked: (value?: boolean | string, deep?: boolean, recursion?: boolean, passValue?: boolean) => void;
             getChildren: (forceInit?: boolean) => TreeNodeData | TreeNodeData[];
             updateChildren: () => void;
             loadData: (callback: (node: Node) => void, defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
@@ -160,17 +164,17 @@ declare const _default: import("vue").DefineComponent<{
             readonly previousSibling: any | null;
             contains: (target: Node, deep?: boolean) => boolean;
             remove: () => void;
-            insertChild: (child?: Node | import("./tree.type").FakeNode | undefined, index?: number | undefined, batch?: boolean | undefined) => void;
-            insertBefore: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
-            insertAfter: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
+            insertChild: (child?: import("./tree.type").FakeNode | Node, index?: number, batch?: boolean) => void;
+            insertBefore: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
+            insertAfter: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
             removeChild: (child: Node) => void;
             removeChildByData: (data: TreeNodeData) => void;
-            expand: (callback?: (() => void) | undefined, expandParent?: boolean | undefined) => void;
+            expand: (callback?: () => void, expandParent?: boolean) => void;
             doCreateChildren: (array: TreeNodeData[], defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
             collapse: () => void;
             shouldLoadData: () => boolean;
             updateLeafState: () => void;
-            setChecked: (value?: string | boolean | undefined, deep?: boolean | undefined, recursion?: boolean | undefined, passValue?: boolean | undefined) => void;
+            setChecked: (value?: boolean | string, deep?: boolean, recursion?: boolean, passValue?: boolean) => void;
             getChildren: (forceInit?: boolean) => TreeNodeData | TreeNodeData[];
             updateChildren: () => void;
             loadData: (callback: (node: Node) => void, defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
@@ -190,21 +194,21 @@ declare const _default: import("vue").DefineComponent<{
         checkDescendants: boolean;
         props: {
             children?: string | undefined;
-            label?: string | ((data: TreeNodeData, node: Node) => string) | undefined;
-            disabled?: string | ((data: TreeNodeData, node: Node) => boolean) | undefined;
-            isLeaf?: string | ((data: TreeNodeData, node: Node) => boolean) | undefined;
+            label?: (string | ((data: TreeNodeData, node: Node) => string)) | undefined;
+            disabled?: (string | ((data: TreeNodeData, node: Node) => boolean)) | undefined;
+            isLeaf?: (string | ((data: TreeNodeData, node: Node) => boolean)) | undefined;
             class?: ((data: TreeNodeData, node: Node) => string | {
                 [key: string]: boolean;
             }) | undefined;
         };
         initialize: () => void;
-        filter: (value: any) => void;
+        filter: (value: import("./tree.type").FilterValue) => void;
         setData: (newVal: TreeData) => void;
-        getNode: (data: Node | TreeNodeData | TreeKey) => Node;
-        insertBefore: (data: TreeNodeData, refData: Node | TreeNodeData | TreeKey) => void;
-        insertAfter: (data: TreeNodeData, refData: Node | TreeNodeData | TreeKey) => void;
-        remove: (data: Node | TreeNodeData) => void;
-        append: (data: TreeNodeData, parentData: Node | TreeNodeData | TreeKey) => void;
+        getNode: (data: TreeKey | TreeNodeData | Node) => Node;
+        insertBefore: (data: TreeNodeData, refData: TreeKey | TreeNodeData | Node) => void;
+        insertAfter: (data: TreeNodeData, refData: TreeKey | TreeNodeData | Node) => void;
+        remove: (data: TreeNodeData | Node) => void;
+        append: (data: TreeNodeData, parentData: TreeNodeData | TreeKey | Node) => void;
         _initDefaultCheckedNodes: () => void;
         _initDefaultCheckedNode: (node: Node) => void;
         setDefaultCheckedKey: (newVal: TreeKey[]) => void;
@@ -222,11 +226,11 @@ declare const _default: import("vue").DefineComponent<{
         setCheckedNodes: (array: Node[], leafOnly?: boolean) => void;
         setCheckedKeys: (keys: TreeKey[], leafOnly?: boolean) => void;
         setDefaultExpandedKeys: (keys: TreeKey[]) => void;
-        setChecked: (data: TreeNodeData | TreeKey, checked: boolean, deep: boolean) => void;
+        setChecked: (data: TreeKey | TreeNodeData, checked: boolean, deep: boolean) => void;
         getCurrentNode: () => Node;
         setCurrentNode: (currentNode: Node) => void;
         setUserCurrentNode: (node: Node, shouldAutoExpandParent?: boolean) => void;
-        setCurrentNodeKey: (key?: TreeKey | undefined, shouldAutoExpandParent?: boolean) => void;
+        setCurrentNodeKey: (key?: TreeKey, shouldAutoExpandParent?: boolean) => void;
     }>;
     root: import("vue").Ref<{
         id: number;
@@ -255,17 +259,17 @@ declare const _default: import("vue").DefineComponent<{
         readonly previousSibling: any | null;
         contains: (target: Node, deep?: boolean) => boolean;
         remove: () => void;
-        insertChild: (child?: Node | import("./tree.type").FakeNode | undefined, index?: number | undefined, batch?: boolean | undefined) => void;
-        insertBefore: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
-        insertAfter: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
+        insertChild: (child?: import("./tree.type").FakeNode | Node, index?: number, batch?: boolean) => void;
+        insertBefore: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
+        insertAfter: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
         removeChild: (child: Node) => void;
         removeChildByData: (data: TreeNodeData) => void;
-        expand: (callback?: (() => void) | undefined, expandParent?: boolean | undefined) => void;
+        expand: (callback?: () => void, expandParent?: boolean) => void;
         doCreateChildren: (array: TreeNodeData[], defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
         collapse: () => void;
         shouldLoadData: () => boolean;
         updateLeafState: () => void;
-        setChecked: (value?: string | boolean | undefined, deep?: boolean | undefined, recursion?: boolean | undefined, passValue?: boolean | undefined) => void;
+        setChecked: (value?: boolean | string, deep?: boolean, recursion?: boolean, passValue?: boolean) => void;
         getChildren: (forceInit?: boolean) => TreeNodeData | TreeNodeData[];
         updateChildren: () => void;
         loadData: (callback: (node: Node) => void, defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
@@ -299,17 +303,17 @@ declare const _default: import("vue").DefineComponent<{
         readonly previousSibling: any | null;
         contains: (target: Node, deep?: boolean) => boolean;
         remove: () => void;
-        insertChild: (child?: Node | import("./tree.type").FakeNode | undefined, index?: number | undefined, batch?: boolean | undefined) => void;
-        insertBefore: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
-        insertAfter: (child: Node | import("./tree.type").FakeNode, ref: Node) => void;
+        insertChild: (child?: import("./tree.type").FakeNode | Node, index?: number, batch?: boolean) => void;
+        insertBefore: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
+        insertAfter: (child: import("./tree.type").FakeNode | Node, ref: Node) => void;
         removeChild: (child: Node) => void;
         removeChildByData: (data: TreeNodeData) => void;
-        expand: (callback?: (() => void) | undefined, expandParent?: boolean | undefined) => void;
+        expand: (callback?: () => void, expandParent?: boolean) => void;
         doCreateChildren: (array: TreeNodeData[], defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
         collapse: () => void;
         shouldLoadData: () => boolean;
         updateLeafState: () => void;
-        setChecked: (value?: string | boolean | undefined, deep?: boolean | undefined, recursion?: boolean | undefined, passValue?: boolean | undefined) => void;
+        setChecked: (value?: boolean | string, deep?: boolean, recursion?: boolean, passValue?: boolean) => void;
         getChildren: (forceInit?: boolean) => TreeNodeData | TreeNodeData[];
         updateChildren: () => void;
         loadData: (callback: (node: Node) => void, defaultProps?: import("./tree.type").TreeNodeLoadedDefaultProps) => void;
@@ -329,17 +333,17 @@ declare const _default: import("vue").DefineComponent<{
     filter: (value: any) => void;
     getNodeKey: (node: Node) => any;
     getNodePath: (data: TreeKey | TreeNodeData) => TreeNodeData[];
-    getCheckedNodes: (leafOnly?: boolean | undefined, includeHalfChecked?: boolean | undefined) => TreeNodeData[];
-    getCheckedKeys: (leafOnly?: boolean | undefined) => TreeKey[];
+    getCheckedNodes: (leafOnly?: boolean, includeHalfChecked?: boolean) => TreeNodeData[];
+    getCheckedKeys: (leafOnly?: boolean) => TreeKey[];
     getCurrentNode: () => TreeNodeData;
     getCurrentKey: () => any;
-    setCheckedNodes: (nodes: Node[], leafOnly?: boolean | undefined) => void;
-    setCheckedKeys: (keys: TreeKey[], leafOnly?: boolean | undefined) => void;
+    setCheckedNodes: (nodes: Node[], leafOnly?: boolean) => void;
+    setCheckedKeys: (keys: TreeKey[], leafOnly?: boolean) => void;
     setChecked: (data: TreeKey | TreeNodeData, checked: boolean, deep: boolean) => void;
     getHalfCheckedNodes: () => TreeNodeData[];
     getHalfCheckedKeys: () => TreeKey[];
     setCurrentNode: (node: Node, shouldAutoExpandParent?: boolean) => void;
-    setCurrentKey: (key?: TreeKey | undefined, shouldAutoExpandParent?: boolean) => void;
+    setCurrentKey: (key?: TreeKey, shouldAutoExpandParent?: boolean) => void;
     t: import("element-plus/es/hooks").Translator;
     getNode: (data: TreeKey | TreeNodeData) => Node;
     remove: (data: TreeNodeData | Node) => void;
@@ -348,7 +352,7 @@ declare const _default: import("vue").DefineComponent<{
     insertAfter: (data: TreeNodeData, refNode: TreeKey | TreeNodeData | Node) => void;
     handleNodeExpand: (nodeData: TreeNodeData, node: Node, instance: ComponentInternalInstance) => void;
     updateKeyChildren: (key: TreeKey, data: TreeData) => void;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("current-change" | "node-expand" | "check-change" | "node-click" | "node-contextmenu" | "node-collapse" | "check" | "node-drag-start" | "node-drag-end" | "node-drop" | "node-drag-leave" | "node-drag-enter" | "node-drag-over")[], "current-change" | "node-expand" | "check-change" | "node-click" | "node-contextmenu" | "node-collapse" | "check" | "node-drag-start" | "node-drag-end" | "node-drop" | "node-drag-leave" | "node-drag-enter" | "node-drag-over", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("check" | "current-change" | "node-expand" | "check-change" | "node-click" | "node-contextmenu" | "node-collapse" | "node-drag-start" | "node-drag-end" | "node-drop" | "node-drag-leave" | "node-drag-enter" | "node-drag-over")[], "check" | "current-change" | "node-expand" | "check-change" | "node-click" | "node-contextmenu" | "node-collapse" | "node-drag-start" | "node-drag-end" | "node-drop" | "node-drag-leave" | "node-drag-enter" | "node-drag-over", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     data: {
         type: ArrayConstructor;
         default: () => never[];
@@ -368,6 +372,10 @@ declare const _default: import("vue").DefineComponent<{
         default: boolean;
     };
     checkOnClickNode: BooleanConstructor;
+    checkOnClickLeaf: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     checkDescendants: {
         type: BooleanConstructor;
         default: boolean;
@@ -376,8 +384,8 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
-    defaultCheckedKeys: PropType<TreeKey[]>;
-    defaultExpandedKeys: PropType<TreeKey[]>;
+    defaultCheckedKeys: PropType<TreeComponentProps["defaultCheckedKeys"]>;
+    defaultExpandedKeys: PropType<TreeComponentProps["defaultExpandedKeys"]>;
     currentNodeKey: PropType<string | number>;
     renderContent: FunctionConstructor;
     showCheckbox: {
@@ -391,7 +399,7 @@ declare const _default: import("vue").DefineComponent<{
     allowDrag: FunctionConstructor;
     allowDrop: FunctionConstructor;
     props: {
-        type: PropType<import("./tree.type").TreeOptionProps>;
+        type: PropType<TreeComponentProps["props"]>;
         default: () => {
             children: string;
             label: string;
@@ -403,15 +411,15 @@ declare const _default: import("vue").DefineComponent<{
         default: boolean;
     };
     highlightCurrent: BooleanConstructor;
-    load: PropType<import("./tree.type").LoadFunction>;
-    filterNodeMethod: PropType<import("./tree.type").FilterNodeMethodFunction>;
+    load: PropType<TreeComponentProps["load"]>;
+    filterNodeMethod: PropType<TreeComponentProps["filterNodeMethod"]>;
     accordion: BooleanConstructor;
     indent: {
         type: NumberConstructor;
         default: number;
     };
     icon: {
-        type: PropType<string | import("vue").Component<any, any, any, import("vue").ComputedOptions, import("vue").MethodOptions>>;
+        type: PropType<string | import("vue").Component>;
     };
 }>> & {
     "onCurrent-change"?: ((...args: any[]) => any) | undefined;
@@ -428,8 +436,8 @@ declare const _default: import("vue").DefineComponent<{
     "onNode-drag-enter"?: ((...args: any[]) => any) | undefined;
     "onNode-drag-over"?: ((...args: any[]) => any) | undefined;
 }, {
-    props: import("./tree.type").TreeOptionProps;
     data: unknown[];
+    props: import("./tree.type").TreeOptionProps;
     checkStrictly: boolean;
     lazy: boolean;
     accordion: boolean;
@@ -440,6 +448,7 @@ declare const _default: import("vue").DefineComponent<{
     showCheckbox: boolean;
     expandOnClickNode: boolean;
     checkOnClickNode: boolean;
+    checkOnClickLeaf: boolean;
     checkDescendants: boolean;
     autoExpandParent: boolean;
     highlightCurrent: boolean;

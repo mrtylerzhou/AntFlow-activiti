@@ -22,4 +22,4 @@ export declare const tableV2HeaderRowProps: {
         __epPropKey: true;
     };
 };
-export declare type TableV2HeaderRowProps = ExtractPropTypes<typeof tableV2HeaderRowProps>;
+export type TableV2HeaderRowProps = ExtractPropTypes<typeof tableV2HeaderRowProps>;

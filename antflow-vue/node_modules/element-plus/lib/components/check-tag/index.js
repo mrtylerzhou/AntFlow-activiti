@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var checkTag$1 = require('./src/check-tag2.js');
 var checkTag = require('./src/check-tag.js');
 var install = require('../../utils/vue/install.js');

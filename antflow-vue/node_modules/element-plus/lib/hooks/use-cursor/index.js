@@ -2,10 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var vue = require('vue');
-
 function useCursor(input) {
-  const selectionRef = vue.ref();
+  let selectionInfo;
   function recordCursor() {
     if (input.value == void 0)
       return;
@@ -14,7 +12,7 @@ function useCursor(input) {
       return;
     const beforeTxt = value.slice(0, Math.max(0, selectionStart));
     const afterTxt = value.slice(Math.max(0, selectionEnd));
-    selectionRef.value = {
+    selectionInfo = {
       selectionStart,
       selectionEnd,
       value,
@@ -23,10 +21,10 @@ function useCursor(input) {
     };
   }
   function setCursor() {
-    if (input.value == void 0 || selectionRef.value == void 0)
+    if (input.value == void 0 || selectionInfo == void 0)
       return;
     const { value } = input.value;
-    const { beforeTxt, afterTxt, selectionStart } = selectionRef.value;
+    const { beforeTxt, afterTxt, selectionStart } = selectionInfo;
     if (beforeTxt == void 0 || afterTxt == void 0 || selectionStart == void 0)
       return;
     let startPos = value.length;

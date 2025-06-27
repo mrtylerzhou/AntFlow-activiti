@@ -71,6 +71,9 @@ var tr = {
       noData: "Veri yok",
       placeholder: "Se\xE7"
     },
+    mention: {
+      loading: "Y\xFCkleniyor"
+    },
     cascader: {
       noMatch: "E\u015Fle\u015Fen veri bulunamad\u0131",
       loading: "Y\xFCkleniyor",

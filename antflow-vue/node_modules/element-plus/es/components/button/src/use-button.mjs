@@ -1,7 +1,4 @@
 import { computed, inject, ref, useSlots, Text } from 'vue';
-import '../../form/index.mjs';
-import '../../config-provider/index.mjs';
-import '../../../hooks/index.mjs';
 import { buttonGroupContextKey } from './constants.mjs';
 import { useDeprecated } from '../../../hooks/use-deprecated/index.mjs';
 import { useGlobalConfig } from '../../config-provider/src/hooks/use-global-config.mjs';
@@ -52,6 +49,10 @@ const useButton = (props, emit) => {
     return false;
   });
   const handleClick = (evt) => {
+    if (_disabled.value || props.loading) {
+      evt.stopPropagation();
+      return;
+    }
     if (props.nativeType === "reset") {
       form == null ? void 0 : form.resetFields();
     }

@@ -1,14 +1,14 @@
 import type { Ref } from 'vue';
 import type { Instance, Modifier, Options, State, VirtualElement } from '@popperjs/core';
-declare type ElementType = HTMLElement | undefined;
-declare type ReferenceElement = ElementType | VirtualElement;
-export declare type PartialOptions = Partial<Options>;
+type ElementType = HTMLElement | undefined;
+type ReferenceElement = ElementType | VirtualElement;
+export type PartialOptions = Partial<Options>;
 export declare const usePopper: (referenceElementRef: Ref<ReferenceElement>, popperElementRef: Ref<ElementType>, opts?: Ref<PartialOptions> | PartialOptions) => {
     state: import("vue").ComputedRef<{
         elements?: {
             reference: Element | VirtualElement;
             popper: HTMLElement;
-            arrow?: HTMLElement | undefined;
+            arrow?: HTMLElement;
         } | undefined;
         options?: import("@popperjs/core").OptionsGeneric<any> | undefined;
         placement?: import("@popperjs/core").Placement | undefined;
@@ -16,8 +16,8 @@ export declare const usePopper: (referenceElementRef: Ref<ReferenceElement>, pop
         orderedModifiers?: Modifier<any, any>[] | undefined;
         rects?: import("@popperjs/core").StateRects | undefined;
         scrollParents?: {
-            reference: (Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport)[];
-            popper: (Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport)[];
+            reference: Array<Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport>;
+            popper: Array<Element | import("@popperjs/core").Window | import("@popperjs/core").VisualViewport>;
         } | undefined;
         styles?: {
             [key: string]: Partial<CSSStyleDeclaration>;
@@ -30,24 +30,24 @@ export declare const usePopper: (referenceElementRef: Ref<ReferenceElement>, pop
         modifiersData?: {
             [key: string]: any;
             arrow?: {
-                x?: number | undefined;
-                y?: number | undefined;
+                x?: number;
+                y?: number;
                 centerOffset: number;
-            } | undefined;
+            };
             hide?: {
                 isReferenceHidden: boolean;
                 hasPopperEscaped: boolean;
                 referenceClippingOffsets: import("@popperjs/core").SideObject;
                 popperEscapeOffsets: import("@popperjs/core").SideObject;
-            } | undefined;
+            };
             offset?: {
-                auto?: import("@popperjs/core").Offsets | undefined;
                 top?: import("@popperjs/core").Offsets | undefined;
                 bottom?: import("@popperjs/core").Offsets | undefined;
                 left?: import("@popperjs/core").Offsets | undefined;
+                right?: import("@popperjs/core").Offsets | undefined;
+                auto?: import("@popperjs/core").Offsets | undefined;
                 "auto-start"?: import("@popperjs/core").Offsets | undefined;
                 "auto-end"?: import("@popperjs/core").Offsets | undefined;
-                right?: import("@popperjs/core").Offsets | undefined;
                 "top-start"?: import("@popperjs/core").Offsets | undefined;
                 "top-end"?: import("@popperjs/core").Offsets | undefined;
                 "bottom-start"?: import("@popperjs/core").Offsets | undefined;
@@ -56,9 +56,9 @@ export declare const usePopper: (referenceElementRef: Ref<ReferenceElement>, pop
                 "right-end"?: import("@popperjs/core").Offsets | undefined;
                 "left-start"?: import("@popperjs/core").Offsets | undefined;
                 "left-end"?: import("@popperjs/core").Offsets | undefined;
-            } | undefined;
-            preventOverflow?: import("@popperjs/core").Offsets | undefined;
-            popperOffsets?: import("@popperjs/core").Offsets | undefined;
+            };
+            preventOverflow?: import("@popperjs/core").Offsets;
+            popperOffsets?: import("@popperjs/core").Offsets;
         } | undefined;
         reset?: boolean | undefined;
     }>;
@@ -74,5 +74,5 @@ export declare const usePopper: (referenceElementRef: Ref<ReferenceElement>, pop
     forceUpdate: () => void | undefined;
     instanceRef: import("vue").ComputedRef<Instance | undefined>;
 };
-export declare type UsePopperReturn = ReturnType<typeof usePopper>;
+export type UsePopperReturn = ReturnType<typeof usePopper>;
 export {};

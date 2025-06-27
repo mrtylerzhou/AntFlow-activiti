@@ -1,6 +1,5 @@
 import { computed, getCurrentInstance } from 'vue';
 import { fromPairs } from 'lodash-unified';
-import '../../utils/index.mjs';
 import { debugWarn } from '../../utils/error.mjs';
 
 const DEFAULT_EXCLUDE_KEYS = ["class", "style"];

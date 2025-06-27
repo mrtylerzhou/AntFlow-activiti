@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
 var util = require('../util.js');
 var shared = require('@vue/shared');
 
@@ -53,7 +52,8 @@ function useWatcher(owner, props_) {
       "className",
       "labelClassName",
       "filterClassName",
-      "showOverflowTooltip"
+      "showOverflowTooltip",
+      "tooltipFormatter"
     ];
     const aliases = {
       property: "prop",

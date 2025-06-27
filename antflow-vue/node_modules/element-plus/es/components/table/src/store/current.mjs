@@ -1,4 +1,5 @@
 import { getCurrentInstance, ref, unref } from 'vue';
+import { isNull } from 'lodash-unified';
 import { getRowIdentity } from '../util.mjs';
 
 function useCurrent(watcherData) {
@@ -45,7 +46,7 @@ function useCurrent(watcherData) {
       } else {
         currentRow.value = null;
       }
-      if (currentRow.value === null) {
+      if (isNull(currentRow.value)) {
         instance.emit("current-change", null, oldCurrentRow);
       }
     } else if (_currentRowKey.value) {

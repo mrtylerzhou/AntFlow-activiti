@@ -3,6 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
+var lodashUnified = require('lodash-unified');
 var util = require('../util.js');
 
 function useCurrent(watcherData) {
@@ -49,7 +50,7 @@ function useCurrent(watcherData) {
       } else {
         currentRow.value = null;
       }
-      if (currentRow.value === null) {
+      if (lodashUnified.isNull(currentRow.value)) {
         instance.emit("current-change", null, oldCurrentRow);
       }
     } else if (_currentRowKey.value) {

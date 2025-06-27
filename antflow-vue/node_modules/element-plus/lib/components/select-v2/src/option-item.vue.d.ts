@@ -16,12 +16,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -34,7 +34,10 @@ declare const _default: import("vue").DefineComponent<{
     hoverItem: () => void;
     selectOptionClick: () => void;
     getLabel: (option: import("./select.types").Option) => any;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("hover" | "select")[], "select" | "hover", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
+    hover: (index?: number) => index is number;
+    select: (val: import("./select.types").Option, index?: number) => boolean;
+}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly data: ArrayConstructor;
     readonly disabled: BooleanConstructor;
     readonly hovering: BooleanConstructor;
@@ -49,12 +52,12 @@ declare const _default: import("vue").DefineComponent<{
     readonly selected: BooleanConstructor;
     readonly created: BooleanConstructor;
 }>> & {
-    onSelect?: ((...args: any[]) => any) | undefined;
-    onHover?: ((...args: any[]) => any) | undefined;
+    onSelect?: ((val: import("./select.types").Option, index?: number | undefined) => any) | undefined;
+    onHover?: ((index?: number | undefined) => any) | undefined;
 }, {
     readonly disabled: boolean;
-    readonly hovering: boolean;
     readonly created: boolean;
     readonly selected: boolean;
+    readonly hovering: boolean;
 }>;
 export default _default;

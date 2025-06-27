@@ -11,8 +11,8 @@ module.exports = function getPolyfill() {
 		if (
 			descriptor
 			&& typeof descriptor.get === 'function'
-			&& typeof RegExp.prototype.dotAll === 'boolean'
-			&& typeof RegExp.prototype.hasIndices === 'boolean'
+			&& 'dotAll' in RegExp.prototype
+			&& 'hasIndices' in RegExp.prototype
 		) {
 			/* eslint getter-return: 0 */
 			var calls = '';
@@ -27,6 +27,9 @@ module.exports = function getPolyfill() {
 					calls += 'y';
 				}
 			});
+
+			descriptor.get.call(o);
+
 			if (calls === 'dy') {
 				return descriptor.get;
 			}

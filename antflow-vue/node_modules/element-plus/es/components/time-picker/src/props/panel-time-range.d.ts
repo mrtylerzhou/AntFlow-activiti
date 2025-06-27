@@ -11,4 +11,4 @@ export declare const panelTimeRangeProps: {
     readonly actualVisible: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, undefined, boolean>;
     readonly format: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
 };
-export declare type PanelTimeRangeProps = ExtractPropTypes<typeof panelTimeRangeProps>;
+export type PanelTimeRangeProps = ExtractPropTypes<typeof panelTimeRangeProps>;

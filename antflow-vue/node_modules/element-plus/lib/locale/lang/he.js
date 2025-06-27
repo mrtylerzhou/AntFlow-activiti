@@ -72,6 +72,9 @@ var he = {
       noData: "\u05D0\u05D9\u05DF \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD",
       placeholder: "\u05E9\u05D5\u05DE\u05E8 \u05DE\u05E7\u05D5\u05DD"
     },
+    mention: {
+      loading: "\u05D8\u05D5\u05E2\u05DF"
+    },
     cascader: {
       noMatch: "\u05DC\u05D0 \u05E0\u05DE\u05E6\u05D0\u05D4 \u05D4\u05EA\u05D0\u05DE\u05D4",
       loading: "\u05D8\u05D5\u05E2\u05DF",

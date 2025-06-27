@@ -14,6 +14,7 @@ const Footer = (props, {
   }, [(_a = slots.default) == null ? void 0 : _a.call(slots)]);
 };
 Footer.displayName = "ElTableV2Footer";
+var Footer$1 = Footer;
 
-exports["default"] = Footer;
+exports["default"] = Footer$1;
 //# sourceMappingURL=footer.js.map

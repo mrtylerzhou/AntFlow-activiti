@@ -3,7 +3,7 @@ import type { Alignment, ListConstructorProps } from '../types';
 import type { VirtualizedListProps } from '../props';
 declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEstimatedTotalSize, getStartIndexForOffset, getStopIndexForStartIndex, initCache, clearCache, validateProps, }: ListConstructorProps<VirtualizedListProps>) => import("vue").DefineComponent<{
     readonly className: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly containerElement: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (string | Element) & {}) | (() => string | Element) | ((new (...args: any[]) => (string | Element) & {}) | (() => string | Element))[], unknown, unknown, "div", boolean>;
+    readonly containerElement: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | Element) | (() => string | Element) | ((new (...args: any[]) => string | Element) | (() => string | Element))[], unknown, unknown, "div", boolean>;
     readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => any[]) | (() => any[]) | ((new (...args: any[]) => any[]) | (() => any[]))[], unknown, unknown, () => [], boolean>;
     readonly direction: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "ltr" | "rtl", never, "ltr", false>;
     readonly height: {
@@ -14,7 +14,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
     };
     readonly innerElement: import("element-plus/es/utils").EpPropFinalized<readonly [StringConstructor, ObjectConstructor], unknown, unknown, "div", boolean>;
     readonly style: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("vue").StyleValue & {}) | (() => import("vue").StyleValue) | ((new (...args: any[]) => import("vue").StyleValue & {}) | (() => import("vue").StyleValue))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | CSSProperties | import("vue").StyleValue[]) | (() => import("vue").StyleValue) | ((new (...args: any[]) => string | CSSProperties | import("vue").StyleValue[]) | (() => import("vue").StyleValue))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -35,7 +35,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", never, "vertical", false>;
+    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", never, "vertical", false>;
     readonly initScrollOffset: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, never, never, 0, false>;
     readonly total: {
         readonly type: import("vue").PropType<number>;
@@ -44,7 +44,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
         __epPropKey: true;
     };
     readonly itemSize: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (number | import("../types").ItemSize) & {}) | (() => number | import("../types").ItemSize) | ((new (...args: any[]) => (number | import("../types").ItemSize) & {}) | (() => number | import("../types").ItemSize))[], never, never>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => number | import("../types").ItemSize) | (() => number | import("../types").ItemSize) | ((new (...args: any[]) => number | import("../types").ItemSize) | (() => number | import("../types").ItemSize))[], never, never>>;
         readonly required: true;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -53,12 +53,12 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -102,7 +102,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
     resetScrollTop: () => void;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("scroll" | "itemRendered")[], "scroll" | "itemRendered", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly className: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-    readonly containerElement: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (string | Element) & {}) | (() => string | Element) | ((new (...args: any[]) => (string | Element) & {}) | (() => string | Element))[], unknown, unknown, "div", boolean>;
+    readonly containerElement: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | Element) | (() => string | Element) | ((new (...args: any[]) => string | Element) | (() => string | Element))[], unknown, unknown, "div", boolean>;
     readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => any[]) | (() => any[]) | ((new (...args: any[]) => any[]) | (() => any[]))[], unknown, unknown, () => [], boolean>;
     readonly direction: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "ltr" | "rtl", never, "ltr", false>;
     readonly height: {
@@ -113,7 +113,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
     };
     readonly innerElement: import("element-plus/es/utils").EpPropFinalized<readonly [StringConstructor, ObjectConstructor], unknown, unknown, "div", boolean>;
     readonly style: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("vue").StyleValue & {}) | (() => import("vue").StyleValue) | ((new (...args: any[]) => import("vue").StyleValue & {}) | (() => import("vue").StyleValue))[], unknown, unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | CSSProperties | import("vue").StyleValue[]) | (() => import("vue").StyleValue) | ((new (...args: any[]) => string | CSSProperties | import("vue").StyleValue[]) | (() => import("vue").StyleValue))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -134,7 +134,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "vertical" | "horizontal", never, "vertical", false>;
+    readonly layout: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "horizontal" | "vertical", never, "vertical", false>;
     readonly initScrollOffset: import("element-plus/es/utils").EpPropFinalized<NumberConstructor, never, never, 0, false>;
     readonly total: {
         readonly type: import("vue").PropType<number>;
@@ -143,7 +143,7 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
         __epPropKey: true;
     };
     readonly itemSize: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (number | import("../types").ItemSize) & {}) | (() => number | import("../types").ItemSize) | ((new (...args: any[]) => (number | import("../types").ItemSize) & {}) | (() => number | import("../types").ItemSize))[], never, never>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => number | import("../types").ItemSize) | (() => number | import("../types").ItemSize) | ((new (...args: any[]) => number | import("../types").ItemSize) | (() => number | import("../types").ItemSize))[], never, never>>;
         readonly required: true;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -152,15 +152,15 @@ declare const createList: ({ name, getOffset, getItemSize, getItemOffset, getEst
     onScroll?: ((...args: any[]) => any) | undefined;
     onItemRendered?: ((...args: any[]) => any) | undefined;
 }, {
-    readonly direction: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "ltr" | "rtl", never>;
-    readonly className: string;
-    readonly layout: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "vertical" | "horizontal", never>;
     readonly data: any[];
-    readonly scrollbarAlwaysOn: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
-    readonly containerElement: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (string | Element) & {}) | (() => string | Element) | ((new (...args: any[]) => (string | Element) & {}) | (() => string | Element))[], unknown, unknown>;
+    readonly direction: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "ltr" | "rtl", never>;
+    readonly layout: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "horizontal" | "vertical", never>;
+    readonly className: string;
+    readonly containerElement: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | Element) | (() => string | Element) | ((new (...args: any[]) => string | Element) | (() => string | Element))[], unknown, unknown>;
     readonly innerElement: import("element-plus/es/utils").EpPropMergeType<readonly [StringConstructor, ObjectConstructor], unknown, unknown>;
     readonly useIsScrolling: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
     readonly perfMode: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
+    readonly scrollbarAlwaysOn: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
     readonly cache: number;
     readonly initScrollOffset: number;
 }>;

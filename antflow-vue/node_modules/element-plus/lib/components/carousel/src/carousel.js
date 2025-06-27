@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
 var runtime = require('../../../utils/vue/props/runtime.js');
 var types = require('../../../utils/types.js');
 
@@ -43,6 +42,10 @@ const carouselProps = runtime.buildProps({
     values: ["", "card"],
     default: ""
   },
+  cardScale: {
+    type: Number,
+    default: 0.83
+  },
   loop: {
     type: Boolean,
     default: true
@@ -56,10 +59,7 @@ const carouselProps = runtime.buildProps({
     type: Boolean,
     default: true
   },
-  motionBlur: {
-    type: Boolean,
-    default: false
-  }
+  motionBlur: Boolean
 });
 const carouselEmits = {
   change: (current, prev) => [current, prev].every(types.isNumber)

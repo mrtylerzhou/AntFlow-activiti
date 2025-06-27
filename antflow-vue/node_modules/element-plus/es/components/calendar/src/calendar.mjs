@@ -1,7 +1,5 @@
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
-import { isArray, isDate } from '@vue/shared';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
+import { isArray, isDate } from '@vue/shared';
 import { UPDATE_MODEL_EVENT, INPUT_EVENT } from '../../../constants/event.mjs';
 
 const isValidRange = (range) => isArray(range) && range.length === 2 && range.every((item) => isDate(item));

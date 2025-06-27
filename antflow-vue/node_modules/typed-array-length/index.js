@@ -5,9 +5,9 @@
 var callBind = require('call-bind');
 var forEach = require('for-each');
 var gOPD = require('gopd');
-var hasProto = require('has-proto')();
 var isTypedArray = require('is-typed-array');
 var typedArrays = require('possible-typed-array-names');
+var gPO = require('reflect.getprototypeof/polyfill')();
 
 /** @typedef {(value: import('.').TypedArray) => number} TypedArrayLengthGetter */
 /** @typedef {{ [k in `$${import('.').TypedArrayName}` | '__proto__']: k extends '__proto__' ? null : TypedArrayLengthGetter }} Cache */
@@ -27,8 +27,8 @@ if (gOPD) {
 			var Proto = TA.prototype;
 			// @ts-expect-error TS doesn't narrow types inside callbacks, which is weird
 			var descriptor = gOPD(Proto, 'length');
-			if (!descriptor && hasProto) {
-				var superProto = Proto.__proto__; // eslint-disable-line no-proto
+			if (!descriptor) {
+				var superProto = gPO(Proto);
 				// @ts-expect-error TS doesn't narrow types inside callbacks, which is weird
 				descriptor = gOPD(superProto, 'length');
 			}

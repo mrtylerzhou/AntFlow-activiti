@@ -2,13 +2,11 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../utils/index.js');
-require('../../virtual-list/index.js');
 var common = require('./common.js');
 var header = require('./header.js');
 var row = require('./row.js');
-var runtime = require('../../../utils/vue/props/runtime.js');
 var props = require('../../virtual-list/src/props.js');
+var runtime = require('../../../utils/vue/props/runtime.js');
 
 const tableV2GridProps = runtime.buildProps({
   columns: common.columns,

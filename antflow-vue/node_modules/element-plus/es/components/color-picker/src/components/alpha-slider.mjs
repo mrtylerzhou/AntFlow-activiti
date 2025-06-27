@@ -12,7 +12,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   props: alphaSliderProps,
   setup(__props, { expose }) {
     const props = __props;
-    const { bar, thumb, handleDrag, handleClick } = useAlphaSlider(props);
+    const {
+      alpha,
+      alphaLabel,
+      bar,
+      thumb,
+      handleDrag,
+      handleClick,
+      handleKeydown
+    } = useAlphaSlider(props);
     const { rootKls, barKls, barStyle, thumbKls, thumbStyle, update } = useAlphaSliderDOM(props, {
       bar,
       thumb,
@@ -32,14 +40,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           ref: bar,
           class: normalizeClass(unref(barKls)),
           style: normalizeStyle(unref(barStyle)),
-          onClick: _cache[0] || (_cache[0] = (...args) => unref(handleClick) && unref(handleClick)(...args))
-        }, null, 6),
+          onClick: unref(handleClick)
+        }, null, 14, ["onClick"]),
         createElementVNode("div", {
           ref_key: "thumb",
           ref: thumb,
           class: normalizeClass(unref(thumbKls)),
-          style: normalizeStyle(unref(thumbStyle))
-        }, null, 6)
+          style: normalizeStyle(unref(thumbStyle)),
+          "aria-label": unref(alphaLabel),
+          "aria-valuenow": unref(alpha),
+          "aria-orientation": _ctx.vertical ? "vertical" : "horizontal",
+          "aria-valuemin": "0",
+          "aria-valuemax": "100",
+          role: "slider",
+          tabindex: "0",
+          onKeydown: unref(handleKeydown)
+        }, null, 46, ["aria-label", "aria-valuenow", "aria-orientation", "onKeydown"])
       ], 2);
     };
   }

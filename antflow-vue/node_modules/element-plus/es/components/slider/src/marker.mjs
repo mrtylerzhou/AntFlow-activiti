@@ -1,6 +1,4 @@
 import { defineComponent, computed, h } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { isString } from '@vue/shared';

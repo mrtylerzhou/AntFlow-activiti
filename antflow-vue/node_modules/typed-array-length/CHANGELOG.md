@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.7](https://github.com/inspect-js/typed-array-length/compare/v1.0.6...v1.0.7) - 2024-11-22
+
+### Fixed
+
+- [Fix] avoid relying on `__proto__` accessor [`#9`](https://github.com/inspect-js/typed-array-length/issues/9)
+
+### Commits
+
+- [Tests] fix TS issues [`f36b6bd`](https://github.com/inspect-js/typed-array-length/commit/f36b6bdbe472923cdd24158705a19b91ae5f512c)
+- [actions] split out node 10-20, and 20+ [`d81efa0`](https://github.com/inspect-js/typed-array-length/commit/d81efa0b275161e82f78ceddb3ccf0bd63c2b834)
+- [Dev Deps] update `@arethetypeswrong/cli`, `@ljharb/eslint-config`, `@types/object-inspect`, `auto-changelog`, `object-inspect`, `tape` [`a61b15b`](https://github.com/inspect-js/typed-array-length/commit/a61b15baa1dbc40d0fdd0e23779bfa32acab6f5e)
+- [Tests] replace `aud` with `npm audit` [`b0b4e8f`](https://github.com/inspect-js/typed-array-length/commit/b0b4e8fa9a3050edcddead80e86765d8fd78298c)
+
 ## [v1.0.6](https://github.com/inspect-js/typed-array-length/compare/v1.0.5...v1.0.6) - 2024-03-21
 
 ### Commits

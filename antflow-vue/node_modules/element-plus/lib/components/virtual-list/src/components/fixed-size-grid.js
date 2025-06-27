@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
 var buildGrid = require('../builders/build-grid.js');
 var defaults = require('../defaults.js');
 var types = require('../../../../utils/types.js');

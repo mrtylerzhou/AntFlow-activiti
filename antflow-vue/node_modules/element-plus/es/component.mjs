@@ -32,6 +32,7 @@ import { ElImage } from './components/image/index.mjs';
 import { ElImageViewer } from './components/image-viewer/index.mjs';
 import { ElInput } from './components/input/index.mjs';
 import { ElInputNumber } from './components/input-number/index.mjs';
+import { ElInputTag } from './components/input-tag/index.mjs';
 import { ElLink } from './components/link/index.mjs';
 import { ElMenu, ElMenuItem, ElMenuItemGroup, ElSubMenu } from './components/menu/index.mjs';
 import { ElPageHeader } from './components/page-header/index.mjs';
@@ -73,6 +74,7 @@ import { ElWatermark } from './components/watermark/index.mjs';
 import { ElTour, ElTourStep } from './components/tour/index.mjs';
 import { ElAnchor, ElAnchorLink } from './components/anchor/index.mjs';
 import { ElSegmented } from './components/segmented/index.mjs';
+import { ElMention } from './components/mention/index.mjs';
 
 var Components = [
   ElAffix,
@@ -124,6 +126,7 @@ var Components = [
   ElImageViewer,
   ElInput,
   ElInputNumber,
+  ElInputTag,
   ElLink,
   ElMenu,
   ElMenuItem,
@@ -178,7 +181,8 @@ var Components = [
   ElTourStep,
   ElAnchor,
   ElAnchorLink,
-  ElSegmented
+  ElSegmented,
+  ElMention
 ];
 
 export { Components as default };

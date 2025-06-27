@@ -1,5 +1,4 @@
 import { defineComponent, h } from 'vue';
-import '../../../hooks/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
 var NodeContent = defineComponent({

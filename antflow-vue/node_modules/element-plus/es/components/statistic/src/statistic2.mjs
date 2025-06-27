@@ -1,6 +1,4 @@
 import { defineComponent, computed, openBlock, createElementBlock, normalizeClass, unref, renderSlot, createTextVNode, toDisplayString, createCommentVNode, createElementVNode, normalizeStyle } from 'vue';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
 import { statisticProps } from './statistic.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
@@ -20,7 +18,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const { value, formatter, precision, decimalSeparator, groupSeparator } = props;
       if (isFunction(formatter))
         return formatter(value);
-      if (!isNumber(value))
+      if (!isNumber(value) || Number.isNaN(value))
         return value;
       let [integer, decimal = ""] = String(value).split(".");
       decimal = decimal.padEnd(precision, "0").slice(0, precision > 0 ? precision : 0);

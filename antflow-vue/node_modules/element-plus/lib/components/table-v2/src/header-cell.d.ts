@@ -9,4 +9,4 @@ export declare const tableV2HeaderCell: {
         __epPropKey: true;
     };
 };
-export declare type TableV2HeaderCell = ExtractPropTypes<typeof tableV2HeaderCell>;
+export type TableV2HeaderCell = ExtractPropTypes<typeof tableV2HeaderCell>;

@@ -1,4 +1,3 @@
-import '../../../utils/index.mjs';
 import { isLeaf } from '../../../utils/dom/aria.mjs';
 
 const getMenuIndex = (el) => {

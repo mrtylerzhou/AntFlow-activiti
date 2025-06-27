@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var shared = require('@vue/shared');
 
 const REPEAT_INTERVAL = 100;

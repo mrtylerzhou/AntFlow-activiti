@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Pagination from './src/pagination.mjs';
 export { paginationEmits, paginationProps } from './src/pagination.mjs';
 export { elPaginationKey } from './src/constants.mjs';

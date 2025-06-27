@@ -1,12 +1,11 @@
 import { computed, unref } from 'vue';
-import '../../../../utils/index.mjs';
 import { sum, enforceUnit } from '../utils.mjs';
 import { isNumber } from '../../../../utils/types.mjs';
 import { addUnit } from '../../../../utils/dom/style.mjs';
 
 const useStyles = (props, {
   columnsTotalWidth,
-  data,
+  rowsHeight,
   fixedColumnsOnLeft,
   fixedColumnsOnRight
 }) => {
@@ -26,14 +25,6 @@ const useStyles = (props, {
       return Math.min(total, maxHeight - footerHeight2);
     }
     return height - footerHeight2;
-  });
-  const rowsHeight = computed(() => {
-    const { rowHeight, estimatedRowHeight } = props;
-    const _data = unref(data);
-    if (isNumber(estimatedRowHeight)) {
-      return _data.length * estimatedRowHeight;
-    }
-    return _data.length * rowHeight;
   });
   const fixedTableHeight = computed(() => {
     const { maxHeight } = props;
@@ -75,7 +66,6 @@ const useStyles = (props, {
     leftTableWidth,
     rightTableWidth,
     headerWidth,
-    rowsHeight,
     windowHeight,
     footerHeight,
     emptyStyle,

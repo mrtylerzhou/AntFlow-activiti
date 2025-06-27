@@ -45,7 +45,7 @@ declare const TableGrid: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
+    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
     readonly bodyWidth: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -82,7 +82,7 @@ declare const TableGrid: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType) | ((new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
     readonly onRowsRendered: {
         readonly type: import("vue").PropType<(params: import("./grid").onRowRenderedParams) => void>;
         readonly required: false;
@@ -139,7 +139,7 @@ declare const TableGrid: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
+    readonly headerHeight: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown, 50, boolean>;
     readonly bodyWidth: {
         readonly type: import("vue").PropType<number>;
         readonly required: true;
@@ -176,7 +176,7 @@ declare const TableGrid: import("vue").DefineComponent<{
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
-    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType) | ((new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
+    readonly rowKey: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType))[], unknown, unknown, "id", boolean>;
     readonly onRowsRendered: {
         readonly type: import("vue").PropType<(params: import("./grid").onRowRenderedParams) => void>;
         readonly required: false;
@@ -190,21 +190,21 @@ declare const TableGrid: import("vue").DefineComponent<{
         __epPropKey: true;
     };
 }>>, {
-    readonly scrollbarAlwaysOn: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
-    readonly rowKey: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType) | ((new (...args: any[]) => import("./types").KeyType & {}) | (() => import("./types").KeyType))[], unknown, unknown>;
-    readonly headerHeight: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]) | ((new (...args: any[]) => (number | number[]) & {}) | (() => number | number[]))[], unknown, unknown>;
-    readonly estimatedRowHeight: number;
+    readonly rowKey: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType) | ((new (...args: any[]) => string | number | symbol) | (() => import("./types").KeyType))[], unknown, unknown>;
     readonly useIsScrolling: boolean;
+    readonly scrollbarAlwaysOn: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
+    readonly cache: number;
+    readonly estimatedRowHeight: number;
     readonly scrollbarStartGap: number;
     readonly scrollbarEndGap: number;
-    readonly cache: number;
+    readonly headerHeight: import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => number | number[]) | (() => number | number[]) | ((new (...args: any[]) => number | number[]) | (() => number | number[]))[], unknown, unknown>;
 }>;
 export default TableGrid;
-export declare type TableGridRowSlotParams = {
+export type TableGridRowSlotParams = {
     columns: TableV2GridProps['columns'];
     rowData: any;
 } & GridDefaultSlotParams;
-export declare type TableGridInstance = InstanceType<typeof TableGrid> & UnwrapRef<{
+export type TableGridInstance = InstanceType<typeof TableGrid> & UnwrapRef<{
     forceUpdate: () => void;
     /**
      * @description fetch total height

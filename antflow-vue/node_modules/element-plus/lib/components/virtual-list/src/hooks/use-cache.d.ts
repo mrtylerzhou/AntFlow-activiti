@@ -1,1 +1,1 @@
-export declare const useCache: () => import("vue").ComputedRef<(((_: any, __: any, ___: any) => {}) & import("lodash").MemoizedFunction) | import("memoize-one").MemoizedFn<(_: any, __: any, ___: any) => {}>>;
+export declare const useCache: <T>() => import("vue").ComputedRef<(((_: any, __: any, ___: any) => Record<string, T>) & import("lodash").MemoizedFunction) | import("memoize-one").MemoizedFn<(_: any, __: any, ___: any) => Record<string, T>>>;

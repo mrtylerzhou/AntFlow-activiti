@@ -3,4 +3,4 @@ export declare const anchorLinkProps: {
     title: StringConstructor;
     href: StringConstructor;
 };
-export declare type AnchorLinkProps = ExtractPropTypes<typeof anchorLinkProps>;
+export type AnchorLinkProps = ExtractPropTypes<typeof anchorLinkProps>;

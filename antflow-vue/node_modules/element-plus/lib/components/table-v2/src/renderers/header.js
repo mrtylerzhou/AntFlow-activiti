@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../components/index.js');
 var utils = require('../utils.js');
 var headerRow = require('../components/header-row.js');
 
@@ -40,6 +39,7 @@ const HeaderRenderer = ({
     default: () => [slots]
   });
 };
+var Header = HeaderRenderer;
 
-exports["default"] = HeaderRenderer;
+exports["default"] = Header;
 //# sourceMappingURL=header.js.map

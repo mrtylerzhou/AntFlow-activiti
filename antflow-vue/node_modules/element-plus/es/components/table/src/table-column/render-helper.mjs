@@ -1,10 +1,10 @@
 import { getCurrentInstance, ref, watchEffect, computed, unref, renderSlot, h, Comment } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
-import { cellForced, getDefaultClassName, defaultRenderCell, treeCellPrefix } from '../config.mjs';
+import { cellForced, defaultRenderCell, treeCellPrefix, getDefaultClassName } from '../config.mjs';
 import { parseWidth, parseMinWidth } from '../util.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
+import { isUndefined } from '../../../../utils/types.mjs';
 import { debugWarn } from '../../../../utils/error.mjs';
+import { isArray } from '@vue/shared';
 
 function useRender(props, slots, owner) {
   const instance = getCurrentInstance();
@@ -50,7 +50,7 @@ function useRender(props, slots, owner) {
     if (!column.minWidth) {
       column.minWidth = 80;
     }
-    column.realWidth = Number(column.width === void 0 ? column.minWidth : column.width);
+    column.realWidth = Number(isUndefined(column.width) ? column.minWidth : column.width);
     return column;
   };
   const setColumnForcedProps = (column) => {
@@ -58,7 +58,7 @@ function useRender(props, slots, owner) {
     const source = cellForced[type] || {};
     Object.keys(source).forEach((prop) => {
       const value = source[prop];
-      if (prop !== "className" && value !== void 0) {
+      if (prop !== "className" && !isUndefined(value)) {
         column[prop] = value;
       }
     });
@@ -70,7 +70,7 @@ function useRender(props, slots, owner) {
     return column;
   };
   const checkSubColumn = (children) => {
-    if (Array.isArray(children)) {
+    if (isArray(children)) {
       children.forEach((child) => check(child));
     } else {
       check(children);
@@ -89,6 +89,11 @@ function useRender(props, slots, owner) {
       column.renderHeader = (scope) => {
         instance.columnConfig.value["label"];
         return renderSlot(slots, "header", scope, () => [column.label]);
+      };
+    }
+    if (slots["filter-icon"]) {
+      column.renderFilterIcon = (scope) => {
+        return renderSlot(slots, "filter-icon", scope);
       };
     }
     let originRenderCell = column.renderCell;
@@ -131,7 +136,7 @@ function useRender(props, slots, owner) {
   };
   const getPropsData = (...propsKey) => {
     return propsKey.reduce((prev, cur) => {
-      if (Array.isArray(cur)) {
+      if (isArray(cur)) {
         cur.forEach((key) => {
           prev[key] = props[key];
         });

@@ -1,8 +1,6 @@
 import { nextTick } from 'vue';
-import '../../utils/index.mjs';
-import '../../constants/index.mjs';
-import { EVENT_CODE } from '../../constants/aria.mjs';
 import { obtainAllFocusableElements } from '../../utils/dom/aria.mjs';
+import { EVENT_CODE } from '../../constants/aria.mjs';
 
 const FOCUSABLE_CHILDREN = "_trap-focus-children";
 const TRAP_FOCUS_HANDLER = "_trap-focus-handler";

@@ -6,6 +6,7 @@ import CommonPicker from './common/picker.mjs';
 import TimePickPanel from './time-picker-com/panel-time-pick.mjs';
 import TimeRangePanel from './time-picker-com/panel-time-range.mjs';
 import { timePickerDefaultProps } from './common/props.mjs';
+import { UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';
 
 dayjs.extend(customParseFormat);
 var TimePicker = defineComponent({
@@ -18,20 +19,20 @@ var TimePicker = defineComponent({
       default: false
     }
   },
-  emits: ["update:modelValue"],
+  emits: [UPDATE_MODEL_EVENT],
   setup(props, ctx) {
     const commonPicker = ref();
     const [type, Panel] = props.isRange ? ["timerange", TimeRangePanel] : ["time", TimePickPanel];
-    const modelUpdater = (value) => ctx.emit("update:modelValue", value);
+    const modelUpdater = (value) => ctx.emit(UPDATE_MODEL_EVENT, value);
     provide("ElPopperOptions", props.popperOptions);
     ctx.expose({
-      focus: (e) => {
+      focus: () => {
         var _a;
-        (_a = commonPicker.value) == null ? void 0 : _a.handleFocusInput(e);
+        (_a = commonPicker.value) == null ? void 0 : _a.focus();
       },
-      blur: (e) => {
+      blur: () => {
         var _a;
-        (_a = commonPicker.value) == null ? void 0 : _a.handleBlurInput(e);
+        (_a = commonPicker.value) == null ? void 0 : _a.blur();
       },
       handleOpen: () => {
         var _a;

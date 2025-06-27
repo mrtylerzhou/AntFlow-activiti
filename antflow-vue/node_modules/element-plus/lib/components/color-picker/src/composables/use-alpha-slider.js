@@ -3,22 +3,27 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var draggable = require('../utils/draggable.js');
 var position = require('../../../../utils/dom/position.js');
-var index = require('../../../../hooks/use-namespace/index.js');
+var index = require('../../../../hooks/use-locale/index.js');
+var aria = require('../../../../constants/aria.js');
+var index$1 = require('../../../../hooks/use-namespace/index.js');
 var style = require('../../../../utils/dom/style.js');
 
 const useAlphaSlider = (props) => {
   const instance = vue.getCurrentInstance();
+  const { t } = index.useLocale();
   const thumb = vue.shallowRef();
   const bar = vue.shallowRef();
+  const alpha = vue.computed(() => props.color.get("alpha"));
+  const alphaLabel = vue.computed(() => t("el.colorpicker.alphaLabel"));
   function handleClick(event) {
+    var _a;
     const target = event.target;
     if (target !== thumb.value) {
       handleDrag(event);
     }
+    (_a = thumb.value) == null ? void 0 : _a.focus();
   }
   function handleDrag(event) {
     if (!bar.value || !thumb.value)
@@ -38,11 +43,37 @@ const useAlphaSlider = (props) => {
       props.color.set("alpha", Math.round((top - thumb.value.offsetHeight / 2) / (rect.height - thumb.value.offsetHeight) * 100));
     }
   }
+  function handleKeydown(event) {
+    const { code, shiftKey } = event;
+    const step = shiftKey ? 10 : 1;
+    switch (code) {
+      case aria.EVENT_CODE.left:
+      case aria.EVENT_CODE.down:
+        event.preventDefault();
+        event.stopPropagation();
+        incrementPosition(-step);
+        break;
+      case aria.EVENT_CODE.right:
+      case aria.EVENT_CODE.up:
+        event.preventDefault();
+        event.stopPropagation();
+        incrementPosition(step);
+        break;
+    }
+  }
+  function incrementPosition(step) {
+    let next = alpha.value + step;
+    next = next < 0 ? 0 : next > 100 ? 100 : next;
+    props.color.set("alpha", next);
+  }
   return {
     thumb,
     bar,
+    alpha,
+    alphaLabel,
     handleDrag,
-    handleClick
+    handleClick,
+    handleKeydown
   };
 };
 const useAlphaSliderDOM = (props, {
@@ -51,7 +82,7 @@ const useAlphaSliderDOM = (props, {
   handleDrag
 }) => {
   const instance = vue.getCurrentInstance();
-  const ns = index.useNamespace("color-alpha-slider");
+  const ns = index$1.useNamespace("color-alpha-slider");
   const thumbLeft = vue.ref(0);
   const thumbTop = vue.ref(0);
   const background = vue.ref();

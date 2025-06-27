@@ -1,6 +1,4 @@
 import { defineComponent, getCurrentInstance, ref, computed, watch, onMounted, openBlock, createElementBlock, normalizeClass, createElementVNode, normalizeStyle } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import { draggable } from '../utils/draggable.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
@@ -114,8 +112,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     createElementVNode("div", {
       ref: "bar",
       class: normalizeClass(_ctx.ns.e("bar")),
-      onClick: _cache[0] || (_cache[0] = (...args) => _ctx.handleClick && _ctx.handleClick(...args))
-    }, null, 2),
+      onClick: _ctx.handleClick
+    }, null, 10, ["onClick"]),
     createElementVNode("div", {
       ref: "thumb",
       class: normalizeClass(_ctx.ns.e("thumb")),

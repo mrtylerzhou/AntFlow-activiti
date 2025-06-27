@@ -1,5 +1,4 @@
 import { defineComponent, ref, computed, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, toDisplayString, createVNode } from 'vue';
-import '../../../../hooks/index.mjs';
 import { ElInput } from '../../../input/index.mjs';
 import { usePagination } from '../usePagination.mjs';
 import { paginationJumperProps } from './jumper.mjs';
@@ -7,7 +6,6 @@ import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 
-const _hoisted_1 = ["disabled"];
 const __default__ = defineComponent({
   name: "ElPaginationJumper"
 });
@@ -55,7 +53,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         createElementVNode("span", {
           class: normalizeClass([unref(ns).e("classifier")])
         }, toDisplayString(unref(t)("el.pagination.pageClassifier")), 3)
-      ], 10, _hoisted_1);
+      ], 10, ["disabled"]);
     };
   }
 });

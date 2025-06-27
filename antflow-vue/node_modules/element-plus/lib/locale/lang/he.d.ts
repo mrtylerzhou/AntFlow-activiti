@@ -68,6 +68,9 @@ declare const _default: {
             noData: string;
             placeholder: string;
         };
+        mention: {
+            loading: string;
+        };
         cascader: {
             noMatch: string;
             loading: string;

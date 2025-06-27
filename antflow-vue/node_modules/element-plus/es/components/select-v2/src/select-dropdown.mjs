@@ -1,32 +1,30 @@
-import { defineComponent, inject, ref, computed, watch, toRaw, unref, createVNode, mergeProps } from 'vue';
+import { defineComponent, inject, ref, computed, watch, unref, createVNode, mergeProps, toRaw } from 'vue';
 import { get } from 'lodash-unified';
-import '../../../utils/index.mjs';
-import '../../virtual-list/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../constants/index.mjs';
 import GroupItem from './group-item.mjs';
 import OptionItem from './option-item.mjs';
 import { useProps } from './useProps.mjs';
 import { selectV2InjectionKey } from './token.mjs';
-import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
-import { isUndefined } from '../../../utils/types.mjs';
-import { isObject } from '@vue/shared';
-import { EVENT_CODE } from '../../../constants/aria.mjs';
 import FixedSizeList from '../../virtual-list/src/components/fixed-size-list.mjs';
 import DynamicSizeList from '../../virtual-list/src/components/dynamic-size-list.mjs';
+import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
+import { isUndefined } from '../../../utils/types.mjs';
+import { isIOS } from '@vueuse/core';
+import { EVENT_CODE } from '../../../constants/aria.mjs';
+import { isObject } from '@vue/shared';
 
+const props = {
+  loading: Boolean,
+  data: {
+    type: Array,
+    required: true
+  },
+  hoveringIndex: Number,
+  width: Number
+};
 var ElSelectMenu = defineComponent({
   name: "ElSelectDropdown",
-  props: {
-    loading: Boolean,
-    data: {
-      type: Array,
-      required: true
-    },
-    hoveringIndex: Number,
-    width: Number
-  },
-  setup(props, {
+  props,
+  setup(props2, {
     slots,
     expose
   }) {
@@ -39,7 +37,7 @@ var ElSelectMenu = defineComponent({
     } = useProps(select.props);
     const cachedHeights = ref([]);
     const listRef = ref();
-    const size = computed(() => props.data.length);
+    const size = computed(() => props2.data.length);
     watch(() => size.value, () => {
       var _a, _b;
       (_b = (_a = select.tooltipRef.value).updatePopper) == null ? void 0 : _b.call(_a);
@@ -93,7 +91,7 @@ var ElSelectMenu = defineComponent({
       } = select.props;
       return disabled || !selected && (multiple ? multipleLimit > 0 && modelValue.length >= multipleLimit : false);
     };
-    const isItemHovering = (target) => props.hoveringIndex === target;
+    const isItemHovering = (target) => props2.hoveringIndex === target;
     const scrollToItem = (index) => {
       const list = listRef.value;
       if (list) {
@@ -106,7 +104,7 @@ var ElSelectMenu = defineComponent({
         list.resetScrollTop();
       }
     };
-    expose({
+    const exposed = {
       listRef,
       isSized,
       isItemDisabled,
@@ -114,7 +112,8 @@ var ElSelectMenu = defineComponent({
       isItemSelected,
       scrollToItem,
       resetScrollTop
-    });
+    };
+    expose(exposed);
     const Item = (itemProps) => {
       const {
         index,
@@ -153,9 +152,9 @@ var ElSelectMenu = defineComponent({
         "onSelect": onSelect,
         "onHover": onHover
       }), {
-        default: (props2) => {
+        default: (props3) => {
           var _a;
-          return ((_a = slots.default) == null ? void 0 : _a.call(slots, props2)) || createVNode("span", null, [getLabel(item)]);
+          return ((_a = slots.default) == null ? void 0 : _a.call(slots, props3)) || createVNode("span", null, [getLabel(item)]);
         }
       });
     };
@@ -169,9 +168,6 @@ var ElSelectMenu = defineComponent({
     const onBackward = () => {
       onKeyboardNavigate("backward");
     };
-    const onEscOrTab = () => {
-      select.expanded = false;
-    };
     const onKeydown = (e) => {
       const {
         code
@@ -181,30 +177,27 @@ var ElSelectMenu = defineComponent({
         esc,
         down,
         up,
-        enter
+        enter,
+        numpadEnter
       } = EVENT_CODE;
-      if (code !== tab) {
+      if ([esc, down, up, enter, numpadEnter].includes(code)) {
         e.preventDefault();
         e.stopPropagation();
       }
       switch (code) {
         case tab:
-        case esc: {
-          onEscOrTab();
+        case esc:
           break;
-        }
-        case down: {
+        case down:
           onForward();
           break;
-        }
-        case up: {
+        case up:
           onBackward();
           break;
-        }
-        case enter: {
+        case enter:
+        case numpadEnter:
           onKeyboardSelect();
           break;
-        }
       }
     };
     return () => {
@@ -212,12 +205,15 @@ var ElSelectMenu = defineComponent({
       const {
         data,
         width
-      } = props;
+      } = props2;
       const {
         height,
         multiple,
         scrollbarAlwaysOn
       } = select.props;
+      const isScrollbarAlwaysOn = computed(() => {
+        return isIOS ? true : scrollbarAlwaysOn;
+      });
       const List = unref(isSized) ? FixedSizeList : DynamicSizeList;
       return createVNode("div", {
         "class": [ns.b("dropdown"), ns.is("multiple", multiple)],
@@ -228,14 +224,14 @@ var ElSelectMenu = defineComponent({
         "ref": listRef
       }, unref(listProps), {
         "className": ns.be("dropdown", "list"),
-        "scrollbarAlwaysOn": scrollbarAlwaysOn,
+        "scrollbarAlwaysOn": isScrollbarAlwaysOn.value,
         "data": data,
         "height": height,
         "width": width,
         "total": data.length,
         "onKeydown": onKeydown
       }), {
-        default: (props2) => createVNode(Item, props2, null)
+        default: (props3) => createVNode(Item, props3, null)
       }), (_d = slots.footer) == null ? void 0 : _d.call(slots)]);
     };
   }

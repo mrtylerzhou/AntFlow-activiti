@@ -53,8 +53,8 @@ export declare const popperTriggerProps: {
     readonly id: StringConstructor;
     readonly open: BooleanConstructor;
 };
-export declare type PopperTriggerProps = typeof popperTriggerProps;
-export declare type PopperTriggerInstance = InstanceType<typeof Trigger>;
+export type PopperTriggerProps = typeof popperTriggerProps;
+export type PopperTriggerInstance = InstanceType<typeof Trigger> & unknown;
 /** @deprecated use `popperTriggerProps` instead, and it will be deprecated in the next major version */
 export declare const usePopperTriggerProps: {
     readonly virtualRef: {
@@ -110,4 +110,4 @@ export declare const usePopperTriggerProps: {
     readonly open: BooleanConstructor;
 };
 /** @deprecated use `PopperTriggerInstance` instead, and it will be deprecated in the next major version */
-export declare type ElPopperArrowTrigger = PopperTriggerInstance;
+export type ElPopperArrowTrigger = PopperTriggerInstance;

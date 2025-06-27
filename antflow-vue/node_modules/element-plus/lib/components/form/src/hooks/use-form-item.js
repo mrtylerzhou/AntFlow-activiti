@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../hooks/index.js');
 var constants = require('../constants.js');
 var index = require('../../../../hooks/use-id/index.js');
 

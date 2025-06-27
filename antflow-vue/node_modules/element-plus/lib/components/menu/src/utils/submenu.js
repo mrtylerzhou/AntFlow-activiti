@@ -2,10 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
-var aria = require('../../../../constants/aria.js');
 var aria$1 = require('../../../../utils/dom/aria.js');
+var aria = require('../../../../constants/aria.js');
 
 class SubMenu {
   constructor(parent, domNode) {
@@ -25,7 +23,6 @@ class SubMenu {
     } else if (idx < 0) {
       idx = this.subMenuItems.length - 1;
     }
-    ;
     this.subMenuItems[idx].focus();
     this.subIndex = idx;
   }
@@ -50,6 +47,7 @@ class SubMenu {
             break;
           }
           case aria.EVENT_CODE.enter:
+          case aria.EVENT_CODE.numpadEnter:
           case aria.EVENT_CODE.space: {
             prevDef = true;
             event.currentTarget.click();

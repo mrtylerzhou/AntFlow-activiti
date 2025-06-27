@@ -1,6 +1,6 @@
 import type { InjectionKey, Ref } from 'vue';
 import type { UseNamespaceReturn } from 'element-plus/es/hooks';
-export declare type TooltipV2Context = {
+export type TooltipV2Context = {
     onClose: () => void;
     onDelayOpen: () => void;
     onOpen: () => void;
@@ -8,7 +8,7 @@ export declare type TooltipV2Context = {
     triggerRef: Ref<HTMLElement | null>;
     ns: UseNamespaceReturn;
 };
-export declare type TooltipV2ContentContext = {
+export type TooltipV2ContentContext = {
     arrowRef: Ref<HTMLElement | null>;
 };
 export declare const tooltipV2RootKey: InjectionKey<TooltipV2Context>;

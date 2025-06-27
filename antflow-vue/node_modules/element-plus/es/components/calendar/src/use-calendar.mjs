@@ -1,10 +1,8 @@
 import { ref, computed } from 'vue';
 import dayjs from 'dayjs';
-import '../../../hooks/index.mjs';
-import '../../../utils/index.mjs';
-import '../../../constants/index.mjs';
 import { useLocale } from '../../../hooks/use-locale/index.mjs';
 import { INPUT_EVENT, UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';
+import { isArray, isDate } from '@vue/shared';
 import { debugWarn } from '../../../utils/error.mjs';
 
 const adjacentMonth = (start, end) => {
@@ -50,7 +48,7 @@ const useCalendar = (props, emit, componentName) => {
     }
   });
   const validatedRange = computed(() => {
-    if (!props.range)
+    if (!props.range || !isArray(props.range) || props.range.length !== 2 || props.range.some((item) => !isDate(item)))
       return [];
     const rangeArrDayjs = props.range.map((_) => dayjs(_).locale(lang.value));
     const [startDayjs, endDayjs] = rangeArrDayjs;

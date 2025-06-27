@@ -1,2 +1,2 @@
 import type Avatar from './avatar.vue';
-export declare type AvatarInstance = InstanceType<typeof Avatar>;
+export type AvatarInstance = InstanceType<typeof Avatar> & unknown;

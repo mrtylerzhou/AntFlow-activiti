@@ -1,4 +1,3 @@
-import '../../utils/index.mjs';
 import Row from './src/row2.mjs';
 export { RowAlign, RowJustify, rowProps } from './src/row.mjs';
 export { rowContextKey } from './src/constants.mjs';

@@ -80,6 +80,9 @@ var ko = {
       noData: "\uB370\uC774\uD130 \uC5C6\uC74C",
       placeholder: "\uC120\uD0DD"
     },
+    mention: {
+      loading: "\uBD88\uB7EC\uC624\uB294 \uC911"
+    },
     dropdown: {
       toggleDropdown: "\uB4DC\uB86D\uB2E4\uC6B4 \uC804\uD658"
     },

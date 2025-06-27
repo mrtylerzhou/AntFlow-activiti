@@ -7,7 +7,6 @@ var dynamicSizeList = require('./src/components/dynamic-size-list.js');
 var fixedSizeGrid = require('./src/components/fixed-size-grid.js');
 var dynamicSizeGrid = require('./src/components/dynamic-size-grid.js');
 var props = require('./src/props.js');
-require('./src/types.js');
 
 
 

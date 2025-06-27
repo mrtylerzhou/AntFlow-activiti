@@ -67,6 +67,9 @@ var ca = {
       noData: "Sense Dades",
       placeholder: "Seleccionar"
     },
+    mention: {
+      loading: "Carregant"
+    },
     cascader: {
       noMatch: "No hi ha dades que coincideixin",
       loading: "Carregant",

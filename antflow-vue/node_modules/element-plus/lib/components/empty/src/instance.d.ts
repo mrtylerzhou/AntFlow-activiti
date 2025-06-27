@@ -1,2 +1,2 @@
 import type Empty from './empty.vue';
-export declare type EmptyInstance = InstanceType<typeof Empty>;
+export type EmptyInstance = InstanceType<typeof Empty> & unknown;

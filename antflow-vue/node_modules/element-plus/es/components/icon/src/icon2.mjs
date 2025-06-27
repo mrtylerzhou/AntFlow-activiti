@@ -1,6 +1,4 @@
 import { defineComponent, computed, openBlock, createElementBlock, mergeProps, unref, renderSlot } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { iconProps } from './icon.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';

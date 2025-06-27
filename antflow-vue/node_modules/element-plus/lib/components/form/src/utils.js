@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../utils/index.js');
-var error = require('../../../utils/error.js');
 var lodashUnified = require('lodash-unified');
+var error = require('../../../utils/error.js');
 
 const SCOPE = "ElForm";
 function useFormLabelWidth() {

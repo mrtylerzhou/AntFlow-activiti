@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-export declare type UseDelayedRenderProps = {
+export type UseDelayedRenderProps = {
     indicator: Ref<boolean>;
     intermediateIndicator: Ref<boolean>;
     shouldSetIntermediate?: (step: 'show' | 'hide') => boolean;

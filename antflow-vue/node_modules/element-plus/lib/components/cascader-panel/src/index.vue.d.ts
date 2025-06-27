@@ -8,7 +8,7 @@ declare const _default: import("vue").DefineComponent<{
     };
     renderLabel: PropType<RenderLabel>;
     modelValue: {
-        readonly type: PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue) | ((new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue))[], unknown, unknown>>;
+        readonly type: PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue) | ((new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -19,12 +19,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -152,7 +152,7 @@ declare const _default: import("vue").DefineComponent<{
         doCheck: (checked: boolean) => void;
     }[]>;
     handleKeyDown: (e: KeyboardEvent) => void;
-    handleCheckChange: (node: Node, checked: boolean, emitClose?: boolean | undefined) => void;
+    handleCheckChange: (node: Node, checked: boolean, emitClose?: boolean) => void;
     getFlattedNodes: (leafOnly: boolean) => Node[] | undefined;
     /**
      * @description get an array of currently selected node,(leafOnly) whether only return the leaf checked nodes, default is `false`
@@ -171,7 +171,7 @@ declare const _default: import("vue").DefineComponent<{
     };
     renderLabel: PropType<RenderLabel>;
     modelValue: {
-        readonly type: PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue) | ((new (...args: any[]) => CascaderValue & {}) | (() => CascaderValue))[], unknown, unknown>>;
+        readonly type: PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue) | ((new (...args: any[]) => string | number | import("./node").CascaderNodePathValue | (CascaderNodeValue | import("./node").CascaderNodePathValue)[]) | (() => CascaderValue))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -179,13 +179,13 @@ declare const _default: import("vue").DefineComponent<{
     options: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => CascaderOption[]) | (() => CascaderOption[]) | ((new (...args: any[]) => CascaderOption[]) | (() => CascaderOption[]))[], unknown, unknown, () => CascaderOption[], boolean>;
     props: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => import("./node").CascaderProps) | (() => import("./node").CascaderProps) | ((new (...args: any[]) => import("./node").CascaderProps) | (() => import("./node").CascaderProps))[], unknown, unknown, () => import("./node").CascaderProps, boolean>;
 }>> & {
+    "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
     onChange?: ((...args: any[]) => any) | undefined;
     onClose?: ((...args: any[]) => any) | undefined;
-    "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
     "onExpand-change"?: ((...args: any[]) => any) | undefined;
 }, {
-    props: import("./node").CascaderProps;
     border: boolean;
+    props: import("./node").CascaderProps;
     options: CascaderOption[];
 }>;
 export default _default;

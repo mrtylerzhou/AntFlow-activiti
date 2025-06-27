@@ -1,3 +1,5 @@
+import { isArray } from '@vue/shared';
+
 const FontGap = 3;
 function prepareCanvas(width, height, ratio = 1) {
   const canvas = document.createElement("canvas");
@@ -29,7 +31,7 @@ function useClips() {
       ctx.fillStyle = color;
       ctx.textAlign = textAlign;
       ctx.textBaseline = textBaseline;
-      const contents = Array.isArray(content) ? content : [content];
+      const contents = isArray(content) ? content : [content];
       contents == null ? void 0 : contents.forEach((item, index) => {
         ctx.fillText(item != null ? item : "", contentWidth / 2, index * (mergedFontSize + FontGap * ratio));
       });

@@ -2,8 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('./components/config-provider/index.js');
-require('./constants/index.js');
 var version = require('./version.js');
 var key = require('./constants/key.js');
 var useGlobalConfig = require('./components/config-provider/src/hooks/use-global-config.js');

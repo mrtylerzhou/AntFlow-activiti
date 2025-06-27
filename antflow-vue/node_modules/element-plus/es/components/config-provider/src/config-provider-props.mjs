@@ -1,8 +1,6 @@
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
+import { useEmptyValuesProps } from '../../../hooks/use-empty-values/index.mjs';
 import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
 import { useSizeProp } from '../../../hooks/use-size/index.mjs';
-import { useEmptyValuesProps } from '../../../hooks/use-empty-values/index.mjs';
 
 const configProviderProps = buildProps({
   a11y: {

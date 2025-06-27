@@ -2,7 +2,6 @@ import { Loading } from './src/service.mjs';
 export { Loading as ElLoadingService } from './src/service.mjs';
 import { vLoading } from './src/directive.mjs';
 export { vLoading as ElLoadingDirective, vLoading } from './src/directive.mjs';
-import './src/types.mjs';
 
 const ElLoading = {
   install(app) {

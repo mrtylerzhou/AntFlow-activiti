@@ -1,13 +1,11 @@
 import { createVNode, renderSlot, mergeProps } from 'vue';
 import { get } from 'lodash-unified';
-import '../../../../utils/index.mjs';
-import '../components/index.mjs';
 import { Alignment } from '../constants.mjs';
 import { placeholderSign } from '../private.mjs';
 import { enforceUnit, tryCall, componentToSlot } from '../utils.mjs';
-import { isFunction, isObject } from '@vue/shared';
-import TableV2Cell from '../components/cell.mjs';
+import TableCell from '../components/cell.mjs';
 import ExpandIcon from '../components/expand-icon.mjs';
+import { isFunction, isObject } from '@vue/shared';
 
 const CellRenderer = ({
   columns,
@@ -67,7 +65,7 @@ const CellRenderer = ({
     rowIndex
   };
   const columnCellRenderer = componentToSlot(cellRenderer);
-  const Cell = columnCellRenderer ? columnCellRenderer(cellProps) : renderSlot(slots, "default", cellProps, () => [createVNode(TableV2Cell, cellProps, null)]);
+  const Cell = columnCellRenderer ? columnCellRenderer(cellProps) : renderSlot(slots, "default", cellProps, () => [createVNode(TableCell, cellProps, null)]);
   const kls = [ns.e("row-cell"), column.class, column.align === Alignment.CENTER && ns.is("align-center"), column.align === Alignment.RIGHT && ns.is("align-right")];
   const expandable = rowIndex >= 0 && expandColumnKey && column.key === expandColumnKey;
   const expanded = rowIndex >= 0 && expandedRowKeys.includes(rowData[rowKey]);
@@ -96,6 +94,7 @@ const CellRenderer = ({
   }), [IconOrPlaceholder, Cell]);
 };
 CellRenderer.inheritAttrs = false;
+var Cell = CellRenderer;
 
-export { CellRenderer as default };
+export { Cell as default };
 //# sourceMappingURL=cell.mjs.map

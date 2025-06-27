@@ -1,7 +1,4 @@
 import { ref, watch, provide, computed } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
-import '../../../constants/index.mjs';
 import { collapseContextKey } from './constants.mjs';
 import { castArray } from 'lodash-unified';
 import { UPDATE_MODEL_EVENT, CHANGE_EVENT } from '../../../constants/event.mjs';

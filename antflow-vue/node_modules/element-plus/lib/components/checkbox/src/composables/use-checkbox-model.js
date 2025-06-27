@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../constants/index.js');
 var constants = require('../constants.js');
 var types = require('../../../../utils/types.js');
 var shared = require('@vue/shared');

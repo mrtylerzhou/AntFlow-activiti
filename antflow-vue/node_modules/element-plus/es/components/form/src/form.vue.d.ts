@@ -1,7 +1,10 @@
 import type { Arrayable } from 'element-plus/es/utils';
 import type { FormItemContext, FormValidateCallback, FormValidationResult } from './types';
 import type { FormItemProp } from './form-item';
-declare const _default: import("vue").DefineComponent<{
+declare function __VLS_template(): {
+    default?(_: {}): any;
+};
+declare const __VLS_component: import("vue").DefineComponent<{
     readonly model: ObjectConstructor;
     readonly rules: {
         readonly type: import("vue").PropType<Partial<Record<string, Arrayable<import("./types").FormItemRule>>>>;
@@ -27,86 +30,39 @@ declare const _default: import("vue").DefineComponent<{
         __epPropKey: true;
     };
     readonly size: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "default" | "small" | "large", unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "small" | "default" | "large", unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly disabled: BooleanConstructor;
 }, {
-    COMPONENT_NAME: string;
-    props: Readonly<import("@vue/shared").LooseRequired<Readonly<import("vue").ExtractPropTypes<{
-        readonly model: ObjectConstructor;
-        readonly rules: {
-            readonly type: import("vue").PropType<Partial<Record<string, Arrayable<import("./types").FormItemRule>>>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly labelPosition: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "top" | "left" | "right", unknown, "right", boolean>;
-        readonly requireAsteriskPosition: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "left" | "right", unknown, "left", boolean>;
-        readonly labelWidth: import("element-plus/es/utils").EpPropFinalized<readonly [StringConstructor, NumberConstructor], unknown, unknown, "", boolean>;
-        readonly labelSuffix: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
-        readonly inline: BooleanConstructor;
-        readonly inlineMessage: BooleanConstructor;
-        readonly statusIcon: BooleanConstructor;
-        readonly showMessage: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
-        readonly validateOnRuleChange: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
-        readonly hideRequiredAsterisk: BooleanConstructor;
-        readonly scrollToError: BooleanConstructor;
-        readonly scrollIntoViewOptions: {
-            readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<readonly [ObjectConstructor, BooleanConstructor], unknown, unknown>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly size: {
-            readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "default" | "small" | "large", unknown>>;
-            readonly required: false;
-            readonly validator: ((val: unknown) => boolean) | undefined;
-            __epPropKey: true;
-        };
-        readonly disabled: BooleanConstructor;
-    }>> & {
-        onValidate?: ((prop: FormItemProp, isValid: boolean, message: string) => any) | undefined;
-    }>>;
-    emit: (event: "validate", prop: FormItemProp, isValid: boolean, message: string) => void;
-    fields: FormItemContext[];
-    formSize: import("vue").ComputedRef<"" | "default" | "small" | "large">;
-    ns: {
-        namespace: import("vue").ComputedRef<string>;
-        b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
-        is: {
-            (name: string, state: boolean | undefined): string;
-            (name: string): string;
-        };
-        cssVar: (object: Record<string, string>) => Record<string, string>;
-        cssVarName: (name: string) => string;
-        cssVarBlock: (object: Record<string, string>) => Record<string, string>;
-        cssVarBlockName: (name: string) => string;
-    };
-    formClasses: import("vue").ComputedRef<(string | {
-        [x: string]: boolean | import("element-plus/es/utils").EpPropMergeType<StringConstructor, "top" | "left" | "right", unknown>;
-    })[]>;
-    getField: (prop: string) => FormItemContext | undefined;
-    addField: (field: FormItemContext) => void;
-    removeField: (field: FormItemContext) => void;
-    resetFields: (props?: Arrayable<FormItemProp> | undefined) => void;
-    clearValidate: (props?: Arrayable<FormItemProp> | undefined) => void;
-    isValidatable: import("vue").ComputedRef<boolean>;
-    obtainValidateFields: (props: Arrayable<FormItemProp>) => FormItemContext[];
-    validate: (callback?: FormValidateCallback | undefined) => FormValidationResult;
-    doValidateField: (props?: Arrayable<FormItemProp>) => Promise<boolean>;
-    validateField: (props?: Arrayable<FormItemProp> | undefined, callback?: FormValidateCallback | undefined) => FormValidationResult;
+    /**
+     * @description Validate the whole form. Receives a callback or returns `Promise`.
+     */
+    validate: (callback?: FormValidateCallback) => FormValidationResult;
+    /**
+     * @description Validate specified fields.
+     */
+    validateField: (props?: Arrayable<FormItemProp>, callback?: FormValidateCallback) => FormValidationResult;
+    /**
+     * @description Reset specified fields and remove validation result.
+     */
+    resetFields: (props?: Arrayable<FormItemProp>) => void;
+    /**
+     * @description Clear validation message for specified fields.
+     */
+    clearValidate: (props?: Arrayable<FormItemProp>) => void;
+    /**
+     * @description Scroll to the specified fields.
+     */
     scrollToField: (prop: FormItemProp) => void;
+    /**
+     * @description All fields context.
+     */
+    fields: FormItemContext[];
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
-    validate: (prop: FormItemProp, isValid: boolean, message: string) => boolean;
+    validate: (prop: FormItemProp, isValid: boolean, message: string) => void;
 }, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     readonly model: ObjectConstructor;
     readonly rules: {
@@ -133,7 +89,7 @@ declare const _default: import("vue").DefineComponent<{
         __epPropKey: true;
     };
     readonly size: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "default" | "small" | "large", unknown>>;
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<StringConstructor, "" | "small" | "default" | "large", unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -143,16 +99,22 @@ declare const _default: import("vue").DefineComponent<{
     onValidate?: ((prop: FormItemProp, isValid: boolean, message: string) => any) | undefined;
 }, {
     readonly disabled: boolean;
-    readonly labelPosition: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "top" | "left" | "right", unknown>;
-    readonly requireAsteriskPosition: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "left" | "right", unknown>;
-    readonly labelWidth: import("element-plus/es/utils").EpPropMergeType<readonly [StringConstructor, NumberConstructor], unknown, unknown>;
-    readonly labelSuffix: string;
-    readonly showMessage: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
-    readonly validateOnRuleChange: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
     readonly inline: boolean;
+    readonly labelWidth: import("element-plus/es/utils").EpPropMergeType<readonly [StringConstructor, NumberConstructor], unknown, unknown>;
+    readonly labelPosition: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "top" | "left" | "right", unknown>;
     readonly inlineMessage: boolean;
+    readonly showMessage: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
+    readonly requireAsteriskPosition: import("element-plus/es/utils").EpPropMergeType<StringConstructor, "left" | "right", unknown>;
+    readonly labelSuffix: string;
+    readonly validateOnRuleChange: import("element-plus/es/utils").EpPropMergeType<BooleanConstructor, unknown, unknown>;
     readonly statusIcon: boolean;
     readonly hideRequiredAsterisk: boolean;
     readonly scrollToError: boolean;
 }>;
+declare const _default: __VLS_WithTemplateSlots<typeof __VLS_component, ReturnType<typeof __VLS_template>>;
 export default _default;
+type __VLS_WithTemplateSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

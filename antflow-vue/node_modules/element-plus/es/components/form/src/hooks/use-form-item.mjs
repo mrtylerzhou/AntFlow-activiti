@@ -1,5 +1,4 @@
 import { inject, ref, computed, onMounted, watch, toRef, onUnmounted } from 'vue';
-import '../../../../hooks/index.mjs';
 import { formContextKey, formItemContextKey } from '../constants.mjs';
 import { useId } from '../../../../hooks/use-id/index.mjs';
 

@@ -1,6 +1,4 @@
 import { computed, ref, watchEffect } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { isArray } from '@vue/shared';
 import { isNumber } from '../../../utils/types.mjs';

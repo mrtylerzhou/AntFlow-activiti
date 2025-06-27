@@ -4,7 +4,7 @@ import { useProps } from './useProps.mjs';
 function useAllowCreate(props, states) {
   const { aliasProps, getLabel, getValue } = useProps(props);
   const createOptionCount = ref(0);
-  const cachedSelectedOption = ref(null);
+  const cachedSelectedOption = ref();
   const enableAllowCreateMode = computed(() => {
     return props.allowCreate && props.filterable;
   });

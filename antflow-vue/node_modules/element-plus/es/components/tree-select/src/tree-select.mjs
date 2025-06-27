@@ -1,7 +1,7 @@
 import { defineComponent, ref, computed, reactive, onMounted, h } from 'vue';
 import { pick } from 'lodash-unified';
 import { ElSelect } from '../../select/index.mjs';
-import _Tree from '../../tree/index.mjs';
+import { ElTree } from '../../tree/index.mjs';
 import { useSelect } from './select.mjs';
 import { useTree } from './tree.mjs';
 import CacheOptions from './cache-options.mjs';
@@ -12,7 +12,7 @@ const _sfc_main = defineComponent({
   inheritAttrs: false,
   props: {
     ...ElSelect.props,
-    ..._Tree.props,
+    ...ElTree.props,
     cacheData: {
       type: Array,
       default: () => []
@@ -53,7 +53,7 @@ const _sfc_main = defineComponent({
           "insertBefore",
           "insertAfter"
         ]),
-        ...pick(select.value, ["focus", "blur"])
+        ...pick(select.value, ["focus", "blur", "selectedLabel"])
       });
     });
     return () => h(ElSelect, reactive({
@@ -63,7 +63,7 @@ const _sfc_main = defineComponent({
       ...slots,
       default: () => [
         h(CacheOptions, { data: cacheOptions.value }),
-        h(_Tree, reactive({
+        h(ElTree, reactive({
           ...treeProps,
           ref: (ref2) => tree.value = ref2
         }))

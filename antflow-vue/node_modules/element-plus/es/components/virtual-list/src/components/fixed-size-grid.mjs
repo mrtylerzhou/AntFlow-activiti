@@ -1,4 +1,3 @@
-import '../../../../utils/index.mjs';
 import createGrid from '../builders/build-grid.mjs';
 import { AUTO_ALIGNMENT, CENTERED_ALIGNMENT, END_ALIGNMENT, START_ALIGNMENT, SMART_ALIGNMENT } from '../defaults.mjs';
 import { isNumber } from '../../../../utils/types.mjs';

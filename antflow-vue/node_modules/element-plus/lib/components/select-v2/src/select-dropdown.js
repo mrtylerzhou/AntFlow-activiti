@@ -4,33 +4,31 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
-require('../../../utils/index.js');
-require('../../virtual-list/index.js');
-require('../../../hooks/index.js');
-require('../../../constants/index.js');
 var groupItem = require('./group-item.js');
 var optionItem = require('./option-item.js');
 var useProps = require('./useProps.js');
 var token = require('./token.js');
-var index = require('../../../hooks/use-namespace/index.js');
-var types = require('../../../utils/types.js');
-var shared = require('@vue/shared');
-var aria = require('../../../constants/aria.js');
 var fixedSizeList = require('../../virtual-list/src/components/fixed-size-list.js');
 var dynamicSizeList = require('../../virtual-list/src/components/dynamic-size-list.js');
+var index = require('../../../hooks/use-namespace/index.js');
+var types = require('../../../utils/types.js');
+var core = require('@vueuse/core');
+var aria = require('../../../constants/aria.js');
+var shared = require('@vue/shared');
 
+const props = {
+  loading: Boolean,
+  data: {
+    type: Array,
+    required: true
+  },
+  hoveringIndex: Number,
+  width: Number
+};
 var ElSelectMenu = vue.defineComponent({
   name: "ElSelectDropdown",
-  props: {
-    loading: Boolean,
-    data: {
-      type: Array,
-      required: true
-    },
-    hoveringIndex: Number,
-    width: Number
-  },
-  setup(props, {
+  props,
+  setup(props2, {
     slots,
     expose
   }) {
@@ -43,7 +41,7 @@ var ElSelectMenu = vue.defineComponent({
     } = useProps.useProps(select.props);
     const cachedHeights = vue.ref([]);
     const listRef = vue.ref();
-    const size = vue.computed(() => props.data.length);
+    const size = vue.computed(() => props2.data.length);
     vue.watch(() => size.value, () => {
       var _a, _b;
       (_b = (_a = select.tooltipRef.value).updatePopper) == null ? void 0 : _b.call(_a);
@@ -97,7 +95,7 @@ var ElSelectMenu = vue.defineComponent({
       } = select.props;
       return disabled || !selected && (multiple ? multipleLimit > 0 && modelValue.length >= multipleLimit : false);
     };
-    const isItemHovering = (target) => props.hoveringIndex === target;
+    const isItemHovering = (target) => props2.hoveringIndex === target;
     const scrollToItem = (index) => {
       const list = listRef.value;
       if (list) {
@@ -110,7 +108,7 @@ var ElSelectMenu = vue.defineComponent({
         list.resetScrollTop();
       }
     };
-    expose({
+    const exposed = {
       listRef,
       isSized,
       isItemDisabled,
@@ -118,7 +116,8 @@ var ElSelectMenu = vue.defineComponent({
       isItemSelected,
       scrollToItem,
       resetScrollTop
-    });
+    };
+    expose(exposed);
     const Item = (itemProps) => {
       const {
         index,
@@ -157,9 +156,9 @@ var ElSelectMenu = vue.defineComponent({
         "onSelect": onSelect,
         "onHover": onHover
       }), {
-        default: (props2) => {
+        default: (props3) => {
           var _a;
-          return ((_a = slots.default) == null ? void 0 : _a.call(slots, props2)) || vue.createVNode("span", null, [getLabel(item)]);
+          return ((_a = slots.default) == null ? void 0 : _a.call(slots, props3)) || vue.createVNode("span", null, [getLabel(item)]);
         }
       });
     };
@@ -173,9 +172,6 @@ var ElSelectMenu = vue.defineComponent({
     const onBackward = () => {
       onKeyboardNavigate("backward");
     };
-    const onEscOrTab = () => {
-      select.expanded = false;
-    };
     const onKeydown = (e) => {
       const {
         code
@@ -185,30 +181,27 @@ var ElSelectMenu = vue.defineComponent({
         esc,
         down,
         up,
-        enter
+        enter,
+        numpadEnter
       } = aria.EVENT_CODE;
-      if (code !== tab) {
+      if ([esc, down, up, enter, numpadEnter].includes(code)) {
         e.preventDefault();
         e.stopPropagation();
       }
       switch (code) {
         case tab:
-        case esc: {
-          onEscOrTab();
+        case esc:
           break;
-        }
-        case down: {
+        case down:
           onForward();
           break;
-        }
-        case up: {
+        case up:
           onBackward();
           break;
-        }
-        case enter: {
+        case enter:
+        case numpadEnter:
           onKeyboardSelect();
           break;
-        }
       }
     };
     return () => {
@@ -216,12 +209,15 @@ var ElSelectMenu = vue.defineComponent({
       const {
         data,
         width
-      } = props;
+      } = props2;
       const {
         height,
         multiple,
         scrollbarAlwaysOn
       } = select.props;
+      const isScrollbarAlwaysOn = vue.computed(() => {
+        return core.isIOS ? true : scrollbarAlwaysOn;
+      });
       const List = vue.unref(isSized) ? fixedSizeList["default"] : dynamicSizeList["default"];
       return vue.createVNode("div", {
         "class": [ns.b("dropdown"), ns.is("multiple", multiple)],
@@ -232,14 +228,14 @@ var ElSelectMenu = vue.defineComponent({
         "ref": listRef
       }, vue.unref(listProps), {
         "className": ns.be("dropdown", "list"),
-        "scrollbarAlwaysOn": scrollbarAlwaysOn,
+        "scrollbarAlwaysOn": isScrollbarAlwaysOn.value,
         "data": data,
         "height": height,
         "width": width,
         "total": data.length,
         "onKeydown": onKeydown
       }), {
-        default: (props2) => vue.createVNode(Item, props2, null)
+        default: (props3) => vue.createVNode(Item, props3, null)
       }), (_d = slots.footer) == null ? void 0 : _d.call(slots)]);
     };
   }

@@ -1,11 +1,8 @@
 import Select from './src/select.mjs';
 export { selectV2InjectionKey } from './src/token.mjs';
+import { withInstall } from '../../utils/vue/install.mjs';
 
-Select.install = (app) => {
-  app.component(Select.name, Select);
-};
-const _Select = Select;
-const ElSelectV2 = _Select;
+const ElSelectV2 = withInstall(Select);
 
-export { ElSelectV2, _Select as default };
+export { ElSelectV2, ElSelectV2 as default };
 //# sourceMappingURL=index.mjs.map

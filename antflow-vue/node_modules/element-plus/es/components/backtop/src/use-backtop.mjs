@@ -1,6 +1,5 @@
 import { shallowRef, ref, onMounted } from 'vue';
 import { useThrottleFn, useEventListener } from '@vueuse/core';
-import '../../../utils/index.mjs';
 import { throwError } from '../../../utils/error.mjs';
 
 const useBackTop = (props, emit, componentName) => {

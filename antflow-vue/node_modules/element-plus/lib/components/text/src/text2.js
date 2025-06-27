@@ -3,9 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
-require('../../form/index.js');
-require('../../../utils/index.js');
 var text = require('./text.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var useFormCommonProps = require('../../form/src/hooks/use-form-common-props.js');
@@ -20,6 +17,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
   props: text.textProps,
   setup(__props) {
     const props = __props;
+    const textRef = vue.ref();
     const textSize = useFormCommonProps.useFormSize();
     const ns = index.useNamespace("text");
     const textKls = vue.computed(() => [
@@ -29,8 +27,38 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       ns.is("truncated", props.truncated),
       ns.is("line-clamp", !types.isUndefined(props.lineClamp))
     ]);
+    const inheritTitle = vue.useAttrs().title;
+    const bindTitle = () => {
+      var _a, _b, _c, _d, _e;
+      if (inheritTitle)
+        return;
+      let shouldAddTitle = false;
+      const text = ((_a = textRef.value) == null ? void 0 : _a.textContent) || "";
+      if (props.truncated) {
+        const width = (_b = textRef.value) == null ? void 0 : _b.offsetWidth;
+        const scrollWidth = (_c = textRef.value) == null ? void 0 : _c.scrollWidth;
+        if (width && scrollWidth && scrollWidth > width) {
+          shouldAddTitle = true;
+        }
+      } else if (!types.isUndefined(props.lineClamp)) {
+        const height = (_d = textRef.value) == null ? void 0 : _d.offsetHeight;
+        const scrollHeight = (_e = textRef.value) == null ? void 0 : _e.scrollHeight;
+        if (height && scrollHeight && scrollHeight > height) {
+          shouldAddTitle = true;
+        }
+      }
+      if (shouldAddTitle) {
+        textRef.value.setAttribute("title", text);
+      } else {
+        textRef.value.removeAttribute("title");
+      }
+    };
+    vue.onMounted(bindTitle);
+    vue.onUpdated(bindTitle);
     return (_ctx, _cache) => {
       return vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(_ctx.tag), {
+        ref_key: "textRef",
+        ref: textRef,
         class: vue.normalizeClass(vue.unref(textKls)),
         style: vue.normalizeStyle({ "-webkit-line-clamp": _ctx.lineClamp })
       }, {

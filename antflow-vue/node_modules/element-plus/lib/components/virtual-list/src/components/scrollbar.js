@@ -3,14 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../scrollbar/index.js');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var defaults = require('../defaults.js');
 var props = require('../props.js');
 var utils = require('../utils.js');
-var index = require('../../../../hooks/use-namespace/index.js');
 var util = require('../../../scrollbar/src/util.js');
+var index = require('../../../../hooks/use-namespace/index.js');
 var raf = require('../../../../utils/raf.js');
 
 const ScrollBar = vue.defineComponent({
@@ -75,7 +72,7 @@ const ScrollBar = vue.defineComponent({
         return;
       onselectstartStore = document.onselectstart;
       document.onselectstart = () => false;
-      thumbEl.addEventListener("touchmove", onMouseMove);
+      thumbEl.addEventListener("touchmove", onMouseMove, { passive: true });
       thumbEl.addEventListener("touchend", onMouseUp);
     };
     const detachEvents = () => {

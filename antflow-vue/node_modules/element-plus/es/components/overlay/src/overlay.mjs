@@ -1,20 +1,15 @@
 import { defineComponent, createVNode, renderSlot, h } from 'vue';
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
-import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
-import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { useSameTarget } from '../../../hooks/use-same-target/index.mjs';
 import { PatchFlags } from '../../../utils/vue/vnode.mjs';
+import { buildProps, definePropType } from '../../../utils/vue/props/runtime.mjs';
+import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
 const overlayProps = buildProps({
   mask: {
     type: Boolean,
     default: true
   },
-  customMaskEvent: {
-    type: Boolean,
-    default: false
-  },
+  customMaskEvent: Boolean,
   overlayClass: {
     type: definePropType([
       String,

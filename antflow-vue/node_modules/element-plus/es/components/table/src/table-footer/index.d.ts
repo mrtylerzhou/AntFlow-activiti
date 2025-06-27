@@ -1,6 +1,6 @@
 import type { Store } from '../store';
 import type { PropType } from 'vue';
-import type { Sort, SummaryMethod } from '../table/defaults';
+import type { DefaultRow, Sort, SummaryMethod } from '../table/defaults';
 export interface TableFooter<T> {
     fixed: string;
     store: Store<T>;
@@ -16,13 +16,13 @@ declare const _default: import("vue").DefineComponent<{
     };
     store: {
         required: true;
-        type: PropType<any>;
+        type: PropType<TableFooter<DefaultRow>["store"]>;
     };
-    summaryMethod: PropType<SummaryMethod<any>>;
+    summaryMethod: PropType<TableFooter<DefaultRow>["summaryMethod"]>;
     sumText: StringConstructor;
     border: BooleanConstructor;
     defaultSort: {
-        type: PropType<Sort>;
+        type: PropType<TableFooter<DefaultRow>["defaultSort"]>;
         default: () => {
             prop: string;
             order: string;
@@ -32,12 +32,12 @@ declare const _default: import("vue").DefineComponent<{
     ns: {
         namespace: import("vue").ComputedRef<string>;
         b: (blockSuffix?: string) => string;
-        e: (element?: string | undefined) => string;
-        m: (modifier?: string | undefined) => string;
-        be: (blockSuffix?: string | undefined, element?: string | undefined) => string;
-        em: (element?: string | undefined, modifier?: string | undefined) => string;
-        bm: (blockSuffix?: string | undefined, modifier?: string | undefined) => string;
-        bem: (blockSuffix?: string | undefined, element?: string | undefined, modifier?: string | undefined) => string;
+        e: (element?: string) => string;
+        m: (modifier?: string) => string;
+        be: (blockSuffix?: string, element?: string) => string;
+        em: (element?: string, modifier?: string) => string;
+        bm: (blockSuffix?: string, modifier?: string) => string;
+        bem: (blockSuffix?: string, element?: string, modifier?: string) => string;
         is: {
             (name: string, state: boolean | undefined): string;
             (name: string): string;
@@ -47,6 +47,8 @@ declare const _default: import("vue").DefineComponent<{
         cssVarBlock: (object: Record<string, string>) => Record<string, string>;
         cssVarBlockName: (name: string) => string;
     };
+    onScrollableChange: (layout: import("../table-layout").default<any>) => void;
+    onColumnsChange: (layout: import("../table-layout").default<any>) => void;
     getCellClasses: (columns: import("../table-column/defaults").TableColumnCtx<any>[], cellIndex: number) => string[];
     getCellStyles: (column: import("../table-column/defaults").TableColumnCtx<any>, cellIndex: number) => any;
     columns: any;
@@ -57,13 +59,13 @@ declare const _default: import("vue").DefineComponent<{
     };
     store: {
         required: true;
-        type: PropType<any>;
+        type: PropType<TableFooter<DefaultRow>["store"]>;
     };
-    summaryMethod: PropType<SummaryMethod<any>>;
+    summaryMethod: PropType<TableFooter<DefaultRow>["summaryMethod"]>;
     sumText: StringConstructor;
     border: BooleanConstructor;
     defaultSort: {
-        type: PropType<Sort>;
+        type: PropType<TableFooter<DefaultRow>["defaultSort"]>;
         default: () => {
             prop: string;
             order: string;

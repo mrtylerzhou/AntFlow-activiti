@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../utils/index.js');
 var error = require('../../../utils/error.js');
 
 const useBackTop = (props, emit, componentName) => {

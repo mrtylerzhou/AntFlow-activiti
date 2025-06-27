@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var vue = require('vue');
 var lodashUnified = require('lodash-unified');
 var index = require('./index.js');
+var shared = require('@vue/shared');
 
 const InitialStateMap = {
   rowKey: "rowKey",
@@ -20,6 +21,10 @@ const InitialStateMap = {
   ["treeProps.children"]: {
     key: "childrenColumnName",
     default: "children"
+  },
+  ["treeProps.checkStrictly"]: {
+    key: "checkStrictly",
+    default: false
   }
 };
 function createStore(table, props) {
@@ -44,7 +49,7 @@ function proxyTableProps(store, props) {
 function handleValue(value, propsKey, store) {
   let newVal = value;
   let storeKey = InitialStateMap[propsKey];
-  if (typeof InitialStateMap[propsKey] === "object") {
+  if (shared.isObject(InitialStateMap[propsKey])) {
     storeKey = storeKey.key;
     newVal = newVal || InitialStateMap[propsKey].default;
   }

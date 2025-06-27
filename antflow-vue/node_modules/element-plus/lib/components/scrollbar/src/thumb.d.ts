@@ -12,5 +12,5 @@ export declare const thumbProps: {
     };
     readonly always: BooleanConstructor;
 };
-export declare type ThumbProps = ExtractPropTypes<typeof thumbProps>;
-export declare type ThumbInstance = InstanceType<typeof Thumb>;
+export type ThumbProps = ExtractPropTypes<typeof thumbProps>;
+export type ThumbInstance = InstanceType<typeof Thumb> & unknown;

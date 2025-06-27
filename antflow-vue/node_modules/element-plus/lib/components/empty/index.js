@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var empty$1 = require('./src/empty2.js');
 var empty = require('./src/empty.js');
 var install = require('../../utils/vue/install.js');

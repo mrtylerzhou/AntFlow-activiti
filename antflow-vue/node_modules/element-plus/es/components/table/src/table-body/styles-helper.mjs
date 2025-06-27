@@ -1,15 +1,15 @@
 import { inject } from 'vue';
-import '../../../../hooks/index.mjs';
 import { getFixedColumnOffset, ensurePosition, getFixedColumnsClass } from '../util.mjs';
 import { TABLE_INJECTION_KEY } from '../tokens.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
+import { isFunction, isString, isArray, isObject } from '@vue/shared';
 
 function useStyles(props) {
   const parent = inject(TABLE_INJECTION_KEY);
   const ns = useNamespace("table");
   const getRowStyle = (row, rowIndex) => {
     const rowStyle = parent == null ? void 0 : parent.props.rowStyle;
-    if (typeof rowStyle === "function") {
+    if (isFunction(rowStyle)) {
       return rowStyle.call(null, {
         row,
         rowIndex
@@ -26,9 +26,9 @@ function useStyles(props) {
       classes.push(ns.em("row", "striped"));
     }
     const rowClassName = parent == null ? void 0 : parent.props.rowClassName;
-    if (typeof rowClassName === "string") {
+    if (isString(rowClassName)) {
       classes.push(rowClassName);
-    } else if (typeof rowClassName === "function") {
+    } else if (isFunction(rowClassName)) {
       classes.push(rowClassName.call(null, {
         row,
         rowIndex
@@ -39,7 +39,7 @@ function useStyles(props) {
   const getCellStyle = (rowIndex, columnIndex, row, column) => {
     const cellStyle = parent == null ? void 0 : parent.props.cellStyle;
     let cellStyles = cellStyle != null ? cellStyle : {};
-    if (typeof cellStyle === "function") {
+    if (isFunction(cellStyle)) {
       cellStyles = cellStyle.call(null, {
         rowIndex,
         columnIndex,
@@ -56,9 +56,9 @@ function useStyles(props) {
     const fixedClasses = getFixedColumnsClass(ns.b(), columnIndex, props == null ? void 0 : props.fixed, props.store, void 0, offset);
     const classes = [column.id, column.align, column.className, ...fixedClasses];
     const cellClassName = parent == null ? void 0 : parent.props.cellClassName;
-    if (typeof cellClassName === "string") {
+    if (isString(cellClassName)) {
       classes.push(cellClassName);
-    } else if (typeof cellClassName === "function") {
+    } else if (isFunction(cellClassName)) {
       classes.push(cellClassName.call(null, {
         rowIndex,
         columnIndex,
@@ -73,17 +73,17 @@ function useStyles(props) {
     let rowspan = 1;
     let colspan = 1;
     const fn = parent == null ? void 0 : parent.props.spanMethod;
-    if (typeof fn === "function") {
+    if (isFunction(fn)) {
       const result = fn({
         row,
         column,
         rowIndex,
         columnIndex
       });
-      if (Array.isArray(result)) {
+      if (isArray(result)) {
         rowspan = result[0];
         colspan = result[1];
-      } else if (typeof result === "object") {
+      } else if (isObject(result)) {
         rowspan = result.rowspan;
         colspan = result.colspan;
       }

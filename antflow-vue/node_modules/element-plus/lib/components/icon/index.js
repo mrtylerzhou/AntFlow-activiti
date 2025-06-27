@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var icon$1 = require('./src/icon2.js');
 var icon = require('./src/icon.js');
 var install = require('../../utils/vue/install.js');

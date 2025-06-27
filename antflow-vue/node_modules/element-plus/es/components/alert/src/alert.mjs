@@ -1,7 +1,6 @@
-import '../../../utils/index.mjs';
+import { TypeComponentsMap } from '../../../utils/vue/icon.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { keysOf } from '../../../utils/objects.mjs';
-import { TypeComponentsMap } from '../../../utils/vue/icon.mjs';
 
 const alertEffects = ["light", "dark"];
 const alertProps = buildProps({

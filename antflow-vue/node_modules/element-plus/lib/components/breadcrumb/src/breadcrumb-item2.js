@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var index$1 = require('../../icon/index.js');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
 var breadcrumbItem = require('./breadcrumb-item.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');

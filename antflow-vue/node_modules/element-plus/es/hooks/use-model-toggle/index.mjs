@@ -1,9 +1,8 @@
 import { getCurrentInstance, computed, watch, onMounted } from 'vue';
-import { isFunction } from '@vue/shared';
-import '../../utils/index.mjs';
 import { buildProp, definePropType } from '../../utils/vue/props/runtime.mjs';
-import { isClient } from '@vueuse/core';
 import { isBoolean } from '../../utils/types.mjs';
+import { isFunction } from '@vue/shared';
+import { isClient } from '@vueuse/core';
 
 const _prop = buildProp({
   type: definePropType(Boolean),

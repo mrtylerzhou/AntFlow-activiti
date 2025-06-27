@@ -1,7 +1,5 @@
 import { inject, ref, computed, toRaw } from 'vue';
 import { isEqual } from 'lodash-unified';
-import '../../../form/index.mjs';
-import '../../../../utils/index.mjs';
 import { checkboxGroupContextKey } from '../constants.mjs';
 import { isPropAbsent, isBoolean } from '../../../../utils/types.mjs';
 import { isArray, isObject } from '@vue/shared';

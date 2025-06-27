@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../utils/index.js');
 var calendar$1 = require('./src/calendar2.js');
 var calendar = require('./src/calendar.js');
 var install = require('../../utils/vue/install.js');

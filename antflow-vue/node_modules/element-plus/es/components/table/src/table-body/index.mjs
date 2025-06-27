@@ -1,6 +1,4 @@
 import { defineComponent, getCurrentInstance, inject, watch, onUnmounted, h } from 'vue';
-import '../../../../utils/index.mjs';
-import '../../../../hooks/index.mjs';
 import useLayoutObserver from '../layout-observer.mjs';
 import { removePopper } from '../util.mjs';
 import { TABLE_INJECTION_KEY } from '../tokens.mjs';

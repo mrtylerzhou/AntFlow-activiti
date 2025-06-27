@@ -1,5 +1,3 @@
-import '../../../../utils/index.mjs';
-import '../../../../constants/index.mjs';
 import { buildProps, definePropType } from '../../../../utils/vue/props/runtime.mjs';
 import { datePickTypes } from '../../../../constants/date.mjs';
 import { isArray } from '@vue/shared';
@@ -10,6 +8,7 @@ const selectionModes = [
   "year",
   "years",
   "month",
+  "months",
   "week",
   "range"
 ];
@@ -45,7 +44,11 @@ const panelSharedProps = buildProps({
     values: datePickTypes
   },
   dateFormat: String,
-  timeFormat: String
+  timeFormat: String,
+  showNow: {
+    type: Boolean,
+    default: true
+  }
 });
 const panelRangeSharedProps = buildProps({
   unlinkPanels: Boolean,

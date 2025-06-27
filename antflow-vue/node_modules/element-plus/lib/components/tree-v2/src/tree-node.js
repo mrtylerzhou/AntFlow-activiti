@@ -6,13 +6,12 @@ var vue = require('vue');
 var index$1 = require('../../icon/index.js');
 var iconsVue = require('@element-plus/icons-vue');
 var index$2 = require('../../checkbox/index.js');
-require('../../../hooks/index.js');
 var treeNodeContent = require('./tree-node-content.js');
 var virtualTree = require('./virtual-tree.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var index = require('../../../hooks/use-namespace/index.js');
+var shared = require('@vue/shared');
 
-const _hoisted_1 = ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick"];
 const __default__ = vue.defineComponent({
   name: "ElTreeNode"
 });
@@ -32,8 +31,24 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       var _a;
       return (_a = tree == null ? void 0 : tree.props.icon) != null ? _a : iconsVue.CaretRight;
     });
+    const getNodeClass = (node) => {
+      const nodeClassFunc = tree == null ? void 0 : tree.props.props.class;
+      if (!nodeClassFunc)
+        return {};
+      let className;
+      if (shared.isFunction(nodeClassFunc)) {
+        const { data } = node;
+        className = nodeClassFunc(data, node);
+      } else {
+        className = nodeClassFunc;
+      }
+      return shared.isString(className) ? { [className]: true } : className;
+    };
     const handleClick = (e) => {
       emit("click", props.node, e);
+    };
+    const handleDrop = (e) => {
+      emit("drop", props.node, e);
     };
     const handleExpandIconClick = () => {
       emit("toggle", props.node);
@@ -58,7 +73,8 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           vue.unref(ns).is("expanded", _ctx.expanded),
           vue.unref(ns).is("current", _ctx.current),
           vue.unref(ns).is("focusable", !_ctx.disabled),
-          vue.unref(ns).is("checked", !_ctx.disabled && _ctx.checked)
+          vue.unref(ns).is("checked", !_ctx.disabled && _ctx.checked),
+          getNodeClass(_ctx.node)
         ]),
         role: "treeitem",
         tabindex: "-1",
@@ -67,7 +83,12 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         "aria-checked": _ctx.checked,
         "data-key": (_a = _ctx.node) == null ? void 0 : _a.key,
         onClick: vue.withModifiers(handleClick, ["stop"]),
-        onContextmenu: handleContextMenu
+        onContextmenu: handleContextMenu,
+        onDragover: vue.withModifiers(() => {
+        }, ["prevent"]),
+        onDragenter: vue.withModifiers(() => {
+        }, ["prevent"]),
+        onDrop: vue.withModifiers(handleDrop, ["stop"])
       }, [
         vue.createElementVNode("div", {
           class: vue.normalizeClass(vue.unref(ns).be("node", "content")),
@@ -99,12 +120,12 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
             indeterminate: _ctx.indeterminate,
             disabled: _ctx.disabled,
             onChange: handleCheckChange,
-            onClick: _cache[0] || (_cache[0] = vue.withModifiers(() => {
-            }, ["stop"]))
-          }, null, 8, ["model-value", "indeterminate", "disabled"])) : vue.createCommentVNode("v-if", true),
+            onClick: vue.withModifiers(() => {
+            }, ["stop"])
+          }, null, 8, ["model-value", "indeterminate", "disabled", "onClick"])) : vue.createCommentVNode("v-if", true),
           vue.createVNode(vue.unref(treeNodeContent["default"]), { node: _ctx.node }, null, 8, ["node"])
         ], 6)
-      ], 42, _hoisted_1);
+      ], 42, ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick", "onDragover", "onDragenter", "onDrop"]);
     };
   }
 });

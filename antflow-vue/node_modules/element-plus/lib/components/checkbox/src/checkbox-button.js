@@ -3,16 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../hooks/index.js');
 var constants = require('./constants.js');
-require('./composables/index.js');
 var checkbox = require('./checkbox.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
 var useCheckbox = require('./composables/use-checkbox.js');
 var index = require('../../../hooks/use-namespace/index.js');
 
-const _hoisted_1 = ["name", "tabindex", "disabled", "true-value", "false-value"];
-const _hoisted_2 = ["name", "tabindex", "disabled", "value"];
 const __default__ = vue.defineComponent({
   name: "ElCheckboxButton"
 });
@@ -54,42 +50,42 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       ];
     });
     return (_ctx, _cache) => {
-      var _a, _b;
+      var _a, _b, _c, _d;
       return vue.openBlock(), vue.createElementBlock("label", {
         class: vue.normalizeClass(vue.unref(labelKls))
       }, [
         _ctx.trueValue || _ctx.falseValue || _ctx.trueLabel || _ctx.falseLabel ? vue.withDirectives((vue.openBlock(), vue.createElementBlock("input", {
           key: 0,
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.isRef(model) ? model.value = $event : null),
+          "onUpdate:modelValue": ($event) => vue.isRef(model) ? model.value = $event : null,
           class: vue.normalizeClass(vue.unref(ns).be("button", "original")),
           type: "checkbox",
           name: _ctx.name,
           tabindex: _ctx.tabindex,
           disabled: vue.unref(isDisabled),
-          "true-value": (_a = _ctx.trueValue) != null ? _a : _ctx.trueLabel,
-          "false-value": (_b = _ctx.falseValue) != null ? _b : _ctx.falseLabel,
-          onChange: _cache[1] || (_cache[1] = (...args) => vue.unref(handleChange) && vue.unref(handleChange)(...args)),
-          onFocus: _cache[2] || (_cache[2] = ($event) => isFocused.value = true),
-          onBlur: _cache[3] || (_cache[3] = ($event) => isFocused.value = false),
-          onClick: _cache[4] || (_cache[4] = vue.withModifiers(() => {
-          }, ["stop"]))
-        }, null, 42, _hoisted_1)), [
+          "true-value": (_b = (_a = _ctx.trueValue) != null ? _a : _ctx.trueLabel) != null ? _b : true,
+          "false-value": (_d = (_c = _ctx.falseValue) != null ? _c : _ctx.falseLabel) != null ? _d : false,
+          onChange: vue.unref(handleChange),
+          onFocus: ($event) => isFocused.value = true,
+          onBlur: ($event) => isFocused.value = false,
+          onClick: vue.withModifiers(() => {
+          }, ["stop"])
+        }, null, 42, ["onUpdate:modelValue", "name", "tabindex", "disabled", "true-value", "false-value", "onChange", "onFocus", "onBlur", "onClick"])), [
           [vue.vModelCheckbox, vue.unref(model)]
         ]) : vue.withDirectives((vue.openBlock(), vue.createElementBlock("input", {
           key: 1,
-          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.isRef(model) ? model.value = $event : null),
+          "onUpdate:modelValue": ($event) => vue.isRef(model) ? model.value = $event : null,
           class: vue.normalizeClass(vue.unref(ns).be("button", "original")),
           type: "checkbox",
           name: _ctx.name,
           tabindex: _ctx.tabindex,
           disabled: vue.unref(isDisabled),
           value: vue.unref(actualValue),
-          onChange: _cache[6] || (_cache[6] = (...args) => vue.unref(handleChange) && vue.unref(handleChange)(...args)),
-          onFocus: _cache[7] || (_cache[7] = ($event) => isFocused.value = true),
-          onBlur: _cache[8] || (_cache[8] = ($event) => isFocused.value = false),
-          onClick: _cache[9] || (_cache[9] = vue.withModifiers(() => {
-          }, ["stop"]))
-        }, null, 42, _hoisted_2)), [
+          onChange: vue.unref(handleChange),
+          onFocus: ($event) => isFocused.value = true,
+          onBlur: ($event) => isFocused.value = false,
+          onClick: vue.withModifiers(() => {
+          }, ["stop"])
+        }, null, 42, ["onUpdate:modelValue", "name", "tabindex", "disabled", "value", "onChange", "onFocus", "onBlur", "onClick"])), [
           [vue.vModelCheckbox, vue.unref(model)]
         ]),
         _ctx.$slots.default || _ctx.label ? (vue.openBlock(), vue.createElementBlock("span", {

@@ -1,17 +1,13 @@
 import { getCurrentInstance, ref, computed, watch, nextTick, onMounted } from 'vue';
 import { useTimeoutFn, isClient } from '@vueuse/core';
 import { isUndefined } from 'lodash-unified';
-import '../../../hooks/index.mjs';
-import '../../../constants/index.mjs';
-import '../../../utils/index.mjs';
-import '../../config-provider/index.mjs';
+import { useLockscreen } from '../../../hooks/use-lockscreen/index.mjs';
 import { useZIndex } from '../../../hooks/use-z-index/index.mjs';
 import { useId } from '../../../hooks/use-id/index.mjs';
 import { useGlobalConfig } from '../../config-provider/src/hooks/use-global-config.mjs';
 import { defaultNamespace } from '../../../hooks/use-namespace/index.mjs';
 import { addUnit } from '../../../utils/dom/style.mjs';
 import { UPDATE_MODEL_EVENT } from '../../../constants/event.mjs';
-import { useLockscreen } from '../../../hooks/use-lockscreen/index.mjs';
 
 const useDialog = (props, targetRef) => {
   var _a;
@@ -64,7 +60,6 @@ const useDialog = (props, targetRef) => {
     closeTimer == null ? void 0 : closeTimer();
     openTimer == null ? void 0 : openTimer();
     if (props.openDelay && props.openDelay > 0) {
-      ;
       ({ stop: openTimer } = useTimeoutFn(() => doOpen(), props.openDelay));
     } else {
       doOpen();
@@ -74,7 +69,6 @@ const useDialog = (props, targetRef) => {
     openTimer == null ? void 0 : openTimer();
     closeTimer == null ? void 0 : closeTimer();
     if (props.closeDelay && props.closeDelay > 0) {
-      ;
       ({ stop: closeTimer } = useTimeoutFn(() => doClose(), props.closeDelay));
     } else {
       doClose();
@@ -135,6 +129,8 @@ const useDialog = (props, targetRef) => {
       nextTick(() => {
         emit("open");
         if (targetRef.value) {
+          targetRef.value.parentElement.scrollTop = 0;
+          targetRef.value.parentElement.scrollLeft = 0;
           targetRef.value.scrollTop = 0;
         }
       });

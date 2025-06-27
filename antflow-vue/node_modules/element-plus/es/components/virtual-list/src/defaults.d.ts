@@ -15,10 +15,6 @@ export declare const RTL = "rtl";
 export declare const RTL_OFFSET_NAG = "negative";
 export declare const RTL_OFFSET_POS_ASC = "positive-ascending";
 export declare const RTL_OFFSET_POS_DESC = "positive-descending";
-export declare const PageKey: {
-    horizontal: string;
-    vertical: string;
-};
 export declare const ScrollbarSizeKey: {
     horizontal: string;
     vertical: string;

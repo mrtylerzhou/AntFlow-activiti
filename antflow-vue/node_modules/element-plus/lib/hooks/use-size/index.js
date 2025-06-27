@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
-require('../../constants/index.js');
 var runtime = require('../../utils/vue/props/runtime.js');
 var size = require('../../constants/size.js');
 

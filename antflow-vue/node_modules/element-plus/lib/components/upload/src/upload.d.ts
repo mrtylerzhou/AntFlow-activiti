@@ -4,14 +4,14 @@ import type { ExtractPropTypes } from 'vue';
 import type Upload from './upload.vue';
 export declare const uploadListTypes: readonly ["text", "picture", "picture-card"];
 export declare const genFileId: () => number;
-export declare type UploadStatus = 'ready' | 'uploading' | 'success' | 'fail';
+export type UploadStatus = 'ready' | 'uploading' | 'success' | 'fail';
 export interface UploadProgressEvent extends ProgressEvent {
     percent: number;
 }
 export interface UploadRequestOptions {
     action: string;
     method: string;
-    data: Record<string, string | Blob | [string | Blob, string]>;
+    data: Record<string, string | Blob | [Blob, string]>;
     filename: string;
     file: UploadRawFile;
     headers: Headers | Record<string, string | number | null | undefined>;
@@ -30,12 +30,13 @@ export interface UploadFile {
     url?: string;
     raw?: UploadRawFile;
 }
-export declare type UploadUserFile = Omit<UploadFile, 'status' | 'uid'> & Partial<Pick<UploadFile, 'status' | 'uid'>>;
-export declare type UploadFiles = UploadFile[];
+export type UploadUserFile = Omit<UploadFile, 'status' | 'uid'> & Partial<Pick<UploadFile, 'status' | 'uid'>>;
+export type UploadFiles = UploadFile[];
 export interface UploadRawFile extends File {
     uid: number;
+    isDirectory?: boolean;
 }
-export declare type UploadRequestHandler = (options: UploadRequestOptions) => XMLHttpRequest | Promise<unknown>;
+export type UploadRequestHandler = (options: UploadRequestOptions) => XMLHttpRequest | Promise<unknown>;
 export interface UploadHooks {
     beforeUpload: (rawFile: UploadRawFile) => Awaitable<void | undefined | null | boolean | File | Blob>;
     beforeRemove: (uploadFile: UploadFile, uploadFiles: UploadFiles) => Awaitable<boolean>;
@@ -47,28 +48,26 @@ export interface UploadHooks {
     onError: (error: Error, uploadFile: UploadFile, uploadFiles: UploadFiles) => void;
     onExceed: (files: File[], uploadFiles: UploadUserFile[]) => void;
 }
-export declare type UploadData = Mutable<Record<string, any>>;
+export type UploadData = Mutable<Record<string, any>>;
 export declare const uploadBaseProps: {
     readonly action: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "#", boolean>;
     readonly headers: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers) | ((new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers))[], unknown, unknown>>; /**
-         * @description key name for uploaded file
-         */
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers) | ((new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly method: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "post", boolean>;
-    readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>>) | (() => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Awaitable<Mutable<Record<string, any>>>) | ((new (...args: any[]) => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>>) | (() => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Awaitable<Mutable<Record<string, any>>>))[], unknown, unknown, () => Mutable<{}>, boolean>;
-    readonly multiple: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | (() => Awaitable<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | ((new (...args: any[]) => Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | (() => Awaitable<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)))[], unknown, unknown, () => Mutable<{}>, boolean>;
+    readonly multiple: BooleanConstructor;
     readonly name: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "file", boolean>;
-    readonly drag: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly drag: BooleanConstructor;
     readonly withCredentials: BooleanConstructor;
     readonly showFileList: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
     readonly accept: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly fileList: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => UploadUserFile[]) | (() => UploadUserFile[]) | ((new (...args: any[]) => UploadUserFile[]) | (() => UploadUserFile[]))[], unknown, unknown, () => [], boolean>;
     readonly autoUpload: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
-    readonly listType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "text" | "picture" | "picture-card", unknown, "text", boolean>;
+    readonly listType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "picture" | "text" | "picture-card", unknown, "text", boolean>;
     readonly httpRequest: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => UploadRequestHandler) | (() => UploadRequestHandler) | {
         (): UploadRequestHandler;
         new (): any;
@@ -92,9 +91,7 @@ export declare const uploadProps: {
         readonly prototype: any;
     })[], unknown, unknown, () => void, boolean>;
     readonly beforeRemove: {
-        readonly type: import("vue").PropType<(uploadFile: UploadFile, uploadFiles: UploadFiles) => Awaitable<boolean>>; /**
-         * @description key name for uploaded file
-         */
+        readonly type: import("vue").PropType<(uploadFile: UploadFile, uploadFiles: UploadFiles) => Awaitable<boolean>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
@@ -163,33 +160,29 @@ export declare const uploadProps: {
         readonly prototype: any;
     })[], unknown, unknown, () => void, boolean>;
     readonly crossorigin: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => ("" | "anonymous" | "use-credentials") & {}) | (() => "" | "anonymous" | "use-credentials") | ((new (...args: any[]) => ("" | "anonymous" | "use-credentials") & {}) | (() => "" | "anonymous" | "use-credentials"))[], unknown, unknown>>; /**
-         * @description key name for uploaded file
-         */
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => "" | "anonymous" | "use-credentials") | (() => "" | "anonymous" | "use-credentials") | ((new (...args: any[]) => "" | "anonymous" | "use-credentials") | (() => "" | "anonymous" | "use-credentials"))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly action: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "#", boolean>;
     readonly headers: {
-        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers) | ((new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers))[], unknown, unknown>>; /**
-         * @description key name for uploaded file
-         */
+        readonly type: import("vue").PropType<import("element-plus/es/utils").EpPropMergeType<(new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers) | ((new (...args: any[]) => Record<string, any> | Headers) | (() => Record<string, any> | Headers))[], unknown, unknown>>;
         readonly required: false;
         readonly validator: ((val: unknown) => boolean) | undefined;
         __epPropKey: true;
     };
     readonly method: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "post", boolean>;
-    readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>>) | (() => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Awaitable<Mutable<Record<string, any>>>) | ((new (...args: any[]) => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>>) | (() => ((rawFile: UploadRawFile) => Awaitable<UploadData>) | Awaitable<Mutable<Record<string, any>>>))[], unknown, unknown, () => Mutable<{}>, boolean>;
-    readonly multiple: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly data: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | (() => Awaitable<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | ((new (...args: any[]) => Mutable<Record<string, any>> | Promise<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)) | (() => Awaitable<Mutable<Record<string, any>>> | ((rawFile: UploadRawFile) => Awaitable<UploadData>)))[], unknown, unknown, () => Mutable<{}>, boolean>;
+    readonly multiple: BooleanConstructor;
     readonly name: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "file", boolean>;
-    readonly drag: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
+    readonly drag: BooleanConstructor;
     readonly withCredentials: BooleanConstructor;
     readonly showFileList: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
     readonly accept: import("element-plus/es/utils").EpPropFinalized<StringConstructor, unknown, unknown, "", boolean>;
     readonly fileList: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => UploadUserFile[]) | (() => UploadUserFile[]) | ((new (...args: any[]) => UploadUserFile[]) | (() => UploadUserFile[]))[], unknown, unknown, () => [], boolean>;
     readonly autoUpload: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, true, boolean>;
-    readonly listType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "text" | "picture" | "picture-card", unknown, "text", boolean>;
+    readonly listType: import("element-plus/es/utils").EpPropFinalized<StringConstructor, "picture" | "text" | "picture-card", unknown, "text", boolean>;
     readonly httpRequest: import("element-plus/es/utils").EpPropFinalized<(new (...args: any[]) => UploadRequestHandler) | (() => UploadRequestHandler) | {
         (): UploadRequestHandler;
         new (): any;
@@ -202,5 +195,5 @@ export declare const uploadProps: {
     readonly disabled: BooleanConstructor;
     readonly limit: NumberConstructor;
 };
-export declare type UploadProps = ExtractPropTypes<typeof uploadProps>;
-export declare type UploadInstance = InstanceType<typeof Upload>;
+export type UploadProps = ExtractPropTypes<typeof uploadProps>;
+export type UploadInstance = InstanceType<typeof Upload> & unknown;

@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../../../utils/index.js');
-require('../../../../hooks/index.js');
 var utils = require('../utils.js');
 var constants = require('../constants.js');
 var useShortcut = require('./use-shortcut.js');
@@ -46,6 +44,17 @@ const useRangePicker = (props, {
       rangeState.value.endDate = null;
     }
   };
+  const onReset = (parsedValue) => {
+    if (shared.isArray(parsedValue) && parsedValue.length === 2) {
+      const [start, end] = parsedValue;
+      minDate.value = start;
+      leftDate.value = start;
+      maxDate.value = end;
+      onParsedValueChanged(vue.unref(minDate), vue.unref(maxDate));
+    } else {
+      restoreDefault();
+    }
+  };
   const restoreDefault = () => {
     const [start, end] = utils.getDefaultValue(vue.unref(defaultValue), {
       lang: vue.unref(lang),
@@ -62,17 +71,7 @@ const useRangePicker = (props, {
       restoreDefault();
     }
   }, { immediate: true });
-  vue.watch(() => props.parsedValue, (parsedValue) => {
-    if (shared.isArray(parsedValue) && parsedValue.length === 2) {
-      const [start, end] = parsedValue;
-      minDate.value = start;
-      leftDate.value = start;
-      maxDate.value = end;
-      onParsedValueChanged(vue.unref(minDate), vue.unref(maxDate));
-    } else {
-      restoreDefault();
-    }
-  }, { immediate: true });
+  vue.watch(() => props.parsedValue, onReset, { immediate: true });
   return {
     minDate,
     maxDate,
@@ -84,6 +83,7 @@ const useRangePicker = (props, {
     handleRangeConfirm,
     handleShortcutClick,
     onSelect,
+    onReset,
     t
   };
 };

@@ -9,4 +9,4 @@ export declare const alphaSliderProps: {
     };
     readonly vertical: import("element-plus/es/utils").EpPropFinalized<BooleanConstructor, unknown, unknown, false, boolean>;
 };
-export declare type AlphaSliderProps = ExtractPropTypes<typeof alphaSliderProps>;
+export type AlphaSliderProps = ExtractPropTypes<typeof alphaSliderProps>;

@@ -2,7 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-require('../../../../utils/index.js');
 var core = require('@vueuse/core');
 
 let isDragging = false;
@@ -39,7 +38,7 @@ function draggable(element, options) {
     (_a = options.start) == null ? void 0 : _a.call(options, event);
   };
   element.addEventListener("mousedown", downFn);
-  element.addEventListener("touchstart", downFn);
+  element.addEventListener("touchstart", downFn, { passive: false });
 }
 
 exports.draggable = draggable;

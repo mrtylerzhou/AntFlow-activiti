@@ -1,10 +1,8 @@
 import { computed, onBeforeMount } from 'vue';
-import '../../utils/index.mjs';
 import { useGetDerivedNamespace } from '../use-namespace/index.mjs';
 import { useIdInjection } from '../use-id/index.mjs';
 import { isClient } from '@vueuse/core';
 
-let cachedContainer;
 const usePopperContainerId = () => {
   const namespace = useGetDerivedNamespace();
   const idInjection = useIdInjection();
@@ -28,8 +26,8 @@ const usePopperContainer = () => {
   onBeforeMount(() => {
     if (!isClient)
       return;
-    if (process.env.NODE_ENV === "test" || !cachedContainer && !document.body.querySelector(selector.value)) {
-      cachedContainer = createContainer(id.value);
+    if (process.env.NODE_ENV === "test" || !document.body.querySelector(selector.value)) {
+      createContainer(id.value);
     }
   });
   return {

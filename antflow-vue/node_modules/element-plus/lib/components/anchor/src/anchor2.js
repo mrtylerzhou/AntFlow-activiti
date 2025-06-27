@@ -4,17 +4,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-require('../../../hooks/index.js');
-require('../../../utils/index.js');
 var anchor = require('./anchor.js');
 var constants = require('./constants.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');
-var index = require('../../../hooks/use-namespace/index.js');
 var element = require('../../../utils/dom/element.js');
-var scroll = require('../../../utils/dom/scroll.js');
-var position = require('../../../utils/dom/position.js');
 var throttleByRaf = require('../../../utils/throttleByRaf.js');
 var types = require('../../../utils/types.js');
+var scroll = require('../../../utils/dom/scroll.js');
+var position = require('../../../utils/dom/position.js');
+var index = require('../../../hooks/use-namespace/index.js');
+var event = require('../../../constants/event.js');
 
 const __default__ = vue.defineComponent({
   name: "ElAnchor"
@@ -48,7 +47,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
       const activeHref = currentAnchor.value;
       if (activeHref !== href) {
         currentAnchor.value = href;
-        emit("change", href);
+        emit(event.CHANGE_EVENT, href);
       }
     };
     let clearAnimate = null;
@@ -111,7 +110,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         const item = anchorTopList[i];
         const next = anchorTopList[i + 1];
         if (i === 0 && scrollTop === 0) {
-          return "";
+          return props.selectScrollTop ? item.href : "";
         }
         if (item.top <= scrollTop && (!next || next.top > scrollTop)) {
           return item.href;

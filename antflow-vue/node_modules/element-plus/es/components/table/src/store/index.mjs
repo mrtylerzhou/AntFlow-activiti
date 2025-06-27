@@ -1,5 +1,5 @@
 import { getCurrentInstance, unref, nextTick } from 'vue';
-import '../../../../hooks/index.mjs';
+import { isNull } from 'lodash-unified';
 import useWatcher from './watcher.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
 
@@ -126,7 +126,7 @@ function useStore() {
     changeSortCondition(states, options) {
       const { sortingColumn, sortProp, sortOrder } = states;
       const columnValue = unref(sortingColumn), propValue = unref(sortProp), orderValue = unref(sortOrder);
-      if (orderValue === null) {
+      if (isNull(orderValue)) {
         states.sortingColumn.value = null;
         states.sortProp.value = null;
       }
@@ -182,11 +182,6 @@ function useStore() {
     commit,
     updateTableScrollY
   };
-}
-class HelperStore {
-  constructor() {
-    this.Return = useStore();
-  }
 }
 
 export { useStore as default };

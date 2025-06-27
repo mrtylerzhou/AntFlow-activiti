@@ -1,6 +1,6 @@
 import { defineComponent, inject, watch } from 'vue';
-import '../../select/index.mjs';
 import { selectKey } from '../../select/src/token.mjs';
+import { isClient } from '@vueuse/core';
 
 var CacheOptions = defineComponent({
   props: {
@@ -19,7 +19,7 @@ var CacheOptions = defineComponent({
         }
       });
       const inputs = ((_a = select.selectRef) == null ? void 0 : _a.querySelectorAll("input")) || [];
-      if (!Array.from(inputs).includes(document.activeElement)) {
+      if (isClient && !Array.from(inputs).includes(document.activeElement)) {
         select.setSelected();
       }
     }, { flush: "post", immediate: true });

@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
-import '../../../utils/index.mjs';
-import { isDate, isArray } from '@vue/shared';
 import { isEmpty } from '../../../utils/types.mjs';
+import { isArray, isDate } from '@vue/shared';
 
 const buildTimeList = (value, bound) => {
   return [
@@ -62,6 +61,9 @@ const makeList = (total, method) => {
   }
   return arr;
 };
+const dayOrDaysToDate = (dayOrDays) => {
+  return isArray(dayOrDays) ? dayOrDays.map((d) => d.toDate()) : dayOrDays.toDate();
+};
 
-export { buildTimeList, dateEquals, extractDateFormat, extractTimeFormat, formatter, makeList, parseDate, rangeArr, valueEquals };
+export { buildTimeList, dateEquals, dayOrDaysToDate, extractDateFormat, extractTimeFormat, formatter, makeList, parseDate, rangeArr, valueEquals };
 //# sourceMappingURL=utils.mjs.map

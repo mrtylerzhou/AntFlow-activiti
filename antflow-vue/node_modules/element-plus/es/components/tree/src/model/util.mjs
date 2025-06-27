@@ -9,11 +9,7 @@ const markNodeData = function(node, data) {
     writable: false
   });
 };
-const getNodeKey = function(key, data) {
-  if (!key)
-    return data[NODE_KEY];
-  return data[key];
-};
+const getNodeKey = (key, data) => data == null ? void 0 : data[key || NODE_KEY];
 const handleCurrentChange = (store, emit, setCurrent) => {
   const preCurrentNode = store.value.currentNode;
   setCurrent();

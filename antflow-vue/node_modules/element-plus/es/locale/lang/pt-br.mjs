@@ -67,6 +67,9 @@ var ptBr = {
       noData: "Sem dados",
       placeholder: "Selecione"
     },
+    mention: {
+      loading: "Carregando"
+    },
     cascader: {
       noMatch: "Sem resultados",
       loading: "Carregando",

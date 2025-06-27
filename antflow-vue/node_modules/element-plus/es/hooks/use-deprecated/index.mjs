@@ -1,5 +1,4 @@
 import { watch, unref } from 'vue';
-import '../../utils/index.mjs';
 import { debugWarn } from '../../utils/error.mjs';
 
 const useDeprecated = ({ from, replacement, scope, version, ref, type = "API" }, condition) => {

@@ -72,6 +72,9 @@ var eo = {
       noData: "Neniuj datumoj",
       placeholder: "Bonvolu elekti"
     },
+    mention: {
+      loading: "\u015Car\u011Dante"
+    },
     cascader: {
       noMatch: "Neniuj kongruaj datumoj",
       loading: "\u015Car\u011Dante",

@@ -1,13 +1,8 @@
-import '../../../utils/index.mjs';
-import '../../../hooks/index.mjs';
 import { buildProps } from '../../../utils/vue/props/runtime.mjs';
 import { useSizeProp } from '../../../hooks/use-size/index.mjs';
 
 const descriptionProps = buildProps({
-  border: {
-    type: Boolean,
-    default: false
-  },
+  border: Boolean,
   column: {
     type: Number,
     default: 3
@@ -24,6 +19,10 @@ const descriptionProps = buildProps({
   },
   extra: {
     type: String,
+    default: ""
+  },
+  labelWidth: {
+    type: [String, Number],
     default: ""
   }
 });

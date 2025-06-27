@@ -1,17 +1,16 @@
-import { isVNode, defineComponent, provide, unref, createVNode, mergeProps } from 'vue';
-import '../../../hooks/index.mjs';
+import { defineComponent, provide, unref, createVNode, isVNode, mergeProps } from 'vue';
 import { useTable } from './use-table.mjs';
 import { TableV2InjectionKey } from './tokens.mjs';
 import { tableV2Props } from './table.mjs';
 import MainTable from './renderers/main-table.mjs';
 import LeftTable from './renderers/left-table.mjs';
-import LeftTable$1 from './renderers/right-table.mjs';
-import RowRenderer from './renderers/row.mjs';
-import CellRenderer from './renderers/cell.mjs';
-import HeaderRenderer from './renderers/header.mjs';
-import HeaderCellRenderer from './renderers/header-cell.mjs';
+import RightTable from './renderers/right-table.mjs';
+import Row from './renderers/row.mjs';
+import Cell from './renderers/cell.mjs';
+import Header from './renderers/header.mjs';
+import HeaderCell from './renderers/header-cell.mjs';
 import Footer from './renderers/footer.mjs';
-import Footer$1 from './renderers/empty.mjs';
+import Empty from './renderers/empty.mjs';
 import Overlay from './renderers/overlay.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';
 
@@ -132,6 +131,7 @@ const TableV2 = defineComponent({
         class: ns.e("left"),
         columns: unref(fixedColumnsOnLeft),
         data: _data,
+        fixedData,
         estimatedRowHeight,
         leftTableRef,
         rowHeight,
@@ -155,6 +155,7 @@ const TableV2 = defineComponent({
         class: ns.e("right"),
         columns: unref(fixedColumnsOnRight),
         data: _data,
+        fixedData,
         estimatedRowHeight,
         rightTableRef,
         rowHeight,
@@ -212,28 +213,28 @@ const TableV2 = defineComponent({
         onColumnSorted
       };
       const tableSlots = {
-        row: (props2) => createVNode(RowRenderer, mergeProps(props2, tableRowProps), {
+        row: (props2) => createVNode(Row, mergeProps(props2, tableRowProps), {
           row: slots.row,
           cell: (props3) => {
             let _slot;
-            return slots.cell ? createVNode(CellRenderer, mergeProps(props3, tableCellProps, {
+            return slots.cell ? createVNode(Cell, mergeProps(props3, tableCellProps, {
               "style": _columnsStyles[props3.column.key]
             }), _isSlot(_slot = slots.cell(props3)) ? _slot : {
               default: () => [_slot]
-            }) : createVNode(CellRenderer, mergeProps(props3, tableCellProps, {
+            }) : createVNode(Cell, mergeProps(props3, tableCellProps, {
               "style": _columnsStyles[props3.column.key]
             }), null);
           }
         }),
-        header: (props2) => createVNode(HeaderRenderer, mergeProps(props2, tableHeaderProps), {
+        header: (props2) => createVNode(Header, mergeProps(props2, tableHeaderProps), {
           header: slots.header,
           cell: (props3) => {
             let _slot2;
-            return slots["header-cell"] ? createVNode(HeaderCellRenderer, mergeProps(props3, tableHeaderCellProps, {
+            return slots["header-cell"] ? createVNode(HeaderCell, mergeProps(props3, tableHeaderCellProps, {
               "style": _columnsStyles[props3.column.key]
             }), _isSlot(_slot2 = slots["header-cell"](props3)) ? _slot2 : {
               default: () => [_slot2]
-            }) : createVNode(HeaderCellRenderer, mergeProps(props3, tableHeaderCellProps, {
+            }) : createVNode(HeaderCell, mergeProps(props3, tableHeaderCellProps, {
               "style": _columnsStyles[props3.column.key]
             }), null);
           }
@@ -253,11 +254,11 @@ const TableV2 = defineComponent({
         default: () => [tableSlots]
       }), createVNode(LeftTable, leftTableProps, _isSlot(tableSlots) ? tableSlots : {
         default: () => [tableSlots]
-      }), createVNode(LeftTable$1, rightTableProps, _isSlot(tableSlots) ? tableSlots : {
+      }), createVNode(RightTable, rightTableProps, _isSlot(tableSlots) ? tableSlots : {
         default: () => [tableSlots]
       }), slots.footer && createVNode(Footer, footerProps, {
         default: slots.footer
-      }), unref(showEmpty) && createVNode(Footer$1, {
+      }), unref(showEmpty) && createVNode(Empty, {
         "class": ns.e("empty"),
         "style": unref(emptyStyle)
       }, {
@@ -270,6 +271,7 @@ const TableV2 = defineComponent({
     };
   }
 });
+var TableV2$1 = TableV2;
 
-export { TableV2 as default };
+export { TableV2$1 as default };
 //# sourceMappingURL=table-v2.mjs.map

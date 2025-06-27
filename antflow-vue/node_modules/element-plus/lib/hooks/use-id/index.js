@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
-require('../../utils/index.js');
-var index = require('../use-namespace/index.js');
 var core = require('@vueuse/core');
+var index = require('../use-namespace/index.js');
 var error = require('../../utils/error.js');
 
 const defaultIdInjection = {
@@ -26,7 +25,7 @@ usage: app.provide(ID_INJECTION_KEY, {
 })`);
   }
   const namespace = index.useGetDerivedNamespace();
-  const idRef = vue.computed(() => vue.unref(deterministicId) || `${namespace.value}-id-${idInjection.prefix}-${idInjection.current++}`);
+  const idRef = core.computedEager(() => vue.unref(deterministicId) || `${namespace.value}-id-${idInjection.prefix}-${idInjection.current++}`);
   return idRef;
 };
 

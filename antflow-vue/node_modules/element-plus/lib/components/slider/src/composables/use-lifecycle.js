@@ -4,12 +4,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
+var shared = require('@vue/shared');
+var types = require('../../../../utils/types.js');
 
 const useLifecycle = (props, initData, resetSize) => {
   const sliderWrapper = vue.ref();
   vue.onMounted(async () => {
     if (props.range) {
-      if (Array.isArray(props.modelValue)) {
+      if (shared.isArray(props.modelValue)) {
         initData.firstValue = Math.max(props.min, props.modelValue[0]);
         initData.secondValue = Math.min(props.max, props.modelValue[1]);
       } else {
@@ -18,7 +20,7 @@ const useLifecycle = (props, initData, resetSize) => {
       }
       initData.oldValue = [initData.firstValue, initData.secondValue];
     } else {
-      if (typeof props.modelValue !== "number" || Number.isNaN(props.modelValue)) {
+      if (!types.isNumber(props.modelValue) || Number.isNaN(props.modelValue)) {
         initData.firstValue = props.min;
       } else {
         initData.firstValue = Math.min(props.max, Math.max(props.min, props.modelValue));

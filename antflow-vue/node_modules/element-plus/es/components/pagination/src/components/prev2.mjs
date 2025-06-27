@@ -1,12 +1,9 @@
 import { defineComponent, computed, openBlock, createElementBlock, unref, toDisplayString, createBlock, withCtx, resolveDynamicComponent } from 'vue';
-import '../../../../hooks/index.mjs';
 import { ElIcon } from '../../../icon/index.mjs';
 import { paginationPrevProps, paginationPrevEmits } from './prev.mjs';
 import _export_sfc from '../../../../_virtual/plugin-vue_export-helper.mjs';
 import { useLocale } from '../../../../hooks/use-locale/index.mjs';
 
-const _hoisted_1 = ["disabled", "aria-label", "aria-disabled"];
-const _hoisted_2 = { key: 0 };
 const __default__ = defineComponent({
   name: "ElPaginationPrev"
 });
@@ -25,15 +22,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         disabled: unref(internalDisabled),
         "aria-label": _ctx.prevText || unref(t)("el.pagination.prev"),
         "aria-disabled": unref(internalDisabled),
-        onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("click", $event))
+        onClick: ($event) => _ctx.$emit("click", $event)
       }, [
-        _ctx.prevText ? (openBlock(), createElementBlock("span", _hoisted_2, toDisplayString(_ctx.prevText), 1)) : (openBlock(), createBlock(unref(ElIcon), { key: 1 }, {
+        _ctx.prevText ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(_ctx.prevText), 1)) : (openBlock(), createBlock(unref(ElIcon), { key: 1 }, {
           default: withCtx(() => [
             (openBlock(), createBlock(resolveDynamicComponent(_ctx.prevIcon)))
           ]),
           _: 1
         }))
-      ], 8, _hoisted_1);
+      ], 8, ["disabled", "aria-label", "aria-disabled", "onClick"]);
     };
   }
 });
