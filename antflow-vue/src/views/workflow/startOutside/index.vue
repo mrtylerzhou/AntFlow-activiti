@@ -30,7 +30,7 @@ import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 import { processSubmit } from "@/api/workflow/outsideApi";
-import cache from "@/plugins/cache";
+import Cookies from "js-cookie";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
 const activeName = ref("createFrom");
@@ -130,7 +130,7 @@ const startTest = (param) => {
         delete lfFormdata.approversValid;
         bizFrom.lfFields = lfFormdata;
     }
-    bizFrom.userId = cache.session.get('userId');
+    bizFrom.userId = Cookies.set('userId');
     proxy.$modal.loading();
     processSubmit(bizFrom).then((res) => {
         if (res.code == 200) {

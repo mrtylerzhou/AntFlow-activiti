@@ -2,15 +2,15 @@
  * @Date:  2024-05-25 14:06:59
  * @LastEditors: LDH 574427343@qq.com
  * @LastEditTime: 2023-03-29 15:52:57
- * @FilePath: src\api\workflow\index.js
+ * @FilePath: src\api\workflow.js
  * 工作流 相关接口
  */
 import http from "@/utils/axios";
-import cache from "@/plugins/cache";
+import Cookies from "js-cookie";
 let baseUrl = import.meta.env.VITE_APP_BASE_API;
 const headers = {
-  Userid: cache.session.get("userId"),
-  Username: cache.session.get("userName"),
+  Userid: Cookies.get("userId"),
+  Username: Cookies.get("userName"),
 };
 /**
  * 获取流程配置详情
