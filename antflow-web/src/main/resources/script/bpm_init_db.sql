@@ -119,6 +119,8 @@ CREATE TABLE if not exists `t_bpmn_template`
     `roles`       varchar(255)        DEFAULT NULL COMMENT 'specified roles to inform',
     `funcs`       varchar(255)        DEFAULT NULL COMMENT 'specified Functionality to inform',
     `template_id` bigint(20)          DEFAULT NULL COMMENT 'template id id',
+     `form_code`         varchar(50)                           null,
+     `message_send_type` varchar(50)                           null comment 'message send type,via email,text message or app push and so on',
     `is_del`      tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:No,1:Yes',
     `create_time` timestamp  NULL     DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user` varchar(50)        DEFAULT '' COMMENT 'create user',

@@ -49,7 +49,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
      * @param informationTemplateVo informationTemplateVo
      */
     @Transactional
-    public void edit(InformationTemplateVo informationTemplateVo) {
+    public long edit(InformationTemplateVo informationTemplateVo) {
         //to check whether the template's name is duplicated
         List<InformationTemplate> list = this.getBaseMapper().selectList(
                 new QueryWrapper<InformationTemplate>()
@@ -96,6 +96,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
             informationTemplate.setNum("LCTZ_" + String.format("%03d", informationTemplate.getId()));
         }
         updateById(informationTemplate);
+        return informationTemplate.getId();
     }
 
     /**

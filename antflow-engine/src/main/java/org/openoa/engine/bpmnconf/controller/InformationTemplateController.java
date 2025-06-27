@@ -68,8 +68,8 @@ public class InformationTemplateController {
      */
     @PostMapping("/save")
     public Result save(@RequestBody InformationTemplateVo informationTemplateVo) {
-        informationTemplateService.edit(informationTemplateVo);
-        return Result.success();
+        long templateId = informationTemplateService.edit(informationTemplateVo);
+        return Result.newSuccessResult(templateId);
     }
 
     /**
