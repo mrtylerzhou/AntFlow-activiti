@@ -71,9 +71,10 @@ const parse = (input, options) => {
   const tokens = [bos];
 
   const capture = opts.capture ? '' : '?:';
+  const win32 = utils.isWindows(options);
 
   // create constants based on platform, for windows or posix
-  const PLATFORM_CHARS = constants.globChars(opts.windows);
+  const PLATFORM_CHARS = constants.globChars(win32);
   const EXTGLOB_CHARS = constants.extglobChars(PLATFORM_CHARS);
 
   const {
@@ -209,8 +210,8 @@ const parse = (input, options) => {
 
     if (tok.value || tok.output) append(tok);
     if (prev && prev.type === 'text' && tok.type === 'text') {
-      prev.output = (prev.output || prev.value) + tok.value;
       prev.value += tok.value;
+      prev.output = (prev.output || '') + tok.value;
       return;
     }
 
@@ -698,6 +699,10 @@ const parse = (input, options) => {
         const next = peek();
         let output = value;
 
+        if (next === '<' && !utils.supportsLookbehinds()) {
+          throw new Error('Node.js v10 or higher is required for regex lookbehinds');
+        }
+
         if ((prev.value === '(' && !/[!=<:]/.test(next)) || (next === '<' && !/<([!=]|\w+>)/.test(remaining()))) {
           output = `\\${value}`;
         }
@@ -1005,6 +1010,7 @@ parse.fastpaths = (input, options) => {
   }
 
   input = REPLACEMENTS[input] || input;
+  const win32 = utils.isWindows(options);
 
   // create constants based on platform, for windows or posix
   const {
@@ -1017,7 +1023,7 @@ parse.fastpaths = (input, options) => {
     NO_DOTS_SLASH,
     STAR,
     START_ANCHOR
-  } = constants.globChars(opts.windows);
+  } = constants.globChars(win32);
 
   const nodot = opts.dot ? NO_DOTS : NO_DOT;
   const slashDot = opts.dot ? NO_DOTS_SLASH : NO_DOT;

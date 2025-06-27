@@ -86,7 +86,6 @@ const handleTodayCreate = () => {
 </script>
 <style lang="scss" scoped>
 .el-row {
-    height: 50%;
     padding-right: 10px;
 }
 
