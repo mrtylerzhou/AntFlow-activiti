@@ -1,0 +1,48 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+require('../../../utils/index.js');
+var runtime = require('../../../utils/vue/props/runtime.js');
+
+const badgeProps = runtime.buildProps({
+  value: {
+    type: [String, Number],
+    default: ""
+  },
+  max: {
+    type: Number,
+    default: 99
+  },
+  isDot: Boolean,
+  hidden: Boolean,
+  type: {
+    type: String,
+    values: ["primary", "success", "warning", "info", "danger"],
+    default: "danger"
+  },
+  showZero: {
+    type: Boolean,
+    default: true
+  },
+  color: String,
+  dotStyle: {
+    type: runtime.definePropType([String, Object, Array])
+  },
+  badgeStyle: {
+    type: runtime.definePropType([String, Object, Array])
+  },
+  offset: {
+    type: runtime.definePropType(Array),
+    default: [0, 0]
+  },
+  dotClass: {
+    type: String
+  },
+  badgeClass: {
+    type: String
+  }
+});
+
+exports.badgeProps = badgeProps;
+//# sourceMappingURL=badge.js.map
