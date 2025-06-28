@@ -6,11 +6,11 @@
  * 三方接入模块 相关接口
  */
 import http from "@/utils/axios";
-import cache from "@/plugins/cache";
+import Cookies from "js-cookie";
 let baseUrl = import.meta.env.VITE_APP_BASE_API;
 const headers = {
-  Userid: cache.session.get("userId"),
-  Username: cache.session.get("userName"),
+  Userid: Cookies.get("userId"),
+  Username: Cookies.get("userName"),
 };
 
 /** 三方接入模块 流程设计 * / 

@@ -1,8 +1,9 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav" />
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
+    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
+      @toggleClick="toggleSideBar" />
+    <breadcrumb v-if="!settingsStore.topNav" id="breadcrumb-container" class="breadcrumb-container" />
+    <top-nav v-if="settingsStore.topNav" id="topmenu-container" class="topmenu-container" />
 
     <div class="right-menu">
       <template v-if="appStore.device !== 'mobile'">
@@ -17,33 +18,39 @@
         </el-tooltip>
 
         <Message id="message" class="right-menu-item hover-effect" />
-        
+
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
+
+        <el-tooltip content="主题模式" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect theme-switch-wrapper" @click="toggleTheme">
+            <svg-icon v-if="settingsStore.isDark" icon-class="sunny" />
+            <svg-icon v-if="!settingsStore.isDark" icon-class="moon" />
+          </div>
+        </el-tooltip>
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
       </template>
-      <div class="avatar-container">
-        <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
-          <div class="avatar-wrapper">
-            <img :src="userStore.avatar" class="user-avatar" />
-            <el-icon><caret-bottom /></el-icon>
-          </div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <router-link to="/user/profile">
-                <el-dropdown-item>个人中心</el-dropdown-item>
-              </router-link>
-              <el-dropdown-item command="setLayout" v-if="settingsStore.showSettings">
-                <span>布局设置</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided command="logout">
-                <span>退出登录</span>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+
+      <el-dropdown @command="handleCommand" class="avatar-container right-menu-item hover-effect" trigger="hover">
+        <div class="avatar-wrapper">
+          <img :src="userStore.avatar" class="user-avatar" />
+          <span class="user-nickname"> {{ userStore.nickName }} </span>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <router-link to="/user/profile">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+            </router-link>
+            <el-dropdown-item divided command="logout">
+              <span>退出登录</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <div class="right-menu-item hover-effect setting" @click="setLayout" v-if="settingsStore.showSettings">
+        <svg-icon icon-class="more-up" />
       </div>
     </div>
   </div>
@@ -57,12 +64,12 @@ import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import HeaderSearch from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/Mark/Git'
-import RuoYiDoc from '@/components/Mark/Doc'
-import Message from "./Message";
+import RuoYiGit from '@/components/RuoYi/Git'
+import RuoYiDoc from '@/components/RuoYi/Doc'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
+import Message from "./Message";
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -75,13 +82,13 @@ function toggleSideBar() {
 function handleCommand(command) {
   switch (command) {
     case "setLayout":
-      setLayout();
-      break;
+      setLayout()
+      break
     case "logout":
-      logout();
-      break;
+      logout()
+      break
     default:
-      break;
+      break
   }
 }
 
@@ -92,14 +99,18 @@ function logout() {
     type: 'warning'
   }).then(() => {
     userStore.logOut().then(() => {
-      location.href = import.meta.env.VITE_HOME_PATH;///index
+      location.href = import.meta.env.VITE_HOME_PATH; //location.href = "/index";
     })
-  }).catch(() => { });
+  }).catch(() => { })
 }
 
 const emits = defineEmits(['setLayout'])
 function setLayout() {
-  emits('setLayout');
+  emits('setLayout')
+}
+
+function toggleTheme() {
+  settingsStore.toggleTheme()
 }
 </script>
 
@@ -108,8 +119,9 @@ function setLayout() {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #dcdfe6;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08); 
+  background: var(--navbar-bg);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+
   .hamburger-container {
     line-height: 46px;
     height: 100%;
@@ -163,20 +175,43 @@ function setLayout() {
           background: rgba(0, 0, 0, 0.025);
         }
       }
+
+      &.theme-switch-wrapper {
+        display: flex;
+        align-items: center;
+
+        svg {
+          transition: transform 0.3s;
+
+          &:hover {
+            transform: scale(1.15);
+          }
+        }
+      }
     }
 
     .avatar-container {
-      margin-right: 40px;
+      margin-right: 0px;
+      padding-right: 0px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 10px;
+        right: 5px;
         position: relative;
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+        }
+
+        .user-nickname {
+          position: relative;
+          left: 5px;
+          bottom: 10px;
+          font-size: 14px;
+          font-weight: bold;
         }
 
         i {

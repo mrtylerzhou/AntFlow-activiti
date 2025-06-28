@@ -103,7 +103,7 @@ const addType = (type) => {
 } 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 
 .add-node-btn-box {
     width: 240px;

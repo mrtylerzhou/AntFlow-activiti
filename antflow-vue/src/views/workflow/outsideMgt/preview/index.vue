@@ -31,7 +31,8 @@
                         </div>
                     </el-col>
                 </el-row>
-                <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+                <label class="page-close-box" @click="close()"><img
+                        src="@/assets/images/antflow/back-close.png"></label>
             </div>
         </div>
     </div>

@@ -169,7 +169,7 @@ const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
 let userSelectedList = ref([]);//{id:1,name:'张三'},{id:2,name:'李四'}
 
 watch(() => userSelectedList.value, (newVal) => {
-    if (!proxy.isArrayEmpty(newVal)) {
+    if (!proxy.isEmptyArray(newVal)) {
         form.value.sender = newVal[0].id;
     } else {
         form.value.sender = undefined;

@@ -85,7 +85,7 @@ onMounted(async () => {
     let data = FormatDisplayUtils.getToTree(mockjson.data);
     proxy.$modal.closeLoading();
     processConfig.value = data;
-    title.value = proxy.isObjEmpty(data?.bpmnName) ? decodeURIComponent(query.bizname) : data?.bpmnName;
+    title.value = proxy.isEmpty(data?.bpmnName) ? decodeURIComponent(query.bizname) : data?.bpmnName;
     nodeConfig.value = data?.nodeConfig;
     lfFormDataConfig.value = data?.lfFormData ?? '';
 });
@@ -115,7 +115,7 @@ const publish = () => {
                 if (resLog.code == 200) {
                     proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
                     const obj = { path: "/outsideMgt/outsideTemp" };
-                    proxy.$tab.openPage(obj);
+                    proxy.$tab.closeOpenPage(obj);
                 } else {
                     proxy.$modal.msgError("提交到API返回失败" + JSON.stringify(resLog.errMsg));
                 }
@@ -135,7 +135,7 @@ const previewJson = () => {
 }
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 
 .app-container {
     position: relative;

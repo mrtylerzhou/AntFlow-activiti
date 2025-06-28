@@ -19,7 +19,7 @@
                     </div>
                 </el-tab-pane>
             </el-tabs>
-            <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+            <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
         </div>
     </div>
 </template>
@@ -30,7 +30,7 @@ import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 import { processSubmit } from "@/api/workflow/outsideApi";
-import cache from "@/plugins/cache";
+import Cookies from "js-cookie";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
 const activeName = ref("createFrom");
@@ -130,13 +130,13 @@ const startTest = (param) => {
         delete lfFormdata.approversValid;
         bizFrom.lfFields = lfFormdata;
     }
-    bizFrom.userId = cache.session.get('userId');
+    bizFrom.userId = Cookies.set('userId');
     proxy.$modal.loading();
     processSubmit(bizFrom).then((res) => {
         if (res.code == 200) {
             proxy.$modal.msgSuccess("发起流程成功");
             const obj = { path: "/flowTask/mytask" };
-            proxy.$tab.openPage(obj);
+            proxy.$tab.closeOpenPage(obj);
         } else {
             proxy.$modal.msgError("发起流程失败" + res.errMsg);
         }
@@ -157,7 +157,7 @@ function close() {
 }
 
 .component {
-    height: calc(100vh - 178px);
+    height: calc(76vh);
     padding-top: 15px;
     padding-bottom: 15px;
     overflow: auto;

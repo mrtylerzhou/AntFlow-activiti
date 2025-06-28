@@ -170,7 +170,7 @@ const handleClose = () => {
 }; 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .condition_list {
   .el-dialog__body {

@@ -1,0 +1,109 @@
+{
+  "name": "unplugin-vue-setup-extend-plus",
+  "type": "module",
+  "version": "1.0.1",
+  "packageManager": "pnpm@7.1.1",
+  "description": "Extending the vue script setup syntactic sugar",
+  "author": "chenxch <124118265@qq.com>",
+  "keywords": [
+    "unplugin",
+    "vite",
+    "webpack",
+    "rollup",
+    "transform",
+    "vue",
+    "setup"
+  ],
+  "homepage": "https://github.com/chenxch/unplugin-vue-setup-extend-plus#readme",
+  "bugs": {
+    "url": "https://github.com/chenxch/unplugin-vue-setup-extend-plus/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenxch/unplugin-vue-setup-extend-plus.git"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "require": "./dist/vite.cjs",
+      "import": "./dist/vite.js"
+    },
+    "./webpack": {
+      "types": "./dist/webpack.d.ts",
+      "require": "./dist/webpack.cjs",
+      "import": "./dist/webpack.js"
+    },
+    "./rollup": {
+      "types": "./dist/rollup.d.ts",
+      "require": "./dist/rollup.cjs",
+      "import": "./dist/rollup.js"
+    },
+    "./esbuild": {
+      "types": "./dist/esbuild.d.ts",
+      "require": "./dist/esbuild.cjs",
+      "import": "./dist/esbuild.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "require": "./dist/types.cjs",
+      "import": "./dist/types.js"
+    },
+    "./dist/client/index": {
+      "types": "./dist/client/index.d.ts",
+      "require": "./dist/client/index.cjs",
+      "import": "./dist/client/index.js"
+    },
+    "./*": "./*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.2.37",
+    "magic-string": "^0.26.2",
+    "unplugin": "^1.3.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.23.1",
+    "@types/node": "^17.0.34",
+    "bumpp": "^7.1.1",
+    "eslint": "^8.15.0",
+    "esno": "^0.16.3",
+    "fast-glob": "^3.2.11",
+    "nodemon": "^2.0.16",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.74.0",
+    "tsup": "^6.5.0",
+    "typescript": "^4.6.4",
+    "vite": "^2.9.15",
+    "vitest": "^0.12.6",
+    "webpack": "^5.72.1"
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:fix": "esno scripts/postbuild.ts",
+    "dev": "tsup --watch src",
+    "lint": "eslint .",
+    "play": "npm -C playground run dev",
+    "release": "bumpp --commit --push --tag && pnpm publish --registry=https://registry.npmjs.org/",
+    "start": "esno src/index.ts",
+    "test": "vitest"
+  }
+}

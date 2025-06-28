@@ -6,7 +6,7 @@
 -->
 <template>
     <el-row :gutter="20">
-        <el-col :lg="6" :md="8" :sm="12" :xs="24">
+        <el-col :xs="24" :md="6">
             <div class="ve-card ve_card1" @click="handleTodo()">
                 <el-icon>
                     <bell />
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :lg="6" :md="8" :sm="12" :xs="24">
+        <el-col :xs="24" :md="6">
             <div class="ve-card ve_card2" @click="handleTodayDone()">
                 <el-icon>
                     <EditPen />
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :lg="6" :md="8" :sm="12" :xs="24">
+        <el-col :xs="24" :md="6">
             <div class="ve-card ve_card3" @click="handleTodayCreate()">
                 <el-icon>
                     <TakeawayBox />
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :lg="6" :md="8" :sm="12" :xs="24">
+        <el-col :xs="24" :md="6">
             <div class="ve-card ve_card4" @click="handleTodayDraft()">
                 <el-icon>
                     <document />
@@ -54,7 +54,7 @@
 </template>
 
 <script setup name="Index">
-import { getTodoList } from "@/api/workflow/index";
+import { getTodoList } from "@/api/workflow/index.js";
 const { proxy } = getCurrentInstance();
 
 let todoFrom = ref({
@@ -73,15 +73,15 @@ const getTodo = () => {
 getTodo();
 const handleTodo = () => {
     const obj = { path: "/flowTask/pendding" };
-    proxy.$tab.openPage(obj);
+    proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDone = () => {
     const obj = { path: "/flowTask/approved" };
-    proxy.$tab.openPage(obj);
+    proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayCreate = () => {
     const obj = { path: "/flowTask/mytask" };
-    proxy.$tab.openPage(obj);
+    proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDraft = () => {
     const obj = { path: "/approveV2" };
@@ -90,14 +90,11 @@ const handleTodayDraft = () => {
 </script>
 <style lang="scss" scoped>
 .el-row {
-    height: 50%;
-    padding-top: 10px;
     padding-right: 10px;
-    padding-left: 10px;
 }
 
 .el-col {
-    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .ve-card {
@@ -112,7 +109,6 @@ const handleTodayDraft = () => {
     &:hover {
         box-shadow: 3px 3px 6px 1px rgba(0, 0, 0, 0.2);
         background: #fff;
-        border: 2px solid #1890ff;
     }
 
     i {
@@ -132,41 +128,41 @@ const handleTodayDraft = () => {
         }
 
         span {
-            font-size: 55px;
+            font-size: 60px;
             font-weight: bold;
         }
     }
 }
 
 .ve_card1 {
-    background: #1890ff;
+    background: #409eff;
 
     &:hover {
-        color: #1890ff;
+        color: #409eff;
     }
 }
 
 .ve_card2 {
-    background: #13ce66;
+    background: #67c23a;
 
     &:hover {
-        color: #13ce66;
+        color: #67c23a;
     }
 }
 
 .ve_card3 {
-    background: #FE7300;
+    background: #e6a23c;
 
     &:hover {
-        color: #FE7300;
+        color: #e6a23c;
     }
 }
 
 .ve_card4 {
-    background: #ff4949;
+    background: #f56c6c;
 
     &:hover {
-        color: #ff4949;
+        color: #f56c6c;
     }
 }
 </style>

@@ -105,7 +105,7 @@ const handleEdit = (row) => {
       id: row.id
    };
    const obj = { path: "/outsideMgt/outsideDesign", query: params };
-   proxy.$tab.openPage(obj);
+   proxy.$tab.closeOpenPage(obj);
 }
 /**流程启用 */
 const effectiveById = async (data) => {
@@ -146,7 +146,7 @@ function handlePreview(row) {
       id: row.id
    };
    const obj = { path: "/outsideMgt/preview", query: params };
-   proxy.$tab.openPage(obj);
+   proxy.$tab.closeOpenPage(obj);
 }
 
 </script>

@@ -1,7 +1,5 @@
 // import { FormatUtils } from '@/utils/antflowformatcommit_data'
-//import { NodeUtils } from '@/utils/antflow/nodeUtils'
-import { isEmpty, isEmptyArray } from "@/utils/antflow/nodeUtils";
-
+import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
 export class FormatCommitUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化

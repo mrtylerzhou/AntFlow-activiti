@@ -1,8 +1,9 @@
 <template>
     <div class="tag-select">
-        <div class="tag-box"> 
-            <el-tag v-if="selectValue" type="warning" effect="dark"  :size="layoutSize"  closable :key="selectValue.nodeId" @close="onDeleteTag(selectValue)">
-                {{ selectValue.nodeName  }}【{{ selectValue.nodeDisplayName }}】
+        <div class="tag-box">
+            <el-tag v-if="selectValue" type="warning" effect="dark" :size="layoutSize" closable
+                :key="selectValue.nodeId" @close="onDeleteTag(selectValue)">
+                {{ selectValue.nodeName }}【{{ selectValue.nodeDisplayName }}】
             </el-tag>
         </div>
         <slot name="append" />
@@ -10,9 +11,9 @@
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'; 
+import { ref, watch } from 'vue';
 const { proxy } = getCurrentInstance();
-const emits = defineEmits(['update:value','update:flowNode']);
+const emits = defineEmits(['update:value', 'update:flowNode']);
 const props = defineProps({
     value: {
         type: String,
@@ -26,23 +27,23 @@ const props = defineProps({
 const layoutSize = ref('default');
 const selectValue = ref(null);
 
-const onDeleteTag = (tag) => { 
+const onDeleteTag = (tag) => {
     emits('update:value', null);
 };
-watch(() => props.flowNode, newValue => {   
-    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) { 
+watch(() => props.flowNode, newValue => {
+    if (!proxy.isEmpty(newValue) && !proxy.isEmpty(newValue.nodeId)) {
         selectValue.value = newValue;
     }
 });
 
-watch(() => props.value, newValue => { 
-    if (!proxy.isObjEmpty(newValue)  && !proxy.isObjEmpty(newValue.nodeId)) {
+watch(() => props.value, newValue => {
+    if (!proxy.isEmpty(newValue) && !proxy.isEmpty(newValue.nodeId)) {
         selectValue.value = props.flowNode;
-    }else {
+    } else {
         selectValue.value = null;
     }
 }, { immediate: true, deep: true, });
- 
+
 </script>
 
 <style scoped lang="scss">

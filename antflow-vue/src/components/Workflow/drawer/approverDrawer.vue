@@ -17,7 +17,7 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">🙍‍♂️ {{
                                         item.name }}
-                                        <img src="@/assets/images/add-close1.png"
+                                        <img src="@/assets/images/antflow/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
                                     <a v-if="approverConfig.nodeApproveList?.length != 0"
@@ -30,8 +30,8 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
-                                        <img src="@/assets/images/add-close1.png"
+                                        }}
+                                        <img src="@/assets/images/antflow/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
                                     <a v-if="approverConfig?.nodeApproveList?.length != 0"
@@ -44,8 +44,8 @@
                                 <p class="selected_list">
                                     <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index">{{
                                         item.name
-                                    }}
-                                        <img src="@/assets/images/add-close1.png"
+                                        }}
+                                        <img src="@/assets/images/antflow/add-close1.png"
                                             @click="$func.removeEle(approverConfig.nodeApproveList, item, 'targetId')">
                                     </span>
                                     <a v-if="approverConfig.nodeApproveList?.length != 0"
@@ -282,8 +282,8 @@ const sureRoleApprover = (data) => {
 }
 /**处理权限按钮变更事件 */
 const handleCheckedButtonsChange = (val) => {
-    if (proxy.isObjEmpty(approvalPageBtns)) return;
-    if (proxy.isArrayEmpty(approvalPageBtns.value)) return;
+    if (proxy.isEmpty(approvalPageBtns)) return;
+    if (proxy.isEmptyArray(approvalPageBtns.value)) return;
     const index = approvalPageBtns.value.indexOf(val);
     index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
     const isAddStep = approvalPageBtns.value.indexOf(19);
@@ -331,7 +331,7 @@ const closeDrawer = () => {
 } 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .el-drawer__header {
     margin-bottom: 5px !important;
@@ -355,9 +355,8 @@ const closeDrawer = () => {
 }
 
 .selected_list img {
-    margin-left: 5px;
-    width: 7px;
-    height: 7px;
+    width: 15px;
+    height: 15px;
     cursor: pointer;
 }
 

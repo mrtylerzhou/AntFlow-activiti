@@ -1,7 +1,7 @@
 <template>
    <div class="app-container">
       <div class="query-box">
-         <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
+         <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
             <el-form-item label="版本编号" prop="bpmnCode">
                <el-input v-model="taskMgmtVO.bpmnCode" placeholder="请输入关键字" clearable style="width: 200px"
                   @keyup.enter="handleQuery" />
@@ -10,34 +10,15 @@
                <el-input v-model="taskMgmtVO.bpmnName" placeholder="请输入关键字" clearable style="width: 200px"
                   @keyup.enter="handleQuery" />
             </el-form-item>
-            <!-- <el-form-item label="状态" prop="effectiveStatus">
-               <el-select v-model="taskMgmtVO.effectiveStatus" placeholder="状态" clearable style="width: 240px">
-                  <el-option label="禁用" value="0" />
-                  <el-option label="启动" value="1" />
-               </el-select>
-            </el-form-item> -->
             <el-form-item>
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
          </el-form>
-
-         <!-- <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-               <el-tooltip class="box-item" effect="dark" content="低代码表单+流程设计器" placement="bottom">
-                  <el-button type="success" plain icon="Edit" @click="handleLFDesign">流程设计(LF)</el-button>
-               </el-tooltip>
-            </el-col>
-            <el-col :span="1.5">
-               <el-tooltip class="box-item" effect="dark" content="需提前开发业务表单" placement="bottom">
-                  <el-button type="primary" plain icon="Edit" @click="handleDIYDesign">流程设计(DIY)</el-button>
-               </el-tooltip>
-            </el-col>
-         </el-row> -->
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
-            <el-table-column label="类型标识" align="center" prop="formCode" />
+            <el-table-column label="类型标识" align="center" prop="formCode" :show-overflow-tooltip="true" width="150" />
             <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" />
             <el-table-column label="版本编号" align="center" prop="bpmnCode" />
             <el-table-column label="版本名称" align="center" prop="bpmnName" />
@@ -84,7 +65,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
 import { getBpmnConflistPage } from "@/api/workflow/index";
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()
 const configList = ref([]);
 const loading = ref(false);
 const showSearch = ref(true);
@@ -124,6 +105,7 @@ const getList = async () => {
 
 const handleVersion = async (row) => {
    const params = {
+      t: Date.now(),
       formCode: row.formCode
    };
    let obj = { path: "flow-version", query: params };

@@ -54,7 +54,7 @@
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
-                                        }}</span>
+                                    }}</span>
                                     <span class="priority-title" @click="setNodeInfo(item.priorityLevel)">优先级{{
                                         item.priorityLevel }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
@@ -99,14 +99,14 @@
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
-                                    }}</span>
+                                        }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                 </div>
 
                                 <div class="content" @click="setNodeInfo(index)">
                                     <div class="text">
                                         <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{ defaultText
-                                            }}</span>
+                                        }}</span>
                                         {{ item.nodeDisplayName }}
                                     </div>
                                     <i class="anticon anticon-right arrow"></i>
@@ -195,7 +195,7 @@ const resetConditionNodesErr = () => {
             (item) => item.columnId && item.columnId !== 0
         ).length == 0;
         props.nodeConfig.conditionNodes[i].isDefault = defaultCond ? 1 : 0;
-        props.nodeConfig.conditionNodes[i].nodeDisplayName = proxy.isObjEmpty(conditionTitle) ? props.nodeConfig.conditionNodes[i].nodeDisplayName : conditionTitle;
+        props.nodeConfig.conditionNodes[i].nodeDisplayName = proxy.isEmpty(conditionTitle) ? props.nodeConfig.conditionNodes[i].nodeDisplayName : conditionTitle;
     }
     let maxLen = props.nodeConfig.conditionNodes.length - 1;
     let node = props.nodeConfig.conditionNodes[maxLen];
@@ -211,7 +211,7 @@ const resetParallelNodesErr = () => {
     if (!props.nodeConfig.parallelNodes) return;
     for (var i = 0; i < props.nodeConfig.parallelNodes.length; i++) {
         let parallTitle = $func.setApproverStr(props.nodeConfig.parallelNodes[i]);
-        props.nodeConfig.parallelNodes[i].error = proxy.isArrayEmpty(props.nodeConfig.parallelNodes[i].nodeApproveList);
+        props.nodeConfig.parallelNodes[i].error = proxy.isEmptyArray(props.nodeConfig.parallelNodes[i].nodeApproveList);
         props.nodeConfig.parallelNodes[i].nodeDisplayName = parallTitle;
     }
 }
@@ -457,7 +457,7 @@ const arrTransfer = (index, type = 1) => {
 };
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 
 .error_tip {
     position: absolute;
