@@ -138,7 +138,7 @@ const previewJson = () => {
 .lf-container {
     position: relative;
     background-color: #f5f5f7;
-    min-height: calc(100vh - 115px);
+    min-height: calc(100vh - 85px);
     padding-top: 15px;
     overflow: auto;
 }

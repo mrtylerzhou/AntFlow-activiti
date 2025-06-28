@@ -157,7 +157,7 @@ function close() {
 }
 
 .component {
-    height: calc(76vh);
+    height: 70vh;
     padding-top: 15px;
     padding-bottom: 15px;
     overflow: auto;
