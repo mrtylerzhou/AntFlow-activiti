@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "antflow-vue",
+=======
+  "name": "antflow",
+>>>>>>> feat_20250527_multiple_conditions
   "version": "9.1.0",
   "description": "流程管理系统",
   "author": "lidonghui",
@@ -13,7 +17,11 @@
   },
   "repository": {
     "type": "git",
+<<<<<<< HEAD
     "url": "https://gitee.com/tylerzhou/Antflow.git"
+=======
+    "url": "https://gitee.com/tylerzhou/Antflow"
+>>>>>>> feat_20250527_multiple_conditions
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
