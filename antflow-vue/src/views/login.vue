@@ -89,6 +89,8 @@ function handleLogin() {
     ElMessage.error("请选择用户");
     return;
   }
+  Cookies.set("userId", userId.value);
+  Cookies.set("userName", encodeURIComponent(_userName.value));
   proxy.$refs.loginRef.validate(valid => {
     if (valid) {
       loading.value = true;

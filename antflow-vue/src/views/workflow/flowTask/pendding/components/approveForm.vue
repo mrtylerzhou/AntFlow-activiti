@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="approve-container">
         <el-header>
             <div class="approval-btns" v-for="btn in approvalButtons">
                 <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
@@ -118,7 +118,7 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.value.isLowCodeFlow == true) {
+                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
                         approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
@@ -205,7 +205,7 @@ const preview = async (viewData) => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
             try {
-                if (viewData.isLowCodeFlow == true) {//低代码表单 和 外部表单接入
+                if (viewData.isLowCodeFlow == true || viewData.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
                     lfFormDataConfig.value = response.data.lfFormData;
                     lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                     lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
@@ -267,10 +267,8 @@ function uniqueByMap(arr) {
  * 关闭当前审批页
  */
 const close = async () => {
-    activeName.value = "baseTab";
-    emits("handleRefreshList");
-    // const obj = { path: "/flowTask/pendding" };
-    // proxy.$tab.closeOpenPage(obj);
+    const obj = { path: "/flowTask/pendding" };
+    proxy.$tab.closeOpenPage(obj);
 }
 
 </script>
@@ -289,19 +287,20 @@ const close = async () => {
     margin: 16px 5px;
 }
 
-.app-container .el-header {
+.approve-container .el-header {
     box-shadow: var(--el-box-shadow-light);
     background-color: #f2f3f4f5;
 }
 
-.app-container .el-main {
+.approve-container .el-main {
     background-color: #fff;
     color: var(--el-text-color-primary);
     border-radius: 5px;
-    height: 75vh;
+    height: 59vh;
+    width: 100%;
 }
 
-.app-container .toolbar {
+.approve-container .toolbar {
     display: inline-flex;
     align-items: center;
     justify-content: center;

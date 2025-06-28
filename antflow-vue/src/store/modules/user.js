@@ -1,6 +1,5 @@
 import router from "@/router";
 import { ElMessageBox } from "element-plus";
-import Cookies from "js-cookie";
 //import { login, logout, getInfo } from "@/api/system/login";
 import { login, getInfo, logout } from "@/api/workflow/mock";
 import { getToken, setToken, removeToken } from "@/utils/auth";
@@ -42,8 +41,6 @@ const useUserStore = defineStore("user", {
         getInfo()
           .then((res) => {
             const user = res.user;
-            Cookies.set("userId", user.userId);
-            Cookies.set("userName", encodeURIComponent(user.nickName));
             let avatar = user.avatar || "";
             if (!isHttp(avatar)) {
               avatar = isEmpty(avatar)
