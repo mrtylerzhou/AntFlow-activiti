@@ -40,7 +40,7 @@
             </div>
         </el-col>
         <el-col :xs="24" :md="6">
-            <div class="ve-card ve_card4">
+            <div class="ve-card ve_card4" @click="handleTodayDraft()">
                 <el-icon>
                     <document />
                 </el-icon>
@@ -82,7 +82,11 @@ const handleTodayDone = () => {
 const handleTodayCreate = () => {
     const obj = { path: "/flowTask/mytask" };
     proxy.$tab.closeOpenPage(obj);
-} 
+}
+const handleTodayDraft = () => {
+    const obj = { path: "/approveV2" };
+    proxy.$tab.openPage(obj);
+}
 </script>
 <style lang="scss" scoped>
 .el-row {

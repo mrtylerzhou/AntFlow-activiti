@@ -10,6 +10,8 @@
                                 <el-button icon="Search" @click="handleQuery" />
                             </template>
                         </el-input>
+                        <el-button icon="Refresh" @click="getList"
+                            style="width: 30px; height: 30px; margin: 0px 10px;" />
                     </div>
                 </el-header>
                 <el-main>
@@ -203,9 +205,8 @@ const handleClick = (tab, event) => {
     padding: 0;
     border: 0;
     outline: 0;
-    font-size: 100%;
     vertical-align: baseline;
-    // font-size: 12px;
+    font-size: 12px;
     line-height: 2.0;
 }
 
@@ -249,7 +250,7 @@ const handleClick = (tab, event) => {
     justify-content: center;
     height: 100%;
     right: 20px;
-    margin: 0 27px;
+    margin: 0 5px;
 }
 
 .layout-middle {

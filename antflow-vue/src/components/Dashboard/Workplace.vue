@@ -1,111 +1,113 @@
 <template>
-    <div>
-        <el-card>
-            <template v-slot:header>
-                <div class="clearfix">
-                    <span>可用流程(DIY)</span>
-                </div>
-            </template>
-            <el-row :gutter="5">
-                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
-                    <el-card shadow="always" class="card-col" @click="handleStart(item)">
-                        <div slot="title">
-                            <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
-                                </el-avatar>
+    <div style="max-height: 80vh;">
+        <el-scrollbar>
+            <el-card>
+                <template v-slot:header>
+                    <div class="clearfix">
+                        <span>可用流程(DIY)</span>
+                    </div>
+                </template>
+                <el-row :gutter="5">
+                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
+                        <el-card shadow="always" class="card-col" @click="handleStart(item)">
+                            <div slot="title">
+                                <div class="card-icon">
+                                    <el-avatar size="large">
+                                        <img :src="item.IconUrl" />
+                                    </el-avatar>
+                                </div>
+                                <div class="card-title">
+                                    <a>{{ item.title }}</a>
+                                    <p>{{ item.description }}</p>
+                                </div>
                             </div>
-                            <div class="card-title">
-                                <a>{{ item.title }}</a>
-                                <p>{{ item.description }}</p>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-card>
+            <el-card>
+                <template v-slot:header>
+                    <div class="clearfix">
+                        <span>低代码表单(LF)
+                            <el-tooltip placement="right">
+                                <template #content>
+                                    <span>
+                                        <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增"
+                                            type="success" effect="dark" :closable="false" />
+                                        <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】"
+                                            type="success" effect="dark" :closable="false" />
+                                        <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】"
+                                            type="success" effect="dark" :closable="false" />
+                                    </span>
+                                </template>
+                                <el-icon><question-filled /></el-icon>
+                            </el-tooltip>
+                        </span>
+                    </div>
+                </template>
+                <el-row :gutter="5">
+                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
+                        <el-card shadow="always" class="card-col" @click="handleStart(item)">
+                            <div slot="title">
+                                <div class="card-icon">
+                                    <el-avatar size="large">
+                                        <img :src="item.IconUrl" />
+                                    </el-avatar>
+                                </div>
+                                <div class="card-title">
+                                    <a>{{ item.title }}</a>
+                                    <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
+                                </div>
                             </div>
-                        </div>
-                    </el-card>
-                </el-col>
-            </el-row>
-        </el-card>
-        <el-card>
-            <template v-slot:header>
-                <div class="clearfix">
-                    <span>低代码表单(LF)
-                        <el-tooltip placement="right">
-                            <template #content>
-                                <span>
-                                    <el-alert style="margin-bottom: 5px;" title="第一步：新增：流程管理->流程类型->新增" type="success"
-                                        effect="dark" :closable="false" />
-                                    <el-alert style="margin-bottom: 5px;" title="第二步：设计：流程管理->流程类型->点击【流程设计】"
-                                        type="success" effect="dark" :closable="false" />
-                                    <el-alert style="margin-bottom: 5px;" title="第三步：启用：流程管理->流程设计->版本管理->点击【启用】"
-                                        type="success" effect="dark" :closable="false" />
-                                </span>
-                            </template>
-                            <el-icon><question-filled /></el-icon>
-                        </el-tooltip>
-                    </span>
-                </div>
-            </template>
-            <el-row :gutter="5">
-                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
-                    <el-card shadow="always" class="card-col" @click="handleStart(item)">
-                        <div slot="title">
-                            <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
-                                </el-avatar>
-                            </div>
-                            <div class="card-title">
-                                <a>{{ item.title }}</a>
-                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-                <el-col :md="24">
-                    <pagination v-show="lfTotal > 0" :total="lfTotal" v-model:page="lfPageDto.page"
-                        v-model:limit="lfPageDto.pageSize" @pagination="getLFFormCodePageList" />
-                </el-col>
-            </el-row>
+                        </el-card>
+                    </el-col>
+                    <el-col :md="24">
+                        <pagination v-show="lfTotal > 0" :total="lfTotal" v-model:page="lfPageDto.page"
+                            v-model:limit="lfPageDto.pageSize" @pagination="getLFFormCodePageList" />
+                    </el-col>
+                </el-row>
 
-        </el-card>
-        <!-- <el-card>
-            <template v-slot:header>
-                <div class="clearfix">
-                    <span>
-                        第三方流程[1]
-                        <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
-                            <el-icon><question-filled /></el-icon>
-                        </el-tooltip>
-                        <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
-                            <a href="http://antflow.top/ruoyi/#/hr/leavetime" target="_blank">
-                                <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
-                            </a>
-                        </el-tooltip>
+            </el-card>
+            <el-card>
+                <template v-slot:header>
+                    <div class="clearfix">
+                        <span>
+                            第三方流程[1]
+                            <el-tooltip content="【*第三方流程（又称：业务方流程），外部系统的业务表单，需要审批流程，接入本流程引擎*】" placement="right">
+                                <el-icon><question-filled /></el-icon>
+                            </el-tooltip>
+                            <el-tooltip content="更多体验三方接入，点击跳转若依管理系统" placement="right">
+                                <a href="http://antflow.top/ruoyi/#/hr/leavetime" target="_blank">
+                                    <el-button type="success" plain icon="Guide">更多体验,点击跳转至若依管理系统</el-button>
+                                </a>
+                            </el-tooltip>
 
-                    </span>
-                </div>
-            </template>
-            <el-row :gutter="5">
-                <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
-                    <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
-                        <div slot="title">
-                            <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
-                                </el-avatar>
+                        </span>
+                    </div>
+                </template>
+                <el-row :gutter="5">
+                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
+                        <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
+                            <div slot="title">
+                                <div class="card-icon">
+                                    <el-avatar size="large">
+                                        <img :src="item.IconUrl" />
+                                    </el-avatar>
+                                </div>
+                                <div class="card-title">
+                                    <a>{{ item.title }}</a>
+                                    <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
+                                </div>
                             </div>
-                            <div class="card-title">
-                                <a>{{ item.title }}</a>
-                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
-                            </div>
-                        </div>
-                    </el-card>
-                </el-col>
-                <el-col :md="24">
-                    <pagination v-show="outsideTotal > 0" :total="outsideTotal" v-model:page="outsidePage.page"
-                        v-model:limit="outsidePage.pageSize" @pagination="getOutSideFormCodeList" />
-                </el-col>
-            </el-row>
-        </el-card> -->
+                        </el-card>
+                    </el-col>
+                    <el-col :md="24">
+                        <pagination v-show="outsideTotal > 0" :total="outsideTotal" v-model:page="outsidePage.page"
+                            v-model:limit="outsidePage.pageSize" @pagination="getOutSideFormCodeList" />
+                    </el-col>
+                </el-row>
+            </el-card>
+        </el-scrollbar>
     </div>
 </template>
 
@@ -131,7 +133,7 @@ const data = reactive({
     },
     outsidePage: {
         page: 1,
-        pageSize: 12
+        pageSize: 6
     },
     outsideVO: {
         description: undefined

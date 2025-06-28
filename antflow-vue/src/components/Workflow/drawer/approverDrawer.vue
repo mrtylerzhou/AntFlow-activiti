@@ -355,9 +355,8 @@ const closeDrawer = () => {
 }
 
 .selected_list img {
-    margin-left: 5px;
-    width: 7px;
-    height: 7px;
+    width: 15px;
+    height: 15px;
     cursor: pointer;
 }
 
