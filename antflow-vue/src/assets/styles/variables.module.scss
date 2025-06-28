@@ -10,7 +10,7 @@ $panGreen: #30b08f;
 
 // 默认主题变量
 $menuText: #bfcbd9;
-$menuActiveText: #409eff;
+$menuActiveText:#1890ff; //#409eff;
 $menuBg: #304156;
 $menuHover: #263445;
 
@@ -18,7 +18,7 @@ $menuHover: #263445;
 $menuLightBg: #ffffff;
 $menuLightHover: #f0f1f5;
 $menuLightText: #303133;
-$menuLightActiveText: #409eff;
+$menuLightActiveText:#1890ff; //#409eff;
 
 // 基础变量
 $base-sidebar-width: 200px;
@@ -32,7 +32,7 @@ $base-sub-menu-background: #1f2d3d;
 $base-sub-menu-hover: #001528;
 
 // 组件变量
-$--color-primary: #409eff;
+$--color-primary: #1890ff;//#409eff;
 $--color-success: #67c23a;
 $--color-warning: #e6a23c;
 $--color-danger: #f56c6c;
