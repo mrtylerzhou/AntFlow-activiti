@@ -130,7 +130,7 @@
           "hidden": false,
           "component": "workflow/flowTask/instance/index",
           "meta": {
-            "title": "流程监控",
+            "title": "流程实例",
             "icon": "",
             "noCache": false,
             "link": null
@@ -275,15 +275,15 @@
       ]
     },
     {
-      "name": "http://antflow.top:7001/doc.html",
-      "path": "http://antflow.top:7001/doc.html",
+      "name": "http://14.103.207.27:7001/doc.html",
+      "path": "http://14.103.207.27:7001/doc.html",
       "hidden": true,
       "component": "Layout",
       "meta": {
         "title": "接口文档",
         "icon": "swagger",
         "noCache": false,
-        "link": "http://antflow.top:7001/doc.html"
+        "link": "http://14.103.207.27:7001/doc.html"
       }
     },
     {
@@ -294,7 +294,7 @@
       "component": "Layout",
       "alwaysShow": true,
       "meta": {
-        "title": "SAAS流程管理",
+        "title": "业务方管理",
         "icon": "component",
         "noCache": false,
         "link": null
@@ -306,7 +306,7 @@
           "hidden": false,
           "component": "workflow/outsideMgt/outsideJoin/index",
           "meta": {
-            "title": "SAAS租户管理",
+            "title": "项目管理",
             "icon": "",
             "noCache": false,
             "link": null

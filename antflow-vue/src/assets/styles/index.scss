@@ -1,10 +1,10 @@
-@import "./variables.module.scss";
-@import "./mixin.scss";
-@import "./transition.scss";
-@import "./element-ui.scss";
-@import "./sidebar.scss";
-@import "./btn.scss";
-@import "./ruoyi.scss";
+@use "./mixin.scss";
+@use "./transition.scss";
+@use "./element-ui.scss";
+@use "./sidebar.scss";
+@use "./btn.scss";
+@use "./ruoyi.scss";
+@use "./antflow/index.scss";
 body {
   height: 100%;
   margin: 0;
@@ -100,7 +100,7 @@ div:focus {
 
 aside {
   background: #eef1f6;
-  padding: 10px 10px;
+  padding: 8px 24px;
   margin-bottom: 20px;
   border-radius: 2px;
   display: block;
@@ -123,31 +123,15 @@ aside {
 }
 
 //main-container全局样式
-.app-container {
-  margin: 10px 10px 10px 10px; 
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
-  height: calc(86vh);
-  background-color: #fff;
-}
+// .app-container {
+//   padding: 20px;
+// }
 
 .components-container {
   margin: 30px 50px;
   position: relative;
 }
 
-.query-box {
-  padding-top: 20px; 
-  padding-left: 10px;
-  padding-right: 10px;
-  background-color: #fff;
-}
-.table-box {
-  padding: 10px; 
-  background-color: #fff;  
-}
 .text-center {
   text-align: center;
 }
@@ -200,62 +184,4 @@ aside {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-}
-
-.page-close-box {
-  position: absolute;
-  top: -0;
-  right: -0;
-  width: 42px;
-  height: 42px;
-  text-align: center;
-  cursor: pointer;
-  z-index: 999;
-}
-
-.page-close-box img {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background-image: url();
-}
-
-.page-close-box::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border: 20px solid #46a6fe;
-  border-color: #46a6fe #46a6fe transparent transparent;
-  content: "";
-}
-
-.pin-top-right-corner {
-  position: absolute;
-  top: -0;
-  right: -0;
-  text-align: center;
-  cursor: pointer;
-  z-index: 999;
-}
-
-.pin-top-right-corner img {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  background-image: url();
-}
-
-.pin-pass:before {
-  content: url("../images/flow-pass.png");
-}
-.pin-in:before {
-  content: url("../images/flow-in.png");
-}
-.pin-refuse:before {
-  content: url("../images/flow-refuse.png");
-}
-.pin-end:before {
-  content: url("../images/flow-end.png");
 }

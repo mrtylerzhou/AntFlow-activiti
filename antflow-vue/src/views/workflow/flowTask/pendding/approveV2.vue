@@ -10,6 +10,8 @@
                                 <el-button icon="Search" @click="handleQuery" />
                             </template>
                         </el-input>
+                        <el-button icon="Refresh" @click="getList"
+                            style="width: 30px; height: 30px; margin: 0px 10px;" />
                     </div>
                 </el-header>
                 <el-main>
@@ -27,6 +29,10 @@
                                         <p class="card-detail">
                                             <span style="width: 40px;">描述：</span>
                                             <span class="card-reason">{{ item.description }}</span>
+                                        </p>
+                                        <p class="card-detail">
+                                            <span>流程编号</span>
+                                            <span class="card-reason">{{ substringHidden(item.processNumber) }}</span>
                                         </p>
                                         <p class="card-time">
                                             <span>审批状态：</span>
@@ -72,7 +78,8 @@
                     <el-tabs v-model="activeName" @tab-click="handleClick">
                         <el-tab-pane label="表单信息" name="baseTab">
                             <div v-if="activeName === 'baseTab'">
-                                <ApporveForm :approveFormData="approveFormDataConfig" />
+                                <ApporveForm :approveFormData="approveFormDataConfig"
+                                    @handleRefreshList="refreshList" />
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="审批记录" name="flowStep">
@@ -148,7 +155,18 @@ async function getList() {
         proxy.$modal.msgError("加载列表失败:" + r.message);
     });
 }
-
+/**
+ * 刷新列表
+*/
+const refreshList = async () => {
+    loadingMore.value = true;
+    await getList();
+    loadingMore.value = false;
+    toggleFlowActive(dataList.value[0], 0);
+}
+/**
+ * 上一页下一页
+*/
 const loadMoreFlowList = async (type) => {
     loadingMore.value = true;
     if (type === 'after') {
@@ -184,9 +202,9 @@ const handleClick = (tab, event) => {
 <style lang="scss" scoped>
 * {
     margin: 0;
+    padding: 0;
     border: 0;
     outline: 0;
-    font-size: 100%;
     vertical-align: baseline;
     font-size: 12px;
     line-height: 2.0;
@@ -232,6 +250,7 @@ const handleClick = (tab, event) => {
     justify-content: center;
     height: 100%;
     right: 20px;
+    margin: 0 5px;
 }
 
 .layout-middle {
@@ -261,6 +280,8 @@ const handleClick = (tab, event) => {
     flex-wrap: wrap;
     gap: 5px;
     padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .item-card {

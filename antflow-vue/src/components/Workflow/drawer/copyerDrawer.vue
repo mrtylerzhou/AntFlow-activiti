@@ -16,7 +16,7 @@
                     <el-button type="primary" @click="addCopyer">添加成员</el-button>
                     <p class="selected_list">
                         <span v-for="(item, index) in copyerConfig.nodeApproveList" :key="index">{{ item.name }}
-                            <img src="@/assets/images/add-close1.png"
+                            <img src="@/assets/images/antflow/add-close1.png"
                                 @click="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
                         </span>
                         <a v-if="copyerConfig.nodeApproveList && copyerConfig.nodeApproveList.length != 0"
@@ -120,7 +120,7 @@ const changePermVal = (data) => {
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .selected_list {
     margin-bottom: 20px;

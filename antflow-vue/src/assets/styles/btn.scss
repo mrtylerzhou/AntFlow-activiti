@@ -1,4 +1,4 @@
-@import './variables.module.scss';
+@use './variables.module.scss' as *;
 
 @mixin colorBtn($color) {
   background: $color;
@@ -89,7 +89,6 @@
   background: #fff;
   color: #fff;
   -webkit-appearance: none;
-  appearance: none;
   text-align: center;
   box-sizing: border-box;
   outline: 0;

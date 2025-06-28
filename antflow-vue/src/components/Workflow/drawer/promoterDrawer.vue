@@ -66,7 +66,7 @@ const closeDrawer = () => {
 }
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .set_promoter {
     .promoter_content {

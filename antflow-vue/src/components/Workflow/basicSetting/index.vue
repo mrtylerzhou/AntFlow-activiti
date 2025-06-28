@@ -121,7 +121,7 @@ watch(() => form.formCode, (val) => {
     }
 });
 onMounted(async () => {
-    if (!proxy.isObjEmpty(props.basicData) && !proxy.isObjEmpty(props.basicData.formCode)) {
+    if (!proxy.isEmpty(props.basicData) && !proxy.isEmpty(props.basicData.formCode)) {
         form.bpmnName = props.basicData.bpmnName;
         form.bpmnCode = props.basicData.bpmnCode;
         form.formCode = props.basicData.formCode;

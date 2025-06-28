@@ -63,6 +63,8 @@ public class BpmnTemplateVo implements Serializable {
      */
     private Long templateId;
     private String templateName;
+    private List<BaseNumIdStruVo> messageSendTypeList;
+    private String formCode;
     /**
      * 0 for not deleted, 1 for deleted
      */

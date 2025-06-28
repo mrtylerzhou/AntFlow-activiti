@@ -4,7 +4,7 @@ import { parseTime } from './ruoyi'
  * 表格时间格式化
  */
 export function formatDate(cellValue) {
-  if (cellValue == null || cellValue == "") return "";
+  if (cellValue == null || cellValue == "") return ""
   var date = new Date(cellValue) 
   var year = date.getFullYear()
   var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
@@ -388,48 +388,3 @@ export function isNumberStr(str) {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }
  
-
-/**
- * 页面转字符串
- * @param {HTMLElement}  form 表单元素
- */
-export function formToHTMLString (form) {  
-  if (!(form instanceof HTMLFormElement)) {  
-      throw new Error('The provided element is not a form');  
-  }   
-  let htmlString = '<form' + Array.from(form.attributes).map(attr => ` ${attr.name}="${attr.value}"`).join('') + '>\n';   
-  Array.from(form.childNodes).forEach(childNode => {   
-      if (childNode.nodeType === 1) {    
-          Array.from(childNode.children).forEach((child, index) => {    
-              if (!formToRraverse(child)){   
-                  htmlString +='    ' +  child.outerHTML.replace(/\n/g, '\n    ') + '\n';   
-              } 
-          });       
-      }   
-  });  
-
-  htmlString += '</form>';  
-  return htmlString.trim();  
-}   
-/**
-* 递归遍历表单元素
-* @param {HTMLElement}  form 表单元素
-*/
-const formToRraverse = (form) => { 
-  let isTure = false;     
-  function traverse(element) {   
-      if (element.tagName.toLowerCase() === 'button') { 
-          isTure = true; 
-          return;
-      } 
-      if (element.children.length > 0) {
-          for (let child of element.children) {
-              traverse(child);
-          }
-      }      
-  } 
-  // 遍历表单元素
-  traverse(form); 
-  // 将文档片段转换为HTML字符串
-  return isTure;
-}

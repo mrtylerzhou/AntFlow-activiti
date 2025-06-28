@@ -31,8 +31,8 @@ public class InformationTemplateUtils {
                 .builder()
                 .systemTitle(translate(informationTemplate.getSystemTitle(), informationTemplateVo.getWildcardCharacterMap()))
                 .systemContent(translate(informationTemplate.getSystemContent(), informationTemplateVo.getWildcardCharacterMap()))
-                .mailTitle(translate(informationTemplate.getMailTitle(), informationTemplateVo.getWildcardCharacterMap()))
-                .mailContent(translate(informationTemplate.getMailContent(), informationTemplateVo.getWildcardCharacterMap()))
+                .mailTitle(translate(informationTemplate.getSystemTitle(), informationTemplateVo.getWildcardCharacterMap()))
+                .mailContent(translate(informationTemplate.getSystemContent(), informationTemplateVo.getWildcardCharacterMap()))
                 .noteContent(translate(informationTemplate.getNoteContent(), informationTemplateVo.getWildcardCharacterMap()))
                 .jumpUrl(informationTemplate.getJumpUrl())
                 .build();
@@ -43,7 +43,7 @@ public class InformationTemplateUtils {
             return "";
         }
         for (WildcardCharacterEnum o : WildcardCharacterEnum.values()) {
-            String pattern= o.getTransfDesc() + "\\(" + o.getCode() + "\\)";
+            String pattern= o.getTransfDesc() /*+ "\\(" + o.getCode() + "\\)"*/;
             String replacement=!ObjectUtils.isEmpty(map.get(o.getCode())) ? map.get(o.getCode()) : "";
             info = info.replaceAll(pattern, replacement);
         }

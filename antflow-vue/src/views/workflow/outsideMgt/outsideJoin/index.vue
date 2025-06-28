@@ -27,30 +27,34 @@
       <el-table v-loading="loading" :data="list">
         <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="租户名称" align="center" prop="name" v-if="columns[1].visible"
+        <el-table-column label="项目名称" align="center" prop="name" v-if="columns[1].visible"
           :show-overflow-tooltip="true" />
         <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible"
           :show-overflow-tooltip="true" />
         <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible">
+        <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" width="160">
           <template #default="scope">
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="260" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="150" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)">新增APP</el-button>
-            <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+            <el-tooltip content="新增APP" placement="top">
+              <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="编辑" placement="top">
+              <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="删除" placement="top">
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
+      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+        @pagination="getList" />
     </div>
-    <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-      @pagination="getList" />
-
-    <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
     <!-- 添加或修改委托对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="130px" style="margin: 0 20px;"
@@ -72,8 +76,8 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="租户名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入租户名称" />
+            <el-form-item label="项目名称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入项目名称" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -103,6 +107,7 @@
         </div>
       </template>
     </el-dialog>
+    <app-form v-model:visible="openAddApp" v-model:appformData="appData" @refresh="getList" />
   </div>
 </template>
 
@@ -136,13 +141,17 @@ const data = reactive({
       trigger: ['blur', 'change']
     }],
     name: [
-      { required: true, message: '请输入租户名称', trigger: 'blur' },
+      { required: true, message: '请输入项目名称', trigger: 'blur' },
       { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
     ],
     accessType: [{ required: true, message: '', trigger: 'change' }]
   }
 });
 const { page, vo, form, rules, appData } = toRefs(data);
+
+onMounted(async () => {
+  getList();
+})
 
 // 列显隐信息
 const columns = ref([
@@ -152,10 +161,6 @@ const columns = ref([
   { key: 3, label: `备注`, visible: true },
   { key: 4, label: `创建时间`, visible: true }
 ]);
-
-onMounted(() => {
-  getList();
-});
 
 /** 查询接入项目列表 */
 function getList() {

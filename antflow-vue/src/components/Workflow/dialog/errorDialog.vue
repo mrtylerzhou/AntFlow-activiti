@@ -13,9 +13,9 @@
         <div>
           <p class="error-modal-desc">以下内容不完善，需进行修改</p>
           <div class="error-modal-list">
-            <div class="error-modal-item" v-for="(item,index) in list" :key="index">
+            <div class="error-modal-item" v-for="(item, index) in list" :key="index">
               <div class="error-modal-item-label">流程设计</div>
-              <div class="error-modal-item-content">【{{item.name}}】 未选择{{item.nodeType}}</div>
+              <div class="error-modal-item-content">【{{ item.name }}】 未选择{{ item.nodeType }}</div>
             </div>
           </div>
         </div>
@@ -53,7 +53,8 @@ let visibleDialog = computed({
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/workflow.scss"; 
+@use "@/assets/styles/antflow/workflow.scss";
+
 .fd-confirm-body .fd-confirm-title {
   color: rgba(0, 0, 0, .85);
   font-weight: 500;

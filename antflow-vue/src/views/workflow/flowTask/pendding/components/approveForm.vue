@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="approve-container">
         <el-header>
             <div class="approval-btns" v-for="btn in approvalButtons">
                 <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
@@ -21,19 +21,20 @@
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
-        <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+        <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
     </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
-import cache from '@/plugins/cache';
+import Cookies from "js-cookie";
 import transferDialog from './transferDialog.vue';
 import approveDialog from './approveDialog.vue';
 import repulseDialog from './repulseDialog.vue';
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { boolToString } from '@/utils/antflow/ObjectUtils'
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
@@ -54,7 +55,6 @@ let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
-
 let approveSubData = ref(null);
 
 let props = defineProps({
@@ -64,6 +64,7 @@ let props = defineProps({
         default: () => { }
     }
 });
+const emits = defineEmits(["handleRefreshList"]);
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
@@ -117,7 +118,7 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {
+                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
                         approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
@@ -216,7 +217,7 @@ const preview = async (viewData) => {
                     componentLoaded.value = true;
                 }
             } catch (error) {
-                //close();
+                close();
             }
         } else {
             proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
@@ -234,12 +235,12 @@ const sureDialogBtn = async (data) => {
     approveSubData.value.approvalComment = data.remark;
     if (!isMultiple.value) {
         data.selectList.unshift({
-            id: cache.session.get('userId'),
-            name: decodeURIComponent(cache.session.get('userName')),
+            id: Cookies.get('userId'),
+            name: decodeURIComponent(Cookies.get('userName')),
         });
-        approveSubData.value.userInfos = data.selectList;
+        approveSubData.value.userInfos = data.selectList.filter(item => item.id);
     } else {
-        approveSubData.value.signUpUsers = data.selectList;
+        approveSubData.value.signUpUsers = data.selectList.filter(item => item.id);
     }
     //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
     await approveProcess(approveSubData.value);
@@ -265,7 +266,7 @@ function uniqueByMap(arr) {
 /**
  * 关闭当前审批页
  */
-const close = () => {
+const close = async () => {
     const obj = { path: "/flowTask/pendding" };
     proxy.$tab.closeOpenPage(obj);
 }
@@ -286,19 +287,20 @@ const close = () => {
     margin: 16px 5px;
 }
 
-.app-container .el-header {
+.approve-container .el-header {
     box-shadow: var(--el-box-shadow-light);
     background-color: #f2f3f4f5;
 }
 
-.app-container .el-main {
+.approve-container .el-main {
     background-color: #fff;
     color: var(--el-text-color-primary);
     border-radius: 5px;
-    height: 75vh;
+    height: 59vh;
+    width: 100%;
 }
 
-.app-container .toolbar {
+.approve-container .toolbar {
     display: inline-flex;
     align-items: center;
     justify-content: center;

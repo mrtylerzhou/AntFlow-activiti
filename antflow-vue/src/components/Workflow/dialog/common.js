@@ -17,8 +17,8 @@ export let getRoleList = async () => {
   let { data } = await getRoles();
   roles.value = data.map((c) => {
     return {
-      roleId: c.id,
-      roleName: c.name,
+      roleId: c.roleId,
+      roleName: c.roleName,
     };
   });
 };

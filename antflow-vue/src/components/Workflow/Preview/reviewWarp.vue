@@ -23,7 +23,7 @@ import LineWarp from '@/components/Workflow/Preview/lineWarp.vue';
 import { getFlowPreview } from '@/api/workflow/index';
 import { FormatPreviewUtils } from '@/utils/antflow/formatFlowPreview';
 import { useStore } from '@/store/modules/workflow';
-import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/zoom.js';
+import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/antflow/zoom.js';
 const { proxy } = getCurrentInstance();
 let store = useStore();
 const antflowDesignRef = ref(null);
@@ -74,7 +74,7 @@ function zoomReset() {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/styles/antflow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 
 .end-node-circle {
     width: 20px;

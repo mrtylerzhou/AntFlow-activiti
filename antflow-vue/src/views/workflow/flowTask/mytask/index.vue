@@ -14,14 +14,16 @@
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
-            <el-form-item style="float: right;">
-               <el-button type="success" plain icon="Promotion" @click="handleTaskCenter">发起请求</el-button>
-            </el-form-item>
          </el-form>
+         <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+               <el-button type="success" plain icon="Promotion" @click="handleTaskCenter">发起请求</el-button>
+            </el-col>
+         </el-row>
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="dataList">
-            <el-table-column label="流程类型" align="center" prop="processKey">
+            <el-table-column label="流程类型" align="center" prop="processKey" :show-overflow-tooltip="true">
                <template #default="item"> {{ substringHidden(item.row.processKey) }}
                   <el-tooltip v-if="item.row.isOutSideProcess" content="外部(第三方)业务方表单接入流程引擎" placement="top">
                      <el-tag type="warning" round>OUT</el-tag>
@@ -35,17 +37,17 @@
             </el-table-column>
 
             <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
-            <el-table-column label="状态" align="center" prop="effectiveStatus" :show-overflow-tooltip="true">
+            <el-table-column label="状态" align="center" prop="effectiveStatus">
                <template #default="item">
                   <el-tag>{{ item.row.taskState }}</el-tag>
                </template>
             </el-table-column>
-            <el-table-column label="创建时间" align="center" prop="createTime">
+            <el-table-column label="创建时间" align="center" prop="createTime" width="160">
                <template #default="scope">
                   <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="更新时间" align="center" prop="runTime">
+            <el-table-column label="更新时间" align="center" prop="runTime" width="160">
                <template #default="scope">
                   <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>

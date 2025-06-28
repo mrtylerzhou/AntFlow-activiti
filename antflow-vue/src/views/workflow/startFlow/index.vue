@@ -20,7 +20,7 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-        <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+        <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
     </div>
 </template>
 
@@ -136,7 +136,7 @@ const startTest = async (param) => {
                 if (res.code == 200) {
                     proxy.$modal.msgSuccess("发起流程成功");
                     const obj = { path: "/flowTask/mytask" };
-                    proxy.$tab.openPage(obj);
+                    proxy.$tab.closeOpenPage(obj);
                 } else {
                     proxy.$modal.msgError("发起流程失败" + res.errMsg);
                 }
@@ -161,7 +161,7 @@ function close() {
 }
 
 .component {
-    height: calc(100vh - 178px);
+    height: 70vh;
     padding-top: 15px;
     padding-bottom: 15px;
     overflow: auto;

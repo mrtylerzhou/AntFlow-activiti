@@ -19,4 +19,5 @@ public class BaseNumIdStruVo {
      * name
      */
     private String name;
+    private Boolean active;
 }

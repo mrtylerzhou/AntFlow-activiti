@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="showSettings" :withHeader="false" direction="rtl" size="300px">
+  <el-drawer v-model="showSettings" :withHeader="false" :lock-scroll="false" direction="rtl" size="300px">
     <div class="setting-drawer-title">
       <h3 class="drawer-title">主题风格设置</h3>
     </div>
@@ -50,6 +50,13 @@
     </div>
 
     <div class="drawer-item">
+      <span>显示页签图标</span>
+      <span class="comp-style">
+        <el-switch v-model="settingsStore.tagsIcon" :disabled="!settingsStore.tagsView" class="drawer-switch" />
+      </span>
+    </div>
+
+    <div class="drawer-item">
       <span>固定 Header</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.fixedHeader" class="drawer-switch" />
@@ -66,7 +73,14 @@
     <div class="drawer-item">
       <span>动态标题</span>
       <span class="comp-style">
-        <el-switch v-model="settingsStore.dynamicTitle" class="drawer-switch" />
+        <el-switch v-model="settingsStore.dynamicTitle" @change="dynamicTitleChange" class="drawer-switch" />
+      </span>
+    </div>
+
+    <div class="drawer-item">
+      <span>底部版权</span>
+      <span class="comp-style">
+        <el-switch v-model="settingsStore.footerVisible" class="drawer-switch" />
       </span>
     </div>
 
@@ -78,80 +92,89 @@
 
 </template>
 
-<script setup> 
+<script setup>
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
 import { handleThemeStyle } from '@/utils/theme'
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
-const showSettings = ref(false);
-const theme = ref(settingsStore.theme);
-const sideTheme = ref(settingsStore.sideTheme);
-const storeSettings = computed(() => settingsStore);
-const predefineColors = ref(["#1890ff", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"]);
+const showSettings = ref(false)
+const theme = ref(settingsStore.theme)
+const sideTheme = ref(settingsStore.sideTheme)
+const storeSettings = computed(() => settingsStore)
+const predefineColors = ref(["#409EFF", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"])
 
 /** 是否需要topnav */
 function topNavChange(val) {
   if (!val) {
-    appStore.toggleSideBarHide(false);
-    permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
+    appStore.toggleSideBarHide(false)
+    permissionStore.setSidebarRouters(permissionStore.defaultRoutes)
   }
 }
 
+/** 是否需要dynamicTitle */
+function dynamicTitleChange() {
+  useSettingsStore().setTitle(useSettingsStore().title)
+}
+
 function themeChange(val) {
-  settingsStore.theme = val;
-  handleThemeStyle(val);
+  settingsStore.theme = val
+  handleThemeStyle(val)
 }
 
 function handleTheme(val) {
-  settingsStore.sideTheme = val;
-  sideTheme.value = val;
+  settingsStore.sideTheme = val
+  sideTheme.value = val
 }
 
 function saveSetting() {
-  proxy.$modal.loading("正在保存到本地，请稍候...");
+  proxy.$modal.loading("正在保存到本地，请稍候...")
   let layoutSetting = {
     "topNav": storeSettings.value.topNav,
     "tagsView": storeSettings.value.tagsView,
+    "tagsIcon": storeSettings.value.tagsIcon,
     "fixedHeader": storeSettings.value.fixedHeader,
     "sidebarLogo": storeSettings.value.sidebarLogo,
     "dynamicTitle": storeSettings.value.dynamicTitle,
+    "footerVisible": storeSettings.value.footerVisible,
     "sideTheme": storeSettings.value.sideTheme,
     "theme": storeSettings.value.theme
-  };
-  localStorage.setItem("layout-setting", JSON.stringify(layoutSetting));
+  }
+  localStorage.setItem("layout-setting", JSON.stringify(layoutSetting))
   setTimeout(proxy.$modal.closeLoading(), 1000)
 }
 
 function resetSetting() {
-  proxy.$modal.loading("正在清除设置缓存并刷新，请稍候...");
+  proxy.$modal.loading("正在清除设置缓存并刷新，请稍候...")
   localStorage.removeItem("layout-setting")
   setTimeout("window.location.reload()", 1000)
 }
 
 function openSetting() {
-  showSettings.value = true;
+  showSettings.value = true
 }
 
 defineExpose({
-  openSetting,
+  openSetting
 })
 </script>
 
 <style lang='scss' scoped>
 .setting-drawer-title {
   margin-bottom: 12px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--el-text-color-primary, rgba(0, 0, 0, 0.85));
   line-height: 22px;
   font-weight: bold;
+
   .drawer-title {
     font-size: 14px;
   }
 }
+
 .setting-drawer-block-checbox {
   display: flex;
   justify-content: flex-start;
@@ -170,13 +193,6 @@ defineExpose({
       height: 48px;
     }
 
-    .custom-img {
-      width: 48px;
-      height: 38px;
-      border-radius: 5px;
-      box-shadow: 1px 1px 2px #898484;
-    }
-
     .setting-drawer-block-checbox-selectIcon {
       position: absolute;
       top: 0;
@@ -193,7 +209,7 @@ defineExpose({
 }
 
 .drawer-item {
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--el-text-color-regular, rgba(0, 0, 0, 0.65));
   padding: 12px 0;
   font-size: 14px;
 

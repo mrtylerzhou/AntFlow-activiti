@@ -53,7 +53,8 @@
                                                     @click.self="addConditionRole" style="cursor:text">
                                                     <span v-for="(item1, index1) in originalConfigData.nodeApproveList"
                                                         :key="index1">
-                                                        {{ item1.name }}<img src="@/assets/images/add-close1.png"
+                                                        {{ item1.name }}<img
+                                                            src="@/assets/images/antflow/add-close1.png"
                                                             @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
                                                     </span>
                                                     <input type="text" placeholder="请选择具体人员/角色/部门"
@@ -315,11 +316,11 @@ const removeStrEle = (item, key) => {
 
 /**格式化控件值 */
 const convertConditionNodeValue = (data, isPreview = true) => {
-    if (!data || proxy.isArrayEmpty(data)) return;
+    if (!data || proxy.isEmptyArray(data)) return;
     for (let itemArray of data) {
         let condRelationItem = itemArray.filter(item => item.condRelation)[0]?.condRelation || false;
         for (let item of itemArray) {
-            if (proxy.isObjEmpty(item.fieldTypeName)) {
+            if (proxy.isEmpty(item.fieldTypeName)) {
                 continue;
             }
             item.condRelation = condRelationItem;
@@ -366,7 +367,7 @@ const convertConditionNodeValue = (data, isPreview = true) => {
 } 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .set_condition {
     .priority_level {

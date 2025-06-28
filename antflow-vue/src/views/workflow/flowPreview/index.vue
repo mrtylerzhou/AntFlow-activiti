@@ -4,7 +4,7 @@
       <div class="task-title">
         <span class="task-title-text">流程详情预览</span>
       </div>
-      <div style="background-color: #f5f5f7;min-height: calc(100vh - 200px);">
+      <div style="background-color: #f5f5f7;min-height:75vh;">
         <el-tabs v-model="activeTab" class="demo-tabs">
           <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
           <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
@@ -31,7 +31,7 @@
         </el-row>
       </div>
     </div>
-    <label class="page-close-box" @click="close()"><img src="@/assets/images/back-close.png"></label>
+    <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
   </div>
 </template>
 
@@ -94,8 +94,8 @@ const init = async () => {
   display: flex;
   justify-content: space-between;
   padding-bottom: 6px;
-  margin-bottom: 16px;
   //border-bottom: 2px solid #e8e8e8;
+  background-color: #f5f5f7;
 }
 
 .task-title-text {

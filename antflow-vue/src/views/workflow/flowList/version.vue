@@ -20,10 +20,10 @@
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
-            <el-table-column label="类型标识" align="center" prop="formCode" />
-            <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" />
-            <el-table-column label="版本编号" align="center" prop="bpmnCode" />
-            <el-table-column label="版本名称" align="center" prop="bpmnName" />
+            <el-table-column label="类型标识" align="center" prop="formCode" :show-overflow-tooltip="true" />
+            <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" :show-overflow-tooltip="true" />
+            <el-table-column label="版本编号" align="center" prop="bpmnCode" :show-overflow-tooltip="true" />
+            <el-table-column label="版本名称" align="center" prop="bpmnName" :show-overflow-tooltip="true" />
             <el-table-column label="流程分类" align="center" prop="isLowCodeFlow">
                <template #default="item">
                   <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器" placement="top">
@@ -114,13 +114,13 @@ const handleEdit = (row) => {
    const params = {
       id: row.id
    };
-   let obj = {};
    if (row.isLowCodeFlow == '1') {
-      obj = { path: "/workflow/lf-design", query: params };
+      let obj = { path: "/workflow/lf-design", query: params };
+      proxy.$tab.openPage(obj);
    } else {
-      obj = { path: "/workflow/diy-design", query: params };
+      let obj = { path: "/workflow/div-design", query: params };
+      proxy.$tab.openPage(obj);
    }
-   proxy.$tab.openPage(obj);
 }
 /**
  * 启动流程
@@ -142,13 +142,13 @@ function handlePreview(row) {
    const params = {
       id: row.id
    };
-   const obj = { path: "/workflow/flowPreview", query: params };
+   let obj = { path: "/workflow/flowPreview", query: params };
    proxy.$tab.openPage(obj);
 }
 /**  返回按钮操作 */
 const backPage = () => {
-   const obj = { path: "/workflow/flowList" };
-   proxy.$tab.openPage(obj);
+   const obj = { path: "/workflow/flowlist" };
+   proxy.$tab.closeOpenPage(obj);
 }
 </script>
 <style lang="scss" scoped>

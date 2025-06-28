@@ -40,6 +40,10 @@
             AND a.name LIKE CONCAT('%',#{vo.name},'%' );
 
         </if>
+        <if test="vo.event != null and vo.event != ''">
+            AND a.event=#{vo.event}
+
+        </if>
     </select>
 
 </mapper>

@@ -1,5 +1,8 @@
 package org.openoa.base.util;
 
+import org.openoa.base.vo.BaseNumIdStruVo;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -32,5 +35,11 @@ public class AntCollectionUtil {
     public static <T> Collection<Integer> LongToIntList (Collection<Long> numbers){
 
         return numbers.stream().map(Long::intValue).collect(Collectors.toList());
+    }
+    public static String joinBaseNumIdTransVoToString (Collection<BaseNumIdStruVo> list){
+        if(CollectionUtils.isEmpty(list)){
+            return "";
+        }
+        return list.stream().map(a->a.getId().toString()).collect(Collectors.joining(","));
     }
 }

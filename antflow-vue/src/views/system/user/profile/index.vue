@@ -73,7 +73,7 @@
 </template>
 
 <script setup name="Profile">
-import cache from '@/plugins/cache';
+import Cookies from "js-cookie";
 import userAvatar from "./userAvatar";
 import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
@@ -84,7 +84,7 @@ import { getUserProfile, getSignatureData } from "@/api/workflow/mock";
 import useUserStore from "@/store/modules/user";
 const userStore = useUserStore();
 
-const _userName = decodeURIComponent(cache.session.get('userName'));
+const _userName = decodeURIComponent(Cookies.get('userName'));
 const activeTab = ref("userinfo");
 const state = reactive({
    user: {},

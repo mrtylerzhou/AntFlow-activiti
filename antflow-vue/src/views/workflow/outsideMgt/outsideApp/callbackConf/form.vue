@@ -4,8 +4,8 @@
     <el-form :model="form" :rules="rules" ref="callbackConfRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="租户名称" prop="businessPartyName">
-            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入租户名称" />
+          <el-form-item label="项目名称" prop="businessPartyName">
+            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入项目名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -101,7 +101,7 @@ watch(() => props.bizformData, (val) => {
   form.value = val;
   form.value.apiClientId = "033AFA1C6C3545AD";
   form.value.apiClientSecret = "EF28AC4A539E4A6F8CFC17ECC2C863CC";
-  form.value.bpmFlowCallbackUrl = "http://antflow.top:7001/user/getUser";
+  form.value.bpmFlowCallbackUrl = "http://14.103.207.27:7001/user/getUser";
 }, { deep: true });
 
 /** 提交表单 */
