@@ -6,7 +6,7 @@
 -->
 <template>
     <el-row :gutter="20">
-        <el-col :xs="24" :md="6">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card1" @click="handleTodo()">
                 <el-icon>
                     <bell />
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :xs="24" :md="6">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card2" @click="handleTodayDone()">
                 <el-icon>
                     <EditPen />
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :xs="24" :md="6">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card3" @click="handleTodayCreate()">
                 <el-icon>
                     <TakeawayBox />
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :xs="24" :md="6">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card4" @click="handleTodayDraft()">
                 <el-icon>
                     <document />
