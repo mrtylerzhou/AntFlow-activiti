@@ -1,11 +1,11 @@
 <template>
   <el-dialog v-model="visibleDialog" style="width: 680px !important;" :show-close="false" append-to-body>
     <template #header>
-      {{title}}
+      {{ title }}
       <div style="float: right;">
         <el-button @click="$emit('update:visible', false)">关 闭</el-button>
         <el-button type="primary" @click="handleCopy">复 制</el-button>
-      </div> 
+      </div>
     </template>
     <div style="min-height: 250px !important;">
       <el-text id="jsonTextId" class="mx-1" type="primary"> {{ modelValue }}</el-text>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance } from 'vue';  
+import { computed, getCurrentInstance } from 'vue';
 const { proxy } = getCurrentInstance()
 let props = defineProps({
   visible: {
@@ -28,7 +28,7 @@ let props = defineProps({
   },
   modelValue: {
     type: Object,
-    default: () => {}
+    default: () => { }
   }
 });
 let emits = defineEmits(['update:visible'])
@@ -46,25 +46,25 @@ let visibleDialog = computed({
  */
 const closeDialog = () => {
   emits('update:visible', false)
-} 
+}
 const handleCopy = () => {
   const jsonELE = document.getElementById('jsonTextId');
   if (!jsonELE) return;
-  const jsonText = jsonELE.innerText;  
+  const jsonText = jsonELE.innerText;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(jsonText).then(() => { 
-      proxy.$modal.msgSuccess("复制成功"); 
-    }, () => { 
-      proxy.$modal.msgSuccess("复制失败"); 
+    navigator.clipboard.writeText(jsonText).then(() => {
+      proxy.$modal.msgSuccess("复制成功");
+    }, () => {
+      proxy.$modal.msgSuccess("复制失败");
     });
   }
-  else{
-    jsonELE.focus(); 
+  else {
+    jsonELE.focus();
     document.execCommand('copy');
-    proxy.$modal.msgSuccess("复制成功"); 
-  } 
+    proxy.$modal.msgSuccess("复制成功");
+  }
 }  
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 </style>

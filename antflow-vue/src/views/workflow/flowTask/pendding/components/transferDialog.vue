@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, getCurrentInstance } from 'vue';
+import { computed, onMounted, watch, ref, getCurrentInstance } from 'vue';
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
 import { getUsers } from "@/api/workflow/mock.js";
 const { proxy } = getCurrentInstance()
@@ -51,20 +51,22 @@ let list = ref([])
 let emits = defineEmits(['update:visible', 'change'])
 let visibleDialog = computed({
   get() {
-    reset();
     return props.visible
   },
   set() {
     closeDialog()
   }
 });
-
+watch(() => props.visible, (val) => {
+  if (val) {
+    reset();
+  }
+});
 let rules = {
   selectList: [{ required: true, message: '', trigger: ['change', 'blur'] }],
   remark: [{ required: true, message: '请输入备注', trigger: ['change', 'blur'] }]
 };
 onMounted(async () => {
-  reset();
   await getUserList();
 });
 
@@ -117,5 +119,5 @@ function reset() {
 };
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 </style>

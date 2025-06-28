@@ -1,6 +1,6 @@
 <template>
   <!-- 选择用户 -->
-  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px;height: 550px;" :before-close="handleClose"
+  <el-dialog title="选择用户" v-model="visibleDialog" style="width: 800px;height: 550px" :before-close="handleClose"
     append-to-body>
     <el-form :model="qform" ref="queryRef" :inline="true">
       <el-form-item label="用户名称" prop="description">
@@ -97,14 +97,14 @@ const queryParams = reactive({
 });
 const { pageDto, qform } = toRefs(queryParams);
 const canCommit = computed(() => {
-  return props.multiple ? !proxy.isArrayEmpty(multiSelectUser.value) && multiSelectUser.value.length <= props.multiplelimit : !proxy.isObjEmpty(selectUserId.value);
+  return props.multiple ? !proxy.isEmptyArray(multiSelectUser.value) && multiSelectUser.value.length <= props.multiplelimit : !proxy.isEmpty(selectUserId.value);
 });
 const canSelectable = (row) => {
   return !props.checkedData?.some((item) => item.id === row.userId);
 }
 onMounted(() => {
   multiSelectUser.value = props.checkedData;
-  if (!proxy.isArrayEmpty(props.checkedData) && !props.multiple) {
+  if (!proxy.isEmptyArray(props.checkedData) && !props.multiple) {
     selectUserId.value = props.checkedData[0].id;
   } else {
     selectUserId.value = null;
@@ -139,7 +139,7 @@ async function handleQuery() {
 /** 点击单框选中数据 */
 function clickedRadio(id) {
   let selectInfo = userList.value.find((item) => item.userId === id);
-  if (!proxy.isObjEmpty(selectInfo)) {
+  if (!proxy.isEmpty(selectInfo)) {
     multiSelectUser.value = [{
       id: selectInfo.userId,
       name: selectInfo.userName,
@@ -154,7 +154,7 @@ function handleSelectionChange(selection) {
     name: item.userName,
   }));
   multiSelectUser.value = selectArr;
-  if (!proxy.isArrayEmpty(props.checkedData)) {
+  if (!proxy.isEmptyArray(props.checkedData)) {
     for (let psd of props.checkedData) {
       if (!multiSelectUser.value.some(c => c.id == psd.id)) {
         multiSelectUser.value.push(psd);

@@ -1,18 +1,5 @@
 //import { NodeUtils } from '@/utils/antflow/nodeUtils'
-export const isEmpty = (data) =>
-  data === null ||
-  data === undefined ||
-  data == "" ||
-  data == {} ||
-  data == "{}" ||
-  data == "[]" ||
-  data == "null";
-export const isEmptyArray = (data) =>
-  Array.isArray(data)
-    ? data.length === 0
-    : data === null || data === undefined || data == ""
-    ? true
-    : false;
+import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id

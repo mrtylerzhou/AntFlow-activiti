@@ -4,8 +4,8 @@
     <el-form :model="form" :rules="rules" ref="approveTemplateRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="租户名称" prop="businessPartyName">
-            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入租户名称" />
+          <el-form-item label="项目名称" prop="businessPartyName">
+            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入项目名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -126,10 +126,10 @@ watch(() => props.bizformData, (val) => {
 function selectTypeChanged() {
   if (form.value.approveTypeId == 1) {
     form.value.approveTypeName = "指定人员";
-    form.value.apiUrl = "http://antflow.top:7001/user/getUser";
+    form.value.apiUrl = "http://14.103.207.27:7001/user/getUser";
   } else {
     form.value.approveTypeName = "指定角色";
-    form.value.apiUrl = "http://antflow.top:7001/user/getRoleInfo";
+    form.value.apiUrl = "http://14.103.207.27:7001/user/getRoleInfo";
   }
 }
 

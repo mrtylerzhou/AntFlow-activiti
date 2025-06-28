@@ -120,7 +120,7 @@ function handleDelete(row) {
 /**  返回按钮操作 */
 const backPage = () => {
     const obj = { path: "outsideApp" };
-    proxy.$tab.openPage(obj);
+    proxy.$tab.closeOpenPage(obj);
 }
 function handleClickTab(tab, event) {
     activeName.value = tab.paneName;

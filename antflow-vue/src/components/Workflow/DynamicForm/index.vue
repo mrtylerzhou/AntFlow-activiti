@@ -9,7 +9,7 @@
 
 <script setup>
 import { ref, onUnmounted, onMounted, computed, watch } from 'vue'
-import { ObjectUtils } from '@/utils/ObjectUtils'
+import { isObjectChanged } from '@/utils/antflow/ObjectUtils'
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
 let props = defineProps({
@@ -24,7 +24,7 @@ let formField = {};
 //let formImportObj = "{\"widgetList\":[{\"key\":95565,\"type\":\"input\",\"icon\":\"text-field\",\"formItemFlag\":true,\"options\":{\"name\":\"input57337\",\"label\":\"部门\",\"labelAlign\":\"\",\"type\":\"text\",\"defaultValue\":\"\",\"placeholder\":\"\",\"columnWidth\":\"200px\",\"size\":\"\",\"labelWidth\":null,\"labelHidden\":false,\"readonly\":false,\"disabled\":false,\"hidden\":false,\"clearable\":true,\"showPassword\":false,\"required\":false,\"requiredHint\":\"\",\"validation\":\"\",\"validationHint\":\"\",\"customClass\":[],\"labelIconClass\":null,\"labelIconPosition\":\"rear\",\"labelTooltip\":null,\"minLength\":null,\"maxLength\":null,\"showWordLimit\":false,\"prefixIcon\":\"\",\"suffixIcon\":\"\",\"appendButton\":false,\"appendButtonDisabled\":false,\"buttonIcon\":\"custom-search\",\"onCreated\":\"\",\"onMounted\":\"\",\"onInput\":\"\",\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\",\"onValidate\":\"\",\"onAppendButtonClick\":\"\",\"fieldTypeName\":\"input\",\"fieldType\":\"1\"},\"id\":\"input57337\"}],\"formConfig\":{\"modelName\":\"formData\",\"refName\":\"vForm\",\"rulesName\":\"rules\",\"labelWidth\":80,\"labelPosition\":\"left\",\"size\":\"\",\"labelAlign\":\"label-left-align\",\"cssCode\":\"\",\"customClass\":[],\"functions\":\"\",\"layoutType\":\"PC\",\"jsonVersion\":3,\"onFormCreated\":\"\",\"onFormMounted\":\"\",\"onFormDataChange\":\"\"}}";
 const observer = new MutationObserver(() => {
   const returnFiled = formDesign.value.getFormFieldJson();
-  if (ObjectUtils.isObjectChanged(formField, returnFiled)) {
+  if (isObjectChanged(formField, returnFiled)) {
     formField = returnFiled;
     store.setLowCodeFormField(formField);
   }

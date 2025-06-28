@@ -22,14 +22,13 @@ import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import { getCurrentVersion } from "@/api/workflow/mock"
 
-
 const settingsStore = useSettingsStore()
-const theme = computed(() => settingsStore.theme);
-const sideTheme = computed(() => settingsStore.sideTheme);
-const sidebar = computed(() => useAppStore().sidebar);
-const device = computed(() => useAppStore().device);
-const needTagsView = computed(() => settingsStore.tagsView);
-const fixedHeader = computed(() => settingsStore.fixedHeader);
+const theme = computed(() => settingsStore.theme)
+const sideTheme = computed(() => settingsStore.sideTheme)
+const sidebar = computed(() => useAppStore().sidebar)
+const device = computed(() => useAppStore().device)
+const needTagsView = computed(() => settingsStore.tagsView)
+const fixedHeader = computed(() => settingsStore.fixedHeader)
 
 const classObj = computed(() => ({
   hideSidebar: !sidebar.value.opened,
@@ -38,8 +37,8 @@ const classObj = computed(() => ({
   mobile: device.value === 'mobile'
 }))
 
-const { width, height } = useWindowSize();
-const WIDTH = 992; // refer to Bootstrap's responsive design
+const { width, height } = useWindowSize()
+const WIDTH = 992 // refer to Bootstrap's responsive design
 
 watch(() => device.value, () => {
   if (device.value === 'mobile' && sidebar.value.opened) {
@@ -60,9 +59,9 @@ function handleClickOutside() {
   useAppStore().closeSideBar({ withoutAnimation: false })
 }
 
-const settingRef = ref(null);
+const settingRef = ref(null)
 function setLayout() {
-  settingRef.value.openSetting();
+  settingRef.value.openSetting()
 }
 
 const timerCheckVersion = setInterval(() => {
@@ -95,11 +94,11 @@ function reloadNotifier(version) {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/mixin.scss";
-@import "@/assets/styles/variables.module.scss";
+@use "@/assets/styles/mixin.scss" as mix;
+@use "@/assets/styles/variables.module.scss" as vars;
 
 .app-wrapper {
-  @include clearfix;
+  @include mix.clearfix;
   position: relative;
   height: 100%;
   width: 100%;
@@ -125,12 +124,12 @@ function reloadNotifier(version) {
   top: 0;
   right: 0;
   z-index: 9;
-  width: calc(100vh - #{$base-sidebar-width});
+  width: calc(100% - #{vars.$base-sidebar-width});
   transition: width 0.28s;
 }
 
 .hideSidebar .fixed-header {
-  width: calc(100vh - 54px);
+  width: calc(100% - 54px);
 }
 
 .sidebarHide .fixed-header {

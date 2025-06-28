@@ -1,7 +1,6 @@
 // import { FormatDisplayUtils } from '@/utils/antflowformatdisplay_data.js'
 import { hrbpOptions } from "@/utils/antflow/const";
-import { isEmpty, isEmptyArray } from "@/utils/antflow/nodeUtils";
-
+import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
 export class FormatDisplayUtils {
   /**
    * 格式化显示数据

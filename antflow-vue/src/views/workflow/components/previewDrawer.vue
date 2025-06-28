@@ -5,10 +5,10 @@
       <el-divider />
       <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
         <el-tab-pane label="表单信息" name="baseTab">
-          <div v-if="baseTabShow"  aria-hidden="true"> 
-            <previewComponent :isPreview="true" />  
+          <div v-if="baseTabShow" aria-hidden="true">
+            <previewComponent :isPreview="true" />
             <!-- <i class="pin-top-right-corner pin-pass"></i> -->
-          </div> 
+          </div>
         </el-tab-pane>
         <el-tab-pane label="审批记录" name="flowStep">
           <div v-if="flowStepShow">
@@ -21,7 +21,7 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-      <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/back-close.png"></label>
+      <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/antflow/back-close.png"></label>
     </el-drawer>
   </div>
 
@@ -29,14 +29,14 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useStore } from '@/store/modules/workflow' 
+import { useStore } from '@/store/modules/workflow'
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
-import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue" 
+import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
 let store = useStore()
 let { setPreviewDrawer } = store
-let previewDrawer = computed(() => store.previewDrawer) 
-const activeName = ref('baseTab') 
+let previewDrawer = computed(() => store.previewDrawer)
+const activeName = ref('baseTab')
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
 let flowReviewShow = ref(false);
@@ -50,11 +50,11 @@ let visible = computed({
 })
 const handleTabClick = (tab, event) => {
   activeName.value = tab.paneName;
-  if (tab.paneName == 'baseTab') {  
-    baseTabShow.value = true; 
-  } else if (tab.paneName == 'flowStep') { 
-    flowStepShow.value = true; 
-  } else if (tab.paneName == 'flowReview') { 
+  if (tab.paneName == 'baseTab') {
+    baseTabShow.value = true;
+  } else if (tab.paneName == 'flowStep') {
+    flowStepShow.value = true;
+  } else if (tab.paneName == 'flowReview') {
     flowReviewShow.value = true;
   }
 }
@@ -63,7 +63,6 @@ const handleTabClick = (tab, event) => {
  */
 const closeDrawer = () => {
   setPreviewDrawer(false)
-} 
+}
 handleTabClick({ paneName: "baseTab" }) 
 </script>
- 

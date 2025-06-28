@@ -31,7 +31,7 @@ import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
-import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/zoom.js";
+import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
 import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let { setIsTried } = useStore()
@@ -81,9 +81,9 @@ const validateIsExistApproveNode = (treeNode) => {
  * @param treeNode 
  */
 const validateParallelApproveNode = (treeNode) => {
-    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
+    if (proxy.isEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 7) {
-        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
+        if (proxy.isEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "并行审批下必须有一个审批人节点作为聚合节点" };
         } else {
             return validateParallelApproveNode(treeNode.childNode);
@@ -100,9 +100,9 @@ const validateParallelApproveNode = (treeNode) => {
  * @param treeNode 
  */
 const validateParallelConditionNode = (treeNode) => {
-    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
+    if (proxy.isEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 2 && treeNode.isParallel == true) {
-        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
+        if (proxy.isEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "条件并行节点下必须有一个审批人节点作为聚合节点" };
         } else {
             return validateParallelConditionNode(treeNode.childNode);
@@ -211,5 +211,5 @@ defineExpose({
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/antflow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 </style>

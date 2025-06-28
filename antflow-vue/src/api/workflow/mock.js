@@ -8,6 +8,7 @@
 import http from "@/utils/axios";
 let baseUrl = import.meta.env.BASE_URL;
 let baseApiUrl = import.meta.env.VITE_APP_BASE_API;
+let workflowUrl = import.meta.env.VITE_APP_BASE_API;
 /**
  * 获取版本信息
  */
@@ -62,7 +63,7 @@ export function listPost(query) {
  * @param {*} data
  * @returns
  */
-export function getRoles_bk(data) {
+export function getRoles(data) {
   return http.get(`${baseUrl}mock/roles.json`, { params: data });
 }
 
@@ -119,7 +120,7 @@ export function getUsers(data) {
     Userid: "1",
     Username: "%E5%BC%A0%E4%B8%89",
   };
-  return http.get(`${baseApiUrl}/user/getUser`, { headers });
+  return http.get(`${workflowUrl}/user/getUser`, { headers });
 }
 /**
  * 获取用户分页信息
@@ -135,7 +136,7 @@ export function getUserPageList(pageDto, qVO) {
     pageDto: pageDto,
     taskMgmtVO: qVO,
   };
-  return http.post(`${baseApiUrl}/user/getUserPageList`, data, { headers });
+  return http.post(`${workflowUrl}/user/getUserPageList`, data, { headers });
 }
 /**
  * 三方接入 获取数据根据url
@@ -147,16 +148,4 @@ export function getDynamicsList(url) {
     Username: "%E5%BC%A0%E4%B8%89",
   };
   return http.get(url, { headers });
-}
-
-/**
- * 获取角色
- * @returns
- */
-export function getRoles() {
-  let headers = {
-    Userid: "1",
-    Username: "%E5%BC%A0%E4%B8%89",
-  };
-  return http.get(`${baseApiUrl}/user/getRoleInfo`, { headers });
 }

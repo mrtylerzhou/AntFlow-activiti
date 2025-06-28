@@ -6,33 +6,33 @@
 -->
 <template>
   <div class="select-result l">
-    <p class="clear">已选（{{total}}）
-        <a @click="emits('del')">清空</a>
+    <p class="clear">已选（{{ total }}）
+      <a @click="emits('del')">清空</a>
     </p>
     <ul>
-        <template v-for="({type, data, cancel}) in list" :key="type">
-          <template v-if="type === 'role'">
-            <li v-for="item in data" :key="item.roleId">
-                <img src="@/assets/images/icon_role.png">
-                <span>{{item.roleName}}</span>
-                <img src="@/assets/images/cancel.png" @click="cancel(item)">
-            </li>
-          </template>
-          <template v-if="type === 'department'">
-            <li v-for="item in data" :key="item.id">
-                <img src="@/assets/images/icon_file.png">
-                <span>{{item.departmentName}}</span>
-                <img src="@/assets/images/cancel.png" @click="cancel(item)">
-            </li>
-          </template>
-          <template v-if="type === 'employee'">
-            <li v-for="item in data" :key="item.id">
-                <img src="@/assets/images/icon_people.png">
-                <span>{{item.employeeName}}</span>
-                <img src="@/assets/images/cancel.png" @click="cancel(item)">
-            </li>
-          </template>
+      <template v-for="({ type, data, cancel }) in list" :key="type">
+        <template v-if="type === 'role'">
+          <li v-for="item in data" :key="item.roleId">
+            <img src="@/assets/images/antflow/icon_role.png">
+            <span>{{ item.roleName }}</span>
+            <img src="@/assets/images/antflow/cancel.png" @click="cancel(item)">
+          </li>
         </template>
+        <template v-if="type === 'department'">
+          <li v-for="item in data" :key="item.id">
+            <img src="@/assets/images/antflow/icon_file.png">
+            <span>{{ item.departmentName }}</span>
+            <img src="@/assets/images/antflow/cancel.png" @click="cancel(item)">
+          </li>
+        </template>
+        <template v-if="type === 'employee'">
+          <li v-for="item in data" :key="item.id">
+            <img src="@/assets/images/antflow/icon_people.png">
+            <span>{{ item.employeeName }}</span>
+            <img src="@/assets/images/antflow/cancel.png" @click="cancel(item)">
+          </li>
+        </template>
+      </template>
     </ul>
   </div>
 </template>
@@ -50,19 +50,23 @@ defineProps({
 let emits = defineEmits(['del'])
 </script>
 
-<style scoped lang="scss">  
-@import "@/assets/styles/antflow/dialog.scss";
+<style scoped lang="scss">
+@use "@/assets/styles/antflow/dialog.scss";
+
 .select-result {
   width: 320px;
   height: 100%;
-  font-size: 12px; 
+  font-size: 12px;
   margin-left: 0px;
+
   ul {
     height: 460px;
-    overflow-y: auto; 
+    overflow-y: auto;
+
     li {
       margin: 11px 26px 13px 19px;
-      line-height: 17px; 
+      line-height: 17px;
+
       span {
         vertical-align: middle;
       }

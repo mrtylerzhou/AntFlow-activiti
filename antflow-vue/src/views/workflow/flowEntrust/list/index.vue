@@ -40,7 +40,6 @@
         </div>
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
-
     </div>
 </template>
 

@@ -8,22 +8,18 @@
   <ul class="select-box">
     <template v-for="(elem, i) in list" :key="i">
       <template v-if="elem.type === 'role'">
-        <li v-for="item in elem.data" :key="item.roleId" 
-          class="check_box"
-          :class="{active: elem.isActive && elem.isActive(item), not: elem.not}" 
-          @click="elem.change(item)">
-          <a :title="item.description" :class="{active: elem.isActiveItem && elem.isActiveItem(item)}">
-            <img src="@/assets/images/icon_role.png">{{item.roleName}}
+        <li v-for="item in elem.data" :key="item.roleId" class="check_box"
+          :class="{ active: elem.isActive && elem.isActive(item), not: elem.not }" @click="elem.change(item)">
+          <a :title="item.description" :class="{ active: elem.isActiveItem && elem.isActiveItem(item) }">
+            <img src="@/assets/images/antflow/icon_role.png">{{ item.roleName }}
           </a>
         </li>
-      </template> 
+      </template>
       <template v-if="elem.type === 'employee'">
         <li v-for="item in elem.data" :key="item.id" class="check_box">
-            <a :class="elem.isActive(item) && 'active'" 
-              @click="elem.change(item)" 
-              :title="item.departmentNames">
-              <img src="@/assets/images/icon_people.png">{{item.employeeName}}
-            </a>
+          <a :class="elem.isActive(item) && 'active'" @click="elem.change(item)" :title="item.departmentNames">
+            <img src="@/assets/images/antflow/icon_people.png">{{ item.employeeName }}
+          </a>
         </li>
       </template>
     </template>
@@ -37,15 +33,18 @@ const props = defineProps({
   }
 }) 
 </script>
-<style scoped lang="scss">  
-@import "@/assets/styles/antflow/dialog.scss"; 
+<style scoped lang="scss">
+@use "@/assets/styles/antflow/dialog.scss";
+
 .select-box {
   height: 440px;
-  overflow-y: auto; 
+  overflow-y: auto;
   margin-left: -30px;
+
   li {
     padding: 5px 0;
     list-style-type: none;
+
     i {
       float: right;
       padding-left: 24px;
@@ -53,13 +52,13 @@ const props = defineProps({
       color: #3195f8;
       font-size: 12px;
       cursor: pointer;
-      background: url(../../assets/images/next_level_active.png) no-repeat 10px center;
+      background: url(../../assets/images/antflow/next_level_active.png) no-repeat 10px center;
       border-left: 1px solid rgb(238, 238, 238);
     }
 
     a.active+i {
       color: rgb(197, 197, 197);
-      background-image: url(../../assets/images/next_level.png);
+      background-image: url(../../assets/images/antflow/next_level.png);
       pointer-events: none;
     }
 
