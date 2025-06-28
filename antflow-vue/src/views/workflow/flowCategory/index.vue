@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <el-tabs v-model="activeName" @tab-click="handleClickTab">
-            <el-tab-pane label="流程分类(LF)" name="LFTab" style="height: 80vh;">
+            <el-tab-pane label="流程分类(LF)" name="LFTab">
                 <div class="query-box">
                     <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
                         <el-form-item label="关键字" prop="description">
@@ -21,7 +21,7 @@
                     </el-form>
                 </div>
                 <div class="table-box">
-                    <el-table v-loading="loading" :data="LFPageList" height="60vh">
+                    <el-table v-loading="loading" :data="LFPageList" height="50vh">
                         <el-table-column label="类型标识" align="center" prop="key" v-if="columns[0].visible"
                             :show-overflow-tooltip="true">
                             <template #default="item">
@@ -68,7 +68,7 @@
                 <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
                     v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
             </el-tab-pane>
-            <el-tab-pane label="流程分类(DIY)" name="DIYTab" style="height: 80vh;">
+            <el-tab-pane label="流程分类(DIY)" name="DIYTab">
                 <div class="query-box">
                     <el-row :gutter="10" class="mb8">
                         <el-col :span="1.5">
@@ -79,7 +79,7 @@
                     </el-row>
                 </div>
                 <div class="table-box">
-                    <el-table v-loading="loading" :data="DIYList">
+                    <el-table v-loading="loading" :data="DIYList" height="50vh">
                         <el-table-column label="类型标识" align="center" prop="key" v-if="columns[0].visible"
                             :show-overflow-tooltip="true" />
                         <el-table-column label="类型名称" align="center" prop="value" v-if="columns[1].visible"

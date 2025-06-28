@@ -86,6 +86,7 @@ h6 {
 }
 
 .el-table {
+  height: 60vh; /* 你可以根据需要调整高度 */
   .el-table__header-wrapper,
   .el-table__fixed-header-wrapper {
     th {
@@ -95,10 +96,18 @@ h6 {
       height: 40px !important;
       font-size: 13px;
     }
+    tr {
+      height: 50px; /* 你可以根据需要调整行高 */ 
+    } 
   }
   .el-table__body-wrapper {
     .el-button [class*="el-icon-"] + span {
       margin-left: 1px;
+    }
+    tbody{ /* 你可以根据需要调整高度 */
+      tr{
+        height: 49px;
+      }
     }
   }
 }

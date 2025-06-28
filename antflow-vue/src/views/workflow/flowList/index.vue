@@ -19,10 +19,10 @@
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
             <el-table-column label="类型标识" align="center" prop="formCode" :show-overflow-tooltip="true" width="150" />
-            <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" />
-            <el-table-column label="版本编号" align="center" prop="bpmnCode" />
-            <el-table-column label="版本名称" align="center" prop="bpmnName" />
-            <el-table-column label="流程分类" align="center" prop="isLowCodeFlow">
+            <el-table-column label="类型名称" align="center" prop="formCodeDisplayName" :show-overflow-tooltip="true" />
+            <el-table-column label="版本编号" align="center" prop="bpmnCode" :show-overflow-tooltip="true" />
+            <el-table-column label="版本名称" align="center" prop="bpmnName" :show-overflow-tooltip="true" />
+            <el-table-column label="流程分类" align="center" prop="isLowCodeFlow" :show-overflow-tooltip="true">
                <template #default="item">
                   <el-tooltip v-if="item.row.isLowCodeFlow != 1" content="自定义表单+流程设计器" placement="top">
                      <el-tag type="warning" round>DIY</el-tag>
@@ -44,7 +44,7 @@
                </template>
             </el-table-column>
             <el-table-column label="描述说明" align="center" prop="remark" width="160" :show-overflow-tooltip="true" />
-            <el-table-column label="创建时间" align="center" prop="updateTime" width="160">
+            <el-table-column label="创建时间" align="center" prop="updateTime" width="160" :show-overflow-tooltip="true">
                <template #default="scope">
                   <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>

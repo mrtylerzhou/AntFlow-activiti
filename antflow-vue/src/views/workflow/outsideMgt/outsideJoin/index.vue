@@ -33,16 +33,22 @@
           :show-overflow-tooltip="true" />
         <el-table-column label="备注" align="center" prop="remark" v-if="columns[3].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible">
+        <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[4].visible" width="160">
           <template #default="scope">
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="260" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="150" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)">新增APP</el-button>
-            <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+            <el-tooltip content="新增APP" placement="top">
+              <el-button link type="primary" icon="Plus" @click="handleAddApp(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="编辑" placement="top">
+              <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="删除" placement="top">
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>

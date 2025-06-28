@@ -17,8 +17,8 @@
       <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
         <el-table-column type="selection" align="center" width="35" />
         <el-table-column label="项目标识" align="center" prop="businessCode" width="150" />
-        <el-table-column label="项目名称" align="center" prop="businessName" />
-        <el-table-column align="center" prop="processKey" width="280">
+        <el-table-column label="项目名称" align="center" prop="businessName" width="150" />
+        <el-table-column align="center" prop="processKey" width="250">
           <template #header>
             <span>
               应用标识
@@ -30,16 +30,22 @@
         </el-table-column>
         <el-table-column label="应用名称" align="center" prop="name" />
         <el-table-column label="业务类型" align="center" prop="applyTypeName" width="120" />
-        <el-table-column label="创建时间" align="center" prop="createTime" width="150">
+        <el-table-column label="创建时间" align="center" prop="createTime" width="160">
           <template #default="scope">
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="260" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" width="150" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button link type="primary" icon="Setting" @click="settingPage(scope.row)">设置</el-button>
-            <el-button link type="primary" icon="Promotion" @click="handleFlowDesign(scope.row)">设计流程</el-button>
+            <el-tooltip content="编辑" placement="top">
+              <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="设置" placement="top">
+              <el-button link type="primary" icon="Setting" @click="settingPage(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip content="设计流程" placement="top">
+              <el-button link type="primary" icon="Promotion" @click="handleFlowDesign(scope.row)"></el-button>
+            </el-tooltip>
             <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button> -->
           </template>
         </el-table-column>

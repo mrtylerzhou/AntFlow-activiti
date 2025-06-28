@@ -24,10 +24,10 @@
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">
-            <el-table-column label="应用标识" align="center" prop="formCode" />
-            <el-table-column label="应用名称" align="center" prop="formCodeDisplayName" />
-            <el-table-column label="流程编号" align="center" prop="bpmnCode" />
-            <el-table-column label="流程名称" align="center" prop="bpmnName" />
+            <el-table-column label="应用标识" align="center" prop="formCode" width="180" />
+            <el-table-column label="应用名称" align="center" prop="formCodeDisplayName" width="180" />
+            <el-table-column label="流程编号" align="center" prop="bpmnCode" :show-overflow-tooltip="true" />
+            <el-table-column label="流程名称" align="center" prop="bpmnName" :show-overflow-tooltip="true" />
             <el-table-column label="是否去重" align="center" prop="deduplicationType">
                <template #default="item">
                   {{ item.row.deduplicationType == 1 ? '否' : '是' }}
@@ -40,21 +40,26 @@
                </template>
             </el-table-column>
 
-            <el-table-column label="修改时间" align="center" prop="updateTime" width="180">
+            <el-table-column label="修改时间" align="center" prop="updateTime" width="160">
                <template #default="scope">
                   <span>{{ parseTime(scope.row.updateTime) }}</span>
                </template>
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="180" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
-                  <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
-                  <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
-                  <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
-                  <el-button link type="primary" @click="handleEdit(scope.row)">复制</el-button>
+                  <el-tooltip content="启动" placement="top">
+                     <el-button v-if="scope.row.effectiveStatus == 1" type="info" disabled link>启动</el-button>
+                     <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
+                  </el-tooltip>
+                  <el-tooltip content="预览" placement="top">
+                     <el-button link type="primary" @click="handlePreview(scope.row)">预览</el-button>
+                  </el-tooltip>
+                  <el-tooltip content="复制" placement="top">
+                     <el-button link type="primary" @click="handleEdit(scope.row)">复制</el-button>
+                  </el-tooltip>
                </template>
             </el-table-column>
          </el-table>
-
          <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
       </div>

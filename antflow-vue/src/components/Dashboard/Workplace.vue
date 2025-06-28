@@ -8,7 +8,7 @@
                     </div>
                 </template>
                 <el-row :gutter="5">
-                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
+                    <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
                             <div slot="title">
                                 <div class="card-icon">
@@ -46,7 +46,7 @@
                     </div>
                 </template>
                 <el-row :gutter="5">
-                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
+                    <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
                             <div slot="title">
                                 <div class="card-icon">
@@ -86,7 +86,7 @@
                     </div>
                 </template>
                 <el-row :gutter="5">
-                    <el-col :lg="6" :md="8" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
+                    <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
                         <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
                             <div slot="title">
                                 <div class="card-icon">
