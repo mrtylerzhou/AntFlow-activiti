@@ -7,16 +7,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseKeyValueStruVo;
+import org.openoa.base.vo.BaseNumIdStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.entity.DictData;
 import org.openoa.mapper.DicDataMapper;
@@ -41,6 +45,8 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     private DicDataMapper dicDataMapper;
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
+    @Autowired
+    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return
@@ -145,12 +151,22 @@ public class DictServiceImpl implements LowCodeFlowBizService {
             LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
                     .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
                     .in(BpmnConf::getFormCode, formCodes)
-                    .eq(BpmnConf::getEffectiveStatus, 1)
-                    .isNotNull(BpmnConf::getExtraFlags);
+                    .eq(BpmnConf::getEffectiveStatus, 1);
             List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
             if(!CollectionUtils.isEmpty(bpmnConfs)){
-                Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+                Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
+                Map<String, Integer> formCode2Flags = bpmnConfs
+                        .stream()
+                        .filter(a->a.getExtraFlags()!=null)
+                        .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
                 for (BaseKeyValueStruVo lfDto : results) {
+                    List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(lfDto.getKey());
+                    if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                        List<BaseNumIdStruVo> numIdStruVos = bpmProcessNotices.stream()
+                                .map(a -> BaseNumIdStruVo.builder().id(a.getId().longValue()).name(ProcessNoticeEnum.getDescByCode(a.getId())).active(true).build())
+                                .collect(Collectors.toList());
+                        lfDto.setProcessNotices(numIdStruVos);
+                    }
                     Integer flags = formCode2Flags.get(lfDto.getKey());
                     if(flags!=null){
                         boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
