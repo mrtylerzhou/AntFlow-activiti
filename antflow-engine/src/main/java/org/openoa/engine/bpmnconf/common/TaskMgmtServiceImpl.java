@@ -3,25 +3,27 @@ package org.openoa.engine.bpmnconf.common;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.BaseKeyValueStruVo;
+import org.openoa.base.vo.BaseNumIdStruVo;
 import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,8 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     private Map<String, FormOperationAdaptor> formOperationAdaptorMap;
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
+    @Autowired
+    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
 
 
     /**
@@ -156,12 +160,22 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
                 .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
                 .in(BpmnConf::getFormCode, formCodes)
-                .eq(BpmnConf::getEffectiveStatus, 1)
-                .isNotNull(BpmnConf::getExtraFlags);
+                .eq(BpmnConf::getEffectiveStatus, 1);
         List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
         if(!CollectionUtils.isEmpty(bpmnConfs)){
-            Map<String, Integer> formCode2Flags = bpmnConfs.stream().collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+            Map<String, Integer> formCode2Flags = bpmnConfs
+                    .stream()
+                    .filter(a->a.getExtraFlags()!=null)
+                    .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+            Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
             for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
+                List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
+                if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                    List<BaseNumIdStruVo> numIdStruVos = bpmProcessNotices.stream()
+                            .map(a -> BaseNumIdStruVo.builder().id(a.getId().longValue()).name(ProcessNoticeEnum.getDescByCode(a.getId())).active(true).build())
+                            .collect(Collectors.toList());
+                    diyProcessInfoDTO.setProcessNotices(numIdStruVos);
+                }
                 Integer flags = formCode2Flags.get(diyProcessInfoDTO.getKey());
                 if(flags!=null){
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);

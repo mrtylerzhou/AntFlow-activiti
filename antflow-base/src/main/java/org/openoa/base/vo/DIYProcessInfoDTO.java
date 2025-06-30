@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.activiti.validation.ProcessValidator;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,4 +23,5 @@ public class DIYProcessInfoDTO {
      * 是否包含发起人自选模块,否为不包含,true为包含
      */
     private Boolean hasStarUserChooseModule=false;
+    private List<BaseNumIdStruVo> processNotices;
 }
