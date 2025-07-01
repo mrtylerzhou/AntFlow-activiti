@@ -105,7 +105,7 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
-/** 查询流程实例列表 */
+/** 查询流程监控列表 */
 const getList = async () => {
    loading.value = true;
    await getAllProcesslistPage(pageDto.value, taskMgmtVO.value).then(response => {

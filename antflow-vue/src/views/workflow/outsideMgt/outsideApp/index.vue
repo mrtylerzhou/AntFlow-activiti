@@ -16,8 +16,8 @@
     <div class="table-box">
       <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
         <el-table-column type="selection" align="center" width="35" />
-        <el-table-column label="项目标识" align="center" prop="businessCode" width="150" />
-        <el-table-column label="项目名称" align="center" prop="businessName" width="150" />
+        <el-table-column label="租户标识" align="center" prop="businessCode" width="150" />
+        <el-table-column label="租户名称" align="center" prop="businessName" width="150" />
         <el-table-column align="center" prop="processKey" width="250">
           <template #header>
             <span>
