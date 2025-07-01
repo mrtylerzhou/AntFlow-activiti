@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 @Slf4j
-@Aspect
-@Component
+/*@Aspect
+@Component*/
 public class HttpLogAspect {
 
     @Autowired

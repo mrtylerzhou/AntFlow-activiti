@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.openoa.mapper.DicDataMapper">
-    <select id="selectLFActiveFormCodes" resultType="org.openoa.entity.DictData">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.DicDataMapper">
+    <select id="selectLFActiveFormCodes" resultType="org.openoa.engine.bpmnconf.confentity.DictData">
         select a.id,
         a.dict_sort as sort,
         a.dict_value as value,
@@ -17,7 +17,7 @@
         order by a.create_time desc
     </select>
 
-    <select id="selectLFFormCodePageList" resultType="org.openoa.entity.DictData">
+    <select id="selectLFFormCodePageList" resultType="org.openoa.engine.bpmnconf.confentity.DictData">
         select a.id,
         a.dict_sort as sort,
         a.dict_value as value,
@@ -39,7 +39,7 @@
         order by a.create_time desc
     </select>
 
-    <select id="selectLFActiveFormCodePageList" resultType="org.openoa.entity.DictData">
+    <select id="selectLFActiveFormCodePageList" resultType="org.openoa.engine.bpmnconf.confentity.DictData">
         select a.id,
         a.dict_sort as sort,
         a.dict_value as value,
