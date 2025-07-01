@@ -1,16 +1,16 @@
 <template>
   <div class="form-container">
     <el-form ref="ruleFormRef" :model="form" label-width="auto" style="max-width: 600px; margin: auto">
-      <el-form-item label="项目标识" prop="businessPartyMark">
+      <el-form-item label="租户标识" prop="businessPartyMark">
         <el-input v-model="form.businessPartyMark" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
-      <el-form-item label="项目名称" prop="businessPartyName">
+      <el-form-item label="租户名称" prop="businessPartyName">
         <el-input v-model="form.businessPartyName" :disabled="true" :style="{ width: '100%' }" />
       </el-form-item>
       <el-form-item label="应用标识" prop="formCode">
         <template #label>
           <span>
-            <el-tooltip content="注：项目管理中应用标识" placement="top">
+            <el-tooltip content="注：Saas租户管理中应用标识" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
             应用标识
@@ -21,7 +21,7 @@
       <el-form-item label="应用名称" prop="bpmnName">
         <template #label>
           <span>
-            <el-tooltip content="注：项目管理中应用名称" placement="top">
+            <el-tooltip content="注：Saas租户管理中应用名称" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
             应用名称

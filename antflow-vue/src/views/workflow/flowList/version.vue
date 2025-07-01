@@ -118,7 +118,7 @@ const handleEdit = (row) => {
       let obj = { path: "/workflow/lf-design", query: params };
       proxy.$tab.openPage(obj);
    } else {
-      let obj = { path: "/workflow/div-design", query: params };
+      let obj = { path: "/workflow/diy-design", query: params };
       proxy.$tab.openPage(obj);
    }
 }

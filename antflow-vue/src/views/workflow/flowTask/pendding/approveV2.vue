@@ -31,7 +31,7 @@
                                             <span class="card-reason">{{ item.description }}</span>
                                         </p>
                                         <p class="card-detail">
-                                            <span>流程编号</span>
+                                            <span>流程编号：</span>
                                             <span class="card-reason">{{ substringHidden(item.processNumber) }}</span>
                                         </p>
                                         <p class="card-time">

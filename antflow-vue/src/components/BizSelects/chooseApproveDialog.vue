@@ -193,6 +193,6 @@ function resetQuery() {
 .tip {
   padding: 8px 16px;
   background-color: rgb(197.7, 225.9, 255);
-  border-left: 5px solid #409eff;
+  border-left: 5px solid #1890ff;
 }
 </style>

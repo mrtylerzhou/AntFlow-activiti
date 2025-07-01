@@ -4,8 +4,8 @@
     <el-form :model="form" :rules="rules" ref="approveTemplateRef" label-width="130px" style="margin: 0 20px;">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="项目名称" prop="businessPartyName">
-            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入项目名称" />
+          <el-form-item label="租户名称" prop="businessPartyName">
+            <el-input v-model="form.businessPartyName" :disabled=true placeholder="请输入租户名称" />
           </el-form-item>
         </el-col>
         <el-col :span="24">

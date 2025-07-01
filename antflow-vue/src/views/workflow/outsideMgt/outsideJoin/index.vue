@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="query-box">
       <el-form :model="vo" ref="queryRef" :inline="true" v-show="showSearch">
-        <el-form-item label="项目标识" prop="businessPartyMark">
+        <el-form-item label="租户标识" prop="businessPartyMark">
           <el-input v-model="vo.businessPartyMark" placeholder="请输入关键字" clearable style="width: 200px"
             @keyup.enter="handleQuery" />
         </el-form-item>
@@ -25,9 +25,9 @@
     </div>
     <div class="table-box">
       <el-table v-loading="loading" :data="list">
-        <el-table-column label="项目标识" align="center" prop="businessPartyMark" v-if="columns[0].visible"
+        <el-table-column label="租户标识" align="center" prop="businessPartyMark" v-if="columns[0].visible"
           :show-overflow-tooltip="true" />
-        <el-table-column label="项目名称" align="center" prop="name" v-if="columns[1].visible"
+        <el-table-column label="租户名称" align="center" prop="name" v-if="columns[1].visible"
           :show-overflow-tooltip="true" />
         <el-table-column label="接入类型" align="center" prop="accessTypeName" v-if="columns[2].visible"
           :show-overflow-tooltip="true" />
@@ -67,17 +67,17 @@
                   <el-tooltip content="项目唯一标识" placement="top">
                     <el-icon><question-filled /></el-icon>
                   </el-tooltip>
-                  项目标识
+                  租户标识
                 </span>
               </template>
-              <el-input v-model="form.businessPartyMark" placeholder="请输入项目标识" />
+              <el-input v-model="form.businessPartyMark" placeholder="请输入租户标识" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="项目名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入项目名称" />
+            <el-form-item label="租户名称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入租户名称" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -141,7 +141,7 @@ const data = reactive({
       trigger: ['blur', 'change']
     }],
     name: [
-      { required: true, message: '请输入项目名称', trigger: 'blur' },
+      { required: true, message: '请输入租户名称', trigger: 'blur' },
       { pattern: /^.{2,10}$/, message: '长度必须在2到10位之间', trigger: 'blur' }
     ],
     accessType: [{ required: true, message: '', trigger: 'change' }]
@@ -155,7 +155,7 @@ onMounted(async () => {
 
 // 列显隐信息
 const columns = ref([
-  { key: 0, label: `项目标识`, visible: true },
+  { key: 0, label: `租户标识`, visible: true },
   { key: 1, label: `项目名字`, visible: true },
   { key: 2, label: `接入类型`, visible: true },
   { key: 3, label: `备注`, visible: true },

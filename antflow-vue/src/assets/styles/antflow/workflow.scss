@@ -14,11 +14,11 @@ a:focus {
 }
 
 a:hover {
-  color: #40a9ff;
+  color: #1890ff;
 }
 
 a:active {
-  color: #096dd9;
+  color: #1890ff;
 }
 
 a:active,
@@ -203,9 +203,9 @@ svg:not(:root) {
 
 .fd-btn.active,
 .fd-btn:active {
-  color: #096dd9;
+  color: #1890ff;
   background-color: #fff;
-  border-color: #096dd9;
+  border-color: #1890ff;
 }
 
 .fd-btn.active > a:only-child,
