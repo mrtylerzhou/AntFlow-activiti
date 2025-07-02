@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="outside-container">
         <div class="fd-nav">
             <div class="fd-nav-left">
                 <div class="fd-nav-title">
@@ -137,7 +137,7 @@ const previewJson = () => {
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/workflow.scss";
 
-.app-container {
+.outside-container {
     position: relative;
     background-color: #f5f5f7;
     min-height: calc(100vh - 115px);
