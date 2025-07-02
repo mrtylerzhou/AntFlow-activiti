@@ -135,34 +135,34 @@ const handleTodayDraft = () => {
 }
 
 .ve_card1 {
-    background: #1890ff;
+    background: #3370ff;
 
     &:hover {
-        color: #1890ff;
+        color: #3370ff;
     }
 }
 
 .ve_card2 {
-    background: #67c23a;
+    background: #13ce66;
 
     &:hover {
-        color: #67c23a;
+        color: #13ce66;
     }
 }
 
 .ve_card3 {
-    background: #e6a23c;
+    background: #fe7300;
 
     &:hover {
-        color: #e6a23c;
+        color: #fe7300;
     }
 }
 
 .ve_card4 {
-    background: #f56c6c;
+    background: #ff4949;
 
     &:hover {
-        color: #f56c6c;
+        color: #ff4949;
     }
 }
 </style>

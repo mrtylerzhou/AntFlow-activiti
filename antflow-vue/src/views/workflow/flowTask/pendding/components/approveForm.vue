@@ -217,11 +217,10 @@ const preview = async (viewData) => {
                     componentLoaded.value = true;
                 }
             } catch (error) {
-                close();
+                proxy.$modal.msgError("数据加载失败:" + error);
             }
         } else {
             proxy.$modal.msgError("获取表单数据失败:" + response.errMsg);
-            close();
         }
         proxy.$modal.closeLoading();
     });
