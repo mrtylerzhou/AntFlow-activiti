@@ -46,9 +46,9 @@ let props = defineProps({
   }
 });
 /* 注意：formJson是指表单设计器导出的json，此处演示的formJson只是一个空白表单json！！ */
-const formJson = reactive(JSON.parse(props.lfFormData));//表单字段渲染
-const formData = reactive(JSON.parse(props.lfFieldsData));//表单字段输入值渲染 
-const lfFieldPermData = reactive(JSON.parse(props.lfFieldPerm));//表单字段权限控制 
+const formJson = reactive(JSON.parse(props.lfFormData || "{}"));//表单字段渲染
+const formData = reactive(JSON.parse(props.lfFieldsData || "{}"));//表单字段输入值渲染 
+const lfFieldPermData = reactive(JSON.parse(props.lfFieldPerm || "{}"));//表单字段权限控制 
 const optionData = reactive({});
 const vFormRef = ref(null);
 /**表单渲染预处理 */
@@ -129,9 +129,9 @@ onBeforeMount(() => {
   advanceHandleFormData();
 })
 onMounted(() => {
-  vFormRef.value.setFormJson(JSON.parse(props.lfFormData))
+  vFormRef.value.setFormJson(JSON.parse(props.lfFormData || "{}"))
   nextTick(() => {
-    vFormRef.value.setFormData(JSON.parse(props.lfFieldsData))
+    vFormRef.value.setFormData(JSON.parse(props.lfFieldsData || "{}"))
   })
 })
 const submitForm = () => {
