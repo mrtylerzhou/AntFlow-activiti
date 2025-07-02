@@ -237,7 +237,8 @@ public class ThirdPartyCallbackFactory {
                     JSON.toJSONString(heads),
                     JSON.toJSONString(Optional.ofNullable(callbackReqVo).orElse(new CallbackReqVo())),
                     resultJson, e);
-            throw new JiMuBizException(e.getMessage());
+            //throw new JiMuBizException(e.getMessage());
+            return null;
         } catch (Exception e) {
             log.error("工作流对外服务回调失败，回调类型：{}，请求头信息{}，入参：{}，出参：{}",
                     callbackTypeEnum.getMark(),

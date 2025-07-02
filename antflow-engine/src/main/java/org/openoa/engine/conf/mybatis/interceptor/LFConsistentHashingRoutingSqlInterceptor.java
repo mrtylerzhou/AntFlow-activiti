@@ -208,8 +208,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
                 }
                 //虽然理论上也也存在where id=xxx and a=x and b=x这种sql,但是默认用户不会这么写,所以暂时不支持
                     BpmBusinessProcess bpmBusinessProcess = SpringBeanUtils.getBean(BpmBusinessProcessServiceImpl.class).getOne(Wrappers.<BpmBusinessProcess>lambdaQuery()
-                            .eq(BpmBusinessProcess::getBusinessId, parameterObject)
-                            .eq(BpmBusinessProcess::getIsLowCodeFlow, 1));
+                            .eq(BpmBusinessProcess::getBusinessId, parameterObject));
                     if(bpmBusinessProcess!=null){
                         return bpmBusinessProcess.getProcessinessKey();
                     }else{
