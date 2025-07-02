@@ -10,7 +10,7 @@ $panGreen: #30b08f;
 
 // 默认主题变量
 $menuText: #bfcbd9;
-$menuActiveText: #3370ff; //#409eff;
+$menuActiveText: #1890ff; //#409eff;
 $menuBg: #304156;
 $menuHover: #263445;
 
@@ -18,7 +18,7 @@ $menuHover: #263445;
 $menuLightBg: #ffffff;
 $menuLightHover: #f0f1f5;
 $menuLightText: #303133;
-$menuLightActiveText: #3370ff; //#409eff;
+$menuLightActiveText: #1890ff; //#409eff;
 
 // 基础变量
 $base-sidebar-width: 200px;
@@ -32,7 +32,8 @@ $base-sub-menu-background: #1f2d3d;
 $base-sub-menu-hover: #001528;
 
 // 组件变量
-$--color-primary: #3370ff; //#409eff;//1890ff
+$--current-color: #1890ff;
+$--color-primary: #1890ff; //#409eff;//1890ff
 $--color-success: #13ce66; //#67c23a;
 $--color-warning: #fe7300; //#e6a23c;
 $--color-danger: #ff4949; //#f56c6c;
@@ -64,7 +65,14 @@ $--color-info: #909399;
   colorDanger: $--color-danger;
   colorInfo: $--color-info;
 }
-
+* {
+  --current-color: #{$--current-color};
+  --el-color-primary: #{$--color-primary};
+  --el-color-success: #{$--color-success};
+  --el-color-warning: #{$--color-warning};
+  --el-color-danger: #{$--color-danger};
+  --el-color-info: #{$--color-info};
+}
 // CSS变量定义
 :root {
   /* 亮色模式变量 */
@@ -80,7 +88,7 @@ $--color-info: #909399;
   --splitpanes-default-bg: #ffffff;
 
   // ElementPlus组件变量
-  --current-color: #{$--color-primary};
+  --current-color: #{$--current-color};
   --el-color-primary: #{$--color-primary};
   --el-color-success: #{$--color-success};
   --el-color-warning: #{$--color-warning};

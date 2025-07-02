@@ -24,7 +24,7 @@ const versionSetting = localStorage.getItem("version-setting") || "v1.0.0";
 const useSettingsStore = defineStore("settings", {
   state: () => ({
     title: "",
-    theme: storageSetting.theme || "#409EFF",
+    theme: storageSetting.theme || "#1890ff",
     sideTheme: storageSetting.sideTheme || sideTheme,
     showSettings: showSettings,
     topNav:
