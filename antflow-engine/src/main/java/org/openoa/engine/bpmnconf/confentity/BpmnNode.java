@@ -131,6 +131,11 @@ public class BpmnNode {
     //whether current node is a parallel node 0 for no and 1 for yes
     @TableField("is_parallel")
     private Boolean isParallel;
+	/**
+	 * 0-无自选抄送人 1-允许发起人自选抄送人
+	 */
+	@TableField("cc_self_select_flag")
+	private Integer ccSelfSelectFlag;
 
 
 

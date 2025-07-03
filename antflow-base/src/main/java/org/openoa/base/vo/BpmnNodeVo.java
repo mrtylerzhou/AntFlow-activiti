@@ -175,6 +175,11 @@ public class BpmnNodeVo  implements Serializable {
      * @see MissingAssigneeProcessStragtegyEnum
      */
     private Integer missingAssigneeDealWay;
+
+	/**
+	 * 允许发起人自选抄送人
+	 */
+	private Integer ccSelfSelectFlag;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){
