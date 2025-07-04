@@ -13,6 +13,26 @@ const headers = {
   Username: Cookies.get("userName"),
 };
 /**
+ * 获取所有通知类型
+ * @returns
+ */
+export function getAllNoticeTypes() {
+  return http.get(`${baseUrl}/informationTemplates/getAllNoticeTypes`, {
+    headers,
+  });
+}
+/**
+ * 新增消息模板
+ * @param {*} data
+ * @returns
+ */
+export function saveInformationTemp(data) {
+  return http.post(`${baseUrl}/informationTemplates/save`, data, {
+    headers,
+  });
+}
+
+/**
  * 获取消息模板列表
  * @returns
  */
