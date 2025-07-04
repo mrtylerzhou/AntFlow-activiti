@@ -17,6 +17,9 @@ const useUserStore = defineStore("user", {
     permissions: [],
   }),
   actions: {
+    setNickName(nickName) {
+      this.nickName = nickName;
+    },
     // 登录
     login(userInfo) {
       const username = userInfo.username.trim();
@@ -56,7 +59,7 @@ const useUserStore = defineStore("user", {
             }
             this.id = user.userId;
             this.name = user.userName;
-            this.nickName = user.nickName;
+            //this.nickName = user.nickName;
             this.avatar = avatar;
             /* 初始密码提示 */
             if (res.isDefaultModifyPwd) {
