@@ -16,10 +16,15 @@
                     <el-button icon="Refresh" @click="resetQuery">重置</el-button>
                 </el-form-item>
             </el-form>
+            <el-row :gutter="10" class="mb8">
+                <el-col :span="1.5">
+                    <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+                </el-col>
+            </el-row>
         </div>
         <div class="table-box">
             <el-table v-loading="loading" :data="dataList">
-                <el-table-column label="模板名称" align="center" prop="name" :show-overflow-tooltip="true">
+                <el-table-column label="模板名称" align="center" prop="name" width="160" :show-overflow-tooltip="true">
                     <template #default="item">
                         <el-tooltip class="box-item" effect="dark" placement="right">
                             <template #content>
@@ -45,9 +50,9 @@
                         <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="100" align="center"
-                    class-name="small-padding fixed-width">
+                <el-table-column label="操作" fixed="right" width="160" class-name="small-padding fixed-width">
                     <template #default="scope">
+                        <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
                         <el-button link type="primary" icon="ZoomIn" @click="handlePreview(scope.row)">查看</el-button>
                     </template>
                 </el-table-column>
@@ -55,25 +60,22 @@
         </div>
         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
             @pagination="getList" />
+        <msg-temp-form v-model:visible="visible" :formData="dataTempForm" />
     </div>
 </template>
 
 <script setup>
 import { getFlowMsgTempleteList } from "@/api/workflow/flowMsgApi";
+import MsgTempForm from "@/views/workflow/flowMsg/msgTemplete/form.vue";
 const { proxy } = getCurrentInstance();
 const dataList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 
-let visible = computed({
-    get() {
-        return true;
-    },
-    set() {
-        closeDialog()
-    }
-})
+let visible = ref(false);
+let dataTempForm = ref({});
+
 const data = reactive({
     form: {},
     pageDto: {
@@ -120,7 +122,20 @@ function resetQuery() {
     handleQuery();
 }
 
-function handlePreview(row) {
+function handleAdd() {
+    visible.value = true;
+    dataTempForm.value = {
+        notifyType: [],
+        systemTitle: "工作流名称是:",
+        systemContent: ""
+    };
 }
-
+function handleEdit(row) {
+    visible.value = true;
+    dataTempForm.value = row;
+}
+const handlePreview = (row) => {
+    visible.value = true;
+    dataTempForm.value = row;
+}
 </script>
