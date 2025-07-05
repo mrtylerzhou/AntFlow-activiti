@@ -38,6 +38,7 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
+                <el-table-column label="跳转页面" align="center" prop="jumpUrlValue" :show-overflow-tooltip="true" />
                 <el-table-column label="主题" align="center" prop="systemTitle" :show-overflow-tooltip="true" />
                 <el-table-column label="状态" align="center" prop="statusValue">
                     <template #default="item">
@@ -131,9 +132,9 @@ function resetQuery() {
 function handleAdd() {
     visible.value = true;
     dataTempForm.value = {
-        notifyType: [],
+        notifyType: [1],
         systemTitle: "工作流名称是:",
-        systemContent: ""
+        systemContent: "",
     };
 }
 function handleEdit(row) {
