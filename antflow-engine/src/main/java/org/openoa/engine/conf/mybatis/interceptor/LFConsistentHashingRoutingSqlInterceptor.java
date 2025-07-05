@@ -61,56 +61,58 @@ import java.util.*;
 public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(LFConsistentHashingRoutingSqlInterceptor.class);
     @Value("${lf.main.table.count:1}")
-    private  Integer mainTableCount;
+    private Integer mainTableCount;
     @Value("${lf.field.table.count:1}")
     private Integer fieldTableCount;
 
     private ConsistentHashingAlg mainTableHashing;
     private ConsistentHashingAlg fieldTableHashing;
 
-    private static final List<String> LF_TABLE_NAMES = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
-    private static final List<String> FORM_CODES_UPPER =Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(),StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
+    private static final List<String> LF_TABLE_NAMES = Lists.newArrayList(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME, StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME);
+    private static final List<String> FORM_CODES_UPPER = Lists.newArrayList(StringConstants.FORM_CODE.toUpperCase(), StringConstants.FORMCODE_NO_CAMAL.toUpperCase());
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
-           // 获取拦截的参数
-           Object[] args = invocation.getArgs();
-           MappedStatement mappedStatement = (MappedStatement) args[0];
-           Object parameterObject = args[1];
+        if (mainTableCount < 2) {
+            return invocation.proceed();
+        }
+        // 获取拦截的参数
+        Object[] args = invocation.getArgs();
+        MappedStatement mappedStatement = (MappedStatement) args[0];
+        Object parameterObject = args[1];
 
 
-           BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
+        BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
 
-           String sql = boundSql.getSql();
-           List<String> tableNames = getTableNames(sql);
-           if(CollectionUtils.containsAny(LF_TABLE_NAMES,tableNames)){
-               String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
-               String modifiedSql="";
-               if(mainTableCount>=2){
-                   for (String tableName : tableNames) {
-                       if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)){
+        String sql = boundSql.getSql();
+        List<String> tableNames = getTableNames(sql);
+        if (CollectionUtils.containsAny(LF_TABLE_NAMES, tableNames)) {
+            String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
+            String modifiedSql = "";
+            for (String tableName : tableNames) {
+                if (tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)) {
 
-                               String newTblName= mainTableHashing.getServer(restoredFormCode);
-                               modifiedSql=replaceTableName(tableName,newTblName,sql);
-                       }else if(tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
+                    String newTblName = mainTableHashing.getServer(restoredFormCode);
+                    modifiedSql = replaceTableName(tableName, newTblName, sql);
+                } else if (tableName.equalsIgnoreCase(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)) {
 
-                               String newTblName= fieldTableHashing.getServer(restoredFormCode);
-                               String tmpSql= StringUtils.hasText(modifiedSql)?modifiedSql:sql;
-                               modifiedSql=replaceTableName(tableName,newTblName,tmpSql);
-                       }
-                   }
-                       BoundSql newBoundSql = new BoundSql(
-                               mappedStatement.getConfiguration(),
-                               modifiedSql,
-                               boundSql.getParameterMappings(),
-                               boundSql.getParameterObject()
-                       );
+                    String newTblName = fieldTableHashing.getServer(restoredFormCode);
+                    String tmpSql = StringUtils.hasText(modifiedSql) ? modifiedSql : sql;
+                    modifiedSql = replaceTableName(tableName, newTblName, tmpSql);
+                }
+            }
+            BoundSql newBoundSql = new BoundSql(
+                    mappedStatement.getConfiguration(),
+                    modifiedSql,
+                    boundSql.getParameterMappings(),
+                    boundSql.getParameterObject()
+            );
 
-                       MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
-                       args[0] = newMappedStatement;
-               }
-           }
+            MappedStatement newMappedStatement = copyMappedStatement(mappedStatement, newBoundSql);
+            args[0] = newMappedStatement;
+
+        }
 
         return invocation.proceed();
     }
@@ -139,6 +141,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
         return builder.build();
     }
+
     private String restoreFormCodeValueFromSql(String sql, BoundSql boundSql) {
 
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
@@ -199,26 +202,26 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
         }*/
         for (ParameterMapping parameterMapping : parameterMappings) {
             String propertyName = parameterMapping.getProperty();
-            if("ID".equalsIgnoreCase(propertyName)){
-                if(parameterObject instanceof LFMain){
-                    return ((LFMain)parameterObject).getFormCode();
+            if ("ID".equalsIgnoreCase(propertyName)) {
+                if (parameterObject instanceof LFMain) {
+                    return ((LFMain) parameterObject).getFormCode();
                 }
-                if(parameterObject instanceof LFMainField){
-                    return ((LFMainField)parameterObject).getFormCode();
+                if (parameterObject instanceof LFMainField) {
+                    return ((LFMainField) parameterObject).getFormCode();
                 }
                 //虽然理论上也也存在where id=xxx and a=x and b=x这种sql,但是默认用户不会这么写,所以暂时不支持
-                    BpmBusinessProcess bpmBusinessProcess = SpringBeanUtils.getBean(BpmBusinessProcessServiceImpl.class).getOne(Wrappers.<BpmBusinessProcess>lambdaQuery()
-                            .eq(BpmBusinessProcess::getBusinessId, parameterObject));
-                    if(bpmBusinessProcess!=null){
-                        return bpmBusinessProcess.getProcessinessKey();
-                    }else{
-                        throw new JiMuBizException("无法根据低代码流程指定Id:"+parameterObject+"找到流程信息,对应的流程不存在!");
-                    }
+                BpmBusinessProcess bpmBusinessProcess = SpringBeanUtils.getBean(BpmBusinessProcessServiceImpl.class).getOne(Wrappers.<BpmBusinessProcess>lambdaQuery()
+                        .eq(BpmBusinessProcess::getBusinessId, parameterObject));
+                if (bpmBusinessProcess != null) {
+                    return bpmBusinessProcess.getProcessinessKey();
+                } else {
+                    throw new JiMuBizException("无法根据低代码流程指定Id:" + parameterObject + "找到流程信息,对应的流程不存在!");
+                }
             }
-            if(!FORM_CODES_UPPER.contains(propertyName.toUpperCase())){
+            if (!FORM_CODES_UPPER.contains(propertyName.toUpperCase())) {
                 continue;
             }
-            Object value=null;
+            Object value = null;
 
 
             if (boundSql.hasAdditionalParameter(propertyName)) {
@@ -252,6 +255,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
             return param.toString();
         }
     }
+
     private List<String> getTableNames(String sql) {
         try {
             Statement statement = CCJSqlParserUtil.parse(sql);
@@ -266,29 +270,29 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
     /**
      * 替换 SQL 中的表名
      */
-    private static String replaceTableName(String originalTblName,String newTblName,String originalSql) {
+    private static String replaceTableName(String originalTblName, String newTblName, String originalSql) {
         try {
 
             Statement statement = CCJSqlParserUtil.parse(originalSql);
 
 
             if (statement instanceof Select) {
-                return processSelectStatement(originalTblName,newTblName,(Select) statement);
+                return processSelectStatement(originalTblName, newTblName, (Select) statement);
             }
 
 
             if (statement instanceof Insert) {
-                return processInsertStatement(originalTblName,newTblName,(Insert) statement);
+                return processInsertStatement(originalTblName, newTblName, (Insert) statement);
             }
 
 
             if (statement instanceof Update) {
-                return processUpdateStatement(originalTblName,newTblName,(Update) statement);
+                return processUpdateStatement(originalTblName, newTblName, (Update) statement);
             }
 
 
             if (statement instanceof Delete) {
-                return processDeleteStatement(originalTblName,newTblName,(Delete) statement);
+                return processDeleteStatement(originalTblName, newTblName, (Delete) statement);
             }
 
         } catch (Exception e) {
@@ -300,10 +304,10 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
     }
 
 
-    private static String processSelectStatement(String originalTblName,String newTblName,Select select) {
+    private static String processSelectStatement(String originalTblName, String newTblName, Select select) {
         StringBuilder modifiedSql = new StringBuilder();
         ExpressionDeParser expressionDeParser = new ExpressionDeParser();
-        SelectDeParser selectDeParser = new SelectDeParser(expressionDeParser,modifiedSql) {
+        SelectDeParser selectDeParser = new SelectDeParser(expressionDeParser, modifiedSql) {
             @Override
             public void visit(Table table) {
                 if (table.getName().equalsIgnoreCase(originalTblName)) {
@@ -312,8 +316,9 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
                 super.visit(table);
             }
+
             @Override
-            public void visit(PlainSelect plainSelect){
+            public void visit(PlainSelect plainSelect) {
 
                 getBuffer().append("SELECT ");
 
@@ -363,7 +368,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
     }
 
 
-    private static String processInsertStatement(String originalTblName,String newTblName,Insert insert) {
+    private static String processInsertStatement(String originalTblName, String newTblName, Insert insert) {
         Table table = insert.getTable();
         if (table.getName().equalsIgnoreCase(originalTblName)) {
             table.setName(newTblName);
@@ -372,7 +377,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
     }
 
 
-    private static String processUpdateStatement(String originalTblName,String newTblName,Update update) {
+    private static String processUpdateStatement(String originalTblName, String newTblName, Update update) {
         Table table = update.getTable();
         if (table.getName().equalsIgnoreCase(originalTblName)) {
             table.setName(newTblName);
@@ -381,20 +386,22 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
     }
 
 
-    private static String processDeleteStatement(String originalTblName,String newTblName,Delete delete) {
+    private static String processDeleteStatement(String originalTblName, String newTblName, Delete delete) {
         Table table = delete.getTable();
         if (table.getName().equalsIgnoreCase(originalTblName)) {
             table.setName(newTblName);
         }
         return delete.toString();
     }
+
     /**
      * 从 SQL 查询中提取列名
+     *
      * @param sql 输入的 SQL 查询
      * @return 返回 SQL 查询中的列名
      * @throws Exception 解析错误
      */
-    public static List<String> getColumnNamesFromSelectSql(String sql)  {
+    public static List<String> getColumnNamesFromSelectSql(String sql) {
         List<String> columnNames = new ArrayList<>();
 
         // 创建 SQL 解析器
@@ -433,8 +440,10 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
         return columnNames;
     }
+
     /**
      * 从 SQL 查询中提取 WHERE 子句中的列名
+     *
      * @param sql 输入的 SQL 查询
      * @return 返回 SQL 查询中的 WHERE 子句涉及的列名
      * @throws Exception 解析错误
@@ -469,7 +478,8 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
     /**
      * 提取 SQL 语句中 WHERE 子句中的列名
-     * @param statement SQL 语句
+     *
+     * @param statement   SQL 语句
      * @param columnNames 存储列名的列表
      */
     private static void processWhereClause(Statement statement, List<String> columnNames) {
@@ -493,8 +503,10 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
             columnNames.addAll(getColumnNames(whereClause));
         }
     }
+
     /**
      * 递归解析表达式并提取列名
+     *
      * @param expression SQL 中的表达式
      * @return 返回列名
      */
@@ -517,6 +529,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
         return columnNames;
     }
+
     @Override
     public Object plugin(Object target) {
         return Plugin.wrap(target, this);
@@ -529,7 +542,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        mainTableHashing=new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME,mainTableCount);
-        fieldTableHashing=new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME,fieldTableCount);
+        mainTableHashing = new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME, mainTableCount);
+        fieldTableHashing = new ConsistentHashingAlg(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME, fieldTableCount);
     }
 }
