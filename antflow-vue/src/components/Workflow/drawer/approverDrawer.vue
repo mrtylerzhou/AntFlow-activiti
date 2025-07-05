@@ -176,7 +176,7 @@ import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
-import roleDialog from '../dialog/roleDialog.vue';
+import roleDialog from '../dialog/selectRoleDialog.vue';
 import FormPermConf from "../permConfig/FormPermConf.vue";
 const { proxy } = getCurrentInstance();
 let store = useStore()
