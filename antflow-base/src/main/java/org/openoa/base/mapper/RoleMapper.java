@@ -18,8 +18,8 @@ import java.util.List;
  */
 @Mapper
 public interface RoleMapper {
-    List<Role> queryRoleByIds(@Param("roleIds") Collection<String> roleIds);
-    List<User> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);
+    List<BaseIdTranStruVo> queryRoleByIds(@Param("roleIds") Collection<String> roleIds);
+    List<BaseIdTranStruVo> queryUserByRoleIds(@Param("roleIds") Collection<String> roleIds);
 
     LinkedList<BaseIdTranStruVo> selectAll();
 }

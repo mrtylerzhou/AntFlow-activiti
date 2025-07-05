@@ -14,7 +14,7 @@ public class TenantDataSourceRegistry implements InitializingBean {
     @Autowired
     private DataSourceFactory dataSourceFactory;
     @Autowired
-    private AntflowDataSourceConfigScanner antflowDataSourceConfigScanner;
+    private IAntflowDataSourceConfigScanner antflowDataSourceConfigScanner;
 
     @Autowired
     private DataSourceProperties dataSourceProperties;
@@ -30,7 +30,11 @@ public class TenantDataSourceRegistry implements InitializingBean {
     }
 
    public DataSource getDefaultDataSource(){
-        return  dataSources.get("");
+       DataSource dataSource = dataSources.get("");
+       if(dataSource==null){
+           dataSource = dataSources.get("default");
+       }
+       return dataSource;
    }
     @Override
     public void afterPropertiesSet() throws Exception {
