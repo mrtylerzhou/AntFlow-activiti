@@ -51,7 +51,6 @@ import { ref, onMounted } from 'vue';
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user'
-import cache from '@/plugins/cache';
 import { ElMessage } from 'element-plus'
 import { getUsers } from "@/api/workflow/mock.js";
 const userStore = useUserStore()
@@ -91,6 +90,7 @@ function handleLogin() {
   }
   Cookies.set("userId", userId.value);
   Cookies.set("userName", encodeURIComponent(_userName.value));
+
   proxy.$refs.loginRef.validate(valid => {
     if (valid) {
       loading.value = true;
@@ -120,6 +120,7 @@ function handleLogin() {
         loading.value = false;
       });
     }
+    userStore.setNickName(_userName.value);
   });
 }
 

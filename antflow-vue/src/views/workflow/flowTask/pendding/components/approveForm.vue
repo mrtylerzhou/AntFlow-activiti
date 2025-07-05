@@ -34,7 +34,6 @@ import repulseDialog from './repulseDialog.vue';
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
-import { boolToString } from '@/utils/antflow/ObjectUtils'
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();

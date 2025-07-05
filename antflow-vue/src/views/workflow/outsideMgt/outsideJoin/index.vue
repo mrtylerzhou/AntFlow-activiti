@@ -6,7 +6,7 @@
           <el-input v-model="vo.businessPartyMark" placeholder="请输入关键字" clearable style="width: 200px"
             @keyup.enter="handleQuery" />
         </el-form-item>
-        <el-form-item label="项目名字" prop="name">
+        <el-form-item label="租户名字" prop="name">
           <el-input v-model="vo.name" placeholder="请输入关键字" clearable style="width: 200px" @keyup.enter="handleQuery" />
         </el-form-item>
 
@@ -18,7 +18,7 @@
 
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-          <el-button type="primary" icon="Plus" @click="handleAdd">新增项目</el-button>
+          <el-button type="primary" icon="Plus" @click="handleAdd">新增租户</el-button>
         </el-col>
         <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
       </el-row>

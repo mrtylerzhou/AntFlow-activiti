@@ -149,3 +149,15 @@ export function getDynamicsList(url) {
   };
   return http.get(url, { headers });
 }
+
+/**
+ * 获取全部角色信息
+ * @returns
+ */
+export function getRoleList() {
+  let headers = {
+    Userid: "1",
+    Username: "%E5%BC%A0%E4%B8%89",
+  };
+  return http.get(`${workflowUrl}/user/getRoleInfo`, { headers });
+}
