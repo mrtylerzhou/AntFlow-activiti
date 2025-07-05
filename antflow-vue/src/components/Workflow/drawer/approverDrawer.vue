@@ -163,7 +163,7 @@
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
                 <div class="drawer_content">
-                    通知设置
+                    <notice-conf v-model:visible="approverVisible" @changePermVal="changePermVal" />
                 </div>
             </el-tab-pane>
         </el-tabs>
@@ -183,6 +183,7 @@ import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import roleDialog from '../dialog/selectRoleDialog.vue';
 import FormPermConf from "./permConfig/FormPermConf.vue";
+import NoticeConf from "./noticeConfig/index.vue";
 const { proxy } = getCurrentInstance();
 let store = useStore()
 let props = defineProps({
