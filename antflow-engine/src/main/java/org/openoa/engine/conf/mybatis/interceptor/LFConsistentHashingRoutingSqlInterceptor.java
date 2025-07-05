@@ -86,6 +86,13 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
         BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
 
         String sql = boundSql.getSql();
+        //如果非要实现路由的表,直接不往下走了,实际中sql语句多种多样,这里进行一个简单的粗糙判断
+        if(!sql.contains(StringConstants.LOWFLOW_FORM_DATA_MAIN_TABLE_NAME)&&!sql.contains(StringConstants.LOWFLOW_FORM_DATA_FIELD_TABLE_NAME)){
+            return invocation.proceed();
+        }
+       /* if(!BoundSqlUtils.isCurdSql(sql)){
+            return invocation.proceed();
+        }*/
         List<String> tableNames = getTableNames(sql);
         if (CollectionUtils.containsAny(LF_TABLE_NAMES, tableNames)) {
             String restoredFormCode = restoreFormCodeValueFromSql(sql, boundSql);
