@@ -2,29 +2,33 @@
     <div class="app-container">
         <div class="query-box">
             <el-form :model="taskMgmtVO" ref="queryRef" :inline="true" v-show="showSearch">
-                <el-form-item label="模板名称" prop="name">
-                    <el-input v-model="taskMgmtVO.name" placeholder="请输入关键字" clearable style="width: 200px"
-                        @keyup.enter="handleQuery" />
-                </el-form-item>
-                <el-form-item label="模板标题" prop="mailTitle">
-                    <el-input v-model="taskMgmtVO.mailTitle" placeholder="请输入关键字" clearable style="width: 200px"
-                        @keyup.enter="handleQuery" />
-                </el-form-item>
 
-                <el-form-item>
-                    <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                    <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-                </el-form-item>
+                <el-row>
+                    <el-col :span="22">
+                        <el-form-item label="模板名称" prop="name">
+                            <el-input v-model="taskMgmtVO.name" placeholder="请输入关键字" clearable style="width: 200px"
+                                @keyup.enter="handleQuery" />
+                        </el-form-item>
+                        <el-form-item label="模板标题" prop="num">
+                            <el-input v-model="taskMgmtVO.num" placeholder="请输入关键字" clearable style="width: 200px"
+                                @keyup.enter="handleQuery" />
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+                            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+                    </el-col>
+                </el-row>
             </el-form>
-            <el-row :gutter="10" class="mb8">
-                <el-col :span="1.5">
-                    <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-                </el-col>
-            </el-row>
+
         </div>
         <div class="table-box">
             <el-table v-loading="loading" :data="dataList">
-                <el-table-column label="模板名称" align="center" prop="name" width="160" :show-overflow-tooltip="true">
+                <el-table-column label="模板编号" align="center" prop="num" width="120" />
+                <el-table-column label="模板名称" align="center" prop="name" width="160">
                     <template #default="item">
                         <el-tooltip class="box-item" effect="dark" placement="right">
                             <template #content>
@@ -34,7 +38,7 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
-                <el-table-column label="模板标题" align="center" prop="mailTitle" :show-overflow-tooltip="true" />
+                <el-table-column label="主题" align="center" prop="systemTitle" :show-overflow-tooltip="true" />
                 <el-table-column label="状态" align="center" prop="statusValue">
                     <template #default="item">
                         <el-tag>{{ item.row.statusValue }}</el-tag>
@@ -53,7 +57,7 @@
                 <el-table-column label="操作" fixed="right" width="160" class-name="small-padding fixed-width">
                     <template #default="scope">
                         <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button link type="primary" icon="ZoomIn" @click="handlePreview(scope.row)">查看</el-button>
+                        <!-- <el-button link type="primary" icon="ZoomIn" @click="handlePreview(scope.row)">查看</el-button> -->
                     </template>
                 </el-table-column>
             </el-table>
@@ -84,15 +88,17 @@ const data = reactive({
     },
     taskMgmtVO: {
         name: undefined,
-        mailTitle: undefined
-    },
-    rules: {
-        name: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
-        mailTitle: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
+        num: undefined
     }
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
+watch(() => visible.value, (val) => {
+    //console.log('66666666=', val);
+    if (!val) {
+        getList();
+    }
+});
 /** 查询流程监控列表 */
 const getList = async () => {
     loading.value = true;
