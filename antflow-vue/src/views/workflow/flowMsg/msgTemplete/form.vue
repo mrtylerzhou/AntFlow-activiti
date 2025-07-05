@@ -1,17 +1,16 @@
 <template>
-    <!-- 添加条件模板对话框 -->
-    <el-dialog title="添加条件" v-model="dialogVisible" width="650px" append-to-body>
+    <!-- 添加消息模板对话框 -->
+    <el-dialog title="添加消息模板" v-model="dialogVisible" width="650px" append-to-body>
         <el-form :model="templateForm" :rules="templateRules" ref="templateRef" label-width="130px" label-position="top"
             style="margin: 0 20px;">
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="通知类型" prop="notifyType">
-                        <el-checkbox-group v-model="templateForm.notifyType">
-                            <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
-                                :key="item.id" border>
-                                {{ item.name }}
-                            </el-checkbox>
-                        </el-checkbox-group>
+                    <el-form-item label="事件类型" prop="event">
+                        <el-select v-model="templateForm.event" placeholder="请选择事件类型" style="width: 240px">
+                            <el-option v-for="item in eventOptions" :key="item.id" :label="item.name"
+                                :value="item.id" />
+                        </el-select>
+
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -44,7 +43,17 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="跳转页面" prop="jumpUrl">
+                        <el-radio-group v-model="templateForm.jumpUrl">
+                            <el-radio-button :value=1>流程审批页</el-radio-button>
+                            <el-radio-button :value=2>流程查看页</el-radio-button>
+                            <el-radio-button :value=3>流程待办页</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-col>
+            </el-row>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
@@ -57,10 +66,11 @@
 </template>
 <script setup>
 import { ref, watch } from "vue";
-import { getAllNoticeTypes, saveInformationTemp, getWildcardCharacter } from "@/api/workflow/flowMsgApi";
+import { getAllNoticeTypes, saveInformationTemp, getWildcardCharacter, getProcessEvents } from "@/api/workflow/flowMsgApi";
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const wildcardList = ref([]);
+const eventOptions = ref([]);
 let props = defineProps({
     visible: {
         type: Boolean,
@@ -85,9 +95,10 @@ const data = reactive({
     templateForm: {},
     templateRules: {
         name: [{ required: true, message: '', trigger: 'blur' }],
-        notifyType: [{ required: true, message: '请选择通知类型', trigger: 'blur' }],
         systemTitle: [{ required: true, message: '', trigger: 'blur' }],
         systemContent: [{ required: true, message: '', trigger: 'blur' }],
+        event: [{ required: true, message: '请选择事件类型', trigger: 'blur' }],
+        jumpUrl: [{ required: true, message: '请选择跳转页面', trigger: 'blur' }],
     }
 });
 const { templateForm, templateRules } = toRefs(data);
@@ -98,6 +109,7 @@ watch(() => dialogVisible.value, (val) => {
         templateForm.value = props.formData;
         getAllNoticeTypesList();
         getWildcardCharacterList();
+        getProcessEventsList();
     }
 });
 
@@ -127,6 +139,21 @@ const getWildcardCharacterList = () => {
         console.log(err);
     });
 };
+/** 获取事件列表 */
+const getProcessEventsList = () => {
+    getProcessEvents().then(res => {
+        if (res && res.code == 200) {
+            eventOptions.value = res.data;
+        } else {
+            proxy.$modal.msgError("获取事件列表失败" + res.errMsg);
+        }
+    }).catch(err => {
+        console.log(err);
+    });
+};
+
+
+
 /** 提交条件模板表单 */
 function submitFormBtn() {
     proxy.$refs["templateRef"].validate(valid => {
@@ -148,15 +175,15 @@ function submitFormBtn() {
 }
 /** 取消操作添加条件模板表单 */
 function closeDialog() {
-    emits("update:visible", false);
     reset();
+    emits("update:visible", false);
 }
 /** 重置操作表单 */
 function reset() {
     templateForm.value = {
-        notifyType: [],
+        notifyType: [1],
         systemTitle: "工作流名称是:",
-        systemContent: ""
+        systemContent: "",
     };
 }
 </script>

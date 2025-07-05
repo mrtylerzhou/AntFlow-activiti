@@ -161,6 +161,11 @@
                         @changePermVal="changePermVal" />
                 </div>
             </el-tab-pane>
+            <el-tab-pane lazy label="通知设置" name="noticeStep">
+                <div class="drawer_content">
+                    通知设置
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
             <el-button type="primary" @click="saveApprover">确 定</el-button>
@@ -177,7 +182,7 @@ import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/antflow/cons
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import roleDialog from '../dialog/selectRoleDialog.vue';
-import FormPermConf from "../permConfig/FormPermConf.vue";
+import FormPermConf from "./permConfig/FormPermConf.vue";
 const { proxy } = getCurrentInstance();
 let store = useStore()
 let props = defineProps({
