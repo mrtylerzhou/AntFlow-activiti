@@ -21,8 +21,7 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.User;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
-import org.openoa.base.service.RoleServiceImpl;
-import org.openoa.base.service.UserServiceImpl;
+import org.openoa.base.service.AfRoleServiceImpl;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -72,7 +71,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private RoleServiceImpl roleService;
+    private AfRoleServiceImpl roleService;
 
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
@@ -713,9 +712,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
         //specified roles
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
-            List<User> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            List<BaseIdTranStruVo> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
             if (!CollectionUtils.isEmpty(users)) {
-                sendUsers.addAll(users.stream().map(u->u.getId().toString()).collect(Collectors.toList()));
+                sendUsers.addAll(users.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
             }
         }
 

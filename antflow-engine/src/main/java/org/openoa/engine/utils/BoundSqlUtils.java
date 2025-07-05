@@ -1,5 +1,6 @@
 package org.openoa.engine.utils;
 
+import com.google.common.collect.Sets;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -17,6 +18,8 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BoundSqlUtils {
 
@@ -141,6 +144,46 @@ public class BoundSqlUtils {
         };
         where.accept(deParser);
     }
+    //粗略判断是否为curd语句
+    public static boolean isCurdSql(String sql) {
+        if (sql == null || sql.trim().isEmpty()) {
+            return false; // 空语句视为非 CRUD
+        }
+
+        String lowerSql = sql.toLowerCase(Locale.ROOT);
+
+        // 使用正则匹配 insert / update / delete / select 为独立单词（\b 是单词边界）
+        Pattern pattern = Pattern.compile("\\b(insert|update|delete|select)\\b");
+        Matcher matcher = pattern.matcher(lowerSql);
+
+        return matcher.find();
+    }
+
+    private static String removeLeadingCommentsAndWhitespace(String sql) {
+        String trimmed = sql.trim();
+
+        // 去除单行注释和多行注释开头
+        while (trimmed.startsWith("--") || trimmed.startsWith("/*")) {
+            if (trimmed.startsWith("--")) {
+                int newline = trimmed.indexOf('\n');
+                trimmed = newline >= 0 ? trimmed.substring(newline + 1).trim() : "";
+            } else if (trimmed.startsWith("/*")) {
+                int endComment = trimmed.indexOf("*/");
+                trimmed = endComment >= 0 ? trimmed.substring(endComment + 2).trim() : "";
+            }
+        }
+
+        return trimmed;
+    }
+
+    private static String getFirstKeyword(String sql) {
+        if (sql.isEmpty()) return "";
+
+        // 获取前缀单词
+        String[] parts = sql.split("\\s+", 2);
+        return parts[0];
+    }
+
     private static boolean isFixedValue(Expression rightExpression) {
         return (rightExpression instanceof LongValue)
                 || (rightExpression instanceof StringValue)

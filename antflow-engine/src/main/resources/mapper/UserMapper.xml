@@ -17,6 +17,7 @@
         <result column="path" property="path"/>
     </resultMap>
 
+    <!--根据公司名称模糊查询公司信息,此接口暂时用不到,用户可不用管-->
     <select id="queryCompanyByNameFuzzy" resultType="org.openoa.base.vo.BaseIdTranStruVo">
 
     select id,org_name as name from t_company
