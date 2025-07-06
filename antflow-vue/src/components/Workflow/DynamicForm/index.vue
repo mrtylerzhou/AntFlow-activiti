@@ -1,6 +1,6 @@
 <template>
   <div class="my-nav-content">
-    <div id="designer-id" class="form-container">
+    <div id="designer-id" class="lf-form-container">
       <v-form-designer ref="formDesign"></v-form-designer>
     </div>
     <!-- <button @click="submitForm">ok</button> -->
@@ -80,13 +80,21 @@ body {
   /* 如果页面出现垂直滚动条，则加入此行CSS以消除之 */
 }
 
+.main-container {
+  margin-left: 0px !important;
+}
+
+.right-toolbar {
+  float: right !important;
+}
+
 .el-dialog {
   width: 700px !important;
   border: 1px solid #DDE1E5 !important;
   border-radius: 3px !important;
 }
 
-.form-container {
+.lf-form-container {
   background: white !important;
   padding: 0px;
   width: 95%;
@@ -94,9 +102,5 @@ body {
   bottom: 0;
   right: 0;
   margin: auto;
-}
-
-.main-container {
-  margin-left: 0px !important;
 }
 </style>
