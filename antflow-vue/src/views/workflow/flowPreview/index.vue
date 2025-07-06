@@ -1,35 +1,33 @@
 <template>
-  <div class="app-container">
-    <div class="card-box" style="padding-top: 10px;">
-      <div class="task-title">
-        <span class="task-title-text">流程详情预览</span>
-      </div>
-      <div style="background-color: #f5f5f7;min-height:75vh;">
-        <el-tabs v-model="activeTab" class="demo-tabs">
-          <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
-          <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
-          <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
-        </el-tabs>
-        <el-row>
-          <el-col :span="24" v-if="activeTab === 'flowForm'" class="item">
-            <div v-if="processConfig">
-              <BasicSetting ref="basicSetting" :basicData="processConfig" />
-            </div>
-          </el-col>
-          <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
-            <div v-if="processConfig" class="component">
-              <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
-                :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
-              </component>
-            </div>
-          </el-col>
-          <el-col :span="24" v-if="activeTab === 'flow'" class="item">
-            <div v-if="nodeConfig" class="flow">
-              <Process ref="processDesign" :processData="nodeConfig" />
-            </div>
-          </el-col>
-        </el-row>
-      </div>
+  <div class="card-box" style="padding: 10px;">
+    <div class="task-title">
+      <span class="task-title-text">流程详情预览</span>
+    </div>
+    <div style="background-color: #f5f5f7;padding: 15px;">
+      <el-tabs v-model="activeTab" class="demo-tabs">
+        <el-tab-pane label="流程基本信息" name="flowForm"></el-tab-pane>
+        <el-tab-pane label="业务表单预览" name="formRender"></el-tab-pane>
+        <el-tab-pane label="流程模板预览" name="flow"></el-tab-pane>
+      </el-tabs>
+      <el-row>
+        <el-col :span="24" v-if="activeTab === 'flowForm'" class="item">
+          <div v-if="processConfig">
+            <BasicSetting ref="basicSetting" :basicData="processConfig" />
+          </div>
+        </el-col>
+        <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
+          <div v-if="processConfig" class="component">
+            <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
+              :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
+            </component>
+          </div>
+        </el-col>
+        <el-col :span="24" v-if="activeTab === 'flow'" class="item">
+          <div v-if="nodeConfig" class="flow">
+            <Process ref="processDesign" :processData="nodeConfig" />
+          </div>
+        </el-col>
+      </el-row>
     </div>
     <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
   </div>

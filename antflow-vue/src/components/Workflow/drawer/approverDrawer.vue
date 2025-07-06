@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                }}</el-radio>
+                                    }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -146,7 +146,7 @@
                     @changePermVal="changePermVal" />
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
-                <notice-conf v-model:visible="approverUserVisible" @changePermVal="changePermVal" />
+                <notice-conf :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
@@ -186,6 +186,7 @@ let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
 let formItems = ref([]);
+let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
@@ -206,11 +207,13 @@ watch(approverConfig1, (val) => {
         let currParallel = val.value.parallelNodes[val.value.index]
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || [];
+        templateVos.value = currParallel.templateVos || [];
         checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
     }
     else {
         approverConfig.value = val.value;
         formItems.value = val.value.lfFieldControlVOs || [];
+        templateVos.value = val.value.templateVos || [];
         checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
     }
 });
@@ -298,10 +301,7 @@ const handleTabClick = (tab, event) => {
         formStepShow.value = false;
     }
 }
-/**低代码表单 */
-const changePermVal = (data) => {
-    approverConfig.value.lfFieldControlVOs = data;
-}
+
 /**条件抽屉的确认 */
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
@@ -316,7 +316,21 @@ const saveApprover = () => {
 /**关闭抽屉 */
 const closeDrawer = () => {
     store.setApprover(false)
-} 
+}
+/**低代码表单字段权限 */
+const changePermVal = (data) => {
+    approverConfig.value.lfFieldControlVOs = data;
+}
+/**消息设置 */
+const handleFlowMsgSet = (data) => {
+    data.nodeId = approverConfig.value.nodeId;
+    approverConfig.value.templateVos = [data];
+    store.setApproverConfig({
+        value: approverConfig1.value.value,
+        flag: true,
+        id: approverConfig1.value.id
+    })
+}
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/dialog.scss";

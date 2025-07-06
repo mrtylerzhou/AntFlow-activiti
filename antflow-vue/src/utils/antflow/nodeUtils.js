@@ -49,6 +49,7 @@ export class NodeUtils {
         viewPage: [0],
       },
       nodeApproveList: [],
+      templateVos: [],
     };
     return approveNode;
   }
@@ -314,6 +315,7 @@ export class NodeUtils {
       isSignUp: 0, //是否加批 0:否，1:是
       noHeaderAction: 1,
       lfFieldControlVOs: [],
+      templateVos: [],
       property: {
         afterSignUpWay: 2, //是否回到加批人 1:是，2:否
         signUpType: 1, //加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
