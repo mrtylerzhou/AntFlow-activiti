@@ -1,13 +1,17 @@
 package org.openoa.base.vo;
 
+import com.sun.corba.se.spi.ior.IORTemplateList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.activiti.bpmn.converter.export.CollaborationExport;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Classname BpmnTemplateVo
@@ -85,4 +89,17 @@ public class BpmnTemplateVo implements Serializable {
      * update user
      */
     private String updateUser;
+
+    public void setEmpList(List<BaseIdTranStruVo> empList) {
+        this.empList = empList;
+        if(!CollectionUtils.isEmpty(empList)){
+            this.empIdList = empList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+        }
+    }
+    public void setRoleList(List<BaseIdTranStruVo> roleList) {
+        this.roleList = roleList;
+        if(!CollectionUtils.isEmpty(roleList)){
+            this.roleIdList = roleList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+        }
+    }
 }

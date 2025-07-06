@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnTemplate;
 import org.openoa.engine.bpmnconf.mapper.BpmnTemplateMapper;
 import org.openoa.base.vo.BpmnConfVo;
