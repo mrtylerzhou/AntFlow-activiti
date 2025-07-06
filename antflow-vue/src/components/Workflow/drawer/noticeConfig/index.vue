@@ -3,8 +3,8 @@
         <el-form ref="templateRef" label-width="130px" label-position="top" style="margin: 0 20px;">
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="通知类型" prop="notifyType">
-                        <el-checkbox-group v-model="templateForm.notifyType">
+                    <el-form-item label="通知类型" prop="checkedMsgSendTypeList">
+                        <el-checkbox-group v-model="checkedMsgSendTypeList">
                             <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
                                 :key="item.id" border>
                                 {{ item.name }}
@@ -31,7 +31,7 @@
                 </el-col>
                 <el-col :span="24">
                     <el-form-item>
-                        <el-tag v-for="tag in selectValues" :key="tag.id" type="success" size="large">
+                        <el-tag v-for="tag in selectValues" :key="tag.id" type="warning" size="large">
                             [{{ tag.num }}] {{ tag.name }}
                         </el-tag>
                     </el-form-item>
@@ -61,13 +61,13 @@
                 </el-col>
                 <el-col :span="24">
                     <div class="gap-2">
-                        <el-tag v-for="userTag in checkedUserList" :key="userTag.targetId" type="success" size="large"
-                            closable @close="handleRemoveUser(userTag)">
+                        <el-tag v-for="userTag in templateForm.empList" :key="userTag.targetId" type="success"
+                            size="large" closable @close="handleRemoveUser(userTag)">
                             {{ userTag.name }}
                         </el-tag>
 
-                        <el-tag v-for="roleTag in checkedRoleList" :key="roleTag.targetId" type="success" size="large"
-                            closable @close="handleRemoveRole(roleTag)">
+                        <el-tag v-for="roleTag in templateForm.roleList" :key="roleTag.targetId" type="success"
+                            size="large" closable @close="handleRemoveRole(roleTag)">
                             {{ roleTag.name }}
                         </el-tag>
                     </div>
@@ -76,12 +76,13 @@
         </el-form>
         <flow-msg-templete v-model:visible="dialogMsgVisible" v-model:checkedData="selectValues"
             @change="saveFlowMsgTempDialog" />
-        <select-user-dialog v-model:visible="chooseUserVisible" :data="checkedUserList" @change="sureUserDialog" />
-        <select-role-dialog v-model:visible="chooseRoleVisible" :data="checkedRoleList" @change="sureRoleDialog" />
+        <select-user-dialog v-model:visible="chooseUserVisible" :data="templateForm.empList" @change="sureUserDialog" />
+        <select-role-dialog v-model:visible="chooseRoleVisible" :data="templateForm.roleList"
+            @change="sureRoleDialog" />
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect, onBeforeMount } from "vue";
 import { getAllNoticeTypes, getProcessEvents } from "@/api/workflow/flowMsgApi";
 import FlowMsgTemplete from "./flowMsgTemplateDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
@@ -113,25 +114,44 @@ const dialogMsgVisible = ref(false);
 const chooseUserVisible = ref(false);
 const chooseRoleVisible = ref(false);
 const noticeUserType = ref("1");
+
 const selectValues = ref([]);
-
-const checkedUserList = ref([]);
-const checkedRoleList = ref([]);
-
+const checkedMsgSendTypeList = ref([]);
 const templateForm = ref({
-    notifyType: [],
+    nodeId: "",
+    messageSendTypeList: [],
     event: "",
-    name: ""
+    informIdList: [],
+    empList: [],
+    roleList: [],
+    templateId: ""
 });
 
 let props = defineProps({
-    visible: {
-        type: Boolean,
-        default: false,
+    formData: {
+        type: Array,
+        default: [],
     }
 });
+const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
+//加载的时候判断，赋默认值
+onBeforeMount(() => {
+    //console.log('props.formData======', JSON.stringify(props.formData));
+    templateForm.value = Array.isArray(props.formData) && props.formData.length > 0 ? props.formData[0] : templateForm.value;
+    checkedMsgSendTypeList.value = templateForm.value.messageSendTypeList.map(item => {
+        return item.id;
+    });
+})
 
-const emits = defineEmits(["update:visible"]);
+watchEffect(() => {
+    templateForm.value.messageSendTypeList = checkedMsgSendTypeList.value.map(item => {
+        return {
+            id: item
+        }
+    });
+    emits('changeFlowMsgSet', templateForm.value)
+})
+
 onMounted(() => {
     getAllNoticeTypesList();
     getProcessEventsList();
@@ -164,29 +184,53 @@ const getProcessEventsList = () => {
 
 /**选择审批人类型更改事件 */
 const changeUserType = (val) => {
-    console.log(val);
-    checkedUserList.value = [];
-    checkedRoleList.value = [];
+    templateForm.value.informIdList = [val];
+    templateForm.value.empList = [];
+    templateForm.value.roleList = [];
 }
-
+/** 消息模板选择 */
 const saveFlowMsgTempDialog = (data) => {
     selectValues.value = data;
+    templateForm.value.templateId = data[0]?.id;
 }
-
+/**
+ * 选择人员
+ * @param data 
+ */
 const sureUserDialog = (data) => {
-    checkedUserList.value = data;
+    templateForm.value.empList = data.map(item => {
+        return {
+            id: item.targetId,
+            name: item.name
+        }
+    });
 }
-
+/**
+ * 选择角色
+ * @param data 
+ */
 const sureRoleDialog = (data) => {
-    checkedRoleList.value = data;
+    templateForm.value.roleList = data.map(item => {
+        return {
+            id: item.targetId,
+            name: item.name
+        }
+    });
 }
-
+/**
+ * 移除人员
+ */
 const handleRemoveUser = (data) => {
-    checkedUserList.value = checkedUserList.value.filter(item => item.targetId != data.targetId);
+    console.log('data======', data);
+    templateForm.value.empList = templateForm.value.empList
+        .filter(item => item.id != data.id);
 }
+/**
+ * 移除角色
+ */
 const handleRemoveRole = (data) => {
-
-    checkedRoleList.value = checkedRoleList.value.filter(item => item.targetId != data.targetId);
+    templateForm.value.roleList = templateForm.value.roleList
+        .filter(item => item.id != data.id);
 }
 </script>
 

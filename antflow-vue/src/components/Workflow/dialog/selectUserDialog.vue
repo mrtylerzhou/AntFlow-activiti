@@ -15,7 +15,8 @@
                 <el-button type="primary" size="default" @click="handleQuery">搜索</el-button>
               </el-form-item>
             </el-form>
-            <el-table ref="refTable" :data="userList" v-loading="loading" border height="350px">
+            <el-table ref="refTable" :data="userList" v-loading="loading" border height="500px"
+              :row-style="{ height: '30px' }">
               <el-table-column label="操作" width="55" align="center" class-name="small-padding fixed-width">
                 <template #default="scope">
                   <el-button link type="primary" size="default" icon="CirclePlus"
@@ -45,7 +46,7 @@
       </el-col>
       <el-col :span="8">
         <p class="tip">已选中列表</p>
-        <el-table ref="selectedTable" :data="checkedUsersList" border height="350px">
+        <el-table ref="selectedTable" :data="checkedUsersList" border height="540px">
           <el-table-column label="操作" width="55" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-button link type="primary" size="default" icon="Delete" @click="handleRemove(scope.row)" />
@@ -73,6 +74,9 @@
 <script setup name="selectUserDialog">
 import { onMounted, watch } from "vue";
 import { getUserPageList } from "@/api/workflow/mock";
+const { proxy } = getCurrentInstance();
+let emits = defineEmits(["update:visible", "change"]);
+
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -83,8 +87,7 @@ const props = defineProps({
     default: [],
   },
 });
-const { proxy } = getCurrentInstance();
-let emits = defineEmits(["update:visible", "change"]);
+
 const loading = ref(false);
 const layoutSize = 'total, prev, pager, next';
 const userList = ref([]);
@@ -103,6 +106,12 @@ const { pageDto, qform } = toRefs(queryParams);
 let visibleDialog = computed({
   get() {
     if (props.visible) {
+      checkedUsersList.value = props.data.map((item) => {
+        return {
+          userId: item.targetId ?? item.id,
+          userName: item.name,
+        };
+      });
       getPageList();
     }
     return props.visible;
@@ -111,15 +120,7 @@ let visibleDialog = computed({
     closeDialog();
   },
 });
-let list = computed(() => props.data);
-watch(list, (newVal) => {
-  checkedUsersList.value = newVal.map((item) => {
-    return {
-      userId: item.targetId,
-      userName: item.name,
-    };
-  });
-}, { deep: true });
+
 onMounted(() => {
   getPageList();
 });

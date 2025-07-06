@@ -146,7 +146,7 @@
                     @changePermVal="changePermVal" />
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
-                <notice-conf v-model:visible="approverUserVisible" @changePermVal="changePermVal" />
+                <notice-conf :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
@@ -186,10 +186,11 @@ let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
 let formItems = ref([]);
+let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
-let approverConfig1 = computed(() => store.approverConfig1);
+let approverConfig1 = computed(() => store.approverConfig1.value);
 let approverDrawer = computed(() => store.approverDrawer);
 let visible = computed({
     get() {
@@ -202,16 +203,18 @@ let visible = computed({
 });
 /**页面加载监听事件 */
 watch(approverConfig1, (val) => {
-    if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
-        let currParallel = val.value.parallelNodes[val.value.index]
+    if (val.nodeType == 7) {//nodeType == 7 是并行审批
+        let currParallel = val.parallelNodes[val.index]
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || [];
+        templateVos.value = currParallel.templateVos || [];
         checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
     }
     else {
-        approverConfig.value = val.value;
-        formItems.value = val.value.lfFieldControlVOs || [];
-        checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+        approverConfig.value = val;
+        formItems.value = val.lfFieldControlVOs || [];
+        templateVos.value = val.templateVos || [];
+        checkApprovalPageBtns.value = val.buttons?.approvalPage;
     }
 });
 
@@ -298,25 +301,37 @@ const handleTabClick = (tab, event) => {
         formStepShow.value = false;
     }
 }
-/**低代码表单 */
-const changePermVal = (data) => {
-    approverConfig.value.lfFieldControlVOs = data;
-}
+
 /**条件抽屉的确认 */
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
     store.setApproverConfig({
-        value: approverConfig1.value.value,
+        value: approverConfig1.value,
         flag: true,
-        id: approverConfig1.value.id
+        id: approverConfig1.id
     })
     closeDrawer()
 }
 /**关闭抽屉 */
 const closeDrawer = () => {
     store.setApprover(false)
-} 
+}
+/**低代码表单字段权限 */
+const changePermVal = (data) => {
+    approverConfig.value.lfFieldControlVOs = data;
+}
+/**消息设置 */
+const handleFlowMsgSet = (data) => {
+    data.nodeId = approverConfig.value.nodeId;
+    approverConfig.value.templateVos = [data];
+    //console.log('approverConfig1================', JSON.stringify(approverConfig1.value.templateVos))
+    store.setApproverConfig({
+        value: approverConfig1.value,
+        flag: true,
+        id: approverConfig1.id
+    })
+}
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/dialog.scss";

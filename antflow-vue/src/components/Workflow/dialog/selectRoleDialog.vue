@@ -13,7 +13,7 @@
               <el-button type="primary" @click="handleQuery">搜索</el-button>
             </el-form-item>
           </el-form>
-          <el-table ref="refTable" :data="roleList" border height="260px">
+          <el-table ref="refTable" :data="roleList" border height="470px" :row-style="{ height: '30px' }">
             <el-table-column label="操作" width="60" align="center" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-button link type="primary" @click="handleSelectUser(scope.row)">
@@ -32,7 +32,7 @@
       </el-col>
       <el-col :span="8">
         <p class="tip">已选中列表</p>
-        <el-table ref="selectedTable" :data="checkedRoleList" border height="310px">
+        <el-table ref="selectedTable" :data="checkedRoleList" border height="520px">
           <el-table-column label="操作" width="60" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-button link type="primary" @click="handleRemove(scope.row)">移除</el-button>
@@ -90,7 +90,7 @@ watch(() => props.visible, (newVal) => {
   if (newVal) {
     checkedRoleList.value = props.data.map(item => {
       return {
-        roleId: item.targetId,
+        roleId: item.targetId ?? item.id,
         roleName: item.name
       }
     })
