@@ -16,18 +16,24 @@
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="事件类型" prop="event">
-                        <el-select v-model="templateForm.event" placeholder="请选择事件类型" style="width: 240px">
+                        <el-select v-model="templateForm.event" placeholder="请选择事件类型" style="width: 350px">
                             <el-option v-for="item in eventOptions" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
-
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="消息模板" prop="name">
-                        <el-button type="primary" plain icon="Plus">选择消息模板</el-button>
+                    <el-form-item label="消息模板" prop="templateId">
+                        <el-button type="primary" plain icon="Plus" @click="dialogMsgVisible = true">选择消息模板</el-button>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                    <el-form-item>
+                        <el-tag v-for="tag in selectValues" :key="tag.id" type="success" size="large">
+                            [{{ tag.num }}] {{ tag.name }}
+                        </el-tag>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -40,24 +46,49 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item prop="name">
+                        <div v-show="noticeUserType == 5">
+                            <el-button type="primary" plain icon="Plus"
+                                @click="chooseUserVisible = true">添加/修改人员</el-button>
+                        </div>
+                        <div v-show="noticeUserType == 6">
+                            <el-button type="primary" plain icon="Plus"
+                                @click="chooseRoleVisible = true">添加/修改角色</el-button>
+                        </div>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                    <div class="gap-2">
+                        <el-tag v-for="userTag in checkedUserList" :key="userTag.targetId" type="success" size="large"
+                            closable @close="handleRemoveUser(userTag)">
+                            {{ userTag.name }}
+                        </el-tag>
 
+                        <el-tag v-for="roleTag in checkedRoleList" :key="roleTag.targetId" type="success" size="large"
+                            closable @close="handleRemoveRole(roleTag)">
+                            {{ roleTag.name }}
+                        </el-tag>
+                    </div>
+                </el-col>
+            </el-row>
         </el-form>
-
-        <div class="approver_Btn" v-show="noticeUserType == 5">
-            <el-button type="primary" plain icon="Plus">添加/修改人员</el-button>
-        </div>
-        <div class="approver_Btn" v-show="noticeUserType == 6">
-            <el-button type="primary" plain icon="Plus">添加/修改角色</el-button>
-        </div>
+        <flow-msg-templete v-model:visible="dialogMsgVisible" v-model:checkedData="selectValues"
+            @change="saveFlowMsgTempDialog" />
+        <select-user-dialog v-model:visible="chooseUserVisible" :data="checkedUserList" @change="sureUserDialog" />
+        <select-role-dialog v-model:visible="chooseRoleVisible" :data="checkedRoleList" @change="sureRoleDialog" />
     </div>
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
 import { getAllNoticeTypes, getProcessEvents } from "@/api/workflow/flowMsgApi";
+import FlowMsgTemplete from "./flowMsgTemplateDialog.vue";
+import selectUserDialog from '../../dialog/selectUserDialog.vue';
+import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const eventOptions = ref([]);
-
 const noticeUserList = ref([{
     value: "1",
     label: "申请人"
@@ -78,7 +109,14 @@ const noticeUserList = ref([{
     label: "指定角色"
 }]);
 
+const dialogMsgVisible = ref(false);
+const chooseUserVisible = ref(false);
+const chooseRoleVisible = ref(false);
 const noticeUserType = ref("1");
+const selectValues = ref([]);
+
+const checkedUserList = ref([]);
+const checkedRoleList = ref([]);
 
 const templateForm = ref({
     notifyType: [],
@@ -94,8 +132,6 @@ let props = defineProps({
 });
 
 const emits = defineEmits(["update:visible"]);
-
-
 onMounted(() => {
     getAllNoticeTypesList();
     getProcessEventsList();
@@ -129,5 +165,34 @@ const getProcessEventsList = () => {
 /**选择审批人类型更改事件 */
 const changeUserType = (val) => {
     console.log(val);
+    checkedUserList.value = [];
+    checkedRoleList.value = [];
+}
+
+const saveFlowMsgTempDialog = (data) => {
+    selectValues.value = data;
+}
+
+const sureUserDialog = (data) => {
+    checkedUserList.value = data;
+}
+
+const sureRoleDialog = (data) => {
+    checkedRoleList.value = data;
+}
+
+const handleRemoveUser = (data) => {
+    checkedUserList.value = checkedUserList.value.filter(item => item.targetId != data.targetId);
+}
+const handleRemoveRole = (data) => {
+
+    checkedRoleList.value = checkedRoleList.value.filter(item => item.targetId != data.targetId);
 }
 </script>
+
+<style lang="scss" scoped>
+.gap-2 {
+    display: flex;
+    gap: 0.5rem;
+}
+</style>

@@ -150,6 +150,7 @@ let saveDialog = () => {
     targetId: item.roleId,
     name: item.roleName
   }))
+  closeDialog();
   emits('change', checkedList)
 }
 
