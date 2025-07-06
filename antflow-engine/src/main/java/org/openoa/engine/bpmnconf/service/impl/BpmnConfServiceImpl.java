@@ -430,7 +430,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(EventTypeEnum.getDescByByCode(Integer.parseInt(o)))
+                            .name(InformEnum.getDescByByCode(Integer.parseInt(o)))
                             .build())
                     .collect(Collectors.toList()));
         }

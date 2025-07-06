@@ -54,10 +54,12 @@
         a.update_time AS updateTime,
         a.is_out_side_process as isOutSideProcess,
         a.is_lowcode_flow as isLowCodeFlow,
-        a.remark AS remark
+        a.remark AS remark,
+        tmp.process_key AS noticeFormCode
         FROM t_bpmn_conf a
         left join t_out_side_bpm_business_party b on a.business_party_id = b.id
         left join t_dict_data c on c.dict_value = a.form_code  and a.is_lowcode_flow =1
+        left join (select distinct process_key from bpm_process_notice) tmp on a.form_code = tmp.process_key
         WHERE a.is_del = 0
         <if test="bpmnConfVo.isOutSideProcess!=null">
             AND a.is_out_side_process = #{bpmnConfVo.isOutSideProcess}

@@ -177,4 +177,8 @@ public class BpmnConfVo {
     private Integer type;
     private String lfFormData;
     private Long lfFormDataId;
+    /**
+     * 如果节点有多个通知类型,只会选出一个,用于给前端此字段不为空则说明当前节点有通知
+     */
+    private String noticeFormCode;
 }
