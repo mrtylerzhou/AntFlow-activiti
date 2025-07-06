@@ -323,7 +323,6 @@ const changePermVal = (data) => {
 }
 /**消息设置 */
 const handleFlowMsgSet = (data) => {
-    data.nodeId = approverConfig.value.nodeId;
     approverConfig.value.templateVos = [data];
     store.setApproverConfig({
         value: approverConfig1.value.value,

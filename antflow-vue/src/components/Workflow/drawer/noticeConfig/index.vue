@@ -31,9 +31,11 @@
                 </el-col>
                 <el-col :span="24">
                     <el-form-item>
-                        <el-tag v-for="tag in selectValues" :key="tag.id" type="warning" size="large">
-                            [{{ tag.num }}] {{ tag.name }}
-                        </el-tag>
+                        <p v-for="tag in selectValues">
+                            <el-tag v-if="tag.name" :key="tag.id" type="warning" size="large">
+                                {{ tag.num }} {{ tag.name }}
+                            </el-tag>
+                        </p>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -136,11 +138,17 @@ let props = defineProps({
 const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
 //加载的时候判断，赋默认值
 onBeforeMount(() => {
-    //console.log('props.formData======', JSON.stringify(props.formData));
+    console.log('props.formData======', JSON.stringify(props.formData));
     templateForm.value = Array.isArray(props.formData) && props.formData.length > 0 ? props.formData[0] : templateForm.value;
     checkedMsgSendTypeList.value = templateForm.value.messageSendTypeList.map(item => {
         return item.id;
     });
+    selectValues.value = [{
+        id: templateForm.value.templateId,
+        name: templateForm.value.templateName
+    }]
+    noticeUserType.value = templateForm.value.informIdList[0];
+    templateForm.value.informList = []
 })
 
 watchEffect(() => {
@@ -221,7 +229,6 @@ const sureRoleDialog = (data) => {
  * 移除人员
  */
 const handleRemoveUser = (data) => {
-    console.log('data======', data);
     templateForm.value.empList = templateForm.value.empList
         .filter(item => item.id != data.id);
 }
