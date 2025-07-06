@@ -7,8 +7,8 @@ public enum ProcessNoticeEnum {
      * 流程审批状态
      */
     EMAIL_TYPE(1,"邮件"),
-    APP_TYPE(3,"app推送"),
     PHONE_TYPE(2,"短信"),
+    APP_TYPE(3,"app推送"),
     WECHAT_TYPE(5,"企微"),
     DING_TALK_TYPE(6,"钉钉"),
     FEISHU_TYPE(7,"飞书"),

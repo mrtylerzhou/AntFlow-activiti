@@ -57,6 +57,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                         .map(o -> {
                             BpmnTemplate bpmnTemplate = new BpmnTemplate();
                             BeanUtils.copyProperties(o, bpmnTemplate);
+                            bpmnTemplate.setId(null);
                             bpmnTemplate.setConfId(bpmnNodeVo.getConfId());
                             bpmnTemplate.setNodeId(bpmnNodeVo.getId());
                             bpmnTemplate.setInforms(StringUtils.join(o.getInformIdList(), ","));
