@@ -748,6 +748,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
             for (String informId : bpmnTemplateVo.getInformIdList()) {
                 InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
+                if(informEnum==InformEnum.ASSIGNED_USER||informEnum==InformEnum.ASSIGNEED_ROLES){
+                    continue;
+                }
                 //todo check whether the result is valid
                 Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
                 if (filObject instanceof List) {
