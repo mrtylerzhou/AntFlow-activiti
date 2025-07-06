@@ -40,8 +40,6 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     private DicDataMapper dicDataMapper;
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
-    @Autowired
-    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return
@@ -149,19 +147,12 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                     .eq(BpmnConf::getEffectiveStatus, 1);
             List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
             if(!CollectionUtils.isEmpty(bpmnConfs)){
-                Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
                 Map<String, Integer> formCode2Flags = bpmnConfs
                         .stream()
                         .filter(a->a.getExtraFlags()!=null)
                         .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
                 for (BaseKeyValueStruVo lfDto : results) {
-                    List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(lfDto.getKey());
-                    if(!CollectionUtils.isEmpty(bpmProcessNotices)){
-                        List<BaseNumIdStruVo> numIdStruVos = bpmProcessNotices.stream()
-                                .map(a -> BaseNumIdStruVo.builder().id(a.getId().longValue()).name(ProcessNoticeEnum.getDescByCode(a.getId())).active(true).build())
-                                .collect(Collectors.toList());
-                        lfDto.setProcessNotices(numIdStruVos);
-                    }
+
                     Integer flags = formCode2Flags.get(lfDto.getKey());
                     if(flags!=null){
                         boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);

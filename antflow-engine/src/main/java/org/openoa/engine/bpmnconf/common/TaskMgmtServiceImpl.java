@@ -169,13 +169,6 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
             Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
             for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
-                List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
-                if(!CollectionUtils.isEmpty(bpmProcessNotices)){
-                    List<BaseNumIdStruVo> numIdStruVos = bpmProcessNotices.stream()
-                            .map(a -> BaseNumIdStruVo.builder().id(a.getId().longValue()).name(ProcessNoticeEnum.getDescByCode(a.getId())).active(true).build())
-                            .collect(Collectors.toList());
-                    diyProcessInfoDTO.setProcessNotices(numIdStruVos);
-                }
                 Integer flags = formCode2Flags.get(diyProcessInfoDTO.getKey());
                 if(flags!=null){
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
