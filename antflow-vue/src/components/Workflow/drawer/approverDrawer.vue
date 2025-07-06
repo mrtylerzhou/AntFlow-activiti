@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                }}</el-radio>
+                                    }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -190,7 +190,7 @@ let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
-let approverConfig1 = computed(() => store.approverConfig1.value);
+let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
 let visible = computed({
     get() {
@@ -203,18 +203,18 @@ let visible = computed({
 });
 /**页面加载监听事件 */
 watch(approverConfig1, (val) => {
-    if (val.nodeType == 7) {//nodeType == 7 是并行审批
-        let currParallel = val.parallelNodes[val.index]
+    if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
+        let currParallel = val.value.parallelNodes[val.value.index]
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || [];
         templateVos.value = currParallel.templateVos || [];
         checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
     }
     else {
-        approverConfig.value = val;
-        formItems.value = val.lfFieldControlVOs || [];
-        templateVos.value = val.templateVos || [];
-        checkApprovalPageBtns.value = val.buttons?.approvalPage;
+        approverConfig.value = val.value;
+        formItems.value = val.value.lfFieldControlVOs || [];
+        templateVos.value = val.value.templateVos || [];
+        checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
     }
 });
 
@@ -307,9 +307,9 @@ const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
     store.setApproverConfig({
-        value: approverConfig1.value,
+        value: approverConfig1.value.value,
         flag: true,
-        id: approverConfig1.id
+        id: approverConfig1.value.id
     })
     closeDrawer()
 }
@@ -325,11 +325,10 @@ const changePermVal = (data) => {
 const handleFlowMsgSet = (data) => {
     data.nodeId = approverConfig.value.nodeId;
     approverConfig.value.templateVos = [data];
-    //console.log('approverConfig1================', JSON.stringify(approverConfig1.value.templateVos))
     store.setApproverConfig({
-        value: approverConfig1.value,
+        value: approverConfig1.value.value,
         flag: true,
-        id: approverConfig1.id
+        id: approverConfig1.value.id
     })
 }
 </script>
