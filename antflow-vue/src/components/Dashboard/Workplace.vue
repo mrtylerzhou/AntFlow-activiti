@@ -1,5 +1,5 @@
 <template>
-    <div style="max-height: 80vh;">
+    <div>
         <el-scrollbar>
             <el-card>
                 <template v-slot:header>
@@ -10,16 +10,20 @@
                 <el-row :gutter="5">
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
-                            <div slot="title">
-                                <div class="card-icon">
-                                    <el-avatar size="large">
-                                        <img :src="item.IconUrl" />
-                                    </el-avatar>
-                                </div>
-                                <div class="card-title">
-                                    <a>{{ item.title }}</a>
-                                    <p>{{ item.description }}</p>
-                                </div>
+                            <div class="card-icon">
+                                <el-avatar size="large">
+                                    <img :src="item.IconUrl" />
+                                </el-avatar>
+                            </div>
+                            <div class="card-title">
+                                <a>{{ item.title }}</a>
+                                <p>{{ item.description }}</p>
+                            </div>
+                            <!-- 新增底部遮罩层和图标 -->
+                            <div class="card-bottom-mask">
+                                <!-- <p v-for="n in 4" :key="n" style="margin-left: 5px;">
+                                    <msgIcon :iconValue="n" viewValue="warning" :sizeValue="25" />
+                                </p> -->
                             </div>
                         </el-card>
                     </el-col>
@@ -48,17 +52,16 @@
                 <el-row :gutter="5">
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
-                            <div slot="title">
-                                <div class="card-icon">
-                                    <el-avatar size="large">
-                                        <img :src="item.IconUrl" />
-                                    </el-avatar>
-                                </div>
-                                <div class="card-title">
-                                    <a>{{ item.title }}</a>
-                                    <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
-                                </div>
+                            <div class="card-icon">
+                                <el-avatar size="large">
+                                    <img :src="item.IconUrl" />
+                                </el-avatar>
                             </div>
+                            <div class="card-title">
+                                <a>{{ item.title }}</a>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
+                            </div>
+                            <div class="card-bottom-mask"></div>
                         </el-card>
                     </el-col>
                     <el-col :md="24">
@@ -88,17 +91,16 @@
                 <el-row :gutter="5">
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
                         <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
-                            <div slot="title">
-                                <div class="card-icon">
-                                    <el-avatar size="large">
-                                        <img :src="item.IconUrl" />
-                                    </el-avatar>
-                                </div>
-                                <div class="card-title">
-                                    <a>{{ item.title }}</a>
-                                    <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
-                                </div>
+                            <div class="card-icon">
+                                <el-avatar size="large">
+                                    <img :src="item.IconUrl" />
+                                </el-avatar>
                             </div>
+                            <div class="card-title">
+                                <a>{{ item.title }}</a>
+                                <p>【{{ substringHidden(item.formCode) }}】{{ item.description }}</p>
+                            </div>
+                            <div class="card-bottom-mask"></div>
                         </el-card>
                     </el-col>
                     <el-col :md="24">
@@ -116,6 +118,7 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 import { getDIYFromCodeData } from "@/api/workflow/index"
 import { getLFActiveFormCodePageList } from "@/api/workflow/lowcodeApi"
 import { getOutSideFormCodePageList } from "@/api/workflow/outsideApi"
+import msgIcon from '@/components/Workflow/components/msgIcon.vue';
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);
@@ -249,21 +252,33 @@ function handleFlow(row) {
     proxy.$modal.msgSuccess("演示环境努力开发中！");
 }
 </script>
+
 <style lang="scss" scoped>
 .card-col {
     cursor: pointer;
     margin-bottom: 10px;
     overflow: hidden;
+    position: relative;
 
-    &:hover {
-        background: rgba(0, 0, 0, 0.45);
-
-        .card-title a,
-        p {
-            color: #ffff;
-        }
+    &:hover .card-bottom-mask {
+        display: flex;
     }
+}
 
+.card-bottom-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // height: 25px;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    pointer-events: none;
+    transition: all 0.2s;
 }
 
 .el-card {
