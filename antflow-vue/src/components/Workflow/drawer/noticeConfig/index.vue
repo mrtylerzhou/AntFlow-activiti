@@ -36,11 +36,10 @@
                             <el-tag v-if="tag.name" :key="tag.id" type="warning" size="large">
                                 {{ tag.num }} {{ tag.name }}
                             </el-tag>
-                            <el-tooltip content="查看消息模板详情" placement="top">
+                            <el-tooltip v-if="tag.name" content="查看消息模板详情" placement="top">
                                 <el-button icon="Search" circle plain type="warning"
                                     @click="dialogMsgViewVisible = true" />
                             </el-tooltip>
-
                         </p>
                     </el-form-item>
                 </el-col>

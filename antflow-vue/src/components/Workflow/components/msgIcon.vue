@@ -1,6 +1,6 @@
 <template>
     <el-text :type="viewType">
-        <el-icon v-if="iconType">
+        <el-icon v-if="iconType" :size="sizeValue">
             <component :is="getTypeIcon(iconType)" />
         </el-icon>
     </el-text>
@@ -18,6 +18,10 @@ let props = defineProps({
     viewValue: {
         type: String,
         default: "info",
+    },
+    sizeValue: {
+        type: [Number, String],
+        default: 15,
     },
 });
 const validTypes = ["primary", "success", "info", "warning", "danger"];
