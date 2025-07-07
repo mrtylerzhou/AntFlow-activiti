@@ -1,5 +1,5 @@
 <template>
-    <div style="max-height: 80vh;">
+    <div>
         <el-scrollbar>
             <el-card>
                 <template v-slot:header>
