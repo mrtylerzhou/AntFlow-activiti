@@ -8,6 +8,7 @@
                             <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
                                 :key="item.id" border>
                                 {{ item.name }}
+                                <msgIcon v-model:iconValue="item.id" viewValue="primary" />
                             </el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
@@ -35,6 +36,11 @@
                             <el-tag v-if="tag.name" :key="tag.id" type="warning" size="large">
                                 {{ tag.num }} {{ tag.name }}
                             </el-tag>
+                            <el-tooltip content="查看消息模板详情" placement="top">
+                                <el-button icon="Search" circle plain type="warning"
+                                    @click="dialogMsgViewVisible = true" />
+                            </el-tooltip>
+
                         </p>
                     </el-form-item>
                 </el-col>
@@ -81,14 +87,18 @@
         <select-user-dialog v-model:visible="chooseUserVisible" :data="templateForm.empList" @change="sureUserDialog" />
         <select-role-dialog v-model:visible="chooseRoleVisible" :data="templateForm.roleList"
             @change="sureRoleDialog" />
+        <msg-view-dialog v-model:visible="dialogMsgViewVisible" v-model:checkedData="selectValues"
+            @change="saveFlowMsgTempDialog" />
     </div>
 </template>
 <script setup>
 import { onMounted, ref, watchEffect, onBeforeMount } from "vue";
 import { getAllNoticeTypes, getProcessEvents } from "@/api/workflow/flowMsgApi";
-import FlowMsgTemplete from "./flowMsgTemplateDialog.vue";
+import flowMsgTemplete from "./flowMsgTemplateDialog.vue";
+import msgViewDialog from "./msgViewDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
+import msgIcon from '../../components/msgIcon.vue';
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const eventOptions = ref([]);
@@ -113,6 +123,7 @@ const noticeUserList = ref([{
 }]);
 
 const dialogMsgVisible = ref(false);
+const dialogMsgViewVisible = ref(false);
 const chooseUserVisible = ref(false);
 const chooseRoleVisible = ref(false);
 const noticeUserType = ref("1");
@@ -138,7 +149,6 @@ let props = defineProps({
 const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
 //加载的时候判断，赋默认值
 onBeforeMount(() => {
-    console.log('props.formData======', JSON.stringify(props.formData));
     templateForm.value = Array.isArray(props.formData) && props.formData.length > 0 ? props.formData[0] : templateForm.value;
     checkedMsgSendTypeList.value = templateForm.value.messageSendTypeList.map(item => {
         return item.id;
@@ -239,6 +249,7 @@ const handleRemoveRole = (data) => {
     templateForm.value.roleList = templateForm.value.roleList
         .filter(item => item.id != data.id);
 }
+
 </script>
 
 <style lang="scss" scoped>
