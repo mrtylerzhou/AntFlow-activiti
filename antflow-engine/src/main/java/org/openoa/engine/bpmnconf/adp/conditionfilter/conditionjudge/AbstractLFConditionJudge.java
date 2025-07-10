@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
@@ -13,7 +14,7 @@ import java.net.Inet4Address;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
-
+@Slf4j
 public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
 
     protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate,int currentIndex,int currentGroup) {
@@ -43,7 +44,8 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
             Integer numberOperator = numberOperatorList.get(iterIndex);
             Object valueFromUser = lfConditionsFromUser.get(key);
             if(valueFromUser==null){
-                throw new JiMuBizException(Strings.lenientFormat("condition field from user %s can not be null",key));
+                log.error(Strings.lenientFormat("condition field from user %s can not be null",key));
+                return false;
             }
             Object valueFromDb = stringObjectEntry.getValue();
             if(valueFromDb==null){

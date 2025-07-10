@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
 import org.openoa.base.exception.JiMuBizException;
 
@@ -10,13 +11,16 @@ import java.math.BigDecimal;
  * @Date 2024/6/22 20:22
  * @Version 0.5
  */
+@Slf4j
 public abstract class AbstractComparableJudge implements ConditionJudge {
     protected boolean compareJudge(BigDecimal confTotal, BigDecimal confTotal2, BigDecimal actual, Integer operator) {
         if (confTotal == null) {
-            throw new JiMuBizException("operator left is null");
+            log.error("confTotal is null");
+            return false;
         }
         if (actual == null) {
-            throw new JiMuBizException("operator right is null");
+            log.error("operator right is null");
+            return false;
         }
         if (operator == null) {
             throw new JiMuBizException("operator is null");
