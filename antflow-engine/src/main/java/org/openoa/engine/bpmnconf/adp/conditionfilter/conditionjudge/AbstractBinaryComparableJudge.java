@@ -31,8 +31,13 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
         //运算符类型
         Integer theOperatorType = conditionsConf.getNumberOperator();
         try {
-            fieldValueInDb =  FieldUtils.readField(conditionsConf, fieldNameInDb, true).toString();
-            fieldValueActual = Optional.ofNullable(FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true)).orElse(0).toString();
+            Object varInDb = FieldUtils.readField(conditionsConf, fieldNameInDb, true);
+            Object varOfUser = FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true);
+            if(varInDb==null||varOfUser==null){
+                return false;
+            }
+            fieldValueInDb =varInDb.toString();
+            fieldValueActual =varOfUser.toString();
             fieldValueActualbig = new BigDecimal(fieldValueActual);
 
             if(JudgeOperatorEnum.binaryOperator().contains(theOperatorType)){
