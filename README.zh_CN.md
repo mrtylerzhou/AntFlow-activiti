@@ -2,7 +2,7 @@
 	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
 </p>
 
-## 想要快速上手使用antflow，请拉到最下面找到【学习资源章节】
+## 想要快速上手使用antflow，请拉到最下面找到[学习资源](#学习资源)
 
 ###### 随手 star ⭐是一种美德。 你们的star就是我们持续开源的动力
 
