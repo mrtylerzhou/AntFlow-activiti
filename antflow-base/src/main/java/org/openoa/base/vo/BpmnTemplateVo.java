@@ -1,11 +1,9 @@
 package org.openoa.base.vo;
 
-import com.sun.corba.se.spi.ior.IORTemplateList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.activiti.bpmn.converter.export.CollaborationExport;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
