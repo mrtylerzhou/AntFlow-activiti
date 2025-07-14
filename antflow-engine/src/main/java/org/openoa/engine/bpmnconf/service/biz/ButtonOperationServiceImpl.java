@@ -55,14 +55,14 @@ public class ButtonOperationServiceImpl{
                 ProcessOperationEnum poEnum = ProcessOperationEnum.getEnumByCode(vo.getOperationType());
                 switch (Objects.requireNonNull(poEnum)){
                     case BUTTON_TYPE_SUBMIT:
-                        thirdPartyCallBackService.doCallback(vo.getBpmFlowCallbackUrl(), PROC_STARTED_CALL_BACK, vo.getBpmnConfVo(),
+                        thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, vo.getBpmnConfVo(),
                                 vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
                     case BUTTON_TYPE_AGREE:
-                        thirdPartyCallBackService.doCallback(vo.getBpmFlowCallbackUrl(), PROC_COMMIT_CALL_BACK, vo.getBpmnConfVo(),
+                        thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, vo.getBpmnConfVo(),
                                 vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
                         break;
                     case BUTTON_TYPE_ABANDON:
-                        thirdPartyCallBackService.doCallback(vo.getBpmFlowCallbackUrl(), PROC_END_CALL_BACK, vo.getBpmnConfVo(),
+                        thirdPartyCallBackService.doCallback( PROC_END_CALL_BACK, vo.getBpmnConfVo(),
                                 vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
                         break;
                 }

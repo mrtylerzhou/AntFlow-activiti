@@ -1,5 +1,6 @@
 package org.openoa.base.service;
 
+import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseIdTranStruVo;
 
 import java.util.Collection;
@@ -23,4 +24,11 @@ public interface AfUserService {
     BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId);
 
     BaseIdTranStruVo queryEmployeeDirectLeaderById(String employeeId);
+
+
+    Employee getEmployeeDetailById(String id);
+
+    List<Employee> getEmployeeDetailByIds(Collection<String> ids);
+
+    long checkEmployeeEffective(String id);
 }

@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
-import org.activiti.engine.impl.RuntimeServiceImpl;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.security.Provider;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -188,10 +186,19 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         if (ProcessDefinitionUtils.isUserTaskParallel(taskData)) {
             TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId(), bpmVariableMultiplayerService);
             try {
-                List<String> strings = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey).stream().distinct().collect(Collectors.toList());
+                List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
+                List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());
                 if (strings.size() > 1) {
                     strings = strings.stream().filter(a -> !a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), strings);
+
+                }
+                List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
+                if(tasks.size()>1){
+                    Task firstTask = tasks.get(0);
+                    List<String> otherNewTaskIds = tasks.stream().map(TaskInfo::getId).distinct().filter(id -> !id.equals(firstTask.getId())).collect(Collectors.toList());
+                    taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), otherNewTaskIds);
+                    taskMgmtMapper.deleteTaskByTaskIds(otherNewTaskIds);
                 }
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);

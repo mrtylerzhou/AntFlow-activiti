@@ -25,14 +25,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useStore } from '@/store/modules/workflow'
-import { nodeTypeList } from '@/utils/flow/const'
+import { nodeTypeList } from '@/utils/antflow/const'
 import errorDialog from "@/components/Workflow/dialog/errorDialog.vue";
 import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
-import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/zoom.js";
-import { flattenMapTreeToList } from '@/utils/flow/nodeUtils'
+import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
+import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let { setIsTried } = useStore()
 const emit = defineEmits(['nextChange'])
@@ -62,9 +62,9 @@ onMounted(async () => {
  * 判断流程中是否有审批节点 Demo 预览需要，项目中不使用可以去掉这步验证
  * @param treeNode 
  */
-const validateIsExistApproveNode = (treeNode) => { 
-    if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" }; 
-    const nodeArray = flattenMapTreeToList(treeNode); 
+const validateIsExistApproveNode = (treeNode) => {
+    if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" };
+    const nodeArray = flattenMapTreeToList(treeNode);
     const isExist = nodeArray.some(node => {
         return node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 7;
     });
@@ -81,9 +81,9 @@ const validateIsExistApproveNode = (treeNode) => {
  * @param treeNode 
  */
 const validateParallelApproveNode = (treeNode) => {
-    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
+    if (proxy.isEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 7) {
-        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
+        if (proxy.isEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "并行审批下必须有一个审批人节点作为聚合节点" };
         } else {
             return validateParallelApproveNode(treeNode.childNode);
@@ -99,10 +99,10 @@ const validateParallelApproveNode = (treeNode) => {
  * 判断存在条件并行节点就必须有聚合节点
  * @param treeNode 
  */
- const validateParallelConditionNode = (treeNode) => {
-    if (proxy.isObjEmpty(treeNode)) return { isSuccess: true, msg: "" };
+const validateParallelConditionNode = (treeNode) => {
+    if (proxy.isEmpty(treeNode)) return { isSuccess: true, msg: "" };
     if (treeNode.nodeType == 2 && treeNode.isParallel == true) {
-        if (proxy.isObjEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
+        if (proxy.isEmpty(treeNode.childNode) || treeNode.childNode.nodeType != 4) {
             return { isSuccess: false, msg: "条件并行节点下必须有一个审批人节点作为聚合节点" };
         } else {
             return validateParallelConditionNode(treeNode.childNode);
@@ -122,14 +122,14 @@ const nodeVerifyMap = new Set([validateIsExistApproveNode, validateParallelAppro
  */
 const reErr = ({ childNode }) => {
     if (childNode) {
-        let { nodeType, error, nodeName, conditionNodes,parallelNodes } = childNode;
+        let { nodeType, error, nodeName, conditionNodes, parallelNodes } = childNode;
         if (nodeType == 1) {
             reErr(childNode);
         }
         else if (nodeType == 2) {
             reErr(childNode);
             for (var i = 0; i < conditionNodes.length; i++) {
-                if (conditionNodes[i].error) {
+                if (conditionNodes[i].error == true) {
                     tipList.value.push({ name: conditionNodes[i].nodeName, nodeType: "条件" });
                 }
                 reErr(conditionNodes[i]);
@@ -147,8 +147,8 @@ const reErr = ({ childNode }) => {
             }
             reErr(childNode);
         }
-        else if (nodeType == 7) {   
-            reErr(childNode); 
+        else if (nodeType == 7) {
+            reErr(childNode);
             for (var i = 0; i < parallelNodes.length; i++) {
                 if (parallelNodes[i].error) {
                     tipList.value.push({ name: parallelNodes[i].nodeName, nodeType: "审批人" });
@@ -160,10 +160,10 @@ const reErr = ({ childNode }) => {
         childNode = null;
     }
 };
- 
+
 const getJson = () => {
     setIsTried(true);
-    tipList.value=[];
+    tipList.value = [];
     reErr(nodeConfig.value);
     if (tipList.value.length != 0) {
         emit('nextChange', { label: "流程设计", key: "processDesign" });
@@ -171,14 +171,14 @@ const getJson = () => {
         return false;
     }
 
-    for (const handleVerifyFunc of nodeVerifyMap) {  
+    for (const handleVerifyFunc of nodeVerifyMap) {
         const { isSuccess, msg } = handleVerifyFunc(nodeConfig.value);
         if (!isSuccess) {
             proxy.$modal.msgError(msg);
             emit('nextChange', { label: "流程设计", key: "processDesign" });
             return false;
         }
-    }   
+    }
     let submitData = JSON.parse(JSON.stringify(nodeConfig.value));
     return submitData;
 };
@@ -211,5 +211,5 @@ defineExpose({
 })
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 </style>

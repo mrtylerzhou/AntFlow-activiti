@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
@@ -173,6 +174,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
             bpmnNodeVo.setId(bpmnNodeId);
             bpmnNodeVo.setConfId(confId);
+            bpmnNodeVo.setFormCode(formCode);
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
@@ -411,13 +413,13 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         .stream()
                         .map(o -> {
                             BpmnTemplateVo vo = new BpmnTemplateVo();
-                            BeanUtils.copyProperties(o, vo);
-                            buildBpmnTemplateVo(vo);
+                            buildBpmnTemplateVo(o,vo);
                             return vo;
                         }).collect(Collectors.toList()));
     }
 
-    private void buildBpmnTemplateVo(BpmnTemplateVo vo) {
+    private void buildBpmnTemplateVo(BpmnTemplate entity,BpmnTemplateVo vo) {
+        BeanUtils.copyProperties(entity, vo);
         vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
         if (!ObjectUtils.isEmpty(vo.getInforms())) {
             vo.setInformIdList(
@@ -428,7 +430,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                     .map(o -> BaseIdTranStruVo
                             .builder()
                             .id(o)
-                            .name(EventTypeEnum.getDescByByCode(Integer.parseInt(o)))
+                            .name(InformEnum.getDescByByCode(Integer.parseInt(o)))
                             .build())
                     .collect(Collectors.toList()));
         }
@@ -446,6 +448,14 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                             .name(employeeInfo.get(o))
                             .build())
                     .collect(Collectors.toList()));
+        }
+        if(!StringUtils.isEmpty(entity.getMessageSendType())){
+            String[] messageSendTypesStr = entity.getMessageSendType().split(",");
+            //这些都是从库里选择出来的,都是活跃的
+            List<BaseNumIdStruVo> messageSendTypes = Arrays.stream(messageSendTypesStr)
+                    .map(a -> BaseNumIdStruVo.builder().id(Long.parseLong(a)).name(MessageSendTypeEnum.getEnumByCode(Integer.parseInt(a)).getDesc()).active(true).build())
+                    .collect(Collectors.toList());
+          vo.setMessageSendTypeList(messageSendTypes);
         }
         //todo functions to be implemented
         vo.setTemplateName(Optional
@@ -583,8 +593,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         BpmnTemplate::getNodeId,
                         o -> {
                             BpmnTemplateVo vo = new BpmnTemplateVo();
-                            BeanUtils.copyProperties(o, vo);
-                            buildBpmnTemplateVo(vo);
+                            buildBpmnTemplateVo(o,vo);
                             return new ArrayList<>(Collections.singletonList(vo));
                         },
                         (a, b) -> {

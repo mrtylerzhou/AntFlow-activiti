@@ -32,7 +32,12 @@ public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
 
     @Override
     public List<Supplier<Boolean>> trueSuppliers(BpmnNodeVo vo, BpmnStartConditionsVo bpmnStartConditions) {
-        Supplier<Boolean> supplier = () -> vo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_COPY.getCode());
+        Supplier<Boolean> supplier = new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return vo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_COPY.getCode());
+            }
+        };
         if(supplier.get()){
             if (bpmnStartConditions.getEmpToForwardList() == null) {
                 bpmnStartConditions.setEmpToForwardList(new ArrayList<>());

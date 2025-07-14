@@ -1,17 +1,18 @@
-@import './variables.module.scss';
-@import './mixin.scss';
-@import './transition.scss';
-@import './element-ui.scss';
-@import './sidebar.scss';
-@import './btn.scss';
-@import './ruoyi.scss'; 
+@use "./mixin.scss";
+@use "./transition.scss";
+@use "./element-ui.scss";
+@use "./sidebar.scss";
+@use "./btn.scss";
+@use "./ruoyi.scss";
+@use "./antflow/index.scss";
 body {
   height: 100%;
   margin: 0;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, Arial, sans-serif;
 }
 
 label {
@@ -105,7 +106,8 @@ aside {
   display: block;
   line-height: 32px;
   font-size: 16px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   color: #2c3e50;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -121,32 +123,17 @@ aside {
 }
 
 //main-container全局样式
-.app-container {
-  margin: 10px 10px 10px 10px;
-  // height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column; 
-  box-shadow:0px 0px 12px rgba(0, 0, 0, 0.12);
-}
+// .app-container {
+//   padding: 20px;
+// }
 
 .components-container {
   margin: 30px 50px;
   position: relative;
 }
 
-.query-box {
-  padding: 10px; 
-  margin-bottom: 5px;
-  background-color: #fff;
-}
-.table-box {
-  padding: 10px; 
-  margin-top: 5px;
-  background-color: #fff;
-}
 .text-center {
-  text-align: center
+  text-align: center;
 }
 
 .sub-navbar {
@@ -157,7 +144,13 @@ aside {
   text-align: right;
   padding-right: 20px;
   transition: 600ms ease position;
-  background: linear-gradient(90deg, rgba(32, 182, 249, 1) 0%, rgba(32, 182, 249, 1) 0%, rgba(33, 120, 241, 1) 100%, rgba(33, 120, 241, 1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(32, 182, 249, 1) 0%,
+    rgba(32, 182, 249, 1) 0%,
+    rgba(33, 120, 241, 1) 100%,
+    rgba(33, 120, 241, 1) 100%
+  );
 
   .subtitle {
     font-size: 20px;
@@ -191,63 +184,4 @@ aside {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-}
-
-
-.page-close-box {
-  position: absolute;
-  top: -0;
-  right: -0;
-  width: 42px;
-  height: 42px;
-  text-align: center;
-  cursor: pointer;
-  z-index: 999;
-}
-
-.page-close-box img {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background-image: url();
-}
-
-.page-close-box::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border: 20px solid #46A6FE;
-  border-color: #46A6FE #46A6FE transparent transparent;
-  content: '';
-}
-
-.pin-top-right-corner {
-  position: absolute;
-  top: -0;
-  right: -0;
-  text-align: center;
-  cursor: pointer;
-  z-index: 999;
-}
-
-.pin-top-right-corner img {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  background-image: url();
-}
-
-.pin-pass:before {
-  content:  url("../images/flow-pass.png");
-}
-.pin-in:before {
-  content:  url("../images/flow-in.png");
-}
-.pin-refuse:before {
-  content:  url("../images/flow-refuse.png");
-}
-.pin-end:before {
-  content:  url("../images/flow-end.png");
 }

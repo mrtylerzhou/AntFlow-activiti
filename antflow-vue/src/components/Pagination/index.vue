@@ -59,7 +59,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits();
+const emit = defineEmits()
 const currentPage = computed({
   get() {
     return props.page
@@ -76,6 +76,7 @@ const pageSize = computed({
     emit('update:limit', val)
   }
 })
+
 function handleSizeChange(val) {
   if (currentPage.value * val > props.total) {
     currentPage.value = 1
@@ -85,22 +86,18 @@ function handleSizeChange(val) {
     scrollTo(0, 800)
   }
 }
+
 function handleCurrentChange(val) {
   emit('pagination', { page: val, limit: pageSize.value })
   if (props.autoScroll) {
     scrollTo(0, 800)
   }
 }
-
 </script>
 
 <style scoped>
 .pagination-container {
-  position: relative;
-  background: #fff; 
-  height: 40px;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  background: #fff;
 }
 .pagination-container.hidden {
   display: none;

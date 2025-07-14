@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Classname BpmnTemplateVo
@@ -63,6 +65,8 @@ public class BpmnTemplateVo implements Serializable {
      */
     private Long templateId;
     private String templateName;
+    private List<BaseNumIdStruVo> messageSendTypeList;
+    private String formCode;
     /**
      * 0 for not deleted, 1 for deleted
      */
@@ -83,4 +87,17 @@ public class BpmnTemplateVo implements Serializable {
      * update user
      */
     private String updateUser;
+
+    public void setEmpList(List<BaseIdTranStruVo> empList) {
+        this.empList = empList;
+        if(!CollectionUtils.isEmpty(empList)){
+            this.empIdList = empList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+        }
+    }
+    public void setRoleList(List<BaseIdTranStruVo> roleList) {
+        this.roleList = roleList;
+        if(!CollectionUtils.isEmpty(roleList)){
+            this.roleIdList = roleList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+        }
+    }
 }

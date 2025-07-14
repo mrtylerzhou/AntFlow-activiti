@@ -22,7 +22,7 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsAccountTypeAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
     CONDITION_BIZ_LEAVE_TIME(2, "请假时长", "leaveHour", 2, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
-    CONDITION_PURCHASE_FEE(3, "采购费用", "planProcurementTotalMoney", 3, Double.class,
+    CONDITION_PURCHASE_FEE(3, "采购费用", "planProcurementTotalMoney", 2, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "planProcurementTotalMoney", PurchaseTotalMoneyJudge.class),
     CONDITION_TYPE_OUT_TOTAL_MONEY(4, "支出费用", "outTotalMoney", 2, String.class,
             BpmnNodeConditionsTotalMoneyAdp.class, BpmnStartConditionsVo.class, "outTotalMoney", OutTotalMoneyJudge.class),

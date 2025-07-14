@@ -1,74 +1,70 @@
 /**
-* 通用css样式布局处理
-* Copyright (c) 2019 Antflow
-*/
+ * 通用css样式布局处理
+ * Copyright (c) 2019 ruoyi
+ */
 
 /** 基础通用 **/
 .pt5 {
   padding-top: 5px;
 }
-
 .pr5 {
   padding-right: 5px;
 }
-
 .pb5 {
   padding-bottom: 5px;
 }
-
 .mt5 {
   margin-top: 5px;
 }
-
 .mr5 {
   margin-right: 5px;
 }
-
 .mb5 {
   margin-bottom: 5px;
 }
-
 .mb8 {
   margin-bottom: 8px;
 }
-
 .ml5 {
   margin-left: 5px;
 }
-
 .mt10 {
   margin-top: 10px;
 }
-
 .mr10 {
   margin-right: 10px;
 }
-
 .mb10 {
   margin-bottom: 10px;
 }
-
 .ml10 {
   margin-left: 10px;
 }
-
 .mt20 {
   margin-top: 20px;
 }
-
 .mr20 {
   margin-right: 20px;
 }
-
 .mb20 {
   margin-bottom: 20px;
 }
-
 .ml20 {
   margin-left: 20px;
 }
 
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: inherit;
   font-weight: 500;
   line-height: 1.1;
@@ -78,7 +74,6 @@
 .el-form .el-form-item__label {
   font-weight: 700;
 }
-
 .el-dialog:not(.is-fullscreen) {
   margin-top: 6vh !important;
 }
@@ -91,25 +86,28 @@
 }
 
 .el-table {
-  height: calc(65vh);
-
-  .el-table__header-wrapper, .el-table__fixed-header-wrapper {
+  height: 60vh; /* 你可以根据需要调整高度 */
+  .el-table__header-wrapper,
+  .el-table__fixed-header-wrapper {
     th {
       word-break: break-word;
       background-color: #f8f8f9 !important;
       color: #515a6e;
-      height: 50px !important;
+      height: 40px !important;
       font-size: 13px;
     }
+    tr {
+      height: 50px; /* 你可以根据需要调整行高 */ 
+    } 
   }
-
   .el-table__body-wrapper {
     .el-button [class*="el-icon-"] + span {
       margin-left: 1px;
     }
-
-    td {
-      height: 49px !important;
+    tbody{ /* 你可以根据需要调整高度 */
+      tr{
+        height: 49px;
+      }
     }
   }
 }
@@ -120,34 +118,49 @@
   color: #6379bb;
   border-bottom: 1px solid #ddd;
   margin: 8px 10px 25px 10px;
-  padding-bottom: 5px
+  padding-bottom: 5px;
 }
- 
+
+/** 表格布局 **/
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  background-color: transparent !important;
+}
+
+/* 弹窗中的分页器 */
 .el-dialog .pagination-container {
   position: static !important;
+  margin: 10px 0 0 0;
+  padding: 0 !important;
+
+  .el-pagination {
+    position: static;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .pagination-container {
+    .el-pagination {
+      > .el-pagination__jump {
+        display: none !important;
+      }
+      > .el-pagination__sizes {
+        display: none !important;
+      }
+    }
+  }
 }
 
 /* tree border */
 .tree-border {
   margin-top: 5px;
-  border: 1px solid #e5e6e7;
-  background: #FFFFFF none;
+  border: 1px solid var(--el-border-color-light, #e5e6e7);
+  background: var(--el-bg-color, #ffffff) none;
   border-radius: 4px;
   width: 100%;
-}
-
-.pagination-container .el-pagination {
-  right: 15px;
-  position: absolute;
-}
-
-@media (max-width: 768px) {
-  .pagination-container .el-pagination > .el-pagination__jump {
-    display: none !important;
-  }
-  .pagination-container .el-pagination > .el-pagination__sizes {
-    display: none !important;
-  }
 }
 
 .el-table .fixed-width .el-button--small {
@@ -163,7 +176,8 @@
   margin-left: 10px;
 }
 
-.el-table .el-dropdown, .el-icon-arrow-down {
+.el-table .el-dropdown,
+.el-icon-arrow-down {
   font-size: 12px;
 }
 
@@ -206,29 +220,28 @@
 }
 
 .card-box {
-  padding-right: 15px;
-  padding-left: 15px;
+  margin-bottom: 10px;
 }
 
 /* button color */
 .el-button--cyan.is-active,
 .el-button--cyan:active {
-  background: #20B2AA;
-  border-color: #20B2AA;
-  color: #FFFFFF;
+  background: #20b2aa;
+  border-color: #20b2aa;
+  color: #ffffff;
 }
 
 .el-button--cyan:focus,
 .el-button--cyan:hover {
-  background: #48D1CC;
-  border-color: #48D1CC;
-  color: #FFFFFF;
+  background: #48d1cc;
+  border-color: #48d1cc;
+  color: #ffffff;
 }
 
 .el-button--cyan {
-  background-color: #20B2AA;
-  border-color: #20B2AA;
-  color: #FFFFFF;
+  background-color: #20b2aa;
+  border-color: #20b2aa;
+  color: #ffffff;
 }
 
 /* text color */
@@ -273,7 +286,7 @@
 .avatar-upload-preview {
   position: absolute;
   top: 50%;
-  transform: translate(25%, -50%);
+  transform: translate(50%, -50%);
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -283,7 +296,7 @@
 
 /* 拖拽列样式 */
 .sortable-ghost {
-  opacity: .8;
+  opacity: 0.8;
   color: #fff !important;
   background: #42b983 !important;
 }
@@ -292,13 +305,8 @@
 .top-right-btn {
   margin-left: auto;
 }
-/* tag select */
-.append-add {
-  border: none;
-  border-left: 1px solid #dcdfe6;
-  border-radius: 0;
-  background: #f5f7fa;
-}
-.radio-table{
-  width: 100%;
+
+/* 分割面板样式 */
+.splitpanes.default-theme .splitpanes__pane {
+  background-color: var(--splitpanes-default-bg) !important;
 }

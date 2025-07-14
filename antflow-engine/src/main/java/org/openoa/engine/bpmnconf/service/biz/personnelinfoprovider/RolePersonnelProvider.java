@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author TylerZhou
@@ -32,7 +33,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class RolePersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private BpmnRoleInfoProvider roleInfoProvider;
 
@@ -88,11 +89,9 @@ public class RolePersonnelProvider extends AbstractNodeAssigneeVoProvider{
         }
         List<String> roleIds = propertysVo.getRoleIds();
         Map<String, String> roleEmployeeInfo = roleInfoProvider.provideRoleEmployeeInfo(roleIds);
-        if(CollectionUtils.isEmpty(roleEmployeeInfo)){
-            log.warn("can not find specified roles info via roleIds:{}",roleIds);
-            throw new JiMuBizException("can not find specified roles info via roleIds");
-        }
-        ArrayList<String> userIds = new ArrayList<>(roleEmployeeInfo.keySet());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+        List<BaseIdTranStruVo> baseIdTranStruVoList = CollectionUtils.isEmpty(roleEmployeeInfo) ? new ArrayList<>() :
+                roleEmployeeInfo.entrySet().stream().map(a -> BaseIdTranStruVo.builder().id(a.getKey()).name(a.getValue()).build()).collect(Collectors.toList());
+
+        return  super.provideAssigneeList(bpmnNodeVo,baseIdTranStruVoList);
     }
 }

@@ -11,6 +11,7 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
+import org.activiti.engine.impl.bpmn.behavior.ParallelGatewayActivityBehavior;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -324,9 +325,12 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         //variable name 2 HistoricVariableInstance
         Multimap<String, HistoricVariableInstance> variableInstanceMap = activitiAdditionalInfoService.getVariableInstanceMap(historicProcessInstance.getId());
+        String[] elementIds = taskVo.getElementId().split(",");
+        for (int i = 0; i < elementIds.length; i++) {
+            //do append record
+            doAddBpmVerifyInfoVo(sort, elementIds[i], activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId(),i==(elementIds.length-1)&&elementIds.length>1);
+        }
 
-        //do append record
-        doAddBpmVerifyInfoVo(sort, taskVo.getElementId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, bpmVariable.getId());
     }
 
     /**
@@ -376,11 +380,11 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
                                       Map<String, String> signUpNodeCollectionNameMap,
                                       List<BpmVerifyInfoVo> bpmVerifyInfoVos, Multimap<String,
             HistoricVariableInstance> variableInstanceMap,
-            Long variableId) {
+            Long variableId,boolean includeParallelGateway) {
 
         //get the netxt pvm activity element
         List<PvmActivity> nextElements = activitiAdditionalInfoService.getNextElementList(elementId, activitiList);
-
+        boolean isCurrentParallelGateway=nextElements.size()>1;
         if (CollectionUtils.isEmpty(nextElements)) {
             return;
         }
@@ -437,11 +441,20 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
 
-        for (PvmActivity nextElement : nextElements) {
+        for (int i = 0; i < nextElements.size(); i++) {
+            PvmActivity nextElement = nextElements.get(i);
+            if (nextElements.size() > 1) {
+                includeParallelGateway = isCurrentParallelGateway&& i == nextElements.size() - 1;
+            }
+
             //get next node's next node,if it still exist,then treat it recursively
             PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
             if (!ObjectUtils.isEmpty(nextNextElement)) {
-                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap,variableId);
+                boolean isNextParallelGateway = ((ActivityImpl) nextNextElement).getActivityBehavior() instanceof ParallelGatewayActivityBehavior;
+                if (!includeParallelGateway && isNextParallelGateway) {
+                    continue;
+                }
+                doAddBpmVerifyInfoVo(sort, nextElement.getId(), activitiList, nodeApproveds, signUpNodeCollectionNameMap, bpmVerifyInfoVos, variableInstanceMap, variableId, includeParallelGateway);
             }
         }
 

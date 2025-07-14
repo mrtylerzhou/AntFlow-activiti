@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.formatter;
 
 import com.google.common.collect.Lists;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
@@ -30,9 +31,9 @@ public class BpmnRemoveFormatImpl extends AbstractBpmnRemoveFormat {
     @Override
     public List<Supplier<Boolean>> trueSuppliers(BpmnNodeVo vo, BpmnStartConditionsVo bpmnStartConditionsVo) {
        Supplier<Boolean> supplier1= ()->vo.getParams().getParamType().equals(1) &&
-                vo.getParams().getAssignee().getAssignee().equals("0");
+                vo.getParams().getAssignee().getAssignee().equals(AFSpecialAssigneeEnum.TO_BE_REMOVED.getId());
        Supplier<Boolean> supplier2=()->vo.getParams().getParamType().equals(2) &&
-               vo.getParams().getAssigneeList().get(0).getAssignee().equals("0");
+               vo.getParams().getAssigneeList().get(0).getAssignee().equals(AFSpecialAssigneeEnum.TO_BE_REMOVED.getId());
        return Lists.newArrayList(supplier1,supplier2);
     }
 

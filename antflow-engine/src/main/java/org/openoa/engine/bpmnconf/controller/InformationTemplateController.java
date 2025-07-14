@@ -2,17 +2,20 @@ package org.openoa.engine.bpmnconf.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.WildcardCharacterEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
+import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.DefaultTemplateVo;
-import org.openoa.base.vo.EnumerateVo;
-import org.openoa.base.vo.InformationTemplateVo;
-import org.openoa.base.vo.ResultAndPage;
+import org.openoa.base.vo.*;
+import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableApproveRemindServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,14 +32,21 @@ public class InformationTemplateController {
 
     @Resource
     private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
+    @Autowired
+    private BpmProcessNoticeServiceImpl processNoticeService;
 
     /**
      * query information template vos;
      *
      * @return resp
      */
-    @PostMapping("/getPage")
-    public ResultAndPage list(PageDto pageDto, InformationTemplateVo informationTemplateVo) {
+    @PostMapping("/listPage")
+    public ResultAndPage list(InformationPgeRequestDto dto)  {
+        PageDto pageDto = dto.getPageDto();
+        InformationTemplateVo informationTemplateVo = dto.getEntity();
+        if(informationTemplateVo==null){
+            informationTemplateVo = new InformationTemplateVo();
+        }
         return informationTemplateService.list(pageDto, informationTemplateVo);
     }
 
@@ -58,8 +68,8 @@ public class InformationTemplateController {
      */
     @PostMapping("/save")
     public Result save(@RequestBody InformationTemplateVo informationTemplateVo) {
-        informationTemplateService.edit(informationTemplateVo);
-        return Result.success();
+        long templateId = informationTemplateService.edit(informationTemplateVo);
+        return Result.newSuccessResult(templateId);
     }
 
     /**
@@ -108,7 +118,7 @@ public class InformationTemplateController {
      *
      * @return resp
      */
-    @PostMapping("defaultTemplates")
+    @PostMapping("/setDefaultTemplates")
     public Result setList(@RequestBody DefaultTemplateVo[] vos) {
         informationTemplateService.setList(Arrays.asList(vos));
         return Result.success();
@@ -120,7 +130,7 @@ public class InformationTemplateController {
      * @param name name
      * @return resp
      */
-    @GetMapping("getWildcardCharacte")
+    @GetMapping("/getWildcardCharacter")
     public Result getWildcardCharacter(@RequestParam(required = false) String name) {
         return Result.newSuccessResult(
                 !StringUtils.isEmpty(name)
@@ -143,6 +153,39 @@ public class InformationTemplateController {
                         .collect(Collectors.toList())
         );
     }
+    @GetMapping("/getProcessEvents")
+    public Result getAllProcessEvents(){
+        List<BaseNumIdStruVo> lists=new ArrayList<>();
+        for (EventTypeEnum anEnum : EventTypeEnum.values()) {
+            lists.add(BaseNumIdStruVo.builder().id(anEnum.getCode().longValue()).name(anEnum.getDesc()).build());
+        }
+        return Result.newSuccessResult(lists);
+    }
+
+    @GetMapping("/getAllNoticeTypes")
+    public Result getAllNoticeTypes(){
+        ProcessNoticeEnum[] processNoticeEnums = ProcessNoticeEnum.values();
+        List<BaseNumIdStruVo> lists = new ArrayList<>();
+        for (ProcessNoticeEnum processNoticeEnum : processNoticeEnums) {
+            lists.add(BaseNumIdStruVo.builder().id(((long)processNoticeEnum.getCode())).name(processNoticeEnum.getDesc()).build());
+        }
+        return Result.newSuccessResult(lists);
+    }
+
+    @GetMapping("/getNoticeTypeByFormCode")
+    public Result getNoticeTypeByFormCode(@RequestParam String formCode){
+        if(StringUtils.isEmpty(formCode)){
+            throw new JiMuBizException("请传入表单编码");
+        }
+        List<BpmProcessNotice> bpmProcessNotices = processNoticeService.processNoticeList(formCode);
+        List<BaseNumIdStruVo> lists = new ArrayList<>();
+        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
+            Integer type = bpmProcessNotice.getType();
+            String descByCode = ProcessNoticeEnum.getDescByCode(type);
+            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).build());
+        }
+        return Result.newSuccessResult(lists);
+    }
 
     /**
      * test timeout remind
@@ -151,4 +194,5 @@ public class InformationTemplateController {
     public void testDoTimeoutReminder() {
         bpmVariableApproveRemindService.doTimeoutReminder();
     }
+
 }

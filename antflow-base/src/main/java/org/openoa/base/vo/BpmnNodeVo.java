@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -169,6 +170,11 @@ public class BpmnNodeVo  implements Serializable {
     private List<BpmnNodeVo> fromNodes;
     private List<BpmnNodeLabelVO> labelList;
     private String elementId;
+    /**
+     * 当前未找到审批人处理方式,如果为null时不进行默认处理
+     * @see MissingAssigneeProcessStragtegyEnum
+     */
+    private Integer missingAssigneeDealWay;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

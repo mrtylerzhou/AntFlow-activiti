@@ -12,9 +12,9 @@
           </template>
           <div class="body">
             <p>
-            <h3>
-              {{ readmeForJava }}
-            </h3>
+              <span>
+                {{ readmeText }}
+              </span>
             </p>
             <p>
               <b>当前版本:</b> <span>v{{ version }}</span>
@@ -23,12 +23,24 @@
               <el-tag type="danger">&yen;免费开源</el-tag>
             </p>
             <p>
-              <el-button type="primary" icon="Cloudy" plain
-                @click="goTarget('https://gitee.com/ldhnet')">访问码云</el-button>
-              <el-button type="success" icon="Cloudy" plain
-                @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E4%BD%8E%E4%BB%A3%E7%A0%81%E7%89%88%E6%9C%AC.md')">操作手册【低代码表单】</el-button>
-              <el-button type="success" icon="Cloudy" plain
-                @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%8D%95.md')">操作手册【自定义表单】</el-button>
+              <el-row :gutter="5">
+                <el-col :xs="12" :sm="12" :md="12" :lg="4">
+                  <el-button type="primary" icon="Cloudy" plain style="width: 100%;"
+                    @click="goTarget('https://gitee.com/ldhnet')">访问码云</el-button>
+                </el-col>
+                <el-col :xs="12" :sm="12" :md="12" :lg="4">
+                  <el-button type="primary" icon="Cloudy" plain style="width: 100%;"
+                    @click="goTarget('https://pcn3ojogrp79.feishu.cn/wiki/VO07wArXCibz5Jkvzejcn8CTn8f')">飞书手册</el-button>
+                </el-col>
+                <el-col :xs="24" :sm="24" :md="24" :lg="8">
+                  <el-button type="success" icon="Cloudy" plain style="width: 100%;"
+                    @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E4%BD%8E%E4%BB%A3%E7%A0%81%E7%89%88%E6%9C%AC.md')">操作手册【低代码表单】</el-button>
+                </el-col>
+                <el-col :xs="24" :sm="24" :md="24" :lg="8">
+                  <el-button type="success" icon="Cloudy" plain style="width: 100%;"
+                    @click="goTarget('https://gitee.com/tylerzhou/Antflow/blob/master/antflow-vue/public/docs/%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%89%8B%E5%86%8C-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E5%8D%95.md')">操作手册【自定义表单】</el-button>
+                </el-col>
+              </el-row>
             </p>
           </div>
         </el-card>
@@ -43,8 +55,8 @@
           </template>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link href="http://14.103.207.27/admin/"
-                target="_blank">http://14.103.207.27/admin/</el-link>
+              <i class="el-icon-s-promotion"></i> 官网：<el-link href="http://antflow.top"
+                target="_blank">http://antflow.top</el-link>
             </p>
             <p>
               <i class="el-icon-user-solid"></i> QQ群：
@@ -68,6 +80,16 @@
             </div>
           </template>
           <el-collapse accordion>
+            <el-collapse-item title="v9.0.0 - 2025-06-27">
+              <ol>
+                <li>流程通知模块对接</li>
+              </ol>
+            </el-collapse-item>
+            <el-collapse-item title="v8.0.0 - 2025-05-01">
+              <ol>
+                <li>流程设计条件节点实现条件分组</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v7.0.0 - 2025-03-05">
               <ol>
                 <li>实现发起人自选审批人</li>
@@ -122,14 +144,16 @@
 
 <script setup name="Index">
 import shortcuts from "@/components/Dashboard/Shortcuts";
-const version = ref('7.1.0')
+const version = ref('0.9.1')
 console.log("VITE_APP_ENV=======", import.meta.env.VITE_APP_ENV);
 console.log("VITE_APP_BASE_API=======", import.meta.env.VITE_APP_BASE_API);
 console.log("BASE_URL=======", import.meta.env.BASE_URL);
 console.log("VITE_HOME_PATH=======", import.meta.env.VITE_HOME_PATH);
 
+const envName = import.meta.env.VITE_HOME_PATH || 'admin';
 const readmeForDotnet = ".net首个钉钉工作流UI风格的流程引擎！支持数十种数据库，开箱即用。同时也是一款纯血版工作流引擎，仅依赖了asp.net 9.0和freesql，natasha等几款优秀开源项目。致力解决传统工作流流程图必须由专业程序员绘制、学习曲线陡峭、上手难、排查问题难、维护成本高等问题。如果喜欢请给颗star"
 const readmeForJava = "AntFlow是一款采用Springboot+Mybatis+activiti+vue3等主流前后端技术开发的仿钉钉workflow工作流引擎，结合中国式办公特点深度定制，可以作为钉钉工作流的开源替代。致力解决传统activiti/flowable流程图必须由专业程序员绘制，学习曲线陡峭，上手难、排查问题难、维护成本高等问题,是企业审批流&saas化工作流部署不二选择!如果喜欢请给颗星星！"
+const readmeText = envName.indexOf('dotnet') > 0 ? readmeForDotnet : readmeForJava;
 
 function goTarget(url) {
   window.open(url, '__blank')
@@ -138,7 +162,6 @@ function goTarget(url) {
 
 <style scoped lang="scss">
 .el-row {
-  height: 50%;
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 10px;

@@ -8,6 +8,8 @@ public enum InformEnum {
     ALL_APPROVER(2, "所有已审批人", "approveds"),
     CURRENT_APPROVER(3, "当前节点审批人", "assignee"),
     FORWARDED_APPROVER(4, "被转发人", "forwardUsers"),
+    ASSIGNED_USER(5, "指定审批人", "assignee"),
+    ASSIGNEED_ROLES(6, "指定角色", "assigneeRoles"),
     ;
 
     @Getter
@@ -29,6 +31,17 @@ public enum InformEnum {
         for (InformEnum informEnum : InformEnum.values()) {
             if (informEnum.getCode().equals(code)) {
                 return informEnum;
+            }
+        }
+        return null;
+    }
+    public static String getDescByByCode(Integer code) {
+        if(code==null){
+            return null;
+        }
+        for (InformEnum informEnum : InformEnum.values()) {
+            if (informEnum.getCode().equals(code)) {
+                return informEnum.getDesc();
             }
         }
         return null;

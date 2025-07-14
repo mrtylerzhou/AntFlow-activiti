@@ -32,7 +32,7 @@ public class RequestMappingHandlerMappingListener implements ApplicationListener
             String methodName = handlerMethod.getMethod().getName();
             String className = handlerMethod.getBeanType().getName();
 
-            log.info("Mapped \"{" + mappingDescription + "}\" onto " + className + "." + methodName);
+            log.info("Mapped \"{{}}\" onto {}.{}", mappingDescription, className, methodName);
         }
     }
 }

@@ -20,7 +20,8 @@ import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.User;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.service.RoleServiceImpl;
+import org.openoa.base.service.AfUserService;
+import org.openoa.base.service.AfRoleServiceImpl;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -68,9 +69,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
     @Autowired
-    private RoleServiceImpl roleService;
+    private AfRoleServiceImpl roleService;
 
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
@@ -201,20 +202,10 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (ObjectUtils.isEmpty(bpmVariable)) {
             return false;
         }
-
-        if (vo.getMessageType()!=null&& vo.getMessageType()== 1) {//out of node messages
-            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("message_type", 1)
-                    .eq("event_type", vo.getEventType())) > 0;
-        } else if (vo.getMessageType()!=null&&vo.getMessageType()==2) {//in node messages
-            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("element_id", vo.getElementId())
-                    .eq("message_type", 2)
-                    .eq("event_type", vo.getEventType())) > 0;
-        }
-        return false;
+        return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
+                .eq("variable_id", bpmVariable.getId())
+                .eq("message_type", 1)
+                .eq("event_type", vo.getEventType())) > 0;
     }
 
     /**
@@ -308,8 +299,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .filter(o -> !StringUtils.isEmpty(o.getAssignee()))
                 .map(HistoricTaskInstance::getAssignee)
+                .filter(assignee -> !StringUtils.isEmpty(assignee))
+                .distinct()
                 .collect(Collectors.toList()));
 
 
@@ -467,9 +459,15 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
             List<BpmVariableMessage> bpmVariableMessages = this.getBaseMapper().selectList(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", vo.getVariableId())
-                    .eq("element_id", vo.getElementId())
-                    .eq("message_type", 2)
                     .eq("event_type", vo.getEventType()));
+            if(!StringUtils.isEmpty(vo.getElementId())){
+                List<BpmVariableMessage> currentNodeVariableMessages = bpmVariableMessages
+                        .stream()
+                        .filter(a -> vo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(currentNodeVariableMessages)){
+                   bpmVariableMessages=currentNodeVariableMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
+                }
+            }
             if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
                 for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
                     doSendTemplateMessages(bpmVariableMessage, vo);
@@ -526,7 +524,10 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 })
                 .collect(Collectors.toList());
 
-
+        List<BaseNumIdStruVo> messageSendTypeList = bpmnTemplateVo.getMessageSendTypeList();
+        if(!messageSendTypeEnums.isEmpty()&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知
+            messageSendTypeEnums= messageSendTypeList.stream().map(a -> MessageSendTypeEnum.getEnumByCode(a.getId().intValue())).filter(Objects::nonNull).collect(Collectors.toList());
+        }
         Map<Integer, String> wildcardCharacterMap = getWildcardCharacterMap(vo);
         InformationTemplateVo informationTemplateVo = informationTemplateUtils.translateInformationTemplate(InformationTemplateVo
                 .builder()
@@ -673,17 +674,17 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         if (ObjectUtils.isEmpty(propertys)) {
                             continue;
                         }
-                        List<String> emplNames = employeeService.qryLiteEmployeeInfoByIds(propertys)
+                        List<String> emplNames = employeeService.queryUserByIds(propertys)
                                 .stream()
-                                .map(Employee::getUsername).collect(Collectors.toList());
+                                .map(BaseIdTranStruVo::getName).collect(Collectors.toList());
                         if (!ObjectUtils.isEmpty(emplNames)) {
                             wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), StringUtils.join(emplNames, ","));
                         }
                     } else {
                        if(!property.toString().equals("0")){
-                           Employee employee = employeeService.qryLiteEmployeeInfoById(property.toString());
+                           BaseIdTranStruVo employee = employeeService.getById(property.toString());
                            if (employee!=null) {
-                               wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getUsername());
+                               wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getName());
                            }
                        }
                     }
@@ -711,9 +712,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
         //specified roles
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
-            List<User> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            List<BaseIdTranStruVo> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
             if (!CollectionUtils.isEmpty(users)) {
-                sendUsers.addAll(users.stream().map(u->u.getId().toString()).collect(Collectors.toList()));
+                sendUsers.addAll(users.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
             }
         }
 
@@ -747,6 +748,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getInformIdList())) {
             for (String informId : bpmnTemplateVo.getInformIdList()) {
                 InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
+                if(informEnum==InformEnum.ASSIGNED_USER||informEnum==InformEnum.ASSIGNEED_ROLES){
+                    continue;
+                }
                 //todo check whether the result is valid
                 Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
                 if (filObject instanceof List) {

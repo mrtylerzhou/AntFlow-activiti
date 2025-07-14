@@ -16,36 +16,37 @@
                     <el-button type="primary" @click="addCopyer">添加成员</el-button>
                     <p class="selected_list">
                         <span v-for="(item, index) in copyerConfig.nodeApproveList" :key="index">{{ item.name }}
-                            <img src="@/assets/images/add-close1.png"
+                            <img src="@/assets/images/antflow/add-close1.png"
                                 @click="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
                         </span>
                         <a v-if="copyerConfig.nodeApproveList && copyerConfig.nodeApproveList.length != 0"
                             @click="copyerConfig.nodeApproveList = []">清除</a>
                     </p>
-                    <el-checkbox-group v-model="ccSelfSelectFlag" class="clear">
+                    <!-- <el-checkbox-group v-model="ccSelfSelectFlag" class="clear">
                         <el-checkbox :value="1">允许发起人自选抄送人</el-checkbox>
-                    </el-checkbox-group>
+                    </el-checkbox-group> -->
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
-                    <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"  @changePermVal="changePermVal" />
-                </div>                
+                    <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
+                        @changePermVal="changePermVal" />
+                </div>
             </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
             <el-button type="primary" @click="saveCopyer">确 定</el-button>
             <el-button @click="closeDrawer">取 消</el-button>
-        </div> 
+        </div>
         <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
     </el-drawer>
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
 import selectUserDialog from '../dialog/selectUserDialog.vue'
-import FormPermConf from "../config/FormPermConf.vue"
-import $func from '@/utils/flow/index'
-import { useStore } from '@/store/modules/workflow' 
+import FormPermConf from "./permConfig/FormPermConf.vue"
+import $func from '@/utils/antflow/index'
+import { useStore } from '@/store/modules/workflow'
 let copyerConfig = ref({})
 let ccSelfSelectFlag = ref([])
 let copyerVisible = ref(false)
@@ -119,7 +120,7 @@ const changePermVal = (data) => {
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/styles/flow/dialog.scss";
+@use "@/assets/styles/antflow/dialog.scss";
 
 .selected_list {
     margin-bottom: 20px;

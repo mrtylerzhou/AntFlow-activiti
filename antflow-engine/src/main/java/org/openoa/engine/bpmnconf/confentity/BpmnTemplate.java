@@ -59,6 +59,10 @@ public class BpmnTemplate {
      */
     @TableField("template_id")
     private Long templateId;
+    @TableField("message_send_type")
+    private String messageSendType;
+    @TableField("form_code")
+    private String formCode;
     /**
      * is del 0 for no and 1 for yes
      */

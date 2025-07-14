@@ -80,13 +80,12 @@ public class ThirdPartyCallbackFactory {
     /**
      * 执行回调
      *
-     * @param url
      * @param callbackTypeEnum
      * @param bpmnConfVo
      * @param <T>
      * @return
      */
-    public <T> T doCallback(String url, CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
+    public <T> T doCallback(CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
                             String processNum, String businessId) {
 
         //true代表回调调,false代表关闭回调
@@ -176,8 +175,10 @@ public class ThirdPartyCallbackFactory {
             OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService = SpringBeanUtils.getBean(OutSideBpmCallbackUrlConfServiceImpl.class);
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConfVo.getId(), bpmnConfVo.getBusinessPartyId());
 
+            String url="";
             heads.put("central-service", getCurrentSysDomain());//域名
             if (outSideBpmCallbackUrlConf!=null) {
+                url = outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl();
                 String apiClientId = outSideBpmCallbackUrlConf.getApiClientId();
                 String apiClientSecret = outSideBpmCallbackUrlConf.getApiClientSecret();
                 heads.put("api-client-id", apiClientId);//用户应用标识
@@ -236,7 +237,8 @@ public class ThirdPartyCallbackFactory {
                     JSON.toJSONString(heads),
                     JSON.toJSONString(Optional.ofNullable(callbackReqVo).orElse(new CallbackReqVo())),
                     resultJson, e);
-            throw new JiMuBizException(e.getMessage());
+            //throw new JiMuBizException(e.getMessage());
+            return null;
         } catch (Exception e) {
             log.error("工作流对外服务回调失败，回调类型：{}，请求头信息{}，入参：{}，出参：{}",
                     callbackTypeEnum.getMark(),

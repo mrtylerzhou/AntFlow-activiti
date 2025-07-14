@@ -18,8 +18,8 @@
           placeholder="账号"
         >
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
-        </el-input>
-      </el-form-item> -->
+</el-input>
+</el-form-item> -->
 
       <el-form-item prop="password">
         <el-input v-model="loginForm.password" type="password" size="large" auto-complete="off" placeholder="密码"
@@ -46,19 +46,18 @@
   </div>
 </template>
 
-<script setup> 
+<script setup>
 import { ref, onMounted } from 'vue';
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
-import useUserStore from '@/store/modules/user' 
-import cache from '@/plugins/cache';
+import useUserStore from '@/store/modules/user'
 import { ElMessage } from 'element-plus'
-import { getUsers } from "@/api/mock.js"; 
+import { getUsers } from "@/api/workflow/mock.js";
 const userStore = useUserStore()
 const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-let approveList= ref([]);
+let approveList = ref([]);
 let userOptions = ref([]);
 let userId = ref(null);
 let _userName = ref('');
@@ -75,39 +74,40 @@ const loginRules = {
   password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
   code: [{ required: true, trigger: "change", message: "请输入验证码" }]
 };
-const loading = ref(false); 
+const loading = ref(false);
 // 注册开关
 const register = ref(false);
 const redirect = ref(undefined);
 
 watch(route, (newRoute) => {
-    redirect.value = newRoute.query && newRoute.query.redirect;
+  redirect.value = newRoute.query && newRoute.query.redirect;
 }, { immediate: true });
- 
+
 function handleLogin() {
-  if(!userId.value) {
-        ElMessage.error("请选择用户");
-        return;    
-    }  
-  cache.session.set('userId', userId.value); 
-  cache.session.set('userName', encodeURIComponent(_userName.value));   
-  proxy.$refs.loginRef.validate(valid => {  
-    if (valid) { 
+  if (!userId.value) {
+    ElMessage.error("请选择用户");
+    return;
+  }
+  Cookies.set("userId", userId.value);
+  Cookies.set("userName", encodeURIComponent(_userName.value));
+
+  proxy.$refs.loginRef.validate(valid => {
+    if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
-      if (loginForm.value.rememberMe) {  
+      if (loginForm.value.rememberMe) {
         Cookies.set("username", loginForm.value.username, { expires: 30 });
         Cookies.set("password", encrypt(loginForm.value.password), { expires: 30 });
-        Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 }); 
+        Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 });
       } else {
 
         // 否则移除
         Cookies.remove("username");
         Cookies.remove("password");
-        Cookies.remove("rememberMe"); 
-      }  
+        Cookies.remove("rememberMe");
+      }
       // 调用action的登录方法
-      userStore.login(loginForm.value).then(() => { 
+      userStore.login(loginForm.value).then(() => {
         const query = route.query;
         const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
           if (cur !== "redirect") {
@@ -117,30 +117,31 @@ function handleLogin() {
         }, {});
         router.push({ path: redirect.value || "/", query: otherQueryParams });
       }).catch(() => {
-        loading.value = false; 
+        loading.value = false;
       });
     }
-  }); 
+    userStore.setNickName(_userName.value);
+  });
 }
- 
-onMounted(async () => {  
-  await getUserList();  
+
+onMounted(async () => {
+  await getUserList();
 })
-const getUserList = async () => { 
-    await getUsers().then(res => {
-        if (res.code == 200) {
-            approveList.value = res.data;
-            userOptions.value = res.data.map(item => {
-                return {
-                    label: item.name,
-                    value: item.id
-                }
-            });
+const getUserList = async () => {
+  await getUsers().then(res => {
+    if (res.code == 200) {
+      approveList.value = res.data;
+      userOptions.value = res.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id
         }
-    });
+      });
+    }
+  });
 }
 const changeSelect = async () => {
-  _userName.value = approveList.value.find(item => item.id == userId.value)?.name;  
+  _userName.value = approveList.value.find(item => item.id == userId.value)?.name;
 }
 function getCookie() {
   const username = Cookies.get("username");
@@ -151,7 +152,7 @@ function getCookie() {
     password: password === undefined ? loginForm.value.password : decrypt(password),
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
   };
-} 
+}
 getCookie();
 </script>
 
@@ -164,6 +165,7 @@ getCookie();
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
 }
+
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
@@ -175,32 +177,39 @@ getCookie();
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+
   .el-input {
     height: 40px;
+
     input {
       height: 40px;
     }
   }
+
   .input-icon {
     height: 39px;
     width: 14px;
     margin-left: 0px;
   }
 }
+
 .login-tip {
   font-size: 13px;
   text-align: center;
   color: #bfbfbf;
 }
+
 .login-code {
   width: 33%;
   height: 40px;
   float: right;
+
   img {
     cursor: pointer;
     vertical-align: middle;
   }
 }
+
 .el-login-footer {
   height: 40px;
   line-height: 40px;
@@ -213,6 +222,7 @@ getCookie();
   font-size: 12px;
   letter-spacing: 1px;
 }
+
 .login-code-img {
   height: 40px;
   padding-left: 12px;

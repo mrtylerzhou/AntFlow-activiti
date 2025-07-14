@@ -18,7 +18,7 @@ import org.springframework.util.ObjectUtils;
 public class PurchaseTypeJudge implements ConditionJudge {
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
         if (ObjectUtils.isEmpty(conditionsConf.getPurchaseType())) {
             throw new JiMuBizException("the process has no Purchase Type conf,please contact the administrator to add one");
         }

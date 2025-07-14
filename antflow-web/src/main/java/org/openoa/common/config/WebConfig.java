@@ -76,17 +76,7 @@ public class WebConfig  implements WebMvcConfigurer {
         converters.add(0, fastJsonHttpMessageConverter);
     }
 
-    @Bean
-    public FilterRegistrationBean<XssFilter> xssFilter() {
-        FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new XssFilter());
-        registration.addUrlPatterns("/*");
-        registration.setName("xssFilter");
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return registration;
 
-
-    }
 //    @Bean
     public FilterRegistrationBean<HttpLogFilter> httpLogFilter() {
         FilterRegistrationBean<HttpLogFilter> registration = new FilterRegistrationBean<>();

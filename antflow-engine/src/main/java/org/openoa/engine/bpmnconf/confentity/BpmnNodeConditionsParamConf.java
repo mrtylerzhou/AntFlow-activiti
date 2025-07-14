@@ -43,6 +43,10 @@ public class BpmnNodeConditionsParamConf {
     @TableField("condition_param_jsom")
     private String conditionParamJsom;
     private Integer operator;
+    @TableField("cond_relation")
+    private Integer condRelation;
+    @TableField("cond_group")
+    private Integer condGroup;
     /**
      * remark
      */

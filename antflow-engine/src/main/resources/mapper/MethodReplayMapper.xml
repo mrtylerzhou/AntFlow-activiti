@@ -21,7 +21,7 @@
         #{methodName,jdbcType=VARCHAR},
         #{paramType,jdbcType=VARCHAR},
         #{args,jdbcType=VARCHAR},
-        sysdate,
+        sysdate(),
         #{errorMsg,jdbcType=VARCHAR},
         #{alreadyReplayTimes,jdbcType=INTEGER},
         #{maxReplayTimes,jdbcType=INTEGER}

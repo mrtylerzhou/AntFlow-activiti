@@ -17,7 +17,7 @@ public class MBPInterceptorConfig {
     public MybatisPlusInterceptor configInterceptors() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         //prevent delete All
-        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());//防止改、删全表
+        //interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());//防止改、删全表
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
 
         return interceptor;

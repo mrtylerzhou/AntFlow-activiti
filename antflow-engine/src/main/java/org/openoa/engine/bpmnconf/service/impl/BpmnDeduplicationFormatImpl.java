@@ -35,13 +35,21 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
         String startNodeId = null;
 
         Map<String, BpmnNodeVo> mapNodes = Maps.newHashMap();
+        boolean containsParallelGateway=false;
         for (BpmnNodeVo vo : bpmnConfVo.getNodes()) {
             mapNodes.put(vo.getNodeId(), vo);
             if (!ObjectUtils.isEmpty(vo.getNodeType()) && (vo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_START.getCode()))) {
                 startNodeId = vo.getNodeId();
             }
+            if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(vo.getNodeType())
+                    ||(NodeTypeEnum.NODE_TYPE_GATEWAY.getCode().equals(vo.getNodeType())&&Boolean.TRUE.equals(vo.getIsParallel()))){
+                containsParallelGateway=true;
+                break;
+            }
         }
-
+        if(containsParallelGateway){
+            return backwardDeduplication(bpmnConfVo, bpmnStartConditions);
+        }
         //start node's assignee
         String initiator = mapNodes.get(startNodeId).getParams().getAssignee().getAssignee();
 

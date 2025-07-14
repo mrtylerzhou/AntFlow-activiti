@@ -7,17 +7,17 @@
                         <Avatar />
                     </el-icon>自选审批人</span>
                 <div class="optional-approver-content">
-                    <p v-for="node in approvaNodeList" :key="node.id" class="optional-node-title">
+                    <div v-for="node in approvaNodeList" :key="node.id" class="optional-node-title">
                         {{ node.nodeName }}
-                    <div style="display: block;">
-                        <el-tag v-for="item in node.approversList" :key="item.id" style="margin: 0 3px;" size="large"
-                            closable effect="light" @close="onDeleteTag(node, item)">
-                            {{ item.name }}
-                        </el-tag>
-                        <el-button type="success" size="default" icon="Plus" circle @click="openUserDialog(node)"
-                            v-show="canShowaddButton(node)" />
+                        <div style="display: block;">
+                            <el-tag v-for="item in node.approversList" :key="item.id" style="margin: 0 3px;"
+                                size="large" closable effect="light" @close="onDeleteTag(node, item)">
+                                {{ item.name }}
+                            </el-tag>
+                            <el-button type="success" size="default" icon="Plus" circle @click="openUserDialog(node)"
+                                v-show="canShowaddButton(node)" />
+                        </div>
                     </div>
-                    </p>
                 </div>
             </el-col>
         </el-row>
@@ -28,7 +28,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { getStartUserChooseModules } from '@/api/workflow';
+import { getStartUserChooseModules } from '@/api/workflow/index';
 import chooseApproveUser from './chooseApproveDialog.vue';
 const emits = defineEmits(['chooseApprove']);
 const props = defineProps({

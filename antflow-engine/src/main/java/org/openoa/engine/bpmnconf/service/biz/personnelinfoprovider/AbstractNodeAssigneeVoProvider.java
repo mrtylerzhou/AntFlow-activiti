@@ -1,7 +1,13 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
+import com.google.common.collect.Lists;
+import com.mysql.cj.util.LazyString;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
+import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
+import org.openoa.base.interf.BpmnProcessAdminProvider;
+import org.openoa.base.interf.MissAssigneeProcessing;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -20,7 +26,8 @@ import java.util.List;
 public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelProviderService {
     @Autowired
     private AssigneeVoBuildUtils assigneeVoBuildUtils;
-   protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo bpmnNodeVo, Collection<String> assignees) {
+
+   protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo bpmnNodeVo, Collection<BaseIdTranStruVo> assignees) {
        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
            if(CollectionUtils.isEmpty(emplList)){
@@ -28,6 +35,8 @@ public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelPro
            }
            return assigneeVoBuildUtils.buildVOs(emplList,bpmnNodeVo.getNodeName(),false);
        }
-       return assigneeVoBuildUtils.buildVos(assignees,bpmnNodeVo.getNodeName(),false);
+       return assigneeVoBuildUtils.buildVOs(assignees,bpmnNodeVo.getNodeName(),false);
     }
+
+
 }

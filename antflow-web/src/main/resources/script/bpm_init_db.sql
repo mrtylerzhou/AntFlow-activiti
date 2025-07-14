@@ -119,6 +119,8 @@ CREATE TABLE if not exists `t_bpmn_template`
     `roles`       varchar(255)        DEFAULT NULL COMMENT 'specified roles to inform',
     `funcs`       varchar(255)        DEFAULT NULL COMMENT 'specified Functionality to inform',
     `template_id` bigint(20)          DEFAULT NULL COMMENT 'template id id',
+     `form_code`         varchar(50)                           null,
+     `message_send_type` varchar(50)                           null comment 'message send type,via email,text message or app push and so on',
     `is_del`      tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:No,1:Yes',
     `create_time` timestamp  NULL     DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user` varchar(50)        DEFAULT '' COMMENT 'create user',
@@ -141,6 +143,8 @@ CREATE TABLE if not exists `t_information_template`
     `jump_url`       int(11)               DEFAULT NULL COMMENT 'url to jump to',
     `remark`         varchar(200) NOT NULL DEFAULT '' COMMENT 'remark',
     `status`         tinyint(4)   NOT NULL DEFAULT '0' COMMENT 'status 0:in use,1:disabled',
+     `event`          int                                    null,
+    `event_name`     varchar(50)              null,
     `is_del`         tinyint(4)   NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_time`    timestamp    NOT NULL     DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `create_user`    varchar(50)          DEFAULT '' COMMENT 'as its name says',
@@ -251,6 +255,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
     `bpmn_node_id` bigint(20)          NOT NULL COMMENT 'conf id',
     `is_default`   int(11)             NOT NULL DEFAULT '0' COMMENT 'is default 0:no,1:yes',
     `sort`         int(11)             NOT NULL COMMENT 'condition,s priority',
+    `group_relation` tinyint                                       null comment '0 for and and 1 for or',
      ext_json     varchar(2000)                                 null comment '前端vue3版本conditionlist参数模型',
     `remark`       varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`       tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
@@ -270,6 +275,9 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
     `condition_param_type`    int(11)             NOT NULL COMMENT 'param type,used to determine ConditionTypeEnum',
      `condition_param_name`  varchar(50)             NOT NULL COMMENT 'param field name',
     `condition_param_jsom`    text                NOT NULL COMMENT 'paramJSON',
+    `operator`                int                 null,
+    `cond_relation`           int                 null comment 'condition''s relations,0 for and and 1 for or',
+    `cond_group`            int                 null comment 'group that a condition belongs to',
     `remark`                  varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                  tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_user`             varchar(50)                  DEFAULT '' COMMENT 'as its name says',
@@ -938,7 +946,7 @@ CREATE TABLE IF NOT EXISTS `t_op_log`
   AUTO_INCREMENT = 1
  ;
 
-CREATE TABLE IF NOT EXISTS  `third_party_account_apply`
+CREATE TABLE IF NOT EXISTS  `t_biz_account_apply`
 (
     `id`                 int(11) NOT NULL AUTO_INCREMENT,
     `account_type`       tinyint(4)   DEFAULT NULL COMMENT 'account type',
@@ -977,6 +985,8 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_son           int                                null comment 'Whether it is a child application (0: No, 1: Yes)',
     look_url         varchar(500)                       null comment 'URL for viewing the application',
     submit_url       varchar(500)                       null comment 'URL for submitting the application',
+    user_request_uri varchar(500)                       null comment 'get  user info',
+    role_request_uri varchar(500)                       null comment 'get Role info',
     condition_url    varchar(500)                       null comment 'URL for accessing conditions or rules related to the application',
     parent_id        int                                null comment 'Parent application ID (if this is a child application)',
     application_url  varchar(500)                       null comment 'Main URL of the application',
@@ -1230,7 +1240,7 @@ CREATE TABLE IF NOT EXISTS  `t_sys_version` (
     `update_user` VARCHAR(50) COMMENT 'Update user',
     `is_hide` TINYINT COMMENT '0 for not hide and 1 for hide',
     `download_code` VARCHAR(255) COMMENT 'Download code',
-    `effective_time` timestamp COMMENT 'Effective time',
+    `effective_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'Effective time',
     INDEX `idx_version` (`version`) -- Optional index for improved performance on `version` queries
 ) ENGINE=InnoDB  COMMENT='sys version control';
 
@@ -1256,9 +1266,9 @@ create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
     node_id     bigint                             null comment 'foreign key for connect with t_bpmn_node_role_conf',
     empl_id     varchar(64)                             null comment 'assignee id',
     empl_name   varchar(50)                        null comment 'assignee''s name',
-    create_user varchar(50) charset utf8           null,
+    create_user varchar(50)           null,
    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-    update_user varchar(255) charset utf8          null,
+    update_user varchar(255)          null,
     column_8    int                                null,
    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
    `is_del` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted'
@@ -1654,8 +1664,7 @@ comment '流程动态条件选择条件记录表';
 create index indx_process_number
     on t_bpm_dynamic_condition_choosen (process_number);
 
-alter table t_bpmn_node_conditions_param_conf
-	add operator int null after condition_param_jsom;
+
 
 
 CREATE TABLE `t_bpmn_node_customize_conf` (
@@ -1670,85 +1679,3 @@ CREATE TABLE `t_bpmn_node_customize_conf` (
   `update_time` DATETIME NULL COMMENT 'update time',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  COMMENT='customize config entity';
-
--- ----------------------------
--- Records of t_user
---表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
---关于用户表demo数据的使用说明
---t_user,t_role,t_department表都是测试数据,实际使用中,一般用户系统里面都会有基本的用户表,角色表,部门表,审批的时候用户可以根据实际情况去使用或者关联使用自己已有系统的表,选择出来的数据结构符合BaseIdTranStruVo结构即可,即有id和name两个字段
---初次使用时,用户可以先初始化demo表,看一下流程是否满足自己的业务需求,然后逐步改sql,满足自己的业务需求.Antflow demo里审批人规则特别多,实际上用户可能只需要一个或者多个规则(一般指定人员,直属领导,直接角色就满足了),根据需求实现部分即可,像hrbp有的公司根本没有这个概念,自然也没必要实现
---用户实现审批人规则时,查看PersonnelEnum枚举,参照指定人员来实现其它的,实现无非就是改写sql而已,其实很简单,很多用户绕不过来,以为自己不熟悉antflow就不敢改,只要返回的数据结构符合BaseIdTranStruVo实体即可
--- ----------------------------
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (1, '张三', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (2, '李四', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (3, '王五', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (4, '菜六', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (5, '牛七', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (6, '马八', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (7, '李九', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (8, '周十', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (9, '肖十一', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (10, '令狐冲', NULL, 'zypqqgc@qq.com', 13, 17, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (11, '风清扬', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (12, '刘正风', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (13, '岳不群', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (14, '宁中则', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (15, '桃谷六仙', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (16, '不介和尚', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (17, '丁一师太', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (18, '依林师妹', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (19, '邱灵珊', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (20, '任盈盈', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (235, '斯克', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (237, '川普', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-INSERT INTO `t_user`(`id`, `user_name`, `mobile`, `email`, `leader_id`, `hrbp_id`, `mobile_is_show`, `path`, `is_del`, `head_img`, `department_id`) VALUES (1001, '小马', NULL, 'zypqqgc@qq.com', 18, 19, 0, NULL, 0, NULL, 9);
-
--- ----------------------------
--- Records of t_role
--- ----------------------------
-INSERT INTO `t_role` VALUES (1, '审核管理员');
-INSERT INTO `t_role` VALUES (2, '招商事业部');
-INSERT INTO `t_role` VALUES (3, '互联网部门');
-INSERT INTO `t_role` VALUES (4, '销售部');
-INSERT INTO `t_role` VALUES (5, '战区一');
-INSERT INTO `t_role` VALUES (6, '战区二');
-INSERT INTO `t_role` VALUES (7, 'JAVA开发');
-INSERT INTO `t_role` VALUES (8, '测试审批角色');
-
--- ----------------------------
--- Records of t_user_role
--- ----------------------------
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (1, 1, 1);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (2, 1, 1);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (3, 1, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (4, 2, 2);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (5, 2, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (6, 2, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (7, 3, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (8, 4, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (9, 5, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (10, 6, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (11, 7, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (12, 11, 3);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (13, 10, 6);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (14, 8, 7);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (15, 19, 8);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (16, 12, 4);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (17, 13, 5);
-INSERT INTO `t_user_role`(`id`, `user_id`, `role_id`) VALUES (18, 16, 4);
-
-
--- ----------------------------
--- Records of t_department
---表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
--- ----------------------------
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (1, '一级部门', NULL, NULL, '/1', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (2, '二级部门', NULL, 3, '/1/2', 2, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (3, '三级部门', NULL, 4, '/1/2/3', 3, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (4, '四级部门', NULL, 5, '/1/2/3/4', 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (5, '五级部门', NULL, 6, '/1/2/3/4/5', 5, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (6, '六级部门', NULL, 7, '/1/2/3/4/5/6', 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (7, '七级部门', NULL, 8, '/1/2/3/4/5/6/7', 7, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (8, '市场部', NULL, 9, '/1/2/3/4/5/6/7/8', 8, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_department`(`id`, `name`, `short_name`, `parent_id`, `path`, `level`, `leader_id`, `sort`, `is_del`, `is_hide`, `create_user`, `update_user`, `create_time`, `update_time`) VALUES (9, '销售部', NULL, 9, '/1/2/3/4/5/6/7/8/9', 9, 9, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-

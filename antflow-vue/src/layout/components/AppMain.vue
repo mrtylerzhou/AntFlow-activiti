@@ -7,25 +7,45 @@
         </keep-alive>
       </transition>
     </router-view>
-    <iframe-toggle/>
+    <iframe-toggle />
+    <copyright />
   </section>
 </template>
 
 <script setup>
+import copyright from "./Copyright/index"
 import iframeToggle from "./IframeToggle/index"
 import useTagsViewStore from '@/store/modules/tagsView'
 
+const route = useRoute()
 const tagsViewStore = useTagsViewStore()
+
+onMounted(() => {
+  addIframe()
+})
+
+watchEffect(() => {
+  addIframe()
+})
+
+function addIframe() {
+  if (route.meta.link) {
+    useTagsViewStore().addIframeView(route)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .app-main {
-  /* 50= navbar  50  */ 
-  height: calc(100% - 84px);
+  /* 50= navbar  50  */
+  min-height: calc(100vh - 50px);
   width: 100%;
   position: relative;
-  overflow: auto;
-  background-color: #f5f5f7;
+  overflow: hidden;
+}
+
+.app-main:has(.copyright) {
+  padding-bottom: 36px;
 }
 
 .fixed-header + .app-main {
@@ -33,10 +53,10 @@ const tagsViewStore = useTagsViewStore()
 }
 
 .hasTagsView {
-  //.app-main {
-  //  /* 84 = navbar + tags-view = 50 + 34 */
-  //  min-height: calc(100vh - 84px);
-  //}
+  .app-main {
+    /* 84 = navbar + tags-view = 50 + 34 */
+    min-height: calc(100vh - 84px);
+  }
 
   .fixed-header + .app-main {
     padding-top: 84px;

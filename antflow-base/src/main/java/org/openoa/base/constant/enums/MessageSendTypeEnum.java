@@ -7,7 +7,9 @@ public enum MessageSendTypeEnum {
     MAIL(1, "邮件")
     , MESSAGE(2, "短信"),
     PUSH(3, "APP-PUSH"),
-    WECHAT_PUSH(4,"企微消息"),
+    WECHAT_PUSH(5,"企微消息"),
+    DING_TALK_TYPE(6,"钉钉"),
+    FEISHU_TYPE(7,"飞书"),
     ;
 
     @Getter

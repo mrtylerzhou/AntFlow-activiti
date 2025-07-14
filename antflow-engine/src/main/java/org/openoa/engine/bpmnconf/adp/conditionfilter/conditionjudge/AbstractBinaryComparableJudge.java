@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  * 为支持1<a<2这种类型的比较设计的,如果是普通的单值比较,请使用AbstractComparableJudge,第二个参数值为null即可
@@ -17,7 +18,7 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
     private static final Logger log = LoggerFactory.getLogger(AbstractBinaryComparableJudge.class);
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
         String fieldNameInDb = fieldNameInDb();
         String fieldNameActual=fieldNameInStartConditions();
         String fieldValueInDb = null;
@@ -30,8 +31,13 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
         //运算符类型
         Integer theOperatorType = conditionsConf.getNumberOperator();
         try {
-            fieldValueInDb =  FieldUtils.readField(conditionsConf, fieldNameInDb, true).toString();
-            fieldValueActual = FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true).toString();
+            Object varInDb = FieldUtils.readField(conditionsConf, fieldNameInDb, true);
+            Object varOfUser = FieldUtils.readField(bpmnStartConditionsVo, fieldNameActual, true);
+            if(varInDb==null||varOfUser==null){
+                return false;
+            }
+            fieldValueInDb =varInDb.toString();
+            fieldValueActual =varOfUser.toString();
             fieldValueActualbig = new BigDecimal(fieldValueActual);
 
             if(JudgeOperatorEnum.binaryOperator().contains(theOperatorType)){

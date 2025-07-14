@@ -4,14 +4,14 @@
   "data": [
     {
       "path": "",
-      "redirect": "/showFlow",
+      "redirect": "/taskCenter",
       "component": "Layout",
       "children": [
         {
-          "name": "showFlow",
-          "path": "/showFlow",
+          "name": "taskCenter",
+          "path": "/taskCenter",
           "hidden": false,
-          "component": "showFlow/index",
+          "component": "workflow/taskCenter/index",
           "meta": {
             "title": "发起请求",
             "icon": "guide",
@@ -40,7 +40,7 @@
           "name": "MyTask",
           "path": "mytask",
           "hidden": false,
-          "component": "flowTask/mytask/index",
+          "component": "workflow/flowTask/mytask/index",
           "meta": {
             "title": "我的发起",
             "icon": "",
@@ -52,7 +52,7 @@
           "name": "PenddingTask",
           "path": "pendding",
           "hidden": false,
-          "component": "flowTask/pendding/index",
+          "component": "workflow/flowTask/pendding/index",
           "meta": {
             "title": "待办任务",
             "icon": "",
@@ -64,7 +64,7 @@
           "name": "ApprovedTask",
           "path": "approved",
           "hidden": false,
-          "component": "flowTask/approved/index",
+          "component": "workflow/flowTask/approved/index",
           "meta": {
             "title": "已办任务",
             "icon": "",
@@ -76,7 +76,7 @@
           "name": "CopyToMeTask",
           "path": "CopyToMe",
           "hidden": false,
-          "component": "flowTask/copyToMe/index",
+          "component": "workflow/flowTask/copyToMe/index",
           "meta": {
             "title": "抄送到我",
             "icon": "",
@@ -88,9 +88,21 @@
           "name": "approve",
           "path": "pendding/approve",
           "hidden": true,
-          "component": "flowTask/pendding/approve",
+          "component": "workflow/flowTask/pendding/approve",
           "meta": {
             "title": "流程审批",
+            "icon": "",
+            "noCache": true,
+            "link": null
+          }
+        },
+        {
+          "name": "approveV2",
+          "path": "/approveV2",
+          "hidden": true,
+          "component": "workflow/flowTask/pendding/approveV2",
+          "meta": {
+            "title": "流程审批V2",
             "icon": "",
             "noCache": true,
             "link": null
@@ -116,19 +128,19 @@
           "name": "flowInstance",
           "path": "instance",
           "hidden": false,
-          "component": "flowTask/instance/index",
+          "component": "workflow/flowTask/instance/index",
           "meta": {
-            "title": "流程实例",
+            "title": "流程监控",
             "icon": "",
             "noCache": false,
             "link": null
           }
         },
         {
-          "name": "flowtemp",
-          "path": "flowtemp",
+          "name": "flowCategory",
+          "path": "flowCategory",
           "hidden": false,
-          "component": "workflow/temp/index",
+          "component": "workflow/flowCategory/index",
           "meta": {
             "title": "流程类型",
             "icon": "",
@@ -137,10 +149,10 @@
           }
         },
         {
-          "name": "flowConfig",
-          "path": "config",
+          "name": "flowList",
+          "path": "flowList",
           "hidden": false,
-          "component": "workflow/config/index",
+          "component": "workflow/flowList/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -152,7 +164,7 @@
           "name": "lf-FlowDesign",
           "path": "lf-design",
           "hidden": true,
-          "component": "workflow/design/lf",
+          "component": "workflow/flowDesign/lf",
           "meta": {
             "title": "低代码表单流程设计",
             "icon": "",
@@ -164,7 +176,7 @@
           "name": "diy-FlowDesign",
           "path": "diy-design",
           "hidden": true,
-          "component": "workflow/design/diy",
+          "component": "workflow/flowDesign/diy",
           "meta": {
             "title": "自定义表单流程设计",
             "icon": "",
@@ -174,9 +186,9 @@
         },
         {
           "name": "flowPreview",
-          "path": "preview",
+          "path": "flowPreview",
           "hidden": true,
-          "component": "workflow/preview/index",
+          "component": "workflow/flowPreview/index",
           "meta": {
             "title": "流程模板预览",
             "icon": "",
@@ -188,7 +200,7 @@
           "name": "startFlow",
           "path": "/startFlow/index",
           "hidden": true,
-          "component": "startFlow/index",
+          "component": "workflow/startFlow/index",
           "meta": {
             "title": "发起申请流程",
             "icon": "",
@@ -200,7 +212,7 @@
           "name": "startOutside",
           "path": "/startOutside/index",
           "hidden": true,
-          "component": "startOutside/index",
+          "component": "workflow/startOutside/index",
           "meta": {
             "title": "业务方表单发起测试",
             "icon": "",
@@ -212,7 +224,7 @@
           "name": "version",
           "path": "flow-version",
           "hidden": true,
-          "component": "workflow/config/version",
+          "component": "workflow/flowList/version",
           "meta": {
             "title": "版本管理",
             "icon": "",
@@ -240,7 +252,7 @@
           "name": "flowentrustsetting",
           "path": "setting",
           "hidden": false,
-          "component": "flowEntrust/setting/index",
+          "component": "workflow/flowEntrust/setting/index",
           "meta": {
             "title": "委托设置",
             "icon": "",
@@ -252,7 +264,7 @@
           "name": "flowentrustlist",
           "path": "list",
           "hidden": false,
-          "component": "flowEntrust/list/index",
+          "component": "workflow/flowEntrust/list/index",
           "meta": {
             "title": "委托列表",
             "icon": "",
@@ -282,7 +294,7 @@
       "component": "Layout",
       "alwaysShow": true,
       "meta": {
-        "title": "业务方管理",
+        "title": "Saas流程管理",
         "icon": "component",
         "noCache": false,
         "link": null
@@ -292,9 +304,9 @@
           "name": "outsideJoin",
           "path": "outsideJoin",
           "hidden": false,
-          "component": "outsideMgt/outsideJoin/index",
+          "component": "workflow/outsideMgt/outsideJoin/index",
           "meta": {
-            "title": "项目管理",
+            "title": "Saas租户管理",
             "icon": "",
             "noCache": false,
             "link": null
@@ -304,7 +316,7 @@
           "name": "outsideApp",
           "path": "outsideApp",
           "hidden": false,
-          "component": "outsideMgt/outsideApp/index",
+          "component": "workflow/outsideMgt/outsideApp/index",
           "meta": {
             "title": "应用管理",
             "icon": "",
@@ -316,7 +328,7 @@
           "name": "outsideTemp",
           "path": "outsideTemp",
           "hidden": false,
-          "component": "outsideMgt/outsideTemp/index",
+          "component": "workflow/outsideMgt/outsideTemp/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -328,7 +340,7 @@
           "name": "outsideDesign",
           "path": "outsideDesign",
           "hidden": true,
-          "component": "outsideMgt/outsideDesign/index",
+          "component": "workflow/outsideMgt/outsideDesign/index",
           "meta": {
             "title": "流程设计",
             "icon": "",
@@ -340,7 +352,7 @@
           "name": "outsideflowPreview",
           "path": "preview",
           "hidden": true,
-          "component": "outsideMgt/preview/index",
+          "component": "workflow/outsideMgt/preview/index",
           "meta": {
             "title": "三方流程模板预览",
             "icon": "",
@@ -352,7 +364,7 @@
           "name": "app-setting",
           "path": "app-setting",
           "hidden": true,
-          "component": "outsideMgt/outsideApp/Setting/index",
+          "component": "workflow/outsideMgt/outsideApp/Setting/index",
           "meta": {
             "title": "应用设置",
             "icon": "",

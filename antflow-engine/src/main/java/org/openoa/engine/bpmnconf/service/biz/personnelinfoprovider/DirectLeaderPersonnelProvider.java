@@ -18,14 +18,14 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class DirectLeaderPersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class DirectLeaderPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeDirectLeaderById(startUserId);
-        ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+
+        return  super.provideAssigneeList(bpmnNodeVo,Lists.newArrayList(baseIdTranStruVo));
     }
 }

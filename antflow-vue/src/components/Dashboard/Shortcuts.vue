@@ -6,7 +6,7 @@
 -->
 <template>
     <el-row :gutter="20">
-        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card1" @click="handleTodo()">
                 <el-icon>
                     <bell />
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card2" @click="handleTodayDone()">
                 <el-icon>
                     <EditPen />
@@ -27,11 +27,11 @@
                     <span>{{ todoFrom.doneTodayCount }}</span>
                 </div>
             </div>
-        </el-col> 
-        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
+        </el-col>
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
             <div class="ve-card ve_card3" @click="handleTodayCreate()">
                 <el-icon>
-                    <TakeawayBox /> 
+                    <TakeawayBox />
                 </el-icon>
                 <div>
                     <p>今日发起</p>
@@ -39,8 +39,8 @@
                 </div>
             </div>
         </el-col>
-        <el-col :lg="6" :md="8"  :sm="12" :xs="24">
-            <div class="ve-card ve_card4">
+        <el-col :lg="6" :md="12" :sm="12" :xs="24">
+            <div class="ve-card ve_card4" @click="handleTodayDraft()">
                 <el-icon>
                     <document />
                 </el-icon>
@@ -52,48 +52,51 @@
         </el-col>
     </el-row>
 </template>
- 
-<script setup name="Index"> 
-import { getTodoList } from "@/api/workflow";
-const { proxy } = getCurrentInstance(); 
+
+<script setup name="Index">
+import { getTodoList } from "@/api/workflow/index.js";
+const { proxy } = getCurrentInstance();
 
 let todoFrom = ref({
-  todoCount: 0,
-  doneTodayCount: 0,
-  doneCreateCount: 0,
-}) 
+    todoCount: 0,
+    doneTodayCount: 0,
+    doneCreateCount: 0,
+})
 const getTodo = () => {
-  getTodoList().then(res => {
-    todoFrom.value = res.data;
-  }).catch((err) => {
-    if (err && err.msg)
-      console.log("获取todolist失败=" + JSON.stringify(err.msg));
-  })
+    getTodoList().then(res => {
+        todoFrom.value = res.data;
+    }).catch((err) => {
+        if (err && err.msg)
+            console.log("获取todolist失败=" + JSON.stringify(err.msg));
+    })
 }
 getTodo();
 const handleTodo = () => {
-  const obj = {path: "/flowTask/pendding"};
-  proxy.$tab.openPage(obj);
+    const obj = { path: "/flowTask/pendding" };
+    proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDone = () => {
-  const obj = {path: "/flowTask/approved"};
-  proxy.$tab.openPage(obj);
+    const obj = { path: "/flowTask/approved" };
+    proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayCreate = () => {
-  const obj = {path: "/flowTask/mytask"};
-  proxy.$tab.openPage(obj);
-} 
+    const obj = { path: "/flowTask/mytask" };
+    proxy.$tab.closeOpenPage(obj);
+}
+const handleTodayDraft = () => {
+    const obj = { path: "/approveV2" };
+    proxy.$tab.openPage(obj);
+}
 </script>
 <style lang="scss" scoped>
 .el-row {
-    height: 50%;  
-    padding-top: 10px;
-    padding-right: 10px;   
-    padding-left: 10px;
+    padding-right: 10px;
 }
-.el-col {  
-    padding-bottom: 10px;
+
+.el-col {
+    margin-bottom: 10px;
 }
+
 .ve-card {
     cursor: pointer;
     border-radius: 10px;
@@ -102,50 +105,62 @@ const handleTodayCreate = () => {
     align-items: center;
     transition: all 500ms;
     color: #fff;
+
     &:hover {
         box-shadow: 3px 3px 6px 1px rgba(0, 0, 0, 0.2);
         background: #fff;
-        border: 2px solid #1890ff;
     }
+
     i {
         font-size: 90px;
         margin: 10px 20px;
     }
+
     div {
         flex: 1;
         padding-right: 12px;
+
         p {
             margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         span {
-            font-size: 55px;
+            font-size: 60px;
             font-weight: bold;
         }
     }
 }
+
 .ve_card1 {
-    background: #1890ff;
+    background: #3370ff;
+
     &:hover {
-        color: #1890ff;
+        color: #3370ff;
     }
 }
+
 .ve_card2 {
     background: #13ce66;
+
     &:hover {
         color: #13ce66;
     }
 }
+
 .ve_card3 {
-    background: #FE7300;
+    background: #fe7300;
+
     &:hover {
-        color: #FE7300;
+        color: #fe7300;
     }
 }
+
 .ve_card4 {
     background: #ff4949;
+
     &:hover {
         color: #ff4949;
     }

@@ -3,7 +3,13 @@
         <el-table v-loading="loading" :data="activityList">
             <!-- <el-table-column label="序号" align="center" prop="id" /> -->
             <el-table-column label="流程环节" align="center" prop="taskName" />
-            <el-table-column label="执行人" align="center" prop="verifyUserName" />
+            <el-table-column label="执行人" align="center" prop="verifyUserName">
+                <template #default="scope">
+                    <el-avatar v-if="scope.row.verifyUserName" size="small">
+                        {{ scope.row.verifyUserName.substring(0, 1) }}</el-avatar>
+                    {{ scope.row.verifyUserName }}
+                </template>
+            </el-table-column>
             <el-table-column label="操作" align="center" prop="type">
                 <template #default="item">
                     <el-tag :type="item.row.type" :size="item.row.size">{{ item.row.verifyStatusName }}</el-tag>
@@ -22,8 +28,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { approveButtonColor } from '@/utils/flow/const';
-import { getBpmVerifyInfoVos } from '@/api/workflow';
+import { approveButtonColor } from '@/utils/antflow/const';
+import { getBpmVerifyInfoVos } from '@/api/workflow/index';
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
 let activityList = ref(null);
@@ -34,8 +40,8 @@ onMounted(async () => {
     await getPreviewData();
 })
 const getPreviewData = async () => {
-    let param = instanceViewConfig1.value; 
-    let resData = await getBpmVerifyInfoVos(param); 
+    let param = instanceViewConfig1.value;
+    let resData = await getBpmVerifyInfoVos(param);
     loading.value = false;
     if (resData.code == 200) {
         activityList.value = resData.data.map(c => {
@@ -43,7 +49,7 @@ const getPreviewData = async () => {
                 ...c,
                 type: approveButtonColor[c.verifyStatus],
                 size: c.verifyStatus == 99 ? 'large' : 'default',
-                verifyStatusName: c.verifyStatusName ? c.verifyStatusName : (c.taskName != '流程结束'?'未处理':'结束'),
+                verifyStatusName: c.verifyStatusName ? c.verifyStatusName : (c.taskName != '流程结束' ? '未处理' : '结束'),
                 remark: c.verifyDesc
             }
         })

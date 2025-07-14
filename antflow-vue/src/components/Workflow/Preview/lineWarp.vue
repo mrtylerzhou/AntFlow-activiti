@@ -28,7 +28,6 @@
                         <div class="condition-node-box">
                             <div class="node-wrap-box" :data-node-key="item.nodeId">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
-                                    <span class="iconfont"></span>
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
                                 <div class="content">
@@ -55,7 +54,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
-import { bgColors } from '@/utils/flow/const'
+import { bgColors } from '@/utils/antflow/const'
 let props = defineProps({
     nodeConfig: {
         type: Object,
@@ -75,7 +74,7 @@ onMounted(() => {
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
 <style scoped lang="scss">
-@import "@/assets/styles/flow/workflow.scss";
+@use "@/assets/styles/antflow/workflow.scss";
 
 .pixel-line {
     width: 2px;

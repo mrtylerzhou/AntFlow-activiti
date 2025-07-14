@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.entity.UserMessage;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseMsgInfo;
@@ -24,7 +25,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
     @Autowired
     private UserMessageServiceImpl userMessageService;
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     //do some work before send message
     @Async

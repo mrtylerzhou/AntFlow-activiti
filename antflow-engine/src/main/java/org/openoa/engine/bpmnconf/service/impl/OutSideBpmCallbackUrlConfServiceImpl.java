@@ -8,6 +8,7 @@ import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
@@ -51,7 +52,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
     private OutSideBpmBaseServiceImpl outSideBpmBaseService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     public List<OutSideBpmCallbackUrlConf> selectListByFormCode(String formCode) {
         List<OutSideBpmCallbackUrlConf> confList = this.getBaseMapper().selectList(new QueryWrapper<OutSideBpmCallbackUrlConf>()

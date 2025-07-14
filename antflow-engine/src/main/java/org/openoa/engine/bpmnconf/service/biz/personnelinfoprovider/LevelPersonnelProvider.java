@@ -16,7 +16,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
+public class LevelPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
     @Override
@@ -30,10 +30,8 @@ public class LevelPersonnelProvider extends AbstractNodeAssigneeVoProvider{
         Integer assignLevelType = propertysVo.getAssignLevelType();
         Integer assignLevelGrade = propertysVo.getAssignLevelGrade();
         BaseIdTranStruVo baseIdTranStruVo = userService.queryLeaderByEmployeeIdAndLevel(startUserId, assignLevelGrade);
-        if(baseIdTranStruVo==null){
-            throw new JiMuBizException("未能根据发起人和指定层级找到审批人信息");
-        }
-        ArrayList<String> userIds = Lists.newArrayList(baseIdTranStruVo.getId().toString());
-        return  super.provideAssigneeList(bpmnNodeVo,userIds);
+
+
+        return  super.provideAssigneeList(bpmnNodeVo,Lists.newArrayList(baseIdTranStruVo));
     }
 }

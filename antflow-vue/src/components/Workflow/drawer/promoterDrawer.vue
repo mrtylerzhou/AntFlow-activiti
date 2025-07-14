@@ -5,8 +5,9 @@
  * @FilePath: /ant-flow/src/components/drawer/promoterDrawer.vue
 -->
 <template>
-    <el-drawer :append-to-body="true" title="发起人" v-model="visible" class="set_promoter"  :with-header="false" :size="680">
-        <span class="drawer-title">发起人</span> 
+    <el-drawer :append-to-body="true" title="发起人" v-model="visible" class="set_promoter" :with-header="false"
+        :size="680">
+        <span class="drawer-title">发起人</span>
         <div class="demo-drawer__content">
             <div class="promoter_content drawer_content">
                 <p>{{ $func.arrToStr(flowPermission) || '所有人' }}</p>
@@ -16,12 +17,12 @@
                 <el-button type="primary" @click="savePromoter">确 定</el-button>
                 <el-button @click="closeDrawer">取 消</el-button>
             </div>
-  
+
         </div>
     </el-drawer>
 </template>
-<script setup> 
-import $func from '@/utils/flow/index'
+<script setup>
+import $func from '@/utils/antflow/index'
 import { useStore } from '@/store/modules/outsideflow'
 import { computed, ref, watch } from 'vue'
 let flowPermission = ref([])
@@ -30,8 +31,8 @@ let checkedList = ref([])
 
 let store = useStore()
 let { setPromoter, setFlowPermission } = store
-let promoterDrawer = computed(()=> store.promoterDrawer)
-let flowPermission1 = computed(()=> store.flowPermission1)
+let promoterDrawer = computed(() => store.promoterDrawer)
+let flowPermission1 = computed(() => store.flowPermission1)
 let visible = computed({
     get() {
         return promoterDrawer.value
@@ -64,15 +65,17 @@ const closeDrawer = () => {
     setPromoter(false)
 }
 </script>
-<style scoped lang="scss">  
-@import "@/assets/styles/flow/dialog.scss";
+<style scoped lang="scss">
+@use "@/assets/styles/antflow/dialog.scss";
 
 .set_promoter {
     .promoter_content {
         padding: 0 20px;
+
         .el-button {
             margin-bottom: 20px;
         }
+
         p {
             padding: 18px 0;
             font-size: 14px;

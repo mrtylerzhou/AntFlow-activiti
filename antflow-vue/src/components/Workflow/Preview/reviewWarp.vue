@@ -1,6 +1,6 @@
 <template>
-    <div style="text-align:center;" >
-        <section class="antflow-design"  ref="antflowDesignRef">
+    <div style="text-align:center;">
+        <section class="antflow-design" ref="antflowDesignRef">
             <div class="zoom">
                 <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
@@ -20,66 +20,67 @@
 </template>
 <script setup>
 import LineWarp from '@/components/Workflow/Preview/lineWarp.vue';
-import { getFlowPreview } from '@/api/workflow';
-import { FormatUtils } from '@/utils/flow/formatFlowPreview';
-import { useStore } from '@/store/modules/workflow'; 
-import {wheelZoomFunc, zoomInit,resetImage} from '@/utils/zoom.js';
+import { getFlowPreview } from '@/api/workflow/index';
+import { FormatPreviewUtils } from '@/utils/antflow/formatFlowPreview';
+import { useStore } from '@/store/modules/workflow';
+import { wheelZoomFunc, zoomInit, resetImage } from '@/utils/antflow/zoom.js';
 const { proxy } = getCurrentInstance();
 let store = useStore();
 const antflowDesignRef = ref(null);
 const boxScaleRef = ref(null);
 let nowVal = ref(100);
-let viewConfig = computed(() => store.instanceViewConfig1) 
+let viewConfig = computed(() => store.instanceViewConfig1)
 let props = defineProps({
     previewConf: {
         type: Object,
         default: () => (null)
     }
 });
-const nodeConfig = ref(null); 
-const getFlowPreviewList = async (objData) => {  
+const nodeConfig = ref(null);
+const getFlowPreviewList = async (objData) => {
     let param = {
         processNumber: objData.processNumber,
         isStartPreview: false,
         isOutSideAccessProc: objData.isOutSideAccess || false,
         isLowCodeFlow: objData.isLowCodeFlow || false
     };
-    if(props.previewConf) {
+    if (props.previewConf) {
         param = props.previewConf;
-    } 
+    }
     proxy.$modal.loading();
     let resData = await getFlowPreview(param);
     proxy.$modal.closeLoading();
-    let formatData = FormatUtils.formatSettings(resData.data);
-    nodeConfig.value = formatData; 
+    let formatData = FormatPreviewUtils.formatSettings(resData.data);
+    nodeConfig.value = formatData;
 }
-onMounted(async () => { 
-    zoomInit(antflowDesignRef, boxScaleRef, (val) => { 
+onMounted(async () => {
+    zoomInit(antflowDesignRef, boxScaleRef, (val) => {
         nowVal.value = val
     });
-    await getFlowPreviewList(viewConfig.value); 
-}); 
+    await getFlowPreviewList(viewConfig.value);
+});
 /** 页面放大 */
 function zoomIn() {
-  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true})
+    wheelZoomFunc({ scaleFactor: parseInt(nowVal.value) / 100 + 0.1, isExternalCall: true })
 }
 
 /** 页面缩小 */
 function zoomOut() {
-  wheelZoomFunc({scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true})
+    wheelZoomFunc({ scaleFactor: parseInt(nowVal.value) / 100 - 0.1, isExternalCall: true })
 }
 /** 还原缩放比例 */
 function zoomReset() {
-  resetImage()
+    resetImage()
 }
 </script>
-<style lang="scss" scoped> 
- @import "@/assets/styles/flow/workflow.scss"; 
+<style lang="scss" scoped>
+@use "@/assets/styles/antflow/workflow.scss";
+
 .end-node-circle {
     width: 20px;
     height: 20px;
     margin: auto;
     border-radius: 50%;
     background: #dbdcdc
-}   
+}
 </style>

@@ -20,30 +20,31 @@
 
             <el-form-item v-if="!copyOpt" label="类型标识" prop="formCode">
                 <el-input v-model="form.formCode" :disabled="true" :style="{ width: '100%' }" />
-            </el-form-item>  
+            </el-form-item>
 
             <el-form-item v-else label="类型标识" prop="formCode">
                 <el-select filterable v-model="form.formCode" placeholder="请选类型标识" :style="{ width: '100%' }">
-                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value" :value="item.key">
-                        <span style="float: left">【{{ item.key }}】 {{ item.value }}</span> 
+                    <el-option v-for="(item, index) in formCodeOptions" :key="index" :label="item.value"
+                        :value="item.key">
+                        <span style="float: left">【{{ item.key }}】 {{ item.value }}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
 
-            <el-form-item v-if="!copyOpt"  label="流程名称" prop="bpmnName"> 
+            <el-form-item v-if="!copyOpt" label="流程名称" prop="bpmnName">
                 <el-input v-model="form.bpmnName" :disabled="true" :style="{ width: '100%' }" readonly />
-            </el-form-item> 
+            </el-form-item>
 
             <el-form-item v-else label="流程名称" prop="bpmnName">
                 <template #label>
                     <span>
                         <el-tooltip content="同【模板类型】名称一致，不需手动输入" placement="top">
-                        <el-icon><question-filled /></el-icon>
+                            <el-icon><question-filled /></el-icon>
                         </el-tooltip>
                         流程名称
                     </span>
                 </template>
-                <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly/>
+                <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly />
             </el-form-item>
 
             <el-form-item label="审批人去重" prop="deduplicationType">
@@ -60,21 +61,21 @@
             <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
-            </el-form-item> 
+            </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, watch, getCurrentInstance } from 'vue'
-import { NodeUtils } from '@/utils/flow/nodeUtils'
-import { getDIYFromCodeData } from "@/api/workflow";
-import { getLowCodeFlowFormCodes } from "@/api/lowcodeApi"; 
-const { query } = useRoute(); 
+import { NodeUtils } from '@/utils/antflow/nodeUtils'
+import { getDIYFromCodeData } from "@/api/workflow/index";
+import { getLowCodeFlowFormCodes } from "@/api/workflow/lowcodeApi";
+const { query } = useRoute();
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['nextChange'])
 let loading = ref(false);
-const copyOpt = query?.copy??0 > 0?true:false;
+const copyOpt = query?.copy ?? 0 > 0 ? true : false;
 let props = defineProps({
     flowType: {
         type: String,
@@ -110,8 +111,8 @@ const form = reactive({
     deduplicationType: 1
 })
 // 复制操作 监听formCode的变化
-watch(() => form.formCode,(val) => { 
-    if (val) { 
+watch(() => form.formCode, (val) => {
+    if (val) {
         formCodeOptions.value.forEach(item => {
             if (item.key == val) {
                 form.bpmnName = item.value;
@@ -119,8 +120,8 @@ watch(() => form.formCode,(val) => {
         })
     }
 });
-onMounted(async () => { 
-    if (!proxy.isObjEmpty(props.basicData) && !proxy.isObjEmpty(props.basicData.formCode)) {
+onMounted(async () => {
+    if (!proxy.isEmpty(props.basicData) && !proxy.isEmpty(props.basicData.formCode)) {
         form.bpmnName = props.basicData.bpmnName;
         form.bpmnCode = props.basicData.bpmnCode;
         form.formCode = props.basicData.formCode;
@@ -128,15 +129,15 @@ onMounted(async () => {
         form.deduplicationType = props.basicData.deduplicationType;
     }
     else {
-        form.bpmnCode = generatorID; 
+        form.bpmnCode = generatorID;
         form.formCode = query.fc;
-        form.bpmnName = decodeURIComponent(query.fcname??''); 
+        form.bpmnName = decodeURIComponent(query.fcname ?? '');
     }
     if (props.flowType == 'DIY') {
         getDIYFromCodeList();
     } else if (props.flowType == 'LF') {
         getLFFromCodeList();
-    } 
+    }
 });
 
 /**获取全部DIY FromCode */
@@ -200,7 +201,7 @@ defineExpose({
     background: white !important;
     padding: 30px;
     max-width: 750px;
-    min-height: 70vh;
+    min-height: 80vh;
     left: 0;
     bottom: 0;
     right: 0;

@@ -12,6 +12,7 @@ import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -53,7 +54,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private AfUserService employeeService;
 
     @Autowired
     private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;

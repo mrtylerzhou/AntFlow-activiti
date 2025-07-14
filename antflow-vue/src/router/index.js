@@ -1,6 +1,6 @@
-import { createWebHashHistory, createRouter } from 'vue-router'
+import { createWebHashHistory, createRouter } from "vue-router";
 /* Layout */
-import Layout from '@/layout'
+import Layout from "@/layout";
 
 /**
  * Note: 路由配置项
@@ -27,92 +27,97 @@ import Layout from '@/layout'
 // 公共路由
 export const constantRoutes = [
   {
-    path: '/redirect',
+    path: "/redirect",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect/index.vue')
-      }
-    ]
+        path: "/redirect/:path(.*)",
+        component: () => import("@/views/redirect/index.vue"),
+      },
+    ],
   },
   {
-    path: '/login',
-    component: () => import('@/views/login'),
-    hidden: true
-  }, 
+    path: "/login",
+    component: () => import("@/views/login"),
+    hidden: true,
+  },
   {
     path: "/:pathMatch(.*)*",
-    component: () => import('@/views/error/404'),
-    hidden: true
+    component: () => import("@/views/error/404"),
+    hidden: true,
   },
   {
-    path: '/401',
-    component: () => import('@/views/error/401'),
-    hidden: true
+    path: "/401",
+    component: () => import("@/views/error/401"),
+    hidden: true,
   },
   {
-    path: '',
+    path: "/flowMsg/msgTemp",
+    component: () => import("@/views/workflow/flowMsg/msgTemplete/index.vue"),
+    hidden: false,
+  },
+  {
+    path: "",
     component: Layout,
-    redirect: '/index',
+    redirect: "/index",
     children: [
       {
-        path: '/index',
-        component: () => import('@/views/index'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
+        path: "/index",
+        component: () => import("@/views/index"),
+        name: "Index",
+        meta: { title: "首页", icon: "dashboard", affix: true },
+      },
+    ],
   },
   {
-    path: '/user',
+    path: "/user",
     component: Layout,
     hidden: true,
-    redirect: 'noredirect',
+    redirect: "noredirect",
     children: [
       {
-        path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
-      }
-    ]
+        path: "profile",
+        component: () => import("@/views/system/user/profile/index"),
+        name: "Profile",
+        meta: { title: "个人中心", icon: "user" },
+      },
+    ],
   },
   {
-    path: '/system',
-    name: 'system', 
+    path: "/system",
+    name: "system",
     hidden: false,
-    component:()=>import('@/views/system/user/index.vue')
-  }
-]
+    component: () => import("@/views/system/user/index.vue"),
+  },
+];
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
   {
-    path: '/system/user-auth',
+    path: "/system/user-auth",
     component: Layout,
     hidden: true,
-    permissions: ['system:user:edit'],
+    permissions: ["system:user:edit"],
     children: [
       {
-        path: 'role/:userId(\\d+)',
-        component: () => import('@/views/system/user/authRole'),
-        name: 'AuthRole',
-        meta: { title: '分配角色', activeMenu: '/system/user' }
-      }
-    ]
-  }
-]
+        path: "role/:userId(\\d+)",
+        component: () => import("@/views/system/user/authRole"),
+        name: "AuthRole",
+        meta: { title: "分配角色", activeMenu: "/system/user" },
+      },
+    ],
+  },
+];
 
-const router = createRouter({   
-  history: createWebHashHistory(import.meta.env.BASE_URL),//createWebHistory(), //
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL), //createWebHistory(), //
   routes: constantRoutes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      return savedPosition
+      return savedPosition;
     } else {
-      return { top: 0 }
+      return { top: 0 };
     }
   },
 });

@@ -15,7 +15,7 @@ public class AsyncProperties {
     /**
      * 执行线程池最大线程数
      */
-    private int maxPoolSize= 100;
+    private int maxPoolSize= Runtime.getRuntime().availableProcessors()*2;
 
     /**
      * 线程池BlockingQueue容量

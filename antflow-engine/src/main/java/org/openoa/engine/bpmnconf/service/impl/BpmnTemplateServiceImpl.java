@@ -2,7 +2,9 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnTemplate;
 import org.openoa.engine.bpmnconf.mapper.BpmnTemplateMapper;
 import org.openoa.base.vo.BpmnConfVo;
@@ -23,6 +25,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
         if (ObjectUtils.isEmpty(templateVos)) {
             return;
         }
+
         List<BpmnTemplate> bpmnTemplateList = bpmnConfVo.getTemplateVos()
                 .stream()
                 .map(o -> {
@@ -33,6 +36,8 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                     bpmnTemplate.setEmps(StringUtils.join(o.getEmpIdList(), ","));
                     bpmnTemplate.setRoles(StringUtils.join(o.getRoleIdList(), ","));
                     bpmnTemplate.setFuncs(StringUtils.join(o.getFuncIdList(), ","));
+                    bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
+                    bpmnTemplate.setFormCode(bpmnConfVo.getFormCode());
                     bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                     return bpmnTemplate;
                 })
@@ -52,12 +57,15 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                         .map(o -> {
                             BpmnTemplate bpmnTemplate = new BpmnTemplate();
                             BeanUtils.copyProperties(o, bpmnTemplate);
+                            bpmnTemplate.setId(null);
                             bpmnTemplate.setConfId(bpmnNodeVo.getConfId());
                             bpmnTemplate.setNodeId(bpmnNodeVo.getId());
                             bpmnTemplate.setInforms(StringUtils.join(o.getInformIdList(), ","));
                             bpmnTemplate.setEmps(StringUtils.join(o.getEmpIdList(), ","));
                             bpmnTemplate.setRoles(StringUtils.join(o.getRoleIdList(), ","));
                             bpmnTemplate.setFuncs(StringUtils.join(o.getFuncIdList(), ","));
+                            bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
+                            bpmnTemplate.setFormCode(bpmnNodeVo.getFormCode());
                             bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                             return bpmnTemplate;
                         })

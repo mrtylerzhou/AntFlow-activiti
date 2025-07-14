@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SpelExpressionConditionJudge implements ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int index) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int index,int group) {
 
         return SpelEvaluator.evaluate(conditionsConf.getExpression(), bpmnStartConditionsVo);
     }

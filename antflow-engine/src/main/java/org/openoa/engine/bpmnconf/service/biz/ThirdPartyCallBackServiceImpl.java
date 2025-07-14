@@ -13,11 +13,11 @@ import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_END_CALL_BACK
 public class ThirdPartyCallBackServiceImpl {
 
     @MethodReplay
-   public void doCallback(String url, CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
+   public void doCallback(CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
                String processNum, String businessId,String verifyUserName){
-       log.info("准备执行外部工作流回调：{} , processNumber:{} , callBackUrl:{} , 操作人：{}",PROC_END_CALL_BACK.getDesc() ,processNum, url, verifyUserName);
+       log.info("准备执行外部工作流回调：{} , processNumber:{} , callBackUrl:{} , 操作人：{}",PROC_END_CALL_BACK.getDesc() ,processNum, verifyUserName);
        //回调通知业务方
-       ThirdPartyCallbackFactory.build().doCallback(url, callbackTypeEnum, bpmnConfVo,
+       ThirdPartyCallbackFactory.build().doCallback( callbackTypeEnum, bpmnConfVo,
                processNum, businessId);
    }
 }
