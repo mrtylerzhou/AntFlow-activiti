@@ -108,6 +108,8 @@ npm run dev
 6. antflow是开源免费的，捐赠自愿不强求。如果你感觉我们做的还可以，**请给一颗星[⭐](https://gitee.com/ldhnet/AntFlow-Designer)支持一下**，这是对我们开源的极大鼓励。
 7. 学习使用中有疑问，想要和其它用户交流，加antflow官方qq群（**972107977**)
 8. 想要了解和三方系统集成案例？请查看**官方ruoyi集成版**：[若依灵犀](https://gitee.com/ruoyimate/ruoyimate)Ruoyi-Mate(目前尚在持续完善中，后面也会一直迭代，完善流程快速开发以及集成开箱即用的、生产可靠的三方组件)
+9. 使用中遇到问题？可能其它用户也遇到了，常见问题请查看,[常见问题列表](https://gitee.com/tylerzhou/Antflow/issues/IC0J4Y)
+10. 我如何说服老板使用Antflow？请查看[企业登记](https://gitee.com/tylerzhou/Antflow/issues/IC07CJ)
 
 ## 捐赠支持
 
