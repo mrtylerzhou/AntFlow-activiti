@@ -2,7 +2,7 @@
 	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
 </p>
 
-  **严正声明：现在、未来都不会有商业版本，拒绝伪开源，拒绝加密、加壳、混淆，连网检查授权等行为。**
+## 想要快速上手使用antflow，请拉到最下面找到【学习资源章节】
 
 ###### 随手 star ⭐是一种美德。 你们的star就是我们持续开源的动力
 
@@ -14,12 +14,12 @@
 
 AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低代码工作流引擎平台。可独立部署，也可以做为模块嵌入到现有系统中。使用简单，易于维护，前端只需要简单点击和选择即可完成流程配置，后端只需要实现一个接口即可新开发出一条业务流程！
 
-| 项目名          | 地址                                                                                                                                                                                   | 描述                                                                                                                                                                                                                       |
-|--------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 前端独立设计器地址    | [⭐Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer)<br />⭐[GitHub仓库](https://github.com/ldhnet/AntFlow-Designer)<br />⭐[GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview) | 项目独立前端设计器地址,主要用于用户只需要集成设计器,代办,已办等列表都自己设计的自定义程度较高场景,<br />目前项目官网demo上部署的是集成ruoyi的,**和后端项目在一个仓库里,**即后端仓库的**antflow-vue**文件夹下面 |
-| 开源Java后端项目地址 | [⭐Gitee仓库](https://gitee.com/tylerzhou/Antflow)<br />[⭐Github仓库](https://github.com/mrtylerzhou/AntFlow)<br />[⭐GitCode](https://gitcode.com/zypqqgc/AntFlow/overview)               | Antflow**后端代码**,其中antflow-vue为官网展示的demo项目,包含了一套去除了后端系统的ruoyi前端                                                                                                                          |
-| 开源.net后端项目地址 | ⭐[github地址](https://github.com/mrtylerzhou/AntFlow.net)                                                                                                                            | .net 版和java版共用同一套前端,用户可以使用独立设计器,如果需要和官网demo一样的效果,可以下载后端java仓库,然后取出antflow-vue                                                                                                |
-| 独立设计器预览地址    | [预览入口](http://14.103.207.27/ant-flow/dist/#/)                                                                                                                                         | 仅独立设计器的预览地址,独立设计器主要用于前端ui定制化需求较高的场景                                                                                                                                                        |
+| 项目名               | 地址                                                                                                                                                                                   | 描述                                                                                                                                                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 前端独立设计器地址   | [⭐Gitee仓库](https://gitee.com/ldhnet/AntFlow-Designer)<br />⭐[GitHub仓库](https://github.com/ldhnet/AntFlow-Designer)<br />⭐[GitCode仓库](https://gitcode.com/ldhnet/FlowDesigner/overview) | 项目独立前端设计器地址,主要用于用户只需要集成设计器,代办,已办等列表都自己设计的自定义程度较高场景,<br />目前项目官网demo上部署的是集成ruoyi的,**和后端项目在一个仓库里,**即后端仓库的**antflow-vue**文件夹下面 |
+| 开源Java后端项目地址 | [⭐Gitee仓库](https://gitee.com/tylerzhou/Antflow)<br />[⭐Github仓库](https://github.com/mrtylerzhou/AntFlow)<br />[⭐GitCode](https://gitcode.com/zypqqgc/AntFlow/overview)                   | Antflow**后端代码**,其中antflow-vue为官网展示的demo项目,包含了一套去除了后端系统的ruoyi前端                                                                                                                          |
+| 开源.net后端项目地址 | ⭐[github地址](https://github.com/mrtylerzhou/AntFlow.net)                                                                                                                                | .net 版和java版共用同一套前端,用户可以使用独立设计器,如果需要和官网demo一样的效果,可以下载后端java仓库,然后取出antflow-vue                                                                                                |
+| 独立设计器预览地址   | [预览入口](http://14.103.207.27/ant-flow/dist/#/)                                                                                                                                         | 仅独立设计器的预览地址,独立设计器主要用于前端ui定制化需求较高的场景                                                                                                                                                        |
 | 成品案例预览地址     | [预览入口](http://14.103.207.27/admin/)                                                                                                                                                   | 即java后端项目里的antflow-vue项目的预览,用于快速和ruoyi集成                                                                                                                                                                |
 | 系统操作手册地址     | [查看入口](https://gitee.com/tylerzhou/Antflow/wikis/)                                                                                                                                    |                                                                                                                                                                                                                            |
 
@@ -63,7 +63,6 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 
 ![](./doc/images/6.png)
 
-
 # 快速开始
 
 ## 前端运行
@@ -91,9 +90,21 @@ npm run dev
 ## 后端运行
 
 1. 项目下载 git clone https://gitee.com/tylerzhou/Antflow.git
+   > master分支对应java8，java17_support分支对应java17
+   >
 2. 打开 **antflow-web模块**下resources目录下的**application-dev.properties**文件,修改数据库连接信息,新建一个名为**antflow**的数据库
-3. 打开里面**antflow-web**模块resources目录下的scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql**
+3. 打开scripts文件夹,执行里面的**act_init_db.sql**和**bpm_init_db.sql以及bpm_init_db_data.sql（生产环境不需要执行bpm_init_db_data.sql里面的sql，都是demo数据，方便poc使用）**
 4. 启动项目,如果一切顺利,这时候后端就启动起来了
+
+## 学习资源
+
+1. 快速开发一条流程请查看[官网首页](http://antflow.top/admin/#/index) 操作手册-低代码表单和操作手册-自定义表单
+2. 快速接入SaaS流程（外部API调用方式接入），请查看[官方飞快文档](https://pcn3ojogrp79.feishu.cn/wiki/VO07wArXCibz5Jkvzejcn8CTn8f) 5.3节
+3. 快速将antflow集成到已有系统，并对接已有系统的用户、角色、组织构架请查看[gitee wiki页](https://gitee.com/tylerzhou/Antflow/wikis/pages) 之快速上手篇
+4. 如何想要对前端设计器进行修改，改为vue2或者react技术栈，请查看gitee wiki页面里的antflow虚拟节点关键字段说明。
+5. 想要全面详细了解antflow，可以查看项目开源仓库里面docs目录下的20余篇文档（之所以不放在wiki里面是因为gitee wiki mermaid插件太老，无法正常查看，最好下载到本地看）
+6. 学习使用中有疑问，想要和其它用户交流，加antflow官方qq群（972107977）。
+7. antflow是开源免费的，捐赠自愿不强求。如果你感觉我们做的还可以，请给一颗星支持一下，这是对我们开源的极大鼓励。
 
 ## 捐赠支持
 
@@ -108,6 +119,7 @@ npm run dev
 小郑 30元、高宇 20元、*门 88元、平安喜乐 1元、GxpCode 100元、*十 50元、不爱吃的白萝卜 10元、汪总 100元+3元、十三 100元(.net版首捐⭐️)
 SZ1806 188元,ゞ低调℡华丽 100元,Dorian 8.88元,小桥流水 6.6元,杨章隐 88元 首捐⭐️
 ```
+
 <table>
     <tr>
         <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/wxpay.jpg"/></td>

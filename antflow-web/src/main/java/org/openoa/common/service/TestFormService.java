@@ -27,7 +27,6 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         String userId =  vo.getStartUserId();
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
-                .jobLevelVo(vo.getJobLevelVo())
                 .accountType(vo.getAccountType()).build();
     }
 
@@ -42,7 +41,6 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         return BpmnStartConditionsVo.builder()
                 .startUserId(userId)
                 .accountType(vo.getAccountType())
-                .jobLevelVo(vo.getJobLevelVo())
                 .build();
     }
 
