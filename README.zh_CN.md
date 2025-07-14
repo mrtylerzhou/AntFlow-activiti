@@ -2,7 +2,7 @@
 	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
 </p>
 
-## 想要快速上手使用antflow，请拉到最下面找到[学习资源](#学习资源)
+## 想要快速上手使用antflow，请拉到最下面找到[学习资源](#studyresource)
 
 ###### 随手 star ⭐是一种美德。 你们的star就是我们持续开源的动力
 
@@ -97,6 +97,8 @@ npm run dev
 4. 启动项目,如果一切顺利,这时候后端就启动起来了
 
 ## 学习资源
+
+`<a id="studyresource"/>`
 
 1. 快速开发一条流程请查看[官网首页](http://antflow.top/admin/#/index) **操作手册-低代码表单**和**操作手册-自定义表单**
 2. 快速接入SaaS流程（外部API调用方式接入），请查看[官方飞快文档](https://pcn3ojogrp79.feishu.cn/wiki/VO07wArXCibz5Jkvzejcn8CTn8f) 5.3节
