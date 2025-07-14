@@ -98,9 +98,9 @@ npm run dev
 
 ## 学习资源
 
-`<a id="studyresource"/>`
+<a id="studyresource"/>
 
-1. 快速开发一条流程请查看[官网首页](http://antflow.top/admin/#/index) **操作手册-低代码表单**和**操作手册-自定义表单**
+1. [快速开发一条流程请查看]()[官网首页](http://antflow.top/admin/#/index) **操作手册-低代码表单**和**操作手册-自定义表单**
 2. 快速接入SaaS流程（外部API调用方式接入），请查看[官方飞快文档](https://pcn3ojogrp79.feishu.cn/wiki/VO07wArXCibz5Jkvzejcn8CTn8f) 5.3节
 3. **快速将antflow集成到已有系统**，并对接已有系统的用户、角色、组织构架请查看[gitee wiki页](https://gitee.com/tylerzhou/Antflow/wikis/pages) 之快速上手篇
 4. 如何想要对前端设计器进行修改，改为vue2或者react技术栈，请查看gitee wiki页面里的antflow虚拟节点关键字段说明。
