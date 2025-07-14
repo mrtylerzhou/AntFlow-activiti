@@ -98,7 +98,7 @@ npm run dev
 
 <a id="studyresource"/>
 
-## [学习资源]()
+## 学习资源
 
 1. [官网首页](http://antflow.top/admin/#/index) 查看**操作手册-低代码表单**和**操作手册-自定义表单**
 2. 快速接入SaaS流程（外部API调用方式接入），请查看[官方飞快文档](https://pcn3ojogrp79.feishu.cn/wiki/VO07wArXCibz5Jkvzejcn8CTn8f) 5.3节
