@@ -23,7 +23,7 @@ public class ThirdAccountJudge implements ConditionJudge {
             throw new JiMuBizException("the process has no third party account conf,please contact the administrator to add one");
         }
         if (ObjectUtils.isEmpty(bpmnStartConditionsVo.getAccountType())) {
-            throw new JiMuBizException("the process has no account type when start up,but it is a must,please contact the administrator");
+            return false;
         }
         return conditionsConf.getAccountType().contains(bpmnStartConditionsVo.getAccountType());
     }

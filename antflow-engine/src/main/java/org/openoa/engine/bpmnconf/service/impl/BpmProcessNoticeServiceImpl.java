@@ -44,6 +44,7 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
         wrapper.eq("process_key", processKey);
         return this.getBaseMapper().selectList(wrapper);
     }
+
     public Map<String,List<BpmProcessNotice>> processNoticeMap(List<String> processKeys) {
         LambdaQueryWrapper<BpmProcessNotice> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(BpmProcessNotice::getProcessKey,processKeys);
