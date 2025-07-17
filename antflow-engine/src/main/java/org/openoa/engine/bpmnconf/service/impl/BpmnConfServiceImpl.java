@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.DynamicAny.DynAny;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
@@ -557,14 +558,35 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         filter(o ->bpmnNodeVo.getNodeFrom().equals(o.getNodeId())).findFirst().orElse(null);
 
                 if(prevNode!=null){
-                    List<BpmnNodeLabelVO> labelList = prevNode.getLabelList();
-                    if(CollectionUtils.isEmpty(labelList)){
-                        labelList = new ArrayList<>();
-                        labelList.add(NodeLabelConstants.dynamicCondition);
-                        prevNode.setLabelList(labelList);
-                    }else{
-                        prevNode.getLabelList().add(NodeLabelConstants.dynamicCondition);
+                    List<BpmnNode> nodes=new ArrayList<>();
+                    nodes.add(prevNode);
+                    List<Long> dynamicLabelNodeIds=new ArrayList<>();
+                    if(NodeTypeEnum.NODE_TYPE_GATEWAY.getCode().equals(prevNode.getNodeType())){
+                        for (Map.Entry<Long, List<String>> nodeToEntry : bpmnNodeToMap.entrySet()) {
+                            Long nodeId = nodeToEntry.getKey();
+                            List<String> nodeTos = nodeToEntry.getValue();
+                            if(!CollectionUtils.isEmpty(nodeTos)&&(nodeTos.contains(prevNode.getNodeId())|| nodeTos.contains(bpmnNodeVo.getNodeId()))){
+                                dynamicLabelNodeIds.add(nodeId);
+                            }
+
+                        }
                     }
+
+                    if(!CollectionUtils.isEmpty(dynamicLabelNodeIds)){
+                        List<BpmnNode> dynamicLabelNodes = bpmnNodeList.stream().filter(a -> dynamicLabelNodeIds.contains(a.getId())).collect(Collectors.toList());
+                        nodes.addAll(dynamicLabelNodes);
+                    }
+                    for (BpmnNode node : nodes) {
+                        List<BpmnNodeLabelVO> labelList = node.getLabelList();
+                        if(CollectionUtils.isEmpty(labelList)){
+                            labelList = new ArrayList<>();
+                            labelList.add(NodeLabelConstants.dynamicCondition);
+                            node.setLabelList(labelList);
+                        }else{
+                            node.getLabelList().add(NodeLabelConstants.dynamicCondition);
+                        }
+                    }
+
                 }else{
                     log.warn("can not find prev node for node:%s");
                 }
