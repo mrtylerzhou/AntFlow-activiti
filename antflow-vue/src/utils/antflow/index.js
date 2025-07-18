@@ -58,10 +58,12 @@ All.prototype = {
         }
       }
     } else if (nodeConfig.setType == 3) {
-      let level =
-        nodeConfig.directorLevel == 1
-          ? "直接主管"
-          : "第" + nodeConfig.directorLevel + "级主管";
+      const levelMap = {
+        1: "直接主管",
+        2: "第二主管",
+        3: "第三主管"
+      };
+      let level = levelMap[nodeConfig.directorLevel] || `第${nodeConfig.directorLevel}级主管`;
       if (nodeConfig.signType == 2) {
         return level + "会签";
       } else {
