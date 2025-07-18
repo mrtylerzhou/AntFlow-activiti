@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -14,14 +15,17 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
+import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +61,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private BpmVariableServiceImpl bpmnVariableService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
+    @Autowired
+    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
 
 
 
@@ -126,6 +132,30 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .eq(BpmVariableMultiplayer::getElementId, elementId)
                     .eq(BpmVariableMultiplayer::getVariableId, variableId)
                     .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+            if(StringUtils.isBlank(nodeId)){
+                List<BpmVariableSignUp> signUpList = bpmVariableSignUpService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
+                BpmVariableSignUp  signUpParent=null;
+                if(!CollectionUtils.isEmpty(signUpList)){
+                    for (BpmVariableSignUp bpmVariableSignUp : signUpList) {
+                        String subElements = bpmVariableSignUp.getSubElements();
+                        List<BpmnConfCommonElementVo> subElementVos = JSON.parseArray(subElements, BpmnConfCommonElementVo.class);
+                        if(!CollectionUtils.isEmpty(subElementVos)){
+                            BpmnConfCommonElementVo bpmnConfCommonElementVo = subElementVos.get(0);
+                            if(taskDefKey.equals(bpmnConfCommonElementVo.getElementId())){
+                                signUpParent=bpmVariableSignUp;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(signUpParent!=null){
+                    elementId=signUpParent.getElementId();
+                    nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
+                            .eq(BpmVariableMultiplayer::getElementId, elementId)
+                            .eq(BpmVariableMultiplayer::getVariableId, variableId)
+                            .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+                }
+            }
             if (StringUtils.isNotBlank(nodeId)) {
                 List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
                         .getBaseMapper()
