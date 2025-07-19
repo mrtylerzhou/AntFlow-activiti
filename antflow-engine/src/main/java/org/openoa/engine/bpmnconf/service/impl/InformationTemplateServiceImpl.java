@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
+import org.apache.ibatis.annotations.Param;
 import org.openoa.base.constant.enums.JumpUrlEnum;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
@@ -118,7 +119,19 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
                 .collect(Collectors.toList()));
         return PageUtils.getResultAndPage(page);
     }
-
+    public InformationTemplateVo getInformationTemplateById(Long templateId){
+        InformationTemplate informationTemplate = this.getById(templateId);
+        if(informationTemplate==null){
+            return null;
+        }
+        InformationTemplateVo informationTemplateVo=new InformationTemplateVo();
+        BeanUtils.copyProperties(informationTemplate,informationTemplateVo);
+        Integer jumpUrl = informationTemplate.getJumpUrl();
+        Integer status = informationTemplate.getStatus();
+        informationTemplateVo.setJumpUrlValue(JumpUrlEnum.getDescByByCode(jumpUrl));
+        informationTemplateVo.setStatusValue(Objects.equals(status,0)?"启用":"禁用");
+        return informationTemplateVo;
+    }
     /**
      * get template list by no condition
      *
