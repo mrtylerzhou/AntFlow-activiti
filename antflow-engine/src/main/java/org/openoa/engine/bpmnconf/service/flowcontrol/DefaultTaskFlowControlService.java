@@ -11,8 +11,12 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
+import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.AddAssigneeProcessImpl;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
 import org.openoa.base.util.ProcessDefinitionUtils;
@@ -116,10 +120,11 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		String processNumber = variables.get("processNumber").toString();
 		String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
 		List<BaseIdTranStruVo> assigneeListByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
+		int currentEqualCount=0;
 		for (int i = 0; i < currentTaskEntitys.size(); i++) {
 			Task currentTaskEntity=currentTaskEntitys.get(i);
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
-
+				currentEqualCount++;
 				BaseIdTranStruVo assignee;
 				if (i < assigneeListByElementId.size()) {
 					assignee = assigneeListByElementId.get(i);
@@ -143,7 +148,21 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 			}
 		}
-
+		if(currentEqualCount<assigneeListByElementId.size()){
+			List<BaseIdTranStruVo> baseIdTranStruVos = assigneeListByElementId.subList(currentEqualCount, assigneeListByElementId.size());
+			AddAssigneeProcessImpl bean = SpringBeanUtils.getBean(AddAssigneeProcessImpl.class);
+			BusinessDataVo vo=new BusinessDataVo();
+			vo.setFormCode(variables.get("formCode").toString());
+			vo.setProcessNumber(processNumber);
+			vo.setTaskDefKey(activity.getId());
+			vo.setOperationType(ProcessOperationEnum.BUTTON_TYPE_ADD_ASSIGNEE.getCode());
+			for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
+				List<BaseIdTranStruVo> userInfos=new ArrayList<>();
+				userInfos.add(baseIdTranStruVo);
+				vo.setUserInfos(userInfos);
+				bean.doProcessButton(vo);
+			}
+		}
 		return new ArrayList<>();
 	}
 
