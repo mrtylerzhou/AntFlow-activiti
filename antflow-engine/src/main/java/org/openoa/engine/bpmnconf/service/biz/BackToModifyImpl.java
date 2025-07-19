@@ -188,18 +188,18 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             try {
                 List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
                 List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());
-                if (strings.size() > 1) {
+                if (strings.size() > 0) {
                     strings = strings.stream().filter(a -> !a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), strings);
 
                 }
-                List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
+                /*List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
                 if(tasks.size()>1){
                     Task firstTask = tasks.get(0);
                     List<String> otherNewTaskIds = tasks.stream().map(TaskInfo::getId).distinct().filter(id -> !id.equals(firstTask.getId())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), otherNewTaskIds);
                     taskMgmtMapper.deleteTaskByTaskIds(otherNewTaskIds);
-                }
+                }*/
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);
                 throw new JiMuBizException("流程回退出错了!");

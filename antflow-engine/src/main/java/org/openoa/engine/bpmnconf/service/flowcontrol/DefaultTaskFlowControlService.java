@@ -114,13 +114,21 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				.getVariables(currentTaskEntitys.get(0).getId());
 
 		String processNumber = variables.get("processNumber").toString();
-		for (Task currentTaskEntity : currentTaskEntitys) {
-
+		String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
+		List<BaseIdTranStruVo> assigneeListByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
+		for (int i = 0; i < currentTaskEntitys.size(); i++) {
+			Task currentTaskEntity=currentTaskEntitys.get(i);
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
-				String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
-				List<BaseIdTranStruVo> assigneeByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
+
+				BaseIdTranStruVo assignee;
+				if (i < assigneeListByElementId.size()) {
+					assignee = assigneeListByElementId.get(i);
+				} else {
+					assignee = assigneeListByElementId.get(assigneeListByElementId.size() - 1);
+				}
+
 				String variableVal = "startUser".equals(variableName)?variables.get("startUser").toString():
-						assigneeByElementId.get(0).getId();
+						assignee.getId();
 				int index = variableName.indexOf("List");
 				String newVarName="";
 				if(index!=-1){
@@ -134,7 +142,6 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 			}else{
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 			}
-
 		}
 
 		return new ArrayList<>();
