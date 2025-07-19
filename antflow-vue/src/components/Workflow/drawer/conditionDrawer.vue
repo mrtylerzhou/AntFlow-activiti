@@ -318,7 +318,7 @@ const removeStrEle = (item, key) => {
 const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isEmptyArray(data)) return;
     for (let itemArray of data) {
-        let condRelationItem = itemArray[0].condRelation || false;//组内条件 或和且
+        let condRelationItem = itemArray[0]?.condRelation || false;//组内条件 或和且
         for (let item of itemArray) {
             if (proxy.isEmpty(item.fieldTypeName)) {
                 continue;
