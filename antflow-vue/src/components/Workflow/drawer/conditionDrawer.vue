@@ -199,7 +199,7 @@
     <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
 </template>
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, watchEffect } from 'vue'
 import ConditionDialog from "../dialog/selectConditionDialog.vue";
 import { useStore } from '@/store/modules/workflow'
 import { optTypes, opt1s } from '@/utils/antflow/const'
@@ -230,7 +230,6 @@ watch(conditionsConfig1, (val) => {
     originalConfigData.value = val.priorityLevel ? val.value.conditionNodes[val?.priorityLevel - 1] : { nodeApproveList: [], conditionList: [[]] }
     convertConditionNodeValue(originalConfigData.value.conditionList);
 });
-
 /**添加条件 */
 const addCondition = async (index) => {
     activeGroupIdx.value = index;
@@ -242,6 +241,7 @@ const saveCondition = () => {
     var a = conditionsConfig.value.conditionNodes.splice(priorityLevel.value - 1, 1)//截取旧下标
     conditionsConfig.value.conditionNodes.splice(originalConfigData.value.priorityLevel - 1, 0, a[0])//填充新下标
     conditionsConfig.value.conditionNodes.map((item, index) => {
+        console.log("item==item===", JSON.stringify(item.conditionList));
         item.priorityLevel = index + 1,
             convertConditionNodeValue(item.conditionList, false)
     });
@@ -318,7 +318,7 @@ const removeStrEle = (item, key) => {
 const convertConditionNodeValue = (data, isPreview = true) => {
     if (!data || proxy.isEmptyArray(data)) return;
     for (let itemArray of data) {
-        let condRelationItem = itemArray.filter(item => item.condRelation)[0]?.condRelation || false;
+        let condRelationItem = itemArray[0].condRelation || false;//组内条件 或和且
         for (let item of itemArray) {
             if (proxy.isEmpty(item.fieldTypeName)) {
                 continue;
