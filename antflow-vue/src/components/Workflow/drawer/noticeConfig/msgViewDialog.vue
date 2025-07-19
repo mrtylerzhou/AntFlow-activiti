@@ -37,6 +37,17 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="跳转页面" prop="jumpUrl">
+                        <el-radio-group v-model="templateForm.jumpUrl">
+                            <el-radio-button :value=1>流程审批页</el-radio-button>
+                            <el-radio-button :value=2>流程查看页</el-radio-button>
+                            <el-radio-button :value=3>流程待办页</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-col>
+            </el-row>
         </el-form>
         <template #footer>
             <div class="dialog-footer">
@@ -85,7 +96,7 @@ const { templateForm } = toRefs(data);
 watch(() => dialogVisible.value, (val) => {
     if (val) {
         reset();
-        //templateForm.value = props.formData;
+        templateForm.value = props.formData;
         getAllNoticeTypesList();
         getProcessEventsList();
     }
