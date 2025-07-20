@@ -192,7 +192,7 @@ public class InformationTemplateController {
         for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
             Integer type = bpmProcessNotice.getType();
             String descByCode = ProcessNoticeEnum.getDescByCode(type);
-            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).build());
+            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).active(true).build());
         }
         return Result.newSuccessResult(lists);
     }
