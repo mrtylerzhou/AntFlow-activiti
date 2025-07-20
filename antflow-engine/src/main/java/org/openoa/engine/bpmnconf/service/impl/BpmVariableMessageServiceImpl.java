@@ -453,7 +453,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
             if (!ObjectUtils.isEmpty(tasks)) {
-                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).collect(Collectors.toList()));
+                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
             }
         }
 
