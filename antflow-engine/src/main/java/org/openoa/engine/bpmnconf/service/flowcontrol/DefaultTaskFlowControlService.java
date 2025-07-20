@@ -4,11 +4,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.impl.RuntimeServiceImpl;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.Command;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
@@ -16,10 +22,12 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
+import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.AddAssigneeProcessImpl;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
 import org.openoa.base.util.ProcessDefinitionUtils;
+import org.springframework.util.CollectionUtils;
 
 public class DefaultTaskFlowControlService implements TaskFlowControlService
 {
@@ -120,11 +128,15 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		String processNumber = variables.get("processNumber").toString();
 		String variableName = _bpmVariableMultiplayerService.queryVariableNameByElementId(processNumber, activity.getId());
 		List<BaseIdTranStruVo> assigneeListByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, activity.getId());
+		TaskEntity taskEntity=null;
 		int currentEqualCount=0;
 		for (int i = 0; i < currentTaskEntitys.size(); i++) {
 			Task currentTaskEntity=currentTaskEntitys.get(i);
 			if(currentTaskEntity.getTaskDefinitionKey().equals(currentTaskDefKey)){
 				currentEqualCount++;
+				if(taskEntity==null){
+					taskEntity=(TaskEntity) currentTaskEntity;
+				}
 				BaseIdTranStruVo assignee;
 				if (i < assigneeListByElementId.size()) {
 					assignee = assigneeListByElementId.get(i);
@@ -148,6 +160,27 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 			}
 		}
+		List<HistoricTaskInstance> historicTaskInstances = _processEngine.getHistoryService().createHistoricTaskInstanceQuery().processInstanceId(_processInstanceId).taskDefinitionKey(currentTaskDefKey).list();
+		List<HistoricTaskInstance> finishedHistoryTasks = historicTaskInstances.stream().filter(a -> a.getEndTime() != null).collect(Collectors.toList());
+		if(!CollectionUtils.isEmpty(finishedHistoryTasks)){
+			TaskMgmtMapper taskMgmtMapper = SpringBeanUtils.getBean(TaskMgmtMapper.class);
+			for (HistoricTaskInstance finishedHistoryTask : finishedHistoryTasks) {
+				taskMgmtMapper.deleteExecutionById(finishedHistoryTask.getExecutionId());
+			}
+			RuntimeService runtimeService = _processEngine.getRuntimeService();
+			String executionId = taskEntity.getExecutionId();
+			int nrOfInstances= (int)runtimeService.getVariable(executionId,"nrOfInstances");
+			int nrOfActiveInstances= (int)runtimeService.getVariable(executionId,"nrOfInstances");
+			int nrOfCompletedInstances= (int)runtimeService.getVariable(executionId,"nrOfInstances");
+			if(!(nrOfInstances==currentEqualCount&&nrOfActiveInstances==currentEqualCount&&nrOfCompletedInstances==0)){
+				runtimeService.setVariable(executionId,"nrOfInstances",currentEqualCount);
+				runtimeService.setVariable(executionId,"nrOfActiveInstances",currentEqualCount);
+				runtimeService.setVariable(executionId,"nrOfCompletedInstances",0);
+			}
+
+			currentEqualCount+=finishedHistoryTasks.size();
+		}
+
 		if(currentEqualCount<assigneeListByElementId.size()){
 			List<BaseIdTranStruVo> baseIdTranStruVos = assigneeListByElementId.subList(currentEqualCount, assigneeListByElementId.size());
 			AddAssigneeProcessImpl bean = SpringBeanUtils.getBean(AddAssigneeProcessImpl.class);

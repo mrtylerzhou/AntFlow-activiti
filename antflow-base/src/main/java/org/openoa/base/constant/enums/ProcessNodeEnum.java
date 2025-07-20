@@ -1,6 +1,8 @@
 package org.openoa.base.constant.enums;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.JiMuBizException;
 
 /**
  * process node enum
@@ -255,5 +257,29 @@ public enum ProcessNodeEnum {
             }
         }
         return null;
+    }
+    public static String getGeneralNextNode(String taskDefKey){
+        if(StringUtils.isEmpty(taskDefKey)){
+            throw new JiMuBizException("请传入taskDefKey");
+        }
+        String taskNo=taskDefKey.replace("task","");
+        long longTaskNo=Long.parseLong(taskNo);
+        return "task"+(longTaskNo+1);
+    }
+    public static  String getGeneralPrevNode(String taskDefKey){
+        if(StringUtils.isEmpty(taskDefKey)){
+            throw new JiMuBizException("请传入taskDefKey");
+        }
+        String taskNo=taskDefKey.replace("task","");
+        long longTaskNo=Long.parseLong(taskNo);
+        return "task"+(longTaskNo-1);
+    }
+    public static int compare(String taskDefKey1,String taskDefKey2){
+        if(StringUtils.isEmpty(taskDefKey1)||StringUtils.isEmpty(taskDefKey2)){
+            throw new JiMuBizException("请传入taskDefKey");
+        }
+        Long longTaskDefKey1=Long.parseLong(taskDefKey1.replace("task",""));
+        Long longTaskDefkey2=Long.parseLong(taskDefKey2.replace("task",""));
+        return longTaskDefKey1.compareTo(longTaskDefkey2);
     }
 }

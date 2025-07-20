@@ -134,6 +134,9 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 }
                 restoreNodeKey = taskData.getTaskDefinitionKey();
                 backToNodeKey = prevTask.getTaskDefinitionKey();
+                if(ProcessNodeEnum.compare(backToNodeKey,restoreNodeKey)>0){
+                    backToNodeKey=ProcessNodeEnum.getGeneralPrevNode(restoreNodeKey);
+                }
                 break;
             case TWO_DISAGREE:
                 restoreNodeKey = ProcessNodeEnum.TOW_TASK_KEY.getDesc();
