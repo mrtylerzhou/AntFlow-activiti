@@ -282,27 +282,29 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //call activiti's history service to query history process instance
-        HistoricProcessInstance processInstance =historyService.createHistoricProcessInstanceQuery().processInstanceId(businessProcess.getProcInstId()).singleResult();
+        //HistoricProcessInstance processInstancex =historyService.createHistoricProcessInstanceQuery().processInstanceId(businessProcess.getProcInstId()).singleResult();
 
-        //todo to be optimized
+        String procInstId = businessProcess.getProcInstId();
+        String createUser = businessProcess.getCreateUser();
+        Date createTime = businessProcess.getCreateTime();
+
         //set process instance id
-        vo.setProcessInsId(processInstance.getId());
+        vo.setProcessInsId(procInstId);
 
         //set start user id
-        vo.setStartUser(processInstance.getStartUserId());
+        vo.setStartUser(createUser);
 
         //get process's start time
-        Date processStartTime = processInstance.getStartTime();
 
         //set apply date
-        vo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(processStartTime));
+        vo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(createTime));
 
         //set apply time
-        vo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(processStartTime));
+        vo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(createTime));
 
 
         //get a list of history tasks
-        List<HistoricTaskInstance> hisTask = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstance.getId()).list();
+        List<HistoricTaskInstance> hisTask = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).list();
 
 
         //set already approved employee id
@@ -324,7 +326,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //if the event type is in node event, then get the node info from activiti process engine
         if (vo.getEventTypeEnum().getIsInNode()) {
             //get current task list by process instance id
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
             if (!ObjectUtils.isEmpty(tasks)) {
 
                 //if node is empty then get from task's definition
@@ -345,7 +347,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 }
 
                 //get process's next node info via activiti's pvm
-                PvmActivity nextNodePvmActivity = processConstants.getNextNodePvmActivity(processInstance.getId());
+                PvmActivity nextNodePvmActivity = processConstants.getNextNodePvmActivity(procInstId);
 
                 //if next node is not empty and next node is not end event,then process it
                 if (!ObjectUtils.isEmpty(nextNodePvmActivity)) {
