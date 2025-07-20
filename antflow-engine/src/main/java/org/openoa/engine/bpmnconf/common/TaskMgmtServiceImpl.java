@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -178,10 +175,19 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
                 if(!CollectionUtils.isEmpty(bpmProcessNotices)){
                     List<BaseNumIdStruVo> processNotices=new ArrayList<>();
-                    for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
-                        Integer type = bpmProcessNotice.getType();
-                        String descByCode = ProcessNoticeEnum.getDescByCode(type);
-                        processNotices.add(BaseNumIdStruVo.builder().id(type.longValue()).name(descByCode).active(true).build());
+
+                    for (ProcessNoticeEnum value : ProcessNoticeEnum.values()) {
+                        Integer type = value.getCode();
+                        String descByCode = value.getDesc();
+                        BaseNumIdStruVo struVo=new BaseNumIdStruVo();
+                        struVo.setId(type.longValue());
+                        struVo.setName(descByCode);
+                        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
+                           if(Objects.equals(value.getCode(),bpmProcessNotice.getType())){
+                               struVo.setActive(true);
+                           }
+                        }
+                        processNotices.add(struVo);
                     }
                     diyProcessInfoDTO.setProcessNotices(processNotices);
                 }
