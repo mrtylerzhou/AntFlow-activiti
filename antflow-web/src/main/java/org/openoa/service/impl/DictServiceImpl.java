@@ -40,6 +40,8 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     private DicDataMapper dicDataMapper;
     @Autowired
     private BpmnConfServiceImpl bpmnConfService;
+    @Autowired
+    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return
@@ -151,12 +153,24 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                         .stream()
                         .filter(a->a.getExtraFlags()!=null)
                         .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
+                Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
                 for (BaseKeyValueStruVo lfDto : results) {
 
                     Integer flags = formCode2Flags.get(lfDto.getKey());
                     if(flags!=null){
                         boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
                         lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
+                    }
+                    String formCode = lfDto.getKey();
+                    List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(formCode);
+                    if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                        List<BaseNumIdStruVo> processNotices=new ArrayList<>();
+                        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
+                            Integer type = bpmProcessNotice.getType();
+                            String descByCode = ProcessNoticeEnum.getDescByCode(type);
+                            processNotices.add(BaseNumIdStruVo.builder().id(type.longValue()).name(descByCode).active(true).build());
+                        }
+                        lfDto.setProcessNotices(processNotices);
                     }
                 }
             }

@@ -9,6 +9,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.InformEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
@@ -173,6 +174,16 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 if(flags!=null){
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
                     diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
+                }
+                List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
+                if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                    List<BaseNumIdStruVo> processNotices=new ArrayList<>();
+                    for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
+                        Integer type = bpmProcessNotice.getType();
+                        String descByCode = ProcessNoticeEnum.getDescByCode(type);
+                        processNotices.add(BaseNumIdStruVo.builder().id(type.longValue()).name(descByCode).active(true).build());
+                    }
+                    diyProcessInfoDTO.setProcessNotices(processNotices);
                 }
             }
         }
