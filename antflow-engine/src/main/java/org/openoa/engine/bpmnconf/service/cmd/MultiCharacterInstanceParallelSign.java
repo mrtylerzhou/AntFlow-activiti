@@ -49,6 +49,7 @@ public class MultiCharacterInstanceParallelSign implements Command {
 		newTaskEntity.setName(taskEntity.getName());
 		newTaskEntity.setId(pec.getIdGenerator().getNextId());
 		newTaskEntity.setExecution(newExecutionEntity);
+		newExecutionEntity.setActivity(executionEntity.getActivity());
 		pec.getTaskService().saveTask(newTaskEntity);
  
 		Integer nrOfInstances = (Integer)executionEntity.getVariable("nrOfInstances");

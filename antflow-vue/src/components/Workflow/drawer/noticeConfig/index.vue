@@ -38,7 +38,7 @@
                             </el-tag>
                             <el-tooltip v-if="tag.name" content="查看消息模板详情" placement="top">
                                 <el-button icon="Search" circle plain type="warning"
-                                    @click="dialogMsgViewVisible = true" />
+                                    @click="handleReverwTemplate(tag.id)" />
                             </el-tooltip>
                         </p>
                     </el-form-item>
@@ -86,13 +86,12 @@
         <select-user-dialog v-model:visible="chooseUserVisible" :data="templateForm.empList" @change="sureUserDialog" />
         <select-role-dialog v-model:visible="chooseRoleVisible" :data="templateForm.roleList"
             @change="sureRoleDialog" />
-        <msg-view-dialog v-model:visible="dialogMsgViewVisible" v-model:checkedData="selectValues"
-            @change="saveFlowMsgTempDialog" />
+        <msg-view-dialog v-model:visible="dialogMsgViewVisible" v-model:formData="selectTemplateForm" />
     </div>
 </template>
 <script setup>
 import { onMounted, ref, watchEffect, onBeforeMount } from "vue";
-import { getAllNoticeTypes, getProcessEvents } from "@/api/workflow/flowMsgApi";
+import { getAllNoticeTypes, getProcessEvents, getInformationTemplateById } from "@/api/workflow/flowMsgApi";
 import flowMsgTemplete from "./flowMsgTemplateDialog.vue";
 import msgViewDialog from "./msgViewDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
@@ -128,6 +127,7 @@ const chooseRoleVisible = ref(false);
 const noticeUserType = ref("1");
 
 const selectValues = ref([]);
+const selectTemplateForm = ref(null);
 const checkedMsgSendTypeList = ref([]);
 const templateForm = ref({
     nodeId: "",
@@ -148,7 +148,7 @@ let props = defineProps({
 const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
 //加载的时候判断，赋默认值
 onBeforeMount(() => {
-    templateForm.value = Array.isArray(props.formData) && props.formData.length > 0 ? props.formData[0] : templateForm.value;
+    templateForm.value = Array.isArray(props.formData) && props.formData.length > 0 && props.formData[0].event > 0 ? props.formData[0] : templateForm.value;
     checkedMsgSendTypeList.value = templateForm.value.messageSendTypeList.map(item => {
         return item.id;
     });
@@ -198,6 +198,19 @@ const getProcessEventsList = () => {
         console.log(err);
     });
 };
+
+const getSelectTemplateById = (id) => {
+    getInformationTemplateById(id).then(res => {
+        if (res && res.code == 200) {
+            selectTemplateForm.value = res.data;
+            dialogMsgViewVisible.value = true;
+        } else {
+            proxy.$modal.msgError("获取消息模板失败" + res.errMsg);
+        }
+    }).catch(err => {
+        console.log(err);
+    });
+}
 
 /**选择审批人类型更改事件 */
 const changeUserType = (val) => {
@@ -249,6 +262,9 @@ const handleRemoveRole = (data) => {
         .filter(item => item.id != data.id);
 }
 
+const handleReverwTemplate = (id) => {
+    getSelectTemplateById(id);
+} 
 </script>
 
 <style lang="scss" scoped>

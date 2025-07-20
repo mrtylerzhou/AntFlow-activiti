@@ -121,6 +121,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                         .list();
                 if (!CollectionUtils.isEmpty(historicTaskInstances)) {
                     taskDefKey = historicTaskInstances.get(0).getTaskDefinitionKey();
+                    processInfoVo.setNodeId(taskDefKey);
                 }
             }
         }
