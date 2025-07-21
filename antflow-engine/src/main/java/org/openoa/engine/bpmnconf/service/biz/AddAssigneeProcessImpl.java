@@ -90,7 +90,7 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
             Object next = iterator.next();
             String nextValue = next.toString();
             if (assignees.contains(nextValue)) {
-                throw new RuntimeException("审批人:"+next+"已存在,请重新选择");
+               continue;
             }
             assigneeValues.add(nextValue);
             //添加在当前任务审批人后面

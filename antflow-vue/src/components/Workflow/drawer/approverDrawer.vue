@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                    }}</el-radio>
+                                }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -146,7 +146,7 @@
                     @changePermVal="changePermVal" />
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
-                <notice-conf :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
+                <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
@@ -190,6 +190,7 @@ let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
+let noticeStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
 let visible = computed({
@@ -293,14 +294,6 @@ const handleApprovalBtnSubOption = (val) => {
     approverConfig.value.property.afterSignUpWay = val && val == 9 ? 1 : 2;
     approverConfig.value.property.signUpType = val && val == 9 ? 1 : val;
 }
-const handleTabClick = (tab, event) => {
-    activeName.value = tab.paneName;
-    if (tab.paneName == 'formStep') {
-        formStepShow.value = true;
-    } else {
-        formStepShow.value = false;
-    }
-}
 
 /**条件抽屉的确认 */
 const saveApprover = () => {
@@ -330,6 +323,25 @@ const handleFlowMsgSet = (data) => {
         id: approverConfig1.value.id
     })
 }
+/**
+ * 切换tab
+ * @param tab 当前tab
+ * @param event 
+ */
+const handleTabClick = (tab, event) => {
+    activeName.value = tab.paneName;
+    if (tab.paneName == 'formStep') {
+        formStepShow.value = true;
+    } else {
+        formStepShow.value = false;
+    }
+    if (tab.paneName == 'noticeStep') {
+        noticeStepShow.value = true;
+    } else {
+        noticeStepShow.value = false;
+    }
+}
+
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/dialog.scss";

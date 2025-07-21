@@ -2,7 +2,7 @@
  * @Date:  2024-05-25 14:06:59
  * @LastEditors: LDH 574427343@qq.com
  * @LastEditTime: 2024-06-29 15:52:57
- * @FilePath: src\api\mock.js
+ * @FilePath: src/api/workflow/mock.js
  * 静态数据模拟接口
  */
 import http from "@/utils/axios";
