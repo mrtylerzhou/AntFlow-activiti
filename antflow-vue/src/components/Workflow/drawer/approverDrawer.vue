@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                }}</el-radio>
+                                    }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
