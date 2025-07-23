@@ -222,6 +222,7 @@ const changeUserType = (val) => {
 const saveFlowMsgTempDialog = (data) => {
     selectValues.value = data;
     templateForm.value.templateId = data[0]?.id;
+    templateForm.value.templateName = data[0]?.name;
 }
 /**
  * 选择人员
