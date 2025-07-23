@@ -42,6 +42,7 @@ public class ConditionServiceImpl implements ConditionService {
         }
         boolean result = true;
         Integer groupRelation = conditionsConf.getGroupRelation();
+        int index=0;
         for (Map.Entry<Integer, List<Integer>> conditionTypeEntry : groupedConditionParamTypes.entrySet()) {
             Integer currentGroup = conditionTypeEntry.getKey();
             Integer condRelation=conditionsConf.getGroupedCondRelations().get(currentGroup);
@@ -56,7 +57,7 @@ public class ConditionServiceImpl implements ConditionService {
             }
             conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
 
-            int index=0;
+
             for (Integer integer : conditionParamTypeList) {
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
                 if (conditionTypeEnum == null) {
@@ -68,17 +69,19 @@ public class ConditionServiceImpl implements ConditionService {
                         currentGroupResult = false;
                         //如果是且关系,有一个条件判断为false则终止判断
                         if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
+                            index++;
                             break;
                         }
                     }else {
                         //如果是或关系,有一个条件判断为true则终止判断
                         currentGroupResult=true;
                         if(condRelation.equals(ConditionRelationShipEnum.OR.getCode())){
+                            index++;
                             break;
                         }
                     }
                 } catch (JiMuBizException e) {
-                    log.info("condiiton judge business exception:" + e.getMessage());
+                    log.info("condition judge business exception:{}", e.getMessage());
                     throw e;
                 } catch (Exception e) {
                     log.error("conditionJudgeClass instantiate failure", e);

@@ -19,6 +19,7 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
 
     protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate,int currentIndex,int currentGroup) {
         Map<Integer, Map<String, Object>> groupedLfConditionsMap = conditionsConf.getGroupedLfConditionsMap();
+        Map<Integer, List<Integer>> groupedNumberOperatorListMap = conditionsConf.getGroupedNumberOperatorListMap();
         if(groupedLfConditionsMap==null){
             return false;
         }
@@ -33,13 +34,10 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
         }
         boolean isMatch=true;
         int iterIndex=0;
-        List<Integer> numberOperatorList = conditionsConf.getNumberOperatorList();
+        List<Integer> numberOperatorList =groupedNumberOperatorListMap.get(currentGroup);
         //operator type
         for (Map.Entry<String, Object> stringObjectEntry : lfConditionsFromDb.entrySet()) {
-            if(iterIndex!=currentIndex){
-                iterIndex++;
-                continue;
-            }
+
             String key = stringObjectEntry.getKey();
             Integer numberOperator = numberOperatorList.get(iterIndex);
             Object valueFromUser = lfConditionsFromUser.get(key);

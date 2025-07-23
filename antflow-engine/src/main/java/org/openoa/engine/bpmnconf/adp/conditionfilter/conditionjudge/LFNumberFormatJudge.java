@@ -29,7 +29,6 @@ public class LFNumberFormatJudge extends AbstractLFConditionJudge{
            }
            BigDecimal valueinDbBig2=null;
            if (split.length>1){
-               valueinDbBig2 = null;
                if(isBooleanValue){
                    boolean parsedBoolean = Boolean.parseBoolean(split[1]);
                    valueinDbBig2=parsedBoolean?new BigDecimal("1"):new BigDecimal("0");
