@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 /**
  * 为支持1<a<2这种类型的比较设计的,如果是普通的单值比较,请使用AbstractComparableJudge,第二个参数值为null即可
@@ -18,7 +17,7 @@ public abstract class AbstractBinaryComparableJudge extends AbstractComparableJu
     private static final Logger log = LoggerFactory.getLogger(AbstractBinaryComparableJudge.class);
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
         String fieldNameInDb = fieldNameInDb();
         String fieldNameActual=fieldNameInStartConditions();
         String fieldValueInDb = null;
