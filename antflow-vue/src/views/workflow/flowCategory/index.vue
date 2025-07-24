@@ -53,7 +53,11 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button link type="danger" icon="BellFilled"
+                                    <el-button
+                                        v-if="scope.row.processNotices.find(function (item) { return item.active; })"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
@@ -113,7 +117,11 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button link type="danger" icon="BellFilled"
+                                    <el-button
+                                        v-if="scope.row.processNotices.find(function (item) { return item.active; })"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
