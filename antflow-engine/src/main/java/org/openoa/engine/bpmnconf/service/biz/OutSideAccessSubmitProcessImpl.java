@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,12 +71,18 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
             throw new JiMuBizException("流程已发起！");
         }
         String originalBusinessId=businessDataVo.getBusinessId();
-        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
-        formAdapter.submitData(businessDataVo);
+        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+        if(Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
+            bpmnStartConditionsVo=formAdapter.launchParameters(businessDataVo);
+            formAdapter.submitData(businessDataVo);
+
+        }
+
         //query outside access business info
         OutSideBpmAccessBusiness outSideBpmAccessBusiness = outSideBpmAccessBusinessService.getById(originalBusinessId);
         //new start conditions vo
-        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+
         //调整以后,这里存储的实际上是逗号分割的字符串
         String templateMark=outSideBpmAccessBusiness.getTemplateMark();
         if(!StringUtils.isEmpty(templateMark)){

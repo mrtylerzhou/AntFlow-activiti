@@ -36,31 +36,9 @@ public class ButtonOperationServiceImpl{
         ProcessOperationAdaptor processOperation = adaptorFactory.getProcessOperation(vo);
         try {
             processOperation.doProcessButton(vo);
-            if (vo.getIsOutSideAccessProc()) {
-
-                String verifyUserName = SecurityUtils.getLogInEmpNameSafe();
-
-                String verifyUserId = SecurityUtils.getLogInEmpIdSafe();
-//                Map<String, Object> objectMap = vo.getObjectMap();
-//                if (!CollectionUtils.isEmpty(objectMap)) {
-//                    verifyUserName = Optional.ofNullable(objectMap.get("employeeName")).map(String::valueOf).orElse(StringUtils.EMPTY);
-//                    verifyUserId = Optional.ofNullable(objectMap.get("employeeId")).map(Object::toString).orElse("");
-//                }
-                ProcessorFactory.executePostProcessors(vo);
-                ProcessOperationEnum poEnum = ProcessOperationEnum.getEnumByCode(vo.getOperationType());
-                switch (Objects.requireNonNull(poEnum)){
-                    case BUTTON_TYPE_SUBMIT:
-
-                    case BUTTON_TYPE_AGREE:
-
-                        break;
-                    case BUTTON_TYPE_ABANDON:
-
-                        break;
-                }
-            }
-
+            ProcessorFactory.executePostProcessors(vo);
         } catch (Exception e){
+            log.error("流程执行出错啦!",e);
             throw e;
         }
         return vo;
