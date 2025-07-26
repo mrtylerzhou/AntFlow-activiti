@@ -9,7 +9,9 @@ import org.openoa.engine.lowflow.service.LFFormOperationAdaptor;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -71,6 +73,9 @@ public class LowFlowApprovalServiceAspect {
                 throw new JiMuBizException("切面方法错误,请联系管理员!");
             }
             UDLFApplyVo arg = (UDLFApplyVo)args[0];
+            if(CollectionUtils.isEmpty(lfFormOperationAdaptors)){
+                lfFormOperationAdaptors=new ArrayList<>();
+            }
             for (LFFormOperationAdaptor lfFormOperationAdaptor : lfFormOperationAdaptors) {
                 if ("queryData".equals(methodName)) {
                     // 查询前处理

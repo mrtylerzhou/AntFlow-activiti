@@ -5,7 +5,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.base.interf.ProcessFinishListener;
 import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
