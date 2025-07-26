@@ -1,20 +1,15 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 
 import org.openoa.base.service.ProcessorFactory;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
-import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
 
 /**
  *@Author JimuOffice
