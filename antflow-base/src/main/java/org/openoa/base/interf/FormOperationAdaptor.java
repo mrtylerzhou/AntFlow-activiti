@@ -41,7 +41,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
 
     /**
      * a method to submit data for a process,most of the times,it is a must method,it is used to submit business data for a process
-     *
+     * ⚠️⚠️⚠️ 入参和出参类型一致,返回对象时一定要返回原对象(参考第三方账号申请,将新属性赋值给原对象)
      * @param vo vo
      * @return T(business data)
      */

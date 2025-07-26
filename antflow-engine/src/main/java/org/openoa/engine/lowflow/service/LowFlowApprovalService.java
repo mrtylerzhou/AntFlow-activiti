@@ -2,8 +2,6 @@ package org.openoa.engine.lowflow.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
@@ -19,19 +17,17 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
-import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.activitilistener.ProcessFinishListener;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
-import org.openoa.engine.bpmnconf.mapper.LFMainMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainServiceImpl;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
-import org.openoa.engine.lowflow.service.hooks.LFProcessFinishHook;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +51,6 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private LFMainFieldServiceImpl mainFieldService;
     @Autowired
     private LFMainServiceImpl mainService;
-    @Autowired(required = false)
-    private List<LFProcessFinishHook> lfProcessFinishHooks;
     @Autowired
     private BpmnConfLfFormdataServiceImpl lfFormdataService;
 
@@ -295,12 +289,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public void finishData(BusinessDataVo vo) {
-        if(CollectionUtils.isEmpty(lfProcessFinishHooks)){
-            return;
-        }
-        for (LFProcessFinishHook lfProcessFinishHook : lfProcessFinishHooks) {
-            lfProcessFinishHook.onFinishData(vo);
-        }
+
     }
     private Map<String,Object> filterConditionFields(UDLFApplyVo vo){
         Long confId = vo.getBpmnConfVo().getId();
