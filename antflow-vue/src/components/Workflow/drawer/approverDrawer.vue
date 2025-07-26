@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                    }}</el-radio>
+                                }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -87,14 +87,14 @@
                             <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
                         </el-radio-group>
                     </div>
-                    <!-- <div class="approver_block">
+                    <div class="approver_block">
                         <p>✍审批人为空时</p>
                         <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
-                            <el-radio :value="1">自动审批通过/不允许发起</el-radio>
+                            <el-radio :value="1">不允许发起</el-radio>
                             <br />
                             <el-radio :value="2">转交给审核管理员</el-radio>
                         </el-radio-group>
-                    </div> -->
+                    </div>
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
