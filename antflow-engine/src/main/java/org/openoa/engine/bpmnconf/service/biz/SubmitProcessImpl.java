@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
@@ -55,6 +56,9 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         String processNumber=businessDataVo.getFormCode() + "_" + vo.getBusinessId();
         if(Boolean.TRUE.equals(businessDataVo.getIsMigration())){
             processNumber=businessDataVo.getProcessNumber();
+        }
+        if(StringUtils.isEmpty(vo.getProcessNumber())){
+            vo.setProcessNumber(processNumber);
         }
         bpmnStartConditionsVo.setProcessNum(processNumber);
         bpmnStartConditionsVo.setEntryId(vo.getEntityName() + ":" + vo.getBusinessId());
