@@ -1,8 +1,9 @@
 package org.openoa.engine.bpmnconf.activitilistener;
 
+import org.openoa.base.interf.ProcessFinishListener;
 import org.openoa.base.vo.BusinessDataVo;
 
-public interface WorkflowButtonHandler extends ProcessFinishListener {
+public interface WorkflowButtonHandler {
 
     /**
      * 流程提交
@@ -103,4 +104,5 @@ public interface WorkflowButtonHandler extends ProcessFinishListener {
      * 未来节点加签
      */
     void onAddFutureAssignee(BusinessDataVo businessData);
+    void onFinishData(BusinessDataVo vo);
 }

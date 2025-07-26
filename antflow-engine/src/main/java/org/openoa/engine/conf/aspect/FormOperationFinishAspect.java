@@ -5,7 +5,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.activitilistener.ProcessFinishListener;
+import org.openoa.base.interf.ProcessFinishListener;
+import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class FormOperationFinishAspect {
     @Autowired
-    private ProcessFinishListener processFinishListener;
+    private WorkflowButtonHandler workflowButtonHandler;
 
     /**
      * 对所有实现了 FormOperationAdaptor 接口的类的 finishData 方法做切面
      */
-    @Around("execution(* org.openoa.base.interf.FormOperationAdaptor+.finishData(..))")
+    @Around("execution(* org.openoa.base.interf.ProcessFinishListener+.finishData(..))")
     public Object aroundFinishData(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
@@ -29,7 +30,7 @@ public class FormOperationFinishAspect {
             log.error("[FormOperationFinishAspect] 参数不合法，类名：{} 方法：{}", className, methodName);
             throw new IllegalArgumentException("finishData 参数非法，必须是 BusinessDataVo 类型");
         }
-        processFinishListener.onFinishData((BusinessDataVo) args[0]);
+        workflowButtonHandler.onFinishData((BusinessDataVo) args[0]);
         log.info("[FormOperationFinishAspect] >>> {}.{} 开始执行", className, methodName);
         long start = System.currentTimeMillis();
 

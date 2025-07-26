@@ -7,7 +7,7 @@ import org.openoa.base.vo.BusinessDataVo;
  * FormOperationAdaptor is the core interface to adapt different business data to a process
  * @param <T>
  */
-public interface FormOperationAdaptor<T extends BusinessDataVo> extends ActivitiService {
+public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessFinishListener, ActivitiService {
 
     /**
      * set for preview condition,it is not a must method,but most of the time it is needed for preview a process
@@ -69,11 +69,6 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends Activiti
      */
     void cancellationData(T businessDataVo);
 
-    /**
-     * this method is called when a process is finished,it is a must method usually
-     *
-     * @param businessDataVo businessDataVo
-     */
-    void finishData(BusinessDataVo businessDataVo);
+
 
 }
