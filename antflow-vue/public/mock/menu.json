@@ -52,7 +52,7 @@
           "name": "PenddingTask",
           "path": "pendding",
           "hidden": false,
-          "component": "workflow/flowTask/pendding/index",
+          "component": "workflow/flowTask/pendding/approveV2",
           "meta": {
             "title": "待办任务",
             "icon": "",
