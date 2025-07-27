@@ -97,28 +97,11 @@ import msgViewDialog from "./msgViewDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
 import msgIcon from '../../components/msgIcon.vue';
+import { noticeUserList } from '@/utils/antflow/const';
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const eventOptions = ref([]);
-const noticeUserList = ref([{
-    value: "1",
-    label: "申请人"
-}, {
-    value: "2",
-    label: "所有已审批人"
-}, {
-    value: "3",
-    label: "当前节点审批人"
-}, {
-    value: "4",
-    label: "被转发人"
-}, {
-    value: "5",
-    label: "指定人员"
-}, {
-    value: "6",
-    label: "指定角色"
-}]);
+
 
 const dialogMsgVisible = ref(false);
 const dialogMsgViewVisible = ref(false);
