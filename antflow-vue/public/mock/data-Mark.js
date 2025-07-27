@@ -15,7 +15,7 @@ export default {
       setType: "5", //指定审批人类型，5-指定人员，4-指定角色，3-指定层级审批 ，13-直属领导，12-发起人自己，6-HRBP
       directorLevel: "", //第n层主管
       signType: "", //多人审批时采用的审批方式 1会签 2或签
-      noHeaderAction: "", //审批人为空时 1自动审批通过/不允许发起 2转交给审核管理员
+      noHeaderAction: "", //审批人为空时 0不允许发起  1 跳过 2转交给审核管理员
       ccSelfSelectFlag: "", //允许发起人自选抄送人
       conditionList: [], //当审批单同时满足以下条件时进入此流程
       nodeApproveList: [], //操作人
@@ -25,7 +25,7 @@ export default {
         setType: 5,
         directorLevel: 1,
         signType: 1,
-        noHeaderAction: 2,
+        noHeaderAction: 0,
         childNode: {
           nodeName: "路由",
           nodeType: 2,
@@ -33,7 +33,7 @@ export default {
           setType: 1,
           directorLevel: 1,
           signType: 1,
-          noHeaderAction: 2,
+          noHeaderAction: 0,
           ccSelfSelectFlag: 1,
           conditionList: [],
           nodeApproveList: [],
@@ -53,7 +53,7 @@ export default {
               setType: 1,
               directorLevel: 1,
               signType: 1,
-              noHeaderAction: 2,
+              noHeaderAction: 0,
               ccSelfSelectFlag: 1,
               isDefault: 0,
               conditionList: [
@@ -82,7 +82,7 @@ export default {
                 setType: 5, //指定审批人类型，5-指定人员，4-指定角色，3-指定层级审批 ，13-直属领导，12-发起人自己，6-HRBP
                 directorLevel: 1, //当 setType= 3时，代表指定第几级领导审批
                 signType: 1, //多人审批时采用的审批方式 1-会签 2-或签
-                noHeaderAction: 2,
+                noHeaderAction: 0,
                 ccSelfSelectFlag: 1, //允许发起人自选
                 conditionList: [],
                 nodeApproveList: [
@@ -105,7 +105,7 @@ export default {
               setType: 1,
               directorLevel: 1,
               signType: 1,
-              noHeaderAction: 2,
+              noHeaderAction: 0,
               ccSelfSelectFlag: 1,
               conditionList: [],
               nodeApproveList: [],
