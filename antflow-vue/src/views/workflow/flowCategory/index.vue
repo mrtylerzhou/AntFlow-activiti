@@ -53,10 +53,8 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button
-                                        v-if="scope.row.processNotices.find(function (item) { return item.active; })"
-                                        link type="danger" icon="BellFilled"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-if="scope.row.processNotices?.findIndex(item => item.active) > -1" link
+                                        type="danger" icon="BellFilled" @click="handleFlowMsg(scope.row)"></el-button>
                                     <el-button v-else link icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
@@ -117,10 +115,8 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button
-                                        v-if="scope.row.processNotices.find(function (item) { return item.active; })"
-                                        link type="danger" icon="BellFilled"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-if="scope.row.processNotices?.findIndex(item => item.active) > -1" link
+                                        type="danger" icon="BellFilled" @click="handleFlowMsg(scope.row)"></el-button>
                                     <el-button v-else link icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
@@ -192,13 +188,13 @@
             </template>
         </el-dialog>
 
-        <set-flow-msg v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
+        <set-default-msg v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SetFlowMsg from './setFlowMsg.vue';
+import SetDefaultMsg from './setDefaultMsg.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
 import { getLowCodeFromCodeData, createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
