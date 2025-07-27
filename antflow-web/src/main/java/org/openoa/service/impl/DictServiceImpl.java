@@ -8,10 +8,7 @@ import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.BaseKeyValueStruVo;
-import org.openoa.base.vo.BaseNumIdStruVo;
-import org.openoa.base.vo.ResultAndPage;
-import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
@@ -181,6 +178,10 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                         }
                         lfDto.setProcessNotices(processNotices);
                     }
+                    BpmnConfVo confVo=new BpmnConfVo();
+                    confVo.setFormCode(formCode);
+                    bpmnConfService.setBpmnTemplateVos(confVo);
+                    lfDto.setTemplateVos(confVo.getTemplateVos());
                 }
             }
         }

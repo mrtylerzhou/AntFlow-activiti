@@ -17,6 +17,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseNumIdStruVo;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
@@ -169,7 +170,8 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
             Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
             for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
-                Integer flags = formCode2Flags.get(diyProcessInfoDTO.getKey());
+                String formCode = diyProcessInfoDTO.getKey();
+                Integer flags = formCode2Flags.get(formCode);
                 if(flags!=null){
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
                     diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
@@ -193,6 +195,10 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     }
                     diyProcessInfoDTO.setProcessNotices(processNotices);
                 }
+                BpmnConfVo confVo=new BpmnConfVo();
+                confVo.setFormCode(formCode);
+                bpmnConfService.setBpmnTemplateVos(confVo);
+                diyProcessInfoDTO.setTemplateVos(confVo.getTemplateVos());
             }
         }
         return diyProcessInfoDTOS;

@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.DynamicAny.DynAny;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
@@ -404,11 +403,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      *
      * @param bpmnConfVo bpmnConfVo
      */
-    private void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
+    public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
         bpmnConfVo.setTemplateVos(
                 bpmnTemplateService.getBaseMapper().selectList(
                         new QueryWrapper<BpmnTemplate>()
-                                .eq("conf_id", bpmnConfVo.getId())
+                                .eq("form_code", bpmnConfVo.getFormCode())
                                 .eq("is_del", 0)
                                 .isNull("node_id"))
                         .stream()

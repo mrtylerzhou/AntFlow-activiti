@@ -25,10 +25,8 @@ import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
-import org.openoa.engine.bpmnconf.confentity.BpmVariable;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNode;
+import org.openoa.engine.bpmnconf.confentity.*;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,11 +45,8 @@ import static org.openoa.base.constant.enums.DeduplicationTypeEnum.*;
 
 @Service
 @Slf4j
-public class BpmnConfCommonServiceImpl {
+public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImpl>{
 
-    @Autowired
-    @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
     @Autowired
     private BpmnNodeServiceImpl nodeService;
 
@@ -78,7 +73,7 @@ public class BpmnConfCommonServiceImpl {
      * @return
      */
     public BpmnConf getBpmnConfByFormCode(String formCode) {
-        return Optional.ofNullable(bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+        return Optional.ofNullable(super.service.getOne(new QueryWrapper<BpmnConf>()
                 .eq("form_code", formCode)
                 .eq("effective_status", 1)))
                 .orElse(new BpmnConf());
@@ -91,7 +86,7 @@ public class BpmnConfCommonServiceImpl {
      * @return
      */
     public List<BpmnConf> getBpmnConfByFormCodeBatch(List<String> formCodes) {
-        return bpmnConfService.list(new QueryWrapper<BpmnConf>()
+        return super.service.list(new QueryWrapper<BpmnConf>()
                 .in("form_code", formCodes)
                 .eq("effective_status", 1));
     }
@@ -105,7 +100,7 @@ public class BpmnConfCommonServiceImpl {
      * @param bpmnCode
      */
     public void updateBpmnConfByCode(Integer appId, Integer bpmnType, Integer isAll, String bpmnCode) {
-        bpmnConfService.update(BpmnConf
+        super.service.update(BpmnConf
                         .builder()
                         .appId(appId)
                         .bpmnType(bpmnType)
@@ -125,7 +120,7 @@ public class BpmnConfCommonServiceImpl {
     public void startProcess(String bpmnCode, BpmnStartConditionsVo bpmnStartConditions) {
 
         //to query the process's config information
-        BpmnConfVo bpmnConfVo = bpmnConfService.detail(bpmnCode);
+        BpmnConfVo bpmnConfVo = super.service.detail(bpmnCode);
         bpmnStartConditions.setPreview(false);
 
         // format process's floating direction,set assignees,assignees deduplication and remove some nodes on conditions
@@ -341,9 +336,9 @@ public class BpmnConfCommonServiceImpl {
 
         BpmnConfVo detail;
         if (isStartPagePreview) {
-            detail = bpmnConfService.detailByFormCode(dataVo.getFormCode());
+            detail = super.service.detailByFormCode(dataVo.getFormCode());
         } else {
-            detail = bpmnConfService.detail(dataVo.getBpmnCode());
+            detail = super.service.detail(dataVo.getBpmnCode());
         }
 
         JSONObject object = JSON.parseObject(params);
@@ -423,7 +418,7 @@ public class BpmnConfCommonServiceImpl {
 
     }
     public boolean migrationCheckConditionsChange(BusinessDataVo vo) {
-        BpmnConf bpmnConf = this.bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+        BpmnConf bpmnConf = super.service.getOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", vo.getBpmnCode()));
         if(bpmnConf==null){
             throw new JiMuBizException("未找到对应的 bpmnConf 记录");
@@ -719,7 +714,7 @@ public class BpmnConfCommonServiceImpl {
      * @return
      */
     public List<BpmnConf> getIsAllConfs() {
-        return bpmnConfService.getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
+        return super.service.getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
                 .eq("is_all", 1)
                 .eq("effective_status", 1)
                 .eq("is_del", 0));

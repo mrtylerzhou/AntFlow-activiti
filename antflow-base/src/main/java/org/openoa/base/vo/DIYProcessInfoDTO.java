@@ -24,4 +24,5 @@ public class DIYProcessInfoDTO {
      */
     private Boolean hasStarUserChooseModule=false;
     private List<BaseNumIdStruVo> processNotices;
+    private List<BpmnTemplateVo> templateVos;
 }
