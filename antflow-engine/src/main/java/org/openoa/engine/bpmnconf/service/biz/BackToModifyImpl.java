@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -13,8 +12,8 @@ import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
+import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
@@ -42,7 +41,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.sql.Wrapper;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,8 +56,6 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private TaskService taskService;
-    @Autowired
-    private HistoryService historyService;
 
     @Autowired
     private BpmVerifyInfoServiceImpl verifyInfoService;
@@ -128,12 +124,12 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         ProcessDisagreeTypeEnum processDisagreeTypeEnum = ProcessDisagreeTypeEnum.getByCode(backToModifyType);
         switch (processDisagreeTypeEnum) {
             case ONE_DISAGREE:
-                HistoricTaskInstance prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
+                ActHiTaskinst prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
                 if (prevTask == null) {
                     throw new JiMuBizException("无前置节点,无法回退上一节点!");
                 }
                 restoreNodeKey = taskData.getTaskDefinitionKey();
-                backToNodeKey = prevTask.getTaskDefinitionKey();
+                backToNodeKey = prevTask.getTaskDefKey();
                 if(ProcessNodeEnum.compare(backToNodeKey,restoreNodeKey)>0){
                     backToNodeKey=ProcessNodeEnum.getGeneralPrevNode(restoreNodeKey);
                 }

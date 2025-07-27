@@ -2,15 +2,14 @@ package org.openoa.engine.bpmnconf.common;
 
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
+import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.Employee;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
@@ -47,9 +46,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private BpmProcessForwardServiceImpl processForwardService;
 
-
     @Autowired
-    private HistoryService historyService;
+    private ActHiTaskinstServiceImpl actHiTaskinstService;
     @Autowired
     private AfUserService employeeService;
     @Autowired
@@ -110,16 +108,10 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
 
         } else {
             if (Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
-                List<HistoricTaskInstance> historicTaskInstances = historyService
-                        .createHistoricTaskInstanceQuery()
-                        .processInstanceId(bpmBusinessProcess
-                                .getProcInstId()).
-                        taskAssignee(SecurityUtils.getLogInEmpId())
-                        .orderByHistoricTaskInstanceEndTime()
-                        .desc()
-                        .list();
-                if (!CollectionUtils.isEmpty(historicTaskInstances)) {
-                    taskDefKey = historicTaskInstances.get(0).getTaskDefinitionKey();
+
+                ActHiTaskinst actHiTaskinst = actHiTaskinstService.queryLastHisRecord(bpmBusinessProcess.getProcInstId(), SecurityUtils.getLogInEmpId());
+                if (actHiTaskinst!=null) {
+                    taskDefKey = actHiTaskinst.getTaskDefKey();
                     processInfoVo.setNodeId(taskDefKey);
                 }
             }
@@ -187,8 +179,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processCode);
         //monitor,view,process's admin,super admin,historical approvers and forward user
         if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
-            List<HistoricTaskInstance> taskInstanceList = historyService.createHistoricTaskInstanceQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
-            List<String> list = taskInstanceList.stream().filter(s -> !ObjectUtils.isEmpty(s)).map(HistoricTaskInstance::getAssignee).collect(Collectors.toList());
+            List<ActHiTaskinst> taskInstanceList = actHiTaskinstService.queryRecordsByProcInstId(bpmBusinessProcess.getProcInstId());
+            List<String> list = taskInstanceList.stream().filter(s -> !ObjectUtils.isEmpty(s)).map(ActHiTaskinst::getAssignee).collect(Collectors.toList());
             if (list.contains(SecurityUtils.getLogInEmpIdStr())) {
                 return true;
             }

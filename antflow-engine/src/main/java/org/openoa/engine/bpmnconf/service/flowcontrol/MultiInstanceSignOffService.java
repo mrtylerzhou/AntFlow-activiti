@@ -8,6 +8,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,26 +24,25 @@ public class MultiInstanceSignOffService {
 
     private final RuntimeService runtimeService;
     private final TaskService taskService;
-    private final HistoryService historyService;
     private final TaskMgmtMapper taskMgmtMapper;
     private final BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
     private final BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     private final BpmFlowrunEntrustServiceImpl flowrunEntrustService;
-    private final RepositoryService repositoryService;
+    private final ActHiTaskinstServiceImpl actHiTaskinstService;
 
     public MultiInstanceSignOffService(@Autowired ProcessEngine processEngine,
                                        TaskMgmtMapper taskMgmtMapper,
                                        BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper,
                                        BpmBusinessProcessServiceImpl bpmBusinessProcessService,
-                                       BpmFlowrunEntrustServiceImpl flowrunEntrustService) {
+                                       BpmFlowrunEntrustServiceImpl flowrunEntrustService,
+                                       ActHiTaskinstServiceImpl actHiTaskinstService) {
         this.runtimeService = processEngine.getRuntimeService();
         this.taskService = processEngine.getTaskService();
-        this.historyService = processEngine.getHistoryService();
-        this.repositoryService = processEngine.getRepositoryService();
         this.taskMgmtMapper = taskMgmtMapper;
         this.bpmVariableMultiplayerMapper = bpmVariableMultiplayerMapper;
         this.bpmBusinessProcessService = bpmBusinessProcessService;
         this.flowrunEntrustService = flowrunEntrustService;
+        this.actHiTaskinstService = actHiTaskinstService;
     }
 
     /**
@@ -107,11 +107,8 @@ public class MultiInstanceSignOffService {
         Integer nrOfCompleted = (Integer) runtimeService.getVariable(myExecution.getParentId(), "nrOfCompletedInstances");
         Integer nrOfInstances = (Integer) runtimeService.getVariable(myExecution.getParentId(), "nrOfInstances");
         // 处理已完成的数量
-        long completedCount = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .taskAssignee(userToRemove)
-                .finished()
-                .count();
+        long completedCount =actHiTaskinstService.queryRecordsByProcInstId(processInstanceId).stream().filter(a->a.getEndTime()!=null&&a.getAssignee().equals(userToRemove)).count();
+
         if (completedCount > 0 && nrOfCompleted != null) {
             runtimeService.setVariable(myExecution.getParentId(), "nrOfCompletedInstances", nrOfCompleted - 1);
         }

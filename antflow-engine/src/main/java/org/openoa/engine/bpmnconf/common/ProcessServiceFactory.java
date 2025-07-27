@@ -29,8 +29,6 @@ public class ProcessServiceFactory {
     @Autowired
     protected TaskService taskService;
 
-    @Autowired
-    protected HistoryService historyService;
 
     @Autowired
     protected ManagementService managementService;

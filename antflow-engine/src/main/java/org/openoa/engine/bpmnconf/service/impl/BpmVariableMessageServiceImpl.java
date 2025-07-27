@@ -7,18 +7,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jodd.bean.BeanUtil;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
-import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmVariableApproveRemind;
-import org.openoa.base.entity.Employee;
-import org.openoa.base.entity.User;
+import org.openoa.base.entity.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.AfRoleServiceImpl;
@@ -84,7 +78,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     @Autowired
-    private HistoryService historyService;
+    private ActHiTaskinstServiceImpl hiTaskinstService;
 
     @Autowired
     private TaskService taskService;
@@ -282,7 +276,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //call activiti's history service to query history process instance
-        //HistoricProcessInstance processInstancex =historyService.createHistoricProcessInstanceQuery().processInstanceId(businessProcess.getProcInstId()).singleResult();
+
 
         String procInstId = businessProcess.getProcInstId();
         String createUser = businessProcess.getCreateUser();
@@ -304,13 +298,12 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //get a list of history tasks
-        List<HistoricTaskInstance> hisTask = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).list();
-
+        List<ActHiTaskinst> hisTask = hiTaskinstService.queryRecordsByProcInstId(procInstId);
 
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .map(HistoricTaskInstance::getAssignee)
+                .map(ActHiTaskinst::getAssignee)
                 .filter(assignee -> !StringUtils.isEmpty(assignee))
                 .distinct()
                 .collect(Collectors.toList()));
