@@ -57,7 +57,7 @@
                                         v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
                                         link type="danger" icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled"
+                                    <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
@@ -117,7 +117,7 @@
                                         v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
                                         link type="danger" icon="BellFilled"
                                         @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled"
+                                    <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">

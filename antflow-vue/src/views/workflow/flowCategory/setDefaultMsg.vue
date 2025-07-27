@@ -17,7 +17,7 @@
                         </span>
                     </template>
                     <el-checkbox-group v-model="checkedMsgSendTypeList">
-                        <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
+                        <el-checkbox style="margin: 5px;" v-for="(item, index) in messageSendTypeList" :value="item.id"
                             :key="item.id" border>
                             {{ item.name }}
                             <msgIcon v-model:iconValue="item.id" viewValue="primary" />
@@ -77,12 +77,10 @@
 <script setup>
 import { ref, watch } from "vue";
 import msgIcon from '@/components/Workflow/components/msgIcon.vue';
-import { getAllNoticeTypes, saveTaskMgmt } from "@/api/workflow/flowMsgApi";
+import { saveTaskMgmt } from "@/api/workflow/flowMsgApi";
 import SetSeniorMsg from './setSeniorMsg.vue';
-import { noticeUserList, eventTypeList } from '@/utils/antflow/const';
-
+import { noticeUserList, messageSendTypeList, eventTypeList } from '@/utils/antflow/const';
 const { proxy } = getCurrentInstance();
-const notifyTypeList = ref([]);
 const checkedMsgSendTypeList = ref([]);
 const noticeSeniorSetShow = ref(false);
 const tabPosition = ref('defaultNotice');
@@ -115,22 +113,8 @@ watch(() => dialogVisible.value, (val) => {
             return item.id;
         });
         msgTableData.value = props.formMsgData.templateVos || [];
-        getAllNoticeTypesList();
     }
 });
-
-/** 获取所有通知类型列表 */
-const getAllNoticeTypesList = () => {
-    getAllNoticeTypes().then(res => {
-        if (res && res.code == 200) {
-            notifyTypeList.value = res.data;
-        } else {
-            proxy.$modal.msgError("获取通知类型失败" + res.errMsg);
-        }
-    }).catch(err => {
-        console.log(err);
-    });
-};
 
 function submitDialog() {
     let params = {
