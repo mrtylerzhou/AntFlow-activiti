@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.vo.BaseNumIdStruVo;
 import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnTemplateVo;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,17 +37,16 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
         List<Integer> notifyTypeIds=vo.getNotifyTypeIds();
         QueryWrapper<BpmProcessNotice> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
-        this.getBaseMapper().delete(wrapper);
-        if (!ObjectUtils.isEmpty(notifyTypeIds)) {
-            notifyTypeIds.forEach(o -> {
-                this.getBaseMapper().insert(BpmProcessNotice.builder()
-                        .processKey(processKey)
-                        .type(o)
-                        .build());
-            });
-        }
+
         List<BpmnTemplateVo> templateVos = vo.getTemplateVos();
         if(!CollectionUtils.isEmpty(templateVos)){
+            List<BpmProcessNotice> bpmProcessNotices = this.getBaseMapper().selectList(wrapper);
+            //如果设置了高级通知,但是没有设置普通通知类型,就高级的赋值给普通的
+            if(CollectionUtils.isEmpty(bpmProcessNotices)){
+                notifyTypeIds=!CollectionUtils.isEmpty(notifyTypeIds)?notifyTypeIds:new ArrayList<>();
+                List<Integer> advancedNotifyIds = templateVos.stream().flatMap(x -> x.getMessageSendTypeList().stream()).map(a -> a.getId().intValue()).collect(Collectors.toList());
+                notifyTypeIds.addAll(advancedNotifyIds);
+            }
             BpmnConfVo confVo=new BpmnConfVo();
             confVo.setFormCode(processKey);
             confVo.setTemplateVos(templateVos);
@@ -55,6 +56,16 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
 
             bpmnTemplateService.remove(delWrapper);
             bpmnTemplateService.editBpmnTemplate(confVo,null);
+        }
+        if (!ObjectUtils.isEmpty(notifyTypeIds)) {
+
+            this.getBaseMapper().delete(wrapper);
+            notifyTypeIds.forEach(o -> {
+                this.getBaseMapper().insert(BpmProcessNotice.builder()
+                        .processKey(processKey)
+                        .type(o)
+                        .build());
+            });
         }
     }
 
