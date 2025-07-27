@@ -23,10 +23,7 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -63,6 +60,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
     @Autowired
     private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    @Autowired
+    private BpmVerifyInfoServiceImpl verifyInfoService;
 
 
 

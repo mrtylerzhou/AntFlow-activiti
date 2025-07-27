@@ -15,6 +15,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUpPersonnel;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpPersonnelMapper;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -30,6 +31,7 @@ public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariab
 
 
     @Autowired
+    @Lazy
     private BpmVariableServiceImpl bpmVariableService;
 
     @Autowired

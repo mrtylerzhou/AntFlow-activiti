@@ -27,6 +27,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -54,6 +55,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     @Autowired(required = false)
     private Map<String, FormOperationAdaptor> formOperationAdaptorMap;
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;

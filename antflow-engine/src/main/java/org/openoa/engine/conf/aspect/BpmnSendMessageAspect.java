@@ -15,7 +15,6 @@ import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
@@ -25,10 +24,10 @@ import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.engine.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +50,7 @@ public class BpmnSendMessageAspect {
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired
+    @Lazy
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
     @Autowired
     private IAdaptorFactory adaptorFactory;

@@ -24,6 +24,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -55,6 +56,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     @Autowired
     private OutSideBpmBaseServiceImpl outSideBpmBaseService;
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
 
     /**
