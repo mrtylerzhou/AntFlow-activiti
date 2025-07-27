@@ -73,7 +73,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
      * @return
      */
     public BpmnConf getBpmnConfByFormCode(String formCode) {
-        return Optional.ofNullable(super.service.getOne(new QueryWrapper<BpmnConf>()
+        return Optional.ofNullable(super.getService().getOne(new QueryWrapper<BpmnConf>()
                 .eq("form_code", formCode)
                 .eq("effective_status", 1)))
                 .orElse(new BpmnConf());
@@ -86,7 +86,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
      * @return
      */
     public List<BpmnConf> getBpmnConfByFormCodeBatch(List<String> formCodes) {
-        return super.service.list(new QueryWrapper<BpmnConf>()
+        return super.getService().list(new QueryWrapper<BpmnConf>()
                 .in("form_code", formCodes)
                 .eq("effective_status", 1));
     }
@@ -100,7 +100,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
      * @param bpmnCode
      */
     public void updateBpmnConfByCode(Integer appId, Integer bpmnType, Integer isAll, String bpmnCode) {
-        super.service.update(BpmnConf
+        super.getService().update(BpmnConf
                         .builder()
                         .appId(appId)
                         .bpmnType(bpmnType)
@@ -120,7 +120,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
     public void startProcess(String bpmnCode, BpmnStartConditionsVo bpmnStartConditions) {
 
         //to query the process's config information
-        BpmnConfVo bpmnConfVo = super.service.detail(bpmnCode);
+        BpmnConfVo bpmnConfVo = super.getService().detail(bpmnCode);
         bpmnStartConditions.setPreview(false);
 
         // format process's floating direction,set assignees,assignees deduplication and remove some nodes on conditions
@@ -336,9 +336,9 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
 
         BpmnConfVo detail;
         if (isStartPagePreview) {
-            detail = super.service.detailByFormCode(dataVo.getFormCode());
+            detail = super.getService().detailByFormCode(dataVo.getFormCode());
         } else {
-            detail = super.service.detail(dataVo.getBpmnCode());
+            detail = super.getService().detail(dataVo.getBpmnCode());
         }
 
         JSONObject object = JSON.parseObject(params);
@@ -418,7 +418,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
 
     }
     public boolean migrationCheckConditionsChange(BusinessDataVo vo) {
-        BpmnConf bpmnConf = super.service.getOne(new QueryWrapper<BpmnConf>()
+        BpmnConf bpmnConf = super.getService().getOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", vo.getBpmnCode()));
         if(bpmnConf==null){
             throw new JiMuBizException("未找到对应的 bpmnConf 记录");
@@ -714,7 +714,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
      * @return
      */
     public List<BpmnConf> getIsAllConfs() {
-        return super.service.getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
+        return super.getService().getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
                 .eq("is_all", 1)
                 .eq("effective_status", 1)
                 .eq("is_del", 0));

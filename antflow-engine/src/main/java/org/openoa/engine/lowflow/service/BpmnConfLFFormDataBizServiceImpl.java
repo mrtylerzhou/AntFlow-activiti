@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class BpmnConfLFFormDataBizServiceImpl extends BizServiceImpl<BpmnConfLfFormdataServiceImpl> {
 
     public BpmnConfLfFormdata getLFFormDataByFormCode(String formCode){
-        BpmnConfLfFormdata byFormCode = this.service.getBaseMapper().getByFormCode(formCode);
+        BpmnConfLfFormdata byFormCode = this.getService().getBaseMapper().getByFormCode(formCode);
         return byFormCode;
     }
 }

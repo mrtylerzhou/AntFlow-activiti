@@ -83,7 +83,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
 
     public List<BpmVerifyInfoVo> getVerifyInfoList(String processCode) {
-        List<BpmVerifyInfoVo> bpmVerifyInfoVos = service.verifyInfoList(processCode);
+        List<BpmVerifyInfoVo> bpmVerifyInfoVos = getService().verifyInfoList(processCode);
         return bpmVerifyInfoVos;
     }
 
@@ -111,7 +111,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //query and then append process record
-        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = service.verifyInfoList(processNumber, bpmBusinessProcess.getProcInstId());
+        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = getService().verifyInfoList(processNumber, bpmBusinessProcess.getProcInstId());
 
         //sort verify info by verify date in ascending order
         searchBpmVerifyInfoVos = searchBpmVerifyInfoVos.stream().sorted(Comparator.comparing(BpmVerifyInfoVo::getVerifyDate)).collect(Collectors.toList());
@@ -181,7 +181,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //query to do task info
-        List<BpmVerifyInfoVo> taskInfo = service.findTaskInfo(bpmBusinessProcess);
+        List<BpmVerifyInfoVo> taskInfo = getService().findTaskInfo(bpmBusinessProcess);
 
         BpmVerifyInfoVo taskVo;
 
@@ -364,7 +364,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @return
      */
     public  String  findCurrentNodeIds(String processNumber) {
-      return  service.findCurrentNodeIds(processNumber);
+      return  getService().findCurrentNodeIds(processNumber);
     }
     /**
      * do append verify info
