@@ -11,13 +11,13 @@
                     <template #label>
                         <span>
                             默认通知
-                            <el-tooltip content="注：默认通知将会采用默认消息模板，审批人为默认通知人" placement="top">
+                            <el-tooltip :content="tooltipContent" placement="top">
                                 <el-icon><question-filled /></el-icon>
                             </el-tooltip>
                         </span>
                     </template>
                     <el-checkbox-group v-model="checkedMsgSendTypeList">
-                        <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
+                        <el-checkbox style="margin: 5px;" v-for="(item, index) in messageSendTypeList" :value="item.id"
                             :key="item.id" border>
                             {{ item.name }}
                             <msgIcon v-model:iconValue="item.id" viewValue="primary" />
@@ -77,12 +77,10 @@
 <script setup>
 import { ref, watch } from "vue";
 import msgIcon from '@/components/Workflow/components/msgIcon.vue';
-import { getAllNoticeTypes, saveTaskMgmt } from "@/api/workflow/flowMsgApi";
+import { saveTaskMgmt } from "@/api/workflow/flowMsgApi";
 import SetSeniorMsg from './setSeniorMsg.vue';
-import { noticeUserList, eventTypeList } from '@/utils/antflow/const';
-
+import { noticeUserList, messageSendTypeList, eventTypeList } from '@/utils/antflow/const';
 const { proxy } = getCurrentInstance();
-const notifyTypeList = ref([]);
 const checkedMsgSendTypeList = ref([]);
 const noticeSeniorSetShow = ref(false);
 const tabPosition = ref('defaultNotice');
@@ -108,29 +106,15 @@ let dialogVisible = computed({
 })
 const emits = defineEmits(["update:visible", "refresh"]);
 const msgTableData = ref([]);
-
+const tooltipContent = ref('注：默认通知将会采用默认消息模板，审批人为默认通知人。如果有高级设置，则以高级设置为主');
 watch(() => dialogVisible.value, (val) => {
     if (val) {
         checkedMsgSendTypeList.value = props.formMsgData.processNotices.filter(c => c.active).map(item => {
             return item.id;
         });
         msgTableData.value = props.formMsgData.templateVos || [];
-        getAllNoticeTypesList();
     }
 });
-
-/** 获取所有通知类型列表 */
-const getAllNoticeTypesList = () => {
-    getAllNoticeTypes().then(res => {
-        if (res && res.code == 200) {
-            notifyTypeList.value = res.data;
-        } else {
-            proxy.$modal.msgError("获取通知类型失败" + res.errMsg);
-        }
-    }).catch(err => {
-        console.log(err);
-    });
-};
 
 function submitDialog() {
     let params = {
@@ -157,6 +141,12 @@ function openSeniorSet() {
 /**消息设置 */
 const handleFlowMsgSet = (data) => {
     if (proxy.isEmpty(data)) return;
+
+    const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
+    if (hasEmptyValue(data, propsToCheck)) {
+        proxy.$modal.msgError("请选择完整的消息设置");
+        return;
+    }
     const index = msgTableData.value.findIndex(item => item.event === data.event);
     if (index !== -1) {
         // 如果找到具有相同 event 的条目，则更新该条目
@@ -165,7 +155,6 @@ const handleFlowMsgSet = (data) => {
         // 如果没有找到，则添加新的条目
         msgTableData.value.push(data);
     }
-    console.log('msgTableData.value====', JSON.stringify(msgTableData.value));
 }
 
 /**消息设置 */
@@ -191,5 +180,18 @@ const getEventType = (param) => {
 /** 取消操作添加条件模板表单 */
 function closeDialog() {
     emits("update:visible", false);
-} 
+}
+// 检查对象中指定属性是否有空值
+function hasEmptyValue(obj, props) {
+    return props.some(prop => {
+        const value = obj[prop];
+        return proxy.isEmpty(value);
+    });
+}
+// 检查对象中所有属性是否有空值
+function hasEmptyValueObj(obj) {
+    return Object.values(obj).some(value => {
+        return proxy.isEmpty(value);
+    });
+}
 </script>

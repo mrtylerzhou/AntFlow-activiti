@@ -53,9 +53,11 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button v-if="scope.row.processNotices?.findIndex(item => item.active) > -1" link
-                                        type="danger" icon="BellFilled" @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled"
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
@@ -70,10 +72,6 @@
                                     <el-button link type="success" icon="ZoomIn"
                                         @click="handleLFTemp(scope.row)"></el-button>
                                 </el-tooltip>
-
-                                <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                                <el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
                         </el-table-column>
                     </el-table>
@@ -115,9 +113,11 @@
                             class-name="small-padding fixed-width">
                             <template #default="scope">
                                 <el-tooltip content="通知设置" placement="top">
-                                    <el-button v-if="scope.row.processNotices?.findIndex(item => item.active) > -1" link
-                                        type="danger" icon="BellFilled" @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled"
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
@@ -132,8 +132,6 @@
                                     <el-button link type="success" icon="ZoomIn"
                                         @click="handleLFTemp(scope.row)"></el-button>
                                 </el-tooltip>
-                                <!--<el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button> -->
                             </template>
                         </el-table-column>
                     </el-table>
@@ -240,7 +238,7 @@ const data = reactive({
         }],
     }
 });
-const { vo, pageDto, taskMgmtVO, form, rules } = toRefs(data);
+const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
 
 // 列显隐信息
 const columns = ref([
@@ -358,7 +356,8 @@ async function handleFlowMsg(row) {
     formMsgData.value = {
         formCode: row.key,
         flowType: row.type,
-        processNotices: row.processNotices || []
+        processNotices: row.processNotices || [],
+        templateVos: row.templateVos || []
     };
     openFlowMsgDialog.value = true;
 }

@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                }}</el-radio>
+                                    }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -90,8 +90,12 @@
                     <div class="approver_block">
                         <p>✍审批人为空时</p>
                         <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
-                            <el-radio :value="1">不允许发起</el-radio>
+                            <el-radio :value="0">不允许发起</el-radio>
                             <br />
+                            <!--注意,这里的跳过指的是不生成审批任务节点,即流程图里没有当前缺失审批人的节点-->
+                            <el-radio :value="1">跳过</el-radio>
+                            <br />
+                            <!--转给管理员需实现BpmnProcessAdminProvider接口-->
                             <el-radio :value="2">转交给审核管理员</el-radio>
                         </el-radio-group>
                     </div>
@@ -246,7 +250,7 @@ watch(checkedHRBP, (val) => {
 const changeType = (val) => {
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
-    approverConfig.value.noHeaderAction = 2;
+    approverConfig.value.noHeaderAction = 0;
     checkedHRBP.value = '';
     if (val == 3) {
         approverConfig.value.directorLevel = 1;

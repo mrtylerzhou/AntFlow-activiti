@@ -5,8 +5,8 @@
                 <el-col :span="24">
                     <el-form-item label="通知类型" prop="checkedMsgSendTypeList">
                         <el-checkbox-group v-model="checkedMsgSendTypeList">
-                            <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
-                                :key="item.id" border>
+                            <el-checkbox style="margin: 5px;" v-for="(item, index) in messageSendTypeList"
+                                :value="item.id" :key="item.id" border>
                                 {{ item.name }}
                                 <msgIcon v-model:iconValue="item.id" viewValue="primary" />
                             </el-checkbox>
@@ -97,7 +97,7 @@ import msgViewDialog from "./msgViewDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
 import msgIcon from '../../components/msgIcon.vue';
-import { noticeUserList } from '@/utils/antflow/const';
+import { messageSendTypeList, noticeUserList } from '@/utils/antflow/const';
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const eventOptions = ref([]);
@@ -153,7 +153,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-    getAllNoticeTypesList();
+    //getAllNoticeTypesList();
     getProcessEventsList();
 })
 
