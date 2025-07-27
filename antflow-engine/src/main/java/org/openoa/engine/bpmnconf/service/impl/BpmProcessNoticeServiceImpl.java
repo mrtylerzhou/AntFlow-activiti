@@ -47,9 +47,12 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
         List<BpmnTemplateVo> templateVos = vo.getTemplateVos();
         if(!CollectionUtils.isEmpty(templateVos)){
             BpmnConfVo confVo=new BpmnConfVo();
+            confVo.setFormCode(processKey);
             confVo.setTemplateVos(templateVos);
             LambdaQueryWrapper<BpmnTemplate> delWrapper = Wrappers.<BpmnTemplate>lambdaQuery()
-                    .eq(BpmnTemplate::getFormCode, processKey);
+                    .eq(BpmnTemplate::getFormCode, processKey)
+                            .isNull(BpmnTemplate::getNodeId);
+
             bpmnTemplateService.remove(delWrapper);
             bpmnTemplateService.editBpmnTemplate(confVo,null);
         }
