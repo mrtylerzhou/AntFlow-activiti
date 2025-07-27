@@ -11,7 +11,7 @@
                     <template #label>
                         <span>
                             默认通知
-                            <el-tooltip content="注：默认通知将会采用默认消息模板，审批人为默认通知人" placement="top">
+                            <el-tooltip :content="tooltipContent" placement="top">
                                 <el-icon><question-filled /></el-icon>
                             </el-tooltip>
                         </span>
@@ -108,7 +108,7 @@ let dialogVisible = computed({
 })
 const emits = defineEmits(["update:visible", "refresh"]);
 const msgTableData = ref([]);
-
+const tooltipContent = ref('注：默认通知将会采用默认消息模板，审批人为默认通知人。如果有高级设置，则以高级设置为主');
 watch(() => dialogVisible.value, (val) => {
     if (val) {
         checkedMsgSendTypeList.value = props.formMsgData.processNotices.filter(c => c.active).map(item => {
@@ -157,6 +157,12 @@ function openSeniorSet() {
 /**消息设置 */
 const handleFlowMsgSet = (data) => {
     if (proxy.isEmpty(data)) return;
+
+    const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
+    if (hasEmptyValue(data, propsToCheck)) {
+        proxy.$modal.msgError("请选择完整的消息设置");
+        return;
+    }
     const index = msgTableData.value.findIndex(item => item.event === data.event);
     if (index !== -1) {
         // 如果找到具有相同 event 的条目，则更新该条目
@@ -165,7 +171,6 @@ const handleFlowMsgSet = (data) => {
         // 如果没有找到，则添加新的条目
         msgTableData.value.push(data);
     }
-    console.log('msgTableData.value====', JSON.stringify(msgTableData.value));
 }
 
 /**消息设置 */
@@ -191,5 +196,18 @@ const getEventType = (param) => {
 /** 取消操作添加条件模板表单 */
 function closeDialog() {
     emits("update:visible", false);
-} 
+}
+// 检查对象中指定属性是否有空值
+function hasEmptyValue(obj, props) {
+    return props.some(prop => {
+        const value = obj[prop];
+        return proxy.isEmpty(value);
+    });
+}
+// 检查对象中所有属性是否有空值
+function hasEmptyValueObj(obj) {
+    return Object.values(obj).some(value => {
+        return proxy.isEmpty(value);
+    });
+}
 </script>
