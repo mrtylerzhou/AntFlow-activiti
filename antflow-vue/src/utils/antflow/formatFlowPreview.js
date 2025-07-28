@@ -108,7 +108,7 @@ export class FormatPreviewUtils {
       if (nodesGroup.hasOwnProperty(currNodeId)) {
         let itemNodes = nodesGroup[currNodeId];
         for (let itemNode of itemNodes) {
-          if (4 == itemNode.nodeType) {
+          if (4 == itemNode.nodeType || 6 == itemNode.nodeType) {
             Object.assign(node, { childNode: itemNode });
           }
         }
