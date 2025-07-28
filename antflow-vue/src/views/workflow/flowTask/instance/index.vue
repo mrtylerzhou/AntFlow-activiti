@@ -139,6 +139,7 @@ function handlePreview(row) {
       processNumber: row.processNumber,
       isOutSideAccess: row.isOutSideProcess,
       isLowCodeFlow: row.isLowCodeFlow,
+      processState: row.processState,
    })
 }
 

@@ -3,24 +3,32 @@
     <el-drawer v-model="visible" v-if="visible" title="流程预览" :size="800" :with-header="false" :destroy-on-close="true">
       <span style="font-weight: bold;">流程详情</span>
       <el-divider />
-      <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
-        <el-tab-pane label="表单信息" name="baseTab">
-          <div v-if="baseTabShow" aria-hidden="true">
-            <previewComponent :isPreview="true" />
-            <!-- <i class="pin-top-right-corner pin-pass"></i> -->
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="审批记录" name="flowStep">
-          <div v-if="flowStepShow">
-            <FlowStepTable />
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="流程预览" name="flowReview">
-          <div v-if="flowReviewShow">
-            <ReviewWarp />
-          </div>
-        </el-tab-pane>
-      </el-tabs>
+      <div class="tabs-header-wrap">
+        <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
+          <el-tab-pane label="表单信息" name="baseTab">
+            <div v-if="baseTabShow" aria-hidden="true">
+              <previewComponent :isPreview="true" />
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="审批记录" name="flowStep">
+            <div v-if="flowStepShow">
+              <FlowStepTable />
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="流程预览" name="flowReview">
+            <div v-if="flowReviewShow">
+              <ReviewWarp />
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+
+        <img v-if="processState == 1" class="tabs-header-img" src="@/assets/images/antflow/flow-in.svg" alt="tab-img" />
+        <img v-else-if="processState == 2" class="tabs-header-img" src="@/assets/images/antflow/flow-pass.svg"
+          alt="tab-img" />
+        <img v-else-if="processState == 6" class="tabs-header-img" src="@/assets/images/antflow/flow-refuse.svg"
+          alt="tab-img" />
+        <img v-else class="tabs-header-img" src="@/assets/images/antflow/flow-end.svg" alt="tab-img" />
+      </div>
       <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/antflow/back-close.png"></label>
     </el-drawer>
   </div>
@@ -36,6 +44,8 @@ import previewComponent from "@/views/workflow/components/previewComponent.vue"
 let store = useStore()
 let { setPreviewDrawer } = store
 let previewDrawer = computed(() => store.previewDrawer)
+let viewConfig = computed(() => store.instanceViewConfig1)
+let processState = computed(() => viewConfig.value.processState)
 const activeName = ref('baseTab')
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
@@ -66,3 +76,19 @@ const closeDrawer = () => {
 }
 handleTabClick({ paneName: "baseTab" }) 
 </script>
+
+<style scoped>
+.tabs-header-wrap {
+  position: relative;
+}
+
+.tabs-header-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+  pointer-events: none;
+}
+</style>
