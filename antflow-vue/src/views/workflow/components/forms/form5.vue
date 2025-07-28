@@ -140,7 +140,7 @@ defineExpose({
 
 .form-container {
     background: white !important;
-    padding: 30px;
+    padding: 10px;
     max-width: 750px;
     min-height: 58vh;
     left: 0;
