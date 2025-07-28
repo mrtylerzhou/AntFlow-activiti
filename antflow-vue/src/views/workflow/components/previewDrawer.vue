@@ -21,13 +21,7 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-
-        <img v-if="processState == 1" class="tabs-header-img" src="@/assets/images/antflow/flow-in.svg" alt="tab-img" />
-        <img v-else-if="processState == 2" class="tabs-header-img" src="@/assets/images/antflow/flow-pass.svg"
-          alt="tab-img" />
-        <img v-else-if="processState == 6" class="tabs-header-img" src="@/assets/images/antflow/flow-refuse.svg"
-          alt="tab-img" />
-        <img v-else class="tabs-header-img" src="@/assets/images/antflow/flow-end.svg" alt="tab-img" />
+        <ProcessStateImg :process-state="processState" />
       </div>
       <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/antflow/back-close.png"></label>
     </el-drawer>
@@ -36,11 +30,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from '@/store/modules/workflow'
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
+import ProcessStateImg from './ProcessStateImg.vue'
 let store = useStore()
 let { setPreviewDrawer } = store
 let previewDrawer = computed(() => store.previewDrawer)
@@ -80,15 +75,5 @@ handleTabClick({ paneName: "baseTab" })
 <style scoped>
 .tabs-header-wrap {
   position: relative;
-}
-
-.tabs-header-img {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100px;
-  height: 100px;
-  z-index: 10;
-  pointer-events: none;
 }
 </style>
