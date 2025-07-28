@@ -52,14 +52,6 @@
                         <el-table-column label="操作" fixed="right" width="320" align="center"
                             class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-tooltip content="通知设置" placement="top">
-                                    <el-button
-                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
-                                        link type="danger" icon="BellFilled"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled" type="info"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
-                                </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
                                     <el-button link type="primary" icon="Promotion"
                                         @click="handleLFDesign(scope.row)"></el-button>
@@ -67,6 +59,14 @@
                                 <el-tooltip content="流程版本" placement="top">
                                     <el-button link type="warning" icon="Operation"
                                         @click="handleVersion(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="通知设置" placement="top">
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="查看表单" placement="top">
                                     <el-button link type="success" icon="ZoomIn"
@@ -112,14 +112,6 @@
                         <el-table-column label="操作" fixed="right" width="320" align="center"
                             class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-tooltip content="通知设置" placement="top">
-                                    <el-button
-                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
-                                        link type="danger" icon="BellFilled"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
-                                    <el-button v-else link icon="BellFilled" type="info"
-                                        @click="handleFlowMsg(scope.row)"></el-button>
-                                </el-tooltip>
                                 <el-tooltip content="设计流程" placement="top">
                                     <el-button link type="primary" icon="Promotion"
                                         @click="handleDIYDesign(scope.row)"></el-button>
@@ -127,6 +119,14 @@
                                 <el-tooltip content="流程版本" placement="top">
                                     <el-button link type="warning" icon="Operation"
                                         @click="handleVersion(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="通知设置" placement="top">
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="查看表单" placement="top">
                                     <el-button link type="success" icon="ZoomIn"
