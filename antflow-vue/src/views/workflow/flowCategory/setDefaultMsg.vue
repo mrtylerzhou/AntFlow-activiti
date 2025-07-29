@@ -143,7 +143,7 @@ const handleFlowMsgSet = (data) => {
     if (proxy.isEmpty(data)) return;
 
     const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
-    if (hasEmptyValue(data, propsToCheck)) {
+    if (proxy.hasEmptyValue(data, propsToCheck)) {
         proxy.$modal.msgError("请选择完整的消息设置");
         return;
     }
@@ -181,17 +181,5 @@ const getEventType = (param) => {
 function closeDialog() {
     emits("update:visible", false);
 }
-// 检查对象中指定属性是否有空值
-function hasEmptyValue(obj, props) {
-    return props.some(prop => {
-        const value = obj[prop];
-        return proxy.isEmpty(value);
-    });
-}
-// 检查对象中所有属性是否有空值
-function hasEmptyValueObj(obj) {
-    return Object.values(obj).some(value => {
-        return proxy.isEmpty(value);
-    });
-}
+
 </script>

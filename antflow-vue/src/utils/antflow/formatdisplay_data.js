@@ -45,6 +45,7 @@ export class FormatDisplayUtils {
       isDel: 0,
       directorMaxLevel: 3,
       nodeConfig: {},
+      templateVos: nodeData.templateVos || [],
     };
     return displayObj;
   }

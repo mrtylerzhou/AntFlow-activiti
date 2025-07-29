@@ -40,6 +40,7 @@ import {
   substringHidden,
   isEmpty,
   isEmptyArray,
+  hasEmptyValue,
 } from "@/utils/antflow/ObjectUtils";
 // 分页组件
 import Pagination from "@/components/Pagination";
@@ -72,6 +73,7 @@ app.config.globalProperties.selectDictLabels = selectDictLabels;
 app.config.globalProperties.substringHidden = substringHidden;
 app.config.globalProperties.isEmptyArray = isEmptyArray;
 app.config.globalProperties.isEmpty = isEmpty;
+app.config.globalProperties.hasEmptyValue = hasEmptyValue;
 // 全局组件挂载
 app.component("DictTag", DictTag);
 app.component("Pagination", Pagination);

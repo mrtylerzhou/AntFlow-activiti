@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-form ref="templateRef" label-width="130px" label-position="top" style="margin: 0 20px;">
+        <el-form ref="templateRef" label-width="130px" label-position="top"
+            style="margin-bottom: 10px;border:1px solid #bfcbd9;padding:20px;">
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="通知类型" prop="checkedMsgSendTypeList">
@@ -81,6 +82,7 @@
                 </el-col>
             </el-row>
         </el-form>
+        <el-button type="primary" plain icon="Refresh" @click="resetForm">重置通知</el-button>
         <flow-msg-templete v-model:visible="dialogMsgVisible" v-model:checkedData="selectValues"
             @change="saveFlowMsgTempDialog" />
         <select-user-dialog v-model:visible="chooseUserVisible" :data="templateForm.empList" @change="sureUserDialog" />
@@ -149,7 +151,13 @@ watchEffect(() => {
             id: item
         }
     });
-    emits('changeFlowMsgSet', templateForm.value)
+
+    const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
+    if (proxy.hasEmptyValue(templateForm.value, propsToCheck)) {
+        emits('changeFlowMsgSet')
+    } else {
+        emits('changeFlowMsgSet', templateForm.value)
+    }
 })
 
 onMounted(() => {
@@ -248,6 +256,21 @@ const handleRemoveRole = (data) => {
 
 const handleReverwTemplate = (id) => {
     getSelectTemplateById(id);
+}
+
+const resetForm = () => {
+    checkedMsgSendTypeList.value = [];
+    selectValues.value = [];
+    noticeUserType.value = 1;
+    templateForm.value = {
+        nodeId: undefined,
+        messageSendTypeList: [],
+        event: undefined,
+        informIdList: [],
+        empList: [],
+        roleList: [],
+        templateId: undefined
+    };
 } 
 </script>
 

@@ -303,6 +303,7 @@ const handleApprovalBtnSubOption = (val) => {
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
+    console.log('保存审批人配置==', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,
@@ -320,7 +321,7 @@ const changePermVal = (data) => {
 }
 /**消息设置 */
 const handleFlowMsgSet = (data) => {
-    approverConfig.value.templateVos = [data];
+    approverConfig.value.templateVos = !proxy.isEmpty(data) ? [data] : [];
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,

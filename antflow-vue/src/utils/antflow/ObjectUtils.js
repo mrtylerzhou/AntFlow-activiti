@@ -16,6 +16,19 @@ export const isEmptyArray = (data) =>
     ? true
     : false;
 
+// 检查对象中指定属性是否有空值
+export const hasEmptyValue = (obj, props) => {
+  if (isEmpty(obj)) {
+    return Object.values(obj).some((value) => {
+      return isEmpty(value);
+    });
+  } else {
+    return props.some((prop) => {
+      const value = obj[prop];
+      return isEmpty(value);
+    });
+  }
+};
 /**
  * 字符串中间部分隐藏
  * @param {*} str
