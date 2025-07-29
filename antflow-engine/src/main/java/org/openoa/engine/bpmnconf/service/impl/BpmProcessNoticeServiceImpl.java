@@ -43,9 +43,8 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
             List<BpmProcessNotice> bpmProcessNotices = this.getBaseMapper().selectList(wrapper);
             //如果设置了高级通知,但是没有设置普通通知类型,就高级的赋值给普通的
             if(CollectionUtils.isEmpty(bpmProcessNotices)){
-                notifyTypeIds=!CollectionUtils.isEmpty(notifyTypeIds)?notifyTypeIds:new ArrayList<>();
-                List<Integer> advancedNotifyIds = templateVos.stream().flatMap(x -> x.getMessageSendTypeList().stream()).map(a -> a.getId().intValue()).collect(Collectors.toList());
-                notifyTypeIds.addAll(advancedNotifyIds);
+                List<Integer> advancedNotifyIds = templateVos.stream().flatMap(x -> x.getMessageSendTypeList().stream()).map(a -> a.getId().intValue()).distinct().collect(Collectors.toList());
+                notifyTypeIds = new ArrayList<>(advancedNotifyIds);
             }
             BpmnConfVo confVo=new BpmnConfVo();
             confVo.setFormCode(processKey);

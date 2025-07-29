@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.constant.enus;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import org.openoa.base.constant.enums.InformEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 
 import java.util.Collections;
@@ -55,13 +56,20 @@ public enum EventTypeEnum {
         this.informIdList = informIdList;
     }
 
-    public static String getDescByByCode(Integer code) {
+    public static EventTypeEnum getByCode(Integer code){
         for (EventTypeEnum eventTypeEnum : EventTypeEnum.values()) {
             if (eventTypeEnum.getCode().equals(code)) {
-                return eventTypeEnum.getDesc();
+                return eventTypeEnum;
             }
         }
         return null;
+    }
+    public static String getDescByByCode(Integer code) {
+        EventTypeEnum byCode = getByCode(code);
+        if(byCode==null){
+            return null;
+        }
+        return byCode.getDesc();
     }
 
     public static EventTypeEnum getEnumByOperationType(Integer operationType) {
