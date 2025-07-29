@@ -148,7 +148,8 @@ const approveProcess = async (param) => {
         await processOperation(param).then((res) => {
             if (res.code == 200) {
                 proxy.$modal.msgSuccess("审批成功");
-                close();
+                emits("handleRefreshList");
+                //close();
             } else {
                 proxy.$modal.msgError("审批失败:" + res.errMsg);
             }
@@ -172,7 +173,7 @@ const approveUndertakeSubmit = async () => {
         await processOperation(approveSubData.value).then((resData) => {
             if (resData.code == 200) {
                 proxy.$modal.msgSuccess("承办成功");
-
+                emits("handleRefreshList");
             } else {
                 proxy.$modal.msgError("承办失败:" + resData.errMsg);
             }
