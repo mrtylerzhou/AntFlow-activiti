@@ -1,36 +1,27 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.MailUtils;
-import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseMsgInfo;
 import org.openoa.base.vo.MailInfo;
 import org.openoa.base.vo.MessageInfo;
-import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageStatusServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -76,7 +67,7 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendMailBath(Map<String, MailInfo> map) {
+    public void sendMailBatch(Map<String, MailInfo> map) {
         List<MailInfo> mailInfos = Lists.newArrayList();
 
         for (Map.Entry<String, MailInfo> entry : map.entrySet()) {
@@ -94,7 +85,7 @@ public class MessageServiceImpl {
             }
         }
         if (!CollectionUtils.isEmpty(mailInfos)) {
-            mailUtils.doSendMailBath(mailInfos);
+            mailUtils.doSendMailBatch(mailInfos);
         }
     }
 
@@ -117,7 +108,7 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendSmsBath(Map<String, MessageInfo> map) {
+    public void sendSmsBatch(Map<String, MessageInfo> map) {
         List<MessageInfo> messageInfos = Lists.newArrayList();
 
         for (Map.Entry<String, MessageInfo> entry : map.entrySet()) {
@@ -145,7 +136,7 @@ public class MessageServiceImpl {
      * @param map
      */
     @Async
-    public void sendAppPushBath(Map<String, BaseMsgInfo> map) {
+    public void sendAppPushBatch(Map<String, BaseMsgInfo> map) {
         for (Map.Entry<String, BaseMsgInfo> entry : map.entrySet()) {
             doSendAppPush(entry.getValue(), entry.getKey());
         }
@@ -176,7 +167,7 @@ public class MessageServiceImpl {
      * @param userMessages
      */
     @Async
-    public void insertUserMessageBath(List<UserMessage> userMessages) {
+    public void insertUserMessageBatch(List<UserMessage> userMessages) {
 
         for (UserMessage userMessage : userMessages) {
             if (ObjectUtils.isEmpty(userMessage.getUserId())) {

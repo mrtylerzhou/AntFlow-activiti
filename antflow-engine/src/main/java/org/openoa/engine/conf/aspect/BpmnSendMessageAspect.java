@@ -126,7 +126,7 @@ public class BpmnSendMessageAspect {
 
 
             //get bpmn variable message vo
-            vo = getBpmVariableMessageVo(businessDataVo);
+            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
 
             /**
              * 因为发起流程组装流程发送vo对象是一个后置操作，所以从流程引擎中查到的是发起节点的下一个节点
@@ -137,7 +137,7 @@ public class BpmnSendMessageAspect {
         } else {
 
             //get bpmn variable message vo
-            vo = getBpmVariableMessageVo(businessDataVo);
+            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
 
 
             //get process operation enum by operation type
@@ -163,58 +163,7 @@ public class BpmnSendMessageAspect {
 
     }
 
-    /**
-     * set send message vo
-     *
-     * @param businessDataVo
-     * @return
-     */
-    private BpmVariableMessageVo getBpmVariableMessageVo(BusinessDataVo businessDataVo) {
 
-        if (ObjectUtils.isEmpty(businessDataVo)) {
-            return  null;
-        }
-
-            //get event type by operation type
-            EventTypeEnum eventTypeEnum = EventTypeEnum.getEnumByOperationType(businessDataVo.getOperationType());
-
-            if (ObjectUtils.isEmpty(eventTypeEnum)) {
-                return null;
-            }
-
-
-            //default link type is process type
-            Integer type = 2;
-
-
-            //if event type is cancel operation then link type is view type
-            if (eventTypeEnum.equals(EventTypeEnum.PROCESS_CANCELLATION)) {
-                type = 1;
-            }
-
-
-            //build message vo
-            return bpmVariableMessageService.getBpmVariableMessageVo(BpmVariableMessageVo
-                    .builder()
-                    .processNumber(businessDataVo.getProcessNumber())
-                    .formCode(businessDataVo.getFormCode())
-                    .eventType(eventTypeEnum.getCode())
-                    .forwardUsers(Optional.ofNullable(businessDataVo.getUserIds())
-                            .orElse(Lists.newArrayList())
-                            .stream()
-                            .map(String::valueOf)
-                            .collect(Collectors.toList()))
-                    .signUpUsers(Optional.ofNullable(businessDataVo.getSignUpUsers())
-                            .orElse(Lists.newArrayList())
-                            .stream()
-                            .map(BaseIdTranStruVo::getId)
-                            .collect(Collectors.toList()))
-                    .messageType(eventTypeEnum.getIsInNode() ? 2 : 1)
-                    .eventTypeEnum(eventTypeEnum)
-                    .type(type)
-                    .build());
-
-    }
 
     /**
      * get BusinessDataVo

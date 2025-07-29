@@ -106,7 +106,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         if(!vo.getIsOutSideAccessProc()){
             formFactory.getFormAdaptor(vo).cancellationData(vo);
         }
-
+        vo.setStartUserId(bpmBusinessProcess.getCreateUser());
     }
 
     @Override

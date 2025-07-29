@@ -435,6 +435,11 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     public void sendTemplateMessagesAsync(BpmVariableMessageVo vo) {
         doSendTemplateMessages(vo);
     }
+    @Async
+    void sendTemplateMessagesAsync(BusinessDataVo businessDataVo){
+        BpmVariableMessageVo bpmVariableMessageVo = fromBusinessDataVo(businessDataVo);
+        doSendTemplateMessages(bpmVariableMessageVo);
+    }
 
     /**
      * send templated messages in sync way
@@ -443,6 +448,10 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      */
     public void sendTemplateMessages(BpmVariableMessageVo vo) {
         doSendTemplateMessages(vo);
+    }
+    public void sendTemplateMessages(BusinessDataVo businessDataVo) {
+        BpmVariableMessageVo bpmVariableMessageVo = fromBusinessDataVo(businessDataVo);
+        doSendTemplateMessages(bpmVariableMessageVo);
     }
 
     /**
@@ -562,23 +571,23 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
             switch (messageSendTypeEnum) {
                 case MAIL:
 
-                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
                             .stream()
-                            .map(o -> getUserMsgBathVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
+                            .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
                                     vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MAIL))
                             .collect(Collectors.toList()));
                     break;
                 case MESSAGE:
-                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
                             .stream()
-                            .map(o -> getUserMsgBathVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
+                            .map(o -> getUserMsgBatchVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
                                     vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MESSAGE))
                             .collect(Collectors.toList()));
                     break;
                 case PUSH:
-                    UserMsgUtils.sendMessageBathNoUserMessage(employees
+                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
                             .stream()
-                            .map(o -> getUserMsgBathVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
+                            .map(o -> getUserMsgBatchVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
                                     vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.PUSH))
                             .collect(Collectors.toList()));
                     break;
@@ -649,9 +658,9 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
      * @param messageSendTypeEnum
      * @return
      */
-    private UserMsgBathVo getUserMsgBathVo(Employee o, String title, String content, String taskId,
-                                           String emailUrl, String appUrl, MessageSendTypeEnum messageSendTypeEnum) {
-        return UserMsgBathVo
+    private UserMsgBatchVo getUserMsgBatchVo(Employee o, String title, String content, String taskId,
+                                             String emailUrl, String appUrl, MessageSendTypeEnum messageSendTypeEnum) {
+        return UserMsgBatchVo
                 .builder()
                 .userMsgVo(UserMsgVo
                         .builder()
@@ -778,4 +787,51 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         return sendUsers;
     }
 
+    public BpmVariableMessageVo fromBusinessDataVo(BusinessDataVo businessDataVo) {
+
+
+        if (ObjectUtils.isEmpty(businessDataVo)) {
+            return null;
+        }
+
+        //get event type by operation type
+        EventTypeEnum eventTypeEnum = EventTypeEnum.getEnumByOperationType(businessDataVo.getOperationType());
+
+        if (ObjectUtils.isEmpty(eventTypeEnum)) {
+            return null;
+        }
+
+
+        //default link type is process type
+        Integer type = 2;
+
+
+        //if event type is cancel operation then link type is view type
+        if (eventTypeEnum.equals(EventTypeEnum.PROCESS_CANCELLATION)) {
+            type = 1;
+        }
+
+
+        //build message vo
+        return this.getBpmVariableMessageVo(BpmVariableMessageVo
+                .builder()
+                .processNumber(businessDataVo.getProcessNumber())
+                .formCode(businessDataVo.getFormCode())
+                .eventType(eventTypeEnum.getCode())
+                .forwardUsers(Optional.ofNullable(businessDataVo.getUserIds())
+                        .orElse(Lists.newArrayList())
+                        .stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toList()))
+                .signUpUsers(Optional.ofNullable(businessDataVo.getSignUpUsers())
+                        .orElse(Lists.newArrayList())
+                        .stream()
+                        .map(BaseIdTranStruVo::getId)
+                        .collect(Collectors.toList()))
+                .messageType(eventTypeEnum.getIsInNode() ? 2 : 1)
+                .eventTypeEnum(eventTypeEnum)
+                .type(type)
+                .build());
+
+    }
 }

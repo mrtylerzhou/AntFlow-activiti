@@ -2,7 +2,10 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,10 @@ import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
 public class AntFlowOperationListener implements WorkflowButtonHandler{
     @Autowired
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
+    @Autowired
+    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    @Autowired
+    private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
 
     /**
      * 流程提交
@@ -25,6 +32,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(), SecurityUtils.getLogInEmpNameSafe());
         }
+        bpmVariableMessageService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -43,6 +51,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
+        bpmVariableMessageService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -50,6 +59,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onDisAgree(BusinessDataVo businessData) {
+        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
     }
 
     /**
@@ -68,6 +78,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_END_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
+        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
     }
 
     /**
@@ -75,6 +86,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onUndertake(BusinessDataVo businessData) {
+
     }
 
     /**
@@ -89,6 +101,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onStop(BusinessDataVo businessData) {
+        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_CANCELLATION,businessData);
     }
 
     /**
@@ -96,6 +109,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onForward(BusinessDataVo businessData) {
+        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_FORWARD,businessData);
     }
 
     /**
@@ -103,6 +117,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onBackToModify(BusinessDataVo businessData) {
+        bpmVariableMessageService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -110,6 +125,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onJp(BusinessDataVo businessData) {
+        bpmVariableMessageService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -175,6 +191,6 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onFinishData(BusinessDataVo vo) {
-
+        //注意流程完成通知消息并不在这里,实际上已经有了,请勿要在这里写
     }
 }

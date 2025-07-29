@@ -38,8 +38,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        getMessageSendBean().sendBpmApprovalMsgBath(activitiBpmMsgVos);
+    public static void sendBpmApprovalMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+        getMessageSendBean().sendBpmApprovalMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -47,7 +47,7 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVo
      */
-    public static void sendBpmForwardedlMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
+    public static void sendBpmForwardedMsg(ActivitiBpmMsgVo activitiBpmMsgVo) {
         getMessageSendBean().sendBpmForwardedlMsg(activitiBpmMsgVo);
     }
 
@@ -56,8 +56,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmForwardedlMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        getMessageSendBean().sendBpmForwardedlMsgBath(activitiBpmMsgVos);
+    public static void sendBpmForwardedMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+        getMessageSendBean().sendBpmForwardedMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -74,8 +74,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmFinishMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        getMessageSendBean().sendBpmFinishMsgBath(activitiBpmMsgVos);
+    public static void sendBpmFinishMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+        getMessageSendBean().sendBpmFinishMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -92,8 +92,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public void sendBpmRejectMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-       getMessageSendBean().sendBpmRejectMsgBath(activitiBpmMsgVos);
+    public void sendBpmRejectMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+       getMessageSendBean().sendBpmRejectMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -110,8 +110,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmOverTimeMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-       getMessageSendBean().sendBpmOverTimeMsgBath(activitiBpmMsgVos);
+    public static void sendBpmOverTimeMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+       getMessageSendBean().sendBpmOverTimeMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -128,8 +128,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmTerminationMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-       getMessageSendBean().sendBpmTerminationMsgBath(activitiBpmMsgVos);
+    public static void sendBpmTerminationMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+       getMessageSendBean().sendBpmTerminationMsgBatch(activitiBpmMsgVos);
     }
 
     /**
@@ -146,8 +146,8 @@ public class ActivitiTemplateMsgUtils {
      *
      * @param activitiBpmMsgVos
      */
-    public static void sendBpmGenerationApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
-        getMessageSendBean().sendBpmGenerationApprovalMsgBath(activitiBpmMsgVos);
+    public static void sendBpmGenerationApprovalMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+        getMessageSendBean().sendBpmGenerationApprovalMsgBatch(activitiBpmMsgVos);
     }
 
     /**
