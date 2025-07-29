@@ -35,7 +35,7 @@ export class NodeUtils {
       signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
       isSignUp: 0, //是否加批 0:否，1:是
       directorLevel: 1,
-      noHeaderAction: 1,
+      noHeaderAction: 0,
       childNode: child,
       error: true,
       property: {
@@ -313,9 +313,9 @@ export class NodeUtils {
       setType: 5, //审批人类型 5、指定人员
       signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
       isSignUp: 0, //是否加批 0:否，1:是
-      noHeaderAction: 1,
+      noHeaderAction: 0,
       lfFieldControlVOs: [],
-      templateVos: [],
+      templateVos: [], //消息通知设置
       property: {
         afterSignUpWay: 2, //是否回到加批人 1:是，2:否
         signUpType: 1, //加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1

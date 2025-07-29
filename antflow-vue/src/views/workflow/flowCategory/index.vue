@@ -52,15 +52,26 @@
                         <el-table-column label="操作" fixed="right" width="320" align="center"
                             class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="Promotion"
-                                    @click="handleLFDesign(scope.row)">设计流程</el-button>
-                                <el-button link type="warning" icon="Operation"
-                                    @click="handleVersion(scope.row)">流程版本</el-button>
-                                <el-button link type="success" icon="ZoomIn"
-                                    @click="handleLFTemp(scope.row)">查看表单</el-button>
-                                <!-- <el-button link type="primary" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                                <el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button> -->
+                                <el-tooltip content="设计流程" placement="top">
+                                    <el-button link type="primary" icon="Promotion"
+                                        @click="handleLFDesign(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="流程版本" placement="top">
+                                    <el-button link type="warning" icon="Operation"
+                                        @click="handleVersion(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="通知设置" placement="top">
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="查看表单" placement="top">
+                                    <el-button link type="success" icon="ZoomIn"
+                                        @click="handleLFTemp(scope.row)"></el-button>
+                                </el-tooltip>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -101,14 +112,26 @@
                         <el-table-column label="操作" fixed="right" width="320" align="center"
                             class-name="small-padding fixed-width">
                             <template #default="scope">
-                                <el-button link type="primary" icon="Promotion"
-                                    @click="handleDIYDesign(scope.row)">设计流程</el-button>
-                                <el-button link type="warning" icon="Operation"
-                                    @click="handleVersion(scope.row)">流程版本</el-button>
-                                <el-button link type="success" icon="ZoomIn"
-                                    @click="handleLFTemp(scope.row)">查看表单</el-button>
-                                <!--<el-button link type="danger" icon="Delete"
-                                    @click="handleDelete(scope.row)">删除</el-button> -->
+                                <el-tooltip content="设计流程" placement="top">
+                                    <el-button link type="primary" icon="Promotion"
+                                        @click="handleDIYDesign(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="流程版本" placement="top">
+                                    <el-button link type="warning" icon="Operation"
+                                        @click="handleVersion(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="通知设置" placement="top">
+                                    <el-button
+                                        v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
+                                        link type="danger" icon="BellFilled"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                    <el-button v-else link icon="BellFilled" type="info"
+                                        @click="handleFlowMsg(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="查看表单" placement="top">
+                                    <el-button link type="success" icon="ZoomIn"
+                                        @click="handleLFTemp(scope.row)"></el-button>
+                                </el-tooltip>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -162,11 +185,14 @@
                 </div>
             </template>
         </el-dialog>
+
+        <set-default-msg v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import SetDefaultMsg from './setDefaultMsg.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
 import { getLowCodeFromCodeData, createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
@@ -177,13 +203,17 @@ const loading = ref(false);
 const showSearch = ref(true);
 const open = ref(false);
 const openForm = ref(false);
-const title = ref("");
 
+const openFlowMsgDialog = ref(false);
+const formMsgData = ref(null);
+
+const title = ref("");
 let lfFormDataConfig = ref(null);
 let loadedComponent = ref(null);
 let componentLoaded = ref(null);
 const activeName = ref('LFTab');
 const total = ref(0);
+
 const data = reactive({
     form: {},
     pageDto: {
@@ -208,7 +238,7 @@ const data = reactive({
         }],
     }
 });
-const { vo, pageDto, taskMgmtVO, form, rules } = toRefs(data);
+const { pageDto, taskMgmtVO, form, rules } = toRefs(data);
 
 // 列显隐信息
 const columns = ref([
@@ -221,6 +251,7 @@ const columns = ref([
 onMounted(async () => {
     getLFPageList();
 })
+
 /** 查询接入业务方列表 */
 function getDIYList() {
     loading.value = true;
@@ -320,6 +351,25 @@ async function handleLFDesign(row) {
     const obj = { path: "/workflow/lf-design", query: param };
     proxy.$tab.openPage(obj);
 }
+/** 选择通知消息设置 */
+async function handleFlowMsg(row) {
+    formMsgData.value = {
+        formCode: row.key,
+        flowType: row.type,
+        processNotices: row.processNotices || [],
+        templateVos: row.templateVos || []
+    };
+    openFlowMsgDialog.value = true;
+}
+/** 刷新列表 */
+const refreshList = (type) => {
+    if (type === 'LF') {
+        getLFPageList();
+    } else {
+        getDIYList();
+    }
+}
+
 /**
  * 跳转到版本管理
  * @param row 

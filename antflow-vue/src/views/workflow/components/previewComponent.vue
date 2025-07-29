@@ -76,7 +76,6 @@ preview(viewConfig.value);
 <style lang="scss" scoped>
 .component {
     background: white !important;
-    padding: 30px !important;
     max-width: 720px !important;
     min-height: 520px !important;
     left: 0 !important;

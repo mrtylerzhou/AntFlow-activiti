@@ -42,6 +42,7 @@ public class ConditionServiceImpl implements ConditionService {
         }
         boolean result = true;
         Integer groupRelation = conditionsConf.getGroupRelation();
+
         for (Map.Entry<Integer, List<Integer>> conditionTypeEntry : groupedConditionParamTypes.entrySet()) {
             Integer currentGroup = conditionTypeEntry.getKey();
             Integer condRelation=conditionsConf.getGroupedCondRelations().get(currentGroup);
@@ -56,7 +57,7 @@ public class ConditionServiceImpl implements ConditionService {
             }
             conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
 
-            int index=0;
+
             for (Integer integer : conditionParamTypeList) {
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
                 if (conditionTypeEnum == null) {
@@ -64,27 +65,28 @@ public class ConditionServiceImpl implements ConditionService {
                     throw new JiMuBizException("logic error,please contact the Administrator");
                 }
                 try {
-                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,index,currentGroup)) {
+                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,currentGroup)) {
                         currentGroupResult = false;
                         //如果是且关系,有一个条件判断为false则终止判断
                         if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
+
                             break;
                         }
                     }else {
                         //如果是或关系,有一个条件判断为true则终止判断
                         currentGroupResult=true;
                         if(condRelation.equals(ConditionRelationShipEnum.OR.getCode())){
+
                             break;
                         }
                     }
                 } catch (JiMuBizException e) {
-                    log.info("condiiton judge business exception:" + e.getMessage());
+                    log.info("condition judge business exception:{}", e.getMessage());
                     throw e;
                 } catch (Exception e) {
                     log.error("conditionJudgeClass instantiate failure", e);
                     throw  e;
                 }
-                index++;
             }
             result = currentGroupResult;
             if(groupRelation==ConditionRelationShipEnum.AND.getCode()&&!result){//条件组之间如果为且关系,如果有一个条件组评估为false,则立刻返回false

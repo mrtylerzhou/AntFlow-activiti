@@ -11,6 +11,7 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.vo.GenericEmployee;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -23,12 +24,14 @@ import java.util.stream.Collectors;
 public class OutSideBpmBaseServiceImpl {
 
     @Autowired
+    @Lazy
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
 
     @Autowired
     private OutSideBpmAdminPersonnelServiceImpl outSideBpmAdminPersonnelService;
 
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
 
 

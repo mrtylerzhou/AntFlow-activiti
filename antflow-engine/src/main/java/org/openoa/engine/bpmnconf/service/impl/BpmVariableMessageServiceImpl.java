@@ -7,18 +7,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jodd.bean.BeanUtil;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
-import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmVariableApproveRemind;
-import org.openoa.base.entity.Employee;
-import org.openoa.base.entity.User;
+import org.openoa.base.entity.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.AfRoleServiceImpl;
@@ -34,6 +28,7 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.*;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
@@ -84,7 +79,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     @Autowired
-    private HistoryService historyService;
+    private ActHiTaskinstServiceImpl hiTaskinstService;
 
     @Autowired
     private TaskService taskService;
@@ -182,13 +177,23 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         .builder()
                         .variableId(variableId)
                         .elementId(elementId)
-                        .messageType(messageType)
+                        .messageType(getMessageSendType(o.getEvent(),messageType))
                         .eventType(o.getEvent())
                         .content(JSON.toJSONString(o))
                         .build())
                 .collect(Collectors.toList());
     }
 
+    private Integer getMessageSendType(Integer event,Integer defaultMessageSendType){
+        if(event==null){
+            return defaultMessageSendType;
+        }
+        EventTypeEnum eventTypeEnum = EventTypeEnum.getByCode(event);
+        if(eventTypeEnum==null){
+            return defaultMessageSendType;
+        }
+        return eventTypeEnum.getIsInNode()?2:1;
+    }
     /**
 
      * check whether to to send messages by template
@@ -202,10 +207,19 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (ObjectUtils.isEmpty(bpmVariable)) {
             return false;
         }
-        return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                .eq("variable_id", bpmVariable.getId())
-                .eq("message_type", 1)
-                .eq("event_type", vo.getEventType())) > 0;
+        if (vo.getMessageType()!=null&& vo.getMessageType()== 2) {//in node messages
+            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
+                    .eq("variable_id", bpmVariable.getId())
+                    //.eq("element_id", vo.getElementId())
+                    .eq("message_type", 2)
+                    .eq("event_type", vo.getEventType())) > 0;
+        } else if (vo.getMessageType()!=null&&vo.getMessageType()==1) {//out of node messages
+            return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
+                    .eq("variable_id", bpmVariable.getId())
+                    .eq("message_type", 1)
+                    .eq("event_type", vo.getEventType())) > 0;
+        }
+        return false;
     }
 
     /**
@@ -273,33 +287,34 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
 
 
         //call activiti's history service to query history process instance
-        HistoricProcessInstance processInstance =historyService.createHistoricProcessInstanceQuery().processInstanceId(businessProcess.getProcInstId()).singleResult();
 
-        //todo to be optimized
+
+        String procInstId = businessProcess.getProcInstId();
+        String createUser = businessProcess.getCreateUser();
+        Date createTime = businessProcess.getCreateTime();
+
         //set process instance id
-        vo.setProcessInsId(processInstance.getId());
+        vo.setProcessInsId(procInstId);
 
         //set start user id
-        vo.setStartUser(processInstance.getStartUserId());
+        vo.setStartUser(createUser);
 
         //get process's start time
-        Date processStartTime = processInstance.getStartTime();
 
         //set apply date
-        vo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(processStartTime));
+        vo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(createTime));
 
         //set apply time
-        vo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(processStartTime));
+        vo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(createTime));
 
 
         //get a list of history tasks
-        List<HistoricTaskInstance> hisTask = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstance.getId()).list();
-
+        List<ActHiTaskinst> hisTask = hiTaskinstService.queryRecordsByProcInstId(procInstId);
 
         //set already approved employee id
         vo.setApproveds(hisTask
                 .stream()
-                .map(HistoricTaskInstance::getAssignee)
+                .map(ActHiTaskinst::getAssignee)
                 .filter(assignee -> !StringUtils.isEmpty(assignee))
                 .distinct()
                 .collect(Collectors.toList()));
@@ -315,7 +330,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         //if the event type is in node event, then get the node info from activiti process engine
         if (vo.getEventTypeEnum().getIsInNode()) {
             //get current task list by process instance id
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
             if (!ObjectUtils.isEmpty(tasks)) {
 
                 //if node is empty then get from task's definition
@@ -336,7 +351,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                 }
 
                 //get process's next node info via activiti's pvm
-                PvmActivity nextNodePvmActivity = processConstants.getNextNodePvmActivity(processInstance.getId());
+                PvmActivity nextNodePvmActivity = processConstants.getNextNodePvmActivity(procInstId);
 
                 //if next node is not empty and next node is not end event,then process it
                 if (!ObjectUtils.isEmpty(nextNodePvmActivity)) {
@@ -442,7 +457,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
             List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
             if (!ObjectUtils.isEmpty(tasks)) {
-                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).collect(Collectors.toList()));
+                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
             }
         }
 

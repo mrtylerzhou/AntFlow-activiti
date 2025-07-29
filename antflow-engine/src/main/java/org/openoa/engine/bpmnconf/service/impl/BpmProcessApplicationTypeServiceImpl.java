@@ -12,6 +12,7 @@ import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,6 +35,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
     @Autowired
     private BpmProcessCategoryServiceImpl bpmProcessCategoryService;
     @Autowired
+    @Lazy
     private BpmProcessAppApplicationServiceImpl processAppApplicationService;
     @Autowired
     private BpmProcessAppApplicationMapper bpmProcessAppApplicationMapper;

@@ -1,7 +1,7 @@
 <template>
     <!-- 查看消息模板对话框 -->
     <el-dialog title="查看消息模板" v-model="dialogVisible" width="650px" append-to-body>
-        <el-form :model="templateForm" ref="templateRef" label-width="130px" label-position="top"
+        <el-form :model="templateForm" ref="templateRef" :disabled="true" label-width="130px" label-position="top"
             style="margin: 0 20px;">
             <el-row>
                 <el-col :span="24">

@@ -1,12 +1,13 @@
 <template>
     <div>
-        <el-form ref="templateRef" label-width="130px" label-position="top" style="margin: 0 20px;">
+        <el-form ref="templateRef" label-width="130px" label-position="top"
+            style="margin-bottom: 10px;border:1px solid #bfcbd9;padding:20px;">
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="通知类型" prop="checkedMsgSendTypeList">
                         <el-checkbox-group v-model="checkedMsgSendTypeList">
-                            <el-checkbox style="margin: 5px;" v-for="(item, index) in notifyTypeList" :value="item.id"
-                                :key="item.id" border>
+                            <el-checkbox style="margin: 5px;" v-for="(item, index) in messageSendTypeList"
+                                :value="item.id" :key="item.id" border>
                                 {{ item.name }}
                                 <msgIcon v-model:iconValue="item.id" viewValue="primary" />
                             </el-checkbox>
@@ -81,6 +82,7 @@
                 </el-col>
             </el-row>
         </el-form>
+        <el-button type="primary" plain icon="Refresh" @click="resetForm">重置通知</el-button>
         <flow-msg-templete v-model:visible="dialogMsgVisible" v-model:checkedData="selectValues"
             @change="saveFlowMsgTempDialog" />
         <select-user-dialog v-model:visible="chooseUserVisible" :data="templateForm.empList" @change="sureUserDialog" />
@@ -97,28 +99,11 @@ import msgViewDialog from "./msgViewDialog.vue";
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../../dialog/selectRoleDialog.vue';
 import msgIcon from '../../components/msgIcon.vue';
+import { messageSendTypeList, noticeUserList } from '@/utils/antflow/const';
 const { proxy } = getCurrentInstance();
 const notifyTypeList = ref([]);
 const eventOptions = ref([]);
-const noticeUserList = ref([{
-    value: "1",
-    label: "申请人"
-}, {
-    value: "2",
-    label: "所有已审批人"
-}, {
-    value: "3",
-    label: "当前节点审批人"
-}, {
-    value: "4",
-    label: "被转发人"
-}, {
-    value: "5",
-    label: "指定人员"
-}, {
-    value: "6",
-    label: "指定角色"
-}]);
+
 
 const dialogMsgVisible = ref(false);
 const dialogMsgViewVisible = ref(false);
@@ -170,7 +155,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-    getAllNoticeTypesList();
+    //getAllNoticeTypesList();
     getProcessEventsList();
 })
 
@@ -222,6 +207,7 @@ const changeUserType = (val) => {
 const saveFlowMsgTempDialog = (data) => {
     selectValues.value = data;
     templateForm.value.templateId = data[0]?.id;
+    templateForm.value.templateName = data[0]?.name;
 }
 /**
  * 选择人员
@@ -264,6 +250,21 @@ const handleRemoveRole = (data) => {
 
 const handleReverwTemplate = (id) => {
     getSelectTemplateById(id);
+}
+
+const resetForm = () => {
+    checkedMsgSendTypeList.value = [];
+    selectValues.value = [];
+    noticeUserType.value = 1;
+    templateForm.value = {
+        nodeId: undefined,
+        messageSendTypeList: [],
+        event: undefined,
+        informIdList: [],
+        empList: [],
+        roleList: [],
+        templateId: undefined
+    };
 } 
 </script>
 

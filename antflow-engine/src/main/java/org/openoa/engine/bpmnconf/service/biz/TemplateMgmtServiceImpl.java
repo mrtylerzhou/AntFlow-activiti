@@ -17,9 +17,11 @@ import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessServiceFactory;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
+import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class TemplateMgmtServiceImpl extends ProcessServiceFactory {
     public final static String PROCESS_TEMPLATE = "process201804161604";
     @Autowired
     private BpmVerifyInfoMapper bpmVerifyInfoMapper;
+    @Autowired
+    private ActHiTaskinstServiceImpl actHiTaskinstService;
 
     /**
      * deployment a process,for compatibility purpose,it is highly recommended to use thei newer one
@@ -287,13 +291,11 @@ public class TemplateMgmtServiceImpl extends ProcessServiceFactory {
     public void rejectNode(String taskId, String taskNode) {
         // store task node
         String destTaskkey = taskNode;
-        // HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+
         Map<String, Object> variables;
         // query current task
-        HistoricTaskInstance currTask = historyService
-                .createHistoricTaskInstanceQuery().taskId(taskId)
-                .singleResult();
-        ExecutionEntity entity = (ExecutionEntity) runtimeService.createExecutionQuery().executionId(currTask.getProcessInstanceId()).singleResult();
+        ActHiTaskinst currTask = actHiTaskinstService.queryByTaskId(taskId);
+        ExecutionEntity entity = (ExecutionEntity) runtimeService.createExecutionQuery().executionId(currTask.getProcInstId()).singleResult();
         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                 .getDeployedProcessDefinition(entity.getProcessDefinitionId());
         variables = entity.getProcessVariables();
@@ -321,7 +323,7 @@ public class TemplateMgmtServiceImpl extends ProcessServiceFactory {
             for (Task task : list) {
                 //variables.put(Contants.START_USER,taskService.getVariable(task.getId(),"startUser"));
                 taskService.complete(task.getId(), variables);
-                historyService.deleteHistoricTaskInstance(task.getId());
+                actHiTaskinstService.deleteById(task.getId());
             }
 
             for (TransitionImpl transitionImpl : transitionImpls) {

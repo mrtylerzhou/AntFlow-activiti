@@ -11,12 +11,13 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -35,6 +36,7 @@ public class FormFactory implements ApplicationContextAware {
     @Autowired
     private IAdaptorFactory adaptorFactory;
     @Autowired
+    @Lazy
     private OutSideBpmAccessBusinessServiceImpl outSideBpmAccessBusinessService;
     private ApplicationContext applicationContext;
 
@@ -87,7 +89,8 @@ public class FormFactory implements ApplicationContextAware {
     private Class<?> getFormTClass(String key) {
         FormOperationAdaptor bean = getFormAdaptor(BusinessDataVo.builder().formCode(key).build());
         if (!ObjectUtils.isEmpty(bean)) {
-            Type[] interfacesTypes = bean.getClass().getGenericInterfaces();
+
+            Type[] interfacesTypes = ClassUtils.getUserClass(bean).getGenericInterfaces();
             ParameterizedType p = (ParameterizedType) interfacesTypes[0];
             Class<?> cls = (Class) p.getActualTypeArguments()[0];
             if (!ObjectUtils.isEmpty(cls)) {

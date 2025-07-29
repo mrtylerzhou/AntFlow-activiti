@@ -6,7 +6,6 @@ import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.springframework.stereotype.Service;
 
-import javax.lang.model.util.ElementScanner6;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -14,7 +13,7 @@ import java.math.RoundingMode;
 @Slf4j
 public class LFNumberFormatJudge extends AbstractLFConditionJudge{
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int group) {
 
        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,(a,b,c)->{
            String[] split = a.toString().split(",");
@@ -29,7 +28,6 @@ public class LFNumberFormatJudge extends AbstractLFConditionJudge{
            }
            BigDecimal valueinDbBig2=null;
            if (split.length>1){
-               valueinDbBig2 = null;
                if(isBooleanValue){
                    boolean parsedBoolean = Boolean.parseBoolean(split[1]);
                    valueinDbBig2=parsedBoolean?new BigDecimal("1"):new BigDecimal("0");
@@ -45,7 +43,7 @@ public class LFNumberFormatJudge extends AbstractLFConditionJudge{
                userValue= NumberUtils.toScaledBigDecimal(b.toString(), 2, RoundingMode.HALF_UP);;
            }
            return super.compareJudge(valueinDbBig1,valueinDbBig2,userValue,c);
-       },index,group);
+       },group);
     }
 
 }

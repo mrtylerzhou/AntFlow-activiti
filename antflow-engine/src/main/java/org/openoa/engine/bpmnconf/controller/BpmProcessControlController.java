@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RequestMapping("/taskMgmt")
 @RestController
-public class BpmProcessDeptController {
+public class BpmProcessControlController {
 
     @Autowired
     private BpmProcessDeptServiceImpl processDeptService;
