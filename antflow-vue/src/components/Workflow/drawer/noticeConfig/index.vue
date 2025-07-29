@@ -151,7 +151,13 @@ watchEffect(() => {
             id: item
         }
     });
-    emits('changeFlowMsgSet', templateForm.value)
+
+    const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
+    if (proxy.hasEmptyValue(templateForm.value, propsToCheck)) {
+        emits('changeFlowMsgSet')
+    } else {
+        emits('changeFlowMsgSet', templateForm.value)
+    }
 })
 
 onMounted(() => {

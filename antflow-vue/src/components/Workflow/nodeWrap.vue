@@ -55,7 +55,7 @@
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
-                                    }}</span>
+                                        }}</span>
                                     <span class="priority-title" @click="setNodeInfo(item.priorityLevel)">优先级{{
                                         item.priorityLevel }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
@@ -100,7 +100,7 @@
                                         @blur="blurEvent(index)" @focus="$event.currentTarget.select()" v-focus
                                         v-model="item.nodeName" />
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
-                                    }}</span>
+                                        }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                     <i v-if="item.templateVos && item.templateVos.length > 0"
                                         class="anticon anticon-notice notice"></i>
@@ -109,7 +109,7 @@
                                 <div class="content" @click="setNodeInfo(index)">
                                     <div class="text">
                                         <span class="placeholder" v-if="!item.nodeDisplayName">请选择{{ defaultText
-                                        }}</span>
+                                            }}</span>
                                         {{ item.nodeDisplayName }}
                                     </div>
                                     <i class="anticon anticon-right arrow"></i>
@@ -182,6 +182,7 @@ let defaultText = computed(() => {
 });
 
 let noticeIconShow = computed(() => {
+    console.log('props===========', JSON.stringify(props.nodeConfig.templateVos))
     return !proxy.isEmptyArray(props.nodeConfig.templateVos);
 });
 
