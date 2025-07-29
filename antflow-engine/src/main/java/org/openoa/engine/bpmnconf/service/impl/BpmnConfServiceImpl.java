@@ -144,6 +144,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
             }
+	        if (Objects.equals(bpmnNodeVo.getCcSelfSelectFlag(), 1)) {
+		        bpmnNodeVo.setNodeProperty(NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
+	        }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
 
