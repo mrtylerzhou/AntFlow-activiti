@@ -35,7 +35,11 @@ public class BpmnRemoveCopyFormatImpl extends AbstractBpmnRemoveFormat {
         Supplier<Boolean> supplier = new Supplier<Boolean>() {
             @Override
             public Boolean get() {
-                return vo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_COPY.getCode());
+               if(bpmnStartConditions.isPreview()){
+                   return false;
+               }else{
+                   return vo.getNodeType().equals(NodeTypeEnum.NODE_TYPE_COPY.getCode());
+               }
             }
         };
         if(supplier.get()){

@@ -417,7 +417,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         }
 
 
-        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_ORIAL_TREATOR.getCode());
+        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_OPERATOR.getCode());
 
         doUserMsgSend(activitiBpmMsgVo, content);
     }
@@ -439,7 +439,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         }
 
 
-        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_NOW_TREATOR.getCode());
+        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_NOW_OPERATOR.getCode());
 
         doUserMsgSend(activitiBpmMsgVo, content);
     }
@@ -543,7 +543,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         } else {
             content = bpmnConfNoticeTemplateDetail.getNoticeTemplateDetail();
         }
-        String result = replceTemplateDetail(activitiBpmMsgVo, content);
+        String result = replaceTemplateDetail(activitiBpmMsgVo, content);
         log.info("转换后数据content:{}", result);
         return result;
     }
@@ -554,7 +554,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param content
      * @return
      */
-    public String replceTemplateDetail(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
+    public String replaceTemplateDetail(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
         List<NoticeReplaceEnum> noticeReplaceEnums = Lists.newArrayList();
         for (NoticeReplaceEnum noticeReplaceEnum : NoticeReplaceEnum.values()) {
             if (content.contains("{" + noticeReplaceEnum.getDesc() + "}")) {

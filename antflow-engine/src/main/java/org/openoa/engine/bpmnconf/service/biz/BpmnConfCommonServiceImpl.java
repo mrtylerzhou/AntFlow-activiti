@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.ProxyClient;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.exception.JiMuBizException;
@@ -26,18 +25,15 @@ import org.openoa.engine.bpmnconf.adp.formatter.BpmnRemoveConfFormatFactory;
 import org.openoa.engine.bpmnconf.adp.formatter.BpmnStartFormatFactory;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.BpmnNodeParamTypeEnum.*;
