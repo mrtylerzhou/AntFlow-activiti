@@ -28,6 +28,7 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.*;
+import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
@@ -176,13 +177,23 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         .builder()
                         .variableId(variableId)
                         .elementId(elementId)
-                        .messageType(messageType)
+                        .messageType(getMessageSendType(o.getEvent(),messageType))
                         .eventType(o.getEvent())
                         .content(JSON.toJSONString(o))
                         .build())
                 .collect(Collectors.toList());
     }
 
+    private Integer getMessageSendType(Integer event,Integer defaultMessageSendType){
+        if(event==null){
+            return defaultMessageSendType;
+        }
+        EventTypeEnum eventTypeEnum = EventTypeEnum.getByCode(event);
+        if(eventTypeEnum==null){
+            return defaultMessageSendType;
+        }
+        return eventTypeEnum.getIsInNode()?2:1;
+    }
     /**
 
      * check whether to to send messages by template
@@ -199,7 +210,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         if (vo.getMessageType()!=null&& vo.getMessageType()== 2) {//in node messages
             return this.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
                     .eq("variable_id", bpmVariable.getId())
-                    .eq("element_id", vo.getElementId())
+                    //.eq("element_id", vo.getElementId())
                     .eq("message_type", 2)
                     .eq("event_type", vo.getEventType())) > 0;
         } else if (vo.getMessageType()!=null&&vo.getMessageType()==1) {//out of node messages
