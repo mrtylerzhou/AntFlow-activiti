@@ -238,7 +238,11 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                         for (Task otherNewTask : otherNewTasks) {
                             Map<String,Object> varMap=new HashMap<>();
                             varMap.put(StringConstants.TASK_ASSIGNEE_NAME, otherNewTask.getAssigneeName());
-                            taskService.complete(otherNewTask.getId(),varMap);
+                            try {
+                                taskService.complete(otherNewTask.getId(),varMap);
+                            }catch (Exception e){
+
+                            }
                         }
                     }
                 }
