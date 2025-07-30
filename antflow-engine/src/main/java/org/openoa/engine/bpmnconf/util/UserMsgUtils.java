@@ -7,21 +7,24 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.entity.UserMessage;
+import org.openoa.base.interf.ProcessNoticeAdaptor;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.MessageServiceImpl;
+import org.openoa.engine.factory.AdaptorFactory;
+import org.openoa.engine.factory.IAdaptorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.MessageSendTypeEnum.*;
 
 public class UserMsgUtils {
+    private static final Logger log = LoggerFactory.getLogger(UserMsgUtils.class);
     //=================================================send message(single) Start===========================================
 
     /**
@@ -238,24 +241,29 @@ public class UserMsgUtils {
     private static void doSendMessageBatch(List<UserMsgBatchVo> userMsgBatchVos, MessageServiceImpl messageService) {
 
 
+        Map<MessageSendTypeEnum, List<UserMsgVo>> grouped = userMsgBatchVos.stream()
+                .flatMap(batch -> batch.messageSendTypeEnums.stream()
+                        .map(type -> new AbstractMap.SimpleEntry<>(type, batch.userMsgVo)))
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+                ));
 
-        //formatting messages
-        Multimap<MessageSendTypeEnum, UserMsgVo> almMap = formatUserMsgBatchVos(userMsgBatchVos);
-
-        //send emails
-        if (almMap.containsKey(MAIL)) {
-            sendMailBatch(messageService, almMap);
+        for (Map.Entry<MessageSendTypeEnum, List<UserMsgVo>> messageSendTypeEnumListEntry : grouped.entrySet()) {
+            MessageSendTypeEnum messageSendTypeEnum = messageSendTypeEnumListEntry.getKey();
+            if(messageSendTypeEnum==null){
+                continue;
+            }
+            List<UserMsgVo> userMsgVos = messageSendTypeEnumListEntry.getValue();
+            IAdaptorFactory adaptorFactory = SpringBeanUtils.getBean(IAdaptorFactory.class);
+            ProcessNoticeAdaptor processNoticeAdaptor = adaptorFactory.getProcessNoticeAdaptor(messageSendTypeEnum);
+            if(processNoticeAdaptor!=null){
+                processNoticeAdaptor.sendMessageBatchByType(userMsgVos);
+            }else{
+                log.warn("未实现的消息发送策略!{}",messageSendTypeEnum);
+            }
         }
 
-        //send text messages
-        if (almMap.containsKey(MESSAGE)) {
-            sendSmsBatch(messageService, almMap);
-        }
-
-        //send app push
-        if (almMap.containsKey(PUSH)) {
-            sendAppPushBatch(messageService, almMap);
-        }
     }
 
     /**
@@ -276,11 +284,10 @@ public class UserMsgUtils {
      * send app push in batch
      *
      * @param messageService
-     * @param almMap
      */
-    private static void sendAppPushBatch(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
+    private static void sendAppPushBatch(MessageServiceImpl messageService, List<UserMsgVo> userMsgVos) {
         Map<String, BaseMsgInfo> map = Maps.newHashMap();
-        getUserMsgVos(almMap, PUSH).forEach(o -> {
+        userMsgVos.forEach(o -> {
             map.put(o.getUserId(), buildBaseMsgInfo(o));
         });
         messageService.sendAppPushBatch(map);
@@ -290,11 +297,10 @@ public class UserMsgUtils {
      * send text message in batch
      *
      * @param messageService
-     * @param almMap
      */
-    private static void sendSmsBatch(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
+    private static void sendSmsBatch(MessageServiceImpl messageService,  List<UserMsgVo> userMsgVos) {
         Map<String, MessageInfo> map = Maps.newHashMap();
-        getUserMsgVos(almMap, MESSAGE).forEach(o -> {
+        userMsgVos.forEach(o -> {
             map.put(o.getUserId(), buildMessageInfo(o));
         });
         messageService.sendSmsBatch(map);
@@ -304,11 +310,10 @@ public class UserMsgUtils {
      * send emails in batch
      *
      * @param messageService
-     * @param almMap
      */
-    private static void sendMailBatch(MessageServiceImpl messageService, Multimap<MessageSendTypeEnum, UserMsgVo> almMap) {
+    private static void sendMailBatch(MessageServiceImpl messageService, List<UserMsgVo> userMsgVos) {
         Map<String, MailInfo> map = Maps.newHashMap();
-        getUserMsgVos(almMap, MAIL).forEach(o -> {
+        userMsgVos.forEach(o -> {
             map.put(o.getUserId(), buildMailInfo(o));
         });
         messageService.sendMailBatch(map);
@@ -383,7 +388,7 @@ public class UserMsgUtils {
      * @param userMsgVo
      * @return
      */
-    private static BaseMsgInfo buildBaseMsgInfo(UserMsgVo userMsgVo) {
+    public static BaseMsgInfo buildBaseMsgInfo(UserMsgVo userMsgVo) {
         return BaseMsgInfo
                 .builder()
                 .msgTitle(userMsgVo.getTitle())
@@ -398,7 +403,7 @@ public class UserMsgUtils {
      * @param userMsgVo
      * @return
      */
-    private static MessageInfo buildMessageInfo(UserMsgVo userMsgVo) {
+    public static MessageInfo buildMessageInfo(UserMsgVo userMsgVo) {
         return MessageInfo
                 .builder()
                 .receiver(userMsgVo.getMobile())
@@ -412,7 +417,7 @@ public class UserMsgUtils {
      * @param userMsgVo
      * @return
      */
-    private static MailInfo buildMailInfo(UserMsgVo userMsgVo) {
+    public static MailInfo buildMailInfo(UserMsgVo userMsgVo) {
         return MailInfo
                 .builder()
                 .receiver(userMsgVo.getEmail())

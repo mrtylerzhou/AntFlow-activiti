@@ -28,12 +28,12 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.confentity.*;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
 import org.openoa.engine.bpmnconf.util.UserMsgUtils;
-import org.openoa.engine.vo.BpmVariableMessageVo;
+import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -568,30 +568,11 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
             if (Objects.isNull(messageSendTypeEnum)) {
                 continue;
             }
-            switch (messageSendTypeEnum) {
-                case MAIL:
-
-                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
-                            .stream()
-                            .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
-                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MAIL))
-                            .collect(Collectors.toList()));
-                    break;
-                case MESSAGE:
-                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
-                            .stream()
-                            .map(o -> getUserMsgBatchVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
-                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.MESSAGE))
-                            .collect(Collectors.toList()));
-                    break;
-                case PUSH:
-                    UserMsgUtils.sendMessageBatchNoUserMessage(employees
-                            .stream()
-                            .map(o -> getUserMsgBatchVo(o, StringUtils.EMPTY, informationTemplateVo.getNoteContent(),
-                                    vo.getTaskId(), emailUrl, appUrl, MessageSendTypeEnum.PUSH))
-                            .collect(Collectors.toList()));
-                    break;
-            }
+            UserMsgUtils.sendMessageBatchNoUserMessage(employees
+                    .stream()
+                    .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
+                            vo.getTaskId(), emailUrl, appUrl,messageSendTypeEnum))
+                    .collect(Collectors.toList()));
         }
     }
 

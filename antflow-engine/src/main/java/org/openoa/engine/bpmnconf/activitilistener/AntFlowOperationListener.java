@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;

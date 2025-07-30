@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.constant.enums.EventTypeEnum;
 
 import java.util.Date;
 
@@ -73,7 +74,7 @@ public class InformationTemplate {
     private Integer status;
 
     /**
-     * @see org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum
+     * @see EventTypeEnum
      */
     private Integer event;
     @TableField("event_name")

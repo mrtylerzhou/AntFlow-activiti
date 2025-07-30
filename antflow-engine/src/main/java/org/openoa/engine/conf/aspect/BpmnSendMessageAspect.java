@@ -1,6 +1,5 @@
 package org.openoa.engine.conf.aspect;
 
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,18 +9,16 @@ import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.vo.BpmVariableMessageVo;
+import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -29,7 +26,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 

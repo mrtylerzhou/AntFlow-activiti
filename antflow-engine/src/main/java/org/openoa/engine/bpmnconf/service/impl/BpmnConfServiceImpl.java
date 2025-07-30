@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,7 +19,7 @@ import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
-import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_CONDITIONS;
 
 
 /**

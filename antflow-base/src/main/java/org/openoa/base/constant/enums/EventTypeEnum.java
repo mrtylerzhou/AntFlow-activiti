@@ -1,9 +1,7 @@
-package org.openoa.engine.bpmnconf.constant.enus;
+package org.openoa.base.constant.enums;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.openoa.base.constant.enums.InformEnum;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
 
 import java.util.Collections;
 import java.util.List;
