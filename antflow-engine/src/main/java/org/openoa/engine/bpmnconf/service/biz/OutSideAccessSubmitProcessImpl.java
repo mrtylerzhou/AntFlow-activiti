@@ -157,6 +157,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .description(processTitlePrefix + "-" + businessDataVo.getBpmnName())
                 .version(businessDataVo.getBpmnCode())
                 .isOutSideProcess(1)
+                .isLowCodeFlow(businessDataVo.getIsLowCodeFlow())
                 //.approvalUserId(businessDataVo.getEmplId())
                 .build();
         //save business process info
