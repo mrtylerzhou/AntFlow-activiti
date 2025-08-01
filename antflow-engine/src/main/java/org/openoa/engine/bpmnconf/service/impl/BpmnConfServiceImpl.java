@@ -26,7 +26,6 @@ import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.utils.MultiTenantIdUtil;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,9 +262,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      */
     public BpmnConfVo detail(String bpmnCode) {
         BpmnConf bpmnConf = this.getBaseMapper().selectOne(new LambdaQueryWrapper<BpmnConf>()
-                .eq(BpmnConf::getBpmnCode, bpmnCode)
-                .eq(!StringUtils.isEmpty(MultiTenantIdUtil.getCurrentTenantId()), BpmnConf::getTenantId,MultiTenantIdUtil.getCurrentTenantId())
-        );
+                .eq(BpmnConf::getBpmnCode, bpmnCode));
         return getBpmnConfVo(bpmnConf);
     }
 

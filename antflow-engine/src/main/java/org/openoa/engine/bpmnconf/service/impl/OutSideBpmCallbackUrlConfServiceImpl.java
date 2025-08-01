@@ -15,13 +15,10 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper;
-import org.openoa.engine.utils.MultiTenantIdUtil;
-import org.openoa.engine.vo.GenericEmployee;
-import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
@@ -226,7 +223,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
                 .selectList(new LambdaQueryWrapper<OutSideBpmCallbackUrlConf>()
                         .eq(OutSideBpmCallbackUrlConf::getBusinessPartyId,businessPartyId)
                         .eq(OutSideBpmCallbackUrlConf::getStatus,1)
-                        .eq(!StringUtils.isEmpty(MultiTenantIdUtil.getCurrentTenantId()), OutSideBpmCallbackUrlConf::getTenantId,MultiTenantIdUtil.getCurrentTenantId())
+                        .eq(!StringUtils.isEmpty(MultiTenantUtil.getCurrentTenantId()), OutSideBpmCallbackUrlConf::getTenantId, MultiTenantUtil.getCurrentTenantId())
                 )
                 .stream()
                 .findFirst()
