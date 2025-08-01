@@ -1,6 +1,6 @@
 // ObjectUtils.isObjectChanged(tar1, tar2)
 // ObjectUtils.isObjectChangedSimple(tar1, tar2)
-//import {  ObjectUtils } from '@/utils/ObjectUtils'
+//import {  ObjectUtils } from '@/utils/antflow/ObjectUtils'
 export const isEmpty = (data) =>
   data === null ||
   data === undefined ||
@@ -28,6 +28,17 @@ export const hasEmptyValue = (obj, props) => {
       return isEmpty(value);
     });
   }
+};
+// 判断字段是否为“真”
+export const isTrue = (val) => {
+  return (
+    val === true ||
+    val === "true" ||
+    val === "True" ||
+    val === "TRUE" ||
+    val === 1 ||
+    val === "1"
+  );
 };
 /**
  * 字符串中间部分隐藏

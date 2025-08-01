@@ -34,6 +34,7 @@ import repulseDialog from './repulseDialog.vue';
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
@@ -117,7 +118,7 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
+                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接 
                         approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
@@ -205,7 +206,7 @@ const preview = async (viewData) => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
             try {
-                if (viewData.isLowCodeFlow == true || viewData.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
+                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接 
                     lfFormDataConfig.value = response.data.lfFormData;
                     lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                     lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
