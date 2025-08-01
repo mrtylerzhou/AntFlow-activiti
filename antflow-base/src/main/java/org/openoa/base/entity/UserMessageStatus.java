@@ -78,4 +78,7 @@ public class UserMessageStatus {
     private String createUser;
     @TableField("update_user")
     private String updateUser;
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

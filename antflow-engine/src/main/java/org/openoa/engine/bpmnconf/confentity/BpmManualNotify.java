@@ -44,5 +44,13 @@ public class BpmManualNotify {
     private Date createTime;
     @TableField("update_time")
     private Date updateTime;
+    /**
+
+     * 0 for not deleted and 1 for deleted
+     */
+    @TableField("is_del")
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 
 }

@@ -53,8 +53,9 @@ public class BpmnNodeLfFormdataFieldControl implements Serializable {
      */  
     @TableLogic  
     @TableField("is_del")  
-    private Integer isDel;  
-  
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     /**  
      * 创建人  
      */  

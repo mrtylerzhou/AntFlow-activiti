@@ -30,6 +30,8 @@ public class BpmnNodeLabel {
 
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 
     @TableField("create_user")
     private String createUser;

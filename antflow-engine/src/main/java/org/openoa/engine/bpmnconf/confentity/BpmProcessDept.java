@@ -80,6 +80,8 @@ public class BpmProcessDept {
      */
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     /**
      * is for all
      */

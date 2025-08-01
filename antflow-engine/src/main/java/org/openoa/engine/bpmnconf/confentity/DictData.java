@@ -29,6 +29,8 @@ public class DictData {
     private String isDefault;
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     @TableField("create_time")
     private Date createTime;
     @TableField("create_user")

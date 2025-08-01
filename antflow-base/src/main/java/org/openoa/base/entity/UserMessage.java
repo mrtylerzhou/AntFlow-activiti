@@ -67,6 +67,8 @@ public class UserMessage {
      */
     @TableField("is_del")
     private Boolean del;
+    @TableField("tenant_id")
+    private String tenantId;
     @TableField("create_time")
     private Date createTime;
     @TableField("update_time")

@@ -13,6 +13,7 @@ import java.util.Date;
 
 /**
  * process permission
+ *
  * @author tylerZhou
  * @since 0.5
  */
@@ -24,8 +25,8 @@ import java.util.Date;
 public class BpmProcessPermissions {
 
 
-  @TableId(value = "id", type = IdType.AUTO)
-  private Long id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
     /**
      * user id
      */
@@ -47,7 +48,7 @@ public class BpmProcessPermissions {
     @TableField("create_user")
     private String createUser;
     /**
-     *create time
+     * create time
      */
     @TableField("create_time")
     private Date createTime;
@@ -62,5 +63,8 @@ public class BpmProcessPermissions {
      */
     @TableField("office_id")
     private Long officeId;
-
+    @TableField("is_del")
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

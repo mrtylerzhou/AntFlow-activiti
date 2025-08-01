@@ -91,7 +91,10 @@ public class OpLog{
      * 操作备注
      */
     private String remark;
-
+    @TableField("is_del")
+    private Boolean del;
+    @TableField("tenant_id")
+    private String tenantId;
     @Tolerate
     public OpLog() {
     }

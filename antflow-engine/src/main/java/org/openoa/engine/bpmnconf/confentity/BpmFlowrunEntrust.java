@@ -62,4 +62,9 @@ public class BpmFlowrunEntrust {
      */
     @TableField("is_view")
     private Integer isView;
+
+    @TableField("is_del")
+    public Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

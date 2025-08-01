@@ -43,5 +43,7 @@ public class BpmTaskconfig {
      */
     @TableField("number")
     private Integer number;
-
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

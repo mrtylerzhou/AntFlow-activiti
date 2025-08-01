@@ -49,6 +49,8 @@ public class BpmnConfNoticeTemplateDetail {
      */
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     /**
      * create user
      */

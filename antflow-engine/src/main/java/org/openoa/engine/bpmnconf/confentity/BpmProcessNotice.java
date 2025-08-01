@@ -28,5 +28,8 @@ public class BpmProcessNotice {
      */
     @TableField("process_key")
     private String processKey;
-
+    @TableField("is_del")
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

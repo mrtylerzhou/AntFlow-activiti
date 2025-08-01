@@ -58,6 +58,8 @@ public class OutSideBpmConditionsTemplate{
      */
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     /**
      * as its name says
      */

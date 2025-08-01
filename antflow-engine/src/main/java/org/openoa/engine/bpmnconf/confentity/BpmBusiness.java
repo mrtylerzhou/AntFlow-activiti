@@ -58,4 +58,6 @@ public class BpmBusiness {
 
     @TableField("is_del")
     public Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
 }

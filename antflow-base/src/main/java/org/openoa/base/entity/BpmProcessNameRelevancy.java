@@ -39,6 +39,8 @@ public class BpmProcessNameRelevancy {
     private String processKey;
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     @TableField("create_time")
     private Date createTime;
 
