@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -312,10 +313,11 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     public BpmProcessAppApplicationVo getApplicationUrl(String businessCode, String processKey) {
         if (!StringUtil.isEmpty(businessCode) &&!StringUtil.isEmpty(processKey)) {
             List<BpmProcessAppApplication> list = this.list(
-                    new QueryWrapper<BpmProcessAppApplication>()
-                            .eq("business_code", businessCode)
-                            .eq("process_key", processKey)
-                            .eq("is_del", 0));
+                    new LambdaQueryWrapper<BpmProcessAppApplication>()
+                            .eq(BpmProcessAppApplication::getBusinessCode,businessCode)
+                            .eq(BpmProcessAppApplication::getProcessKey,processKey)
+                            .eq(BpmProcessAppApplication::getIsDel,0));
+
             if (!CollectionUtils.isEmpty(list)) {
                 BpmProcessAppApplication application = list.get(0);
                 BpmProcessAppApplicationVo vo = new BpmProcessAppApplicationVo();

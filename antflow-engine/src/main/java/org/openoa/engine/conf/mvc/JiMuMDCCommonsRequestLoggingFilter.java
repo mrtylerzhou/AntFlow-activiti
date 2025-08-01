@@ -1,10 +1,12 @@
 package org.openoa.engine.conf.mvc;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.MDCLogUtil;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.engine.conf.engineconfig.MultiTenantIdHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
@@ -26,7 +28,8 @@ import java.nio.charset.StandardCharsets;
 public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFilter {
     @Autowired
     private AfUserService userService;
-
+    @Autowired
+    private MultiTenantIdHolder tenantIdHolder;
     @Override
     protected boolean shouldLog(HttpServletRequest request) {
         return true;
@@ -38,6 +41,13 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
         if (!request.getMethod().equals("OPTIONS")) {
             String userId = request.getHeader("userId");
             String userName = request.getHeader("userName");
+            //tenantId是单库多租户,即靠tenantId字段来区分不同租户
+            //tenantUser是分库多租户,每个租户一个数据库
+            String tenantId=request.getHeader(StringConstants.TENANT_ID);
+            String tenantUser=request.getHeader(StringConstants.TENANT_USER);
+            if(!StringUtils.isEmpty(tenantId)){
+                tenantIdHolder.setCurrentTenantId(tenantId);
+            }
             if(!StringUtils.isEmpty(userName)){
                 try {
                     userName = URLDecoder.decode(userName, StandardCharsets.UTF_8.name());

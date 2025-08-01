@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +26,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
+import org.openoa.engine.utils.MultiTenantIdUtil;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,8 +262,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      * @return
      */
     public BpmnConfVo detail(String bpmnCode) {
-        BpmnConf bpmnConf = this.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
-                .eq("bpmn_code", bpmnCode));
+        BpmnConf bpmnConf = this.getBaseMapper().selectOne(new LambdaQueryWrapper<BpmnConf>()
+                .eq(BpmnConf::getBpmnCode, bpmnCode));
         return getBpmnConfVo(bpmnConf);
     }
 
@@ -347,9 +349,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         }
         ProcessorFactory.executePreReadProcessors(bpmnConfVo);
         //set nodes
-        List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
-                .eq("conf_id", bpmnConf.getId())
-                .eq("is_del", 0));
+        List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper()
+                .selectList(new LambdaQueryWrapper<BpmnNode>()
+                        .eq(BpmnNode::getConfId,bpmnConf.getId())
+                        .eq(BpmnNode::getIsDel,0));
+
         boolean isOutSideProcess=bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1;
         boolean isLowCodeFlow=bpmnConf.getIsLowCodeFlow()!=null&&bpmnConf.getIsLowCodeFlow()==1;
         if(isOutSideProcess||isLowCodeFlow||bpmnConf.getExtraFlags()!=null){

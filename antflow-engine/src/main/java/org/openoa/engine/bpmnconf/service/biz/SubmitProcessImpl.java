@@ -17,6 +17,7 @@ import org.openoa.base.entity.BpmProcessName;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.FormFactory;
+import org.openoa.engine.utils.MultiTenantIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +95,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                     .description(applyName + "-" + processName)
                     .dataSourceId(vo.getDataSourceId())
                     .version(businessDataVo.getBpmnCode())
+                    .tenantId(MultiTenantIdUtil.getCurrentTenantId())
                     .build());
             //the process number is predictable
             businessDataVo.setProcessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId());

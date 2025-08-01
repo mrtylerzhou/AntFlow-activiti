@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,6 +19,7 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper;
+import org.openoa.engine.utils.MultiTenantIdUtil;
 import org.openoa.engine.vo.GenericEmployee;
 import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
@@ -220,9 +222,15 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
      */
     public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
 
-        OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper().selectList(new QueryWrapper<OutSideBpmCallbackUrlConf>()
-                .eq("business_party_id", businessPartyId)
-                .eq("status", 1)).stream().findFirst().orElse(null);
+        OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper()
+                .selectList(new LambdaQueryWrapper<OutSideBpmCallbackUrlConf>()
+                        .eq(OutSideBpmCallbackUrlConf::getBusinessPartyId,businessPartyId)
+                        .eq(OutSideBpmCallbackUrlConf::getStatus,1)
+                )
+                .stream()
+                .findFirst()
+                .orElse(null);
+
 
 //        if (outSideBpmCallbackUrlConf==null) {
 //            throw new JiMuBizException("流程回调URL未配置，方法执行失败");

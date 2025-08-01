@@ -21,6 +21,7 @@ import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.utils.MultiTenantIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -87,13 +88,15 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
 
         // 3. Deploy the process to the engine
         repositoryService.createDeployment()
+                .tenantId(MultiTenantIdUtil.getCurrentTenantId())
                 .addBpmnModel(StringUtils.join(bpmnConfCommonVo.getProcessNum(), ".bpmn"), model)
                 .name(StringUtils.join(bpmnConfCommonVo.getProcessNum(), " deployment"))
                 .deploy();
 
         // 4. Start a process instance
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(bpmnConfCommonVo.getProcessNum(), bpmnStartConditions.getEntryId(),
-                startParamMap);
+        ProcessInstance processInstance =runtimeService
+                .startProcessInstanceByKeyAndTenantId(bpmnConfCommonVo.getProcessNum(),bpmnStartConditions.getEntryId(),startParamMap,MultiTenantIdUtil.getCurrentTenantId());
+
 
 
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
