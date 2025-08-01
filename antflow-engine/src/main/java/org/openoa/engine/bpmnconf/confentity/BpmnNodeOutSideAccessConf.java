@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_bpmn_node_out_side_access_conf")
-public class BpmnNodeOutSideAccessConf{
+public class BpmnNodeOutSideAccessConf implements TenantField, Serializable {
 
 
     /**

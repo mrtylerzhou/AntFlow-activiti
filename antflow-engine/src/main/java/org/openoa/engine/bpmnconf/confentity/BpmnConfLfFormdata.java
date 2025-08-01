@@ -7,13 +7,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;  
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
-  
+import org.openoa.base.interf.TenantField;
+
 import java.io.Serializable;
 import java.util.Date;
 
 @Data  
 @TableName("t_bpmn_conf_lf_formdata")  
-public class BpmnConfLfFormdata implements Serializable {
+public class BpmnConfLfFormdata implements TenantField, Serializable {
   
     private static final long serialVersionUID = 1L;  
   

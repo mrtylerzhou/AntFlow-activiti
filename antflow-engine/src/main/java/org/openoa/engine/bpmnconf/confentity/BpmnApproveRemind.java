@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Date;
  */
 @TableName("t_bpmn_approve_remind")
 @Data
-public class BpmnApproveRemind {
+public class BpmnApproveRemind implements TenantField, Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)

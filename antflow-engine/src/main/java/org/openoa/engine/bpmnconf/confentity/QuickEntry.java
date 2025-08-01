@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -21,7 +23,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_quick_entry")
-public class QuickEntry {
+public class QuickEntry implements TenantField, Serializable {
 
     /**
      * variable url mark

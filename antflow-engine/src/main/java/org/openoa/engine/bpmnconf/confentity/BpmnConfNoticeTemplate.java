@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Date;
 @TableName("t_bpmn_conf_notice_template")
 @AllArgsConstructor
 @NoArgsConstructor
-public class BpmnConfNoticeTemplate {
+public class BpmnConfNoticeTemplate  implements TenantField, Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)

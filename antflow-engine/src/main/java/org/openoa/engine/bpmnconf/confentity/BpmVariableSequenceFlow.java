@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -23,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpm_variable_sequence_flow")
-public class BpmVariableSequenceFlow {
+public class BpmVariableSequenceFlow implements TenantField, Serializable {
 
 
     /**

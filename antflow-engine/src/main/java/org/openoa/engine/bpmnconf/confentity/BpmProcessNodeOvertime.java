@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import org.openoa.base.interf.TenantField;
+
+import java.io.Serializable;
 
 /**
  * @author AntFlow
@@ -14,7 +17,7 @@ import lombok.Data;
 @Data
 @Builder
 @TableName("bpm_process_node_overtime")
-public class BpmProcessNodeOvertime {
+public class BpmProcessNodeOvertime implements TenantField, Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)

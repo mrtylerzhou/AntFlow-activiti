@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_sys_version")
-public class SysVersion {
+public class SysVersion  implements TenantField, Serializable {
     /**
      * is published 0 for published 1 for unpublished(hidden)
      */

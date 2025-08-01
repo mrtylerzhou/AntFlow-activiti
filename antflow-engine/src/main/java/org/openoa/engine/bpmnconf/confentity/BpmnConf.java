@@ -10,7 +10,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -26,7 +28,7 @@ import static org.openoa.base.constant.StringConstants.SPECIAL_CHARACTERS;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpmn_conf")
-public class BpmnConf {
+public class BpmnConf implements TenantField, Serializable {
 
 
     /**

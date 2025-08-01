@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -20,7 +22,7 @@ import java.util.Date;
 @TableName("t_bpmn_node_personnel_conf")
 @Getter
 @Setter
-public class BpmnNodePersonnelConf {
+public class BpmnNodePersonnelConf implements TenantField, Serializable {
 
     /**
      * 自增主键

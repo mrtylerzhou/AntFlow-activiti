@@ -263,7 +263,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      */
     public BpmnConfVo detail(String bpmnCode) {
         BpmnConf bpmnConf = this.getBaseMapper().selectOne(new LambdaQueryWrapper<BpmnConf>()
-                .eq(BpmnConf::getBpmnCode, bpmnCode));
+                .eq(BpmnConf::getBpmnCode, bpmnCode)
+                .eq(!StringUtils.isEmpty(MultiTenantIdUtil.getCurrentTenantId()), BpmnConf::getTenantId,MultiTenantIdUtil.getCurrentTenantId())
+        );
         return getBpmnConfVo(bpmnConf);
     }
 

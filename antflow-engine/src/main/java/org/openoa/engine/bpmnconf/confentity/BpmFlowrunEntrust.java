@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
+
+import java.io.Serializable;
 
 /**
  * @author AntFlow
@@ -18,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("bpm_flowrun_entrust")
-public class BpmFlowrunEntrust {
+public class BpmFlowrunEntrust implements TenantField, Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;

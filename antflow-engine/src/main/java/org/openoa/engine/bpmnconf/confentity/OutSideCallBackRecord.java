@@ -8,7 +8,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.openoa.base.constant.enums.CallbackTypeEnum;
 import org.openoa.base.constant.enums.MsgProcessEventEnum;
+import org.openoa.base.interf.TenantField;
 
+import javax.sql.rowset.serial.SerialArray;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +21,7 @@ import java.util.Date;
 @TableName("t_out_side_bpm_call_back_record")
 @Getter
 @Setter
-public class OutSideCallBackRecord {
+public class OutSideCallBackRecord implements TenantField, Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     /**

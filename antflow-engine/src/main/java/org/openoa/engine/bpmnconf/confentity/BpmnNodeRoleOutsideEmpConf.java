@@ -7,14 +7,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpmn_node_role_outside_emp_conf")
-public class BpmnNodeRoleOutsideEmpConf {
+public class BpmnNodeRoleOutsideEmpConf implements TenantField, Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     @TableField("node_id")

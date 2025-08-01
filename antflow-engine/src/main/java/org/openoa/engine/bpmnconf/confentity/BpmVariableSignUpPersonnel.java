@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -17,7 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpm_variable_sign_up_personnel")
-public class BpmVariableSignUpPersonnel {
+public class BpmVariableSignUpPersonnel implements TenantField, Serializable {
 
     /**
      * auto incr id

@@ -7,13 +7,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Builder
 @TableName("t_op_log")
-public class OpLog{
+public class OpLog implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

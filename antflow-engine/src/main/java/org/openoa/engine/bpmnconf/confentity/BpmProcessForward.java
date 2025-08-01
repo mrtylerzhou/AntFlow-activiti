@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -20,7 +22,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("bpm_process_forward")
-public class BpmProcessForward {
+public class BpmProcessForward implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

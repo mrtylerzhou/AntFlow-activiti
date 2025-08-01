@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpmn_node")
-public class BpmnNode {
+public class BpmnNode implements TenantField, Serializable {
 
     /**
      * auto incr id

@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -16,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_user_email_send")
-public class UserEmailSend {
+public class UserEmailSend implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

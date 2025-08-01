@@ -9,7 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.EventTypeEnum;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -21,7 +23,7 @@ import java.util.Date;
 @TableName("t_information_template")
 @AllArgsConstructor
 @NoArgsConstructor
-public class InformationTemplate {
+public class InformationTemplate implements TenantField, Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)

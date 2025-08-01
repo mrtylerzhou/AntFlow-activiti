@@ -226,6 +226,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
                 .selectList(new LambdaQueryWrapper<OutSideBpmCallbackUrlConf>()
                         .eq(OutSideBpmCallbackUrlConf::getBusinessPartyId,businessPartyId)
                         .eq(OutSideBpmCallbackUrlConf::getStatus,1)
+                        .eq(!StringUtils.isEmpty(MultiTenantIdUtil.getCurrentTenantId()), OutSideBpmCallbackUrlConf::getTenantId,MultiTenantIdUtil.getCurrentTenantId())
                 )
                 .stream()
                 .findFirst()

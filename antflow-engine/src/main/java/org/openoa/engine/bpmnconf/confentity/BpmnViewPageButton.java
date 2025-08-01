@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.SecurityUtils;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -23,7 +25,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_bpmn_view_page_button")
-public class BpmnViewPageButton {
+public class BpmnViewPageButton implements TenantField, Serializable {
 
     /**
      * auto incr id

@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -21,7 +23,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("bpm_business_process")
-public class BpmBusinessProcess {
+public class BpmBusinessProcess implements TenantField, Serializable {
 
     /**
      * process version 0 for old and 1 for new
@@ -37,7 +39,7 @@ public class BpmBusinessProcess {
     @TableField("PROCESSINESS_KEY")
     private String processinessKey;
     /**
-     * business Id
+     * businessId
      */
     @TableField("BUSINESS_ID")
     private String businessId;

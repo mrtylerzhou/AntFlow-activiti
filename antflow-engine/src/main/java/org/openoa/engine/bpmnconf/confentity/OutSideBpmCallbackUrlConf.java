@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -21,7 +23,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_out_side_bpm_callback_url_conf")
-public class OutSideBpmCallbackUrlConf {
+public class OutSideBpmCallbackUrlConf implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

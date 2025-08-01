@@ -2,12 +2,14 @@ package org.openoa.engine.lowflow.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @TableName("t_lf_main")
-public class LFMain {
+public class LFMain implements TenantField, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

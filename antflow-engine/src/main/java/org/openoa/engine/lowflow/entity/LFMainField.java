@@ -10,18 +10,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SnowFlake;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
 import org.springframework.util.CollectionUtils;
 
 import java.io.PipedReader;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
 @Data
 @TableName("t_lf_main_field")
-public class LFMainField {
+public class LFMainField implements TenantField, Serializable {
     /**
      * 主键ID
      */

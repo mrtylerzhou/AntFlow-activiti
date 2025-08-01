@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import org.openoa.base.interf.TenantField;
+
+import java.io.Serializable;
 
 
 /**
@@ -16,7 +19,7 @@ import lombok.Data;
 @Data
 @Builder
 @TableName("bpm_process_app_data")
-public class BpmProcessAppData {
+public class BpmProcessAppData implements TenantField, Serializable {
 
 
    @TableId(value = "id", type = IdType.AUTO)

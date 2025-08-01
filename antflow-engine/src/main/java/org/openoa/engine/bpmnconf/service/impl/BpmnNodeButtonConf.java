@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -16,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpmn_node_button_conf")
-public class BpmnNodeButtonConf {
+public class BpmnNodeButtonConf implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

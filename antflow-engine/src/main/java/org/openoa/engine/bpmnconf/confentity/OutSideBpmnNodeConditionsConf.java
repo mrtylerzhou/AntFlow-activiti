@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_out_side_bpmn_node_conditions_conf")
-public class OutSideBpmnNodeConditionsConf {
+public class OutSideBpmnNodeConditionsConf implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 

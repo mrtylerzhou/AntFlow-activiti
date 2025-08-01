@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import org.openoa.base.interf.TenantField;
+
+import java.io.Serializable;
 
 /**
  * process notice
@@ -15,7 +18,7 @@ import lombok.Data;
 @Data
 @Builder
 @TableName("bpm_process_notice")
-public class BpmProcessNotice {
+public class BpmProcessNotice implements TenantField, Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
