@@ -72,7 +72,7 @@
             </el-container>
         </el-aside>
         <el-container>
-            <div class="layout-middle">
+            <div class="layout-middle" id="fullscreen">
                 <el-scrollbar>
                     <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
                     <div v-if="approveFormDataConfig">
@@ -199,6 +199,10 @@ const toggleFlowActive = (data, index) => {
 const handleClick = (tab, event) => {
     activeName.value = tab.paneName;
 }
+window.onload = function () {
+    var fullscreen = document.getElementById("fullscreen");
+    fullscreen.style.height = (window.innerHeight) + "px";
+}
 </script>
 
 <style lang="scss" scoped>
@@ -211,6 +215,7 @@ const handleClick = (tab, event) => {
     font-size: 12px;
     line-height: 2.0;
 }
+
 
 .empty-text {
     display: block;
@@ -259,7 +264,7 @@ const handleClick = (tab, event) => {
     margin-right: 10px;
     margin-top: 10px;
     width: 100%;
-    height: calc(-95px + 100vh);
+    height: 90vh;
     background-color: #f2f3f4f5;
 }
 

@@ -298,7 +298,6 @@ const close = async () => {
 .approve-container .el-main {
     background-color: #fff;
     color: var(--el-text-color-primary);
-    border-radius: 5px;
     flex: 1 1 auto;
     width: 100%;
     margin-bottom: 0;
@@ -307,7 +306,6 @@ const close = async () => {
 }
 
 .approve-container .el-footer {
-    box-shadow: var(--el-box-shadow-light);
     background-color: #f2f3f4f5;
     position: sticky;
     bottom: 0;
