@@ -15,6 +15,7 @@ import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeLoopConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLoopConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -148,6 +149,7 @@ public class NodePropertyLoopAdp extends BpmnNodeAdaptor {
         bpmnNodeLoopConf.setCreateUser(SecurityUtils.getLogInEmpName());
         bpmnNodeLoopConf.setUpdateTime(new Date());
         bpmnNodeLoopConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+        bpmnNodeLoopConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeLoopConfService.save(bpmnNodeLoopConf);
     }
 

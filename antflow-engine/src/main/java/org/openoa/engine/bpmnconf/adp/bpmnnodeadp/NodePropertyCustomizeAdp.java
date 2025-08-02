@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmnNodeCustomizeConf;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeCustomizeConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,7 @@ public class NodePropertyCustomizeAdp extends BpmnNodeAdaptor{
         BpmnNodeCustomizeConf customizeConf=new BpmnNodeCustomizeConf();
         customizeConf.setBpmnNodeId(bpmnNodeVo.getId());
         customizeConf.setSignType(bpmnNodePropertysVo.getSignType());
+        customizeConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeCustomizeConfService.save(customizeConf);
     }
 

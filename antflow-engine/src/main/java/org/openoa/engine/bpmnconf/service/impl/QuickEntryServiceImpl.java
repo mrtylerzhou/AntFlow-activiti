@@ -16,6 +16,7 @@ import org.openoa.engine.bpmnconf.confentity.QuickEntry;
 import org.openoa.engine.bpmnconf.confentity.QuickEntryType;
 import org.openoa.engine.bpmnconf.confentity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.ProcessTypeInforVo;
 import org.openoa.engine.vo.QuickEntryVo;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEntry> {
+public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEntry> implements QuickEntryService {
 
     private static final String RETURN_SUCCESS = "000000";
     @Autowired

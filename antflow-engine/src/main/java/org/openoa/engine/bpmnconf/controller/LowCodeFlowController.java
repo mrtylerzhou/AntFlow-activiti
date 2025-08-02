@@ -10,7 +10,7 @@ import org.openoa.base.vo.DetailRequestDto;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
-import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.engine.lowflow.service.BpmnConfLFFormDataBizServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

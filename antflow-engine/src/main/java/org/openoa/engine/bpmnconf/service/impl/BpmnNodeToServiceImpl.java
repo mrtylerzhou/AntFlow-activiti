@@ -6,6 +6,8 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeTo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeToMapper;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeToService;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BpmnNodeToServiceImpl extends ServiceImpl<BpmnNodeToMapper, BpmnNodeTo> {
+public class BpmnNodeToServiceImpl extends ServiceImpl<BpmnNodeToMapper, BpmnNodeTo> implements BpmnNodeToService {
 
 
     public void editNodeTo(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
@@ -34,6 +36,7 @@ public class BpmnNodeToServiceImpl extends ServiceImpl<BpmnNodeToMapper, BpmnNod
                         .nodeTo(o)
                         .createUser(logInEmpNameSafe)
                         .createTime(nowDate)
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build())
                 .collect(Collectors.toList());
 

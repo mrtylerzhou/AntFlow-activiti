@@ -13,7 +13,8 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeSubmitMapper;
-import org.openoa.engine.bpmnconf.service.biz.BpmnBizCustomService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeSubmitMapper, BpmProcessNodeSubmit> {
+public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeSubmitMapper, BpmProcessNodeSubmit> implements BpmProcessNodeSubmitService {
 
     @Autowired
     private BpmProcessNodeSubmitMapper bpmProcessNodeSubmitMapper;

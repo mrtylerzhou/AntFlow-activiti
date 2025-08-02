@@ -24,6 +24,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsParamConfServic
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.util.BpmnConfNodePropertyConverter;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -254,6 +255,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         bpmnNodeConditionsConf.setExtJson(bpmnNodeConditionsConfBaseVo.getExtJson());
         bpmnNodeConditionsConf.setCreateTime(new Date());
         bpmnNodeConditionsConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+        bpmnNodeConditionsConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         confMapper.insert(bpmnNodeConditionsConf);
 
 

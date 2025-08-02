@@ -17,6 +17,7 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.vo.*;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  * @since 0.5
  */
 @Service
-public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplicationMapper, BpmProcessAppApplication> {
+public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplicationMapper, BpmProcessAppApplication> implements BpmProcessAppApplicationService {
 
     @Autowired
     private BpmProcessAppApplicationMapper bpmProcessAppApplicationMapper;

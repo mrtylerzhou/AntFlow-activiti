@@ -6,13 +6,15 @@ import org.openoa.engine.bpmnconf.confentity.BpmnNodeSignUpConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeSignUpConfMapper;
 import org.openoa.base.vo.BpmnNodeVo;
 
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeSignUpConfService;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 
 @Service
-public class BpmnNodeSignUpConfServiceImpl extends ServiceImpl<BpmnNodeSignUpConfMapper, BpmnNodeSignUpConf> {
+public class BpmnNodeSignUpConfServiceImpl extends ServiceImpl<BpmnNodeSignUpConfMapper, BpmnNodeSignUpConf> implements BpmnNodeSignUpConfService {
 
     public void editSignUpConf(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
         if (ObjectUtils.isEmpty(bpmnNodeVo.getIsSignUp()) || bpmnNodeVo.getIsSignUp() != 1) {
@@ -26,6 +28,7 @@ public class BpmnNodeSignUpConfServiceImpl extends ServiceImpl<BpmnNodeSignUpCon
                 .signUpType(bpmnNodeVo.getProperty().getSignUpType())
                 .createUser(SecurityUtils.getLogInEmpNameSafe())
                 .createTime(new Date())
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .build();
         this.getBaseMapper().insert(bpmnNodeSignUpConf);
     }

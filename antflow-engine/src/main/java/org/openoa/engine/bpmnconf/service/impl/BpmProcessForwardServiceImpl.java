@@ -10,6 +10,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessForwardMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardMapper, BpmProcessForward> {
+public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardMapper, BpmProcessForward> implements BpmProcessForwardService {
 
     private static Map<String, BpmProcessForward> processForwardMap = new ConcurrentHashMap<>();
 

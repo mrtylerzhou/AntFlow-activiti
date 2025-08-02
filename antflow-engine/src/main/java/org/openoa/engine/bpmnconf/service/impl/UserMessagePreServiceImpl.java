@@ -13,6 +13,7 @@ import org.openoa.base.vo.*;
 import org.openoa.base.exception.JiMuBizException;
 
 import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessagePreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, UserMessage> {
+public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, UserMessage> implements UserMessagePreService {
 
     @Autowired
     private UserMessageServiceImpl userMessageService;

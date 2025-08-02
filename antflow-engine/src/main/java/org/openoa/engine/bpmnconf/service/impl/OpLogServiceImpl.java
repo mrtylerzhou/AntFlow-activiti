@@ -5,12 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.engine.bpmnconf.confentity.OpLog;
 import org.openoa.engine.bpmnconf.mapper.OpLogMapper;
 import org.openoa.base.util.JimuJsonUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.OpLogService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class OpLogServiceImpl extends ServiceImpl<OpLogMapper, OpLog> {
+public class OpLogServiceImpl extends ServiceImpl<OpLogMapper, OpLog> implements OpLogService {
 
 
     @Async

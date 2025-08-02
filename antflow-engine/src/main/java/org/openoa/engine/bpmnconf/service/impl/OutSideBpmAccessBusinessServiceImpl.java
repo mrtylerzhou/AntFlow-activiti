@@ -27,6 +27,7 @@ import org.openoa.engine.bpmnconf.mapper.OutSideBpmAccessBusinessMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ButtonOperationServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAccessBusinessService;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
@@ -48,7 +49,7 @@ import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
  * @since 0.5
  */
 @Service
-public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmAccessBusinessMapper, OutSideBpmAccessBusiness> {
+public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmAccessBusinessMapper, OutSideBpmAccessBusiness> implements OutSideBpmAccessBusinessService {
 
     @Autowired
     private OutSideBpmAccessBusinessMapper outSideBpmAccessBusinessMapper;

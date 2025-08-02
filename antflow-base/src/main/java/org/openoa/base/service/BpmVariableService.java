@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface BpmVariableService {
     Map<String,String> getAssigneeNameByProcessNumAndElementId(String processNumber, String elementId);
-    public String getVarNameByProcessNumberAndElementId(String processNum, String elementId);
+    String getVarNameByProcessNumberAndElementId(String processNum, String elementId);
 }

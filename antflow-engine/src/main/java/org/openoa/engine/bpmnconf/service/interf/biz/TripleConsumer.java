@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.service.interf.biz;
 
 @FunctionalInterface
 public interface TripleConsumer<T1,T2,T3> {

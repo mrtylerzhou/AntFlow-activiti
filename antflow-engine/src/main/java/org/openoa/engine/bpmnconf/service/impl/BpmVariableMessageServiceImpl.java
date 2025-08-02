@@ -31,9 +31,11 @@ import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableMessageService;
 import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
 import org.openoa.engine.bpmnconf.util.UserMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -51,7 +53,7 @@ import java.util.stream.Collectors;
  * @Created by AntOffice
  */
 @Service
-public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessageMapper, BpmVariableMessage> {
+public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessageMapper, BpmVariableMessage> implements BpmVariableMessageService {
 
 
     @Autowired
@@ -144,6 +146,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                             .variableId(variableId)
                             .elementId(elementVo.getElementId())
                             .content(JSON.toJSONString(elementVo.getApproveRemindVo()))
+                            .tenantId(MultiTenantUtil.getCurrentTenantId())
                             .build());
                 }
             }
@@ -180,6 +183,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
                         .messageType(getMessageSendType(o.getEvent(),messageType))
                         .eventType(o.getEvent())
                         .content(JSON.toJSONString(o))
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build())
                 .collect(Collectors.toList());
     }

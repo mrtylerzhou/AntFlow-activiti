@@ -17,6 +17,8 @@ import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.adaptor.BpmnInsertVariableSubs;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -58,7 +60,8 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 .processName(bpmnConfCommonVo.getProcessName())
                 .processDesc(bpmnConfCommonVo.getProcessDesc())
                 .processStartConditions(JSON.toJSONString(bpmnStartConditions))//process start condition
-                .createUser( SecurityUtils.getLogInEmpIdSafe().toString())
+                .createUser(SecurityUtils.getLogInEmpIdSafe())
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .createTime(new Date())
                 .build();
         bpmVariableService.getBaseMapper().insert(bpmVariable);
@@ -114,6 +117,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                         .elementFromId(elementVo.getFlowFrom())
                         .elementToId(elementVo.getFlowTo())
                         .sequenceFlowType(1)//此版本默认无参连线
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build());
             }
         }
@@ -160,6 +164,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                         .elementId(key)
                         .nodeId(elementVo.getNodeId())
                         .subElements(JSON.toJSONString(subElements))
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build());
             }
 
@@ -232,6 +237,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                                 .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_START.getCode())
                                 .buttonType(o.getButtonType())
                                 .buttonName(o.getButtonName())
+                                .tenantId(MultiTenantUtil.getCurrentTenantId())
                                 .build();
                     })
                     .collect(Collectors.toList()));
@@ -248,6 +254,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                                 .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
                                 .buttonType(o.getButtonType())
                                 .buttonName(o.getButtonName())
+                                .tenantId(MultiTenantUtil.getCurrentTenantId())
                                 .build();
                     })
                     .collect(Collectors.toList()));

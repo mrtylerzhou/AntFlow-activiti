@@ -19,6 +19,7 @@ import org.openoa.engine.bpmnconf.confentity.UserEmailSend;
 import org.openoa.engine.bpmnconf.mapper.UserEmailSendMapper;
 import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
 import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserMessage> {
+public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserMessage> implements UserMessageService {
     @Value("${message.email.password:none}")
     private String password;
 

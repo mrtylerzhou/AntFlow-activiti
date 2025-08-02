@@ -8,6 +8,7 @@ import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmTaskconfig;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, BpmTaskconfig> {
+public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, BpmTaskconfig> implements BpmTaskconfigService {
 
 
     @Autowired

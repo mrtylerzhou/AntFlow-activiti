@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.service.interf.biz;
 
 import org.activiti.engine.task.Task;
 

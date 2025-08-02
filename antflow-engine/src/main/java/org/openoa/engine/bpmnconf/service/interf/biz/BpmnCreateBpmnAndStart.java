@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.service.interf.biz;
 
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;

@@ -10,6 +10,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.BusinessConfTableFieldEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeBusinessTableConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -94,6 +95,7 @@ public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
         bpmnNodeBusinessTableConf.setCreateUser(SecurityUtils.getLogInEmpName());
         bpmnNodeBusinessTableConf.setUpdateTime(new Date());
         bpmnNodeBusinessTableConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+        bpmnNodeBusinessTableConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeBusinessTableConfService.save(bpmnNodeBusinessTableConf);
     }
 

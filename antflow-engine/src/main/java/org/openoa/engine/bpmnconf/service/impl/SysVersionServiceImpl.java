@@ -13,6 +13,7 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;
 import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.BeanUtils;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  * @since0.5
  */
 @Service
-public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVersion> {
+public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVersion> implements SysVersionService {
 
     public static final String APP_TYPE_ANDROID = "android";
     public static final String APP_TYPE_IOS = "ios";

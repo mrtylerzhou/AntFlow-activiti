@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.engine.utils.MultiInstanceUtils;
+import org.openoa.engine.utils.MultiTenantUtil;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -93,6 +95,7 @@ public class BpmnViewPageButton implements TenantField, Serializable {
                 .createTime(new Date())
                 .updateUser(SecurityUtils.getLogInEmpNameSafe())
                 .updateTime(new Date())
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .build();
     }
 }

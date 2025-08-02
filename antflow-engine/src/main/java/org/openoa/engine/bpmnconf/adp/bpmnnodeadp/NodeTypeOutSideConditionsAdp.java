@@ -10,6 +10,7 @@ import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmnNodeConditionsConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmnNodeConditionsConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +61,7 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
         //edit out side conditions conf
         OutSideBpmnNodeConditionsConf outSideBpmnNodeConditionsConf = new OutSideBpmnNodeConditionsConf();
         outSideBpmnNodeConditionsConf.setBpmnNodeId(bpmnNodeVo.getId());
+        outSideBpmnNodeConditionsConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         if (bpmnNodeVo.getProperty().getConditionsConf()!=null) {//todo
             outSideBpmnNodeConditionsConf.setOutSideId(bpmnNodeVo.getProperty().getConditionsConf().getOutSideConditionsId());
         }

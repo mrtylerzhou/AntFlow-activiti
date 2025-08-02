@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,6 +19,9 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
+import org.openoa.engine.bpmnconf.service.biz.OutSideBpmBaseServiceImpl;
+
+import org.openoa.engine.bpmnconf.service.interf.repository.ApplicationService;
 import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.BeanUtils;
@@ -41,7 +43,7 @@ import static org.openoa.base.constant.enums.AdminPersonnelTypeEnum.ADMIN_PERSON
  * @since 0.5
  */
 @Service
-public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplicationMapper, BpmProcessAppApplication> {
+public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplicationMapper, BpmProcessAppApplication> implements ApplicationService {
 
     @Autowired
     private BpmProcessAppApplicationMapper bpmProcessAppApplicationMapper;
@@ -62,29 +64,30 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * add /remove process application
      */
+    @Override
     public void edit(BpmProcessAppApplicationVo vo) {
         BpmProcessAppApplication application = new BpmProcessAppApplication();
         BeanUtils.copyProperties(vo, application);
         if (!StringUtil.isEmpty(application.getRoute())) {
-            application.setRoute(StringEscapeUtils.unescapeHtml3(application.getRoute()));
+            application.setRoute(StringEscapeUtils.unescapeHtml4(application.getRoute()));
         }
         if (vo.getId()!=null) {
             application.setCreateUserId(SecurityUtils.getLogInEmpIdSafe());
         }
 
-        List<BpmProcessAppApplication> list = this.list(new QueryWrapper<BpmProcessAppApplication>()
-                .ne(application.getId() != null, "id", application.getId())
-                .eq("process_name", application.getTitle())
-                .eq("is_del", 0));
+        List<BpmProcessAppApplication> list = this.list(
+                AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                        .ne(application.getId()!=null, BpmProcessAppApplication::getId,application.getId())
+                        .eq(BpmProcessAppApplication::getTitle,application.getTitle()));
         //check whether the name is repeated
         if (!CollectionUtils.isEmpty(list)) {
             throw new JiMuBizException("该选项名称已存在");
         }
 
-        List<BpmProcessAppApplication> list1 = this.list(new QueryWrapper<BpmProcessAppApplication>()
-                .ne(application.getId() != null, "id", application.getId())
-                .eq("process_key", application.getProcessKey())
-                .eq("is_del", 0));
+        List<BpmProcessAppApplication> list1 = this.list(
+                AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                        .ne(application.getId()!=null, BpmProcessAppApplication::getId,application.getId())
+                        .eq(BpmProcessAppApplication::getProcessKey,application.getProcessKey()));
 
         //check whether the number is repeated
         if (!CollectionUtils.isEmpty(list1)) {
@@ -108,10 +111,10 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
             //if current operation is edit and is parent application,then find out all child applications
             if (vo.getId()!=null && vo.getApplyType().equals(3)) {
 
-                List<Integer> sonIds = this.list(new QueryWrapper<BpmProcessAppApplication>()
-                        .eq("is_son", 1)
-                        .eq("parent_id", vo.getId())
-                        .eq("is_del", 0))
+                List<Integer> sonIds = this.list(
+                        AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                                .eq(BpmProcessAppApplication::getIsSon,1)
+                                .eq(BpmProcessAppApplication::getParentId,vo.getId()))
                         .stream()
                         .map(BpmProcessAppApplication::getId)
                         .collect(Collectors.toList());
@@ -120,10 +123,10 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                 for (Integer sonId : sonIds) {
 
                     //find out its old category
-                    QueryWrapper<BpmProcessApplicationType> wrapper = new QueryWrapper<>();
-                    wrapper.eq("is_del", 0);
-                    wrapper.eq("application_id", sonId);
-                    List<Long> types = bpmProcessApplicationTypeService.list(wrapper)
+                    List<Long> types = bpmProcessApplicationTypeService.list(
+                            AFWrappers.<BpmProcessApplicationType>lambdaTenantQuery()
+                                    .eq(BpmProcessApplicationType::getApplicationId,sonId)
+                            )
                             .stream()
                             .map(BpmProcessApplicationType::getCategoryId)
                             .collect(Collectors.toList());
@@ -155,12 +158,13 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * remove application
      */
+    @Override
     public void del(Integer id) {
         BpmProcessAppApplication application = this.getById(id);
 
-        List<BpmProcessAppApplication> list = this.list(new QueryWrapper<BpmProcessAppApplication>()
-                .eq("parent_id", id)
-                .eq("is_del", 0));
+        List<BpmProcessAppApplication> list = this.list(
+                AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                        .eq(BpmProcessAppApplication::getParentId,id));
         //如果父级应用且关联子级应用 则不可删除
         if (application.getApplyType().equals(3)
                 && !CollectionUtils.isEmpty(list)) {
@@ -173,6 +177,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * page list
      */
+    @Override
     public ResultAndPage<BpmProcessAppApplicationVo> pageList(PageDto pageDto, BpmProcessAppApplicationVo vo) {
 
         //query current login's visible business permission list (central system's permission list is empty,others return empty list directly)
@@ -225,16 +230,16 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
 
             //to check where can be deleted
             o.setIsCanDel(true);
-            if (bpmnConfService.count(new QueryWrapper<BpmnConf>()
-                    .eq("form_code", o.getBusinessCode() + "_" + o.getProcessKey())
-                    .eq("is_del", 0)) > 0) {
+            if (bpmnConfService.count(
+                    AFWrappers.<BpmnConf>lambdaTenantQuery()
+                            .eq(a->a.getFormCode(),o.getBusinessCode() + "_" + o.getProcessKey())) > 0) {
                 o.setIsCanDel(false);
             }
 
             OutSideBpmBusinessParty party = Optional
                     .ofNullable(outSideBpmBusinessPartyService.getBaseMapper().selectOne(
-                            new QueryWrapper<OutSideBpmBusinessParty>()
-                                    .eq("business_party_mark", o.getBusinessCode())))
+                            AFWrappers.<OutSideBpmBusinessParty>lambdaTenantQuery()
+                                    .eq(OutSideBpmBusinessParty::getBusinessPartyMark,o.getBusinessCode())))
                     .orElse(new OutSideBpmBusinessParty());
 
 
@@ -248,9 +253,8 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
 
             //set application type
             List<Long> processTypes = bpmProcessApplicationTypeService.list(
-                    new QueryWrapper<BpmProcessApplicationType>()
-                            .eq("application_id", o.getId())
-                            .eq("is_del", 0))
+                    AFWrappers.<BpmProcessApplicationType>lambdaTenantQuery()
+                            .eq(BpmProcessApplicationType::getApplicationId,o.getId()))
                     .stream()
                     .map(BpmProcessApplicationType::getCategoryId)
                     .filter(type -> !type.equals(1L) && !type.equals(2L))
@@ -309,6 +313,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
      * @param processKey   process key
      * @return 应用url
      */
+    @Override
     public BpmProcessAppApplicationVo getApplicationUrl(String businessCode, String processKey) {
         if (!StringUtil.isEmpty(businessCode) &&!StringUtil.isEmpty(processKey)) {
 
@@ -339,18 +344,17 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * get parent application list
      */
+    @Override
     public List<BpmProcessAppApplicationVo> getParentApplicationList(BpmProcessAppApplicationVo applicationVo) {
         List<BpmProcessAppApplication> list = applicationVo!=null && !StringUtil.isEmpty(applicationVo.getBusinessCode())
                 ? this.list(
-                new QueryWrapper<BpmProcessAppApplication>()
-                        .eq("business_code", applicationVo.getBusinessCode())
-                        .eq("apply_type", 3)
-                        .eq("is_del", 0))
+                        AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                                .eq(BpmProcessAppApplication::getBusinessCode,applicationVo.getBusinessCode())
+                                .eq(BpmProcessAppApplication::getApplyType,3))
                 : this.list(
-                new QueryWrapper<BpmProcessAppApplication>()
-                        .isNull("business_code")
-                        .eq("apply_type", 3)
-                        .eq("is_del", 0));
+                AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                        .isNull(BpmProcessAppApplication::getBusinessCode)
+                        .eq(BpmProcessAppApplication::getApplyType,3));
         Map<Long, String> categoryMap = processCategoryService.list(
                 new QueryWrapper<>())
                 .stream()
@@ -363,9 +367,8 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                     BpmProcessAppApplicationVo vo = new BpmProcessAppApplicationVo();
 
                     List<Long> processTypes = bpmProcessApplicationTypeService.list(
-                            new QueryWrapper<BpmProcessApplicationType>()
-                                    .eq("application_id", o.getId())
-                                    .eq("is_del", 0))
+                            AFWrappers.<BpmProcessApplicationType>lambdaTenantQuery()
+                                    .eq(BpmProcessApplicationType::getApplicationId,o.getId()))
                             .stream()
                             .map(BpmProcessApplicationType::getCategoryId)
                             .filter(type -> !type.equals(1L) && !type.equals(2L))
@@ -391,6 +394,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * get category list
      */
+    @Override
     public List<BpmProcessCategoryVo> getProcessTypeList(BpmProcessAppApplicationVo vo) {
         BpmProcessAppApplication application = this.getById(vo.getId());
         if (application!=null) {
@@ -402,9 +406,8 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                             v -> v.getProcessTypeName() + v.getEntrance(),
                             (v1, v2) -> v1));
             List<Long> processTypes = bpmProcessApplicationTypeService.list(
-                    new QueryWrapper<BpmProcessApplicationType>()
-                            .eq("application_id", application.getId())
-                            .eq("is_del", 0))
+                    AFWrappers.<BpmProcessApplicationType>lambdaTenantQuery()
+                            .eq(BpmProcessApplicationType::getApplicationId,application.getId()))
                     .stream()
                     .map(BpmProcessApplicationType::getCategoryId)
                     .filter(type -> !type.equals(1L) && !type.equals(2L))
@@ -427,14 +430,14 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
     /**
      * get application key list
      */
+    @Override
     public List<BaseApplicationVo> getApplicationKeyList(BpmProcessAppApplicationVo applicationVo) {
         if (applicationVo==null || StringUtil.isEmpty(applicationVo.getBusinessCode())) {
             return Lists.newArrayList();
         }
         List<BpmProcessAppApplication> list = this.list(
-                new QueryWrapper<BpmProcessAppApplication>()
-                        .eq("business_code", applicationVo.getBusinessCode())
-                        .eq("is_del", 0));
+                AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
+                        .eq(BpmProcessAppApplication::getBusinessCode,applicationVo.getBusinessCode()));
         return list.stream()
                 .filter(o -> !StringUtil.isEmpty(o.getProcessKey()))
                 .map(o -> BaseApplicationVo

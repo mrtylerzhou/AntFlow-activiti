@@ -25,6 +25,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * //todo 员工信息
  */
 @Service
-public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, BpmVerifyInfo> {
+public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, BpmVerifyInfo> implements BpmVerifyInfoService {
 
 
     @Autowired

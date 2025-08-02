@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.impl;
+package org.openoa.engine.bpmnconf.service.biz;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,6 +8,9 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.OutSideBpmProcesses;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAdminPersonnelServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.vo.GenericEmployee;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.factory.annotation.Autowired;

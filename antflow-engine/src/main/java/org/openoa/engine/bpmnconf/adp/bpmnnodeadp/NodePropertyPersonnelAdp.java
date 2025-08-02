@@ -16,6 +16,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceImpl;
 
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -121,6 +122,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
         bpmnNodePersonnelConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
         bpmnNodePersonnelConf.setUpdateTime(new Date());
         bpmnNodePersonnelConf.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
+        bpmnNodePersonnelConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodePersonnelConfService.getBaseMapper().insert(bpmnNodePersonnelConf);
 
         Integer nodePersonnelId = Optional.of(bpmnNodePersonnelConf.getId()).orElse(0);
@@ -142,6 +144,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
                 personnelEmplConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 personnelEmplConf.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
                 personnelEmplConf.setUpdateTime(new Date());
+                personnelEmplConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
                 if(id2nameMap!=null&&!StringUtils.isEmpty(id2nameMap.get(emplId))){
                     personnelEmplConf.setEmplName(id2nameMap.get(emplId));
                 }

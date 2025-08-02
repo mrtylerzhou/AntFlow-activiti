@@ -10,6 +10,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmApproveTemplateMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmApproveTemplateService;
 import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
 import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * @since 0.5
  */
 @Service
-public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> {
+public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> implements OutSideBpmApproveTemplateService {
 
     @Autowired
     private OutSideBpmApproveTemplateMapper OutSideBpmApproveTemplateMapper;

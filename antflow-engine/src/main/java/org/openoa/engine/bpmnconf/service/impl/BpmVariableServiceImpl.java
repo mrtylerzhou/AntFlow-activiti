@@ -22,6 +22,7 @@ import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -39,8 +40,6 @@ import java.util.stream.Collectors;
 @Service("bpmVariableService")
 public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> implements BpmVariableService {
 
-    @Autowired
-    private BpmVariableMapper mapper;
 
     @Autowired
     private BpmVariableSingleServiceImpl bpmVariableSingleService;
@@ -72,7 +71,7 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
 
         String processNum = StringUtils.join(formCode, "_", businessId);
 
-        BpmVariable bpmVariable = this.mapper.selectOne(new QueryWrapper<BpmVariable>().eq("process_num", processNum));
+        BpmVariable bpmVariable = this.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>().eq("process_num", processNum));
 
         if (ObjectUtils.isEmpty(bpmVariable)) {
             return false;
@@ -155,19 +154,19 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
    }
 
    public void deleteByProcessNumber(String processNumber){
-       LambdaQueryWrapper<BpmVariable> variableQry = Wrappers.<BpmVariable>lambdaQuery()
+       LambdaQueryWrapper<BpmVariable> variableQry = AFWrappers.<BpmVariable>lambdaTenantQuery()
                .eq(BpmVariable::getProcessNum, processNumber);
        BpmVariable bpmVariable = this.getBaseMapper().selectOne(variableQry);
        Long variableId = bpmVariable.getId();
        this.getBaseMapper().deleteById(variableId);
 
         // 删除t_bpm_variable_single表数据
-        LambdaQueryWrapper<BpmVariableSingle> singleQry = Wrappers.<BpmVariableSingle>lambdaQuery()
+        LambdaQueryWrapper<BpmVariableSingle> singleQry = AFWrappers.<BpmVariableSingle>lambdaTenantQuery()
                 .eq(BpmVariableSingle::getVariableId, variableId);
         bpmVariableSingleService.getBaseMapper().delete(singleQry);
 
         // 删除t_bpm_variable_multiplayer表数据
-        LambdaQueryWrapper<BpmVariableMultiplayer> multiplayerQry = Wrappers.<BpmVariableMultiplayer>lambdaQuery()
+        LambdaQueryWrapper<BpmVariableMultiplayer> multiplayerQry = AFWrappers.<BpmVariableMultiplayer>lambdaTenantQuery()
                 .eq(BpmVariableMultiplayer::getVariableId, variableId);
         bpmVariableMultiplayerService.getBaseMapper().delete(multiplayerQry);
    }

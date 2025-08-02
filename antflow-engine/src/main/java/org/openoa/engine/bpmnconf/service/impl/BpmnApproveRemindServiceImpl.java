@@ -7,23 +7,23 @@ import org.openoa.engine.bpmnconf.confentity.BpmnApproveRemind;
 import org.openoa.engine.bpmnconf.mapper.BpmnApproveRemindMapper;
 import org.openoa.base.vo.BpmnApproveRemindVo;
 import org.openoa.base.vo.BpmnNodeVo;
+
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 @Service
-public class BpmnApproveRemindServiceImpl extends ServiceImpl<BpmnApproveRemindMapper, BpmnApproveRemind> {
+public class BpmnApproveRemindServiceImpl extends ServiceImpl<BpmnApproveRemindMapper, BpmnApproveRemind> implements BpmnApproveRemindService {
 
-
-    @Autowired
-    private BpmnApproveRemindMapper mapper;
 
     /**
      * edit remind info
      *
      * @param bpmnNodeVo
      */
+    @Override
     public void editBpmnApproveRemind(BpmnNodeVo bpmnNodeVo) {
         BpmnApproveRemindVo o = bpmnNodeVo.getApproveRemindVo();
         if (ObjectUtils.isEmpty(o)) {
@@ -40,7 +40,8 @@ public class BpmnApproveRemindServiceImpl extends ServiceImpl<BpmnApproveRemindM
             bpmnApproveRemind.setTemplateId(null);
         }
         bpmnApproveRemind.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-        mapper.insert(bpmnApproveRemind);
+        bpmnApproveRemind.setTenantId(MultiTenantUtil.getCurrentTenantId());
+        getBaseMapper().insert(bpmnApproveRemind);
 
     }
 

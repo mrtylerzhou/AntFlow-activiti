@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeOutSideAccessConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,6 +56,7 @@ public class NodePropertyOutSideAccessAdp extends BpmnNodeAdaptor {
                 .bpmnNodeId(bpmnNodeVo.getId())
                 .signType(propertysVo.getSignType())
                 .nodeMark(propertysVo.getNodeMark())
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .build());
 
     }

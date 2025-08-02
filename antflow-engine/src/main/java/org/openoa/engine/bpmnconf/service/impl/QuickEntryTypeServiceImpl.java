@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.QuickEntryType;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryTypeMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.List;
  * query entry curd service
  */
 @Service
-public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> {
+public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> implements QuickEntryTypeService {
 
     @Autowired
     private QuickEntryTypeMapper quickEntryTypeMapper;

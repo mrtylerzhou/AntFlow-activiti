@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessCategory;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.openoa.engine.vo.BpmProcessCategoryVo;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * process category curd service
  */
 @Service
-public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategoryMapper, BpmProcessCategory> {
+public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategoryMapper, BpmProcessCategory> implements BpmProcessCategoryService {
 
     @Autowired
     private BpmProcessCategoryMapper bpmProcessCategoryMapper;

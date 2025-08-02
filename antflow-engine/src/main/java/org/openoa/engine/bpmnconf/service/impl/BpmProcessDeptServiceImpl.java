@@ -13,6 +13,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  * //todo process and department connection service,the module is deprecated and will be redesigned
  */
 @Service
-public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper, BpmProcessDept> {
+public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper, BpmProcessDept> implements BpmProcessDeptService {
 
     private static Map<String, BpmnConf> bpmnConfMap = new ConcurrentHashMap<>();
 

@@ -8,6 +8,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmProcessApplicationType;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessCategory;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessApplicationTypeMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessApplicationTypeService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
  *  process application type curd service
  */
 @Service
-public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcessApplicationTypeMapper, BpmProcessApplicationType> {
+public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcessApplicationTypeMapper, BpmProcessApplicationType> implements BpmProcessApplicationTypeService {
 
     @Autowired
     private BpmProcessApplicationTypeMapper bpmProcessApplicationTypeMapper;

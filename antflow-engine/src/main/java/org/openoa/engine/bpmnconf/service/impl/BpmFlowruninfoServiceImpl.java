@@ -6,6 +6,8 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowruninfo;
 import org.openoa.engine.bpmnconf.mapper.BpmFlowruninfoMapper;
+
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowruninfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper, BpmFlowruninfo> {
+public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper, BpmFlowruninfo> implements BpmFlowruninfoService {
     protected static Map<String, ProcessDefinition> PROCESS_DEFINITION_CACHE = new HashMap<String, ProcessDefinition>();
 
-    @Autowired
-    private BpmFlowruninfoMapper mapper;
+
     @Autowired
     private RepositoryService repositoryService;
 
     /**
      * create run info
      */
+    @Override
     public void createFlowRunInfo(String entryId, String processInstance) throws Exception {
         BpmFlowruninfo flowruninfo = new BpmFlowruninfo();
         flowruninfo.setEntitykey(entryId);
@@ -33,7 +35,7 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
         flowruninfo.setEntityclass(SecurityUtils.getLogInEmpNameSafe());
         flowruninfo.setCreateactor(SecurityUtils.getLogInEmpNameSafe());
         flowruninfo.setCreatedate(new Date());
-        mapper.insert(flowruninfo);
+        getBaseMapper().insert(flowruninfo);
     }
 
     /**
@@ -41,8 +43,9 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
      *
      * @param flowruninfo
      */
+    @Override
     public void createFlowRunInfo(BpmFlowruninfo flowruninfo) {
-        mapper.insert(flowruninfo);
+        getBaseMapper().insert(flowruninfo);
     }
 
     /**
@@ -51,15 +54,17 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
      * @param runInfoId
      * @return
      */
+    @Override
     public BpmFlowruninfo getFlowruninfo(Long runInfoId) {
-        return mapper.getFlowruninfo(runInfoId);
+        return getBaseMapper().getFlowruninfo(runInfoId);
     }
 
     /**
      * delete  run info
      */
+    @Override
     public void deleteFlowruninfo(Long id) {
-        mapper.deleteById(id);
+        getBaseMapper().deleteById(id);
     }
 
     /**
@@ -68,6 +73,7 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
      * @param processDefinitionId
      * @return
      */
+    @Override
     public ProcessDefinition getProcessDefinition(String processDefinitionId) {
         ProcessDefinition processDefinition = PROCESS_DEFINITION_CACHE
                 .get(processDefinitionId);

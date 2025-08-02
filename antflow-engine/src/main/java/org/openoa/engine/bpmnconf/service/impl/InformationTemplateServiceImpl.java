@@ -18,6 +18,7 @@ import org.openoa.engine.bpmnconf.confentity.DefaultTemplate;
 import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.InformationTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class InformationTemplateServiceImpl extends ServiceImpl<InformationTemplateMapper, InformationTemplate> {
+public class InformationTemplateServiceImpl extends ServiceImpl<InformationTemplateMapper, InformationTemplate> implements InformationTemplateService {
 
 
 

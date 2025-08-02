@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import org.activiti.engine.TaskService;
@@ -9,6 +8,9 @@ import org.openoa.base.vo.BpmFlowrunEntrustVo;
 import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
 import org.openoa.engine.bpmnconf.confentity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
+
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -16,17 +18,11 @@ import org.springframework.util.ObjectUtils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
-public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustMapper, BpmFlowrunEntrust> {
+public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustMapper, BpmFlowrunEntrust> implements BpmFlowrunEntrustService {
 
-
-    @Autowired
-    private BpmFlowrunEntrustMapper mapper;
     @Autowired
     private TaskService taskService;
 
@@ -37,7 +33,8 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param runtaskid task id
      * @param type      0 entrust 1:circulate
      */
-    public void addFlowrunEntrust(String actual,String actualName, String original,String originalName, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
+    @Override
+    public void addFlowrunEntrust(String actual, String actualName, String original, String originalName, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
         BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
         entrust.setType(type);
         entrust.setRuntaskid(runtaskid);
@@ -48,11 +45,12 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         entrust.setIsRead(2);
         entrust.setProcDefId(processKey);
         entrust.setRuninfoid(ProcessInstanceId);
-        mapper.insert(entrust);
+        getBaseMapper().insert(entrust);
     }
 
+    @Override
     public boolean addFlowrunEntrust(BpmFlowrunEntrust flowrunEntrust) {
-        mapper.insert(flowrunEntrust);
+        getBaseMapper().insert(flowrunEntrust);
         return true;
     }
 
@@ -64,19 +62,20 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @return
      * @throws Exception
      */
+    @Override
     public UserEntrust getBpmEntrust(String receiverId, String processKey) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
             date = df.parse(df.format(new Date()));
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error("error occur when parsing:",e);
         }
         String key = "";
         if (processKey.contains(":")) {
-            key = processKey.split(":")[0].toString();
+            key = processKey.split(":")[0];
         }
-        UserEntrust entrust = mapper.getBpmEntrust(receiverId, !Strings.isNullOrEmpty(key) ? key : processKey);
+        UserEntrust entrust = getBaseMapper().getBpmEntrust(receiverId, !Strings.isNullOrEmpty(key) ? key : processKey);
         UserEntrust userEntrust = null;
         if (!ObjectUtils.isEmpty(entrust) && date != null) {
             if (entrust.getBeginTime() == null && entrust.getEndTime() == null) {
@@ -99,21 +98,24 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
     }
 
 
+    @Override
     public Boolean updateBpmFlowrunEntrust(String processInstanceId, Integer loginUserId) {
-        mapper.updateBpmFlowrunEntrust(processInstanceId, loginUserId);
+        getBaseMapper().updateBpmFlowrunEntrust(processInstanceId, loginUserId);
         return true;
     }
 
     /**
      * update entrusted flow status as viewed
      */
+    @Override
     public boolean editFlowrunEntrustState(String processInstanceId) {
-        QueryWrapper<BpmFlowrunEntrust> wrapper = new QueryWrapper<>();
-        wrapper.eq("runinfoid", processInstanceId);
-        wrapper.eq("original",  SecurityUtils.getLogInEmpIdSafe());
-        mapper.selectList(wrapper).forEach(o -> {
+        getBaseMapper().selectList(
+                AFWrappers.<BpmFlowrunEntrust>lambdaTenantQuery()
+                        .eq(BpmFlowrunEntrust::getRuninfoid,processInstanceId)
+                        .eq(BpmFlowrunEntrust::getOriginal,SecurityUtils.getLogInEmpIdSafe())
+        ).forEach(o -> {
             o.setIsView(1);
-            mapper.updateById(o);
+            getBaseMapper().updateById(o);
         });
         return true;
     }
@@ -124,8 +126,14 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param vo
      * @return
      */
+    @Override
     public List<BpmFlowrunEntrust> findFlowrunEntrustByProcessInstanceId(BpmFlowrunEntrustVo vo) {
-        return Optional.ofNullable(this.mapper.selectList(new QueryWrapper<BpmFlowrunEntrust>().eq("type", vo.getType()).eq("runinfoid", vo.getRuninfoid()))).orElse(Arrays.asList());
+        return Optional.ofNullable(this.getBaseMapper()
+                .selectList(
+                        AFWrappers.<BpmFlowrunEntrust>lambdaTenantQuery()
+                                .eq(BpmFlowrunEntrust::getType,vo.getType())
+                                .eq(BpmFlowrunEntrust::getRuninfoid,vo.getRuninfoid())))
+                .orElse(Arrays.asList());
     }
 
 }

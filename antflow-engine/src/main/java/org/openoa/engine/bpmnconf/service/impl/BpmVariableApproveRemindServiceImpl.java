@@ -23,6 +23,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmVariable;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableApproveRemindMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
 import org.openoa.engine.bpmnconf.util.InformationTemplateUtils;
 import org.openoa.engine.bpmnconf.util.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +47,9 @@ import static org.openoa.base.constant.enums.WildcardCharacterEnum.*;
  */
 @Slf4j
 @Service
-public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariableApproveRemindMapper, BpmVariableApproveRemind> {
+public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariableApproveRemindMapper, BpmVariableApproveRemind> implements BpmVariableApproveRemindService {
 
 
-    @Autowired
-    private BpmVariableApproveRemindMapper mapper;
 
     @Autowired
     private BpmVariableServiceImpl bpmVariableService;
@@ -372,7 +371,7 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
 
 
         //get node approval remind info
-        List<BpmVariableApproveRemind> bpmVariableApproveReminds = this.mapper.selectList(new QueryWrapper<BpmVariableApproveRemind>()
+        List<BpmVariableApproveRemind> bpmVariableApproveReminds = this.getBaseMapper().selectList(new QueryWrapper<BpmVariableApproveRemind>()
                 .in("variable_id", bpmVariables
                         .stream()
                         .map(BpmVariable::getId)

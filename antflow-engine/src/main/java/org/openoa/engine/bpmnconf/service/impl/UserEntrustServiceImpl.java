@@ -26,12 +26,10 @@ import java.util.List;
 public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserEntrust> {
 
 
-    @Autowired
-    private UserEntrustMapper mapper;
 
     //获get current login employee's entrust list
     public List<Entrust> getEntrustList() {
-        return mapper.getEntrustListNew( SecurityUtils.getLogInEmpIdSafe());
+        return getBaseMapper().getEntrustListNew( SecurityUtils.getLogInEmpIdSafe());
     }
     public UserEntrust getEntrustDetail(Integer id) {
         return this.getBaseMapper().selectById(id);
@@ -63,14 +61,14 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
             userEntrust.setSender(dataVo.getSender());
             if (idsVo.getId() != null && idsVo.getId() > 0) {
                 //更新
-                UserEntrust userEntrustCheck = mapper.selectById(idsVo.getId());
+                UserEntrust userEntrustCheck = getBaseMapper().selectById(idsVo.getId());
                 if (userEntrustCheck == null) {
                     throw new JiMuBizException("300001", "更新的记录不存在");
                 }
                 userEntrust.setId(idsVo.getId());
                 userEntrust.setPowerId(userEntrustCheck.getPowerId());
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-                mapper.updateById(userEntrust);
+                getBaseMapper().updateById(userEntrust);
             } else if (idsVo.getPowerId() != null) {
                 if (userEntrust.getReceiverId() == null) {
                     throw new JiMuBizException("300002", "请选择委托对象");
@@ -78,7 +76,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 //插入
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 userEntrust.setPowerId(idsVo.getPowerId());
-                mapper.insert(userEntrust);
+                getBaseMapper().insert(userEntrust);
             }
         }
     }
@@ -106,7 +104,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
         }
         QueryWrapper<UserEntrust> wrapper = new QueryWrapper<>();
         wrapper.eq("power_id", powerId).eq("sender", employeeId);
-        List<UserEntrust> list = this.mapper.selectList(wrapper);
+        List<UserEntrust> list = this.getBaseMapper().selectList(wrapper);
         if(!CollectionUtils.isEmpty(list)){
             for (UserEntrust u : list) {
                 if (u.getBeginTime()!=null && u.getEndTime()!=null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime()) && (new Date().getTime() <= DateUtil.getDayEnd(u.getEndTime()).getTime())) {

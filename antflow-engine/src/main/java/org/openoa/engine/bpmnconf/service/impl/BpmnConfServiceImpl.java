@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,8 +24,10 @@ import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.engine.utils.AFWrappers;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
  * @Created by AntOffice
  */
 @Service
-public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
+public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> implements BpmnConfService {
 
     private static final String linkMark = "_";
     @Autowired
@@ -108,6 +109,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         bpmnConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
         bpmnConf.setCreateTime(new Date());
         bpmnConf.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
+        bpmnConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnConfVo.setUpdateTime(new Date());
 
         this.getBaseMapper().insert(bpmnConf);
@@ -156,6 +158,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             bpmnNode.setConfId(confId);
             bpmnNode.setCreateTime(new Date());
             bpmnNode.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+            bpmnNode.setTenantId(MultiTenantUtil.getCurrentTenantId());
             bpmnNodeService.getBaseMapper().insert(bpmnNode);
 
             Long bpmnNodeId = bpmnNode.getId();
@@ -233,7 +236,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
 
     private String reCheckBpmnCode(String bpmnCodeParts, String bpmnCode) {
 
-        long count = this.getBaseMapper().selectCount(new QueryWrapper<BpmnConf>().eq("bpmn_code", bpmnCode));
+        long count = this.getBaseMapper().selectCount(AFWrappers.<BpmnConf>lambdaTenantQuery().eq(BpmnConf::getBpmnCode, bpmnCode));
 
         if (count == 0) {
             return bpmnCode;
@@ -409,10 +412,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
     public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
         bpmnConfVo.setTemplateVos(
                 bpmnTemplateService.getBaseMapper().selectList(
-                        new QueryWrapper<BpmnTemplate>()
-                                .eq("form_code", bpmnConfVo.getFormCode())
-                                .eq("is_del", 0)
-                                .isNull("node_id"))
+                        AFWrappers.<BpmnTemplate>lambdaTenantQuery()
+                                .eq(BpmnTemplate::getFormCode,bpmnConfVo.getFormCode())
+                                .isNull(BpmnTemplate::getNodeId))
                         .stream()
                         .map(o -> {
                             BpmnTemplateVo vo = new BpmnTemplateVo();
@@ -474,9 +476,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      */
     private void setViewPageButton(BpmnConfVo bpmnConfVo) {
         List<BpmnViewPageButton> bpmnViewPageButtons = bpmnViewPageButtonService.getBaseMapper().selectList(
-                new QueryWrapper<BpmnViewPageButton>()
-                        .eq("conf_id", bpmnConfVo.getId())
-                        .eq("is_del", 0));
+                Wrappers.<BpmnViewPageButton>lambdaQuery()
+                        .eq(BpmnViewPageButton::getConfId,bpmnConfVo.getId()));
 
         BpmnViewPageButtonBaseVo bpmnViewPageButtonBaseVo = new BpmnViewPageButtonBaseVo();
 
@@ -630,7 +631,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             return new HashMap<>();
         }
         return bpmnApproveRemindService.getBaseMapper().selectList(
-                new LambdaQueryWrapper<BpmnApproveRemind>()
+                AFWrappers.<BpmnApproveRemind>lambdaTenantQuery()
                         .in(BpmnApproveRemind::getNodeId, ids))
                 .stream()
                 .collect(Collectors.toMap(
@@ -657,7 +658,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         (a, b) -> a));
     }
 private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
-    List<BpmnNodeLabel> nodeLabels = nodeLabelsService.list(Wrappers.<BpmnNodeLabel>lambdaQuery().in(BpmnNodeLabel::getNodeId,ids));
+    List<BpmnNodeLabel> nodeLabels = nodeLabelsService.list(AFWrappers.<BpmnNodeLabel>lambdaTenantQuery().in(BpmnNodeLabel::getNodeId,ids));
     return nodeLabels.stream().collect(Collectors.groupingBy(BpmnNodeLabel::getNodeId));
 }
     /**
@@ -695,7 +696,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
 
     private Map<Long,List<BpmnNodeLfFormdataFieldControl>> getBpmnNodeFieldControlConfMap(List<Long> idList){
         return nodeLfFormdataFieldControlService.list(
-                Wrappers.<BpmnNodeLfFormdataFieldControl>lambdaQuery()
+                AFWrappers.<BpmnNodeLfFormdataFieldControl>lambdaTenantQuery()
                         .in(BpmnNodeLfFormdataFieldControl::getNodeId,idList)
         ).stream()
                 .collect(Collectors.toMap(
@@ -884,9 +885,10 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
         AssertUtil.throwsIfEmpty(bpmnConf,"未能根据id:查询到指定配置!",Lists.newArrayList(id));
 
         //query the old effective workflow configuration by formcode
-        BpmnConf confInDb = this.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
-                .eq("form_code", bpmnConf.getFormCode())
-                .eq("effective_status", 1));
+        BpmnConf confInDb = this.getBaseMapper().selectOne(
+                AFWrappers.<BpmnConf>lambdaTenantQuery()
+                        .eq(BpmnConf::getFormCode,bpmnConf.getFormCode())
+                        .eq(BpmnConf::getEffectiveStatus,1));
 
         if (!ObjectUtils.isEmpty(confInDb)) {
             //set the old one effective status to zero
@@ -935,7 +937,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
             List<BpmProcessAppApplication> bizAppList = bpmProcessAppApplicationService.selectApplicationList();
             Map<String, String>  bizAppMap= bizAppList
                     .stream()
-                    .collect(Collectors.toMap(p->p.getProcessKey(),p->p.getTitle()));
+                    .collect(Collectors.toMap(BpmProcessAppApplication::getProcessKey, BpmProcessAppApplication::getTitle));
             for (BpmnConfVo record : bpmnConfVos) {
                 if (record.getIsOutSideProcess() == 1){
                     record.setFormCodeDisplayName(bizAppMap.get(record.getFormCode()));
@@ -946,7 +948,7 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
             List<DIYProcessInfoDTO> diyFormCodeList = TaskMgmtService.viewProcessInfo(null);
             Map<String, String>  diyFormCodes= diyFormCodeList
                     .stream()
-                    .collect(Collectors.toMap(p->p.getKey(),p->p.getValue()));
+                    .collect(Collectors.toMap(DIYProcessInfoDTO::getKey, DIYProcessInfoDTO::getValue));
             for (BpmnConfVo record : bpmnConfVos) {
                 if (record.getIsLowCodeFlow() == 0 && record.getIsOutSideProcess() == 0){
                     record.setFormCodeDisplayName(diyFormCodes.get(record.getFormCode()));

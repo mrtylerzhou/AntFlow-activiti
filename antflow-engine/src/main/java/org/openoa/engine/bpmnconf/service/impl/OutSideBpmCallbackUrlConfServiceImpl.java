@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,6 +17,7 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper;
+import org.openoa.engine.bpmnconf.service.biz.OutSideBpmBaseServiceImpl;
 import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;

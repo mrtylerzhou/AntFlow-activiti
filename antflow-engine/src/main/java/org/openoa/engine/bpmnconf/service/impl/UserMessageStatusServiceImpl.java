@@ -6,15 +6,12 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.entity.UserMessageStatus;
 import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;
 
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusMapper, UserMessageStatus> {
-
-
-    @Autowired
-    private UserMessageStatusMapper mapper;
+public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusMapper, UserMessageStatus> implements UserMessageStatusService {
 
 
     //update insert sms
@@ -25,12 +22,12 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setMessageStatus(userMessageStatus.getMessageStatus());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -44,12 +41,12 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setMailStatus(userMessageStatus.getMailStatus());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -63,12 +60,12 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setShock(userMessageStatus.getShock());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -82,12 +79,12 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setOpenPhone(userMessageStatus.getOpenPhone());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -102,12 +99,12 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setSound(userMessageStatus.getSound());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -121,14 +118,14 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
             //insert
             userMessageStatus.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatus.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-            mapper.insert(userMessageStatus);
+            getBaseMapper().insert(userMessageStatus);
         } else {
             //update
             userMessageStatusInfo.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             userMessageStatusInfo.setNotTrouble(userMessageStatus.getNotTrouble());
             userMessageStatusInfo.setNotTroubleTimeBegin(userMessageStatus.getNotTroubleTimeBegin());
             userMessageStatusInfo.setNotTroubleTimeEnd(userMessageStatus.getNotTroubleTimeEnd());
-            mapper.updateById(userMessageStatusInfo);
+            getBaseMapper().updateById(userMessageStatusInfo);
         }
         return true;
     }
@@ -137,7 +134,7 @@ public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusM
     private UserMessageStatus getUserMessageStatus() {
         QueryWrapper<UserMessageStatus> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id",  SecurityUtils.getLogInEmpIdSafe());
-        return this.mapper.selectOne(wrapper);
+        return this.getBaseMapper().selectOne(wrapper);
     }
 
 }

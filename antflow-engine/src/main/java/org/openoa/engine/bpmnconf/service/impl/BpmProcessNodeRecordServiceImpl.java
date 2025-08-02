@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeRecord;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeRecordMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -11,7 +12,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 
 @Service
-public class BpmProcessNodeRecordServiceImpl extends ServiceImpl<BpmProcessNodeRecordMapper, BpmProcessNodeRecord> {
+public class BpmProcessNodeRecordServiceImpl extends ServiceImpl<BpmProcessNodeRecordMapper, BpmProcessNodeRecord> implements BpmProcessNodeRecordService {
 
     @Autowired
     private BpmProcessNodeRecordMapper mapper;

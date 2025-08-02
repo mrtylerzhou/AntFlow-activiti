@@ -11,6 +11,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmProcessAppData;
 import org.openoa.engine.bpmnconf.confentity.QuickEntry;
 import org.openoa.engine.bpmnconf.confentity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppDataMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
 import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  *  app process go online service
  */
 @Service
-public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataMapper, BpmProcessAppData> {
+public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataMapper, BpmProcessAppData> implements BpmProcessAppDataService {
 
     @Autowired
     private BpmProcessAppDataMapper bpmProcessAppDataMapper;

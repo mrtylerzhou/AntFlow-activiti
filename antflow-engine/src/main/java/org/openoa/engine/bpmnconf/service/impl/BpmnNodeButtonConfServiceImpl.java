@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.engine.bpmnconf.confentity.BpmnNodeButtonConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -68,6 +70,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                     .buttonPageType(AUDIT.getCode())
                     .buttonType(BUTTON_TYPE_RESUBMIT.getCode())
                     .buttonName(ButtonTypeEnum.getDescByCode(BUTTON_TYPE_RESUBMIT.getCode()))
+                    .tenantId(MultiTenantUtil.getCurrentTenantId())
                     .build());
         }
     }
@@ -82,6 +85,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                         .buttonPageType(buttonPageTypeEnum.getCode())
                         .buttonType(o)
                         .buttonName(ButtonTypeEnum.getDescByCode(o))
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -20,6 +20,9 @@ import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
+import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -103,8 +106,8 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
                         .eq("ENTRY_ID", bpmnStartConditions.getEntryId()));
         if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
              bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
-                    new QueryWrapper<BpmBusinessProcess>()
-                            .eq("BUSINESS_NUMBER", bpmnStartConditions.getProcessNum()));
+                   AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                            .eq(BpmBusinessProcess::getBusinessNumber, bpmnStartConditions.getProcessNum()));
             String procInstId = bpmBusinessProcess.getProcInstId();
             runtimeService.deleteProcessInstance(procInstId,"migration");
         }
@@ -123,7 +126,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
 
 
         //get the first task and complete it
-        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).taskTenantId(MultiTenantUtil.getCurrentTenantId()).list();
         if (!ObjectUtils.isEmpty(tasks)) {
             Task task = tasks.get(0);
             Map<String,Object> varMap=new HashMap<>();

@@ -8,7 +8,6 @@ import jodd.bean.BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
-import org.openoa.base.constant.enums.DeduplicationTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
@@ -17,12 +16,11 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.Employee;
 import org.openoa.engine.bpmnconf.confentity.*;
-import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmBusinessPartyService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
  * @since 0.5
  */
 @Service
-public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBusinessPartyMapper, OutSideBpmBusinessParty> {
+public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBusinessPartyMapper, OutSideBpmBusinessParty> implements OutSideBpmBusinessPartyService {
 
     @Autowired
     private OutSideBpmBusinessPartyMapper outSideBpmBusinessPartyMapper;

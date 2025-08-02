@@ -15,6 +15,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -137,6 +138,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                                         .createUser(SecurityUtils.getLogInEmpName())
                                         .updateTime(new Date())
                                         .updateUser(SecurityUtils.getLogInEmpName())
+                                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                                         .build())
                         .collect(Collectors.toList()));
             }
@@ -155,6 +157,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                         bpmnNodeRoleOutsideEmpConf.setEmplName(baseIdTranStruVo.getName());
                         bpmnNodeRoleOutsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpName());
                         bpmnNodeRoleOutsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+                        bpmnNodeRoleOutsideEmpConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
                         bpmnNodeRoleOutsideEmpConfs.add(bpmnNodeRoleOutsideEmpConf);
                     }
                     bpmnNodeRoleOutsideEmpConfService.saveBatch(bpmnNodeRoleOutsideEmpConfs);

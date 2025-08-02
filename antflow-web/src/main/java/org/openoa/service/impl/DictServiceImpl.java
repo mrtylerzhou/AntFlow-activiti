@@ -11,7 +11,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.service.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.DictData;

@@ -18,6 +18,7 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.constant.enums.ProcessEnum;
 
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -26,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class BpmProcessNodeOvertimeServiceImpl extends ServiceImpl<BpmProcessNodeOvertimeMapper, BpmProcessNodeOvertime> {
+public class BpmProcessNodeOvertimeServiceImpl extends ServiceImpl<BpmProcessNodeOvertimeMapper, BpmProcessNodeOvertime> implements BpmProcessNodeOvertimeService {
 
     @Autowired
     private BpmProcessNodeOvertimeMapper bpmProcessNodeOvertimeMapper;

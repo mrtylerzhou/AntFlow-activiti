@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmAdminPersonnelMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * @since 0.5
  */
 @Service
-public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> {
+public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> implements OutSideBpmAdminPersonnelService {
 
     @Autowired
     private OutSideBpmAdminPersonnelMapper outSideBpmAdminPersonnelMapper;

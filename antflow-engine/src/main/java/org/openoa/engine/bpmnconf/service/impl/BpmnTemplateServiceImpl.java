@@ -10,6 +10,8 @@ import org.openoa.engine.bpmnconf.mapper.BpmnTemplateMapper;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnTemplateVo;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> {
+public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> implements BpmnTemplateService {
 
     public void editBpmnTemplate(BpmnConfVo bpmnConfVo, Long confId) {
         List<BpmnTemplateVo> templateVos = bpmnConfVo.getTemplateVos();
@@ -39,6 +41,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                     bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
                     bpmnTemplate.setFormCode(bpmnConfVo.getFormCode());
                     bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+                    bpmnTemplate.setTenantId(MultiTenantUtil.getCurrentTenantId());
                     return bpmnTemplate;
                 })
                 .collect(Collectors.toList());
@@ -67,6 +70,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                             bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
                             bpmnTemplate.setFormCode(bpmnNodeVo.getFormCode());
                             bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+                            bpmnTemplate.setTenantId(MultiTenantUtil.getCurrentTenantId());
                             return bpmnTemplate;
                         })
                         .collect(Collectors.toList()));

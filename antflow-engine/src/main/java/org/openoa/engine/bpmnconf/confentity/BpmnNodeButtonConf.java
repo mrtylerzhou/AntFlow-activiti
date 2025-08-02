@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.impl;
+package org.openoa.engine.bpmnconf.confentity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

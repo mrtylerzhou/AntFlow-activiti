@@ -10,6 +10,7 @@ import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmnNodeHrbpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeHrbpConfServiceImpl;
+import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -87,6 +88,7 @@ public class NodePropertyHrbpAdp extends BpmnNodeAdaptor {
         bpmnNodeHrbpConf.setCreateUser(SecurityUtils.getLogInEmpName());
         bpmnNodeHrbpConf.setUpdateTime(new Date());
         bpmnNodeHrbpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+        bpmnNodeHrbpConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeHrbpConfService.save(bpmnNodeHrbpConf);
     }
 

@@ -8,6 +8,7 @@ import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpMapper;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class BpmVariableSignUpServiceImpl extends ServiceImpl<BpmVariableSignUpMapper, BpmVariableSignUp> {
+public class BpmVariableSignUpServiceImpl extends ServiceImpl<BpmVariableSignUpMapper, BpmVariableSignUp> implements BpmVariableSignUpService {
 
 
     @Autowired
