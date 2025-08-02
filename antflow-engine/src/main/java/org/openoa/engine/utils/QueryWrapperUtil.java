@@ -14,23 +14,6 @@ public class QueryWrapperUtil {
         }
         return wrapper;
     }
-    public static <T extends TenantField> LambdaQueryWrapper<T> addTenantCondition(LambdaQueryWrapper<T> wrapper) {
-        String tenantId = MultiTenantUtil.getCurrentTenantId();
-        wrapper.eq(IsDelField::getIsDel,0);
-        if (MultiTenantUtil.strictTenantMode()&&!StringUtils.isEmpty(tenantId)) {
-            wrapper.eq(TenantField::getTenantId, tenantId);
-        }
-        return wrapper;
-    }
-    public static <T extends TenantField> LambdaQueryWrapper<T> buildWithTenant(){
-        LambdaQueryWrapper<T> wrapper=new LambdaQueryWrapper<>();
-        String tenantId = MultiTenantUtil.getCurrentTenantId();
-        wrapper.eq(IsDelField::getIsDel,0);
-        if (MultiTenantUtil.strictTenantMode()&&!StringUtils.isEmpty(tenantId)) {
-            wrapper.eq(TenantField::getTenantId, tenantId);
-        }
-        return wrapper;
-    }
     public static <T> LambdaQueryWrapper<T> buildWithTenant( SFunction<T, ?> tenantColumn){
         String tenantId = MultiTenantUtil.getCurrentTenantId();
         LambdaQueryWrapper<T> wrapper=new LambdaQueryWrapper<>();

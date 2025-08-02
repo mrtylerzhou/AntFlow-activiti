@@ -26,7 +26,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnViewPageButtonBizServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.utils.AF;
+import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,8 +262,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      * @return
      */
     public BpmnConfVo detail(String bpmnCode) {
-        BpmnConf bpmnConf = this.getBaseMapper().selectOne(AF.WT(new LambdaQueryWrapper<BpmnConf>()
-                .eq(BpmnConf::getBpmnCode, bpmnCode)));
+        BpmnConf bpmnConf = this.getBaseMapper().selectOne(AFWrappers.<BpmnConf>lambdaTenantQuery()
+                .eq(BpmnConf::getBpmnCode, bpmnCode));
         return getBpmnConfVo(bpmnConf);
     }
 
@@ -350,9 +350,9 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
         ProcessorFactory.executePreReadProcessors(bpmnConfVo);
         //set nodes
         List<BpmnNode> bpmnNodes = bpmnNodeService.getBaseMapper()
-                .selectList(AF.WT(new LambdaQueryWrapper<BpmnNode>()
+                .selectList(AFWrappers.<BpmnNode>lambdaTenantQuery()
                         .eq(BpmnNode::getConfId,bpmnConf.getId())
-                        .eq(BpmnNode::getIsDel,0)));
+                        .eq(BpmnNode::getIsDel,0));
 
         boolean isOutSideProcess=bpmnConf.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1;
         boolean isLowCodeFlow=bpmnConf.getIsLowCodeFlow()!=null&&bpmnConf.getIsLowCodeFlow()==1;
@@ -609,9 +609,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             return new HashMap<>();
         }
         return bpmnTemplateService.getBaseMapper().selectList(
-                new QueryWrapper<BpmnTemplate>()
-                        .in("node_id", ids)
-                        .eq("is_del", 0))
+                AFWrappers.<BpmnTemplate>lambdaTenantQuery()
+                        .in(BpmnTemplate::getNodeId, ids))
                 .stream()
                 .collect(Collectors.toMap(
                         BpmnTemplate::getNodeId,
@@ -631,9 +630,8 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
             return new HashMap<>();
         }
         return bpmnApproveRemindService.getBaseMapper().selectList(
-                new QueryWrapper<BpmnApproveRemind>()
-                        .in("node_id", ids)
-                        .eq("is_del", 0))
+                new LambdaQueryWrapper<BpmnApproveRemind>()
+                        .in(BpmnApproveRemind::getNodeId, ids))
                 .stream()
                 .collect(Collectors.toMap(
                         BpmnApproveRemind::getNodeId,
@@ -669,9 +667,9 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
      * @return
      */
     private Map<Long, BpmnNodeSignUpConf> getBpmnNodeSignUpConfMap(List<Long> idList) {
-        return bpmnNodeSignUpConfService.getBaseMapper().selectList(new QueryWrapper<BpmnNodeSignUpConf>()
-                .in("bpmn_node_id", idList)
-                .eq("is_del", 0)).stream()
+        return bpmnNodeSignUpConfService.getBaseMapper().selectList(AFWrappers.<BpmnNodeSignUpConf>lambdaTenantQuery()
+                        .in(BpmnNodeSignUpConf::getBpmnNodeId, idList))
+                .stream()
                 .collect(Collectors.toMap(BpmnNodeSignUpConf::getBpmnNodeId, o -> o));
     }
 
@@ -683,8 +681,8 @@ private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
      */
     private Map<Long, List<BpmnNodeButtonConf>> getBpmnNodeButtonConfMap(List<Long> idList) {
         return bpmnNodeButtonConfService.getBaseMapper().selectList(
-                AF.WT(new LambdaQueryWrapper<BpmnNodeButtonConf>()
-                        .in(BpmnNodeButtonConf::getBpmnNodeId, idList)))
+                AFWrappers.<BpmnNodeButtonConf>lambdaTenantQuery()
+                        .in(BpmnNodeButtonConf::getBpmnNodeId, idList))
                 .stream()
                 .collect(Collectors.toMap(
                         BpmnNodeButtonConf::getBpmnNodeId,
