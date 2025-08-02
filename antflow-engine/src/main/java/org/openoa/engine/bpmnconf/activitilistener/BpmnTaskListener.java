@@ -31,7 +31,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
-import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
+import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;

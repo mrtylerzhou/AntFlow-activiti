@@ -1,8 +1,6 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.engine.utils;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
 import jodd.util.StringUtil;
@@ -10,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
-import org.openoa.base.util.DateUtil;
 import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
@@ -21,7 +18,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 

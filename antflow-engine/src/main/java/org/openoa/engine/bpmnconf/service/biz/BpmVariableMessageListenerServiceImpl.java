@@ -7,7 +7,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
-import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
+import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;

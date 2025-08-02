@@ -23,7 +23,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsConfServiceImpl
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsParamConfServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.engine.bpmnconf.util.BpmnConfNodePropertyConverter;
+import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
 import org.openoa.engine.utils.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.engine.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;

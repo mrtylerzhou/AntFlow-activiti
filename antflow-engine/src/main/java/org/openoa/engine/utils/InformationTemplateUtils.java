@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.engine.utils;
 
 import org.openoa.base.constant.enums.WildcardCharacterEnum;
 import org.openoa.base.vo.InformationTemplateVo;

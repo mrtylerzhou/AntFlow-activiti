@@ -26,7 +26,7 @@ import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
-import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
+import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;

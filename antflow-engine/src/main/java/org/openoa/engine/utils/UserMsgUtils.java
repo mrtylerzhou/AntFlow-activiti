@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.util;
+package org.openoa.engine.utils;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -12,7 +12,6 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.MessageServiceImpl;
-import org.openoa.engine.factory.AdaptorFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

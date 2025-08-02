@@ -28,7 +28,7 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
-import org.openoa.engine.bpmnconf.util.JsonUtils;
+import org.openoa.engine.utils.JsonUtils;
 import org.openoa.engine.vo.CallbackReqVo;
 import org.openoa.engine.vo.CallbackRespVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
