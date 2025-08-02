@@ -68,7 +68,7 @@ public class UserMessage implements TenantField, Serializable {
      * 0 for not deleted 1 for deleted
      */
     @TableField("is_del")
-    private Boolean del;
+    private Integer isDel;
     @TableField("tenant_id")
     private String tenantId;
     @TableField("create_time")

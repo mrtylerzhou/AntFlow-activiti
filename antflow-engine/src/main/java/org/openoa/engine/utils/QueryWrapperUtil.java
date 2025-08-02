@@ -3,6 +3,7 @@ package org.openoa.engine.utils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.interf.IsDelField;
 import org.openoa.base.interf.TenantField;
 
 public class QueryWrapperUtil {
@@ -13,16 +14,18 @@ public class QueryWrapperUtil {
         }
         return wrapper;
     }
-    public static <T extends TenantField> LambdaQueryWrapper<T> addTenantCondition(LambdaQueryWrapper<T> wrapper,T entity) {
+    public static <T extends TenantField> LambdaQueryWrapper<T> addTenantCondition(LambdaQueryWrapper<T> wrapper) {
         String tenantId = MultiTenantUtil.getCurrentTenantId();
+        wrapper.eq(IsDelField::getIsDel,0);
         if (MultiTenantUtil.strictTenantMode()&&!StringUtils.isEmpty(tenantId)) {
             wrapper.eq(TenantField::getTenantId, tenantId);
         }
         return wrapper;
     }
-    public static <T extends TenantField> LambdaQueryWrapper<T> buildWithTenant(T entity){
+    public static <T extends TenantField> LambdaQueryWrapper<T> buildWithTenant(){
         LambdaQueryWrapper<T> wrapper=new LambdaQueryWrapper<>();
         String tenantId = MultiTenantUtil.getCurrentTenantId();
+        wrapper.eq(IsDelField::getIsDel,0);
         if (MultiTenantUtil.strictTenantMode()&&!StringUtils.isEmpty(tenantId)) {
             wrapper.eq(TenantField::getTenantId, tenantId);
         }

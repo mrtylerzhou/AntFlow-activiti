@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.NodePropertyEnum;
@@ -10,6 +11,7 @@ import org.openoa.engine.bpmnconf.confentity.BpmnNodeTo;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
+import org.openoa.engine.utils.AF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -40,9 +42,8 @@ public class NodeAdditionalInfoServiceImpl {
 
     public Map<Long, List<String>> getBpmnNodeToMap(List<Long> idList) {
         return bpmnNodeToService.getBaseMapper().selectList(
-                        new QueryWrapper<BpmnNodeTo>()
-                                .in("bpmn_node_id", idList)
-                                .eq("is_del", 0))
+                        AF.WT(new LambdaQueryWrapper<BpmnNodeTo>()
+                                .in(BpmnNodeTo::getBpmnNodeId, idList)))
                 .stream()
                 .collect(Collectors.toMap(
                         BpmnNodeTo::getBpmnNodeId,

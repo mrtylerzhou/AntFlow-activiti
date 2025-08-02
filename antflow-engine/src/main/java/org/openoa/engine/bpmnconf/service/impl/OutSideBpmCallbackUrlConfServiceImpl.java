@@ -9,6 +9,7 @@ import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -18,7 +19,9 @@ import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmCallbackUrlConfMapper;
+import org.openoa.engine.utils.AF;
 import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.engine.utils.QueryWrapperUtil;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
@@ -220,10 +223,9 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
     public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
 
         OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper()
-                .selectList(new LambdaQueryWrapper<OutSideBpmCallbackUrlConf>()
+                .selectList(AF.WT(new LambdaQueryWrapper<OutSideBpmCallbackUrlConf>()
                         .eq(OutSideBpmCallbackUrlConf::getBusinessPartyId,businessPartyId)
-                        .eq(OutSideBpmCallbackUrlConf::getStatus,1)
-                        .eq(!StringUtils.isEmpty(MultiTenantUtil.getCurrentTenantId()), OutSideBpmCallbackUrlConf::getTenantId, MultiTenantUtil.getCurrentTenantId())
+                        .eq(OutSideBpmCallbackUrlConf::getStatus,1))
                 )
                 .stream()
                 .findFirst()

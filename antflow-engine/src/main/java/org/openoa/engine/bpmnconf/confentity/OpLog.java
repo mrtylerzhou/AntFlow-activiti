@@ -94,7 +94,7 @@ public class OpLog implements TenantField, Serializable {
      */
     private String remark;
     @TableField("is_del")
-    private Boolean del;
+    private Integer isDel;
     @TableField("tenant_id")
     private String tenantId;
     @Tolerate

@@ -20,6 +20,7 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
+import org.openoa.engine.utils.AF;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -310,11 +311,12 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
      */
     public BpmProcessAppApplicationVo getApplicationUrl(String businessCode, String processKey) {
         if (!StringUtil.isEmpty(businessCode) &&!StringUtil.isEmpty(processKey)) {
+
             List<BpmProcessAppApplication> list = this.list(
-                    new LambdaQueryWrapper<BpmProcessAppApplication>()
+                    AF.WT( new LambdaQueryWrapper<BpmProcessAppApplication>()
                             .eq(BpmProcessAppApplication::getBusinessCode,businessCode)
-                            .eq(BpmProcessAppApplication::getProcessKey,processKey)
-                            .eq(BpmProcessAppApplication::getIsDel,0));
+                            .eq(BpmProcessAppApplication::getProcessKey,processKey))
+                    );
 
             if (!CollectionUtils.isEmpty(list)) {
                 BpmProcessAppApplication application = list.get(0);
