@@ -21,7 +21,6 @@
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
-        <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
     </div>
 </template>
 
@@ -261,16 +260,7 @@ function uniqueByMap(arr) {
     }
     const res = new Map();
     return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
-}
-
-/**
- * 关闭当前审批页
- */
-const close = async () => {
-    const obj = { path: "/flowTask/pendding" };
-    proxy.$tab.closeOpenPage(obj);
-}
-
+} 
 </script>
 <style lang="scss" scoped>
 .component {
