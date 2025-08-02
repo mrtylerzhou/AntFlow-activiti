@@ -1,12 +1,5 @@
 <template>
     <div class="approve-container">
-        <el-header>
-            <div class="approval-btns" v-for="btn in approvalButtons">
-                <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
-                    @click="clickApproveSubmit(btn.value)"> {{ btn.label }}
-                </el-button>
-            </div>
-        </el-header>
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
@@ -17,6 +10,13 @@
                 </div>
             </el-scrollbar>
         </el-main>
+        <el-footer>
+            <div class="approval-btns" v-for="btn in approvalButtons">
+                <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
+                    @click="clickApproveSubmit(btn.value)"> {{ btn.label }}
+                </el-button>
+            </div>
+        </el-footer>
         <transfer-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
@@ -287,17 +287,33 @@ const close = async () => {
     margin: 16px 5px;
 }
 
-.approve-container .el-header {
-    box-shadow: var(--el-box-shadow-light);
-    background-color: #f2f3f4f5;
+.approve-container {
+    position: relative;
+    height: 82vh;
+    /* 让容器撑满页面高度，确保footer在底部 */
+    display: flex;
+    flex-direction: column;
 }
 
 .approve-container .el-main {
     background-color: #fff;
     color: var(--el-text-color-primary);
     border-radius: 5px;
-    height: 59vh;
+    flex: 1 1 auto;
     width: 100%;
+    margin-bottom: 0;
+    overflow: auto;
+    /* 让el-main自动撑满剩余高度 */
+}
+
+.approve-container .el-footer {
+    box-shadow: var(--el-box-shadow-light);
+    background-color: #f2f3f4f5;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
 }
 
 .approve-container .toolbar {

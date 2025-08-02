@@ -75,8 +75,8 @@
             <div class="layout-middle">
                 <el-scrollbar>
                     <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
-                    <div class="form-content" v-if="approveFormDataConfig">
-                        <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <div v-if="approveFormDataConfig">
+                        <el-tabs v-model="activeName" @tab-click="handleClick" class="content-tabs">
                             <el-tab-pane label="表单信息" name="baseTab">
                                 <div v-if="activeName === 'baseTab'">
                                     <ApporveForm :approveFormData="approveFormDataConfig"
@@ -263,18 +263,7 @@ const handleClick = (tab, event) => {
     background-color: #f2f3f4f5;
 }
 
-.layout-middle .form-content {
-    box-shadow: var(--el-box-shadow-light);
-    border-bottom: 10px;
-    margin-top: 2px;
-    background-color: #fff;
-    height: calc(-97px + 100vh);
-    width: 100%;
-    padding: 10px;
-    min-width: 560px;
-}
-
-.layout-middle .form-content .content-tabs {
+.layout-middle .content-tabs {
     padding: 10px;
 }
 
