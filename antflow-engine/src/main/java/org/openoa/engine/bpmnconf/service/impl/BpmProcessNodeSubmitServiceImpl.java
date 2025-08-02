@@ -11,7 +11,7 @@ import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
+import org.openoa.base.entity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeSubmitMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmitService;

@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.engine.bpmnconf.confentity.OpLog;
+import org.openoa.base.entity.OpLog;
 import org.openoa.engine.bpmnconf.mapper.OpLogMapper;
 import org.openoa.base.util.JimuJsonUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.OpLogService;

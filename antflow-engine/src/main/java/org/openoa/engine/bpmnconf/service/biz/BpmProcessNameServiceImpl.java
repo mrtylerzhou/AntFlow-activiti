@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmProcessName;
 import org.openoa.base.entity.BpmProcessNameRelevancy;
 import org.openoa.base.vo.BpmProcessVo;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNameMapper;
 import org.springframework.beans.factory.annotation.Autowired;

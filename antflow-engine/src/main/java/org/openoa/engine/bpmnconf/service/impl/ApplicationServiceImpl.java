@@ -11,13 +11,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.entity.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
 import org.openoa.engine.bpmnconf.service.biz.OutSideBpmBaseServiceImpl;
 

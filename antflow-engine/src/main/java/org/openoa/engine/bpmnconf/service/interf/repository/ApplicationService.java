@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service.interf.repository;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication;
+import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.engine.vo.BaseApplicationVo;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessCategoryVo;

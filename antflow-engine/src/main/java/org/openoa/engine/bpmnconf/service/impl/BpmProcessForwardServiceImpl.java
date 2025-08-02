@@ -6,8 +6,9 @@ import com.google.common.base.Strings;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
+
 import org.openoa.engine.bpmnconf.mapper.BpmProcessForwardMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;

@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.QuickEntryMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.QuickEntry">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.QuickEntry">
         <id column="id" property="id"/>
         <result column="title" property="title"/>
         <result column="effective_source" property="effectiveSource"/>

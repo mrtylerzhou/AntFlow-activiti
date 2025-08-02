@@ -2,7 +2,8 @@ package org.openoa.engine.bpmnconf.service.interf.repository;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.openoa.engine.bpmnconf.confentity.BpmFlowruninfo;
+import org.openoa.base.entity.BpmFlowruninfo;
+
 
 public interface BpmFlowruninfoService extends IService<BpmFlowruninfo> {
     void createFlowRunInfo(String entryId, String processInstance) throws Exception;

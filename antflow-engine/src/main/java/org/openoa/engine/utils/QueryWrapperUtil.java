@@ -3,8 +3,7 @@ package org.openoa.engine.utils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.interf.IsDelField;
-import org.openoa.base.interf.TenantField;
+import org.openoa.base.util.MultiTenantUtil;
 
 public class QueryWrapperUtil {
     public static <T> LambdaQueryWrapper<T> addTenantCondition(LambdaQueryWrapper<T> wrapper, SFunction<T, ?> tenantColumn) {

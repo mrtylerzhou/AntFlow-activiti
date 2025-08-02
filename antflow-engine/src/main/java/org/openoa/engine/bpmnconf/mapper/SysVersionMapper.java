@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.dto.PageDto;
-import org.openoa.engine.bpmnconf.confentity.SysVersion;
+import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.vo.SysVersionVo;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

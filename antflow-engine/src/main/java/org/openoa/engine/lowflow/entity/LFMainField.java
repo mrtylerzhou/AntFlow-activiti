@@ -1,11 +1,8 @@
 package org.openoa.engine.lowflow.entity;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.annotation.*;
 import com.google.common.base.Strings;
 import lombok.Data;
-import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
@@ -13,12 +10,10 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SnowFlake;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnConfLfFormdataField;
 import org.springframework.util.CollectionUtils;
 
-import java.io.PipedReader;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Data

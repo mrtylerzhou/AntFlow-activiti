@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmnNodeConditionsConf;
+import org.openoa.base.entity.OutSideBpmnNodeConditionsConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmnNodeConditionsConfServiceImpl;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

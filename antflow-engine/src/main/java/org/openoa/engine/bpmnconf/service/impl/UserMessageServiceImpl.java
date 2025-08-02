@@ -15,7 +15,7 @@ import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.confentity.UserEmailSend;
+import org.openoa.base.entity.UserEmailSend;
 import org.openoa.engine.bpmnconf.mapper.UserEmailSendMapper;
 import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
 import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;

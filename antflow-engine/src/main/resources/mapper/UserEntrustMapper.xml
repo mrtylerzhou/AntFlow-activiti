@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.UserEntrustMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.UserEntrust">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.UserEntrust">
         <id column="id" property="id"/>
         <result column="sender" property="sender"/>
         <result column="receiver_id" property="receiverId"/>

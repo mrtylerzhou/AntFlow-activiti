@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeRecord;
+import org.openoa.base.entity.BpmProcessNodeRecord;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeRecordMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeRecordService;
 import org.springframework.beans.factory.annotation.Autowired;

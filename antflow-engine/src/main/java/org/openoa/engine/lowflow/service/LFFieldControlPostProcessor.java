@@ -5,7 +5,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.LFFieldControlVO;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeLfFormdataFieldControl;
+import org.openoa.base.entity.BpmnNodeLfFormdataFieldControl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLfFormdataFieldControlServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

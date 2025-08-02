@@ -9,7 +9,7 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
+import org.openoa.base.entity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

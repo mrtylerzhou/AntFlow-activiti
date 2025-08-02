@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmAdminPersonnelMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.OutSideBpmAdminPersonnel">
         <id column="id" property="id"/>
         <result column="business_party_id" property="businessPartyId"/>
         <result column="type" property="type"/>

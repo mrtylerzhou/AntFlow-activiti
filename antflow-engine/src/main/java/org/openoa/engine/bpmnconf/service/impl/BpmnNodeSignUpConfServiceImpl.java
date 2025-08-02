@@ -2,12 +2,12 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeSignUpConf;
+import org.openoa.base.entity.BpmnNodeSignUpConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeSignUpConfMapper;
 import org.openoa.base.vo.BpmnNodeVo;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeSignUpConfService;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 

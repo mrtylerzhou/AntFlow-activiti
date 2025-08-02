@@ -2,16 +2,13 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import org.activiti.engine.impl.util.CollectionUtil;
-import org.openoa.engine.bpmnconf.confentity.DefaultTemplate;
+import org.openoa.base.entity.DefaultTemplate;
 import org.openoa.engine.bpmnconf.mapper.DefaultTemplateMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class DefaultTemplateServiceImpl extends ServiceImpl<DefaultTemplateMapper, DefaultTemplate> implements DefaultTemplateService {

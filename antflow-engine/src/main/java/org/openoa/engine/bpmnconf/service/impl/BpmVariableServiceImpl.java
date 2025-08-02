@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -10,11 +9,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.entity.BpmVariable;
+import org.openoa.base.entity.BpmVariableSignUpPersonnel;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
@@ -25,7 +23,6 @@ import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;

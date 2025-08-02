@@ -5,7 +5,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.engine.bpmnconf.confentity.BpmTaskconfig;
+import org.openoa.base.entity.BpmTaskconfig;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;

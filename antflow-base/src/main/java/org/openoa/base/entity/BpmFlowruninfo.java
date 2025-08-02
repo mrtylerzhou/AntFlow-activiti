@@ -1,0 +1,72 @@
+package org.openoa.base.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author AntFlow
+ * @since 0.5
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("bpm_flowruninfo")
+public class BpmFlowruninfo implements TenantField, Serializable {
+
+
+    /**
+     * id
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+    /**
+     * process instance id
+     */
+    private Long runinfoid;
+    /**
+     * create user id
+     */
+    @TableField("create_UserId")
+    private String createUserId;
+    /**
+     * entity key
+     */
+    private String entitykey;
+    /**
+     * entity class
+     */
+    private String entityclass;
+    /**
+     * entity type
+     */
+    private String entitykeytype;
+    /**
+     * created by
+     */
+    private String createactor;
+    /**
+     * creator department
+     */
+    private String createdepart;
+    /**
+     * create date
+     */
+    private Date createdate;
+
+    @TableField("is_del")
+    public Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
+
+}

@@ -27,7 +27,6 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
-import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMessageMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
@@ -35,7 +34,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableMessageSe
 import org.openoa.engine.utils.InformationTemplateUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

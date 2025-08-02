@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.PersonnelRuleVO;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeOutSideAccessConf;
+import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeOutSideAccessConfServiceImpl;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

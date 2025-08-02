@@ -4,7 +4,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessCategory;
+import org.openoa.base.entity.BpmProcessCategory;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;

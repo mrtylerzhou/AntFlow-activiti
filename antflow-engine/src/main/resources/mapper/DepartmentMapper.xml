@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.DepartmentMapper">
 
-    <select id="ListSubDepartmentByEmployeeId" resultType="org.openoa.engine.bpmnconf.confentity.Department">
+    <select id="ListSubDepartmentByEmployeeId" resultType="org.openoa.base.entity.Department">
         select id,name from t_department
         <where>
             <if test="employeeId != null">
@@ -10,7 +10,7 @@
             </if>
         </where>
     </select>
-    <select id="getDepartmentByEmployeeId" resultType="org.openoa.engine.bpmnconf.confentity.Department">
+    <select id="getDepartmentByEmployeeId" resultType="org.openoa.base.entity.Department">
         select id,name from t_department
         <where>
             <if test="employeeId != null">

@@ -3,9 +3,11 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
-import org.openoa.engine.bpmnconf.confentity.BpmVariable;
+
+import org.openoa.base.entity.BpmVariable;
+import org.openoa.base.entity.BpmVariableSignUp;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
+
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpMapper;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;

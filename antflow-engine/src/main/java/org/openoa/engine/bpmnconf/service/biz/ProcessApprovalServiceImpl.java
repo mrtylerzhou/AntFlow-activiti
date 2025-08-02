@@ -16,7 +16,7 @@ import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.SortTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;

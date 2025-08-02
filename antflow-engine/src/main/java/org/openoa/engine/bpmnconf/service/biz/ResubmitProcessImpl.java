@@ -11,7 +11,7 @@ import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnNodeLabelVO;
-import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
+import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;

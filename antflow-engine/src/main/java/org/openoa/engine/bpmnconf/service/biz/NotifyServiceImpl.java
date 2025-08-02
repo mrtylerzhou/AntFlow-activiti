@@ -13,7 +13,7 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
-import org.openoa.engine.bpmnconf.confentity.BpmManualNotify;
+import org.openoa.base.entity.BpmManualNotify;
 import org.openoa.engine.bpmnconf.mapper.*;
 import org.openoa.engine.bpmnconf.service.impl.BpmTaskconfigServiceImpl;
 import org.openoa.engine.utils.MessageUtils;

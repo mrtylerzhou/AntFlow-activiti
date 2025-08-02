@@ -7,7 +7,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.interf.ConditionService;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.engine.bpmnconf.confentity.BpmDynamicConditionChoosen;
+import org.openoa.base.entity.BpmDynamicConditionChoosen;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;

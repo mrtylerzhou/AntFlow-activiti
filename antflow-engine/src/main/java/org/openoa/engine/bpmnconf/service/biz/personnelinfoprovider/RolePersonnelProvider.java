@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
@@ -9,7 +8,6 @@ import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.*;
 import org.openoa.common.util.AssigneeVoBuildUtils;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmApproveTemplateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

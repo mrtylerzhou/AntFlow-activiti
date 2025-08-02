@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.TenantField;
+import org.openoa.base.util.MultiTenantUtil;
 
 public class AFWrappers {
     public static <T extends TenantField> LambdaQueryWrapper<T> lambdaTenantQuery() {

@@ -24,7 +24,7 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
+import org.openoa.base.entity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;

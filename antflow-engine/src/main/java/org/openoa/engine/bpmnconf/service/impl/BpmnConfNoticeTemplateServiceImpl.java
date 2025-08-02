@@ -1,10 +1,9 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.constant.enums.MsgNoticeTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfNoticeTemplate;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfNoticeTemplateDetail;
+import org.openoa.base.entity.BpmnConfNoticeTemplate;
+import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfNoticeTemplateMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateService;

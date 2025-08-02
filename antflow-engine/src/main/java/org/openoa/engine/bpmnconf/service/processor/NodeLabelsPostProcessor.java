@@ -6,7 +6,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeLabel;
+import org.openoa.base.entity.BpmnNodeLabel;
 import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

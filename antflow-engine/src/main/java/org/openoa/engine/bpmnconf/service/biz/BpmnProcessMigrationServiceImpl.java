@@ -13,7 +13,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
+import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.TripleConsumer;

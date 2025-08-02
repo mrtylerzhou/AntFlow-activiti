@@ -2,12 +2,12 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.entity.BpmnNodeTo;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeTo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeToMapper;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeToService;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

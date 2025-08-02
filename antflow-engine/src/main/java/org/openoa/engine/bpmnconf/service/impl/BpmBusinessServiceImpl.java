@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.confentity.BpmBusiness;
+import org.openoa.base.entity.BpmBusiness;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmBusinessService;

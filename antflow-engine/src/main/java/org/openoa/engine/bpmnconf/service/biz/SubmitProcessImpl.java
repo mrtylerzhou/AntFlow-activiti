@@ -17,7 +17,7 @@ import org.openoa.base.entity.BpmProcessName;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

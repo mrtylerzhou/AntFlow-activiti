@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,11 +8,9 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+import org.openoa.base.entity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
 import org.openoa.base.exception.JiMuBizException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;

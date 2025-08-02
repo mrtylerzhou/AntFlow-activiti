@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeButtonConf;
+import org.openoa.base.entity.BpmnNodeButtonConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 

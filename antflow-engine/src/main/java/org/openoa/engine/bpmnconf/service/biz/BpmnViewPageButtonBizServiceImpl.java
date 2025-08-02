@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import org.openoa.engine.bpmnconf.confentity.BpmnViewPageButton;
+import org.openoa.base.entity.BpmnViewPageButton;
 import org.openoa.engine.bpmnconf.service.impl.BpmnViewPageButtonServiceImpl;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnViewPageButtonBaseVo;

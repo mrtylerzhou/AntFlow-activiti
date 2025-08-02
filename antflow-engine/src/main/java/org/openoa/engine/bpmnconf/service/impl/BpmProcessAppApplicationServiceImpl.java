@@ -11,7 +11,7 @@ import org.openoa.base.constant.enums.ApplyType;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.*;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -21,7 +21,6 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplica
 import org.openoa.engine.vo.*;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
-import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;

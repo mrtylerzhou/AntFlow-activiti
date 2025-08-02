@@ -3,8 +3,7 @@ package org.openoa.engine.bpmnconf.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton;
-import org.springframework.stereotype.Repository;
+import org.openoa.base.entity.BpmVariableViewPageButton;
 
 import java.util.List;
 

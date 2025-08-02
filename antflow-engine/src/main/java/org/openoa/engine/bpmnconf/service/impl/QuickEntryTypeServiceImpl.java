@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.QuickEntryType;
+import org.openoa.base.entity.QuickEntryType;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryTypeMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
 import org.openoa.engine.vo.QuickEntryVo;

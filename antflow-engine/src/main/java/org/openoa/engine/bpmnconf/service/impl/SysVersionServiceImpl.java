@@ -11,7 +11,7 @@ import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.confentity.SysVersion;
+import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;

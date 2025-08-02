@@ -2,7 +2,7 @@ package org.openoa.engine.utils;
 
 import org.openoa.base.constant.enums.WildcardCharacterEnum;
 import org.openoa.base.vo.InformationTemplateVo;
-import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
+import org.openoa.base.entity.InformationTemplate;
 import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;

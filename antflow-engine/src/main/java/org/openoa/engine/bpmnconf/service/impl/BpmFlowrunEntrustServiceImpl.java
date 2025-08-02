@@ -3,10 +3,11 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import org.activiti.engine.TaskService;
+import org.openoa.base.entity.BpmFlowrunEntrust;
+import org.openoa.base.entity.UserEntrust;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmFlowrunEntrustVo;
-import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
-import org.openoa.engine.bpmnconf.confentity.UserEntrust;
+
 import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;

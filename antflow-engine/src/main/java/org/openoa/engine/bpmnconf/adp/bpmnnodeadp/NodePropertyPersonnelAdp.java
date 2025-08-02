@@ -9,21 +9,20 @@ import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodePersonnelConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodePersonnelEmplConf;
+import org.openoa.base.entity.BpmnNodePersonnelConf;
+import org.openoa.base.entity.BpmnNodePersonnelEmplConf;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceImpl;
 
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

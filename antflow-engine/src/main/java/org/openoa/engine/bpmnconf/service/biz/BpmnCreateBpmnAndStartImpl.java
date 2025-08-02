@@ -23,7 +23,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
 import org.openoa.engine.utils.AFWrappers;
-import org.openoa.engine.utils.MultiTenantUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;

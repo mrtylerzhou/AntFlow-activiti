@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataFieldMapper;
 import org.springframework.stereotype.Service;
 

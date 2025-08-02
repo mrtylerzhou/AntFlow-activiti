@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
+import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.JiMuBizException;
