@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;

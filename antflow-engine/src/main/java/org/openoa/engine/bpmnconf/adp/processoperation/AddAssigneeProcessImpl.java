@@ -1,15 +1,11 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
-import org.activiti.engine.impl.el.JuelExpression;
 import org.activiti.engine.impl.interceptor.Command;
-import org.activiti.engine.impl.javax.el.ValueExpression;
-import org.activiti.engine.impl.juel.*;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
@@ -20,18 +16,17 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.utils.MultiInstanceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
