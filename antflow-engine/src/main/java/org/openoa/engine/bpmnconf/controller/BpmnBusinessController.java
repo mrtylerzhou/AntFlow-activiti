@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.base.entity.BpmnNode;
@@ -98,7 +98,7 @@ public class BpmnBusinessController {
     @GetMapping("/getStartUserChooseModules")
     public Result getStartUserChooseModules(String formCode) {
         if (StringUtils.isEmpty(formCode)) {
-            throw new JiMuBizException("参数formCode不能为空!");
+            throw new AFBizException("参数formCode不能为空!");
         }
         List<BpmnNode> nodesByFormCodeAndProperty = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
         List<BpmnNodeVo> nodeVos = nodesByFormCodeAndProperty.stream().map(a -> {

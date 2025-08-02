@@ -13,7 +13,7 @@ import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.BpmnNode;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.BpmnUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -254,7 +254,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
             BpmnNodeVo startNode = bpmnNodeList.stream().filter(o -> o.getNodeType().equals(NodeTypeEnum.NODE_TYPE_START.getCode())).findFirst().orElse(null);
             //if can not get the start page node then error should thrown
             if (ObjectUtils.isEmpty(startNode)) {
-                throw new JiMuBizException("can't find out the start node！");
+                throw new AFBizException("can't find out the start node！");
             }
             //添加节点
             addBpmVerifyInfoVo(startNode, bpmnNodeList, bpmVerifyInfoVos);
@@ -423,7 +423,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
         BpmnConf bpmnConf = super.getService().getOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", vo.getBpmnCode()));
         if(bpmnConf==null){
-            throw new JiMuBizException("未找到对应的 bpmnConf 记录");
+            throw new AFBizException("未找到对应的 bpmnConf 记录");
         }
         BpmnConfVo bpmnConfVo = new BpmnConfVo();
         BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
@@ -456,8 +456,8 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
         try {
             bpmnStartFormatFactory.formatBpmnConf(bpmnConfVo,bpmnStartConditionsVo);
         }catch (Exception ex){
-            if(ex instanceof JiMuBizException){
-                String code = ((JiMuBizException) ex).getCode();
+            if(ex instanceof AFBizException){
+                String code = ((AFBizException) ex).getCode();
                 if(StringConstants.CONDITION_CHANGED.equals(code)){
                     return true;
                 }
@@ -508,7 +508,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
                 }
                 if (resultList.size() > nodeList.size()) {
                     log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
-                    throw new JiMuBizException("999", "nodeId数据错误");
+                    throw new AFBizException("999", "nodeId数据错误");
                 }
                 nowNode.setNodeFrom(lastNode.getNodeId());
                 resultList.add(nowNode);
@@ -550,7 +550,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
                     }
                     if (resultList.size() > nodeList.size()) {
                         log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
-                        throw new JiMuBizException("999", "nodeId数据错误");
+                        throw new AFBizException("999", "nodeId数据错误");
                     }
                     nowNode.setNodeFrom(lastNode.getNodeId());
                     resultList.add(nowNode);
@@ -602,7 +602,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
                 }
                 if (results.size() > mapNodes.values().size()) {
                     log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(mapNodes.values()));
-                    throw new JiMuBizException("999", "nodeId数据错误");
+                    throw new AFBizException("999", "nodeId数据错误");
                 }
                 nodeVo.setNodeFrom(prevNode.getNodeId());
                 results.add(nodeVo);
@@ -630,7 +630,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
                     startNode = bpmnNodeVo;
                 } else {
                     log.info("has more than one start up user while previewing the process,nodeId:{}", bpmnNodeVo.getNodeId());
-                    throw new JiMuBizException("999", "has more than 1 start up node");
+                    throw new AFBizException("999", "has more than 1 start up node");
                 }
             }
             if (bpmnNodeVo.getParams() == null || StringUtils.isBlank(bpmnNodeVo.getParams().getNodeTo())) {
@@ -639,7 +639,7 @@ public class BpmnConfCommonServiceImpl extends BizServiceImpl<BpmnConfServiceImp
         }
         if (!existEnd) {
             log.info("has no end node while previewing the process,nodeList:{}", JSON.toJSONString(nodeList));
-            throw new JiMuBizException("has not end node while previewing the process");
+            throw new AFBizException("has not end node while previewing the process");
         }
         return startNode;
     }

@@ -7,7 +7,7 @@ import jodd.util.StringUtil;
 import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.constant.enums.VersionIsForceEnums;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
@@ -226,7 +226,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      */
     public SysVersion getInfoByVersion(String version) {
         if (StringUtil.isEmpty(version)) {
-            throw new JiMuBizException( "版本号错误!");
+            throw new AFBizException( "版本号错误!");
         }
         return getOne(new QueryWrapper<SysVersion>().eq("version", version));
     }
@@ -273,7 +273,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
     @Transactional
     public Boolean edit(SysVersionVo vo) {
         if (vo==null) {
-            throw new JiMuBizException("object can not be null");
+            throw new AFBizException("object can not be null");
         }
 
         if (vo.getId()!=null) {

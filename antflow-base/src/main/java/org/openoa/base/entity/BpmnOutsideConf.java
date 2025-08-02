@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.google.common.base.Strings;
 import lombok.Data;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import java.util.Date;
 
@@ -72,16 +72,16 @@ public class BpmnOutsideConf {
     private Date modifiedTime;
     public static void checkParams(BpmnOutsideConf conf){
         if(Strings.isNullOrEmpty(conf.getFormCode())){
-            throw new JiMuBizException("formCode不能为空!");
+            throw new AFBizException("formCode不能为空!");
         }
         if(Strings.isNullOrEmpty(conf.getCallBackUrl())){
-            throw new JiMuBizException("callBackUrl不能为空!");
+            throw new AFBizException("callBackUrl不能为空!");
         }
         if(Strings.isNullOrEmpty(conf.getDetailUrl())){
-            throw new JiMuBizException("detailUrl不能为空!");
+            throw new AFBizException("detailUrl不能为空!");
         }
         if(Strings.isNullOrEmpty(conf.getBusinessName())){
-            throw new JiMuBizException("businessName不能为空!");
+            throw new AFBizException("businessName不能为空!");
         }
     }
 }

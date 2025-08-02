@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseInfoTranStructVo;
@@ -48,21 +48,21 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
         String nodeId = vo.getNodeId();
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         if(StringUtils.isEmpty(processNumber)){
-            throw new JiMuBizException("流程编号不能为空");
+            throw new AFBizException("流程编号不能为空");
         }
         if(StringUtils.isEmpty(nodeId)){
-            throw new JiMuBizException("节点id不能为空");
+            throw new AFBizException("节点id不能为空");
         }
         if(CollectionUtils.isEmpty(userInfos)){
-            throw new JiMuBizException("审批人不能为空");
+            throw new AFBizException("审批人不能为空");
         }
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(null==bpmBusinessProcess){
-            throw new JiMuBizException("未能根据流程编号找到流程信息:"+processNumber);
+            throw new AFBizException("未能根据流程编号找到流程信息:"+processNumber);
         }
         List<BaseInfoTranStructVo> assignees = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(processNumber, nodeId);
         if(userInfos.size()!=assignees.size()){
-            throw new JiMuBizException("审批人数量和流程中审批人数量不一致");
+            throw new AFBizException("审批人数量和流程中审批人数量不一致");
         }
         Map<BaseIdTranStruVo,BaseIdTranStruVo> changedAssignees=new HashMap<>();
         for (int i = 0; i < assignees.size(); i++) {
@@ -75,7 +75,7 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
             }
         }
         if(CollectionUtils.isEmpty(changedAssignees)){
-           throw  new JiMuBizException("当前审批人未发生变更!勿需操作!");
+           throw  new AFBizException("当前审批人未发生变更!勿需操作!");
         }
         String varName = assignees.get(0).getVarName();
         String variableId=assignees.get(0).getVariableId();//单人的是single表id,多人的是multiplayer personnel表id

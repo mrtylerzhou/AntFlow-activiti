@@ -11,7 +11,7 @@ import org.openoa.base.entity.BpmDynamicConditionChoosen;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.mapper.BpmDynamicConditionChoosenMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class ConditionServiceImpl implements ConditionService {
             Integer condRelation=conditionsConf.getGroupedCondRelations().get(currentGroup);
             boolean currentGroupResult=true;
             if(condRelation==null){
-                throw new JiMuBizException("logic error,please contact the Administrator");
+                throw new AFBizException("logic error,please contact the Administrator");
             }
             List<Integer> conditionParamTypeList=conditionTypeEntry.getValue();
             if (CollectionUtils.isEmpty(conditionParamTypeList)) {
@@ -62,7 +62,7 @@ public class ConditionServiceImpl implements ConditionService {
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
                 if (conditionTypeEnum == null) {
                     log.info("condition type is null,type:{}", integer);
-                    throw new JiMuBizException("logic error,please contact the Administrator");
+                    throw new AFBizException("logic error,please contact the Administrator");
                 }
                 try {
                     if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,currentGroup)) {
@@ -80,7 +80,7 @@ public class ConditionServiceImpl implements ConditionService {
                             break;
                         }
                     }
-                } catch (JiMuBizException e) {
+                } catch (AFBizException e) {
                     log.info("condition judge business exception:{}", e.getMessage());
                     throw e;
                 } catch (Exception e) {
@@ -118,7 +118,7 @@ public class ConditionServiceImpl implements ConditionService {
                     dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
                     dynamicConditionChoosen.setNodeId(bpmnNodeVo.getNodeId());
                     dynamicConditionChoosenMapper.insert(dynamicConditionChoosen);
-                    throw new JiMuBizException(StringConstants.CONDITION_CHANGED,"流程条件发生改变");
+                    throw new AFBizException(StringConstants.CONDITION_CHANGED,"流程条件发生改变");
                 }
 
             }

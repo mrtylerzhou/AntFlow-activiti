@@ -6,7 +6,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SnowFlake;
@@ -80,10 +80,10 @@ public class LFMainField implements TenantField, Serializable {
 
     public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId,String formCode){
         if(CollectionUtils.isEmpty(fieldMap)){
-            throw new JiMuBizException("form data has no value");
+            throw new AFBizException("form data has no value");
         }
         if(CollectionUtils.isEmpty(fieldConfigMap)){
-            throw new JiMuBizException("field configs are empty,please check your logic");
+            throw new AFBizException("field configs are empty,please check your logic");
         }
         List<LFMainField> mainFields=new ArrayList<>(fieldMap.size());
         for (Map.Entry<String, Object> fieldId2ValueEntry : fieldMap.entrySet()) {
@@ -113,7 +113,7 @@ public class LFMainField implements TenantField, Serializable {
         Integer fieldType = fieldConfig.getFieldType();
         LFFieldTypeEnum fieldTypeEnum = LFFieldTypeEnum.getByType(fieldType);
         if(fieldTypeEnum==null){
-            throw new JiMuBizException(Strings.lenientFormat("field type can not be empty,%s",fieldConfig));
+            throw new AFBizException(Strings.lenientFormat("field type can not be empty,%s",fieldConfig));
         }
         switch (fieldTypeEnum){
             case STRING:

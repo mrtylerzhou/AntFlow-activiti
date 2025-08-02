@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import java.math.BigDecimal;
 
@@ -23,7 +23,7 @@ public abstract class AbstractComparableJudge implements ConditionJudge {
             return false;
         }
         if (operator == null) {
-            throw new JiMuBizException("operator is null");
+            throw new AFBizException("operator is null");
         }
 
         // -1 indicates that the first argument is less than the second.0 indicates that the arguments are equal.1 indicates that the first argument is greater than the second.
@@ -75,7 +75,7 @@ public abstract class AbstractComparableJudge implements ConditionJudge {
                 }
                 break;
             default:
-                throw new JiMuBizException("operator is not support at the moment yet");
+                throw new AFBizException("operator is not support at the moment yet");
         }
         return flag;
     }

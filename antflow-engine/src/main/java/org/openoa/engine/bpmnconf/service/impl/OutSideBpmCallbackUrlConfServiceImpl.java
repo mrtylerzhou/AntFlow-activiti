@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -186,7 +186,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
                     .eq("application_id", vo.getApplicationId())
             );
             if (count > 0) {
-                throw new JiMuBizException("一个应用只能配置一条回调数据");
+                throw new AFBizException("一个应用只能配置一条回调数据");
             }
         }
 

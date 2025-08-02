@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.activiti.engine.RepositoryService;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.base.entity.BpmProcessDept;
@@ -120,7 +120,7 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
     }
 
 
-    public void editProcessConf(BpmProcessDeptVo vo) throws JiMuBizException {
+    public void editProcessConf(BpmProcessDeptVo vo) throws AFBizException {
         //todo save process's other info
         processNoticeService.saveProcessNotice(vo);
     }

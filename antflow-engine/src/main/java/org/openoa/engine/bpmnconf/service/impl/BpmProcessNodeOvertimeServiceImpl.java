@@ -14,7 +14,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessNodeOvertimeMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.constant.enums.ProcessEnum;
 
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
@@ -139,7 +139,7 @@ public class BpmProcessNodeOvertimeServiceImpl extends ServiceImpl<BpmProcessNod
     /**
      * get task overtime
      */
-    public void checkTaskOvertime() throws JiMuBizException {
+    public void checkTaskOvertime() throws AFBizException {
         List<Task> list = taskService.createTaskQuery().list();
         for (Task task : list) {
             try {
@@ -164,7 +164,7 @@ public class BpmProcessNodeOvertimeServiceImpl extends ServiceImpl<BpmProcessNod
                         }
                     }
                 }
-            } catch (JiMuBizException e) {
+            } catch (AFBizException e) {
                 e.printStackTrace();
             }
         }

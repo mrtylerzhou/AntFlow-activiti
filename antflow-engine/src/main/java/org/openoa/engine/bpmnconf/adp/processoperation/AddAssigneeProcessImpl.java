@@ -11,7 +11,7 @@ import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -47,10 +47,10 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         String taskDefKey = vo.getTaskDefKey();
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         if(CollectionUtils.isEmpty(userInfos)){
-            throw new RuntimeException("请选择要加签的人员");
+            throw new AFBizException("请选择要加签的人员");
         }
         if(userInfos.size()>1){
-            throw new JiMuBizException("每次加能加签1人");
+            throw new AFBizException("每次加能加签1人");
         }
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(bpmBusinessProcess==null){
@@ -73,7 +73,7 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         ActivityImpl currentActiviti = currentActivities.get(0);
         ActivityBehavior activityBehavior = currentActiviti.getActivityBehavior();
         if(!(activityBehavior instanceof MultiInstanceActivityBehavior)){
-            throw new JiMuBizException("不支持非多实例节点!");
+            throw new AFBizException("不支持非多实例节点!");
         }
         String collectionName = MultiInstanceUtils.getCollectionNameByBehavior(activityBehavior);
         Object variable = taskService.getVariable(task.getId(), collectionName);
@@ -102,7 +102,7 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         }else if (activityBehavior instanceof SequentialMultiInstanceBehavior){
             command = new MultiCharacterInstanceSequentialSign(task.getId(), variables);
         }else {
-            throw new JiMuBizException("不支持加签的节点类型!");
+            throw new AFBizException("不支持加签的节点类型!");
         }
         managementService.executeCommand(command);
         BaseIdTranStruVo userinfo = userInfos.get(0);

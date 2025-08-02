@@ -18,7 +18,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmnProcessMigrationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.entity.BpmBusinessProcess;
 
@@ -72,10 +72,10 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
         if (ObjectUtils.isEmpty(tasks)) {
-            throw new JiMuBizException("当前流程已审批！");
+            throw new AFBizException("当前流程已审批！");
         }
         if(tasks.stream().noneMatch(a->a.getAssignee().equals(SecurityUtils.getLogInEmpIdStr()))){
-            throw new JiMuBizException("当前流程已审批！");
+            throw new AFBizException("当前流程已审批！");
         }
         Task task;
         if (!ObjectUtils.isEmpty(vo.getTaskId())) {
@@ -87,7 +87,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             }
         }
         if (ObjectUtils.isEmpty(task)) {
-            throw new JiMuBizException("当前流程代办已审批或不存在！");
+            throw new AFBizException("当前流程代办已审批或不存在！");
         }
         String formKey = task.getFormKey();
         //实际上存的是label信息
@@ -110,7 +110,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
 
         if (ObjectUtils.isEmpty(task)) {
-            throw new JiMuBizException("当前流程代办已审批！");
+            throw new AFBizException("当前流程代办已审批！");
         }
 
         executeTaskCompletion(vo, task, bpmBusinessProcess);

@@ -9,7 +9,7 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.PageUtils;
@@ -306,7 +306,7 @@ public class UserMessageServiceImpl extends ServiceImpl<UserMessageMapper, UserM
         //check receiver
         Employee detail =employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
-            throw new JiMuBizException("999999", "发送消息失败，不存在的用户!");
+            throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
         String senderUser = "";
 

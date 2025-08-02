@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.TenantField;
 
 import java.io.Serializable;
@@ -132,20 +132,20 @@ public class BpmnConf implements TenantField, Serializable {
 
     public static void validateBpmnName(String bpmnName) {
         if (StringUtils.isBlank(bpmnName)) {
-            throw new JiMuBizException("审批流名称必须存在!");
+            throw new AFBizException("审批流名称必须存在!");
         }
 
         if (Pattern.matches(PATTERN, bpmnName)) {
-            throw new JiMuBizException("审批流名称不合法");
+            throw new AFBizException("审批流名称不合法");
         }
         if (StringUtils.isAnyEmpty(bpmnName)) {
-            throw new JiMuBizException("审批流名称不得包含空格");
+            throw new AFBizException("审批流名称不得包含空格");
         }
         if (Pattern.matches(SPECIAL_CHARACTERS, bpmnName)) {
-            throw new JiMuBizException("审批流名称中不得包含特殊字符!");
+            throw new AFBizException("审批流名称中不得包含特殊字符!");
         }
         if (bpmnName.length() > BPMN_NAME_MAX_LEN) {
-            throw new JiMuBizException("审批流名称过长");
+            throw new AFBizException("审批流名称过长");
         }
     }
 

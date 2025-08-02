@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.entity.BpmTaskconfig;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,7 +62,7 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
     public String findTargeNode(String taskId) {
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         if (ObjectUtils.isEmpty(task)) {
-            throw new JiMuBizException("当前任务id:[" + taskId + "]" + "不存在");
+            throw new AFBizException("当前任务id:[" + taskId + "]" + "不存在");
         }
         String processKey = task.getProcessDefinitionId().split(":")[0];
         String nodeKey = mapper.findTaskRollBack(processKey, task.getTaskDefinitionKey());

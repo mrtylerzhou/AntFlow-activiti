@@ -29,7 +29,7 @@ import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServ
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
@@ -94,18 +94,18 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     public void doProcessButton(BusinessDataVo vo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if (bpmBusinessProcess == null) {
-            throw new JiMuBizException("未查询到流程信息!");
+            throw new AFBizException("未查询到流程信息!");
         }
         String procInstId = bpmBusinessProcess.getProcInstId();
         //get a list of running tasks,then reject all of them
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(procInstId).list();
         if (CollectionUtils.isEmpty(taskList)) {
-            throw new JiMuBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
+            throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
 
         if (taskData == null) {
-            throw new JiMuBizException("当前流程已审批！");
+            throw new AFBizException("当前流程已审批！");
         }
 
         List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             case ONE_DISAGREE:
                 ActHiTaskinst prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
                 if (prevTask == null) {
-                    throw new JiMuBizException("无前置节点,无法回退上一节点!");
+                    throw new AFBizException("无前置节点,无法回退上一节点!");
                 }
                 restoreNodeKey = taskData.getTaskDefinitionKey();
                 backToNodeKey = prevTask.getTaskDefKey();
@@ -163,7 +163,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 backToNodeKey = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
                 break;
             default:
-                throw new JiMuBizException("未支持的退回类型!");
+                throw new AFBizException("未支持的退回类型!");
         }
         //save verify info
         verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
@@ -248,7 +248,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 }
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);
-                throw new JiMuBizException("流程回退出错了!");
+                throw new AFBizException("流程回退出错了!");
             }
 
         } else {
@@ -256,7 +256,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 processNodeJump.commitProcess(taskData.getId(), null, backToNodeKey);
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);
-                throw new JiMuBizException("流程回退出错了!");
+                throw new AFBizException("流程回退出错了!");
             }
 
         }

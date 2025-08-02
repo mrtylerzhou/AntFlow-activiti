@@ -1,7 +1,7 @@
 package org.openoa.engine.conf.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -9,9 +9,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
-import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -62,7 +60,7 @@ public class RestInterceptor implements ClientHttpRequestInterceptor {
                 response.getStatusCode(), response.getStatusText(),totalSeconds, body);
 
         if(HttpStatus.TOO_MANY_REQUESTS==statusCode){
-            throw new JiMuBizException("请求限流");
+            throw new AFBizException("请求限流");
         }
     }
 

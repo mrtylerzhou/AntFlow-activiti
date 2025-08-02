@@ -1,13 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
-import com.google.common.collect.Lists;
-import com.mysql.cj.util.LazyString;
-import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
-import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
-import org.openoa.base.interf.BpmnProcessAdminProvider;
-import org.openoa.base.interf.MissAssigneeProcessing;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -31,7 +25,7 @@ public abstract class AbstractNodeAssigneeVoProvider implements BpmnPersonnelPro
        if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
            if(CollectionUtils.isEmpty(emplList)){
-               throw new JiMuBizException("thirdy party process role node has no employee info");
+               throw new AFBizException("thirdy party process role node has no employee info");
            }
            return assigneeVoBuildUtils.buildVOs(emplList,bpmnNodeVo.getNodeName(),false);
        }

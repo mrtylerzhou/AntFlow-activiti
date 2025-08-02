@@ -12,7 +12,7 @@ import org.openoa.engine.bpmnconf.constant.AntFlowConstants;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.vo.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -30,7 +30,7 @@ public class BpmnConfNodePropertyConverter {
     public static BpmnNodeConditionsConfBaseVo fromVue3Model(BpmnNodePropertysVo propertysVo){
 
         if(propertysVo==null){
-            throw new JiMuBizException("node has no property!");
+            throw new AFBizException("node has no property!");
         }
 
 
@@ -48,7 +48,7 @@ public class BpmnConfNodePropertyConverter {
         boolean isLowCodeFlow = false;
         List<List<BpmnNodeConditionsConfVueVo>> groupedNewModels = propertysVo.getConditionList();
         if(ObjectUtils.isEmpty(groupedNewModels)&&Objects.equals(isDefault,0)){
-            throw new JiMuBizException("input nodes is empty");
+            throw new AFBizException("input nodes is empty");
         }
 
         int index=0;
@@ -60,7 +60,7 @@ public class BpmnConfNodePropertyConverter {
                 newModel.setCondGroup(index);
                 String columnId = newModel.getColumnId();
                 if(columnId==null){
-                    throw new JiMuBizException("each and every node must have a columnId value");
+                    throw new AFBizException("each and every node must have a columnId value");
                 }
 
                 int columnIdInt = Integer.parseInt(columnId);
@@ -72,7 +72,7 @@ public class BpmnConfNodePropertyConverter {
                 }
                 ConditionTypeEnum enumByCode = ConditionTypeEnum.getEnumByCode(columnIdInt);
                 if(enumByCode==null){
-                    throw new JiMuBizException(String.format("columnId of value:%s is not a valid value",columnId));
+                    throw new AFBizException(String.format("columnId of value:%s is not a valid value",columnId));
                 }
                 conditionTypes.add(columnIdInt);
                 currentGroupConditionTypes.add(columnIdInt);
@@ -81,7 +81,7 @@ public class BpmnConfNodePropertyConverter {
                 if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
                     //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
                     if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
-                        throw new JiMuBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
+                        throw new AFBizException(String.format("columnDbname:%s is not a valid name",columnDbname));
                     }
                 }
                 Integer fieldType = enumByCode.getFieldType();
@@ -127,7 +127,7 @@ public class BpmnConfNodePropertyConverter {
                     if(optType!=null){
                         JudgeOperatorEnum symbol = JudgeOperatorEnum.getByOpType(optType);
                         if(symbol==null){
-                            throw new JiMuBizException(String.format("condition optype of %d is undefined!",optType));
+                            throw new AFBizException(String.format("condition optype of %d is undefined!",optType));
                         }
                         Field opField = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, AntFlowConstants.NUM_OPERATOR, true);
                         ReflectionUtils.setField(opField,result,symbol.getCode());
@@ -183,7 +183,7 @@ public class BpmnConfNodePropertyConverter {
     }
     public static List<BpmnNodeConditionsConfVueVo> toVue3Model(BpmnNodeConditionsConfBaseVo baseVo){
         if(baseVo==null){
-            throw new JiMuBizException("baseVo to convert is null");
+            throw new AFBizException("baseVo to convert is null");
         }
         if(Objects.equals(baseVo.getIsDefault(),1)){
             return  new ArrayList<>();

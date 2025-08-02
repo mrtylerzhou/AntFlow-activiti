@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.openoa.base.constant.enums.OpLogFlagEnum;
 import org.openoa.base.entity.OpLog;
 import org.openoa.base.vo.SignatureRequest;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.impl.OpLogServiceImpl;
 import org.openoa.base.util.EnvUtil;
 import org.openoa.base.util.JimuJsonUtil;
@@ -45,7 +45,7 @@ public class HttpLogAspect {
         try {
             return resp = joinPoint.proceed();
         } catch (Throwable throwable) {
-            flagEnum = throwable instanceof JiMuBizException ? OpLogFlagEnum.BusinessException : OpLogFlagEnum.FAILURE;
+            flagEnum = throwable instanceof AFBizException ? OpLogFlagEnum.BusinessException : OpLogFlagEnum.FAILURE;
             resp = throwable.getClass().getSimpleName() + " : " + throwable.getMessage();
             throw throwable;
         } finally {
@@ -118,7 +118,7 @@ public class HttpLogAspect {
     @AfterThrowing(pointcut = "httpAspect()", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable e) {
 
-        OpLogFlagEnum flagEnum = e instanceof JiMuBizException ? OpLogFlagEnum.BusinessException : OpLogFlagEnum.FAILURE;
+        OpLogFlagEnum flagEnum = e instanceof AFBizException ? OpLogFlagEnum.BusinessException : OpLogFlagEnum.FAILURE;
 
         //非业务报错则发送通知邮件
         if (flagEnum.equals(OpLogFlagEnum.FAILURE)) {

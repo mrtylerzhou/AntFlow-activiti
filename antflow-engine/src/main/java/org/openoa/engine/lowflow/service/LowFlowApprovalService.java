@@ -10,7 +10,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -93,7 +93,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
             log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
-            throw new JiMuBizException("can not get lowcode form data by specified id");
+            throw new AFBizException("can not get lowcode form data by specified id");
         }
         Long mainId = lfMain.getId();
         Long confId = lfMain.getConfId();
@@ -107,7 +107,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         lfFormdataFieldMap=allFieldConfMap.get(confId);
         List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
         if(CollectionUtils.isEmpty(lfMainFields)){
-            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
+            throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         //returned to page for presenting
         Map<String,Object> fieldVoMap=new HashMap<>(lfMainFields.size());
@@ -116,7 +116,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             String fieldName = Id2SelfEntry.getKey();
             BpmnConfLfFormdataField currentFieldProp = lfFormdataFieldMap.get(fieldName);
             if(currentFieldProp==null){
-                throw new JiMuBizException(Strings.lenientFormat("field with name:%s has no property",fieldName));
+                throw new AFBizException(Strings.lenientFormat("field with name:%s has no property",fieldName));
             }
             List<LFMainField> fields = Id2SelfEntry.getValue();
             int valueLen = fields.size();
@@ -125,7 +125,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 Integer fieldType = currentFieldProp.getFieldType();
                 LFFieldTypeEnum fieldTypeEnum = LFFieldTypeEnum.getByType(fieldType);
                 if(fieldTypeEnum==null){
-                    throw new JiMuBizException(Strings.lenientFormat("unrecognized field type,name:%s,formcode:%s,confId:%d",fieldName,formCode,confId));
+                    throw new AFBizException(Strings.lenientFormat("unrecognized field type,name:%s,formcode:%s,confId:%d",fieldName,formCode,confId));
                 }
                 Object actualValue=null;
                 switch (fieldTypeEnum){
@@ -186,7 +186,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
         List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
         if(CollectionUtils.isEmpty(bpmnConfLfFormdataList)){
-            throw  new JiMuBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
+            throw  new AFBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
         }
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         vo.setLfFormData(lfFormdata.getFormdata());
@@ -197,7 +197,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     public UDLFApplyVo submitData(UDLFApplyVo vo) {
         Map<String, Object> lfFields = vo.getLfFields();
         if(CollectionUtils.isEmpty(lfFields)){
-            throw new JiMuBizException("form data does not contains any field");
+            throw new AFBizException("form data does not contains any field");
         }
         Long confId = vo.getBpmnConfVo().getId();
         String formCode = vo.getFormCode();
@@ -216,7 +216,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
         if(CollectionUtils.isEmpty(fieldConfMap)){
-            throw  new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
+            throw  new AFBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
         List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId,formCode);
         mainFieldService.saveBatch(mainFields);
@@ -233,12 +233,12 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         Map<String, Object> lfFields = vo.getLfFields();
         if(CollectionUtils.isEmpty(lfFields)){
-            throw new JiMuBizException("form data does not contains any field");
+            throw new AFBizException("form data does not contains any field");
         }
         LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
             log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
-            throw new JiMuBizException("can not get lowcode form data by specified id");
+            throw new AFBizException("can not get lowcode form data by specified id");
         }
         Long mainId = lfMain.getId();
         String formCode = vo.getFormCode();
@@ -254,7 +254,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 		    }
 		    Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
 		    if (ObjectUtils.isEmpty(fieldConfMap)) {
-			    throw new JiMuBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
+			    throw new AFBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
 		    }
 		    List<LFMainField> mainFields = LFMainField.parseFromMap(submitLfFields, fieldConfMap, mainId, vo.getFormCode());
 		    if (CollectionUtils.isNotEmpty(mainFields)) {
@@ -264,7 +264,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 		    }
 	    }
 		if(CollectionUtils.isEmpty(lfMainFields)){
-            throw  new JiMuBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
+            throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         for (LFMainField field : lfMainFields){
             String f_value = lfFields.get(field.getFieldId()).toString();
@@ -303,7 +303,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             List<BpmnConfLfFormdataField> allFields = lfFormdataFieldService.list(Wrappers.<BpmnConfLfFormdataField>lambdaQuery()
                     .eq(BpmnConfLfFormdataField::getBpmnConfId, confId));
             if(CollectionUtils.isEmpty(allFields)){
-               throw new JiMuBizException("lowcode form data has no fields");
+               throw new AFBizException("lowcode form data has no fields");
             }
 
             List<String> condFieldNames=new ArrayList<>();
@@ -336,7 +336,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         //condition fields can not be greater than 1 at the moment
         if(!CollectionUtils.isEmpty(conditionFieldMap) &&conditionFieldMap.size()>1){
-            throw new JiMuBizException("conditionFields size can not greater than 1");
+            throw new AFBizException("conditionFields size can not greater than 1");
         }
         return conditionFieldMap;
     }

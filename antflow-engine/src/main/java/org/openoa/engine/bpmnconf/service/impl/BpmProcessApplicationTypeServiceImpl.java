@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.entity.BpmProcessApplicationType;
 import org.openoa.base.entity.BpmProcessCategory;
@@ -216,13 +216,13 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
 
         BpmProcessApplicationType applicationType = this.getBaseMapper().selectById(id);
         if (applicationType==null) {
-            throw new JiMuBizException("无此条记录");
+            throw new AFBizException("无此条记录");
         }
 
         BpmProcessAppApplication application = processAppApplicationService.getBaseMapper().selectById(applicationType.getApplicationId());
         Integer sort = applicationType.getSort();
         if (sort == 1) {
-            throw new JiMuBizException("当前记录已到顶");
+            throw new AFBizException("当前记录已到顶");
         }
 
 
@@ -234,7 +234,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
                             .eq("is_del",0)
                             .eq("category_id", applicationType.getCategoryId()));
             if(bpmProcessApplicationType==null){
-                throw new JiMuBizException("没有此记录");
+                throw new AFBizException("没有此记录");
             }
             type=bpmProcessApplicationType;
 
@@ -259,7 +259,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
                         .sorted((a, b) -> a.getSort().compareTo(b.getSort()))
                         .collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(vos)) {
-                    throw new JiMuBizException("当前记录已到顶");
+                    throw new AFBizException("当前记录已到顶");
                 }
                 //交换sort
                 BpmProcessAppApplicationVo vo = vos.get(vos.size() - 1);
@@ -287,7 +287,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
                         .sorted((a, b) -> a.getSort().compareTo(b.getSort()))
                         .collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(vos)) {
-                    throw new JiMuBizException("当前记录已到顶");
+                    throw new AFBizException("当前记录已到顶");
                 }
 
                 BpmProcessAppApplicationVo vo = vos.get(vos.size() - 1);
@@ -301,7 +301,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
                 return true;
             }
         }
-        throw new JiMuBizException("无满足条件的排序方式！");
+        throw new AFBizException("无满足条件的排序方式！");
 
     }
 
@@ -359,7 +359,7 @@ public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcess
         BpmProcessCategory processCategory = bpmProcessCategoryService.getBaseMapper().selectById(processTypeId);
         BpmProcessApplicationType processApplicationType = this.getBaseMapper().selectById(id);
         if (processCategory==null) {
-           throw  new JiMuBizException("无此条记录");
+           throw  new AFBizException("无此条记录");
         }
         if (isCancel) {
             Long aLong = this.addProcessApplicationType(BpmProcessApplicationTypeVo.builder()

@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.engine.bpmnconf.service.TriplePredict;
@@ -25,7 +25,7 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
         Map<String, Object> lfConditionsFromUser = bpmnStartConditionsVo.getLfConditions();
         if (CollectionUtils.isEmpty(lfConditionsFromDb)) {
 
-            throw new JiMuBizException("the process has no no code conditions conf,please contact the administrator to add one");
+            throw new AFBizException("the process has no no code conditions conf,please contact the administrator to add one");
         }
         if (ObjectUtils.isEmpty(lfConditionsFromUser)) {
             return false;
@@ -45,7 +45,7 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
             }
             Object valueFromDb = stringObjectEntry.getValue();
             if(valueFromDb==null){
-                throw new JiMuBizException(Strings.lenientFormat("condition field from db %s can not be null",key));
+                throw new AFBizException(Strings.lenientFormat("condition field from db %s can not be null",key));
             }
             isMatch = predicate.test(valueFromDb, valueFromUser,numberOperator);
             iterIndex++;

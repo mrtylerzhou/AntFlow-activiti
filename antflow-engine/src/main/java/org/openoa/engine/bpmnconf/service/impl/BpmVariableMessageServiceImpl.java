@@ -13,7 +13,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.AfRoleServiceImpl;
 import org.openoa.base.util.DateUtil;
@@ -257,7 +257,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         BpmnConf bpmnConf = bpmnConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
                 .eq("bpmn_code", bpmVariable.getBpmnCode()));
         if(bpmnConf==null){
-            throw new JiMuBizException(Strings.lenientFormat("can not get bpmnConf by bpmncode:%s",bpmVariable.getBpmnCode()));
+            throw new AFBizException(Strings.lenientFormat("can not get bpmnConf by bpmncode:%s",bpmVariable.getBpmnCode()));
         }
         //set bpmn code
         vo.setBpmnCode(bpmnConf.getBpmnCode());
@@ -285,7 +285,7 @@ public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessag
         BpmBusinessProcess businessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", vo.getProcessNumber()));
 
         if (ObjectUtils.isEmpty(businessProcess)) {
-            throw new JiMuBizException(Strings.lenientFormat("can not get BpmBusinessProcess by process Numbeer:%s",vo.getProcessNumber()));
+            throw new AFBizException(Strings.lenientFormat("can not get BpmBusinessProcess by process Numbeer:%s",vo.getProcessNumber()));
         }
 
 

@@ -6,7 +6,7 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -30,7 +30,7 @@ public class CustomizePersonnelProvider implements BpmnPersonnelProviderService 
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         if(bpmnNodeVo==null){
-            throw  new JiMuBizException("node can not be null!");
+            throw  new AFBizException("node can not be null!");
         }
         Map<String, List<BaseIdTranStruVo>> nodeId2Assignees = bpmnStartConditions.getApproversList();
         List<BaseIdTranStruVo> currentNodeAssignees=new ArrayList<>();

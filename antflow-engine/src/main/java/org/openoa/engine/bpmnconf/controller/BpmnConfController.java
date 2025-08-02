@@ -11,7 +11,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnNodeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.interf.ActivitiService;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.biz.ProcessApprovalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -170,10 +170,10 @@ public class BpmnConfController {
      * @param requestDto
      * @param type
      * @return
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
     @RequestMapping("/process/listPage/{type}")
-    public ResultAndPage<TaskMgmtVO> viewPcProcessList(@RequestBody DetailRequestDto requestDto, @PathVariable("type") Integer type) throws JiMuBizException {
+    public ResultAndPage<TaskMgmtVO> viewPcProcessList(@RequestBody DetailRequestDto requestDto, @PathVariable("type") Integer type) throws AFBizException {
         PageDto pageDto = requestDto.getPageDto();
         TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
         taskMgmtVO.setType(type);

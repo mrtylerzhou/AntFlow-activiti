@@ -8,7 +8,7 @@ import org.openoa.base.constant.enums.ApprovalFormCodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.service.AfUserService;
@@ -69,7 +69,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
         //to check whether the process is already started
         if (!bpmBusinessProcessService.checkProcessData(processNum)) {
-            throw new JiMuBizException("流程已发起！");
+            throw new AFBizException("流程已发起！");
         }
         String originalBusinessId=businessDataVo.getBusinessId();
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
@@ -95,7 +95,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                     .in("template_mark", outSideBpmAccessBusiness.getTemplateMark()));
 
             if (outSideBpmConditionsTemplate==null) {
-                throw new JiMuBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
+                throw new AFBizException("条件模板[" + outSideBpmAccessBusiness.getTemplateMark() + "]已经失效，无法发起流程");
             }
             List<Integer> templateMarkIds = outSideBpmConditionsTemplate.stream().map(a -> a.getId().intValue()).collect(Collectors.toList());
             bpmnStartConditionsVo.setTemplateMarkIds(templateMarkIds);

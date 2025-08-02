@@ -12,7 +12,7 @@ import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
@@ -245,7 +245,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
             // to check whether there is duplicate data
             QueryWrapper<BpmProcessAppApplication> wrapper = new QueryWrapper<BpmProcessAppApplication>().eq("process_name", vo.getTitle()).eq("is_del", 0);
             if (this.count(wrapper) > 0) {
-                throw new JiMuBizException("该选项名称已存在");
+                throw new AFBizException("该选项名称已存在");
             }
             this.save(forVo);
         }

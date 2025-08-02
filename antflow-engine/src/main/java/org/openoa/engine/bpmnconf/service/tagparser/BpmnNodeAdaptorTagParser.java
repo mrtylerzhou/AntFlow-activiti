@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.tagparser;
 
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
@@ -17,7 +17,7 @@ public class BpmnNodeAdaptorTagParser implements TagParser<BpmnNodeAdaptor, Bpmn
     @Override
     public BpmnNodeAdaptor parseTag(BpmnNodeAdpConfEnum data) {
         if(data==null){
-            throw new JiMuBizException("provided data to find a bpmnNodeAdaptor method is null");
+            throw new AFBizException("provided data to find a bpmnNodeAdaptor method is null");
         }
         Collection<BpmnNodeAdaptor> bpmnNodeAdaptors = SpringBeanUtils.getBeans(BpmnNodeAdaptor.class);
         for (BpmnNodeAdaptor bpmnNodeAdaptor : bpmnNodeAdaptors) {

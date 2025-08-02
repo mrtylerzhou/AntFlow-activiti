@@ -10,7 +10,7 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.vo.BaseMsgInfo;
 
 import org.openoa.base.vo.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.UserMessagePreService;
@@ -35,7 +35,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
         //query receiver's info
         Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
-            throw new JiMuBizException("999999", "发送消息失败，不存在的用户!");
+            throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
         //todo 判断用户存在
         String senderUser = SecurityUtils.getLogInEmpNameSafe();
@@ -79,7 +79,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
         //get receiver's info
         Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
-            throw new JiMuBizException("999999", "发送消息失败，不存在的用户!");
+            throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
         String senderUser = "";
         //todo
@@ -131,7 +131,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
                 //query receiver's info
                 Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
                 if (detail == null) {
-                    throw new JiMuBizException("999999", "发送消息失败，不存在的用户!");
+                    throw new AFBizException("999999", "发送消息失败，不存在的用户!");
                 }
                 String senderUser = "";
 
@@ -183,7 +183,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
                 //search receiver
                 Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
                 if (detail == null) {
-                    throw new JiMuBizException("999999", "发送消息失败，不存在的用户!");
+                    throw new AFBizException("999999", "发送消息失败，不存在的用户!");
                 }
                 String senderUser = "";
 

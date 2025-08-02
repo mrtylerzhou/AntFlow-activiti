@@ -11,7 +11,7 @@ import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.DateUtil;
@@ -100,7 +100,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
                     .eq("is_del",0);
             BpmnConf effectiveConfByFormCode = bpmnConfService.getOne(qryWrapper);
             if(effectiveConfByFormCode==null){
-                throw new JiMuBizException(String.format("未能根据流程编号%s找到有效的流程配置,请检查同业入参",formCode));
+                throw new AFBizException(String.format("未能根据流程编号%s找到有效的流程配置,请检查同业入参",formCode));
             }
             vo.setBpmnConfId(effectiveConfByFormCode.getId());
             outSideBpmAccessBusiness = new OutSideBpmAccessBusiness();
@@ -132,7 +132,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {
-            throw new JiMuBizException("发起人用户名为空，无法发起流程！");
+            throw new AFBizException("发起人用户名为空，无法发起流程！");
         }
 
         //set start user id
@@ -235,7 +235,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
         //check whether business party mark is empty
         if (StringUtil.isEmpty(vo.getBusinessPartyMark())) {
-            throw new JiMuBizException("业务方标识为空，无法发起流程！");
+            throw new AFBizException("业务方标识为空，无法发起流程！");
         }
 
 
@@ -246,12 +246,12 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
         //if the record does not exist,then the mark is invalid
         if (outSideBpmBusinessParty==null) {
-            throw new JiMuBizException("业务方不合法，无法预览流程");
+            throw new AFBizException("业务方不合法，无法预览流程");
         }
 
         //校验发起人是否为空
         if (StringUtil.isEmpty(vo.getUserId())) {
-            throw new JiMuBizException("发起人用户名为空，无法预览流程！");
+            throw new AFBizException("发起人用户名为空，无法预览流程！");
         }
 
 
@@ -259,7 +259,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
 
         if (employee==null) {
-            throw new JiMuBizException("发起人不合法，无法预览流程");
+            throw new AFBizException("发起人不合法，无法预览流程");
         }
         //query condition template
         List<OutSideBpmConditionsTemplate> outSideBpmConditionsTemplates=null;
@@ -271,7 +271,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
 
             if (outSideBpmConditionsTemplates==null) {
-                throw new JiMuBizException("模板信息不合法，无法预览流程");
+                throw new AFBizException("模板信息不合法，无法预览流程");
             }
         }
 
@@ -379,11 +379,11 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
     public void processBreak(OutSideBpmAccessBusinessVo vo) {
 
         if (StringUtil.isEmpty(vo.getFormCode())) {
-            throw new JiMuBizException("表单编号为空，无法终止流程");
+            throw new AFBizException("表单编号为空，无法终止流程");
         }
 
         if (StringUtil.isEmpty(vo.getProcessNumber())) {
-            throw new JiMuBizException("流程编号为空，无法终止流程");
+            throw new AFBizException("流程编号为空，无法终止流程");
         }
 
 

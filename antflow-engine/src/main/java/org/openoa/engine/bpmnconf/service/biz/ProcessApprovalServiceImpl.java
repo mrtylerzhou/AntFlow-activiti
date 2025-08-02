@@ -23,7 +23,7 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.constant.enums.ProcessTypeEnum;
 
@@ -92,9 +92,9 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @param pageDto
      * @param vo
      * @return
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
-    public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws JiMuBizException {
+    public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws AFBizException {
 
         LinkedHashMap<String, SortTypeEnum> orderFieldMap = Maps.newLinkedHashMap();
 
@@ -219,7 +219,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
-            throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
+            throw  new AFBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 

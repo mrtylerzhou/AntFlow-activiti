@@ -1,7 +1,7 @@
 package org.openoa.base.constant.enums;
 
 
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -84,7 +84,7 @@ public enum BpmnConfFlagsEnum {
             alreadyFlags=0;
         }
         if(flag==null){
-            throw new JiMuBizException("要判断的枚举不存在!");
+            throw new AFBizException("要判断的枚举不存在!");
         }
         List<BpmnConfFlagsEnum> bpmnConfFlags = BpmnConfFlagsEnum.flagEnumsByCode(alreadyFlags);
         for (BpmnConfFlagsEnum confFlagsEnum : bpmnConfFlags) {

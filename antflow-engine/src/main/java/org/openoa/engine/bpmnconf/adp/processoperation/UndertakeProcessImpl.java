@@ -6,7 +6,7 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
@@ -33,13 +33,13 @@ public class UndertakeProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         if (ObjectUtils.isEmpty(vo.getTaskId())) {
-            throw new JiMuBizException("当前流程节点等于空！");
+            throw new AFBizException("当前流程节点等于空！");
         }
         Task task = taskService.createTaskQuery()
                 .taskId(vo.getTaskId())
                 .singleResult();
         if (ObjectUtils.isEmpty(task)) {
-            throw new JiMuBizException( "当前流程节点已经被人承办！");
+            throw new AFBizException( "当前流程节点已经被人承办！");
         }
         List<TaskMgmtVO> list = taskMgmtMapper.getAgencyList(vo.getTaskId(), ProcessEnum.AGENCY_TYPE.getCode(), task.getProcessInstanceId());
         if (!ObjectUtils.isEmpty(list)) {

@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.collect.Lists;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -24,7 +24,7 @@ public class StartUserPersonnelProvider implements BpmnPersonnelProviderService 
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         if(startConditionsVo.getStartUserId()==null){
-            throw new JiMuBizException("未获取到发起人信息!");
+            throw new AFBizException("未获取到发起人信息!");
         }
         String startUserId = startConditionsVo.getStartUserId();
         String elementName=bpmnNodeVo.getNodeName();

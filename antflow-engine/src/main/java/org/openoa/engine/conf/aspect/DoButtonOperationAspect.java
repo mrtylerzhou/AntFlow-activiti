@@ -5,7 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.constant.StringConstants;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BusinessDataVo;
@@ -46,7 +46,7 @@ public class DoButtonOperationAspect {
         //To determine the operation Type
         ProcessOperationEnum poEnum = ProcessOperationEnum.getEnumByCode(vo.getOperationType());
         if (ObjectUtils.isEmpty(poEnum)) {
-            throw new JiMuBizException("unknown operation type,please Contact the Administrator");
+            throw new AFBizException("unknown operation type,please Contact the Administrator");
         }
         formCode=vo.getFormCode();
         ThreadLocalContainer.set(StringConstants.FORM_CODE,formCode);

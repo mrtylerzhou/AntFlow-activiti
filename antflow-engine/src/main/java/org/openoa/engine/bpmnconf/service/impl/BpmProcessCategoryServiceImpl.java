@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmProcessCategory;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
@@ -50,7 +50,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
                     .eq("is_app", vo.getIsApp())
                     .eq("is_del", 0);
             if (this.count(wrapper) > 0) {
-                throw new JiMuBizException("该选项名称已存在");
+                throw new AFBizException("该选项名称已存在");
             }
 
             //2.get the maximum number of effective process categories
@@ -100,12 +100,12 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     public boolean moveUp(Long id) {
         BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
         if (bpmProcessCategory==null) {
-           throw  new JiMuBizException("无此条记录");
+           throw  new AFBizException("无此条记录");
         }
 
         Integer sort = bpmProcessCategory.getSort();
         if (sort == 2) {
-            throw new JiMuBizException("当前记录已到顶");
+            throw new AFBizException("当前记录已到顶");
         }
 
         BpmProcessCategory processCategory = bpmProcessCategoryMapper.selectOne(new  QueryWrapper<BpmProcessCategory>()
@@ -124,12 +124,12 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     public boolean moveDown(Long id) {
         BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
         if (bpmProcessCategory==null) {
-            new JiMuBizException("无此条记录");
+            new AFBizException("无此条记录");
         }
         Integer sort = bpmProcessCategory.getSort();
         Long count = bpmProcessCategoryMapper.selectCount(new QueryWrapper<BpmProcessCategory>().eq("is_del", 0));
         if (sort >= count) {
-            throw new JiMuBizException("当前记录已到底");
+            throw new AFBizException("当前记录已到底");
         }
 
 
@@ -151,7 +151,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     public boolean delete(Long id) {
         BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
         if (bpmProcessCategory==null) {
-            new JiMuBizException("无此条记录");
+            new AFBizException("无此条记录");
         }
         Integer sort = bpmProcessCategory.getSort();
         QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<BpmProcessCategory>().eq("is_del", 0).eq("is_app", bpmProcessCategory.getIsApp());

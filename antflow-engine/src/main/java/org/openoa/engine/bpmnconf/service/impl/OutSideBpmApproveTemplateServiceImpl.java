@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.OutSideBpmApproveTemplate;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
@@ -97,7 +97,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
                 .eq("approve_type_id", vo.getApproveTypeId());
         long existCount = this.count(templates);
         if (existCount > 0) {
-            throw new JiMuBizException(vo.getApproveTypeName() + "审批模板已存在");
+            throw new AFBizException(vo.getApproveTypeName() + "审批模板已存在");
         }
         OutSideBpmApproveTemplate templateEntity = this.getById(vo.getId());
         if (templateEntity != null) {

@@ -8,7 +8,7 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -175,7 +175,7 @@ public class NotifyServiceImpl {
                 long hour = deviation % (24 * 3600) / 3600;
                 long minute = deviation % 3600 / 60;
                 rst = "请于" + hour + "小时" + minute + "分钟后再提醒!";
-                throw new JiMuBizException(OperationResp.FAILURE.getCode(), rst);
+                throw new AFBizException(OperationResp.FAILURE.getCode(), rst);
             }
 
             // time is overdue
@@ -209,11 +209,11 @@ public class NotifyServiceImpl {
             //current approvers list
             List<TaskMgmtVO> currentAssignees = taskMgmtMapper.getCurrentAssignee(entryId);
             if (ObjectUtils.isEmpty(currentAssignees)) {
-                throw new JiMuBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
+                throw new AFBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
             }
             currentAssignees.forEach(o -> {
                 if (Strings.isNullOrEmpty(o.getOriginalName()) || o.getOriginalName().equals(ProcessEnum.PROC_MAN.getDesc())) {
-                    throw new JiMuBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
+                    throw new AFBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
                 }
                 SendParam sendParam = SendParam.builder()
                         .userId(o.getOriginalName())

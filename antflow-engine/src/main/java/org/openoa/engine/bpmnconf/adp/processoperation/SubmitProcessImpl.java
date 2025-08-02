@@ -9,7 +9,7 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -71,7 +71,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         }else{
             String entryId = vo.getEntityName() + ":" + vo.getBusinessId();
             if (!bpmBusinessProcessService.checkProcessData(entryId)) {
-                throw new JiMuBizException("the process has already been submitted！");
+                throw new AFBizException("the process has already been submitted！");
             }
         }
 

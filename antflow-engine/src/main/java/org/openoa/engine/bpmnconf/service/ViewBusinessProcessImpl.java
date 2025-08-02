@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
@@ -42,7 +42,7 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
     public void doProcessButton(BusinessDataVo businessDataVo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(businessDataVo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
-            throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
+            throw  new AFBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
         }
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
         businessDataVo =formFactory.getFormAdaptor(businessDataVo).queryData(businessDataVo);

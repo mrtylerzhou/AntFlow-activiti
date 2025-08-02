@@ -16,7 +16,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.entity.BpmnNode;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
@@ -88,7 +88,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
 
     public Map<String,BpmVerifyInfo> getByProcInstIdAndTaskDefKey(String processNumber,String taskDefKey){
         if(StringUtils.isBlank(processNumber)){
-            throw  new JiMuBizException("流程编号不存在!");
+            throw  new AFBizException("流程编号不存在!");
         }
        if(StringUtils.isEmpty(taskDefKey)){
            return null;

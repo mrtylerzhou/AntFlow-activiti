@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -58,7 +58,7 @@ public class BpmnSendMessageAspect {
         BusinessDataVo businessDataVo = getBusinessDataVo(joinPoint.getArgs());
 
         if (businessDataVo == null) {
-            throw new JiMuBizException("入参为空，请检查你的参数！");
+            throw new AFBizException("入参为空，请检查你的参数！");
         }
         
 
@@ -70,7 +70,7 @@ public class BpmnSendMessageAspect {
 
         //check whether form code is valid
         if (ObjectUtils.isEmpty(bpmnConf) || ObjectUtils.isEmpty(bpmnConf.getId())) {
-            throw new JiMuBizException("表单编号[" + businessDataVo.getFormCode() + "]未匹配到工作流配置，请检查入参或工作流相关配置");
+            throw new AFBizException("表单编号[" + businessDataVo.getFormCode() + "]未匹配到工作流配置，请检查入参或工作流相关配置");
         }
         if (bpmnConf.getIsOutSideProcess() == 1) {
             businessDataVo.setIsOutSideAccessProc(true);
@@ -193,7 +193,7 @@ public class BpmnSendMessageAspect {
             ProcessOperationAdaptor bean = adaptorFactory.getProcessOperation(businessDataVo);
 
             if (bean==null) {
-                throw new JiMuBizException(StringUtils.join(processOperationEunm.getDesc(), "功能实现未匹配，方法执行失败！"));
+                throw new AFBizException(StringUtils.join(processOperationEunm.getDesc(), "功能实现未匹配，方法执行失败！"));
             }
 
 

@@ -7,7 +7,7 @@ import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.WildcardCharacterEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmProcessNotice;
@@ -184,7 +184,7 @@ public class InformationTemplateController {
     @GetMapping("/getNoticeTypeByFormCode")
     public Result getNoticeTypeByFormCode(@RequestParam String formCode){
         if(StringUtils.isEmpty(formCode)){
-            throw new JiMuBizException("请传入表单编码");
+            throw new AFBizException("请传入表单编码");
         }
         List<BpmProcessNotice> bpmProcessNotices = processNoticeService.processNoticeList(formCode);
         List<BaseNumIdStruVo> lists = new ArrayList<>();

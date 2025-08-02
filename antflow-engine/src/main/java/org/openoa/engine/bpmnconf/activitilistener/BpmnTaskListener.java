@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -109,7 +109,7 @@ public class BpmnTaskListener implements TaskListener {
 
         if (bpmnConf==null) {
             log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            throw new JiMuBizException("Task监听-查询流程配置数据为空");
+            throw new AFBizException("Task监听-查询流程配置数据为空");
         }
         if(extraInfo!=null){
             String expressionText = extraInfo.getExpressionText();

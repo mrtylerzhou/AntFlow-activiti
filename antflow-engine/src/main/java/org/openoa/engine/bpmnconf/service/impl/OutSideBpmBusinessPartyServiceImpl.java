@@ -11,7 +11,7 @@ import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -241,7 +241,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
         //check whether the data is repeated
         if (outSideBpmBusinessPartyMapper.checkData(vo) > 0) {
-            throw new JiMuBizException("业务方标识或业务方名称重复");
+            throw new AFBizException("业务方标识或业务方名称重复");
         }
 
         OutSideBpmBusinessParty outSideBpmBusinessParty = this.getBaseMapper().selectById(vo.getId());
@@ -311,7 +311,7 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
 
         // step 1
         if (vo.getThirdCode() == null) {
-            throw new JiMuBizException("第三方业务方标识不能为空");
+            throw new AFBizException("第三方业务方标识不能为空");
         } else {
             outSideBpmBusinessParty = this.getOne(Wrappers.<OutSideBpmBusinessParty>lambdaQuery().eq(OutSideBpmBusinessParty::getBusinessPartyMark, vo.getThirdCode())
                     .eq(OutSideBpmBusinessParty::getIsDel, 0), false);
@@ -405,12 +405,12 @@ public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBu
     public void syncRolePersonnel(String businessPartyMark, NodeRolePersonVo userList) {
         List<BpmnConfVo> bpmConf = getBpmConf(businessPartyMark);
         if (StringUtils.isBlank(userList.getRoleId())) {
-            throw new JiMuBizException("500", "角色id不能为空");
+            throw new AFBizException("500", "角色id不能为空");
         }
 
         List<BaseIdTranStruVo> users = userList.getUserList();
         if (CollectionUtils.isEmpty(users)) {
-            throw new JiMuBizException("500", "角色人员列表不能为空");
+            throw new AFBizException("500", "角色人员列表不能为空");
         }
 
         for (BpmnConfVo bpmnConfVo : bpmConf) {

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
@@ -67,9 +67,9 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
      *
      * @param taskId
      * @return
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
-    public TaskMgmtVO findTask(String taskId) throws JiMuBizException {
+    public TaskMgmtVO findTask(String taskId) throws AFBizException {
         return taskMgmtMapper.findTask(taskId);
     }
 
@@ -78,9 +78,9 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
      *
      * @param taskId
      * @return
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
-    public TaskMgmtVO getAgencyList(String taskId) throws JiMuBizException {
+    public TaskMgmtVO getAgencyList(String taskId) throws AFBizException {
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
@@ -98,7 +98,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
      */
     public void updateTask(TaskMgmtVO taskMgmtVO) {
         if (ObjectUtils.isEmpty(taskMgmtVO.getTaskIds())) {
-            throw new JiMuBizException("please select the task ids to modify ！！");
+            throw new AFBizException("please select the task ids to modify ！！");
         }
         if (!ObjectUtils.isEmpty(taskMgmtVO.getTaskIds())) {
             taskMgmtVO.getTaskIds().forEach(o -> {
@@ -142,7 +142,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 return null;
             }
         } catch (Exception e) {
-            throw new JiMuBizException("根据业务ID:[" + taskMgmtVO.getBusinessId() + "]无法查询代办数据");
+            throw new AFBizException("根据业务ID:[" + taskMgmtVO.getBusinessId() + "]无法查询代办数据");
         }
     }
 

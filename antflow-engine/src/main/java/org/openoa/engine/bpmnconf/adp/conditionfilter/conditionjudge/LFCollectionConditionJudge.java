@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.conditionfilter.conditionjudge;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.engine.bpmnconf.service.TriplePredict;
@@ -17,7 +17,7 @@ public class LFCollectionConditionJudge extends AbstractLFConditionJudge{
         //a是数据库里存的集合,b是用户传过来的集合(或者单个值),遍历a,b,如果b在a里,则返回true
         TriplePredict<Object,Object,Integer> predicate=(a, b,c)->{
           if(!(a instanceof Iterable)){
-              throw new JiMuBizException("value from db is not iterable");
+              throw new AFBizException("value from db is not iterable");
           }
             Iterable iterableValue = (Iterable)a;
             Iterator iterator = iterableValue.iterator();

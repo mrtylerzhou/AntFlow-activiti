@@ -10,7 +10,7 @@ import org.openoa.base.entity.BpmnApproveRemind;
 import org.openoa.base.entity.BpmnTemplate;
 import org.openoa.base.entity.DefaultTemplate;
 import org.openoa.base.entity.InformationTemplate;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.DefaultTemplateVo;
@@ -59,7 +59,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
                                 "id", informationTemplateVo.getId()));
 
         if (!ObjectUtils.isEmpty(list)) {
-            throw new JiMuBizException("模板名称重复");
+            throw new AFBizException("模板名称重复");
         }
 
         InformationTemplate informationTemplate = new InformationTemplate();
@@ -84,7 +84,7 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
                 if (!ObjectUtils.isEmpty(templates)
                         || !ObjectUtils.isEmpty(approveReminds)
                         || !ObjectUtils.isEmpty(defaultTemplates)) {
-                    throw new JiMuBizException("该模板正在使用中，不可禁用！");
+                    throw new AFBizException("该模板正在使用中，不可禁用！");
                 }
             }
             informationTemplate.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());

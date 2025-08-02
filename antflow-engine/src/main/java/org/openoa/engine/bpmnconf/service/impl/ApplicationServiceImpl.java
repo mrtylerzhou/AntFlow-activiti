@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -81,7 +81,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                         .eq(BpmProcessAppApplication::getTitle,application.getTitle()));
         //check whether the name is repeated
         if (!CollectionUtils.isEmpty(list)) {
-            throw new JiMuBizException("该选项名称已存在");
+            throw new AFBizException("该选项名称已存在");
         }
 
         List<BpmProcessAppApplication> list1 = this.list(
@@ -91,7 +91,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
 
         //check whether the number is repeated
         if (!CollectionUtils.isEmpty(list1)) {
-            throw new JiMuBizException("该选项名称已存在");
+            throw new AFBizException("该选项名称已存在");
         }
 
         //add or update
@@ -168,7 +168,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
         //如果父级应用且关联子级应用 则不可删除
         if (application.getApplyType().equals(3)
                 && !CollectionUtils.isEmpty(list)) {
-            throw new JiMuBizException("父级应用内联了子应用，请先删除子应用！");
+            throw new AFBizException("父级应用内联了子应用，请先删除子应用！");
         }
         application.setIsDel(1);
         bpmProcessAppApplicationMapper.updateById(application);

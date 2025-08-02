@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnDeduplicationFormat;
 import org.springframework.stereotype.Component;
@@ -205,7 +205,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
                 .collect(Collectors.toList());
 
         if (ObjectUtils.isEmpty(nextNodeVo)) {
-            throw new JiMuBizException("未找到下一节点流程发起失败");
+            throw new AFBizException("未找到下一节点流程发起失败");
         }
         return nextNodeVo.get(0);
     }

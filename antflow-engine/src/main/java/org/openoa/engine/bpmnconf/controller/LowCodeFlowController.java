@@ -4,7 +4,7 @@ package org.openoa.engine.bpmnconf.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.DetailRequestDto;
 import org.openoa.base.vo.ResultAndPage;
@@ -70,7 +70,7 @@ public class LowCodeFlowController {
     @GetMapping("/getformDataByFormCode")
     public Result<String> getLFFormDataByFormCode(String formCode) {
         if (StringUtils.isEmpty(formCode)) {
-            throw new JiMuBizException("请传入formcode");
+            throw new AFBizException("请传入formcode");
         }
         BpmnConfLfFormdata lfFormDataByFormCode = lfFormDataBizService.getLFFormDataByFormCode(formCode);
         return Result.newSuccessResult(lfFormDataByFormCode.getFormdata());

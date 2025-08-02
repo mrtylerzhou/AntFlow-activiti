@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnProcessAdminProvider;
 import org.openoa.base.interf.MissAssigneeProcessing;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -24,7 +24,7 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
         Integer missingAssigneeDealWay = nodeVo.getNoHeaderAction();
         if((CollectionUtils.isEmpty(emplList)||emplList.stream().allMatch(Objects::isNull))&&
             missingAssigneeDealWay==null||missingAssigneeDealWay==MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode()){
-            throw new JiMuBizException("存在未找到审批人的节点,流程不允许发起!");
+            throw new AFBizException("存在未找到审批人的节点,流程不允许发起!");
         }
         BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
         emplList.add(baseIdTranStruVo);
@@ -43,7 +43,7 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
                 BaseIdTranStruVo processAdminAndOutsideProcess = bpmnProcessAdminProvider.provideProcessAdminInfo();
                 return processAdminAndOutsideProcess;
             default:
-                throw new JiMuBizException("not support miss assignee processing strategy");
+                throw new AFBizException("not support miss assignee processing strategy");
         }
     }
 }

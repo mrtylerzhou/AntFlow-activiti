@@ -2,11 +2,10 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,13 +36,13 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         String nodeId = vo.getNodeId();
         if(StringUtils.isEmpty(processNumber)){
-            throw new JiMuBizException("流程编号不能为空");
+            throw new AFBizException("流程编号不能为空");
         }
         if (CollectionUtils.isEmpty(userInfos)){
-            throw new JiMuBizException("要变更的人员信息不能为空");
+            throw new AFBizException("要变更的人员信息不能为空");
         }
         if(StringUtils.isEmpty(nodeId)){
-            throw new JiMuBizException("节点id不能为空");
+            throw new AFBizException("节点id不能为空");
         }
     }
     /**
@@ -61,11 +59,11 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         String varName = bpmVariableMultiplayerMapper.getVarNameByElementId(processNumber, taskdefKey);
         Object currentValue = runtimeService.getVariable(procInstId, varName);
         if (!(currentValue instanceof List)) {
-            throw new JiMuBizException("Variable " + varName + " is not a list.");
+            throw new AFBizException("Variable " + varName + " is not a list.");
         }
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).taskDefinitionKey(taskdefKey).list();
         if(!CollectionUtils.isEmpty(tasks)){
-            throw new JiMuBizException("流程任务已生成,不能修改,请使用变更对当前节点进行操作的方法修改!");
+            throw new AFBizException("流程任务已生成,不能修改,请使用变更对当前节点进行操作的方法修改!");
         }
         @SuppressWarnings("unchecked")
         List<String> currentList = new ArrayList<>((List<String>) currentValue);
@@ -75,7 +73,7 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         } else if (action == 2) {
             currentList.removeAll(assigneeIds);
         }else {
-            throw new JiMuBizException("action is not 1 or 2");
+            throw new AFBizException("action is not 1 or 2");
         }
 
         runtimeService.setVariable(procInstId, varName, currentList);

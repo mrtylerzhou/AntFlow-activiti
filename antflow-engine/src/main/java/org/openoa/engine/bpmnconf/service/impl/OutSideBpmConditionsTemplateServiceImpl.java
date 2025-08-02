@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -297,7 +297,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
         }
         long countTemplateMark = this.count(wrapperTemplateMark);
         if (countTemplateMark > 0) {
-            throw new JiMuBizException("条件模板标识重复，编辑失败");
+            throw new AFBizException("条件模板标识重复，编辑失败");
         }
 
         //check whether the template name is repeated,although the name can be repeated,but it may cause confusion,so make it not repeatable
@@ -311,7 +311,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
         }
         long countTemplateName = this.count(wrapperTemplateName);
         if (countTemplateName > 0) {
-            throw new JiMuBizException("条件模板名称重复，编辑失败");
+            throw new AFBizException("条件模板名称重复，编辑失败");
         }
 
         OutSideBpmConditionsTemplate outSideBpmConditionsTemplate = this.getById(vo.getId());
@@ -349,7 +349,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
         OutSideBpmBusinessParty outSideBpmBusinessParty = outSideBpmBusinessPartyService.getById(outSideBpmConditionsTemplate.getBusinessPartyId());
 
         if (templateIsUsed(id, outSideBpmBusinessParty)) {
-            throw new JiMuBizException("审批流程中正使用此条件模板，无法删除");
+            throw new AFBizException("审批流程中正使用此条件模板，无法删除");
         }
 
         this.updateById(OutSideBpmConditionsTemplate

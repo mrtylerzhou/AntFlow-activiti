@@ -12,7 +12,7 @@ import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.entity.BpmBusinessProcess;
 
@@ -80,7 +80,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
         } else {
-            throw  new JiMuBizException("当前流程已审批!");
+            throw  new AFBizException("当前流程已审批!");
         }
         //update process state
         bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()

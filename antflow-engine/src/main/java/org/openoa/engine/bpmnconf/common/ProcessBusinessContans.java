@@ -9,7 +9,7 @@ import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -74,7 +74,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         }
         //check permissions
         if (!this.showProcessData(bpmBusinessProcess.getBusinessNumber())) {
-            throw new JiMuBizException("00", "current user has no access right！");
+            throw new AFBizException("00", "current user has no access right！");
         }
         //set task state
         processInfoVo.setTaskState(ProcessStateEnum.getDescByCode(bpmBusinessProcess.getProcessState()));

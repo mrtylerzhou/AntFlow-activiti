@@ -5,7 +5,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -38,7 +38,7 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
         //传入的用户信息List中第一个是原办理人信息,第二个是将要转的办理人信息
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         if(userInfos.size()!=2){
-            throw new JiMuBizException("转办人员配置错误,无法转办!");
+            throw new AFBizException("转办人员配置错误,无法转办!");
         }
         String originalUserId=userInfos.get(0).getId();
         String originalUserName=userInfos.get(0).getName();
@@ -48,7 +48,7 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
         List<String> assignees = list.stream().map(TaskInfo::getAssignee).collect(Collectors.toList());
         int originAssigneeIndex = assignees.indexOf(originalUserId);
         if(originAssigneeIndex<0){
-            throw new JiMuBizException("流程状态已变更,无当前办理人信息,转办失败!");
+            throw new AFBizException("流程状态已变更,无当前办理人信息,转办失败!");
         }
         for (Task task : list) {
             String assignee = task.getAssignee();
@@ -63,7 +63,7 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
 
         }
         if(!matched){
-            throw new JiMuBizException("流程状态已变更,无当前办理人信息,转办失败!");
+            throw new AFBizException("流程状态已变更,无当前办理人信息,转办失败!");
         }
     }
 

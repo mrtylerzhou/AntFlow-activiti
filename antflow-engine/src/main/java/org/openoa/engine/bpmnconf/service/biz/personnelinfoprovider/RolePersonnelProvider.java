@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.*;
@@ -47,7 +47,7 @@ public class RolePersonnelProvider extends AbstractMissingAssignNodeAssigneeVoPr
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
         if (propertysVo==null || CollectionUtils.isEmpty(propertysVo.getRoleIds())) {
-            throw new JiMuBizException("指定角色找人条件不全，无法找人！");
+            throw new AFBizException("指定角色找人条件不全，无法找人！");
         }
         if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
             // 发起人
@@ -61,7 +61,7 @@ public class RolePersonnelProvider extends AbstractMissingAssignNodeAssigneeVoPr
            // outSideBpmApproveTemplateService.getBaseMapper().select;
             String roelApiUrl = outSideBpmApproveTemplateService.getRoelApiUrlByConfId(bpmnNodeVo.getConfId());
             if(roelApiUrl==null){
-                throw new JiMuBizException("can not find specified out side process template user info url  via confId:"+bpmnNodeVo.getConfId());
+                throw new AFBizException("can not find specified out side process template user info url  via confId:"+bpmnNodeVo.getConfId());
             }
             ParameterizedTypeReference<Result<List<BaseIdTranStruVo>>> typeRef =
                     new ParameterizedTypeReference<Result<List<BaseIdTranStruVo>>>() {};
@@ -73,12 +73,12 @@ public class RolePersonnelProvider extends AbstractMissingAssignNodeAssigneeVoPr
             );
             Result<List<BaseIdTranStruVo>> result = responseEntity.getBody();
             if (result == null || !result.isSuccess()) {
-                throw new JiMuBizException("can not find specified out side process template user info url via confId:"+bpmnNodeVo.getConfId());
+                throw new AFBizException("can not find specified out side process template user info url via confId:"+bpmnNodeVo.getConfId());
             }
 
             List<BaseIdTranStruVo> userList = result.getData();
             if (CollectionUtils.isEmpty(userList)) {
-                throw new JiMuBizException("can not find specified out side process template user info url via confId:"+bpmnNodeVo.getConfId());
+                throw new AFBizException("can not find specified out side process template user info url via confId:"+bpmnNodeVo.getConfId());
             }
 
             return assigneeVoBuildUtils.buildVOs(userList, bpmnNodeVo.getNodeName(), false);

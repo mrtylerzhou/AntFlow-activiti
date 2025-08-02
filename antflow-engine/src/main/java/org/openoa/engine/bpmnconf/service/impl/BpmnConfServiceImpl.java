@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -118,7 +118,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> i
         bpmnConfNoticeTemplateService.insert(bpmnCode);
         Long confId = bpmnConf.getId();
         if(confId==null){
-            throw new JiMuBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
+            throw new AFBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
         }
         bpmnConfVo.setId(confId);
         bpmnViewPageButtonBizService.editBpmnViewPageButton(bpmnConfVo, confId);
@@ -137,7 +137,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> i
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
-                throw new JiMuBizException("apporver node has no property,can not be saved！");
+                throw new AFBizException("apporver node has no property,can not be saved！");
             }
 
             if(NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty())){
@@ -163,7 +163,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> i
 
             Long bpmnNodeId = bpmnNode.getId();
             if(bpmnNodeId==null){
-                throw new JiMuBizException("can not get bpmn node id!");
+                throw new AFBizException("can not get bpmn node id!");
             }
 
             //edit node to
@@ -280,18 +280,18 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> i
         BpmnConf bpmnConf = this.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
                 .eq("form_code", formCode).eq("effective_status", 1));
         if(bpmnConf==null){
-            throw new JiMuBizException("can not get a bpmnConf by provided formCode");
+            throw new AFBizException("can not get a bpmnConf by provided formCode");
         }
         return getBpmnConfVo(bpmnConf);
     }
 
     private BpmnConfVo formatConfVo(BpmnConfVo confVo){
         if(confVo==null){
-            throw new JiMuBizException("has not confVo");
+            throw new AFBizException("has not confVo");
         }
         List<BpmnNodeVo> nodes = confVo.getNodes();
         if(CollectionUtils.isEmpty(nodes)){
-            throw new JiMuBizException("confVo has empty nodes");
+            throw new AFBizException("confVo has empty nodes");
         }
         for (BpmnNodeVo node : nodes) {
             BpmnNodePropertysVo property = node.getProperty();
@@ -374,7 +374,7 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> i
                     if(NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(node.getNodeType())){
                         BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(node, bpmnConfVo.getNodes());
                         if(aggregationNode==null){
-                            throw new JiMuBizException("can not find parallel gateway's aggregation node!");
+                            throw new AFBizException("can not find parallel gateway's aggregation node!");
                         }
                         aggregationNode.setAggregationNode(true);
                         aggregationNode.setDeduplicationExclude(true);

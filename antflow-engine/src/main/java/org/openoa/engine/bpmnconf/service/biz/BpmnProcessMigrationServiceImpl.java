@@ -8,7 +8,7 @@ import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
@@ -57,7 +57,7 @@ public class BpmnProcessMigrationServiceImpl {
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
         if(StringUtils.isBlank(procDefIdByInstId)){
-            throw new JiMuBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
+            throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
         }
         List<ActivityImpl> activitiList = additionalInfoService.getActivitiList(procDefIdByInstId);
         boolean currentExecuted=false;

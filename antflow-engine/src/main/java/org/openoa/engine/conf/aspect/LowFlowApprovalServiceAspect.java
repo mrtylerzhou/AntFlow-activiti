@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.lowflow.service.LFFormOperationAdaptor;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class LowFlowApprovalServiceAspect {
         try {
             Object[] args = joinPoint.getArgs();
             if(args.length>1){
-                throw new JiMuBizException("切面方法错误,请联系管理员!");
+                throw new AFBizException("切面方法错误,请联系管理员!");
             }
             UDLFApplyVo arg = (UDLFApplyVo)args[0];
             if(CollectionUtils.isEmpty(lfFormOperationAdaptors)){

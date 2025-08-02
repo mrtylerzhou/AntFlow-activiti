@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodePersonnelConf;
@@ -54,7 +54,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
                 .distinct()
                 .collect(Collectors.toList());
         if(CollectionUtils.isEmpty(bpmnNodePersons)){
-            throw  new JiMuBizException("配置错误或者数据被删除,指定员人审批未获取到人员");
+            throw  new AFBizException("配置错误或者数据被删除,指定员人审批未获取到人员");
         }
 
         for (BpmnNodePersonnelEmplConf bpmnNodePerson : bpmnNodePersons) {
@@ -86,7 +86,7 @@ public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
 
         if(!CollectionUtils.isEmpty(emplNames)){
             if(emplIds.size()!=emplNames.size()){
-                throw new JiMuBizException("指定人员审批存在姓名不存在的人员!");
+                throw new AFBizException("指定人员审批存在姓名不存在的人员!");
             }
             for (int i = 0; i < emplIds.size(); i++) {
                 BaseIdTranStruVo vo = new BaseIdTranStruVo();
