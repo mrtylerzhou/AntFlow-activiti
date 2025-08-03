@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.openoa.common.constant.enus.ElementPropertyEnum.ELEMENT_PROPERTY_SIGN_UP_SERIAL;
-
 @Service
 public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariableSignUpPersonnelMapper, BpmVariableSignUpPersonnel> implements BpmVariableSignUpPersonnelService {
 

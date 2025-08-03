@@ -11,7 +11,6 @@ import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -19,6 +18,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
-    private BpmVerifyInfoServiceImpl verifyInfoService;
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
@@ -88,7 +88,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 .processState(processState)
                 .build());
         //save verify info
-        verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
+        bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
                 .businessId(bpmBusinessProcess.getBusinessId())
                 .verifyUserId(verifyUserId)
                 .verifyUserName(verifyUserName)

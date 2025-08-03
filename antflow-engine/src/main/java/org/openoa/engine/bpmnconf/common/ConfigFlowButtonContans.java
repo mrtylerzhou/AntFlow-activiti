@@ -19,10 +19,10 @@ import org.openoa.base.entity.BpmVariableViewPageButton;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -52,7 +52,7 @@ public class ConfigFlowButtonContans {
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
-    private BpmVariableSignUpServiceImpl variableSignUpService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
 
@@ -211,7 +211,7 @@ public class ConfigFlowButtonContans {
     public boolean isMoreNode(String processNum,String procInstId, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
         if(list==null){
-            List<BpmVariableSignUp> signUpList = variableSignUpService.getSignUpList(processNum);
+            List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(processNum);
             if(!CollectionUtils.isEmpty(signUpList)){
                 List<String> subElementStrs = signUpList.stream().map(BpmVariableSignUp::getSubElements).collect(Collectors.toList());
                 for (String subElementStr : subElementStrs) {

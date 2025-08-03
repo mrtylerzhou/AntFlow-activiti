@@ -15,7 +15,6 @@ import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnProcessMigrationServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -24,6 +23,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNodeSubmitBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,7 +51,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
-    private BpmVerifyInfoServiceImpl verifyInfoService;
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -155,7 +155,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             bpmVerifyInfo.setVerifyDesc(ObjectUtils.isEmpty(vo.getApprovalComment()) ? "加批" : vo.getApprovalComment());
         }
         if(!StringConstants.CURRENT_USER_ALREADY_PROCESSED.equals(bpmVerifyInfo.getVerifyDesc())){
-            verifyInfoService.addVerifyInfo(bpmVerifyInfo);
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
         }
 
 

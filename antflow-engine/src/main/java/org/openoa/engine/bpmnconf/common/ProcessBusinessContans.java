@@ -22,6 +22,8 @@ import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.service.impl.*;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,9 +58,9 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
-    private BpmVerifyInfoServiceImpl verifyInfoService;
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
 
 
 
@@ -79,7 +81,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         //set task state
         processInfoVo.setTaskState(ProcessStateEnum.getDescByCode(bpmBusinessProcess.getProcessState()));
         //process's verify info
-        processInfoVo.setVerifyInfoList(verifyInfoService.verifyInfoList(bpmBusinessProcess));
+        processInfoVo.setVerifyInfoList(bpmVerifyInfoBizService.verifyInfoList(bpmBusinessProcess));
         //set process desc
         processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
 
@@ -124,7 +126,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .eq(BpmVariableMultiplayer::getVariableId, variableId)
                     .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
             if(StringUtils.isBlank(nodeId)){
-                List<BpmVariableSignUp> signUpList = bpmVariableSignUpService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
+                List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
                 BpmVariableSignUp  signUpParent=null;
                 if(!CollectionUtils.isEmpty(signUpList)){
                     for (BpmVariableSignUp bpmVariableSignUp : signUpList) {

@@ -3,21 +3,26 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.bpmn.behavior.ParallelGatewayActivityBehavior;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.entity.ActHiTaskinst;
-import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmFlowrunEntrust;
-import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUp;
+import org.openoa.base.constant.enums.ProcesTypeEnum;
+import org.openoa.base.entity.*;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.engine.bpmnconf.common.ProcessConstants;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
+import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -27,6 +32,7 @@ import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
 
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,7 +58,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.*;
  * BpmVerifyInfoNewServiceImpl
  */
 @Service
-public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoServiceImpl> {
+public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private static final Logger log = LoggerFactory.getLogger(BpmVerifyInfoBizServiceImpl.class);
     @Autowired
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
@@ -77,9 +83,25 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Resource
     private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    @Autowired
+    private TaskService taskService;
+    @Autowired
+    private BpmBusinessProcessServiceImpl processService;
+    @Autowired
+    private ProcessConstants processConstants;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
+    @Autowired
+    private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;;
+    @Autowired
+    private BpmVariableMapper bpmVariableMapper;
+    @Autowired
+    private BpmnNodeMapper bpmnNodeMapper;
+
+    @Override
     public List<BpmVerifyInfoVo> getVerifyInfoList(String processCode) {
-        List<BpmVerifyInfoVo> bpmVerifyInfoVos = getService().verifyInfoList(processCode);
+        List<BpmVerifyInfoVo> bpmVerifyInfoVos = verifyInfoList(processCode);
         return bpmVerifyInfoVos;
     }
 
@@ -90,6 +112,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @param finishFlag    to indicate whether a process is finished true for finished and false for not finished yet
      * @return verify path include finished and unfinished nodes
      */
+    @Override
     public List<BpmVerifyInfoVo> getBpmVerifyInfoVos(String processNumber, boolean finishFlag) {
         List<BpmVerifyInfoVo> bpmVerifyInfoVos = Lists.newArrayList();
 
@@ -107,7 +130,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //query and then append process record
-        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos = getService().verifyInfoList(processNumber, bpmBusinessProcess.getProcInstId());
+        List<BpmVerifyInfoVo> searchBpmVerifyInfoVos =verifyInfoList(processNumber, bpmBusinessProcess.getProcInstId());
 
         //sort verify info by verify date in ascending order
         searchBpmVerifyInfoVos = searchBpmVerifyInfoVos.stream().sorted(Comparator.comparing(BpmVerifyInfoVo::getVerifyDate)).collect(Collectors.toList());
@@ -173,7 +196,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
 
         //query to do task info
-        List<BpmVerifyInfoVo> taskInfo = getService().findTaskInfo(bpmBusinessProcess);
+        List<BpmVerifyInfoVo> taskInfo = findTaskInfo(bpmBusinessProcess);
 
         BpmVerifyInfoVo taskVo;
 
@@ -241,6 +264,71 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         return bpmVerifyInfoVos;
     }
+    @Override
+    public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(verifyInfo.getVerifyUserId(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        if(entrustByTaskId!=null){
+            verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
+        }
+        this.getMapper().insert(verifyInfo);
+    }
+    /***
+     * add verify info
+     * @param businessId business id
+     * @param taskId    task id
+     * @param remark     verify desc
+     * @param businessType process business type
+     */
+    @Override
+    public void addVerifyInfo(String businessId, String taskId, String remark, Integer businessType, Integer status) {
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        BpmVerifyInfo verifyInfo = new BpmVerifyInfo();
+        verifyInfo.setBusinessId(businessId);
+        verifyInfo.setId(null);
+        verifyInfo.setBusinessType(businessType);
+        verifyInfo.setVerifyDate(new Date());
+        verifyInfo.setTaskName(task == null ? "" : task.getName());
+        verifyInfo.setVerifyUserName(SecurityUtils.getLogInEmpName());
+        verifyInfo.setVerifyUserId(SecurityUtils.getLogInEmpIdStr());
+        verifyInfo.setVerifyDesc(Strings.isNullOrEmpty(remark) ? "同意" : remark);
+        verifyInfo.setVerifyStatus(status);
+        this.getMapper().insert(verifyInfo);
+    }
+    /**
+     * map verify info
+     * 如果procInstId为null,则查询员工信息,否则自省
+     */
+    @Override
+    public List<BpmVerifyInfoVo> getBpmVerifyInfoVoList(List<BpmVerifyInfoVo> list,String procInstId) {
+        List<BpmVerifyInfoVo> infoVoList = new ArrayList<>();
+        infoVoList.addAll(list.stream()
+                .map(o -> {
+                    if (!ObjectUtils.isEmpty(o.getOriginalId())) {
+                        if(!StringUtils.isEmpty(procInstId)){
+                            List<BpmFlowrunEntrust> bpmFlowrunEntrusts = bpmFlowrunEntrustService.list(
+                                    new QueryWrapper<BpmFlowrunEntrust>()
+                                            .eq("original", o.getOriginalId())
+                                            .eq("runinfoid", procInstId)
+
+                            );
+                            if(!CollectionUtils.isEmpty(bpmFlowrunEntrusts)){
+                                o.setOriginalName(bpmFlowrunEntrusts.get(0).getOriginalName());
+                                o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
+                            }
+                        }else{
+                            Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(o.getOriginalId()));
+                            o.setOriginalName(stringStringMap.get(o.getOriginalId()));
+                            o.setVerifyUserName(o.getVerifyUserName() + " 代 " +o.getOriginalName()  + " 审批");
+                        }
+                    }
+                    return o;
+                }).collect(Collectors.toList()));
+        return infoVoList;
+    }
+
 
     /**
      * append info
@@ -250,6 +338,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @param bpmVerifyInfoVos
      * @param taskVo
      */
+
     private void addBpmVerifyInfoVo(String processNumber, Integer sort, List<BpmVerifyInfoVo> bpmVerifyInfoVos, String procDefId,String procInstId, BpmVerifyInfoVo taskVo) {
 
         //get all activiti flow nodes list
@@ -327,6 +416,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
      * @param variableId
      * @return
      */
+    @Override
     public Map<String, String> getSignUpNodeCollectionNameMap(Long variableId) {
 
         Map<String, String> signUpNodeCollectionNameMap = Maps.newHashMap();
@@ -346,14 +436,7 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
 
         return signUpNodeCollectionNameMap;
     }
-    /**
-     * 根据processNumber 获取当前审批节点的ElementId
-     * @param processNumber
-     * @return
-     */
-    public  String  findCurrentNodeIds(String processNumber) {
-      return  getService().findCurrentNodeIds(processNumber);
-    }
+
     /**
      * do append verify info
      *
@@ -445,7 +528,55 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
 
     }
+    /**
+     * get to do task info
+     *
+     * @param bpmBusinessProcess
+     * @return
+     */
+    public List<BpmVerifyInfoVo> findTaskInfo(BpmBusinessProcess bpmBusinessProcess) {
+        String procInstId = bpmBusinessProcess.getProcInstId();
+        List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());
+        if (ObjectUtils.isEmpty(tasks)) {
+            return Lists.newArrayList();
+        }
 
+        List<String> verifyUserIds = tasks.stream().map(BpmVerifyInfoVo::getVerifyUserId).collect(Collectors.toList());
+        Integer isOutSideProcess = bpmBusinessProcess.getIsOutSideProcess();
+        Map<String, String> stringStringMap = null;
+        if(Objects.equals(isOutSideProcess,1)){
+            stringStringMap=tasks.stream().collect(Collectors.toMap(BpmVerifyInfoVo::getVerifyUserId, BpmVerifyInfoVo::getVerifyUserName,(k1, k2)->k1));
+        }else{
+            stringStringMap= bpmnEmployeeInfoProviderService.provideEmployeeInfo(verifyUserIds);
+        }
+        for (BpmVerifyInfoVo task : tasks) {
+            String verifyUidStr = task.getVerifyUserId();
+            String verifyUserName = stringStringMap.get(verifyUidStr);
+            task.setVerifyUserName(verifyUserName);
+        }
+        List<BpmVerifyInfoVo> taskInfors = Lists.newArrayList();
+
+        if (tasks.size() > 1) {
+            String verifyUserName = StringUtils.join(tasks.stream().map(BpmVerifyInfoVo::getVerifyUserName).collect(Collectors.toList()), ",");
+            String taskName = StringUtils.EMPTY;
+            List<String> strs = tasks.stream().map(BpmVerifyInfoVo::getTaskName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(strs)) {
+                taskName = String.join("||", strs);
+            }
+            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).collect(Collectors.joining(","));
+            taskInfors.add(BpmVerifyInfoVo.builder()
+                    .verifyUserIds(verifyUserIds)
+                    .verifyUserName(verifyUserName)
+                    .taskName(taskName)
+                    .elementId(elementId)
+                    .build());
+        } else {
+            tasks.get(0).setVerifyUserIds(verifyUserIds);
+            taskInfors.add(tasks.get(0));
+        }
+
+        return taskInfors;
+    }
     /**
      * @param variableId
      * @return
@@ -472,4 +603,78 @@ public class BpmVerifyInfoBizServiceImpl extends BizServiceImpl<BpmVerifyInfoSer
         }
         return nodeApprovedsMap;
     }
+    /**
+     * map verify info
+     */
+    public List<BpmVerifyInfoVo> getBpmVerifyInfoVoList(List<BpmVerifyInfoVo> list) {
+        return getBpmVerifyInfoVoList(list,null);
+    }
+    /**
+     * get verifyinfo by business id
+     *
+     * @return
+     */
+    public List<BpmVerifyInfoVo> findVerifyInfo(BpmBusinessProcess bpmBusinessProcess) {
+        Integer business_type = ProcesTypeEnum.getCodeByDesc(bpmBusinessProcess.getBusinessNumber().split("\\_")[0].toString());
+        List<BpmVerifyInfoVo> bpmVerifyInfoVo = this.findTaskInfo(bpmBusinessProcess);
+        List<BpmVerifyInfoVo> list = getBpmVerifyInfoVoList(this.getMapper().getVerifyInfo(
+                BpmVerifyInfoVo.builder()
+                        .businessId(bpmBusinessProcess.getBusinessId().toString())
+                        .businessType(business_type)
+                        .build()
+        ));
+        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo)) {
+            bpmVerifyInfoVo.addAll(list);
+            return bpmVerifyInfoVo;
+        } else {
+            return list;
+        }
+    }
+    /**
+     * get process verify info list
+     *
+     * @param bpmBusinessProcess
+     * @return
+     */
+    @Override
+    public List<BpmVerifyInfoVo> verifyInfoList(BpmBusinessProcess bpmBusinessProcess) {
+        List<BpmVerifyInfoVo> bpmVerifyInfoVo = Optional.ofNullable(this.findTaskInfo(bpmBusinessProcess)).orElse(Arrays.asList());
+        List<BpmVerifyInfoVo> list = getBpmVerifyInfoVoList(Optional.ofNullable(getMapper().getVerifyInfo(
+                BpmVerifyInfoVo.builder()
+                        .processCode(bpmBusinessProcess.getBusinessNumber())
+                        .build()
+        )).orElse(Arrays.asList()));
+        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo)) {
+            bpmVerifyInfoVo.addAll(list);
+            return bpmVerifyInfoVo;
+        }
+        return list;
+    }
+
+
+    /**
+     * get process verify info list(not include entrust flows)
+     *
+     * @param processNumber
+     * @return
+     */
+    @Override
+    public List<BpmVerifyInfoVo> verifyInfoList(String processNumber) {
+        return verifyInfoList(processNumber,null);
+    }
+    /**
+     * get process verify info list(not include entrust flows)
+     *
+     * @param processNumber
+     * @return
+     */
+    @Override
+    public List<BpmVerifyInfoVo> verifyInfoList(String processNumber,String procInstId) {
+        return getBpmVerifyInfoVoList(Optional.ofNullable(this.getMapper().getVerifyInfo(
+                BpmVerifyInfoVo.builder()
+                        .processCode(processNumber)
+                        .build()
+        )).orElse(Arrays.asList()),procInstId);
+    }
+
 }

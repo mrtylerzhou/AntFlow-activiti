@@ -20,7 +20,6 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.constant.enums.ProcessStateEnum;
@@ -69,7 +68,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private ConfigFlowButtonContans configFlowButtonContans;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpBizServiceImpl bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
 
@@ -254,7 +253,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
         //check whether current node is a signup node and set the property
         String nodeId = businessDataVo.getProcessRecordInfo().getNodeId();
-        Boolean nodeIsSignUp = bpmVariableSignUpService.checkNodeIsSignUp(vo.getProcessNumber(), nodeId);
+        Boolean nodeIsSignUp = bpmVariableSignUpBizService.checkNodeIsSignUp(vo.getProcessNumber(), nodeId);
         businessDataVo.setIsSignUpNode(nodeIsSignUp);
         //add a "choose a verifier" button if it is a signup node
         if (nodeIsSignUp) {

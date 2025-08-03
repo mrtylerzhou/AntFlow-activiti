@@ -28,13 +28,13 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.util.ProcessDefinitionUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +58,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private TaskService taskService;
 
     @Autowired
-    private BpmVerifyInfoServiceImpl verifyInfoService;
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
 
     @Autowired
     private BpmProcessNodeSubmitServiceImpl processNodeSubmitService;
@@ -166,7 +166,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 throw new AFBizException("未支持的退回类型!");
         }
         //save verify info
-        verifyInfoService.addVerifyInfo(BpmVerifyInfo.builder()
+        bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
                 .businessId(bpmBusinessProcess.getBusinessId())
                 .verifyUserName(vo.getStartUserName())
                 .verifyUserId(vo.getStartUserId())
