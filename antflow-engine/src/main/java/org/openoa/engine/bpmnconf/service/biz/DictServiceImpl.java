@@ -1,4 +1,4 @@
-package org.openoa.service.impl;
+package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -14,7 +14,6 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.base.entity.DictData;
 import org.openoa.engine.bpmnconf.mapper.DicDataMapper;
 import org.openoa.engine.bpmnconf.mapper.DictMainMapper;
