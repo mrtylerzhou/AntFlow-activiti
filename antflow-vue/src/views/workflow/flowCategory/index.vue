@@ -60,6 +60,10 @@
                                     <el-button link type="warning" icon="Operation"
                                         @click="handleVersion(scope.row)"></el-button>
                                 </el-tooltip>
+                                <el-tooltip content="查看表单" placement="top">
+                                    <el-button link type="success" icon="View"
+                                        @click="handleLFTemp(scope.row)"></el-button>
+                                </el-tooltip>
                                 <el-tooltip content="通知设置" placement="top">
                                     <el-button
                                         v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
@@ -67,10 +71,6 @@
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                     <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
-                                </el-tooltip>
-                                <el-tooltip content="查看表单" placement="top">
-                                    <el-button link type="success" icon="ZoomIn"
-                                        @click="handleLFTemp(scope.row)"></el-button>
                                 </el-tooltip>
                             </template>
                         </el-table-column>
@@ -120,6 +120,10 @@
                                     <el-button link type="warning" icon="Operation"
                                         @click="handleVersion(scope.row)"></el-button>
                                 </el-tooltip>
+                                <el-tooltip content="查看表单" placement="top">
+                                    <el-button link type="success" icon="View"
+                                        @click="handleLFTemp(scope.row)"></el-button>
+                                </el-tooltip>
                                 <el-tooltip content="通知设置" placement="top">
                                     <el-button
                                         v-if="scope.row.processNotices?.findIndex(item => item.active) > -1 || scope.row.templateVos?.length > 0"
@@ -128,10 +132,7 @@
                                     <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
-                                <el-tooltip content="查看表单" placement="top">
-                                    <el-button link type="success" icon="ZoomIn"
-                                        @click="handleLFTemp(scope.row)"></el-button>
-                                </el-tooltip>
+
                             </template>
                         </el-table-column>
                     </el-table>
@@ -172,30 +173,17 @@
             </template>
         </el-dialog>
 
-        <!-- 查看表单 -->
-        <el-dialog :title="title" v-model="open" append-to-body>
-            <div class="component">
-                <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
-                    :isPreview="true">
-                </component>
-            </div>
-            <template #footer>
-                <div class="dialog-footer">
-                    <el-button @click="closeDialog">关 闭</el-button>
-                </div>
-            </template>
-        </el-dialog>
-
-        <set-default-msg v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
+        <set-msg-drawer v-model:visible="openFlowMsgDialog" :formMsgData="formMsgData" @refresh="refreshList" />
+        <view-form-drawer v-model:visible="open" :viewFormData="viewFormData" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SetDefaultMsg from './setDefaultMsg.vue';
+import SetMsgDrawer from './setMsgDrawer.vue';
+import ViewFormDrawer from './viewFormDrawer.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
-import { getLowCodeFromCodeData, createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
 const { proxy } = getCurrentInstance();
 const DIYList = ref([]);
 const LFPageList = ref([]);
@@ -208,9 +196,8 @@ const openFlowMsgDialog = ref(false);
 const formMsgData = ref(null);
 
 const title = ref("");
-let lfFormDataConfig = ref(null);
-let loadedComponent = ref(null);
-let componentLoaded = ref(null);
+let viewFormData = ref(null);
+
 const activeName = ref('LFTab');
 const total = ref(0);
 
@@ -308,25 +295,7 @@ function submitForm() {
 
 /** 查看表单操作 */
 const handleLFTemp = async (row) => {
-    loadedComponent.value = null;
-    title.value = "查看表单";
-    proxy.$modal.loading();
-    if (row.type == 'LF') {//低代码表单
-        await getLowCodeFromCodeData(row.key).then(async (res) => {
-            if (res.code == 200) {
-                lfFormDataConfig.value = res.data
-                loadedComponent.value = await loadLFComponent();
-                componentLoaded.value = true;
-            } else {
-                proxy.$modal.msgWarning("未定义业务表单组件");
-            }
-        });
-    } else {//自定义表单
-        loadedComponent.value = await loadDIYComponent(row.key)
-            .catch((err) => { proxy.$modal.msgWarning(err); });
-        componentLoaded.value = true;
-    }
-    proxy.$modal.closeLoading();
+    viewFormData.value = row;
     open.value = true;
 }
 
@@ -380,15 +349,6 @@ const handleVersion = async (row) => {
     };
     let obj = { path: "flow-version", query: params };
     proxy.$tab.openPage(obj);
-}
-/** 修改按钮操作 */
-function handleEdit(row) {
-    proxy.$modal.msgError("演示数据不允许修改操作！");
-}
-
-/** 删除按钮操作 */
-function handleDelete(row) {
-    proxy.$modal.msgError("演示环境不允许删除操作！");
 }
 
 /** 搜索按钮操作 */
