@@ -10,9 +10,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class BpmnNodeServiceImpl extends ServiceImpl<BpmnNodeMapper, BpmnNode> implements BpmnNodeService {
 
-    @Autowired
-    private BpmnNodeToServiceImpl bpmnNodeToService;
-    @Autowired
-    private BpmnNodeMapper mapper;
-
 }

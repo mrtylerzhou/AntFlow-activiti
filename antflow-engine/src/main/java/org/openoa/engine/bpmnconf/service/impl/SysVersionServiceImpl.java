@@ -13,6 +13,7 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;
 import org.openoa.engine.vo.SysVersionVo;
@@ -42,7 +43,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
     private SysVersionMapper sysVersionMapper;
 
     @Autowired
-    private BpmProcessAppDataServiceImpl bpmProcessAppDataService;
+    private BpmProcessAppDataBizService processAppDataBizService;
     @Value("${app.ios.skip_force_version:}")
     private String iosSkipForceVersion;
     @Value("${app.android.skip_force_version:}")
@@ -247,15 +248,15 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         page.setRecords(dtoList
                 .stream()
                 .map(o -> {
-                    List<BaseIdTranStruVo> appList = bpmProcessAppDataService.findAppDataByVersionId(o.getId(), AppApplicationType.ONE_TYPE.getCode());
+                    List<BaseIdTranStruVo> appList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.ONE_TYPE.getCode());
                     if (!CollectionUtils.isEmpty(appList)) {
                         o.setApplication(appList);
                     }
-                    List<BaseIdTranStruVo> dataList = bpmProcessAppDataService.findAppDataByVersionId(o.getId(), AppApplicationType.TWO_TYPE.getCode());
+                    List<BaseIdTranStruVo> dataList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.TWO_TYPE.getCode());
                     if (!CollectionUtils.isEmpty(dataList)) {
                         o.setData(dataList);
                     }
-                    List<BaseIdTranStruVo> quickEntryList = bpmProcessAppDataService.findAppDataByVersionId(o.getId(), AppApplicationType.THREE_TYPE.getCode());
+                    List<BaseIdTranStruVo> quickEntryList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.THREE_TYPE.getCode());
                     if (!CollectionUtils.isEmpty(quickEntryList)) {
                         o.setQuickEntryList(quickEntryList);
                     }
@@ -284,9 +285,9 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             }
             if (this.updateById(sysVersion)) {
                 if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    bpmProcessAppDataService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.ONE_TYPE.getCode());
-                    bpmProcessAppDataService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.TWO_TYPE.getCode());
-                    bpmProcessAppDataService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.THREE_TYPE.getCode());
+                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.ONE_TYPE.getCode());
+                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.TWO_TYPE.getCode());
+                    processAppDataBizService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.THREE_TYPE.getCode());
                 }
                 return true;
             }
@@ -300,8 +301,8 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             sysVersion.setIndex(index);
             if (this.save(sysVersion)) {
                 if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    bpmProcessAppDataService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), 1);
-                    bpmProcessAppDataService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), 2);
+                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), 1);
+                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), 2);
                 }
                 return true;
             }

@@ -25,7 +25,7 @@ import org.openoa.base.entity.OutSideBpmBusinessParty;
 import org.openoa.base.entity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmAccessBusinessMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ButtonOperationServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAccessBusinessService;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
@@ -70,7 +70,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
 
     @Autowired
     @Lazy
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     @Lazy
     private BpmnConfServiceImpl bpmnConfService;

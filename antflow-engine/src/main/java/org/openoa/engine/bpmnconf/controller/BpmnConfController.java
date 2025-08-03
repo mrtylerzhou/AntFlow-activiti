@@ -5,14 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.biz.ProcessApprovalServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +31,13 @@ import java.util.Map;
 @RequestMapping(value = "/bpmnConf")
 public class BpmnConfController {
     @Autowired
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private BpmnNodeToServiceImpl bpmnNodeToService;
     @Autowired
     private ProcessApprovalServiceImpl processApprovalService;
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     @Autowired(required = false)
@@ -64,7 +64,7 @@ public class BpmnConfController {
      */
     @PostMapping("/edit")
     public Result edit(@RequestBody BpmnConfVo bpmnConfVo) {
-        bpmnConfService.edit(bpmnConfVo);
+        bpmnConfBizService.edit(bpmnConfVo);
         return Result.newSuccessResult("ok");
     }
 
@@ -78,7 +78,7 @@ public class BpmnConfController {
     public Result<ResultAndPage<BpmnConfVo>> listPage(@RequestBody ConfDetailRequestDto dto) {
         PageDto page = dto.getPageDto();
         BpmnConfVo vo = dto.getEntity();
-        return Result.newSuccessResult(bpmnConfService.selectPage(page, vo));
+        return Result.newSuccessResult(bpmnConfBizService.selectPage(page, vo));
     }
 
     /**
@@ -149,7 +149,7 @@ public class BpmnConfController {
      */
     @GetMapping("/effectiveBpmn/{id}")
     public Result effectiveBpmn(@PathVariable("id") Integer id) {
-        bpmnConfService.effectiveBpmnConf(id);
+        bpmnConfBizService.effectiveBpmnConf(id);
         return Result.newSuccessResult(null);
     }
 
@@ -161,7 +161,7 @@ public class BpmnConfController {
      */
     @RequestMapping("/detail/{id}")
     public Result<BpmnConfVo> detail(@PathVariable("id") Integer id) {
-        return Result.newSuccessResult(bpmnConfService.detail(id));
+        return Result.newSuccessResult(bpmnConfBizService.detail(id));
     }
 
     /**

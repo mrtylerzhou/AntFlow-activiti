@@ -14,5 +14,4 @@ public interface BpmFlowruninfoService extends IService<BpmFlowruninfo> {
 
     void deleteFlowruninfo(Long id);
 
-    ProcessDefinition getProcessDefinition(String processDefinitionId);
 }

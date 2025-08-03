@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
-import org.activiti.engine.TaskService;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.base.util.SecurityUtils;
@@ -12,7 +11,6 @@ import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.utils.AFWrappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -24,8 +22,6 @@ import java.util.*;
 @Service
 public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustMapper, BpmFlowrunEntrust> implements BpmFlowrunEntrustService {
 
-    @Autowired
-    private TaskService taskService;
 
     /**
      * add flow entrust
@@ -134,7 +130,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
                         AFWrappers.<BpmFlowrunEntrust>lambdaTenantQuery()
                                 .eq(BpmFlowrunEntrust::getType,vo.getType())
                                 .eq(BpmFlowrunEntrust::getRuninfoid,vo.getRuninfoid())))
-                .orElse(Arrays.asList());
+                .orElse(Collections.emptyList());
     }
 
 }

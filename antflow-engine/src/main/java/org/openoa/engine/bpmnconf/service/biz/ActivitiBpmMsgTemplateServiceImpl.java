@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.impl;
+package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
@@ -18,7 +18,10 @@ import org.openoa.base.vo.UserMsgBatchVo;
 import org.openoa.base.vo.UserMsgVo;
 import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
-import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeOvertimeServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +47,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     @Autowired
     private BpmProcessNodeOvertimeServiceImpl processNodeOvertimeService;
     @Autowired
-    private BpmnConfNoticeTemplateServiceImpl bpmnConfNoticeTemplateService;
+    private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
     @Autowired
     private BpmnConfNoticeTemplateDetailServiceImpl bpmnConfNoticeTemplateDetailService;
 
@@ -534,7 +537,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         log.info("content数据转换,activitiBpmMsgVo:{},msgNoticeType:{}", JSON.toJSONString(activitiBpmMsgVo), msgNoticeType);
         BpmnConfNoticeTemplateDetail bpmnConfNoticeTemplateDetail = null;
         if (!StringUtils.isBlank(activitiBpmMsgVo.getBpmnCode())) {
-            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(), msgNoticeType);
+            bpmnConfNoticeTemplateDetail = bpmnConfNoticeTemplateBizService.getDetailByCodeAndType(activitiBpmMsgVo.getBpmnCode(), msgNoticeType);
         }
         String content = null;
         if (bpmnConfNoticeTemplateDetail == null) {

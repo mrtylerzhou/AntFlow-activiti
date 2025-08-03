@@ -19,7 +19,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.OutSideBpmAccessBusiness;
 import org.openoa.base.entity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Component
 public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
 
     @Autowired
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;

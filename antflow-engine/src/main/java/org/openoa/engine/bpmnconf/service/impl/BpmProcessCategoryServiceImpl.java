@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategoryMapper, BpmProcessCategory> implements BpmProcessCategoryService {
 
     @Autowired
-    private BpmProcessCategoryMapper bpmProcessCategoryMapper;
-    @Autowired
     @Lazy
     private BpmProcessApplicationTypeServiceImpl bpmProcessApplicationTypeService;
 
@@ -57,7 +55,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
             QueryWrapper<BpmProcessCategory> categoryWrapper = new QueryWrapper<BpmProcessCategory>()
                     .eq("is_app", vo.getIsApp())
                     .eq("is_del", 0);
-            Long countCode = bpmProcessCategoryMapper.selectCount(categoryWrapper);
+            Long countCode = getBaseMapper().selectCount(categoryWrapper);
             if (vo.getIsApp().equals(0)) {
                 forVo.setEntrance("PC");
             } else if (vo.getIsApp().equals(1)) {
@@ -108,7 +106,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
             throw new AFBizException("当前记录已到顶");
         }
 
-        BpmProcessCategory processCategory = bpmProcessCategoryMapper.selectOne(new  QueryWrapper<BpmProcessCategory>()
+        BpmProcessCategory processCategory = getBaseMapper().selectOne(new  QueryWrapper<BpmProcessCategory>()
         .eq("is_app",bpmProcessCategory.getIsApp())
                 .eq("sort",sort-1)
         .eq("is_del",0)
@@ -127,14 +125,14 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
             new AFBizException("无此条记录");
         }
         Integer sort = bpmProcessCategory.getSort();
-        Long count = bpmProcessCategoryMapper.selectCount(new QueryWrapper<BpmProcessCategory>().eq("is_del", 0));
+        Long count = getBaseMapper().selectCount(new QueryWrapper<BpmProcessCategory>().eq("is_del", 0));
         if (sort >= count) {
             throw new AFBizException("当前记录已到底");
         }
 
 
         //get last modified record
-        BpmProcessCategory processCategory = bpmProcessCategoryMapper.selectOne(
+        BpmProcessCategory processCategory = getBaseMapper().selectOne(
                 new  QueryWrapper<BpmProcessCategory>()
                         .eq("is_app",bpmProcessCategory.getIsApp())
                         .eq("sort",sort+1)
@@ -155,8 +153,8 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
         }
         Integer sort = bpmProcessCategory.getSort();
         QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<BpmProcessCategory>().eq("is_del", 0).eq("is_app", bpmProcessCategory.getIsApp());
-        Long countTotal = bpmProcessCategoryMapper.selectCount(wrapper);
-        List<BpmProcessCategory> list = bpmProcessCategoryMapper.selectList(wrapper.gt("sort", sort));
+        Long countTotal = getBaseMapper().selectCount(wrapper);
+        List<BpmProcessCategory> list = getBaseMapper().selectList(wrapper.gt("sort", sort));
 
         //delete application under a category
         bpmProcessApplicationTypeService.deletProcessApplicationType(BpmProcessApplicationTypeVo.builder().categoryId(id).build());
@@ -168,7 +166,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
             int countChanged = 0;
             for (BpmProcessCategory o : list) {
                 o.setSort(o.getSort() - 1);
-                countChanged += bpmProcessCategoryMapper.updateById(o);
+                countChanged += getBaseMapper().updateById(o);
             }
             return countChanged == countTotal - sort;
         }
@@ -187,7 +185,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
         if (vo.getIsApp()!=null) {
             wrapper.eq("is_app", vo.getIsApp());
         }
-        List<BpmProcessCategory> bpmProcessCategories = bpmProcessCategoryMapper.selectList(wrapper);
+        List<BpmProcessCategory> bpmProcessCategories = getBaseMapper().selectList(wrapper);
         bpmProcessCategories.sort(Comparator.comparing(BpmProcessCategory::getSort));
         return bpmProcessCategories;
     }
@@ -199,7 +197,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
      * @return
      */
     public List<BpmProcessCategoryVo> processCategoryVos(BpmProcessCategoryVo vo) {
-        return bpmProcessAppApplicationVoList(bpmProcessCategoryMapper.findProcessCategory(vo));
+        return bpmProcessAppApplicationVoList(getBaseMapper().findProcessCategory(vo));
     }
 
     /**
@@ -220,7 +218,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
         QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
         wrapper.eq("id", id);
-        List<BpmProcessCategory> bpmProcessCategoryList = bpmProcessCategoryMapper.selectList(wrapper);
+        List<BpmProcessCategory> bpmProcessCategoryList = getBaseMapper().selectList(wrapper);
         if (!CollectionUtils.isEmpty(bpmProcessCategoryList)) {
             return bpmProcessCategoryList.get(0);
         }

@@ -4,7 +4,7 @@ package org.openoa.engine.utils;
 
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
-import org.openoa.engine.bpmnconf.service.impl.ActivitiBpmMsgTemplateServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.ActivitiBpmMsgTemplateServiceImpl;
 
 import java.util.List;
 

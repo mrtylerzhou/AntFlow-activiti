@@ -16,6 +16,7 @@ import java.util.Date;
 @Service
 public class BpmnNodeSignUpConfServiceImpl extends ServiceImpl<BpmnNodeSignUpConfMapper, BpmnNodeSignUpConf> implements BpmnNodeSignUpConfService {
 
+    @Override
     public void editSignUpConf(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
         if (ObjectUtils.isEmpty(bpmnNodeVo.getIsSignUp()) || bpmnNodeVo.getIsSignUp() != 1) {
             return;

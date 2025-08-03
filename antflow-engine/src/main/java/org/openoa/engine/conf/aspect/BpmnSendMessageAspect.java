@@ -13,7 +13,7 @@ import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
@@ -42,7 +42,7 @@ public class BpmnSendMessageAspect {
     private BpmVariableMessageServiceImpl bpmVariableMessageService;
 
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired

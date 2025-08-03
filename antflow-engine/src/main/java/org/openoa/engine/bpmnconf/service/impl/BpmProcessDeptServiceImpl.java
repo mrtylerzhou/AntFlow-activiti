@@ -12,7 +12,7 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -48,7 +48,7 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
     private RepositoryService repositoryService;
     @Autowired
     @Lazy
-    private BpmnConfCommonServiceImpl confCommonService;
+    private BpmnConfBizServiceImpl confCommonService;
     @Autowired
     @Lazy
     private BpmnConfServiceImpl bpmnConfService;

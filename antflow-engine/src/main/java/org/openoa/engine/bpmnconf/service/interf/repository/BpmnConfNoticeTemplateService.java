@@ -5,7 +5,5 @@ import org.openoa.base.entity.BpmnConfNoticeTemplate;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
 
 public interface BpmnConfNoticeTemplateService extends IService<BpmnConfNoticeTemplate> {
-    BpmnConfNoticeTemplateDetail getDetailByCodeAndType(String bpmnCode, Integer noticeType);
 
-    Integer insert(String bpmnCode);
 }

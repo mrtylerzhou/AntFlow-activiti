@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.Getter;
 import lombok.Setter;

@@ -6,6 +6,7 @@ import org.openoa.base.entity.BpmnViewPageButton;
 import org.openoa.engine.bpmnconf.mapper.BpmnViewPageButtonMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnViewPageButtonService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class BpmnViewPageButtonServiceImpl extends ServiceImpl<BpmnViewPageButtonMapper, BpmnViewPageButton> implements BpmnViewPageButtonService {
 
+    @Override
     public Integer deleteByConfId(Long confId) {
-        int deleteSize = baseMapper.delete(new QueryWrapper<BpmnViewPageButton>().eq("conf_id", confId));
-        return deleteSize;
+        return baseMapper.delete( AFWrappers. <BpmnViewPageButton>lambdaTenantQuery().eq(BpmnViewPageButton::getConfId, confId));
     }
 
 }

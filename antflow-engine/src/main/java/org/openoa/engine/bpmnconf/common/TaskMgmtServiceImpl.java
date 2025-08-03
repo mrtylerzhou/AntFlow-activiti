@@ -26,6 +26,7 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     private Map<String, FormOperationAdaptor> formOperationAdaptorMap;
     @Autowired
     @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
 
@@ -162,7 +163,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
                 .in(BpmnConf::getFormCode, formCodes)
                 .eq(BpmnConf::getEffectiveStatus, 1);
-        List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
+        List<BpmnConf> bpmnConfs = bpmnConfBizService.getService().list(queryWrapper);
         if(!CollectionUtils.isEmpty(bpmnConfs)){
             Map<String, Integer> formCode2Flags = bpmnConfs
                     .stream()
@@ -197,7 +198,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 }
                 BpmnConfVo confVo=new BpmnConfVo();
                 confVo.setFormCode(formCode);
-                bpmnConfService.setBpmnTemplateVos(confVo);
+                bpmnConfBizService.setBpmnTemplateVos(confVo);
                 diyProcessInfoDTO.setTemplateVos(confVo.getTemplateVos());
             }
         }

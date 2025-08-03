@@ -17,12 +17,13 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.vo.*;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -64,14 +65,12 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Autowired
     private BpmProcessDeptServiceImpl processDeptService;
     @Autowired
-    private BpmnConfCommonServiceImpl confCommonService;
+    private BpmnConfBizServiceImpl confCommonService;
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private ProcessBusinessContans processBusinessContans;
     @Autowired
-    @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
 
 
 
@@ -146,7 +145,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         List<String> allProcess = processDeptService.getAllProcess();
 
         // process's detailed conf
-        List<BpmnConf> allConfList = Optional.ofNullable(bpmnConfCommonService.getIsAllConfs()).orElse(Arrays.asList());
+        List<BpmnConf> allConfList = Optional.ofNullable(bpmnConfBizService.getIsAllConfs()).orElse(Arrays.asList());
         List<String> collect = allConfList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList());
         allProcess.addAll(collect);
         // allProcess.addAll(ProcessTypeQuery.getprocessKeyList(VPN_TYPE.getCode()));
@@ -202,7 +201,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     private List<BpmProcessAppApplicationVo> processAppDate(List<BpmProcessAppApplicationVo> list) {
         return list.stream().map(o -> {
             o.setSource(o.getEffectiveSource());
-            BpmnConf bpmnConfByCode = bpmnConfCommonService.getBpmnConfByFormCode(o.getProcessKey());
+            BpmnConf bpmnConfByCode = bpmnConfBizService.getBpmnConfByFormCode(o.getProcessKey());
             if (bpmnConfByCode!=null && bpmnConfByCode.getId()!=null) {
 
                 boolean isOutSide = false;
@@ -573,7 +572,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         List<String> keys = list.stream()
                 .map(BpmProcessAppApplicationVo::getProcessKey)
                 .collect(Collectors.toList());
-        Map<String, BpmnConf> map = bpmnConfService.getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
+        Map<String, BpmnConf> map = bpmnConfBizService.getMapper().selectList(new QueryWrapper<BpmnConf>()
                 .in("form_code", keys)
                 .eq("effective_status", 1))
                 .stream()

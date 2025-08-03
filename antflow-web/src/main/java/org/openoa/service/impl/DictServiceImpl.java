@@ -11,6 +11,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConf;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
@@ -36,7 +37,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     @Autowired
     private DicDataMapper dicDataMapper;
     @Autowired
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     /**
@@ -144,7 +145,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                     .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
                     .in(BpmnConf::getFormCode, formCodes)
                     .eq(BpmnConf::getEffectiveStatus, 1);
-            List<BpmnConf> bpmnConfs = bpmnConfService.list(queryWrapper);
+            List<BpmnConf> bpmnConfs = bpmnConfBizService.getService().list(queryWrapper);
             if(!CollectionUtils.isEmpty(bpmnConfs)){
                 Map<String, Integer> formCode2Flags = bpmnConfs
                         .stream()
@@ -180,7 +181,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                     }
                     BpmnConfVo confVo=new BpmnConfVo();
                     confVo.setFormCode(formCode);
-                    bpmnConfService.setBpmnTemplateVos(confVo);
+                    bpmnConfBizService.setBpmnTemplateVos(confVo);
                     lfDto.setTemplateVos(confVo.getTemplateVos());
                 }
             }

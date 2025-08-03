@@ -13,7 +13,7 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnProcessMigrationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
@@ -62,7 +62,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private BpmnProcessMigrationServiceImpl bpmnProcessMigrationService;
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {

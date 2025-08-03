@@ -18,11 +18,8 @@ import java.util.Map;
 
 @Service
 public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper, BpmFlowruninfo> implements BpmFlowruninfoService {
-    protected static Map<String, ProcessDefinition> PROCESS_DEFINITION_CACHE = new HashMap<String, ProcessDefinition>();
 
 
-    @Autowired
-    private RepositoryService repositoryService;
 
     /**
      * create run info
@@ -68,23 +65,5 @@ public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper,
         getBaseMapper().deleteById(id);
     }
 
-    /**
-     * get process definition
-     *
-     * @param processDefinitionId
-     * @return
-     */
-    @Override
-    public ProcessDefinition getProcessDefinition(String processDefinitionId) {
-        ProcessDefinition processDefinition = PROCESS_DEFINITION_CACHE
-                .get(processDefinitionId);
-        if (processDefinition == null) {
-            processDefinition = repositoryService
-                    .createProcessDefinitionQuery()
-                    .processDefinitionId(processDefinitionId).singleResult();
-            PROCESS_DEFINITION_CACHE
-                    .put(processDefinitionId, processDefinition);
-        }
-        return processDefinition;
-    }
+
 }

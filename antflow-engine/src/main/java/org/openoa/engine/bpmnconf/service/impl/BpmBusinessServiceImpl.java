@@ -19,9 +19,6 @@ import java.util.List;
 @Service
 public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBusiness> implements BpmBusinessService {
 
-    @Autowired
-    private BpmBusinessMapper bpmProcessBusinessMapper;
-
 
     /**
      * edit process business
@@ -31,12 +28,12 @@ public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBu
      */
     @Override
     public boolean editProcessBusiness(BusinessDataVo vo) {
-        List<BpmBusiness> list = bpmProcessBusinessMapper.selectList(
+        List<BpmBusiness> list = this.getBaseMapper().selectList(
                 AFWrappers.<BpmBusiness>lambdaTenantQuery()
                 .eq(BpmBusiness::getProcessCode,vo.getProcessNumber()));
         if (ObjectUtils.isEmpty(list)) {
-            String processCode = vo.getProcessKey().split("\\_")[0].toString();
-            bpmProcessBusinessMapper.insert(BpmBusiness.builder()
+            String processCode = vo.getProcessKey().split("_")[0];
+            this.getBaseMapper().insert(BpmBusiness.builder()
                     .businessId(vo.getBusinessId())
                     .processKey(vo.getProcessKey())
                     .createTime(new Date())
@@ -57,15 +54,15 @@ public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBu
     @Override
     public boolean updateBusinessState(BusinessDataVo vo) {
         if (!Strings.isNullOrEmpty(vo.getProcessNumber())) {
-            String businessId = vo.getProcessNumber().split("\\_")[1];
-            List<BpmBusiness> list = bpmProcessBusinessMapper.selectList(
+            String businessId = vo.getProcessNumber().split("_")[1];
+            List<BpmBusiness> list = this.getBaseMapper().selectList(
                     AFWrappers.<BpmBusiness>lambdaTenantQuery()
                             .eq(BpmBusiness::getBusinessId,businessId)
                             .eq(BpmBusiness::getProcessCode,vo.getProcessNumber())
             );
             list.forEach(o -> {
                 o.setIsDel(1);
-                bpmProcessBusinessMapper.updateById(o);
+                this.getBaseMapper().updateById(o);
             });
         }
         return true;
@@ -78,7 +75,7 @@ public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBu
      */
     @Override
     public void deleteBusiness(BusinessDataVo vo) {
-        Long businessId = Long.parseLong(vo.getProcessNumber().split("\\_")[1].toString());
+        Long businessId = Long.parseLong(vo.getProcessNumber().split("_")[1]);
         //todo
         this.updateBusinessState(vo);
     }
@@ -90,7 +87,7 @@ public class BpmBusinessServiceImpl extends ServiceImpl<BpmBusinessMapper, BpmBu
      */
     @Override
     public Integer getBpmBusinessCount(Integer userId) {
-        List<BpmBusiness> list = bpmProcessBusinessMapper.selectList(AFWrappers.<BpmBusiness>lambdaTenantQuery()
+        List<BpmBusiness> list = this.getBaseMapper().selectList(AFWrappers.<BpmBusiness>lambdaTenantQuery()
                 .eq(BpmBusiness::getCreateUser,userId));
         return list.size();
     }

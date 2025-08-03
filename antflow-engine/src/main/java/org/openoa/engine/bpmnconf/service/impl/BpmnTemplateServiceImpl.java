@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> implements BpmnTemplateService {
 
+    @Override
     public void editBpmnTemplate(BpmnConfVo bpmnConfVo, Long confId) {
         List<BpmnTemplateVo> templateVos = bpmnConfVo.getTemplateVos();
         if (ObjectUtils.isEmpty(templateVos)) {
@@ -48,6 +49,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
         this.saveBatch(bpmnTemplateList);
     }
 
+    @Override
     public void editBpmnTemplate(BpmnNodeVo bpmnNodeVo) {
         List<BpmnTemplateVo> templateVos = bpmnNodeVo.getTemplateVos();
         if (ObjectUtils.isEmpty(templateVos)) {

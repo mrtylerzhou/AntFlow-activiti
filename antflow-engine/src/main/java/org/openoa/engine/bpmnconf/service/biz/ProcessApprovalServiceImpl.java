@@ -55,7 +55,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     private BpmProcessForwardServiceImpl processForwardService;
     @Autowired
