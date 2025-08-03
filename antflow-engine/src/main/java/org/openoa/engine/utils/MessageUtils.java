@@ -2,7 +2,7 @@ package org.openoa.engine.utils;
 
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.engine.bpmnconf.service.impl.UserMessagePreServiceImpl;
+import org.openoa.engine.bpmnconf.service.biz.UserMessagePreServiceImpl;
 import org.openoa.base.vo.SendParam;
 
 import java.util.List;

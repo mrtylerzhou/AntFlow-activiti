@@ -19,9 +19,6 @@ import java.util.List;
 @Service
 public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> implements OutSideBpmAdminPersonnelService {
 
-    @Autowired
-    private OutSideBpmAdminPersonnelMapper outSideBpmAdminPersonnelMapper;
-
     /**
      * query business party id list by employee id
      * @param employeeId
@@ -37,7 +34,7 @@ public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmA
             }
         }
 
-        return outSideBpmAdminPersonnelMapper.getBusinessPartyIdByEmployeeId(employeeId, types);
+        return getBaseMapper().getBusinessPartyIdByEmployeeId(employeeId, types);
     }
 
 

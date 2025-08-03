@@ -1,33 +1,21 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jodd.util.StringUtil;
-import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.constant.enums.VersionIsForceEnums;
-import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.AFBizException;
-import org.openoa.base.util.PageUtils;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;
 import org.openoa.engine.vo.SysVersionVo;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -39,11 +27,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
 
     public static final String APP_TYPE_ANDROID = "android";
     public static final String APP_TYPE_IOS = "ios";
-    @Autowired
-    private SysVersionMapper sysVersionMapper;
 
-    @Autowired
-    private BpmProcessAppDataBizService processAppDataBizService;
     @Value("${app.ios.skip_force_version:}")
     private String iosSkipForceVersion;
     @Value("${app.android.skip_force_version:}")
@@ -56,6 +40,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      * @param appVersion appversion
      * @return AppVersionVo
      */
+    @Override
     public AppVersionVo getAppVersion(String application, String appVersion) {
         if (StringUtil.isEmpty(application) || StringUtil.isEmpty(appVersion)) {
             return null;
@@ -80,7 +65,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         Integer curIndex = cur.getIndex();
 
         //get max index
-        Integer maxIndex = sysVersionMapper.maxIndex();
+        Integer maxIndex = getBaseMapper().maxIndex();
         if (maxIndex==null) {
             //if max index is null then return null
             return null;
@@ -158,17 +143,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
     }
 
 
-    private List<Integer> getIgnoreIndexs() {
-        //todo
-      /*  String ignoreIndexs = ConfigService.getConfig("service").getProperty("sys.version.ignore.indexs", "23");
-        if (!StringUtil.isEmpty(ignoreIndexs)) {
-            return Lists.newArrayList(ignoreIndexs)
-                    .stream()
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-        }*/
-        return Collections.EMPTY_LIST;
-    }
+
 
     /**
      * get version info
@@ -179,6 +154,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      * @param isDel   true:filtering deleted only keep valid data
      * @return
      */
+    @Override
     public List<SysVersion> listVersion(Long id, String version, Integer index, Boolean isDel) {
         if ((id==null) && (StringUtil.isEmpty(version)) && (index==null) && (!isDel)) {
             //listVersion params can not be all null
@@ -199,7 +175,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
                 wrapper.eq("is_del", 0);
             }
         }
-        return sysVersionMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
     }
 
     /**
@@ -208,6 +184,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      * @param maxIndex
      * @return
      */
+    @Override
     public List<SysVersion> listVersionByIndex(Integer minIndex, Integer maxIndex) {
         if ((minIndex==null) || (maxIndex==null)) {
             //入参都不能为空
@@ -216,7 +193,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         QueryWrapper<SysVersion> wrapper = new QueryWrapper<>();
         wrapper.gt("`index`", minIndex.intValue());
         wrapper.le("`index`", maxIndex.intValue());
-        return sysVersionMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
     }
 
     /**
@@ -225,6 +202,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      * @param version
      * @return
      */
+    @Override
     public SysVersion getInfoByVersion(String version) {
         if (StringUtil.isEmpty(version)) {
             throw new AFBizException( "版本号错误!");
@@ -232,94 +210,29 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         return getOne(new QueryWrapper<SysVersion>().eq("version", version));
     }
 
-    /**
-     * get a list of version info by version vo
-     *
-     * @param vo SysVersionVo
-     * @return
-     */
-    public ResultAndPage<SysVersionVo> list(SysVersionVo vo) {
-        PageDto pageDto = PageUtils.getPageDtoByVo(vo);
-        Page<SysVersionVo> page = PageUtils.getPageByPageDto(pageDto);
-        Integer totalCount = sysVersionMapper.selectPageListCount(vo);
-        page.setTotal(totalCount);
-        List<SysVersionVo> dtoList = totalCount > 0 ? sysVersionMapper.selectPageList(vo, pageDto) : Collections.EMPTY_LIST;
-        page.setRecords(dtoList);
-        page.setRecords(dtoList
-                .stream()
-                .map(o -> {
-                    List<BaseIdTranStruVo> appList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.ONE_TYPE.getCode());
-                    if (!CollectionUtils.isEmpty(appList)) {
-                        o.setApplication(appList);
-                    }
-                    List<BaseIdTranStruVo> dataList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.TWO_TYPE.getCode());
-                    if (!CollectionUtils.isEmpty(dataList)) {
-                        o.setData(dataList);
-                    }
-                    List<BaseIdTranStruVo> quickEntryList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.THREE_TYPE.getCode());
-                    if (!CollectionUtils.isEmpty(quickEntryList)) {
-                        o.setQuickEntryList(quickEntryList);
-                    }
-                    return o;
-                }).collect(Collectors.toList()));
-        return new ResultAndPage<>(dtoList, PageUtils.getPageDto(page));
-    }
-
-    /**
-     * edit version info
-     *
-     * @param vo
-     * @return
-     */
-    @Transactional
-    public Boolean edit(SysVersionVo vo) {
-        if (vo==null) {
-            throw new AFBizException("object can not be null");
-        }
-
-        if (vo.getId()!=null) {
-            SysVersion sysVersion = new SysVersion();
-            BeanUtils.copyProperties(vo, sysVersion);
-            if (vo.getIsHide()!=null) {
-                sysVersion.setEffectiveTime(new Date());
-            }
-            if (this.updateById(sysVersion)) {
-                if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.ONE_TYPE.getCode());
-                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.TWO_TYPE.getCode());
-                    processAppDataBizService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.THREE_TYPE.getCode());
-                }
-                return true;
-            }
-        } else {
-            SysVersion sysVersion = new SysVersion();
-            BeanUtils.copyProperties(vo, sysVersion);
-            //set index incr 1
-            Integer index = sysVersionMapper.maxIndex() + 1;
-            //set is hide(unpublished)
-            sysVersion.setIsHide(1);
-            sysVersion.setIndex(index);
-            if (this.save(sysVersion)) {
-                if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), 1);
-                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), 2);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * get download code
      *
      * @return
      */
+    @Override
     public SysVersionVo getDownloadQRcode() {
         SysVersionVo vo = new SysVersionVo();
-        Integer index = sysVersionMapper.maxIndex();
+        Integer index = getBaseMapper().maxIndex();
         SysVersion sysVersion = getOne(new QueryWrapper<SysVersion>().eq("`index`", index));
         vo.setDownloadCode(sysVersion.getDownloadCode());
         return vo;
+    }
+    private List<Integer> getIgnoreIndexs() {
+        //todo
+      /*  String ignoreIndexs = ConfigService.getConfig("service").getProperty("sys.version.ignore.indexs", "23");
+        if (!StringUtil.isEmpty(ignoreIndexs)) {
+            return Lists.newArrayList(ignoreIndexs)
+                    .stream()
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }*/
+        return Collections.EMPTY_LIST;
     }
 }

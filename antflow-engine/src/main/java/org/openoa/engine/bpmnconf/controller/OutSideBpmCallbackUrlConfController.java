@@ -4,7 +4,7 @@ package org.openoa.engine.bpmnconf.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.Result;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmCallbackUrlConfBizService;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +19,7 @@ public class OutSideBpmCallbackUrlConfController {
 
 
     @Autowired
-    private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
+    private OutSideBpmCallbackUrlConfBizService outSideBpmCallbackUrlConfBizService;
     /**
      * query callback conf list by formCode
      *
@@ -28,7 +28,7 @@ public class OutSideBpmCallbackUrlConfController {
      */
     @GetMapping("/callbackUrlConf/list/{formCode}")
     public Result list(@PathVariable("formCode") String formCode) {
-        return Result.newSuccessResult(outSideBpmCallbackUrlConfService.selectListByFormCode(formCode));
+        return Result.newSuccessResult(outSideBpmCallbackUrlConfBizService.getService().selectListByFormCode(formCode));
     }
     /**
      * query callback conf list by page
@@ -39,7 +39,7 @@ public class OutSideBpmCallbackUrlConfController {
      */
     @GetMapping("/callbackUrlConf/listPage")
     public Result listPage(PageDto page, OutSideBpmCallbackUrlConfVo vo) {
-        return Result.newSuccessResult(outSideBpmCallbackUrlConfService.listPage(page, vo));
+        return Result.newSuccessResult(outSideBpmCallbackUrlConfBizService.listPage(page, vo));
     }
 
     /**
@@ -50,7 +50,7 @@ public class OutSideBpmCallbackUrlConfController {
      */
     @GetMapping("/callbackUrlConf/detail/{id}")
     public Result detail(@PathVariable("id") Integer id) {
-        return Result.newSuccessResult(outSideBpmCallbackUrlConfService.detail(id));
+        return Result.newSuccessResult(outSideBpmCallbackUrlConfBizService.detail(id));
     }
 
     /**
@@ -61,7 +61,7 @@ public class OutSideBpmCallbackUrlConfController {
      */
     @PostMapping("/callbackUrlConf/edit")
     public Result edit(@RequestBody OutSideBpmCallbackUrlConfVo vo) {
-        outSideBpmCallbackUrlConfService.edit(vo);
+        outSideBpmCallbackUrlConfBizService.getService().edit(vo);
         return Result.newSuccessResult(null);
     }
 

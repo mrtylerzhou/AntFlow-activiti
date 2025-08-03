@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 @Service
 public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> implements OutSideBpmApproveTemplateService {
 
-    @Autowired
-    private OutSideBpmApproveTemplateMapper OutSideBpmApproveTemplateMapper;
 
 
     /**
@@ -39,7 +37,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
      */
     public ResultAndPage<OutSideBpmApproveTemplateVo> listPage(PageDto pageDto, OutSideBpmApproveTemplateVo vo) {
         Page<OutSideBpmApproveTemplateVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<OutSideBpmApproveTemplateVo> OutSideBpmApproveTemplateVos = OutSideBpmApproveTemplateMapper.selectPageList(page, vo);
+        List<OutSideBpmApproveTemplateVo> OutSideBpmApproveTemplateVos = getBaseMapper().selectPageList(page, vo);
         if (CollectionUtils.isEmpty(OutSideBpmApproveTemplateVos)) {
             return PageUtils.getResultAndPage(page);
         }
@@ -135,7 +133,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
      */
     public String getRoelApiUrlByConfId(Long  confId){
 
-        return   OutSideBpmApproveTemplateMapper.selectRoleApiUrlByConfId(confId);
+        return   getBaseMapper().selectRoleApiUrlByConfId(confId);
     }
 
 

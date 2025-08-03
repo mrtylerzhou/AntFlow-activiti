@@ -14,8 +14,8 @@ import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.InformationTemplate;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableApproveRemindBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/informationTemplates")
 public class InformationTemplateController {
     @Resource
-    private InformationTemplateServiceImpl informationTemplateService;
+    private InformationTemplateBizService informationTemplateBizService;
 
     @Resource
     private BpmVariableApproveRemindBizService variableApproveRemindBizService;
@@ -48,7 +48,7 @@ public class InformationTemplateController {
         if(informationTemplateVo==null){
             informationTemplateVo = new InformationTemplateVo();
         }
-        return informationTemplateService.list(pageDto, informationTemplateVo);
+        return informationTemplateBizService.getService().list(pageDto, informationTemplateVo);
     }
 
     @GetMapping("/getInformationTemplateById")
@@ -56,7 +56,7 @@ public class InformationTemplateController {
         if(templateId==null){
             Result.newFailureResult("参数为空错误","模板Id不能为空");
         }
-        InformationTemplateVo informationTemplateById = informationTemplateService.getInformationTemplateById(templateId);
+        InformationTemplateVo informationTemplateById = informationTemplateBizService.getService().getInformationTemplateById(templateId);
         return Result.newSuccessResult(informationTemplateById);
     }
     /**
@@ -66,7 +66,7 @@ public class InformationTemplateController {
      */
     @PostMapping("/updateById")
     public Result updateById(@RequestBody InformationTemplateVo informationTemplateVo) {
-        informationTemplateService.edit(informationTemplateVo);
+        informationTemplateBizService.edit(informationTemplateVo);
         return Result.success();
     }
 
@@ -77,7 +77,7 @@ public class InformationTemplateController {
      */
     @PostMapping("/save")
     public Result save(@RequestBody InformationTemplateVo informationTemplateVo) {
-        long templateId = informationTemplateService.edit(informationTemplateVo);
+        long templateId = informationTemplateBizService.edit(informationTemplateVo);
         return Result.newSuccessResult(templateId);
     }
 
@@ -88,7 +88,7 @@ public class InformationTemplateController {
      */
     @PostMapping("/deleteById")
     public Result deleteById(@RequestParam Long id) {
-        informationTemplateService.updateById(InformationTemplate
+        informationTemplateBizService.getService().updateById(InformationTemplate
                 .builder()
                 .id(id)
                 .updateUser(SecurityUtils.getLogInEmpNameSafe())
@@ -108,7 +108,7 @@ public class InformationTemplateController {
                 .eq("is_del", 0)
                 .eq("status", 0)
                 .like(!StringUtils.isEmpty(name), "name", name);
-        List<InformationTemplate> results = informationTemplateService.list(queryWrapper);
+        List<InformationTemplate> results = informationTemplateBizService.getService().list(queryWrapper);
         return Result.newSuccessResult(results);
     }
 
@@ -119,7 +119,7 @@ public class InformationTemplateController {
      */
     @GetMapping("/defaultTemplates")
     public Result getList() {
-        return Result.newSuccessResult(informationTemplateService.getList());
+        return Result.newSuccessResult(informationTemplateBizService.getList());
     }
 
     /**
@@ -129,7 +129,7 @@ public class InformationTemplateController {
      */
     @PostMapping("/setDefaultTemplates")
     public Result setList(@RequestBody DefaultTemplateVo[] vos) {
-        informationTemplateService.setList(Arrays.asList(vos));
+        informationTemplateBizService.setList(Arrays.asList(vos));
         return Result.success();
     }
 

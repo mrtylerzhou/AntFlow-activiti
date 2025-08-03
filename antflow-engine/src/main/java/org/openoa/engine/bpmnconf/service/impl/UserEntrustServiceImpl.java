@@ -11,6 +11,7 @@ import org.openoa.base.vo.*;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserEntrustService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -20,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserEntrust> {
+public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserEntrust> implements UserEntrustService {
 
 
 

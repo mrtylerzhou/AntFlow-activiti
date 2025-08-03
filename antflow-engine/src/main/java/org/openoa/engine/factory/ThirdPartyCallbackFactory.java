@@ -28,6 +28,7 @@ import org.openoa.base.entity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
 import org.openoa.engine.utils.JsonUtils;
 import org.openoa.engine.vo.CallbackReqVo;
 import org.openoa.engine.vo.CallbackRespVo;
@@ -132,7 +133,7 @@ public class ThirdPartyCallbackFactory {
             callbackReqVo.setEventType(callbackTypeEnum.getMark());
 
             //查询业务方标识
-            OutSideBpmBusinessPartyServiceImpl bean = SpringBeanUtils.getBean(OutSideBpmBusinessPartyServiceImpl.class);
+            OutSideBpmBusinessPartyBizService bean = SpringBeanUtils.getBean(OutSideBpmBusinessPartyBizService.class);
             String businessPartyMarkById = bean.getBusinessPartyMarkById(bpmnConfVo.getBusinessPartyId());
 
             //设置入参业务方标识

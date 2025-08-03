@@ -20,9 +20,6 @@ import java.util.List;
 @Service
 public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> implements QuickEntryTypeService {
 
-    @Autowired
-    private QuickEntryTypeMapper quickEntryTypeMapper;
-
     /**
      * add quick entry
      *
@@ -51,7 +48,7 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
         wrapper.eq("quick_entry_id", quickEntryId);
-        return quickEntryTypeMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
     }
 
     public List<QuickEntryType> quickEntryTypeList(Boolean isApp) {
@@ -62,6 +59,6 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         } else {
             wrapper.eq("type", 1);
         }
-        return quickEntryTypeMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
     }
 }

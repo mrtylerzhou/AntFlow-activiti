@@ -1,6 +1,4 @@
-package org.openoa.engine.bpmnconf.service.impl;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+package org.openoa.engine.bpmnconf.service.biz;
 
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.entity.UserMessage;
@@ -12,8 +10,7 @@ import org.openoa.base.vo.BaseMsgInfo;
 import org.openoa.base.vo.*;
 import org.openoa.base.exception.AFBizException;
 
-import org.openoa.engine.bpmnconf.mapper.UserMessageMapper;
-import org.openoa.engine.bpmnconf.service.interf.repository.UserMessagePreService;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -21,10 +18,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, UserMessage> implements UserMessagePreService {
+public class UserMessagePreServiceImpl {
 
     @Autowired
-    private UserMessageServiceImpl userMessageService;
+    private UserMessageBizService userMessageBizService;
     @Autowired
     private AfUserService employeeService;
 
@@ -63,7 +60,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
 
         SendInfo build = SendInfo.builder().mail(mailInfo).messageInfo(message).userMessage(userMessage).baseMsgInfo(baseMsgInfo).build();
 
-        return userMessageService.sendAllMessage(build);
+        return userMessageBizService.sendAllMessage(build);
 
     }
 
@@ -111,9 +108,9 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
 
         switch (messageSendTypeEnum) {
             case MAIL:
-                return userMessageService.sendMailOnly(build);
+                return userMessageBizService.sendMailOnly(build);
             case MESSAGE:
-                return userMessageService.sendMessageOnly(build);
+                return userMessageBizService.getService().sendMessageOnly(build);
             default:
                 return false;
         }
@@ -158,7 +155,7 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
                 BaseMsgInfo baseMsgInfo = BaseMsgInfo.builder().url(sendParam.getAppUrl()).msgTitle(sendParam.getTitle()).build();
 
                 SendInfo build = SendInfo.builder().mail(mailInfo).messageInfo(message).userMessage(userMessage).baseMsgInfo(baseMsgInfo).build();
-                userMessageService.sendAllMessage(build);
+                userMessageBizService.sendAllMessage(build);
                 //return userMessageService.sendAllMessage(build);
 
             } catch (InterruptedException e) {
@@ -213,10 +210,10 @@ public class UserMessagePreServiceImpl extends ServiceImpl<UserMessageMapper, Us
 
                 switch (messageSendTypeEnum) {
                     case MAIL:
-                        userMessageService.sendMailOnly(build);
+                        userMessageBizService.sendMailOnly(build);
                         break;
                     case MESSAGE:
-                        userMessageService.sendMessageOnly(build);
+                        userMessageBizService.getService().sendMessageOnly(build);
                         break;
                 }
 
