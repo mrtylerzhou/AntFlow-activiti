@@ -18,6 +18,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.vo.*;
@@ -52,7 +53,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Lazy
     private BpmProcessAppDataServiceImpl processAppDataService;
     @Autowired
-    private BpmProcessPermissionsServiceImpl processPermissionsService;
+    private BpmProcessPermissionsBizService processPermissionsBizService;
     @Autowired
     @Lazy
     private SysVersionServiceImpl sysVersionService;
@@ -152,7 +153,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         // allProcess.addAll(ProcessTypeQuery.getprocessKeyList(VPN_TYPE.getCode()));
 
         //get all process that a specified user has permission to create
-        List<String> processKeyList = processPermissionsService.getProcessKey(genericEmployee.getUserId(), ProcessJurisdictionEnum.CREATE_TYPE.getCode());
+        List<String> processKeyList = processPermissionsBizService.getProcessKey(genericEmployee.getUserId(), ProcessJurisdictionEnum.CREATE_TYPE.getCode());
         if (!CollectionUtils.isEmpty(processKeyList)) {
             allProcess.addAll(processKeyList);
         }

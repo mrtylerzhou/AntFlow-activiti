@@ -15,7 +15,6 @@ import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnProcessMigrationServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.base.exception.AFBizException;
@@ -24,6 +23,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNodeSubmitBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,7 +55,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private TaskService taskService;
     @Autowired
-    private BpmProcessNodeSubmitServiceImpl processNodeSubmitService;
+    private BpmProcessNodeSubmitBizService processNodeSubmitBizService;
 
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
@@ -164,7 +164,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             bpmVariableSignUpPersonnelService.insertSignUpPersonnel(taskService, task.getId(), vo.getProcessNumber(), task.getTaskDefinitionKey(), task.getAssignee(), vo.getSignUpUsers());
         }
         //submit process
-        processNodeSubmitService.processComplete(task);
+        processNodeSubmitBizService.processComplete(task);
     }
 
     @Override

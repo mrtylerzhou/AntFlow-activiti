@@ -6,8 +6,8 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessPermissionsServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
     @Autowired
     private BpmProcessNameServiceImpl bpmProcessNameService;
     @Autowired
-    private BpmProcessPermissionsServiceImpl permissionsService;
+    private BpmProcessPermissionsBizService processPermissionsBizService;
 
     /**
      * 根据编号修改权限关联
@@ -43,7 +43,7 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
     }
     @Override
     public List<String> findProcessKey() {
-        List<String> processKeyList = Optional.ofNullable(permissionsService.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList());
+        List<String> processKeyList = Optional.ofNullable(processPermissionsBizService.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList());
         List<BpmnConf> confList = Optional.ofNullable(confCommonService.getIsAllConfs()).orElse(Arrays.asList());
         List<String> collect = confList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList());
         List<String> processList = Optional.ofNullable(this.getService().getAllProcess()).orElse(Arrays.asList());

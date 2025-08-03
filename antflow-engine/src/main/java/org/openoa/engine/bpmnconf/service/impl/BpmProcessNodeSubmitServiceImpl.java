@@ -29,14 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeSubmitMapper, BpmProcessNodeSubmit> implements BpmProcessNodeSubmitService {
 
-    @Autowired
-    private BpmProcessNodeSubmitMapper bpmProcessNodeSubmitMapper;
-    @Autowired
-    private ProcessNodeJump processJump;
-    @Autowired
-    protected TaskService taskService;
-    @Autowired
-    private ActivitiAdditionalInfoServiceImpl additionalInfoService;
+
 
     /**
      * query to check whether the previous operation is submit or disagree
@@ -44,11 +37,12 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
      * @param processInstanceId
      * @return
      */
+    @Override
     public BpmProcessNodeSubmit findBpmProcessNodeSubmit(String processInstanceId) {
         QueryWrapper<BpmProcessNodeSubmit> wrapper = new QueryWrapper<>();
         wrapper.eq("processInstance_Id", processInstanceId);
         wrapper.orderByDesc("create_time");
-        List<BpmProcessNodeSubmit> list = bpmProcessNodeSubmitMapper.selectList(wrapper);
+        List<BpmProcessNodeSubmit> list = getBaseMapper().selectList(wrapper);
         if (!ObjectUtils.isEmpty(list)) {
             return list.get(0);
         } else {
@@ -61,100 +55,26 @@ public class BpmProcessNodeSubmitServiceImpl extends ServiceImpl<BpmProcessNodeS
      *
      * @return
      */
+    @Override
     public boolean addProcessNode(BpmProcessNodeSubmit processNodeSubmit) {
         QueryWrapper<BpmProcessNodeSubmit> wrapper = new QueryWrapper<>();
         wrapper.eq("processInstance_Id", processNodeSubmit.getProcessInstanceId());
-        bpmProcessNodeSubmitMapper.delete(wrapper);
-        bpmProcessNodeSubmitMapper.insert(processNodeSubmit);
+        getBaseMapper().delete(wrapper);
+        getBaseMapper().insert(processNodeSubmit);
         return true;
     }
 
     /**
      * delete node submit info
      */
+    @Override
     public boolean deleteProcessNode(String processInstanceId) {
         QueryWrapper<BpmProcessNodeSubmit> wrapper = new QueryWrapper<>();
         wrapper.eq("processInstance_Id", processInstanceId);
-        bpmProcessNodeSubmitMapper.delete(wrapper);
+        getBaseMapper().delete(wrapper);
         return true;
     }
 
-    /**
-     * 流程审批
-     *
-     * @param task
-     */
-    public void processComplete(Task task) {
-
-        BpmProcessNodeSubmit processNodeSubmit = this.findBpmProcessNodeSubmit(task.getProcessInstanceId());
-        String restoreNodeKey = "";
-        Map<String, Object> varMap = new HashMap<>();
-        //varMap.put(StringConstants.TASK_ASSIGNEE_NAME,SecurityUtils.getLogInEmpName());
-        if (!ObjectUtils.isEmpty(processNodeSubmit)) {
-            this.addProcessNode(BpmProcessNodeSubmit.builder()
-                    .state(0)
-                    .nodeKey(task.getTaskDefinitionKey())
-                    .processInstanceId(task.getProcessInstanceId())
-                    .backType(0)
-                    .createUser(task.getAssignee())
-                    .build());
-            boolean nextElementParallelGateway=false;
-            PvmActivity nextElement = additionalInfoService.getNextElement(task.getTaskDefinitionKey(), task.getProcessInstanceId());
-            if (nextElement != null) {
-                String type = (String) nextElement.getProperty("type");
-                if ("parallelGateway".equals(type)) {
-                    nextElementParallelGateway=true;
-                    List<Task> tasks = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
-                    List<String> currentTaskDefKeys = tasks.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
-                    if(currentTaskDefKeys.size()<=1){
-                        if (nextElement.getOutgoingTransitions().size() > 1) {
-                            restoreNodeKey = "";
-                        } else {
-                            restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
-                        }
-                    }
-                }
-            }
-            if (processNodeSubmit.getState().equals(0)) {
-                if (!StringUtils.isEmpty(restoreNodeKey)) {
-                    processJump.commitProcess(task.getId(), varMap, restoreNodeKey);
-                } else {
-                    taskService.complete(task.getId(), varMap);
-                }
-            } else {
-               if(nextElementParallelGateway &&(processNodeSubmit.getBackType()==1||processNodeSubmit.getBackType()==2)){
-                   taskService.complete(task.getId(), varMap);
-                   return;
-               }
-                // node disagree type（1：back to previous node submit next node 2：back to initiator submit next node
-                // 3. back to initiator submit next node 4. back to history node submit next node 5. back to history node submit back node
-                switch (processNodeSubmit.getBackType()) {
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                        processJump.commitProcess(task.getId(), varMap, processNodeSubmit.getNodeKey());
-                        break;
-                    case 5:
-                        processJump.commitProcess(task.getId(), varMap, processNodeSubmit.getNodeKey());
-                        break;
-                    default:
-                        taskService.complete(task.getId(), varMap);
-                        break;
-                }
-            }
-        } else {
-            taskService.complete(task.getId(), varMap);
-
-            //执行自定义业务逻辑
-            Collection<BpmnBizCustomService> beans = SpringBeanUtils.getBeans(BpmnBizCustomService.class);
-            if (!ObjectUtils.isEmpty(beans)) {
-                for (BpmnBizCustomService bean : beans) {
-                    bean.execute(task);
-                }
-            }
-        }
-    }
 }
 
 

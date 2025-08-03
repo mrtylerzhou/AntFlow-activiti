@@ -1,17 +1,12 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.activiti.engine.TaskService;
-import org.activiti.engine.task.Task;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.entity.BpmTaskconfig;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
-import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -19,29 +14,25 @@ import java.util.Map;
 @Service
 public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, BpmTaskconfig> implements BpmTaskconfigService {
 
-
-    @Autowired
-    private BpmTaskconfigMapper mapper;
-    @Autowired
-    private TaskService taskService;
-
     /**
      * save task config
      *
      * @param procDefId  process definition id
      * @param taskDefKey task definition key
      */
+    @Override
     public void addBpmTaskconfig(String procDefId, String taskDefKey, Long userId, Integer number) {
         BpmTaskconfig con = new BpmTaskconfig();
         con.setProcDefId(procDefId);
         con.setTaskDefKey(taskDefKey);
         con.setUserId(userId);
         con.setNumber(number);
-        mapper.insert(con);
+        getBaseMapper().insert(con);
     }
 
+    @Override
     public void addBpmTaskconfig(BpmTaskconfig bpmTaskconfig) {
-        mapper.insert(bpmTaskconfig);
+        getBaseMapper().insert(bpmTaskconfig);
     }
 
     public void addBpmTaskconfig(String procDefId, String taskDefKey, Long userId) {
@@ -49,47 +40,34 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
         con.setProcDefId(procDefId);
         con.setTaskDefKey(taskDefKey);
         con.setUserId(userId);
-        mapper.insert(con);
+        getBaseMapper().insert(con);
     }
 
-    /**
 
-     * get reject node by task id
-     *
-     * @param taskId
-     * @return
-     */
-    public String findTargeNode(String taskId) {
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        if (ObjectUtils.isEmpty(task)) {
-            throw new AFBizException("当前任务id:[" + taskId + "]" + "不存在");
-        }
-        String processKey = task.getProcessDefinitionId().split(":")[0];
-        String nodeKey = mapper.findTaskRollBack(processKey, task.getTaskDefinitionKey());
-        return nodeKey == null ? "" : nodeKey;
-    }
 
 
 
     /**
      * 查询资源数据
      */
+    @Override
     public List<TaskMgmtVO> findTaskCode(String procDefId, String taskDefKey) {
-        return mapper.findTaskCode(procDefId, taskDefKey);
+        return getBaseMapper().findTaskCode(procDefId, taskDefKey);
     }
 
     /**
      * 根据节点获取数据
      */
     public Map<String, Object> findTaskNodeType(String taskDefKey) {
-        return mapper.findTaskNodeType(taskDefKey);
+        return getBaseMapper().findTaskNodeType(taskDefKey);
     }
 
     /**
      * 获取app路由
      */
+    @Override
     public Map<String, Object> findByAppRoute(@Param("processKey") String processKey, @Param("taskKey") String taskKey, @Param("routeType") String routeType) {
-        return mapper.findByAppRoute(processKey, taskKey, routeType);
+        return getBaseMapper().findByAppRoute(processKey, taskKey, routeType);
     }
 
     /**
@@ -99,8 +77,9 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
      * @param taskDefKey 节点key
      * @return
      */
+    @Override
     public Map<String, Object> findHiTaskHandle(@Param("procInstId") String procInstId, @Param("taskDefKey") String taskDefKey) {
-        return mapper.findHiTaskHandle(procInstId, taskDefKey);
+        return getBaseMapper().findHiTaskHandle(procInstId, taskDefKey);
     }
 
     /**
@@ -110,16 +89,18 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
      * @param applyUser
      * @return
      */
+    @Override
     public Map<String, Object> findEntrust(String procInstId, Integer applyUser) {
 
-        return mapper.findEntrust(procInstId, applyUser);
+        return getBaseMapper().findEntrust(procInstId, applyUser);
     }
 
     /**
      * 根据HRBP指派人员数据判断是否有薪酬权限
      */
+    @Override
     public List<BpmTaskconfig> findBpmTaskconfig(BpmTaskconfig bpmTaskconfig) {
-        return mapper.findBpmTaskconfig(bpmTaskconfig);
+        return getBaseMapper().findBpmTaskconfig(bpmTaskconfig);
     }
 
     /**
@@ -129,8 +110,9 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
      * @param taskKey   节点Key
      * @return
      */
+    @Override
     public Integer deleteByTask(String procDefId, String taskKey) {
-        return mapper.deleteByTask(procDefId, taskKey);
+        return getBaseMapper().deleteByTask(procDefId, taskKey);
     }
 
     /**
@@ -140,11 +122,13 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
      * @param processKey 流程key
      * @return
      */
+    @Override
     public Integer disagreeType(String nodeKey, String processKey) {
-        return mapper.disagreeType(nodeKey, processKey);
+        return getBaseMapper().disagreeType(nodeKey, processKey);
     }
 
+    @Override
     public String getProcessKey(String deploymentId) {
-        return mapper.getProcessKey(deploymentId);
+        return getBaseMapper().getProcessKey(deploymentId);
     }
 }
