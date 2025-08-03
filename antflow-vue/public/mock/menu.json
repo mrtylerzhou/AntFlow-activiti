@@ -235,14 +235,14 @@
       ]
     },
     {
-      "name": "flowEntrust",
-      "path": "/flowEntrust",
+      "name": "flowDevOps",
+      "path": "/flowDevOps",
       "hidden": false,
       "redirect": "noRedirect",
       "component": "Layout",
       "alwaysShow": true,
       "meta": {
-        "title": "委托管理",
+        "title": "流程运维",
         "icon": "clipboard",
         "noCache": false,
         "link": null
@@ -252,7 +252,7 @@
           "name": "flowentrustsetting",
           "path": "setting",
           "hidden": false,
-          "component": "workflow/flowEntrust/setting/index",
+          "component": "workflow/flowDevOps/setting/index",
           "meta": {
             "title": "委托设置",
             "icon": "",
@@ -264,9 +264,21 @@
           "name": "flowentrustlist",
           "path": "list",
           "hidden": false,
-          "component": "workflow/flowEntrust/list/index",
+          "component": "workflow/flowDevOps/list/index",
           "meta": {
             "title": "委托列表",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "flowMsgTemplete",
+          "path": "flowMsgTemp",
+          "hidden": false,
+          "component": "workflow/flowMsg/msgTemplete/index",
+          "meta": {
+            "title": "消息模板",
             "icon": "",
             "noCache": false,
             "link": null
