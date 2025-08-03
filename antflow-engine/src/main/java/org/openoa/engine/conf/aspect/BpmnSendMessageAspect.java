@@ -14,9 +14,9 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.OutSideBpmBusinessParty;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +39,7 @@ import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 public class BpmnSendMessageAspect {
 
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService bpmVariableMessageBizService;
 
     @Autowired
     private BpmnConfBizServiceImpl bpmnConfCommonService;
@@ -122,7 +122,7 @@ public class BpmnSendMessageAspect {
 
 
             //get bpmn variable message vo
-            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
+            vo = bpmVariableMessageBizService.fromBusinessDataVo(businessDataVo);
 
             /**
              * 因为发起流程组装流程发送vo对象是一个后置操作，所以从流程引擎中查到的是发起节点的下一个节点
@@ -133,7 +133,7 @@ public class BpmnSendMessageAspect {
         } else {
 
             //get bpmn variable message vo
-            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
+            vo = bpmVariableMessageBizService.fromBusinessDataVo(businessDataVo);
 
 
             //get process operation enum by operation type
@@ -154,7 +154,7 @@ public class BpmnSendMessageAspect {
                 vo.setIsOutside(true);
                 businessDataVo.setIsOutSideAccessProc(true);
             }
-            bpmVariableMessageService.sendTemplateMessagesAsync(vo);
+            bpmVariableMessageBizService.sendTemplateMessagesAsync(vo);
         }
 
     }

@@ -14,8 +14,8 @@ import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.InformationTemplate;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableApproveRemindServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableApproveRemindBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ public class InformationTemplateController {
     private InformationTemplateServiceImpl informationTemplateService;
 
     @Resource
-    private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
+    private BpmVariableApproveRemindBizService variableApproveRemindBizService;
     @Autowired
     private BpmProcessNoticeServiceImpl processNoticeService;
 
@@ -201,7 +201,7 @@ public class InformationTemplateController {
      */
     @GetMapping("/testDoTimeoutReminder")
     public void testDoTimeoutReminder() {
-        bpmVariableApproveRemindService.doTimeoutReminder();
+        variableApproveRemindBizService.doTimeoutReminder();
     }
 
 }

@@ -17,10 +17,10 @@ import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.adaptor.BpmnInsertVariableSubs;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -50,7 +50,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
     private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
 
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService bpmVariableMessageBizService;
 
 
     public void insertVariables(BpmnConfCommonVo bpmnConfCommonVo, BpmnStartConditionsVo bpmnStartConditions) {
@@ -128,7 +128,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
         insertSignUp(variableId, signUpMultimap, elementList);
 
         // insert message data
-        bpmVariableMessageService.insertVariableMessage(variableId, bpmnConfCommonVo);
+        bpmVariableMessageBizService.insertVariableMessage(variableId, bpmnConfCommonVo);
 
     }
 

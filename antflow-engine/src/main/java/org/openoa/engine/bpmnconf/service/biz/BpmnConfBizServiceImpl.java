@@ -15,6 +15,7 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableBizService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
@@ -68,7 +69,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmnPersonnelFormat bpmnPersonnelFormat;
     @Autowired
-    private BpmVariableServiceImpl bpmnVariableService;
+    private BpmVariableBizService bpmVariableBizService;
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     @Autowired
@@ -359,7 +360,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         //5、set record variables
         BpmnInsertVariables bpmnInsertVariables = SpringBeanUtils.getBean(BpmnInsertVariablesImpl.class);
         if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
-            bpmnVariableService.deleteByProcessNumber(bpmnStartConditions.getProcessNum());
+            bpmVariableBizService.deleteByProcessNumber(bpmnStartConditions.getProcessNum());
         }
         bpmnInsertVariables.insertVariables(bpmnConfCommonVo, bpmnStartConditions);
         //prepared and begin to start up a process
@@ -424,7 +425,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
         wrapper.eq("process_num", processNumber);
-        BpmVariable bpmnVariable = bpmnVariableService.getOne(wrapper);
+        BpmVariable bpmnVariable = bpmVariableBizService.getService().getOne(wrapper);
 
         String processStartConditions = bpmnVariable.getProcessStartConditions();
         JSONObject objectStart = JSON.parseObject(processStartConditions);

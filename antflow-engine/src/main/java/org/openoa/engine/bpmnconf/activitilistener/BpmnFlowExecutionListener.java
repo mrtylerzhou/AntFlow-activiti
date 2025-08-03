@@ -5,7 +5,6 @@ import org.activiti.engine.EngineServices;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.el.FixedValue;
-import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class BpmnFlowExecutionListener implements ExecutionListener {

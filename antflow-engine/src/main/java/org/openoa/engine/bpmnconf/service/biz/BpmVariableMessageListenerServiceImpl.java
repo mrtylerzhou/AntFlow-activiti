@@ -6,7 +6,7 @@ import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.EventTypeEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class BpmVariableMessageListenerServiceImpl {
 
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService bpmVariableMessageBizService;
     @Autowired
     private ProcessBusinessContans processBusinessContans;
 
@@ -28,7 +28,7 @@ public class BpmVariableMessageListenerServiceImpl {
      * @return
      */
     public Boolean listenerCheckIsSendByTemplate(BpmVariableMessageVo bpmVariableMessageVo) {
-        return bpmVariableMessageService.checkIsSendByTemplate(bpmVariableMessageVo);
+        return bpmVariableMessageBizService.checkIsSendByTemplate(bpmVariableMessageVo);
     }
 
     /**
@@ -38,10 +38,10 @@ public class BpmVariableMessageListenerServiceImpl {
      */
     public void listenerSendTemplateMessages(BpmVariableMessageVo bpmVariableMessageVo) {
         //build variable message
-        BpmVariableMessageVo vo = bpmVariableMessageService.getBpmVariableMessageVo(bpmVariableMessageVo);
+        BpmVariableMessageVo vo = bpmVariableMessageBizService.getBpmVariableMessageVo(bpmVariableMessageVo);
         //send template message
         if (vo!=null) {
-            bpmVariableMessageService.sendTemplateMessages(vo);
+            bpmVariableMessageBizService.sendTemplateMessages(vo);
         }
     }
 
