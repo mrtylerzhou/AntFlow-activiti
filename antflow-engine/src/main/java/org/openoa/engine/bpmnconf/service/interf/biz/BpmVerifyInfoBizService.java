@@ -14,6 +14,8 @@ public interface BpmVerifyInfoBizService extends BizService<BpmVerifyInfoMapper,
 
     List<BpmVerifyInfoVo> getBpmVerifyInfoVos(String processNumber, boolean finishFlag);
 
+    String  findCurrentNodeIds(String processNumber);
+
     void addVerifyInfo(BpmVerifyInfo verifyInfo);
 
     void addVerifyInfo(String businessId, String taskId, String remark, Integer businessType, Integer status);

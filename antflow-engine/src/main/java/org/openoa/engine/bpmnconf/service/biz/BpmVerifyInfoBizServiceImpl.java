@@ -264,6 +264,54 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         return bpmVerifyInfoVos;
     }
+    /**
+     * 根据processNumber 获取当前审批节点的ElementId
+     * @param processNumber
+     * @return
+     */
+    @Override
+    public  String  findCurrentNodeIds(String processNumber){
+        //query business process info
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
+
+        if (ObjectUtils.isEmpty(bpmBusinessProcess)) {
+            return "";
+        }
+        // ACT_RU_TASK 表的 PROC_INST_ID_
+        String procInstId = bpmBusinessProcess.getProcInstId();
+
+        List<BpmVerifyInfoVo> tasks = Optional.ofNullable(this.getMapper().findTaskInfor(procInstId)).orElse(Collections.emptyList());
+        if (ObjectUtils.isEmpty(tasks)) {
+            return "";
+        }
+        String elementId = tasks.get(0).getElementId();
+        List<String> bpmnNodeIds =  bpmVariableMapper.getNodeIdsByeElementId(processNumber,elementId);
+
+
+
+        if(CollectionUtils.isEmpty(bpmnNodeIds)){
+            ActHiTaskinst prevTask = processConstants.getPrevTask(elementId, procInstId);
+            if(prevTask!=null){
+                String taskDefinitionKey = prevTask.getTaskDefKey();
+                bpmnNodeIds = bpmVariableSignUpService.getBaseMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
+
+            }
+        }
+        if(CollectionUtils.isEmpty(bpmnNodeIds)){
+            return "";
+        }
+        QueryWrapper<BpmnNode> wrapper = new QueryWrapper<>();
+        wrapper.in("id", bpmnNodeIds);
+        List<BpmnNode> bpmnNodes =bpmnNodeMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(bpmnNodes)){
+            return "";
+        }
+        List<String> nodeCollect = bpmnNodes
+                .stream()
+                .map(BpmnNode::getNodeId)
+                .collect(Collectors.toList());
+        return String.join(",", nodeCollect);
+    }
     @Override
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
         BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(verifyInfo.getVerifyUserId(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
