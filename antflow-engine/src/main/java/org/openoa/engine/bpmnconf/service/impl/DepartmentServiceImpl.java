@@ -6,7 +6,6 @@ import org.openoa.base.entity.Department;
 import org.openoa.engine.bpmnconf.mapper.DepartmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

@@ -6,10 +6,10 @@ import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppDataMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 

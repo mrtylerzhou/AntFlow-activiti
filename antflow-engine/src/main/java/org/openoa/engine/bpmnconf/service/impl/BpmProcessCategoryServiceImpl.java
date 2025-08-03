@@ -3,19 +3,15 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmProcessCategory;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessApplicationTypeBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
-import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.openoa.engine.vo.BpmProcessCategoryVo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;

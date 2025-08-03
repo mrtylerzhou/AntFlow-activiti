@@ -2,15 +2,16 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.openoa.base.entity.*;
+import org.openoa.base.entity.BpmProcessAppApplication;
+import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
-import org.openoa.engine.vo.*;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
+import org.openoa.engine.vo.BpmProcessAppApplicationVo;
+import org.openoa.engine.vo.ProcessTypeInforVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -18,7 +19,9 @@ import org.springframework.util.CollectionUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 

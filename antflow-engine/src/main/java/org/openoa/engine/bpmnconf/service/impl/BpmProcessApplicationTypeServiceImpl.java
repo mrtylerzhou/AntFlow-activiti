@@ -8,7 +8,6 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessApplicatio
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;

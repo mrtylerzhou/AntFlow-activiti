@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.service.tagparser;
 
-import org.openoa.engine.factory.TagParser;
-import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.common.adaptor.bpmnelementadp.AbstractOrderedSignNodeAdp;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.common.adaptor.bpmnelementadp.AbstractOrderedSignNodeAdp;
+import org.openoa.engine.factory.TagParser;
 
 import java.util.Collection;
 

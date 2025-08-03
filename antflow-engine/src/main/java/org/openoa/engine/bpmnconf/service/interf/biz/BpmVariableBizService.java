@@ -6,7 +6,6 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 
 import java.util.List;
-import java.util.Map;
 
 public interface BpmVariableBizService extends BizService<BpmVariableMapper, BpmVariableService, BpmVariable>{
     Boolean checkIsInProcess(String formCode, Integer businessId, Integer loginEmplId, String loginUsername);

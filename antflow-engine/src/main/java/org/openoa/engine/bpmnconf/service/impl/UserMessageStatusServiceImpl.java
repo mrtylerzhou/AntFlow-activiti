@@ -2,14 +2,11 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.entity.UserMessageStatus;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;
-
 import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageStatusService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 @Repository
 public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusMapper, UserMessageStatus> implements UserMessageStatusService {

@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jodd.util.StringUtil;
 import org.openoa.base.constant.enums.VersionIsForceEnums;
-import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.SysVersion;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;
 import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;

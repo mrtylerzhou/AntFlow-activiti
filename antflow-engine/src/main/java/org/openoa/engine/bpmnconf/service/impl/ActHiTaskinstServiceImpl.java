@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.engine.bpmnconf.mapper.ActHiTaskinstMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;

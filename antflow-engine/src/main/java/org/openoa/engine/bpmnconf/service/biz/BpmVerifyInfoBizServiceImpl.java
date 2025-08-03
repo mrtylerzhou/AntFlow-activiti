@@ -14,16 +14,10 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.*;
+import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
-import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
-import org.openoa.engine.bpmnconf.common.ProcessConstants;
-import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
-import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
-import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
@@ -31,7 +25,12 @@ import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.common.service.BpmVariableSingleServiceImpl;
-
+import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
+import org.openoa.engine.bpmnconf.common.ProcessConstants;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
+import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
+import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessEnum.COMLETE_STATE;
 import static org.openoa.base.constant.enums.ProcessNodeEnum.START_TASK_KEY;
-import static org.openoa.base.constant.enums.ProcessStateEnum.*;
+import static org.openoa.base.constant.enums.ProcessStateEnum.HANDLED_STATE;
 
 /**
  * @Author JimuOffice

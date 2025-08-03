@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.base.Strings;
-import org.openoa.base.interf.BpmnPersonnelProviderService;
-import org.openoa.common.util.AssigneeVoBuildUtils;
-import org.openoa.base.vo.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmnPersonnelProviderService;
+import org.openoa.base.vo.*;
+import org.openoa.common.util.AssigneeVoBuildUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;

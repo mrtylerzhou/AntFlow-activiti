@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeOutSideAccessConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeOutSideAccessConfService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 /**
  *  thirdy party process service access service

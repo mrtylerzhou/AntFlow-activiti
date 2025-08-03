@@ -20,10 +20,10 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.Map;
 
-import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
-import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_VIEW_BUSINESS_PROCESS;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
 @Service
 public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {

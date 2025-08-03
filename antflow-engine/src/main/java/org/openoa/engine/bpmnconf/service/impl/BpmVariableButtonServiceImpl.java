@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmVariableButton;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableButtonMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

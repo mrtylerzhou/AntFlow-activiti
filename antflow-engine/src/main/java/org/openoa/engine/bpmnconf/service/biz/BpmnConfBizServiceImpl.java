@@ -15,7 +15,6 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableBizService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;

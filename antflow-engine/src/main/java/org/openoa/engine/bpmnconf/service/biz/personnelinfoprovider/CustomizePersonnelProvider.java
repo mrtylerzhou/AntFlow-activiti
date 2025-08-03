@@ -1,12 +1,12 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.exception.AFBizException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;

@@ -6,25 +6,19 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.openoa.base.constant.enums.*;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ConfigFlowButtonContans;
-import org.openoa.base.constant.enums.ButtonPageTypeEnum;
-import org.openoa.base.constant.enums.ProcessButtonEnum;
-import org.openoa.base.constant.enums.ProcessNodeEnum;
-import org.openoa.base.constant.enums.SortTypeEnum;
-import org.openoa.base.entity.BpmnConf;
-import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
+import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.AFBizException;
-import org.openoa.base.constant.enums.ProcessStateEnum;
-import org.openoa.base.constant.enums.ProcessTypeEnum;
-
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
 import org.openoa.engine.factory.ButtonPreOperationService;
@@ -36,8 +30,9 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
-import static org.openoa.base.constant.enums.ProcessStateEnum.*;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
+import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
 /**
  * @Classname ProcessApprovalServiceImpl

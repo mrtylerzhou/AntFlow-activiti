@@ -7,7 +7,6 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessDeptService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;

@@ -5,19 +5,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.openoa.base.entity.*;
+import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
-
 import org.openoa.engine.bpmnconf.service.interf.repository.ApplicationService;
 import org.openoa.engine.utils.AFWrappers;
-import org.openoa.engine.vo.*;
+import org.openoa.engine.vo.BaseApplicationVo;
+import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 

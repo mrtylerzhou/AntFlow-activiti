@@ -8,14 +8,12 @@ import org.openoa.base.entity.InformationTemplate;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.InformationTemplateVo;
 import org.openoa.base.vo.ResultAndPage;
-
 import org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.InformationTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository

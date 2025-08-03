@@ -1,11 +1,11 @@
 package org.openoa.engine.bpmnconf.service.tagparser;
 
+import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.engine.factory.TagParser;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.engine.factory.TagParser;
 
 import java.util.Collection;
 

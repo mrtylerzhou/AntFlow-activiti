@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.service.tagparser;
 
+import org.openoa.base.constant.enums.PersonnelEnum;
 import org.openoa.base.exception.AFBizException;
-import org.openoa.engine.factory.TagParser;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.common.adaptor.AbstractBpmnPersonnelAdaptor;
-import org.openoa.base.constant.enums.PersonnelEnum;
+import org.openoa.engine.factory.TagParser;
 
 import java.util.Collection;
 

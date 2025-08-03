@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmnNodeLfFormdataFieldControl;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLfFormdataFieldControlService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 @Repository
 public class BpmnNodeLfFormdataFieldControlServiceImpl extends ServiceImpl<BpmnNodeLfFormdataFieldControlMapper, BpmnNodeLfFormdataFieldControl> implements BpmnNodeLfFormdataFieldControlService {

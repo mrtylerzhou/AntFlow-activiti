@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmnNodeLoopConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeLoopConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLoopConfService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 @Repository
 public class BpmnNodeLoopConfServiceImpl extends ServiceImpl<BpmnNodeLoopConfMapper, BpmnNodeLoopConf> implements BpmnNodeLoopConfService {

@@ -3,14 +3,13 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
+import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
-import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessPermissionsMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessPermissionsService;
 import org.openoa.engine.vo.GenericEmployee;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;

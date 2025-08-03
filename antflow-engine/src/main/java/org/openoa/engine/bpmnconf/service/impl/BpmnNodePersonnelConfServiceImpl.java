@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmnNodePersonnelConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodePersonnelConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodePersonnelConfService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 /**
  *@Author JimuOffice

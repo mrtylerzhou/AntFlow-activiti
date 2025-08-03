@@ -1,14 +1,10 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.entity.*;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-
-import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
-import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
 
 
 /**

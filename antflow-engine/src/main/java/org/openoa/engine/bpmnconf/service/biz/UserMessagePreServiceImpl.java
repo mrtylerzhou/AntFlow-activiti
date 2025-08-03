@@ -1,15 +1,12 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
+import org.openoa.base.entity.Employee;
 import org.openoa.base.entity.UserMessage;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.entity.Employee;
-import org.openoa.base.vo.BaseMsgInfo;
-
 import org.openoa.base.vo.*;
-import org.openoa.base.exception.AFBizException;
-
 import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

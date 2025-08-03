@@ -5,7 +5,6 @@ import org.openoa.base.entity.BpmVariableSequenceFlow;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSequenceFlowMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSequenceFlowService;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 /**
  * @Classname BpmVariableSequenceFlowServiceImpl

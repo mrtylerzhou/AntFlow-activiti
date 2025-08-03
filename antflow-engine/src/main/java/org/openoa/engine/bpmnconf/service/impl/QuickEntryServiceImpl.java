@@ -6,16 +6,18 @@ import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.entity.QuickEntry;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.base.entity.QuickEntry;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
