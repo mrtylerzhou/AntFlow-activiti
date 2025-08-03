@@ -21,6 +21,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-@Component
+@Service
 public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
 
     @Autowired

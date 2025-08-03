@@ -11,6 +11,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
 
     @Autowired

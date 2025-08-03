@@ -12,11 +12,13 @@ import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class BpmProcessApplicationTypeBizServiceImpl implements BpmProcessApplicationTypeBizService {
     @Autowired
     private BpmProcessCategoryServiceImpl bpmProcessCategoryService;
@@ -211,6 +213,33 @@ public class BpmProcessApplicationTypeBizServiceImpl implements BpmProcessApplic
             case 4:
                 this.asCommonlyUsed(vo.getCommonUseId(), vo.getId().intValue(), false, vo.getType());
                 break;
+        }
+        return true;
+    }
+    @Override
+    public boolean delete(Long id) {
+        BpmProcessCategory bpmProcessCategory = bpmProcessCategoryService.getBaseMapper().selectById(id);
+        if (bpmProcessCategory==null) {
+            new AFBizException("无此条记录");
+        }
+        Integer sort = bpmProcessCategory.getSort();
+        QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<BpmProcessCategory>().eq("is_del", 0).eq("is_app", bpmProcessCategory.getIsApp());
+        Long countTotal = bpmProcessCategoryService.getBaseMapper().selectCount(wrapper);
+        List<BpmProcessCategory> list = bpmProcessCategoryService.getBaseMapper().selectList(wrapper.gt("sort", sort));
+
+        //delete application under a category
+        getService().deletProcessApplicationType(BpmProcessApplicationTypeVo.builder().categoryId(id).build());
+        bpmProcessCategory.setIsDel(1);
+        bpmProcessCategory.setSort(0);
+        bpmProcessCategoryService.updateById(bpmProcessCategory);
+        //move left
+        if (sort < countTotal) {
+            int countChanged = 0;
+            for (BpmProcessCategory o : list) {
+                o.setSort(o.getSort() - 1);
+                countChanged += bpmProcessCategoryService.getBaseMapper().updateById(o);
+            }
+            return countChanged == countTotal - sort;
         }
         return true;
     }

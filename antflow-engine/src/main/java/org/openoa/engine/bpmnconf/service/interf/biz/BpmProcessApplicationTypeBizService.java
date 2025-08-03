@@ -11,4 +11,6 @@ public interface BpmProcessApplicationTypeBizService extends BizService<BpmProce
     boolean asCommonlyUsed(Long processTypeId, Integer id, boolean isCancel, Integer type);
 
     boolean iconOperation(BpmProcessApplicationTypeVo vo);
+
+    boolean delete(Long id);
 }

@@ -17,6 +17,7 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.vo.*;
@@ -63,7 +64,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Lazy
     private QuickEntryServiceImpl quickEntryService;
     @Autowired
-    private BpmProcessDeptServiceImpl processDeptService;
+    private BpmProcessDeptBizService processDeptBizService;
     @Autowired
     private BpmnConfBizServiceImpl confCommonService;
     @Autowired
@@ -142,7 +143,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
         }
 
         //get all process
-        List<String> allProcess = processDeptService.getAllProcess();
+        List<String> allProcess = processDeptBizService.getService().getAllProcess();
 
         // process's detailed conf
         List<BpmnConf> allConfList = Optional.ofNullable(bpmnConfBizService.getIsAllConfs()).orElse(Arrays.asList());
@@ -444,7 +445,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
 
         List<ProcessTypeInforVo> typeInforVoList = new ArrayList<>();
 
-        List<String> collect = processDeptService.findProcessKey();
+        List<String> collect = processDeptBizService.findProcessKey();
 
         collect.addAll(this.permissionsProcessKeys());
 

@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmProcessCategory;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessApplicationTypeBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.openoa.engine.vo.BpmProcessCategoryVo;
@@ -26,9 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategoryMapper, BpmProcessCategory> implements BpmProcessCategoryService {
 
-    @Autowired
-    @Lazy
-    private BpmProcessApplicationTypeServiceImpl bpmProcessApplicationTypeService;
 
     /**
      * add category
@@ -87,7 +86,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
                 break;
 
             case 4:
-                this.delete(id);
+                SpringBeanUtils.getBean(BpmProcessApplicationTypeBizService.class).delete(id);
                 break;
         }
 
@@ -146,32 +145,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     }
 
 
-    public boolean delete(Long id) {
-        BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
-        if (bpmProcessCategory==null) {
-            new AFBizException("无此条记录");
-        }
-        Integer sort = bpmProcessCategory.getSort();
-        QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<BpmProcessCategory>().eq("is_del", 0).eq("is_app", bpmProcessCategory.getIsApp());
-        Long countTotal = getBaseMapper().selectCount(wrapper);
-        List<BpmProcessCategory> list = getBaseMapper().selectList(wrapper.gt("sort", sort));
 
-        //delete application under a category
-        bpmProcessApplicationTypeService.deletProcessApplicationType(BpmProcessApplicationTypeVo.builder().categoryId(id).build());
-        bpmProcessCategory.setIsDel(1);
-        bpmProcessCategory.setSort(0);
-        this.updateById(bpmProcessCategory);
-        //move left
-        if (sort < countTotal) {
-            int countChanged = 0;
-            for (BpmProcessCategory o : list) {
-                o.setSort(o.getSort() - 1);
-                countChanged += getBaseMapper().updateById(o);
-            }
-            return countChanged == countTotal - sort;
-        }
-        return true;
-    }
 
     /**
      * query a list of process category

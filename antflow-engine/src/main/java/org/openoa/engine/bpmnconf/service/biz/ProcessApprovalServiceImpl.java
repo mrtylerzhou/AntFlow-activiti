@@ -20,13 +20,13 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.constant.enums.ProcessTypeEnum;
 
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardBizService processForwardBizService;
     @Autowired
     private BpmProcessNameServiceImpl bpmProcessNameService;
     @Autowired
@@ -158,8 +158,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         if (!ObjectUtils.isEmpty(page.getRecords())) {
             if (vo.getType().equals(ProcessTypeEnum.ENTRUST_TYPE.getCode()) || vo.getType().equals(ProcessTypeEnum.ADMIN_TYPE.getCode())) {
-                processForwardService.loadProcessForward(SecurityUtils.getLogInEmpId());
-                processForwardService.loadTask(SecurityUtils.getLogInEmpId());
+                processForwardBizService.loadProcessForward(SecurityUtils.getLogInEmpId());
+                processForwardBizService.loadTask(SecurityUtils.getLogInEmpId());
             }
             this.getPcProcessData(page, vo.getType());
         }
@@ -193,7 +193,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
                 if (type.equals(ProcessTypeEnum.ENTRUST_TYPE.getCode())) {
                     // to check whether the forwarded record can process in batch
-                    record.setIsForward(processForwardService.isForward(record.getProcessInstanceId()));
+                    record.setIsForward(processForwardBizService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
                                 .taskName(record.getTaskName()).type(ProcessButtonEnum.VIEW_TYPE.getCode()).build()));

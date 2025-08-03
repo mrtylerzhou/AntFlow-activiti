@@ -2,20 +2,10 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.activiti.engine.RepositoryService;
-import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
-import org.openoa.base.exception.AFBizException;
-import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.base.entity.BpmProcessDept;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper;
-import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
-import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessDeptService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -34,36 +24,15 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
     private static Map<String, BpmnConf> bpmnConfMap = new ConcurrentHashMap<>();
 
 
-    @Autowired
-    private BpmProcessDeptMapper bpmProcessDeptMapper;
-    @Autowired
-    private BpmProcessNodeOvertimeServiceImpl processNodeOvertimeService;
-    @Autowired
-    private BpmProcessNoticeServiceImpl processNoticeService;
-
-    @Autowired
-    private EmployeeMapper employeeMapper;
-
-    @Autowired
-    private RepositoryService repositoryService;
-    @Autowired
-    @Lazy
-    private BpmnConfBizServiceImpl confCommonService;
-    @Autowired
-    @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
-    @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
-    @Autowired
-    private BpmProcessPermissionsServiceImpl permissionsService;
 
     /**
      * 查找最大流程编号
      *
      * @return
      */
+    @Override
     public String maxProcessCode() {
-        return bpmProcessDeptMapper.maxProcessCode();
+        return getBaseMapper().maxProcessCode();
     }
 
     /**
@@ -72,6 +41,7 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
      * @param testStr
      * @return
      */
+    @Override
     public String getProcessCode(String testStr) {
         String[] strs = testStr.split("[^0-9]");//根据不是数字的字符拆分字符串
         String numStr = strs[strs.length - 1];//取出最后一组数字
@@ -89,10 +59,11 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
     /**
      * 查询全员创建权限
      */
+    @Override
     public List<String> getAllProcess() {
         QueryWrapper<BpmProcessDept> wrapper = new QueryWrapper<>();
         wrapper.eq("is_all", 1);
-        List<BpmProcessDept> deptList = bpmProcessDeptMapper.selectList(wrapper);
+        List<BpmProcessDept> deptList = getBaseMapper().selectList(wrapper);
         return Optional.ofNullable(deptList)
                 .map(o ->
                         deptList.stream().map(depProcess -> depProcess.getProcessKey()).collect(Collectors.toList())
@@ -100,28 +71,5 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
                 .orElse(Arrays.asList());
     }
 
-    /**
-     * 根据编号修改权限关联
-     *
-     * @param bpmnConf
-     * @return
-     */
-    public void editRelevance(BpmnConf bpmnConf) {
-        bpmProcessNameService.editProcessName(bpmnConf);
-    }
-    public List<String> findProcessKey() {
-        List<String> processKeyList = Optional.ofNullable(permissionsService.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList());
-        List<BpmnConf> confList = Optional.ofNullable(confCommonService.getIsAllConfs()).orElse(Arrays.asList());
-        List<String> collect = confList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList());
-        List<String> processList = Optional.ofNullable(this.getAllProcess()).orElse(Arrays.asList());
-        processList.addAll(processKeyList);
-        processList.addAll(collect);
-        return processList;
-    }
 
-
-    public void editProcessConf(BpmProcessDeptVo vo) throws AFBizException {
-        //todo save process's other info
-        processNoticeService.saveProcessNotice(vo);
-    }
 }
