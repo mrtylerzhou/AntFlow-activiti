@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.activiti.engine.TaskService;
@@ -18,6 +19,7 @@ import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
@@ -27,6 +29,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -53,6 +56,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         verifyInfo.setVerifyUserId(SecurityUtils.getLogInEmpIdStr());
         verifyInfo.setVerifyDesc(Strings.isNullOrEmpty(remark) ? "同意" : remark);
         verifyInfo.setVerifyStatus(verifyStatuss);
+        verifyInfo.setTenantId(MultiTenantUtil.getCurrentTenantId());
         this.getBaseMapper().insert(verifyInfo);
     }
 
@@ -63,10 +67,10 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
        if(StringUtils.isEmpty(taskDefKey)){
            return null;
        }
-        LambdaQueryWrapper<BpmVerifyInfo> qryWrapper = Wrappers.<BpmVerifyInfo>lambdaQuery()
+
+        List<BpmVerifyInfo> verifyInfos = this.list(AFWrappers.<BpmVerifyInfo>lambdaTenantQuery()
                 .eq(BpmVerifyInfo::getProcessCode, processNumber)
-                .eq(BpmVerifyInfo::getTaskDefKey, taskDefKey);
-        List<BpmVerifyInfo> verifyInfos = this.list(qryWrapper);
+                .eq(BpmVerifyInfo::getTaskDefKey, taskDefKey));
         Map<String, BpmVerifyInfo> verifyInfoMap = verifyInfos.stream().collect(Collectors.toMap(a -> a.getTaskDefKey() + a.getVerifyUserId(), b -> b, (v1, v2) -> v1));
         return verifyInfoMap;
     }

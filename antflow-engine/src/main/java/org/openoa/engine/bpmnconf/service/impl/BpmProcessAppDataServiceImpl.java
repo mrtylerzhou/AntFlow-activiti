@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppDataMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  *  app process go online service
  */
-@Service
+@Repository
 public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataMapper, BpmProcessAppData> implements BpmProcessAppDataService {
 
 

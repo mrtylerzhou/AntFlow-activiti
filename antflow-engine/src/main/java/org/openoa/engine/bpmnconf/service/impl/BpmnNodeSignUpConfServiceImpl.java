@@ -8,12 +8,13 @@ import org.openoa.base.vo.BpmnNodeVo;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeSignUpConfService;
 import org.openoa.base.util.MultiTenantUtil;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 
-@Service
+@Repository
 public class BpmnNodeSignUpConfServiceImpl extends ServiceImpl<BpmnNodeSignUpConfMapper, BpmnNodeSignUpConf> implements BpmnNodeSignUpConfService {
 
     @Override

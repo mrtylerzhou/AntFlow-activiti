@@ -6,6 +6,7 @@ import org.openoa.base.entity.BpmVariableApproveRemind;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableApproveRemindMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import static org.openoa.base.constant.enums.MessageSendTypeEnum.*;
@@ -17,7 +18,7 @@ import static org.openoa.base.constant.enums.WildcardCharacterEnum.*;
  * @Created by AntOffice
  */
 @Slf4j
-@Service
+@Repository
 public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariableApproveRemindMapper, BpmVariableApproveRemind> implements BpmVariableApproveRemindService {
 
 }

@@ -10,6 +10,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.util.MultiTenantUtil;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -21,7 +22,7 @@ import static org.openoa.base.constant.enums.ButtonPageTypeEnum.INITIATE;
 import static org.openoa.base.constant.enums.ButtonTypeEnum.BUTTON_TYPE_RESUBMIT;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_START;
 
-@Service
+@Repository
 public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonConfMapper, BpmnNodeButtonConf> {
 
 

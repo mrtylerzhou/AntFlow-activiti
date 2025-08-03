@@ -14,6 +14,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmApproveTem
 import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  * third party process service-conditions template configuration table service implementation
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> implements OutSideBpmApproveTemplateService {
 
 

@@ -7,6 +7,7 @@ import org.openoa.engine.bpmnconf.mapper.QuickEntryTypeMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * query entry curd service
  */
-@Service
+@Repository
 public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> implements QuickEntryTypeService {
 
     /**

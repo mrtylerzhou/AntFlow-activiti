@@ -10,6 +10,7 @@ import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
  * bpm variable serivce
  *
  */
-@Service("bpmVariableService")
+@Repository("bpmVariableService")
 public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVariable> implements BpmVariableService {
     @Autowired
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;

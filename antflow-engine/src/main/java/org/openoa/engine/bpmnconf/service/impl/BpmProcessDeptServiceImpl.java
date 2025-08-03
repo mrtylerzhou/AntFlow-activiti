@@ -6,6 +6,7 @@ import org.openoa.base.entity.BpmProcessDept;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessDeptMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessDeptService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * //todo process and department connection service,the module is deprecated and will be redesigned
  */
-@Service
+@Repository
 public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper, BpmProcessDept> implements BpmProcessDeptService {
 
     private static Map<String, BpmnConf> bpmnConfMap = new ConcurrentHashMap<>();

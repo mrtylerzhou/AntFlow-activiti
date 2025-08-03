@@ -11,6 +11,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.utils.AFWrappers;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -19,7 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Service
+@Repository
 public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustMapper, BpmFlowrunEntrust> implements BpmFlowrunEntrustService {
 
 

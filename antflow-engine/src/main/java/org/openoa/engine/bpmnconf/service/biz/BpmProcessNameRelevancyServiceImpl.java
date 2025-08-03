@@ -17,15 +17,11 @@ import java.util.stream.Collectors;
 public class BpmProcessNameRelevancyServiceImpl extends ServiceImpl<BpmProcessNameRelevancyMapper, BpmProcessNameRelevancy> {
 
 
-    @Autowired
-    private   BpmProcessNameRelevancyMapper mapper;
-
-
     public boolean selectCout(String formCode) {
         QueryWrapper<BpmProcessNameRelevancy> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", formCode);
         wrapper.eq("is_del", 0);
-        long count = mapper.selectCount(wrapper);
+        long count = getBaseMapper().selectCount(wrapper);
         return count > 0;
     }
 
@@ -33,11 +29,11 @@ public class BpmProcessNameRelevancyServiceImpl extends ServiceImpl<BpmProcessNa
         QueryWrapper<BpmProcessNameRelevancy> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", formCode);
         wrapper.eq("is_del", 0);
-        return this.mapper.selectOne(wrapper);
+        return this.getBaseMapper().selectOne(wrapper);
     }
 
     public boolean add(BpmProcessNameRelevancy processNameRelevancy) {
-        mapper.insert(processNameRelevancy);
+        getBaseMapper().insert(processNameRelevancy);
         return true;
     }
 
@@ -51,7 +47,7 @@ public class BpmProcessNameRelevancyServiceImpl extends ServiceImpl<BpmProcessNa
         QueryWrapper<BpmProcessNameRelevancy> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
         wrapper.eq("process_name_id", id);
-        return Optional.ofNullable(mapper.selectList(wrapper).stream().map(BpmProcessNameRelevancy::getProcessKey).collect(Collectors.toList())).orElse(Arrays.asList());
+        return Optional.ofNullable(getBaseMapper().selectList(wrapper).stream().map(BpmProcessNameRelevancy::getProcessKey).collect(Collectors.toList())).orElse(Arrays.asList());
     }
 
 }

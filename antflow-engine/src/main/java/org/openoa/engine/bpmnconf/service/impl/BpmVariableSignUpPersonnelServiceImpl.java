@@ -5,13 +5,14 @@ import org.openoa.base.entity.BpmVariableSignUpPersonnel;
 import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpPersonnelMapper;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 public class BpmVariableSignUpPersonnelServiceImpl extends ServiceImpl<BpmVariableSignUpPersonnelMapper, BpmVariableSignUpPersonnel> implements BpmVariableSignUpPersonnelService {
 
 

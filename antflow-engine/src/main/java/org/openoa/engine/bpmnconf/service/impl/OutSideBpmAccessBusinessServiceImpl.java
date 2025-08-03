@@ -35,6 +35,7 @@ import org.openoa.engine.vo.OutSideBpmAccessRespVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -48,7 +49,7 @@ import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
  * third party process service,access service
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmAccessBusinessMapper, OutSideBpmAccessBusiness> implements OutSideBpmAccessBusinessService {
 
 }

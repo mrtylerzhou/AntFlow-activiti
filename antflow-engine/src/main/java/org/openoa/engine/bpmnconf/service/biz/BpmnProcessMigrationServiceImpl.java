@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
@@ -70,7 +71,9 @@ public class BpmnProcessMigrationServiceImpl {
             // 查找当前流程实例的任务
             List<Task> tsks = taskService.createTaskQuery()
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
-                    .taskDefinitionKey(activity.getId()).list();
+                    .taskDefinitionKey(activity.getId())
+                    .taskTenantId(MultiTenantUtil.getCurrentTenantId())
+                    .list();
             Map<String, BpmVerifyInfo> verifyInfoMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(tsks)) {
                 verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);

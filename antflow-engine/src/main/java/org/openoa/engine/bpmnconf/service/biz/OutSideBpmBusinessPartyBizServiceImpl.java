@@ -20,6 +20,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationBizService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
@@ -48,7 +49,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
     private AfUserService employeeService;
 
     @Autowired
-    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
+    private BpmProcessAppApplicationBizService bpmProcessAppApplicationBizService;
 
     @Autowired
     private BpmProcessAppDataServiceImpl bpmProcessAppDataServiceImpl;
@@ -265,7 +266,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
 
 
         // step 2
-        BpmProcessAppApplication app = bpmProcessAppApplicationService.getOne(Wrappers.<BpmProcessAppApplication>lambdaQuery().eq(BpmProcessAppApplication::getBusinessCode, vo.getThirdCode())
+        BpmProcessAppApplication app = bpmProcessAppApplicationBizService.getService().getOne(Wrappers.<BpmProcessAppApplication>lambdaQuery().eq(BpmProcessAppApplication::getBusinessCode, vo.getThirdCode())
                 .eq(BpmProcessAppApplication::getProcessKey, vo.getProcessKey()), false);
         if (app == null) {
             app = BpmProcessAppApplication.builder()
@@ -274,7 +275,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                     .title(vo.getProcessName())
                     .applyType(2)
                     .build();
-            bpmProcessAppApplicationService.save(app);
+            bpmProcessAppApplicationBizService.getService().save(app);
         }
 
         // step 3
@@ -302,7 +303,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
      */
     @Override
     public ResultAndPage<BpmProcessAppApplicationVo> applicationsPageList(PageDto page, BpmProcessAppApplicationVo vo) {
-        return   bpmProcessAppApplicationService.applicationsNewList(page,vo);
+        return   bpmProcessAppApplicationBizService.applicationsNewList(page,vo);
     }
 
     /**
@@ -312,7 +313,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
      */
     @Override
     public BpmProcessAppApplication getApplicationDetailById(Integer id) {
-        return bpmProcessAppApplicationService.getById(id);
+        return bpmProcessAppApplicationBizService.getService().getById(id);
     }
     /**
      * get bpm conf by active of list

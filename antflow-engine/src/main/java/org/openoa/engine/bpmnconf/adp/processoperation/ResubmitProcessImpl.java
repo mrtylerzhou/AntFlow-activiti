@@ -9,7 +9,9 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
@@ -49,7 +51,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private FormFactory formFactory;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     @Autowired

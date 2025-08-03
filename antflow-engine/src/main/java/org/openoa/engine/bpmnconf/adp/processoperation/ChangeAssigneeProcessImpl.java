@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -11,6 +12,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -26,13 +28,13 @@ import java.util.stream.Collectors;
 @Component
 public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Autowired
-    protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    protected BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private TaskService taskService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    private BpmFlowrunEntrustService bpmFlowrunEntrustService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {

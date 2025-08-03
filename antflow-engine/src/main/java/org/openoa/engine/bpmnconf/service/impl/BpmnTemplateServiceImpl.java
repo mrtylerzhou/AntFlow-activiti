@@ -12,13 +12,14 @@ import org.openoa.base.vo.BpmnTemplateVo;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> implements BpmnTemplateService {
 
     @Override

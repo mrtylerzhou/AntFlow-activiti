@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.biz;
+package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,6 +8,8 @@ import org.openoa.base.vo.BpmProcessVo;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessNameMapper;
+import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameRelevancyServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -17,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
-public class BpmProcessNameServiceImpl extends ServiceImpl<BpmProcessNameMapper, BpmProcessName> {
+public class BpmProcessNameServiceImpl extends ServiceImpl<BpmProcessNameMapper, BpmProcessName> implements BpmProcessNameService {
 
     private static Map<String, BpmProcessVo> processVoMap = new ConcurrentHashMap<>();
 

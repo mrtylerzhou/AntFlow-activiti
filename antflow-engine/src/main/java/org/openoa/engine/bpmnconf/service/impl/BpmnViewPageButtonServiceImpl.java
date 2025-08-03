@@ -7,6 +7,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmnViewPageButtonMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnViewPageButtonService;
 import org.openoa.engine.utils.AFWrappers;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @Description view pagebutton
  * @Created by AntOffice
  */
-@Service
+@Repository
 public class BpmnViewPageButtonServiceImpl extends ServiceImpl<BpmnViewPageButtonMapper, BpmnViewPageButton> implements BpmnViewPageButtonService {
 
     @Override

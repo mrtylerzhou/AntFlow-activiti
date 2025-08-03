@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmnNodeRoleConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeRoleConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeRoleConfService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-@Service
+@Repository
 public class BpmnNodeRoleConfServiceImpl extends ServiceImpl<BpmnNodeRoleConfMapper, BpmnNodeRoleConf> implements BpmnNodeRoleConfService {
 
 }

@@ -17,7 +17,7 @@ import org.openoa.base.entity.BpmProcessName;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.base.util.MultiTenantUtil;

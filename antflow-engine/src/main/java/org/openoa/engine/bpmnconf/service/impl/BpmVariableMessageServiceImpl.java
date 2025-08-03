@@ -38,6 +38,7 @@ import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -51,7 +52,7 @@ import java.util.stream.Collectors;
  * @Date 2021-11-27 15:44
  * @Created by AntOffice
  */
-@Service
+@Repository
 public class BpmVariableMessageServiceImpl extends ServiceImpl<BpmVariableMessageMapper, BpmVariableMessage> implements BpmVariableMessageService {
 
 }

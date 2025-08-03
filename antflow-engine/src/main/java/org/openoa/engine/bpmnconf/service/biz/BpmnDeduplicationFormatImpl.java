@@ -1,4 +1,4 @@
-package org.openoa.engine.bpmnconf.service.impl;
+package org.openoa.engine.bpmnconf.service.biz;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;

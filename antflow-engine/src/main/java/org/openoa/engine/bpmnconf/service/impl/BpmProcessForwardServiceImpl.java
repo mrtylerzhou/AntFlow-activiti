@@ -6,11 +6,12 @@ import org.openoa.base.entity.BpmProcessForward;
 
 import org.openoa.engine.bpmnconf.mapper.BpmProcessForwardMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
+@Repository
 public class BpmProcessForwardServiceImpl extends ServiceImpl<BpmProcessForwardMapper, BpmProcessForward> implements BpmProcessForwardService {
 
 

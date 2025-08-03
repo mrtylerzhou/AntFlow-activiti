@@ -12,10 +12,11 @@ import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-@Service
+@Repository
 public class BpmnApproveRemindServiceImpl extends ServiceImpl<BpmnApproveRemindMapper, BpmnApproveRemind> implements BpmnApproveRemindService {
 
 

@@ -12,6 +12,7 @@ import org.openoa.base.entity.QuickEntry;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.vo.QuickEntryVo;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * quick entry curd service
  */
 @Slf4j
-@Service
+@Repository
 public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEntry> implements QuickEntryService {
 
     @Override

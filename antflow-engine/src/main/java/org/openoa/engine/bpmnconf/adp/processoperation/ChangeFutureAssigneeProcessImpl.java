@@ -18,6 +18,7 @@ import org.openoa.common.mapper.BpmVariableSingleMapper;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -36,7 +37,7 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
     @Autowired
     private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
-    private BpmFlowrunEntrustServiceImpl flowrunEntrustService;
+    private BpmFlowrunEntrustService flowrunEntrustService;
     @Autowired
     private BpmVariableSingleMapper variableSingleMapper;
     @Autowired

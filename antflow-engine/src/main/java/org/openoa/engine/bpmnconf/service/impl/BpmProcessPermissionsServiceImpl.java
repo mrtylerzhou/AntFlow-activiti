@@ -9,6 +9,7 @@ import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessPermissionsMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessPermissionsService;
 import org.openoa.engine.vo.GenericEmployee;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * @since 0.5
  */
-@Service
+@Repository
 public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPermissionsMapper, BpmProcessPermissions> implements BpmProcessPermissionsService {
 
 

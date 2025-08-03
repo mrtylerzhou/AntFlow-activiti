@@ -27,6 +27,7 @@ import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmBusinessPartyServiceImpl extends ServiceImpl<OutSideBpmBusinessPartyMapper, OutSideBpmBusinessParty> implements OutSideBpmBusinessPartyService {
 
 }

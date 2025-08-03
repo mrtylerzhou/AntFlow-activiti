@@ -6,12 +6,13 @@ import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.entity.BpmTaskconfig;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Repository
 public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, BpmTaskconfig> implements BpmTaskconfigService {
 
     /**

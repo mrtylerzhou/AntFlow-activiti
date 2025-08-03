@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
@@ -39,7 +40,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private FormFactory formFactory;
     @Autowired
-    protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    protected BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     @Autowired

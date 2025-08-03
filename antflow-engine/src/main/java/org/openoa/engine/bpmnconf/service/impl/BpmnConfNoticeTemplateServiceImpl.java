@@ -5,6 +5,7 @@ import org.openoa.base.entity.BpmnConfNoticeTemplate;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfNoticeTemplateMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
  * @Created by AntOffice
  * @since 0.5
  */
-@Service
+@Repository
 public class BpmnConfNoticeTemplateServiceImpl extends ServiceImpl<BpmnConfNoticeTemplateMapper, BpmnConfNoticeTemplate> implements BpmnConfNoticeTemplateService {
 
 }

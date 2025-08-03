@@ -13,6 +13,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.ApplicationService;
 import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
  * @author tylerZhou
  * @since 0.5
  */
-@Service
+@Repository
 public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplicationMapper, BpmProcessAppApplication> implements ApplicationService {
 
 

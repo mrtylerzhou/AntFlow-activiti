@@ -7,6 +7,7 @@ import org.openoa.base.entity.OutSideBpmAdminPersonnel;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmAdminPersonnelMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  * thirdy party process service-business party admin personnel management
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> implements OutSideBpmAdminPersonnelService {
 
     /**

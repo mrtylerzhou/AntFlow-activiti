@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.ActHiTaskinst;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
@@ -35,6 +36,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmitService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +54,7 @@ import java.util.stream.Collectors;
 public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
 
     @Autowired
     private TaskService taskService;
@@ -61,7 +63,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
 
     @Autowired
-    private BpmProcessNodeSubmitServiceImpl processNodeSubmitService;
+    private BpmProcessNodeSubmitService processNodeSubmitService;
 
     @Autowired
     private ProcessNodeJump processNodeJump;

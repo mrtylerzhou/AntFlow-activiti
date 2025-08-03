@@ -1,14 +1,15 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +27,6 @@ import java.util.List;
 public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProcessMapper, BpmBusinessProcess> implements BpmBusinessProcessService {
 
 
-    @Autowired
-    private BpmBusinessProcessMapper mapper;
 
     /**
      * find bpmBusinessProcess by business id and business number
@@ -36,8 +35,9 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @param businessId business id
      * @return
      */
+    @Override
     public BpmBusinessProcess findBpmBusinessProcess(String businessId, String businessNumber) {
-        return mapper.findBpmBusinessProcess(BpmBusinessProcess.builder().businessNumber(businessNumber).businessId(businessId).build());
+        return getBaseMapper().findBpmBusinessProcess(BpmBusinessProcess.builder().businessNumber(businessNumber).businessId(businessId).build());
     }
 
     /**
@@ -48,11 +48,13 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @throws Exception
      */
     @Transactional(propagation = Propagation.REQUIRED)
+    @Override
     public void addBusinessProcess(BpmBusinessProcess businessProcess) {
-        mapper.insert(businessProcess);
+        getBaseMapper().insert(businessProcess);
     }
 
 
+    @Override
     public void addBusinessProcess(String businessId, String key, String entryId, String processNum,String bpmnCode, String description) {
         BpmBusinessProcess bpmBusinessProcess = new BpmBusinessProcess();
 
@@ -66,7 +68,8 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
         bpmBusinessProcess.setDescription(description);
         bpmBusinessProcess.setBusinessNumber(processNum);
         bpmBusinessProcess.setProcessState(ProcessEnum.COMLETE_STATE.getCode());
-        mapper.insert(bpmBusinessProcess);
+        bpmBusinessProcess.setTenantId(MultiTenantUtil.getCurrentTenantId());
+        getBaseMapper().insert(bpmBusinessProcess);
     }
 
     /**
@@ -75,17 +78,17 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @param
      * @return
      */
+    @Override
     public BpmBusinessProcess updateBusinessProcess(BpmBusinessProcess bpmBusinessProcess) {
-        QueryWrapper<BpmBusinessProcess> wrapper = new QueryWrapper<>();
 
-        wrapper.eq("BUSINESS_NUMBER", bpmBusinessProcess.getBusinessNumber());
-        List<BpmBusinessProcess> bpmBusinessProcesses = mapper.selectList(wrapper);
+        List<BpmBusinessProcess> bpmBusinessProcesses = getBaseMapper().selectList(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                .eq(BpmBusinessProcess::getBusinessNumber,bpmBusinessProcess.getBusinessNumber()));
         bpmBusinessProcesses.forEach(o -> {
             o.setProcessState(bpmBusinessProcess.getProcessState());
             if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
                 o.setDescription(bpmBusinessProcess.getDescription());
             }
-            mapper.updateById(o);
+            getBaseMapper().updateById(o);
         });
         return bpmBusinessProcesses.get(0);
     }
@@ -93,10 +96,10 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
     /**
      * query bpmBusinessProcess by process number
      */
+    @Override
     public BpmBusinessProcess getBpmBusinessProcess(String processCode) {
-        QueryWrapper<BpmBusinessProcess> wrapper = new QueryWrapper<>();
-        wrapper.eq("BUSINESS_NUMBER", processCode);
-        BpmBusinessProcess bpmBusinessProcess = this.getOne(wrapper);
+        BpmBusinessProcess bpmBusinessProcess = this.getOne(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                .eq(BpmBusinessProcess::getBusinessNumber,processCode));
 
         return bpmBusinessProcess;
     }
@@ -105,22 +108,24 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
     /**
      * get bpmBusinessProcess by bpmBusinessProcess Entity
      */
+    @Override
     public BpmBusinessProcess getBpmBusinessProcess(BpmBusinessProcess bpmBusinessProcess) {
-        return mapper.findBpmBusinessProcess(bpmBusinessProcess);
+        return getBaseMapper().findBpmBusinessProcess(bpmBusinessProcess);
     }
 
     /**
      * update bpmBusinessProcess by entry id
      *
-     * @param entryId
+     * @param procInstId
      * @return
      */
-    public boolean updateBpmBusinessProcess(String entryId) {
-        QueryWrapper<BpmBusinessProcess> wrapper = new QueryWrapper<>();
-        wrapper.eq("ENTRY_ID", entryId);
-        mapper.selectList(wrapper).stream().forEach(o -> {
+    @Override
+    public boolean updateBpmBusinessProcess(String procInstId) {
+
+        getBaseMapper().selectList(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                .eq(BpmBusinessProcess::getProcInstId,procInstId)).forEach(o -> {
             o.setProcessState(ProcessStateEnum.END_STATE.getCode());
-            mapper.updateById(o);
+            getBaseMapper().updateById(o);
         });
         return true;
     }
@@ -130,40 +135,43 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @param processNumbers
      * @return
      */
+    @Override
     public List<BpmBusinessProcess> listBpmBusinessProcess(List<String> processNumbers) {
         List<BpmBusinessProcess> result = new ArrayList<>();
         if (ObjectUtils.isEmpty(processNumbers)) {
             return result;
         }
-        QueryWrapper<BpmBusinessProcess> wrapper = new QueryWrapper<>();
 
-        wrapper.select("BUSINESS_NUMBER", "description");
-        wrapper.in("BUSINESS_NUMBER", processNumbers);
-        result = this.mapper.selectList(wrapper);
+        result = this.getBaseMapper().selectList(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                        .select(BpmBusinessProcess::getBusinessNumber,BpmBusinessProcess::getDescription)
+                .in(BpmBusinessProcess::getBusinessNumber,processNumbers));
         return result;
     }
 
     /**
      * check whether there is duplicate data
      */
+    @Override
     public boolean checkData(String processNumber) {
-        long number = this.mapper.selectCount(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
+        long number = this.getBaseMapper().selectCount(Wrappers.<BpmBusinessProcess>lambdaQuery().eq(BpmBusinessProcess::getBusinessNumber, processNumber));
         return number <= 0;
     }
 
     /**
      * check whether there is duplicate data by entry id
      */
+    @Override
     public boolean checkProcessData(String entryId) {
-        long number = this.mapper.selectCount(new QueryWrapper<BpmBusinessProcess>().eq("ENTRY_ID", entryId));
+        long number = this.getBaseMapper().selectCount(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery().eq(BpmBusinessProcess::getEntryId, entryId));
         return number <= 0;
     }
 
     /**
      * update process's isDel field
      */
+    @Override
     public void updateProcessIsDel(String processNumber) {
-        BpmBusinessProcess bpmBusinessProcess = this.mapper.selectOne(new QueryWrapper<BpmBusinessProcess>().eq("BUSINESS_NUMBER", processNumber));
+        BpmBusinessProcess bpmBusinessProcess = this.getBaseMapper().selectOne(Wrappers.<BpmBusinessProcess>lambdaQuery().eq(BpmBusinessProcess::getBusinessNumber, processNumber));
         bpmBusinessProcess.setIsDel(1);
         this.updateById(bpmBusinessProcess);
     }

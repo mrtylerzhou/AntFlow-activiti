@@ -8,9 +8,10 @@ import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-@Service
+@Repository
 public class UserMessageStatusServiceImpl extends ServiceImpl<UserMessageStatusMapper, UserMessageStatus> implements UserMessageStatusService {
 
 

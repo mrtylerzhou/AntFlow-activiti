@@ -5,6 +5,7 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;

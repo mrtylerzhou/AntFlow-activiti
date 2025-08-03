@@ -7,6 +7,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessApplicationTypeMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessApplicationTypeService;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,7 +20,7 @@ import java.util.Optional;
 /**
  *  process application type curd service
  */
-@Service
+@Repository
 public class BpmProcessApplicationTypeServiceImpl extends ServiceImpl<BpmProcessApplicationTypeMapper, BpmProcessApplicationType> implements BpmProcessApplicationTypeService {
 
     @Override

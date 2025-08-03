@@ -10,6 +10,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmCallbackUr
 import org.openoa.engine.utils.AFWrappers;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,7 +20,7 @@ import java.util.*;
  * third party process service callback url conf
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpmCallbackUrlConfMapper, OutSideBpmCallbackUrlConf> implements OutSideBpmCallbackUrlConfService {
 
 

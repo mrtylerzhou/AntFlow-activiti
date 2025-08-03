@@ -10,13 +10,14 @@ import org.openoa.engine.bpmnconf.mapper.BpmFlowruninfoMapper;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowruninfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Repository
 public class BpmFlowruninfoServiceImpl extends ServiceImpl<BpmFlowruninfoMapper, BpmFlowruninfo> implements BpmFlowruninfoService {
 
 

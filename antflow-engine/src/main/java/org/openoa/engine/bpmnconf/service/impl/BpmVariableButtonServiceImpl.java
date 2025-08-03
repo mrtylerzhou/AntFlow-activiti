@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmVariableButton;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableButtonMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @Date 2021-11-27 15:29
  * @Created by AntOffice
  */
-@Service
+@Repository
 public class BpmVariableButtonServiceImpl extends ServiceImpl<BpmVariableButtonMapper, BpmVariableButton>  implements BpmVariableButtonService {
 
 

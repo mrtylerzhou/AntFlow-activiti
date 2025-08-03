@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.mapper.OutSideBpmConditionsTemplateMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmConditionsTemplateService;
 import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
  * third party process service-conditions template configuration table service implementation
  * @since 0.5
  */
-@Service
+@Repository
 public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSideBpmConditionsTemplateMapper, OutSideBpmConditionsTemplate> implements OutSideBpmConditionsTemplateService {
 
 

@@ -8,12 +8,13 @@ import org.openoa.base.vo.BpmProcessDeptVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-@Service
+@Repository
 public class BpmProcessNodeOvertimeServiceImpl extends ServiceImpl<BpmProcessNodeOvertimeMapper, BpmProcessNodeOvertime> implements BpmProcessNodeOvertimeService {
 
 

@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
@@ -11,6 +12,7 @@ import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +24,11 @@ import java.util.Date;
 @Component
 public class ForwardProcessImpl implements ProcessOperationAdaptor {
     @Autowired
-    protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    protected BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardService processForwardService;
     @Autowired
     private ProcessBusinessContans businessContans;
     @Autowired

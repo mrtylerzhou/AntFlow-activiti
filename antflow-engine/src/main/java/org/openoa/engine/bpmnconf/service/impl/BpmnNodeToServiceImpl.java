@@ -8,13 +8,14 @@ import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeToService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.utils.AFWrappers;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 public class BpmnNodeToServiceImpl extends ServiceImpl<BpmnNodeToMapper, BpmnNodeTo> implements BpmnNodeToService {
 
 

@@ -5,12 +5,13 @@ import com.google.common.collect.Lists;
 import org.openoa.base.entity.DefaultTemplate;
 import org.openoa.engine.bpmnconf.mapper.DefaultTemplateMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-@Service
+@Repository
 public class DefaultTemplateServiceImpl extends ServiceImpl<DefaultTemplateMapper, DefaultTemplate> implements DefaultTemplateService {
 
     public void insertOrUpdateAllColumnBatch(List<DefaultTemplate> list) {

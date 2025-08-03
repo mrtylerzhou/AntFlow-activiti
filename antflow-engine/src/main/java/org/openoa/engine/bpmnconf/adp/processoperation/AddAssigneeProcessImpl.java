@@ -12,6 +12,7 @@ import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -20,6 +21,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.utils.MultiInstanceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,11 +37,11 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Autowired
     private ManagementService managementService;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private ActivitiAdditionalInfoServiceImpl additionalInfoService;
     @Autowired
-    private BpmFlowrunEntrustServiceImpl flowrunEntrustService;
+    private BpmFlowrunEntrustService flowrunEntrustService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
