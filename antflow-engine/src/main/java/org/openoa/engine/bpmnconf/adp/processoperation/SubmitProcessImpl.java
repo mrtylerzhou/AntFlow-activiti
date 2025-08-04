@@ -17,8 +17,8 @@ import org.openoa.base.entity.BpmProcessName;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNameBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
+    private BpmProcessNameBizService bpmProcessNameBizService;
 
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
@@ -77,7 +77,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
 
         //process's name
         String processName = Optional
-                .ofNullable(bpmProcessNameService.getBpmProcessName(businessDataVo.getFormCode()))
+                .ofNullable(bpmProcessNameBizService.getBpmProcessName(businessDataVo.getFormCode()))
                 .orElse(new BpmProcessName()).getProcessName();
         //apply user info
         String applyName = SecurityUtils.getLogInEmpName();

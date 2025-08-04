@@ -1,24 +1,27 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.DateUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.UserEntrustService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserEntrust> implements UserEntrustService {
@@ -26,6 +29,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
 
 
     //获get current login employee's entrust list
+    @Override
     public List<Entrust> getEntrustList() {
         return getBaseMapper().getEntrustListNew( SecurityUtils.getLogInEmpIdSafe());
     }
@@ -47,6 +51,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
 
     //batch save or update entrust list
     @Transactional
+    @Override
     public void updateEntrustList(DataVo dataVo) {
         for (IdsVo idsVo : dataVo.getIds()) {
             UserEntrust userEntrust = new UserEntrust();
@@ -74,12 +79,14 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 //插入
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 userEntrust.setPowerId(idsVo.getPowerId());
+                userEntrust.setTenantId(MultiTenantUtil.getCurrentTenantId());
                 getBaseMapper().insert(userEntrust);
             }
         }
     }
 
 
+    @Override
     public BaseIdTranStruVo getEntrustEmployee(String employeeId,String employeeName, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return BaseIdTranStruVo.builder().id(employeeId).name(employeeName).build();
@@ -96,13 +103,26 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
      * @param powerId    formid
      * @return
      */
+    @Override
     public BaseIdTranStruVo getEntrustEmployeeOnly(String employeeId,String employeeName, String powerId) {
         if (ObjectUtils.isEmpty(employeeId) || ObjectUtils.isEmpty(powerId)) {
             return BaseIdTranStruVo.builder().id(employeeId).name(employeeName).build();
         }
-        QueryWrapper<UserEntrust> wrapper = new QueryWrapper<>();
-        wrapper.eq("power_id", powerId).eq("sender", employeeId);
-        List<UserEntrust> list = this.getBaseMapper().selectList(wrapper);
+        List<UserEntrust> list = this.getBaseMapper().selectList(AFWrappers.<UserEntrust>lambdaTenantQuery()
+                .eq(UserEntrust::getPowerId,powerId)
+                .eq(UserEntrust::getSender,employeeId));
+         if(StringUtils.hasText(MultiTenantUtil.getCurrentTenantId())){
+
+            List<UserEntrust> currentOnes= list.stream().filter(a->MultiTenantUtil.getCurrentTenantId().equals(a.getTenantId())).collect(Collectors.toList());
+            //如果当前租户有添加,则取当前租户的,如果没有,则尝试取全局的
+            if(CollectionUtils.isEmpty(currentOnes)){
+                //不带tenantId的
+                list=list.stream().filter(a-> !StringUtils.hasText(a.getTenantId())).collect(Collectors.toList());
+            }else{
+                list=currentOnes;
+            }
+
+         }
         if(!CollectionUtils.isEmpty(list)){
             for (UserEntrust u : list) {
                 if (u.getBeginTime()!=null && u.getEndTime()!=null && (new Date().getTime() >= DateUtil.getDayStart(u.getBeginTime()).getTime()) && (new Date().getTime() <= DateUtil.getDayEnd(u.getEndTime()).getTime())) {

@@ -39,7 +39,7 @@ public class ForwardProcessImpl implements ProcessOperationAdaptor {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if (bpmBusinessProcess != null) {
 
-            vo.getUserInfos().stream().forEach(o -> {
+            vo.getUserInfos().forEach(o -> {
                 processForwardService.addProcessForward(BpmProcessForward.builder()
                         .createTime(new Date())
                         .createUserId(SecurityUtils.getLogInEmpId())

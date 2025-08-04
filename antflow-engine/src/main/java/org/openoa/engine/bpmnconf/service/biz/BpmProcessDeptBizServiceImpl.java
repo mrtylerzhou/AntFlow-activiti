@@ -5,9 +5,9 @@ import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNameBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -28,7 +28,7 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
     private BpmnConfBizServiceImpl confCommonService;
 
     @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
+    private BpmProcessNameBizService bpmProcessNameBizService;
     @Autowired
     private BpmProcessPermissionsBizService processPermissionsBizService;
 
@@ -40,7 +40,7 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
      */
     @Override
     public void editRelevance(BpmnConf bpmnConf) {
-        bpmProcessNameService.editProcessName(bpmnConf);
+        bpmProcessNameBizService.editProcessName(bpmnConf);
     }
     @Override
     public List<String> findProcessKey() {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.UserEntrust;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmFlowrunEntrustVo;
 import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
@@ -43,6 +44,7 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         entrust.setIsRead(2);
         entrust.setProcDefId(processKey);
         entrust.setRuninfoid(ProcessInstanceId);
+        entrust.setTenantId(MultiTenantUtil.getCurrentTenantId());
         getBaseMapper().insert(entrust);
     }
 

@@ -32,6 +32,7 @@ import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.*;
+import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.engine.utils.AFWrappers;
@@ -72,42 +73,42 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoBizService;
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardService processForwardService;
     @Autowired
     private NodeAdditionalInfoServiceImpl nodeAdditionalInfoService;
     private static final String linkMark = "_";
     @Autowired
-    private BpmnNodeServiceImpl bpmnNodeService;
+    private BpmnNodeService bpmnNodeService;
     @Autowired
-    private BpmnViewPageButtonServiceImpl bpmnViewPageButtonService;
+    private BpmnViewPageButtonService bpmnViewPageButtonService;
     @Autowired
-    private BpmnNodeToServiceImpl bpmnNodeToService;
+    private BpmnNodeToService bpmnNodeToService;
     @Autowired
-    private BpmnTemplateServiceImpl bpmnTemplateService;
+    private BpmnTemplateService bpmnTemplateService;
     @Autowired
-    private InformationTemplateServiceImpl informationTemplateService;
+    private InformationTemplateService informationTemplateService;
     @Autowired
-    private BpmnNodeButtonConfServiceImpl bpmnNodeButtonConfService;
+    private BpmnNodeButtonConfService bpmnNodeButtonConfService;
     @Autowired
-    private BpmnNodeSignUpConfServiceImpl bpmnNodeSignUpConfService;
+    private BpmnNodeSignUpConfService bpmnNodeSignUpConfService;
     @Autowired
-    private BpmnApproveRemindServiceImpl bpmnApproveRemindService;
+    private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
     @Autowired
     private BpmnViewPageButtonBizServiceImpl bpmnViewPageButtonBizService;
     @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
+    private BpmProcessNameBizService bpmProcessNameService;
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
     @Lazy
-    private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    private OutSideBpmBusinessPartyService outSideBpmBusinessPartyService;
     @Autowired
     @Lazy
-    private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
+    private OutSideBpmCallbackUrlConfService outSideBpmCallbackUrlConfService;
     @Autowired
-    private ApplicationServiceImpl applicationService;
+    private ApplicationService applicationService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
     @Autowired

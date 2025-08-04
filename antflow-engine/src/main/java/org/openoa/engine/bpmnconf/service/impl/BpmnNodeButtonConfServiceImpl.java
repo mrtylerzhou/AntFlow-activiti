@@ -10,6 +10,7 @@ import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeButtonConfService;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
@@ -22,9 +23,10 @@ import static org.openoa.base.constant.enums.ButtonTypeEnum.BUTTON_TYPE_RESUBMIT
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_START;
 
 @Repository
-public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonConfMapper, BpmnNodeButtonConf> {
+public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonConfMapper, BpmnNodeButtonConf> implements BpmnNodeButtonConfService {
 
 
+    @Override
     public void editButtons(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
         //delete the old configs
         this.getBaseMapper().delete(new QueryWrapper<BpmnNodeButtonConf>()
