@@ -11,6 +11,8 @@ import org.openoa.base.vo.OutSideBpmProcesses;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAdminPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
 import org.openoa.engine.vo.GenericEmployee;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +33,11 @@ public class OutSideBpmBaseServiceImpl {
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
 
     @Autowired
-    private OutSideBpmAdminPersonnelServiceImpl outSideBpmAdminPersonnelService;
+    private OutSideBpmAdminPersonnelService outSideBpmAdminPersonnelService;
 
     @Autowired
     @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
 
 
     /**

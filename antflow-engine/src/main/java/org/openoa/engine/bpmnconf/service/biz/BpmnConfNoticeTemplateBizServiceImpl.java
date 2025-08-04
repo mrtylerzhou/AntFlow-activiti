@@ -5,6 +5,7 @@ import org.openoa.base.entity.BpmnConfNoticeTemplate;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
 import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.List;
 @Service
 public class BpmnConfNoticeTemplateBizServiceImpl implements BpmnConfNoticeTemplateBizService {
     @Autowired
-    private BpmnConfNoticeTemplateDetailServiceImpl bpmnConfNoticeTemplateDetailService;
+    private BpmnConfNoticeTemplateDetailService bpmnConfNoticeTemplateDetailService;
 
     @Override
     public BpmnConfNoticeTemplateDetail getDetailByCodeAndType(String bpmnCode, Integer noticeType) {

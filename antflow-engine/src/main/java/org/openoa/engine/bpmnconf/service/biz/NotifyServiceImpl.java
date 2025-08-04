@@ -16,6 +16,7 @@ import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.mapper.*;
 import org.openoa.engine.bpmnconf.service.impl.BpmTaskconfigServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
 import org.openoa.engine.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class NotifyServiceImpl {
     @Autowired
     private BpmBusinessProcessMapper bpmBusinessProcessMapper;
     @Autowired
-    private BpmTaskconfigServiceImpl bpmTaskconfigService;
+    private BpmTaskconfigService bpmTaskconfigService;
     //remind manually
     private static final long ALLOWED = 2 * 60 * 60;
     //todo list detail page

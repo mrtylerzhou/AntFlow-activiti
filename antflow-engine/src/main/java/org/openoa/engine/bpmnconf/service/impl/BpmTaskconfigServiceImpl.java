@@ -35,6 +35,7 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
         getBaseMapper().insert(bpmTaskconfig);
     }
 
+    @Override
     public void addBpmTaskconfig(String procDefId, String taskDefKey, Long userId) {
         BpmTaskconfig con = new BpmTaskconfig();
         con.setProcDefId(procDefId);
@@ -58,6 +59,7 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
     /**
      * 根据节点获取数据
      */
+    @Override
     public Map<String, Object> findTaskNodeType(String taskDefKey) {
         return getBaseMapper().findTaskNodeType(taskDefKey);
     }

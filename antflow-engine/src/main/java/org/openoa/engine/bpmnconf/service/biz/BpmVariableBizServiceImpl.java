@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmVariableSignUpPersonnel;
+import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
@@ -38,7 +39,7 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
 
     @Autowired
-    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
 
     /**
      * to check whether login employee is in process(whether he/she is related to a specified process)

@@ -13,6 +13,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
 import org.openoa.base.entity.Employee;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
@@ -22,6 +23,9 @@ import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeOvertimeServiceImpl
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,15 +45,15 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
+    private BpmProcessNoticeService bpmProcessNoticeService;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
-    private BpmProcessNodeOvertimeServiceImpl processNodeOvertimeService;
+    private BpmProcessNodeOvertimeService processNodeOvertimeService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
     @Autowired
-    private BpmnConfNoticeTemplateDetailServiceImpl bpmnConfNoticeTemplateDetailService;
+    private BpmnConfNoticeTemplateDetailService bpmnConfNoticeTemplateDetailService;
 
 
     @Value("${system.domain:test}")

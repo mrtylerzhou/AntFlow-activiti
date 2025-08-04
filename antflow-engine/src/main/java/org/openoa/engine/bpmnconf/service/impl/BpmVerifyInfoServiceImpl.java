@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, BpmVerifyInfo> implements BpmVerifyInfoService {
 
 
+    @Override
     public void addVerifyInfo(String businessId, String remark, Integer businessType, String taskName, Integer verifyStatuss) {
         BpmVerifyInfo verifyInfo = new BpmVerifyInfo();
         verifyInfo.setBusinessId(businessId);
@@ -43,6 +44,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
         this.getBaseMapper().insert(verifyInfo);
     }
 
+    @Override
     public Map<String,BpmVerifyInfo> getByProcInstIdAndTaskDefKey(String processNumber,String taskDefKey){
         if(StringUtils.isBlank(processNumber)){
             throw  new AFBizException("流程编号不存在!");
@@ -65,6 +67,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * @param processCodes
      * @return
      */
+    @Override
     public Map<String, List<BpmVerifyInfoVo>> getBpmVerifyInfoBatch(List<String> processCodes) {
         List<BpmVerifyInfoVo> vos = this.getBaseMapper().verifyInfoList(BpmVerifyInfoVo.builder().processCodeList(processCodes)
                 .build());
@@ -80,6 +83,7 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
      * @param processCodes
      * @return
      */
+    @Override
     public Map<String, String> listBpmVerifyInfoVo(List<String> processCodes) {
         Map<String, String> map = Maps.newHashMap();
         Map<String, List<BpmVerifyInfoVo>> listMap = this.getBpmVerifyInfoBatch(processCodes);

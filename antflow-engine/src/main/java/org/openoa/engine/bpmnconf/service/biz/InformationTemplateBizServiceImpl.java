@@ -15,6 +15,9 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnApproveRemindServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnTemplateServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.DefaultTemplateServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
+import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +31,11 @@ import java.util.stream.Collectors;
 public class InformationTemplateBizServiceImpl implements InformationTemplateBizService {
 
     @Autowired
-    private DefaultTemplateServiceImpl defaultTemplateService;
+    private DefaultTemplateService defaultTemplateService;
     @Autowired
-    private BpmnApproveRemindServiceImpl bpmnApproveRemindService;
+    private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
-    private BpmnTemplateServiceImpl bpmnTemplateService;
+    private BpmnTemplateService bpmnTemplateService;
 
     /**
      * modify

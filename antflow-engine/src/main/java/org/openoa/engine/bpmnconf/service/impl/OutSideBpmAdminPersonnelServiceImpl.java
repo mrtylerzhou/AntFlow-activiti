@@ -23,6 +23,7 @@ public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmA
      * @param employeeId
      * @return
      */
+    @Override
     public List<Integer> getBusinessPartyIdByEmployeeId(String employeeId, String... permCodes) {
 
         List<Integer> types = Lists.newArrayList();

@@ -8,6 +8,8 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessCategoryServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessApplicationTypeBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class BpmProcessApplicationTypeBizServiceImpl implements BpmProcessApplicationTypeBizService {
     @Autowired
-    private BpmProcessCategoryServiceImpl bpmProcessCategoryService;
+    private BpmProcessCategoryService bpmProcessCategoryService;
     @Autowired
-    @Lazy
-    private BpmProcessAppApplicationServiceImpl processAppApplicationService;
+    private BpmProcessAppApplicationService processAppApplicationService;
 
     /**
      * move left
@@ -69,7 +70,7 @@ public class BpmProcessApplicationTypeBizServiceImpl implements BpmProcessApplic
 
             if (application.getIsSon() == 0) {
 
-                List<BpmProcessAppApplicationVo> vos = processAppApplicationService.getBaseMapper()
+                List<BpmProcessAppApplicationVo> vos = processAppApplicationService.getMapper()
                         .listIcon(BpmProcessAppApplicationVo
                                 .builder()
                                 .id(applicationType.getCategoryId().intValue())
@@ -96,7 +97,7 @@ public class BpmProcessApplicationTypeBizServiceImpl implements BpmProcessApplic
 
             if (application.getIsSon() == 1) {
 
-                List<BpmProcessAppApplicationVo> vos = processAppApplicationService.getBaseMapper()
+                List<BpmProcessAppApplicationVo> vos = processAppApplicationService.getMapper()
                         .listIcon(BpmProcessAppApplicationVo
                                 .builder()
                                 .id(applicationType.getCategoryId().intValue())

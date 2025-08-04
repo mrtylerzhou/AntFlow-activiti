@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmVariableSignUp;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 public class BpmVariableSignUpBizServiceImpl implements BpmVariableSignUpBizService {
     @Autowired
-    private BpmVariableServiceImpl bpmVariableService;
+    private BpmVariableService bpmVariableService;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;

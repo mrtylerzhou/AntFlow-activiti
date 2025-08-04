@@ -32,6 +32,7 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
      * save process notice
      *
      */
+    @Override
     public void saveProcessNotice(BpmProcessDeptVo vo) {
         String processKey=vo.getProcessKey();
         List<Integer> notifyTypeIds=vo.getNotifyTypeIds();
@@ -68,12 +69,14 @@ public class BpmProcessNoticeServiceImpl extends ServiceImpl<BpmProcessNoticeMap
         }
     }
 
+    @Override
     public List<BpmProcessNotice> processNoticeList(String processKey) {
         QueryWrapper<BpmProcessNotice> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
         return this.getBaseMapper().selectList(wrapper);
     }
 
+    @Override
     public Map<String,List<BpmProcessNotice>> processNoticeMap(List<String> processKeys) {
         LambdaQueryWrapper<BpmProcessNotice> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(BpmProcessNotice::getProcessKey,processKeys);

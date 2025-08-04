@@ -25,6 +25,7 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
      * @param vo
      * @return
      */
+    @Override
     public boolean addQuickEntryType(QuickEntryVo vo) {
         if (!CollectionUtils.isEmpty(vo.getTypes())) {
             List<QuickEntryType> quickEntryTypes = this.entryTypeList(vo.getId());
@@ -43,13 +44,7 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         return true;
     }
 
-    private List<QuickEntryType> entryTypeList(Integer quickEntryId) {
-        QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
-        wrapper.eq("is_del", 0);
-        wrapper.eq("quick_entry_id", quickEntryId);
-        return getBaseMapper().selectList(wrapper);
-    }
-
+    @Override
     public List<QuickEntryType> quickEntryTypeList(Boolean isApp) {
         QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
@@ -58,6 +53,13 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         } else {
             wrapper.eq("type", 1);
         }
+        return getBaseMapper().selectList(wrapper);
+    }
+
+    private List<QuickEntryType> entryTypeList(Integer quickEntryId) {
+        QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_del", 0);
+        wrapper.eq("quick_entry_id", quickEntryId);
         return getBaseMapper().selectList(wrapper);
     }
 }

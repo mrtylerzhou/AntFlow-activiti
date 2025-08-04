@@ -19,6 +19,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmConditionsTemplateBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ import static org.openoa.base.constant.enums.AdminPersonnelTypeEnum.ADMIN_PERSON
 public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmConditionsTemplateBizService {
 
     @Autowired
-    private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    private OutSideBpmBusinessPartyService outSideBpmBusinessPartyService;
 
     @Autowired
     private OutSideBpmBaseServiceImpl outSideBpmBaseService;
@@ -46,19 +47,19 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
 
     @Autowired
     @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
 
     @Autowired
-    private BpmnNodeServiceImpl bpmnNodeService;
+    private BpmnNodeService bpmnNodeService;
 
     @Autowired
-    private BpmnNodeConditionsConfServiceImpl bpmnNodeConditionsConfService;
+    private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
 
     @Autowired
-    private BpmnNodeConditionsParamConfServiceImpl bpmnNodeConditionsParamConfService;
+    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
 
     @Autowired
-    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
+    private BpmProcessAppApplicationService bpmProcessAppApplicationService;
 
     /**
      * get condition templates by page

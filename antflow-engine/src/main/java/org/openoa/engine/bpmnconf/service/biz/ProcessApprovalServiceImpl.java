@@ -11,6 +11,7 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -21,6 +22,10 @@ import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,25 +51,25 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private ButtonPreOperationService buttonPreOperationService;
     @Autowired
-    private BpmProcessNameRelevancyServiceImpl processNameRelevancyService;
+    private BpmProcessNameRelevancyService processNameRelevancyService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmnConfBizServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfCommonService;
     @Autowired
     private BpmProcessForwardBizService processForwardBizService;
     @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
+    private BpmProcessNameService bpmProcessNameService;
     @Autowired
     private FormFactory formFactory;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private ProcessBusinessContans businessContans;
     @Autowired
     private ConfigFlowButtonContans configFlowButtonContans;
     @Autowired
-    private BpmVariableSignUpBizServiceImpl bpmVariableSignUpBizService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
 

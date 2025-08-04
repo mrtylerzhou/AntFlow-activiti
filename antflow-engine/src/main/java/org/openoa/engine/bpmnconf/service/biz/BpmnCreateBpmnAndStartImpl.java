@@ -14,6 +14,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -23,6 +24,7 @@ import org.openoa.common.service.ProcessModelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
 import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,10 +50,10 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
     private TaskService taskService;
 
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
 
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardService processForwardService;
     @Autowired
     private ProcessModelServiceImpl processModelService;;
 

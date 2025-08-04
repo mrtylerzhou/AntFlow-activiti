@@ -6,10 +6,12 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -29,9 +31,9 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
     @Autowired
     protected TaskService taskService;
     @Autowired
-    protected BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    protected BpmFlowrunEntrustService bpmFlowrunEntrustService;
     @Autowired
-    protected BpmBusinessProcessServiceImpl businessProcessService;
+    protected BpmBusinessProcessService businessProcessService;
 
     protected void checkParam(BusinessDataVo vo){
         String processNumber = vo.getProcessNumber();

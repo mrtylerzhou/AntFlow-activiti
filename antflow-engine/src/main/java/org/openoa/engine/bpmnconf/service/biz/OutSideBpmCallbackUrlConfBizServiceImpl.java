@@ -16,6 +16,8 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAdminPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmCallbackUrlConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmBusinessPartyService;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
@@ -32,10 +34,10 @@ public class OutSideBpmCallbackUrlConfBizServiceImpl implements OutSideBpmCallba
 
 
     @Autowired
-    private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    private OutSideBpmBusinessPartyService outSideBpmBusinessPartyService;
 
     @Autowired
-    private OutSideBpmAdminPersonnelServiceImpl outSideBpmAdminPersonnelService;
+    private OutSideBpmAdminPersonnelService outSideBpmAdminPersonnelService;
 
     @Autowired
     private OutSideBpmBaseServiceImpl outSideBpmBaseService;

@@ -20,32 +20,32 @@ public interface BpmProcessAppApplicationMapper extends BaseMapper<BpmProcessApp
      *
      * @return
      */
-    public List<BpmProcessAppApplicationVo> listPage(Page page, BpmProcessAppApplicationVo vo);
+    List<BpmProcessAppApplicationVo> listPage(Page page, BpmProcessAppApplicationVo vo);
     /**
      * query application list
      *
      * @return
      */
-    public List<BpmProcessAppApplicationVo> newListPage(Page page, BpmProcessAppApplicationVo vo);
+    List<BpmProcessAppApplicationVo> newListPage(Page page, BpmProcessAppApplicationVo vo);
     /**
      * query by category
      *
      * @return
      */
-    public List<BpmProcessAppApplicationVo> listIcon(BpmProcessAppApplicationVo vo);
+    List<BpmProcessAppApplicationVo> listIcon(BpmProcessAppApplicationVo vo);
     /**
      * get all application that one has no create permission
      *
      * @return
      */
-    public List<BpmProcessAppApplication> findProcessAppApplication();
+    List<BpmProcessAppApplication> findProcessAppApplication();
 
     /**
      * search applications
      *
      * @return
      */
-    public List<BpmProcessAppApplicationVo> searchIcon(BpmProcessAppApplicationVo vo);
+    List<BpmProcessAppApplicationVo> searchIcon(BpmProcessAppApplicationVo vo);
 
     /**
      * list application by category

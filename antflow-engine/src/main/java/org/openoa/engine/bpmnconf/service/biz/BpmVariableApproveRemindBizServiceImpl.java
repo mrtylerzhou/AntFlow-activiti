@@ -11,6 +11,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.*;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.vo.*;
@@ -18,6 +19,7 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableApproveRemindBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
     private BpmVariableServiceImpl bpmVariableService;
 
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
 
     @Autowired
     private TaskService taskService;
@@ -49,7 +51,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
     @Autowired
     private InformationTemplateUtils informationTemplateUtils;
     @Value("${system.domain:test}")

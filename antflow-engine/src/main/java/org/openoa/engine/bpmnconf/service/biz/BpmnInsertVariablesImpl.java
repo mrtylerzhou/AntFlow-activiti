@@ -9,6 +9,7 @@ import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ElementTypeEnum;
 import org.openoa.base.constant.enums.ViewPageTypeEnum;
 import org.openoa.base.entity.*;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
@@ -20,6 +21,10 @@ import org.openoa.common.constant.enus.ElementPropertyEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSequenceFlowService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableViewPageButtonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -35,19 +40,19 @@ import java.util.stream.Collectors;
 public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
 
     @Autowired
-    private BpmVariableServiceImpl bpmVariableService;
+    private BpmVariableService bpmVariableService;
 
     @Autowired
-    private BpmVariableViewPageButtonServiceImpl bpmVariableViewPageButtonService;
+    private BpmVariableViewPageButtonService bpmVariableViewPageButtonService;
 
     @Autowired
-    private BpmVariableButtonServiceImpl bpmVariableButtonService;
+    private BpmVariableButtonService bpmVariableButtonService;
 
     @Autowired
-    private BpmVariableSequenceFlowServiceImpl bpmVariableSequenceFlowService;
+    private BpmVariableSequenceFlowService bpmVariableSequenceFlowService;
 
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpService bpmVariableSignUpService;
 
     @Autowired
     private BpmVariableMessageBizService bpmVariableMessageBizService;

@@ -14,6 +14,8 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.*;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -32,6 +34,8 @@ import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
 import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -65,13 +69,13 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     @Autowired
     private ActHiTaskinstServiceImpl actHiTaskinstService;
     @Autowired
-    private BpmVariableServiceImpl bpmVariableService;
+    private BpmVariableService bpmVariableService;
     @Autowired
     private ActivitiAdditionalInfoServiceImpl activitiAdditionalInfoService;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpService bpmVariableSignUpService;
     @Autowired
-    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
     @Autowired
     private BpmVariableSingleServiceImpl bpmVariableSingleService;
     @Autowired
@@ -81,7 +85,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Resource
-    private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    private BpmFlowrunEntrustService bpmFlowrunEntrustService;
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -292,7 +296,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             ActHiTaskinst prevTask = processConstants.getPrevTask(elementId, procInstId);
             if(prevTask!=null){
                 String taskDefinitionKey = prevTask.getTaskDefKey();
-                bpmnNodeIds = bpmVariableSignUpService.getBaseMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
+                bpmnNodeIds = bpmVariableSignUpService.getMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
 
             }
         }
@@ -313,7 +317,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     }
     @Override
     public void addVerifyInfo(BpmVerifyInfo verifyInfo) {
-        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getBaseMapper().getEntrustByTaskId(verifyInfo.getVerifyUserId(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
+        BpmFlowrunEntrust entrustByTaskId = bpmFlowrunEntrustService.getMapper().getEntrustByTaskId(verifyInfo.getVerifyUserId(), verifyInfo.getRunInfoId(), verifyInfo.getTaskId());
         if(entrustByTaskId!=null){
             verifyInfo.setOriginalId(entrustByTaskId.getOriginal());
         }

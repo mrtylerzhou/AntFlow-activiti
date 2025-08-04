@@ -13,8 +13,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.service.AfRoleService;
 import org.openoa.base.service.AfRoleServiceImpl;
 import org.openoa.base.service.AfUserService;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
@@ -29,6 +32,10 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.openoa.engine.vo.ProcessInforVo;
@@ -44,28 +51,28 @@ import java.util.stream.Collectors;
 @Service
 public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizService {
     @Autowired
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
 
     @Autowired
-    private BpmVariableServiceImpl bpmVariableService;
+    private BpmVariableService bpmVariableService;
 
     @Autowired
-    private BpmVariableApproveRemindServiceImpl bpmVariableApproveRemindService;
+    private BpmVariableApproveRemindService bpmVariableApproveRemindService;
 
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private AfRoleServiceImpl roleService;
+    private AfRoleService roleService;
 
     @Autowired
-    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
+    private BpmProcessNoticeService bpmProcessNoticeService;
 
     @Autowired
     private ProcessBusinessContans processBusinessContans;
 
 
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
 
     @Autowired
     private ActHiTaskinstServiceImpl hiTaskinstService;
@@ -89,7 +96,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
 
     @Autowired
-    private BpmProcessForwardServiceImpl bpmProcessForwardService;
+    private BpmProcessForwardService bpmProcessForwardService;
     @Autowired
     private InformationTemplateUtils informationTemplateUtils;
 

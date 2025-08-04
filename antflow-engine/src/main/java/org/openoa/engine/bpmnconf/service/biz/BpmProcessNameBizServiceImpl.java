@@ -4,6 +4,7 @@ import org.openoa.base.entity.BpmProcessName;
 import org.openoa.base.entity.BpmProcessNameRelevancy;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNameBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @Service
 public class BpmProcessNameBizServiceImpl implements BpmProcessNameBizService {
     @Autowired
-    private BpmProcessNameRelevancyServiceImpl bpmProcessNameRelevancyService;
+    private BpmProcessNameRelevancyService bpmProcessNameRelevancyService;
 
     @Override
     public void editProcessName(BpmnConf bpmnConfByCode) {

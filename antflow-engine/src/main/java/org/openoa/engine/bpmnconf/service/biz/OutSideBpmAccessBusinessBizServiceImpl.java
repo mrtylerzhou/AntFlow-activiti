@@ -22,7 +22,12 @@ import org.openoa.engine.bpmnconf.mapper.OutSideBpmAccessBusinessMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmBusinessPartyService;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmConditionsTemplateService;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
@@ -44,8 +49,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
     private OutSideBpmAccessBusinessMapper outSideBpmAccessBusinessMapper;
 
     @Autowired
-    @Lazy
-    private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    private OutSideBpmBusinessPartyService outSideBpmBusinessPartyService;
 
     @Autowired
     private ButtonOperationServiceImpl processApprovalService;
@@ -55,17 +59,16 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
     private UserMapper userMapper;
 
     @Autowired
-    private BpmVerifyInfoBizServiceImpl bpmVerifyInfoNewService;
+    private BpmVerifyInfoBizService bpmVerifyInfoNewService;
 
     @Autowired
     @Lazy
-    private BpmnConfBizServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfCommonService;
     @Autowired
-    @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
 
     @Autowired
-    private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;
+    private OutSideBpmConditionsTemplateService outSideBpmConditionsTemplateService;
     @Autowired
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 
@@ -157,7 +160,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
     @Override
     public ResultAndPage<BpmnConfVo> selectOutSideFormCodePageList(PageDto pageDto, BpmnConfVo vo) {
         Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectOutSideFormCodeList(page, vo);
+        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getMapper().selectOutSideFormCodeList(page, vo);
         if (bpmnConfVos==null) {
             return PageUtils.getResultAndPage(page);
         }

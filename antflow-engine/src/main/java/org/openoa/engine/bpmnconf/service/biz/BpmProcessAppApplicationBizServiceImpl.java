@@ -18,7 +18,7 @@ import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -34,23 +34,21 @@ import java.util.stream.Collectors;
 public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppApplicationBizService {
     @Autowired
     @Lazy
-    private BpmProcessAppDataServiceImpl processAppDataService;
+    private BpmProcessAppDataService processAppDataService;
     @Autowired
     private BpmProcessPermissionsBizService processPermissionsBizService;
     @Autowired
     @Lazy
-    private SysVersionServiceImpl sysVersionService;
+    private SysVersionService sysVersionService;
     @Autowired
-    private BpmProcessApplicationTypeServiceImpl bpmProcessApplicationTypeService;
+    private BpmProcessApplicationTypeService bpmProcessApplicationTypeService;
     @Autowired
-    private BpmProcessCategoryServiceImpl bpmProcessCategoryService;
+    private BpmProcessCategoryService bpmProcessCategoryService;
     @Autowired
     @Lazy
-    private QuickEntryServiceImpl quickEntryService;
+    private QuickEntryService quickEntryService;
     @Autowired
     private BpmProcessDeptBizService processDeptBizService;
-    @Autowired
-    private BpmnConfBizServiceImpl confCommonService;
     @Autowired
     private BpmnConfBizService bpmnConfBizService;
     @Autowired

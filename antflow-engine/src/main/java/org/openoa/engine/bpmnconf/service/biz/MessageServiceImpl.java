@@ -13,6 +13,8 @@ import org.openoa.base.vo.MailInfo;
 import org.openoa.base.vo.MessageInfo;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserMessageStatusServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageService;
+import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,10 @@ public class MessageServiceImpl {
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 
     @Autowired
-    private UserMessageServiceImpl userMessageService;
+    private UserMessageService userMessageService;
 
     @Autowired
-    private UserMessageStatusServiceImpl userMessageStatusService;
+    private UserMessageStatusService userMessageStatusService;
     @Autowired
     private MailUtils mailUtils;
 

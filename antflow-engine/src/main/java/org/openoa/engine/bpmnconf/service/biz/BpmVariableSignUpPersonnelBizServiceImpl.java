@@ -14,6 +14,7 @@ import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -29,7 +30,7 @@ public class BpmVariableSignUpPersonnelBizServiceImpl implements BpmVariableSign
     private BpmVariableServiceImpl bpmVariableService;
 
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpService bpmVariableSignUpService;
 
     /**
      * insert signup personnel and modify task variable

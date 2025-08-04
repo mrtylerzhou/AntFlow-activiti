@@ -29,6 +29,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     /**
      * add category
      */
+    @Override
     public boolean editProcessCategory(BpmProcessCategoryVo vo) {
         String passFilList ="serialVersionUID";
         BpmProcessCategory forVo = new BpmProcessCategory();
@@ -71,6 +72,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
      * @param id
      * @return
      */
+    @Override
     public boolean categoryOperation(Integer type, Long id) {
         switch (type) {
 
@@ -91,6 +93,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     }
 
 
+    @Override
     public boolean moveUp(Long id) {
         BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
         if (bpmProcessCategory==null) {
@@ -115,6 +118,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     }
 
 
+    @Override
     public boolean moveDown(Long id) {
         BpmProcessCategory bpmProcessCategory = this.getBaseMapper().selectById(id);
         if (bpmProcessCategory==null) {
@@ -150,6 +154,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
      * @param vo
      * @return
      */
+    @Override
     public List<BpmProcessCategory> processCategoryList(BpmProcessCategoryVo vo) {
         QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
@@ -174,6 +179,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
     /**
      * mapping
      */
+    @Override
     public List<BpmProcessCategoryVo> bpmProcessAppApplicationVoList(List<BpmProcessCategoryVo> list) {
         return list.stream().map(o -> {
             o.setName(o.getProcessTypeName() + o.getEntrance());
@@ -185,6 +191,7 @@ public class BpmProcessCategoryServiceImpl extends ServiceImpl<BpmProcessCategor
      * @param id
      * @return
      */
+    @Override
     public BpmProcessCategory getProcessCategory(Long id) {
         QueryWrapper<BpmProcessCategory> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);

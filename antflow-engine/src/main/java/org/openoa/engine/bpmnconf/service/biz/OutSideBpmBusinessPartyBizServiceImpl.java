@@ -20,7 +20,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
@@ -40,10 +40,10 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
     private OutSideBpmBusinessPartyMapper outSideBpmBusinessPartyMapper;
 
     @Autowired
-    private OutSideBpmAdminPersonnelServiceImpl outSideBpmAdminPersonnelService;
+    private OutSideBpmAdminPersonnelService outSideBpmAdminPersonnelService;
 
     @Autowired
-    private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
+    private OutSideBpmCallbackUrlConfService outSideBpmCallbackUrlConfService;
 
     @Autowired
     private AfUserService employeeService;
@@ -52,20 +52,20 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
     private BpmProcessAppApplicationBizService bpmProcessAppApplicationBizService;
 
     @Autowired
-    private BpmProcessAppDataServiceImpl bpmProcessAppDataServiceImpl;
+    private BpmProcessAppDataService bpmProcessAppDataServiceImpl;
 
     @Autowired
     @Lazy
-    private BpmnConfServiceImpl bpmnConfService;
+    private BpmnConfService bpmnConfService;
 
     @Autowired
-    private BpmnNodeServiceImpl bpmnNodeService;
+    private BpmnNodeService bpmnNodeService;
 
     @Autowired
-    private BpmnNodeRoleConfServiceImpl bpmnNodeRoleConfServiceImpl;
+    private BpmnNodeRoleConfService bpmnNodeRoleConfServiceImpl;
 
     @Autowired
-    private BpmnNodeRoleOutsideEmpConfServiceImpl bpmnNodeRoleOutsideEmpConfService;
+    private BpmnNodeRoleOutsideEmpConfService bpmnNodeRoleOutsideEmpConfService;
 
     /**
      * querying business's info by page
@@ -323,7 +323,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
      */
     @Override
     public List<BpmnConfVo> getBpmConf(String businessPartyMark) {
-        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getBaseMapper().selectThirdBpmnConfList(BpmnConfVo.builder()
+        List<BpmnConfVo> bpmnConfVos = bpmnConfService.getMapper().selectThirdBpmnConfList(BpmnConfVo.builder()
                 .businessPartyMark(businessPartyMark).build());
         return bpmnConfVos;
     }

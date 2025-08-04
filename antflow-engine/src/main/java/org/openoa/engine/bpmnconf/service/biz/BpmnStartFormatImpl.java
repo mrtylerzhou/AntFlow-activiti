@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class BpmnStartFormatImpl implements BpmnStartFormat {
 
     @Autowired
-    ConditionFilterService conditionFilterService;
+    private ConditionFilterService conditionFilterService;
 
     @Override
     public void formatBpmnConf(BpmnConfVo bpmnConfVo, BpmnStartConditionsVo bpmnStartConditions) {

@@ -13,6 +13,9 @@ import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceIm
 import org.openoa.engine.bpmnconf.service.impl.QuickEntryServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.SysVersionServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
+import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
+import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -26,14 +29,14 @@ import java.util.stream.Collectors;
 public class BpmProcessAppDataBizServiceImpl implements BpmProcessAppDataBizService {
     @Autowired
     @Lazy
-    private SysVersionServiceImpl sysVersionService;
+    private SysVersionService sysVersionService;
 
     @Autowired
-    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
+    private BpmProcessAppApplicationService bpmProcessAppApplicationService;
 
     @Autowired
     @Lazy
-    private QuickEntryServiceImpl quickEntryService;
+    private QuickEntryService quickEntryService;
 
     @Override
     public SysVersionVo findMaxAppData() {

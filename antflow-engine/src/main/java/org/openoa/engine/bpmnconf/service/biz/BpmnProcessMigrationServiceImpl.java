@@ -10,6 +10,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -18,6 +19,7 @@ import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.TripleConsumer;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -40,9 +42,9 @@ public class BpmnProcessMigrationServiceImpl {
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
-    private BpmVerifyInfoServiceImpl bpmVerifyInfoService;
+    private BpmVerifyInfoService bpmVerifyInfoService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 

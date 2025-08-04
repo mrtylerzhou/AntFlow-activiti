@@ -17,6 +17,7 @@ import org.openoa.engine.bpmnconf.mapper.DictMainMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,7 +39,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     @Autowired
     private BpmnConfBizService bpmnConfBizService;
     @Autowired
-    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
+    private BpmProcessNoticeService bpmProcessNoticeService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return

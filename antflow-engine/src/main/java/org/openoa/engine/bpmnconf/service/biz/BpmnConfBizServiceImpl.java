@@ -112,12 +112,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private IAdaptorFactory adaptorFactory;
     @Autowired
-    private BpmnNodeLfFormdataFieldControlServiceImpl nodeLfFormdataFieldControlService;
+    private BpmnNodeLfFormdataFieldControlService nodeLfFormdataFieldControlService;
     @Autowired
-    private BpmNodeLabelsServiceImpl nodeLabelsService;
+    private BpmNodeLabelsService nodeLabelsService;
     @Autowired
     @Lazy
-    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
+    private BpmProcessAppApplicationService bpmProcessAppApplicationService;
     @Autowired
     private TaskMgmtServiceImpl TaskMgmtService;
 
@@ -294,6 +294,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param formCodes
      * @return
      */
+    @Override
     public List<BpmnConf> getBpmnConfByFormCodeBatch(List<String> formCodes) {
         return getService().list(new QueryWrapper<BpmnConf>()
                 .in("form_code", formCodes)
@@ -308,6 +309,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param bpmnType
      * @param bpmnCode
      */
+    @Override
     public void updateBpmnConfByCode(Integer appId, Integer bpmnType, Integer isAll, String bpmnCode) {
         getService().update(BpmnConf
                         .builder()
@@ -326,6 +328,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param bpmnCode
      * @param bpmnStartConditions
      */
+    @Override
     public void startProcess(String bpmnCode, BpmnStartConditionsVo bpmnStartConditions) {
 
         //to query the process's config information
@@ -368,35 +371,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         bpmnCreateBpmnAndStart.createBpmnAndStart(bpmnConfCommonVo, bpmnStartConditions);
     }
 
-    /**
-     * set view page's buttons
-     *
-     * @param bpmnConfVo
-     * @param bpmnConfCommonVo
-     */
-    private void setViewPageButtons(BpmnConfVo bpmnConfVo, BpmnConfCommonVo bpmnConfCommonVo) {
-        bpmnConfCommonVo.setViewPageButtons(BpmnConfViewPageButtonVo
-                .builder()
-                .viewPageStart(bpmnConfVo.getViewPageButtons().getViewPageStart()
-                        .stream()
-                        .map(o -> BpmnConfCommonButtonPropertyVo
-                                .builder()
-                                .buttonType(o)
-                                .buttonName(ButtonTypeEnum.getDescByCode(o))
-                                .build())
-                        .collect(Collectors.toList()))
-                .viewPageOther(bpmnConfVo.getViewPageButtons().getViewPageOther()
-                        .stream()
-                        .map(o -> {
-                            return BpmnConfCommonButtonPropertyVo
-                                    .builder()
-                                    .buttonType(o)
-                                    .buttonName(ButtonTypeEnum.getDescByCode(o))
-                                    .build();
-                        })
-                        .collect(Collectors.toList()))
-                .build());
-    }
+
 
     /**
      * preview process information on the configuration page
@@ -404,6 +379,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param params
      * @return
      */
+    @Override
     public PreviewNode previewNode(String params) {
         return getPreviewNode(params, false);
     }
@@ -414,6 +390,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param params
      * @return
      */
+    @Override
     public PreviewNode startPagePreviewNode(String params) {
         return getPreviewNode(params, true);
     }
@@ -441,6 +418,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param params
      * @return
      */
+    @Override
     public List<BpmVerifyInfoVo> appStartPagePreviewNode(String params) {
         List<BpmVerifyInfoVo> bpmVerifyInfoVos = Lists.newArrayList();
 
@@ -476,63 +454,300 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         return bpmVerifyInfoVos;
     }
 
-    /**
-     * 添加节点
-     *
-     * @param bpmnNodeVo
-     * @param bpmnNodeList
-     * @param bpmVerifyInfoVos
-     */
-    private void addBpmVerifyInfoVo(BpmnNodeVo bpmnNodeVo, List<BpmnNodeVo> bpmnNodeList, List<BpmVerifyInfoVo> bpmVerifyInfoVos) {
-        Map<String, String> verifyMap = getVerifyMap(bpmnNodeVo);
-        bpmVerifyInfoVos.add(BpmVerifyInfoVo
-                .builder()
-                .taskName(verifyMap.get("taskName"))
-                .verifyUserName(verifyMap.get("verifyUserName"))
-                .build());
-        if (!ObjectUtils.isEmpty(bpmnNodeVo.getNodeTo())) {
-            BpmnNodeVo nextBpmnNodeVo = bpmnNodeList.stream().filter(o -> o.getNodeFrom().equals(bpmnNodeVo.getNodeId())).findFirst().orElse(null);
-            if (!ObjectUtils.isEmpty(nextBpmnNodeVo)) {
-                addBpmVerifyInfoVo(nextBpmnNodeVo, bpmnNodeList, bpmVerifyInfoVos);
+
+
+
+    @Override
+    public boolean migrationCheckConditionsChange(BusinessDataVo vo) {
+        BpmnConf bpmnConf = getService().getOne(new QueryWrapper<BpmnConf>()
+                .eq("bpmn_code", vo.getBpmnCode()));
+        if(bpmnConf==null){
+            throw new AFBizException("未找到对应的 bpmnConf 记录");
+        }
+        BpmnConfVo bpmnConfVo = new BpmnConfVo();
+        BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
+        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(vo);
+        BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
+        bpmnStartConditionsVo.setPreview(true);
+        bpmnStartConditionsVo.setProcessNum(vo.getProcessNumber());
+        bpmnStartConditionsVo.setIsMigration(true);
+        List<BpmnNode> bpmnNodes = nodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
+                .eq("conf_id", bpmnConf.getId())
+                .eq("is_del", 0));
+        Map<Long, List<String>> bpmnNodeToMap = nodeAdditionalInfoService.getBpmnNodeToMap(bpmnNodes.stream().map(BpmnNode::getId).collect(Collectors.toList()));
+        // 将查询到的 bpmnNodes 转换为 bpmnNodeVo 列表
+        List<BpmnNodeVo> bpmnNodeVoList = bpmnNodes.stream()
+            .map(bpmnNode -> {
+                BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
+                BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
+                List<String> nodeToIds = bpmnNodeToMap.get(bpmnNode.getId());
+                bpmnNodeVo.setNodeTo(nodeToIds);
+                BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo));
+                if(bpmnNodeAdaptor==null){
+                    return bpmnNodeVo;
+                }
+                //use adaptor to format nodevo
+                bpmnNodeAdaptor.formatToBpmnNodeVo(bpmnNodeVo);
+                return bpmnNodeVo;
+            })
+            .collect(Collectors.toList());
+        bpmnConfVo.setNodes(bpmnNodeVoList);
+        try {
+            bpmnStartFormatFactory.formatBpmnConf(bpmnConfVo,bpmnStartConditionsVo);
+        }catch (Exception ex){
+            if(ex instanceof AFBizException){
+                String code = ((AFBizException) ex).getCode();
+                if(StringConstants.CONDITION_CHANGED.equals(code)){
+                    return true;
+                }
+                throw ex;
             }
         }
+        return false;
+    }
+
+
+    /**
+     * set node from information
+     *
+     * @param nodeList
+     * @return
+     */
+    @Override
+    public List<BpmnNodeVo> setNodeFrom(List<BpmnNodeVo> nodeList) {
+        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
+        BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
+        List<BpmnNodeVo> resultList = new ArrayList<>();
+        BpmnNodeVo lastNode = new BpmnNodeVo();
+        lastNode.setNodeId("");
+        BpmnNodeVo nowNode = startNode;
+        if (nowNode != null) {
+            while (true) {
+                if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nowNode.getParams().getParamType())) {
+                    nowNode.getParams().setAssigneeList(Arrays.asList(nowNode.getParams().getAssignee()));
+                }
+                nowNode.setNodePropertyName(NodePropertyEnum.getDescByCode(nowNode.getNodeProperty()));
+                if (StringUtils.isBlank(nowNode.getParams().getNodeTo())) {
+                    nowNode.setNodeFrom(lastNode.getNodeId());
+                    resultList.add(nowNode);
+                    break;
+                }
+                if (resultList.size() > nodeList.size()) {
+                    log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
+                    throw new AFBizException("999", "nodeId数据错误");
+                }
+                nowNode.setNodeFrom(lastNode.getNodeId());
+                resultList.add(nowNode);
+                lastNode = nowNode;
+                nowNode = map.get(nowNode.getParams().getNodeTo());
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<BpmnNodeVo> setNodeFromV2(List<BpmnNodeVo> nodeList) {
+        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
+        BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
+        List<BpmnNodeVo> resultList = new ArrayList<>();
+        BpmnNodeVo lastNode = new BpmnNodeVo();
+        lastNode.setNodeId("");
+        BpmnNodeVo nowNode = startNode;
+        if (nowNode != null) {
+            while (true) {
+                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())) {
+                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nowNode, nodeList);
+                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList,new HashSet<>());
+
+                    nowNode = map.get(aggregationNode.getParams().getNodeTo());
+                    lastNode=aggregationNode;
+                }
+                if (nowNode == null) {
+                    break;
+                }
+                if(!NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())){
+                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nowNode.getParams().getParamType())) {
+                        nowNode.getParams().setAssigneeList(Collections.singletonList(nowNode.getParams().getAssignee()));
+                    }
+                    nowNode.setNodePropertyName(NodePropertyEnum.getDescByCode(nowNode.getNodeProperty()));
+                    if (StringUtils.isBlank(nowNode.getParams().getNodeTo())) {
+                        nowNode.setNodeFrom(lastNode.getNodeId());
+                        resultList.add(nowNode);
+                        break;
+                    }
+                    if (resultList.size() > nodeList.size()) {
+                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
+                        throw new AFBizException("999", "nodeId数据错误");
+                    }
+                    nowNode.setNodeFrom(lastNode.getNodeId());
+                    resultList.add(nowNode);
+                    lastNode = nowNode;
+                    nowNode = map.get(nowNode.getParams().getNodeTo());
+                }
+            }
+
+        }
+        return resultList;
+
+    }
+
+
+
+
+
+
+    /**
+     * query all process that all user can create conf
+     *
+     * @return
+     */
+    @Override
+    public List<BpmnConf> getIsAllConfs() {
+        return getService().getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
+                .eq("is_all", 1)
+                .eq("effective_status", 1)
+                .eq("is_del", 0));
+    }
+    /**
+     * query conf detail by id
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public BpmnConfVo detail(long id) {
+        BpmnConf bpmnConf = this.getMapper().selectById(id);
+        return formatConfVo(getBpmnConfVo(bpmnConf));
     }
 
     /**
-     * query node's assignee and taskName
-     *
-     * @param bpmnNodeVo
+     * query conf detail by bpmnCode
+     * @param bpmnCode
      * @return
      */
-    private Map<String, String> getVerifyMap(BpmnNodeVo bpmnNodeVo) {
-        Map<String, String> verifyMap = Maps.newHashMap();
-        String verifyUserName = StringUtils.EMPTY;
-        String taskName = bpmnNodeVo.getNodePropertyName();
-        if (bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_SINGLE.getCode())) {
-            //single approver
-            verifyUserName = bpmnNodeVo.getParams().getAssignee().getAssigneeName();
-            taskName = Optional.ofNullable(taskName)
-                    .orElse(bpmnNodeVo.getParams().getAssignee().getElementName());
-        } else if (bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_MULTIPLAYER.getCode()) ||
-                bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_MULTIPLAYER_SORT.getCode())) {
-            //multi user or multi user in sequence
-            List<BpmnNodeParamsAssigneeVo> assigneeList = bpmnNodeVo.getParams().getAssigneeList();
-            verifyUserName = StringUtils.join(assigneeList
-                    .stream()
-                    .map(BpmnNodeParamsAssigneeVo::getAssigneeName)
-                    .collect(Collectors.toList()), ",");
-            taskName = Optional.ofNullable(taskName)
-                    .orElse(StringUtils.join(assigneeList
-                            .stream()
-                            .map(BpmnNodeParamsAssigneeVo::getElementName)
-                            .distinct()
-                            .collect(Collectors.toList()), ","));
-        }
-        verifyMap.put("verifyUserName", verifyUserName);
-        verifyMap.put("taskName", taskName);
-        return verifyMap;
+    @Override
+    public BpmnConfVo detail(String bpmnCode) {
+        BpmnConf bpmnConf = this.getMapper().selectOne(AFWrappers.<BpmnConf>lambdaTenantQuery()
+                .eq(BpmnConf::getBpmnCode, bpmnCode));
+        return getBpmnConfVo(bpmnConf);
     }
 
+    /**
+     * query conf by formCode
+     *
+     * @param formCode
+     * @return
+     */
+    @Override
+    public BpmnConfVo detailByFormCode(String formCode) {
+        BpmnConf bpmnConf = this.getMapper().selectOne(new QueryWrapper<BpmnConf>()
+                .eq("form_code", formCode).eq("effective_status", 1));
+        if(bpmnConf==null){
+            throw new AFBizException("can not get a bpmnConf by provided formCode");
+        }
+        return getBpmnConfVo(bpmnConf);
+    }
+
+
+
+    /**
+     * set out of node notice template
+     *
+     * @param bpmnConfVo bpmnConfVo
+     */
+    @Override
+    public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
+        bpmnConfVo.setTemplateVos(
+                bpmnTemplateService.getBaseMapper().selectList(
+                                AFWrappers.<BpmnTemplate>lambdaTenantQuery()
+                                        .eq(BpmnTemplate::getFormCode,bpmnConfVo.getFormCode())
+                                        .isNull(BpmnTemplate::getNodeId))
+                        .stream()
+                        .map(o -> {
+                            BpmnTemplateVo vo = new BpmnTemplateVo();
+                            buildBpmnTemplateVo(o,vo);
+                            return vo;
+                        }).collect(Collectors.toList()));
+    }
+    /**
+     * effective bpmn conf
+     *
+     * @param id
+     */
+    @Override
+    public void effectiveBpmnConf(Integer id) {
+        BpmnConf bpmnConf = this.getMapper().selectById(id);
+        AssertUtil.throwsIfEmpty(bpmnConf,"未能根据id:查询到指定配置!",Lists.newArrayList(id));
+
+        //query the old effective workflow configuration by formcode
+        BpmnConf confInDb = this.getMapper().selectOne(
+                AFWrappers.<BpmnConf>lambdaTenantQuery()
+                        .eq(BpmnConf::getFormCode,bpmnConf.getFormCode())
+                        .eq(BpmnConf::getEffectiveStatus,1));
+
+        if (!ObjectUtils.isEmpty(confInDb)) {
+            //set the old one effective status to zero
+            confInDb.setEffectiveStatus(0);
+            this.getService().updateById(confInDb);
+        }else{
+            confInDb=new BpmnConf();
+        }
+        this.getService().updateById(BpmnConf
+                .builder()
+                .id(id.longValue())
+                .appId(confInDb.getAppId())
+                .bpmnType(confInDb.getBpmnType())
+                .isAll(getIsAll(bpmnConf, confInDb))
+                .effectiveStatus(1)
+                .build());
+
+        bpmProcessNameService.editProcessName(bpmnConf);
+    }
+
+
+    /**
+     * get conf list with paging
+     *
+     * @param pageDto
+     * @param vo
+     * @return
+     */
+    @Override
+    public ResultAndPage<BpmnConfVo> selectPage(PageDto pageDto, BpmnConfVo vo) {
+        //use mybatus plus's paging plugin,mbatis plus is very popular in China even all over the world
+        Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<BpmnConfVo> bpmnConfVos = this.getMapper().selectPageList(page, vo);
+        if (bpmnConfVos==null) {
+            return PageUtils.getResultAndPage(page);
+        }
+        if (vo.getIsOutSideProcess() == 1){
+            List<BpmProcessAppApplication> bizAppList = bpmProcessAppApplicationService.selectApplicationList();
+            Map<String, String>  bizAppMap= bizAppList
+                    .stream()
+                    .collect(Collectors.toMap(BpmProcessAppApplication::getProcessKey, BpmProcessAppApplication::getTitle));
+            for (BpmnConfVo record : bpmnConfVos) {
+                if (record.getIsOutSideProcess() == 1){
+                    record.setFormCodeDisplayName(bizAppMap.get(record.getFormCode()));
+                }
+            }
+        }
+        if (vo.getIsOutSideProcess() == 0){
+            List<DIYProcessInfoDTO> diyFormCodeList = TaskMgmtService.viewProcessInfo(null);
+            Map<String, String>  diyFormCodes= diyFormCodeList
+                    .stream()
+                    .collect(Collectors.toMap(DIYProcessInfoDTO::getKey, DIYProcessInfoDTO::getValue));
+            for (BpmnConfVo record : bpmnConfVos) {
+                if (record.getIsLowCodeFlow() == 0 && record.getIsOutSideProcess() == 0){
+                    record.setFormCodeDisplayName(diyFormCodes.get(record.getFormCode()));
+                }
+            }
+        }
+        page.setRecords(bpmnConfVos
+                .stream()
+                .peek(o -> o.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(o.getDeduplicationType())))
+                .collect(Collectors.toList()));
+        return PageUtils.getResultAndPage(page);
+    }
     /**
      * preview the process's information
      *
@@ -626,52 +841,62 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         return previewNode;
 
     }
-    public boolean migrationCheckConditionsChange(BusinessDataVo vo) {
-        BpmnConf bpmnConf = getService().getOne(new QueryWrapper<BpmnConf>()
-                .eq("bpmn_code", vo.getBpmnCode()));
-        if(bpmnConf==null){
-            throw new AFBizException("未找到对应的 bpmnConf 记录");
-        }
-        BpmnConfVo bpmnConfVo = new BpmnConfVo();
-        BeanUtils.copyProperties(bpmnConf, bpmnConfVo);
-        FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(vo);
-        BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(vo);
-        bpmnStartConditionsVo.setPreview(true);
-        bpmnStartConditionsVo.setProcessNum(vo.getProcessNumber());
-        bpmnStartConditionsVo.setIsMigration(true);
-        List<BpmnNode> bpmnNodes = nodeService.getBaseMapper().selectList(new QueryWrapper<BpmnNode>()
-                .eq("conf_id", bpmnConf.getId())
-                .eq("is_del", 0));
-        Map<Long, List<String>> bpmnNodeToMap = nodeAdditionalInfoService.getBpmnNodeToMap(bpmnNodes.stream().map(BpmnNode::getId).collect(Collectors.toList()));
-        // 将查询到的 bpmnNodes 转换为 bpmnNodeVo 列表
-        List<BpmnNodeVo> bpmnNodeVoList = bpmnNodes.stream()
-            .map(bpmnNode -> {
-                BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
-                BeanUtils.copyProperties(bpmnNode, bpmnNodeVo);
-                List<String> nodeToIds = bpmnNodeToMap.get(bpmnNode.getId());
-                bpmnNodeVo.setNodeTo(nodeToIds);
-                BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo));
-                if(bpmnNodeAdaptor==null){
-                    return bpmnNodeVo;
-                }
-                //use adaptor to format nodevo
-                bpmnNodeAdaptor.formatToBpmnNodeVo(bpmnNodeVo);
-                return bpmnNodeVo;
-            })
-            .collect(Collectors.toList());
-        bpmnConfVo.setNodes(bpmnNodeVoList);
-        try {
-            bpmnStartFormatFactory.formatBpmnConf(bpmnConfVo,bpmnStartConditionsVo);
-        }catch (Exception ex){
-            if(ex instanceof AFBizException){
-                String code = ((AFBizException) ex).getCode();
-                if(StringConstants.CONDITION_CHANGED.equals(code)){
-                    return true;
-                }
-                throw ex;
+
+    /**
+     * 添加节点
+     *
+     * @param bpmnNodeVo
+     * @param bpmnNodeList
+     * @param bpmVerifyInfoVos
+     */
+    private void addBpmVerifyInfoVo(BpmnNodeVo bpmnNodeVo, List<BpmnNodeVo> bpmnNodeList, List<BpmVerifyInfoVo> bpmVerifyInfoVos) {
+        Map<String, String> verifyMap = getVerifyMap(bpmnNodeVo);
+        bpmVerifyInfoVos.add(BpmVerifyInfoVo
+                .builder()
+                .taskName(verifyMap.get("taskName"))
+                .verifyUserName(verifyMap.get("verifyUserName"))
+                .build());
+        if (!ObjectUtils.isEmpty(bpmnNodeVo.getNodeTo())) {
+            BpmnNodeVo nextBpmnNodeVo = bpmnNodeList.stream().filter(o -> o.getNodeFrom().equals(bpmnNodeVo.getNodeId())).findFirst().orElse(null);
+            if (!ObjectUtils.isEmpty(nextBpmnNodeVo)) {
+                addBpmVerifyInfoVo(nextBpmnNodeVo, bpmnNodeList, bpmVerifyInfoVos);
             }
         }
-        return false;
+    }
+
+    /**
+     * query node's assignee and taskName
+     *
+     * @param bpmnNodeVo
+     * @return
+     */
+    private Map<String, String> getVerifyMap(BpmnNodeVo bpmnNodeVo) {
+        Map<String, String> verifyMap = Maps.newHashMap();
+        String verifyUserName = StringUtils.EMPTY;
+        String taskName = bpmnNodeVo.getNodePropertyName();
+        if (bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_SINGLE.getCode())) {
+            //single approver
+            verifyUserName = bpmnNodeVo.getParams().getAssignee().getAssigneeName();
+            taskName = Optional.ofNullable(taskName)
+                    .orElse(bpmnNodeVo.getParams().getAssignee().getElementName());
+        } else if (bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_MULTIPLAYER.getCode()) ||
+                bpmnNodeVo.getParams().getParamType().equals(BPMN_NODE_PARAM_MULTIPLAYER_SORT.getCode())) {
+            //multi user or multi user in sequence
+            List<BpmnNodeParamsAssigneeVo> assigneeList = bpmnNodeVo.getParams().getAssigneeList();
+            verifyUserName = StringUtils.join(assigneeList
+                    .stream()
+                    .map(BpmnNodeParamsAssigneeVo::getAssigneeName)
+                    .collect(Collectors.toList()), ",");
+            taskName = Optional.ofNullable(taskName)
+                    .orElse(StringUtils.join(assigneeList
+                            .stream()
+                            .map(BpmnNodeParamsAssigneeVo::getElementName)
+                            .distinct()
+                            .collect(Collectors.toList()), ","));
+        }
+        verifyMap.put("verifyUserName", verifyUserName);
+        verifyMap.put("taskName", taskName);
+        return verifyMap;
     }
 
     private void processNodeToRecursively(List<String>currentNodeIds, Map<String, BpmnNodeVo> bpmnNodeVoMap, List<String> results){
@@ -689,88 +914,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
         }
     }
-    /**
-     * set node from information
-     *
-     * @param nodeList
-     * @return
-     */
-    public List<BpmnNodeVo> setNodeFrom(List<BpmnNodeVo> nodeList) {
-        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
-        BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
-        List<BpmnNodeVo> resultList = new ArrayList<>();
-        BpmnNodeVo lastNode = new BpmnNodeVo();
-        lastNode.setNodeId("");
-        BpmnNodeVo nowNode = startNode;
-        if (nowNode != null) {
-            while (true) {
-                if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nowNode.getParams().getParamType())) {
-                    nowNode.getParams().setAssigneeList(Arrays.asList(nowNode.getParams().getAssignee()));
-                }
-                nowNode.setNodePropertyName(NodePropertyEnum.getDescByCode(nowNode.getNodeProperty()));
-                if (StringUtils.isBlank(nowNode.getParams().getNodeTo())) {
-                    nowNode.setNodeFrom(lastNode.getNodeId());
-                    resultList.add(nowNode);
-                    break;
-                }
-                if (resultList.size() > nodeList.size()) {
-                    log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
-                    throw new AFBizException("999", "nodeId数据错误");
-                }
-                nowNode.setNodeFrom(lastNode.getNodeId());
-                resultList.add(nowNode);
-                lastNode = nowNode;
-                nowNode = map.get(nowNode.getParams().getNodeTo());
-            }
-        }
-        return resultList;
-    }
-
-    public List<BpmnNodeVo> setNodeFromV2(List<BpmnNodeVo> nodeList) {
-        Map<String, BpmnNodeVo> map = new HashMap<>(nodeList.size());
-        BpmnNodeVo startNode = getNodeMapAndStartNode(nodeList, map);
-        List<BpmnNodeVo> resultList = new ArrayList<>();
-        BpmnNodeVo lastNode = new BpmnNodeVo();
-        lastNode.setNodeId("");
-        BpmnNodeVo nowNode = startNode;
-        if (nowNode != null) {
-            while (true) {
-                if (NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())) {
-                    BpmnNodeVo aggregationNode = BpmnUtils.getAggregationNode(nowNode, nodeList);
-                    treatParallelGateWayRecursively(nowNode,lastNode, aggregationNode, map, resultList,new HashSet<>());
-
-                    nowNode = map.get(aggregationNode.getParams().getNodeTo());
-                    lastNode=aggregationNode;
-                }
-                if (nowNode == null) {
-                    break;
-                }
-                if(!NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY.getCode().equals(nowNode.getNodeType())){
-                    if (BPMN_NODE_PARAM_SINGLE.getCode().equals(nowNode.getParams().getParamType())) {
-                        nowNode.getParams().setAssigneeList(Collections.singletonList(nowNode.getParams().getAssignee()));
-                    }
-                    nowNode.setNodePropertyName(NodePropertyEnum.getDescByCode(nowNode.getNodeProperty()));
-                    if (StringUtils.isBlank(nowNode.getParams().getNodeTo())) {
-                        nowNode.setNodeFrom(lastNode.getNodeId());
-                        resultList.add(nowNode);
-                        break;
-                    }
-                    if (resultList.size() > nodeList.size()) {
-                        log.info("error occur while set nodeFrom info,nodeList:{}", JSON.toJSONString(nodeList));
-                        throw new AFBizException("999", "nodeId数据错误");
-                    }
-                    nowNode.setNodeFrom(lastNode.getNodeId());
-                    resultList.add(nowNode);
-                    lastNode = nowNode;
-                    nowNode = map.get(nowNode.getParams().getNodeTo());
-                }
-            }
-
-        }
-        return resultList;
-
-    }
-
     private void treatParallelGateWayRecursively(BpmnNodeVo outerMostParallelGatewayNode, BpmnNodeVo itsPrevNode,
                                                  BpmnNodeVo itsAggregationNode, Map<String, BpmnNodeVo> mapNodes, List<BpmnNodeVo> results,
                                                  Set<String> alreadyProcessNodeIds) {
@@ -818,7 +961,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
         }
     }
-
 
     /**
      * iterate the nodelist and use a map structure to store them
@@ -874,7 +1016,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             BpmnDeduplicationFormat bpmnDeduplicationFormat = SpringBeanUtils.getBean(BpmnDeduplicationFormatImpl.class);
             if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_FORWARD.getCode())) {
                 //deduplication forward
-               bpmnDeduplicationFormat.forwardDeduplication(bpmnConfVo, bpmnStartConditions);
+                bpmnDeduplicationFormat.forwardDeduplication(bpmnConfVo, bpmnStartConditions);
             } else if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_BACKWARD.getCode())) {
                 //deduplication backword
                 bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo, bpmnStartConditions);
@@ -916,59 +1058,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
         return bpmnConfVo;
     }
-
-    /**
-     * query all process that all user can create conf
-     *
-     * @return
-     */
-    @Override
-    public List<BpmnConf> getIsAllConfs() {
-        return getService().getBaseMapper().selectList(new QueryWrapper<BpmnConf>()
-                .eq("is_all", 1)
-                .eq("effective_status", 1)
-                .eq("is_del", 0));
-    }
-    /**
-     * query conf detail by id
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public BpmnConfVo detail(long id) {
-        BpmnConf bpmnConf = this.getMapper().selectById(id);
-        return formatConfVo(getBpmnConfVo(bpmnConf));
-    }
-
-    /**
-     * query conf detail by bpmnCode
-     * @param bpmnCode
-     * @return
-     */
-    @Override
-    public BpmnConfVo detail(String bpmnCode) {
-        BpmnConf bpmnConf = this.getMapper().selectOne(AFWrappers.<BpmnConf>lambdaTenantQuery()
-                .eq(BpmnConf::getBpmnCode, bpmnCode));
-        return getBpmnConfVo(bpmnConf);
-    }
-
-    /**
-     * query conf by formCode
-     *
-     * @param formCode
-     * @return
-     */
-    @Override
-    public BpmnConfVo detailByFormCode(String formCode) {
-        BpmnConf bpmnConf = this.getMapper().selectOne(new QueryWrapper<BpmnConf>()
-                .eq("form_code", formCode).eq("effective_status", 1));
-        if(bpmnConf==null){
-            throw new AFBizException("can not get a bpmnConf by provided formCode");
-        }
-        return getBpmnConfVo(bpmnConf);
-    }
-
     private BpmnConfVo formatConfVo(BpmnConfVo confVo){
         if(confVo==null){
             throw new AFBizException("has not confVo");
@@ -1087,27 +1176,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         setBpmnTemplateVos(bpmnConfVo);
         return bpmnConfVo;
     }
-
-    /**
-     * set out of node notice template
-     *
-     * @param bpmnConfVo bpmnConfVo
-     */
-    @Override
-    public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
-        bpmnConfVo.setTemplateVos(
-                bpmnTemplateService.getBaseMapper().selectList(
-                                AFWrappers.<BpmnTemplate>lambdaTenantQuery()
-                                        .eq(BpmnTemplate::getFormCode,bpmnConfVo.getFormCode())
-                                        .isNull(BpmnTemplate::getNodeId))
-                        .stream()
-                        .map(o -> {
-                            BpmnTemplateVo vo = new BpmnTemplateVo();
-                            buildBpmnTemplateVo(o,vo);
-                            return vo;
-                        }).collect(Collectors.toList()));
-    }
-
     private void buildBpmnTemplateVo(BpmnTemplate entity,BpmnTemplateVo vo) {
         BeanUtils.copyProperties(entity, vo);
         vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
@@ -1393,6 +1461,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         }
                 ));
     }
+
+
+
     /**
      * convert bpmnnode to nodevo
      *
@@ -1468,8 +1539,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         return adaptorFactory.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
     }
-
-
     /**
      * set buttons
      *
@@ -1512,6 +1581,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 .collect(Collectors.toList());
     }
 
+
     /**
      * set node sign up conf
      *
@@ -1536,7 +1606,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         bpmnNodeVo.setProperty(propertysVo);
     }
 
-
     private void setFieldControlVOs(BpmnNode bpmnNode,Map<Long,List<BpmnNodeLfFormdataFieldControl>> fieldControlMap,BpmnNodeVo nodeVo){
         boolean isLowFlow=Objects.equals(bpmnNode.getIsLowCodeFlow(),1);
         if(!isLowFlow){
@@ -1560,41 +1629,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
         nodeVo.setLfFieldControlVOs(fieldControlVOS);
     }
-    /**
-     * effective bpmn conf
-     *
-     * @param id
-     */
-    @Override
-    public void effectiveBpmnConf(Integer id) {
-        BpmnConf bpmnConf = this.getMapper().selectById(id);
-        AssertUtil.throwsIfEmpty(bpmnConf,"未能根据id:查询到指定配置!",Lists.newArrayList(id));
-
-        //query the old effective workflow configuration by formcode
-        BpmnConf confInDb = this.getMapper().selectOne(
-                AFWrappers.<BpmnConf>lambdaTenantQuery()
-                        .eq(BpmnConf::getFormCode,bpmnConf.getFormCode())
-                        .eq(BpmnConf::getEffectiveStatus,1));
-
-        if (!ObjectUtils.isEmpty(confInDb)) {
-            //set the old one effective status to zero
-            confInDb.setEffectiveStatus(0);
-            this.getService().updateById(confInDb);
-        }else{
-            confInDb=new BpmnConf();
-        }
-        this.getService().updateById(BpmnConf
-                .builder()
-                .id(id.longValue())
-                .appId(confInDb.getAppId())
-                .bpmnType(confInDb.getBpmnType())
-                .isAll(getIsAll(bpmnConf, confInDb))
-                .effectiveStatus(1)
-                .build());
-
-        bpmProcessNameService.editProcessName(bpmnConf);
-    }
-
     private Integer getIsAll(BpmnConf bpmnConf, BpmnConf beforeBpmnConf) {
         if (bpmnConf.getIsOutSideProcess() == 1) {
             return 1;
@@ -1606,50 +1640,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         return 0;
     }
     /**
-     * get conf list with paging
-     *
-     * @param pageDto
-     * @param vo
-     * @return
-     */
-    @Override
-    public ResultAndPage<BpmnConfVo> selectPage(PageDto pageDto, BpmnConfVo vo) {
-        //use mybatus plus's paging plugin,mbatis plus is very popular in China even all over the world
-        Page<BpmnConfVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<BpmnConfVo> bpmnConfVos = this.getMapper().selectPageList(page, vo);
-        if (bpmnConfVos==null) {
-            return PageUtils.getResultAndPage(page);
-        }
-        if (vo.getIsOutSideProcess() == 1){
-            List<BpmProcessAppApplication> bizAppList = bpmProcessAppApplicationService.selectApplicationList();
-            Map<String, String>  bizAppMap= bizAppList
-                    .stream()
-                    .collect(Collectors.toMap(BpmProcessAppApplication::getProcessKey, BpmProcessAppApplication::getTitle));
-            for (BpmnConfVo record : bpmnConfVos) {
-                if (record.getIsOutSideProcess() == 1){
-                    record.setFormCodeDisplayName(bizAppMap.get(record.getFormCode()));
-                }
-            }
-        }
-        if (vo.getIsOutSideProcess() == 0){
-            List<DIYProcessInfoDTO> diyFormCodeList = TaskMgmtService.viewProcessInfo(null);
-            Map<String, String>  diyFormCodes= diyFormCodeList
-                    .stream()
-                    .collect(Collectors.toMap(DIYProcessInfoDTO::getKey, DIYProcessInfoDTO::getValue));
-            for (BpmnConfVo record : bpmnConfVos) {
-                if (record.getIsLowCodeFlow() == 0 && record.getIsOutSideProcess() == 0){
-                    record.setFormCodeDisplayName(diyFormCodes.get(record.getFormCode()));
-                }
-            }
-        }
-        page.setRecords(bpmnConfVos
-                .stream()
-                .peek(o -> o.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(o.getDeduplicationType())))
-                .collect(Collectors.toList()));
-        return PageUtils.getResultAndPage(page);
-    }
-
-    /**
      * format outside process form code
      *
      * @param bpmnConfVo
@@ -1658,5 +1648,34 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private String formatOutSideFormCode(BpmnConfVo bpmnConfVo) {
         String formCode = bpmnConfVo.getFormCode();
         return formCode.substring(formCode.indexOf(linkMark) + 1);
+    }
+    /**
+     * set view page's buttons
+     *
+     * @param bpmnConfVo
+     * @param bpmnConfCommonVo
+     */
+    private void setViewPageButtons(BpmnConfVo bpmnConfVo, BpmnConfCommonVo bpmnConfCommonVo) {
+        bpmnConfCommonVo.setViewPageButtons(BpmnConfViewPageButtonVo
+                .builder()
+                .viewPageStart(bpmnConfVo.getViewPageButtons().getViewPageStart()
+                        .stream()
+                        .map(o -> BpmnConfCommonButtonPropertyVo
+                                .builder()
+                                .buttonType(o)
+                                .buttonName(ButtonTypeEnum.getDescByCode(o))
+                                .build())
+                        .collect(Collectors.toList()))
+                .viewPageOther(bpmnConfVo.getViewPageButtons().getViewPageOther()
+                        .stream()
+                        .map(o -> {
+                            return BpmnConfCommonButtonPropertyVo
+                                    .builder()
+                                    .buttonType(o)
+                                    .buttonName(ButtonTypeEnum.getDescByCode(o))
+                                    .build();
+                        })
+                        .collect(Collectors.toList()))
+                .build());
     }
 }

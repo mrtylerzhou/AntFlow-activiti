@@ -115,7 +115,7 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
 
             List<UserEntrust> currentOnes= list.stream().filter(a->MultiTenantUtil.getCurrentTenantId().equals(a.getTenantId())).collect(Collectors.toList());
             //如果当前租户有添加,则取当前租户的,如果没有,则尝试取全局的
-            if(CollectionUtils.isEmpty(currentOnes)){
+            if(CollectionUtils.isEmpty(currentOnes)&&!MultiTenantUtil.strictTenantMode()){
                 //不带tenantId的
                 list=list.stream().filter(a-> !StringUtils.hasText(a.getTenantId())).collect(Collectors.toList());
             }else{

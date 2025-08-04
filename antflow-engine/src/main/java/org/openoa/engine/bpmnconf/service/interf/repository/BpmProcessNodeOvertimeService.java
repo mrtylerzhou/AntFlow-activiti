@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.interf.repository;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.openoa.base.entity.BpmProcessNodeOvertime;
 import org.openoa.base.vo.BpmProcessDeptVo;
+import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface BpmProcessNodeOvertimeService extends IService<BpmProcessNodeOv
     List<BpmProcessNodeOvertime> nodeOvertimeList(String processKey);
 
     List<Integer> selectNoticeType(String processKey);
+
+    List<BpmProcessNodeOvertimeVo> selectNoticeNodeName(String processKey);
 }

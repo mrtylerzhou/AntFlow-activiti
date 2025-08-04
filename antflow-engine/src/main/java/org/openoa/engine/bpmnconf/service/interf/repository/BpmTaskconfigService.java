@@ -13,7 +13,11 @@ public interface BpmTaskconfigService extends IService<BpmTaskconfig> {
 
     void addBpmTaskconfig(BpmTaskconfig bpmTaskconfig);
 
+    void addBpmTaskconfig(String procDefId, String taskDefKey, Long userId);
+
     List<TaskMgmtVO> findTaskCode(String procDefId, String taskDefKey);
+
+    Map<String, Object> findTaskNodeType(String taskDefKey);
 
     Map<String, Object> findByAppRoute(@Param("processKey") String processKey, @Param("taskKey") String taskKey, @Param("routeType") String routeType);
 

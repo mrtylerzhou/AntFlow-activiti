@@ -10,7 +10,10 @@ import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppDataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.QuickEntryTypeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.SysVersionServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
+import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.ProcessTypeInforVo;
 import org.openoa.engine.vo.QuickEntryVo;
@@ -27,13 +30,13 @@ import java.util.stream.Collectors;
 public class QuickEntryBizServiceImpl implements QuickEntryBizService {
 
     @Autowired
-    private QuickEntryTypeServiceImpl quickEntryTypeService;
+    private QuickEntryTypeService quickEntryTypeService;
 
     @Autowired
-    private BpmProcessAppDataServiceImpl bpmProcessAppDataService;
+    private BpmProcessAppDataService bpmProcessAppDataService;
 
     @Autowired
-    private SysVersionServiceImpl sysVersionService;
+    private SysVersionService sysVersionService;
 
     /**
      * add quick entry

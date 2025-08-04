@@ -9,6 +9,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNameBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
 
     @Autowired
     @Lazy
-    private BpmnConfBizServiceImpl confCommonService;
+    private BpmnConfBizService confCommonService;
 
     @Autowired
     private BpmProcessNameBizService bpmProcessNameBizService;

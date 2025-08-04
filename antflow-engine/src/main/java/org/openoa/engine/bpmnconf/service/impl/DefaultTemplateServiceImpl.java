@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public class DefaultTemplateServiceImpl extends ServiceImpl<DefaultTemplateMapper, DefaultTemplate> implements DefaultTemplateService {
 
+    @Override
     public void insertOrUpdateAllColumnBatch(List<DefaultTemplate> list) {
         if(CollectionUtils.isEmpty(list)){
             return;
