@@ -1,12 +1,12 @@
-package org.openoa.engine.vo;
+package org.openoa.base.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.activiti.engine.delegate.DelegateTask;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
-import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.constant.enums.EventTypeEnum;
+
 
 import java.io.Serializable;
 import java.util.Date;

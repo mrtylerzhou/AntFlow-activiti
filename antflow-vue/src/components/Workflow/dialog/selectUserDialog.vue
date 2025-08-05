@@ -33,7 +33,7 @@
               <el-table-column label="状态" align="center" prop="status">
                 <template #default="scope">
                   <el-tag size="default">
-                    {{ scope.row.status === "0" ? "正常" : "停用" }}</el-tag>
+                    {{ scope.row.status == "0" ? "正常" : "停用" }}</el-tag>
                 </template>
               </el-table-column>
             </el-table>
@@ -136,7 +136,7 @@ const getPageList = () => {
         userId: item.id,
         userName: item.name,
         email: "574427343@qq.com",
-        status: 1,
+        status: 0, // 0: 正常, 1: 停用
       };
     });
   }).catch((res) => {

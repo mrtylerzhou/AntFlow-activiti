@@ -27,6 +27,7 @@ import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,6 +48,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
     private OutSideBpmConditionsTemplateMapper outSideBpmConditionsTemplateMapper;
 
     @Autowired
+    @Lazy
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
 
     @Autowired
@@ -56,6 +58,7 @@ public class OutSideBpmConditionsTemplateServiceImpl extends ServiceImpl<OutSide
     private AfUserService employeeService;
 
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
 
     @Autowired

@@ -145,7 +145,7 @@ defineExpose({
 <style scoped>
 .form-container {
   background: white !important;
-  padding: 30px;
+  padding: 10px;
   max-width: 600px;
   min-height: 520px;
   left: 0;

@@ -174,7 +174,7 @@ public class BpmnNodeVo  implements Serializable {
      * 当前未找到审批人处理方式,如果为null时不进行默认处理
      * @see MissingAssigneeProcessStragtegyEnum
      */
-    private Integer missingAssigneeDealWay;
+    private Integer noHeaderAction;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

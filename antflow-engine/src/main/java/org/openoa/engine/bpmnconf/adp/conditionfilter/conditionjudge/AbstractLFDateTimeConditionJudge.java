@@ -9,13 +9,12 @@ import org.openoa.engine.bpmnconf.service.TriplePredict;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.function.BiPredicate;
 
 @Slf4j
 public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditionJudge{
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo,int index,int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
         TriplePredict<Object,Object,Integer> predicate=(a, b,c)->{
             try {
                 String[] split = a.toString().split(",");
@@ -34,7 +33,7 @@ public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditi
                 throw new RuntimeException(e);
             }
         };
-        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate,index,group);
+        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate, group);
     }
     abstract protected FastDateFormat currentDateFormatter();
 }

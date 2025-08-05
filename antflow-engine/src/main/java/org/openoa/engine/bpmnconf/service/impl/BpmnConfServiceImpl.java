@@ -19,7 +19,7 @@ import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_APPROVER;
-import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_CONDITIONS;
 
 
 /**
@@ -403,11 +402,11 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
      *
      * @param bpmnConfVo bpmnConfVo
      */
-    private void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
+    public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
         bpmnConfVo.setTemplateVos(
                 bpmnTemplateService.getBaseMapper().selectList(
                         new QueryWrapper<BpmnTemplate>()
-                                .eq("conf_id", bpmnConfVo.getId())
+                                .eq("form_code", bpmnConfVo.getFormCode())
                                 .eq("is_del", 0)
                                 .isNull("node_id"))
                         .stream()
@@ -557,14 +556,35 @@ public class BpmnConfServiceImpl extends ServiceImpl<BpmnConfMapper, BpmnConf> {
                         filter(o ->bpmnNodeVo.getNodeFrom().equals(o.getNodeId())).findFirst().orElse(null);
 
                 if(prevNode!=null){
-                    List<BpmnNodeLabelVO> labelList = prevNode.getLabelList();
-                    if(CollectionUtils.isEmpty(labelList)){
-                        labelList = new ArrayList<>();
-                        labelList.add(NodeLabelConstants.dynamicCondition);
-                        prevNode.setLabelList(labelList);
-                    }else{
-                        prevNode.getLabelList().add(NodeLabelConstants.dynamicCondition);
+                    List<BpmnNode> nodes=new ArrayList<>();
+                    nodes.add(prevNode);
+                    List<Long> dynamicLabelNodeIds=new ArrayList<>();
+                    if(NodeTypeEnum.NODE_TYPE_GATEWAY.getCode().equals(prevNode.getNodeType())){
+                        for (Map.Entry<Long, List<String>> nodeToEntry : bpmnNodeToMap.entrySet()) {
+                            Long nodeId = nodeToEntry.getKey();
+                            List<String> nodeTos = nodeToEntry.getValue();
+                            if(!CollectionUtils.isEmpty(nodeTos)&&(nodeTos.contains(prevNode.getNodeId())|| nodeTos.contains(bpmnNodeVo.getNodeId()))){
+                                dynamicLabelNodeIds.add(nodeId);
+                            }
+
+                        }
                     }
+
+                    if(!CollectionUtils.isEmpty(dynamicLabelNodeIds)){
+                        List<BpmnNode> dynamicLabelNodes = bpmnNodeList.stream().filter(a -> dynamicLabelNodeIds.contains(a.getId())).collect(Collectors.toList());
+                        nodes.addAll(dynamicLabelNodes);
+                    }
+                    for (BpmnNode node : nodes) {
+                        List<BpmnNodeLabelVO> labelList = node.getLabelList();
+                        if(CollectionUtils.isEmpty(labelList)){
+                            labelList = new ArrayList<>();
+                            labelList.add(NodeLabelConstants.dynamicCondition);
+                            node.setLabelList(labelList);
+                        }else{
+                            node.getLabelList().add(NodeLabelConstants.dynamicCondition);
+                        }
+                    }
+
                 }else{
                     log.warn("can not find prev node for node:%s");
                 }

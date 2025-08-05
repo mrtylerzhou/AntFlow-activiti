@@ -44,10 +44,6 @@ public class ActivitiServiceBean {
     }
 
     @Bean
-    public HistoryService historyService(){
-        return processEngine.getHistoryService();
-    }
-    @Bean
     public ManagementService managementService(){
         return processEngine.getManagementService();
     }

@@ -194,7 +194,7 @@ public class BpmnConfNodePropertyConverter {
         }
         List<BpmnNodeConditionsConfVueVo> results=new ArrayList<>();
 
-        Map<Integer, List<Integer>> groupedConditionParamTypes = baseVo.getGroupedConditionParamTypes();
+        Map<Integer, List<Integer>> groupedConditionParamTypes = baseVo.getGroupedConditionParamTypes()!=null?baseVo.getGroupedConditionParamTypes():new HashMap<>();
         String extJson = baseVo.getExtJson();
         Map<Integer, List<BpmnNodeConditionsConfVueVo>> groupedConditionsConf=new HashMap<>();
         if(!StringUtils.isEmpty(extJson)){

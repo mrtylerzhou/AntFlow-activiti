@@ -24,6 +24,7 @@ import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
 import org.openoa.engine.vo.OutSideBpmCallbackUrlConfVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -43,6 +44,7 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
     private OutSideBpmCallbackUrlConfMapper outSideBpmCallbackUrlConfMapper;
 
     @Autowired
+    @Lazy
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
 
     @Autowired
@@ -218,9 +220,9 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
      */
     public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
 
-        OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper().selectOne(new QueryWrapper<OutSideBpmCallbackUrlConf>()
+        OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper().selectList(new QueryWrapper<OutSideBpmCallbackUrlConf>()
                 .eq("business_party_id", businessPartyId)
-                .eq("status", 1));
+                .eq("status", 1)).stream().findFirst().orElse(null);
 
 //        if (outSideBpmCallbackUrlConf==null) {
 //            throw new JiMuBizException("流程回调URL未配置，方法执行失败");

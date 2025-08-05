@@ -9,9 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import jodd.bean.BeanCopy;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -63,8 +61,6 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
     @Autowired
     private TaskService taskService;
 
-    @Autowired
-    private HistoryService historyService;
 
     @Autowired
     private ProcessBusinessContans processBusinessContans;
@@ -362,17 +358,9 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
     private Map<String, BpmnTimeoutReminderVariableVo> getBpmnTimeoutReminderVariableVoMap(Multimap<String, BpmnTimeoutReminderTaskVo> tasksMultimap) {
 
 
-        //get historic process instance
-        List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceIds(tasksMultimap.keySet()).list();
-
-
         //get bpm and business process connect info by entry id
         List<BpmBusinessProcess> bpmBusinessProcesses = bpmBusinessProcessService.getBaseMapper().selectList(new QueryWrapper<BpmBusinessProcess>()
-                .in("ENTRY_ID", historicProcessInstances
-                        .stream()
-                        .map(HistoricProcessInstance::getBusinessKey)
-                        .collect(Collectors.toList())));
+                .in("PROC_INST_ID_",tasksMultimap.keys()));
 
 
         //get bpm variable by process number
@@ -393,13 +381,13 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
 
         // iterate historic process instance list and bpm business process list,then connect them
         Map<String, BpmBusinessProcess> processMap = Maps.newHashMap();
-        for (HistoricProcessInstance historicProcessInstance : historicProcessInstances) {
+        for (String procinstId : tasksMultimap.keys()) {
             BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcesses
                     .stream()
-                    .filter(bbp -> historicProcessInstance.getBusinessKey().equals(bbp.getEntryId()))
+                    .filter(bbp -> procinstId.equals(bbp.getEntryId()))
                     .findFirst()
                     .orElse(null);
-            processMap.put(historicProcessInstance.getId(), bpmBusinessProcess);
+            processMap.put(procinstId, bpmBusinessProcess);
         }
 
 
@@ -438,25 +426,22 @@ public class BpmVariableApproveRemindServiceImpl extends ServiceImpl<BpmVariable
                 bpmnTimeoutReminderVariableVo.setProcessNumber(bpmVariable.getProcessNum());
 
 
-                Optional<HistoricProcessInstance> historicProcessInstanceOptional = historicProcessInstances
-                        .stream()
-                        .filter(o -> o.getId().equals(key))
-                        .findFirst();
+
 
 
                 //set applicant,applydate,apply time
-                historicProcessInstanceOptional.ifPresent(historicProcessInstance -> {
-                    Employee employee = employeeService.getEmployeeDetailById(historicProcessInstance.getStartUserId());
+
+                    Employee employee = employeeService.getEmployeeDetailById(val.getCreateUser());
                     bpmnTimeoutReminderVariableVo.setStartUser(employee.getUsername());
-                    bpmnTimeoutReminderVariableVo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(historicProcessInstance.getStartTime()));
-                    bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(historicProcessInstance.getStartTime()));
-                });
+                    bpmnTimeoutReminderVariableVo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(val.getCreateTime()));
+                    bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(val.getCreateTime()));
+
 
 
                 if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
                     BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
                     if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmplId())) {
-                        Employee employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmplId());
+                        employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmplId());
                         bpmnTimeoutReminderVariableVo.setApprovalEmpl(employee.getUsername());
                     }
                 }

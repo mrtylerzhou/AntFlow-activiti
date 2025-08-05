@@ -1,25 +1,15 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
-import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 
-import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
 
 /**
  *@Author JimuOffice
@@ -33,8 +23,7 @@ import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
 public class ButtonOperationServiceImpl{
     @Autowired
     private IAdaptorFactory adaptorFactory;
-    @Autowired
-    private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
+
     @Transactional(rollbackFor = Exception.class)
     public BusinessDataVo buttonsOperationTransactional(BusinessDataVo vo) {
 
@@ -42,33 +31,9 @@ public class ButtonOperationServiceImpl{
         ProcessOperationAdaptor processOperation = adaptorFactory.getProcessOperation(vo);
         try {
             processOperation.doProcessButton(vo);
-            if (vo.getIsOutSideAccessProc()) {
-
-                String verifyUserName = SecurityUtils.getLogInEmpNameSafe();
-
-                String verifyUserId = SecurityUtils.getLogInEmpIdSafe();
-//                Map<String, Object> objectMap = vo.getObjectMap();
-//                if (!CollectionUtils.isEmpty(objectMap)) {
-//                    verifyUserName = Optional.ofNullable(objectMap.get("employeeName")).map(String::valueOf).orElse(StringUtils.EMPTY);
-//                    verifyUserId = Optional.ofNullable(objectMap.get("employeeId")).map(Object::toString).orElse("");
-//                }
-                ProcessOperationEnum poEnum = ProcessOperationEnum.getEnumByCode(vo.getOperationType());
-                switch (Objects.requireNonNull(poEnum)){
-                    case BUTTON_TYPE_SUBMIT:
-                        thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, vo.getBpmnConfVo(),
-                                vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
-                    case BUTTON_TYPE_AGREE:
-                        thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, vo.getBpmnConfVo(),
-                                vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
-                        break;
-                    case BUTTON_TYPE_ABANDON:
-                        thirdPartyCallBackService.doCallback( PROC_END_CALL_BACK, vo.getBpmnConfVo(),
-                                vo.getProcessNumber(), vo.getBusinessId(),verifyUserName);
-                        break;
-                }
-            }
-
+            ProcessorFactory.executePostProcessors(vo);
         } catch (Exception e){
+            log.error("流程执行出错啦!",e);
             throw e;
         }
         return vo;

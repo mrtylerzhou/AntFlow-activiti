@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import org.openoa.base.constant.enums.JumpUrlEnum;
-import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.util.PageUtils;
@@ -13,12 +12,11 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.DefaultTemplateVo;
 import org.openoa.base.vo.InformationTemplateVo;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmnApproveRemind;
 import org.openoa.engine.bpmnconf.confentity.BpmnTemplate;
 import org.openoa.engine.bpmnconf.confentity.DefaultTemplate;
 import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,7 +116,19 @@ public class InformationTemplateServiceImpl extends ServiceImpl<InformationTempl
                 .collect(Collectors.toList()));
         return PageUtils.getResultAndPage(page);
     }
-
+    public InformationTemplateVo getInformationTemplateById(Long templateId){
+        InformationTemplate informationTemplate = this.getById(templateId);
+        if(informationTemplate==null){
+            return null;
+        }
+        InformationTemplateVo informationTemplateVo=new InformationTemplateVo();
+        BeanUtils.copyProperties(informationTemplate,informationTemplateVo);
+        Integer jumpUrl = informationTemplate.getJumpUrl();
+        Integer status = informationTemplate.getStatus();
+        informationTemplateVo.setJumpUrlValue(JumpUrlEnum.getDescByByCode(jumpUrl));
+        informationTemplateVo.setStatusValue(Objects.equals(status,0)?"启用":"禁用");
+        return informationTemplateVo;
+    }
     /**
      * get template list by no condition
      *

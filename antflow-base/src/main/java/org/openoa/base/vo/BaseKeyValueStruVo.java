@@ -26,5 +26,6 @@ public class BaseKeyValueStruVo {
      * 是否包含发起人自选模块,否为不包含,true为包含
      */
     private Boolean hasStarUserChooseModule=false;
-    List<BaseNumIdStruVo> processNotices;
+    private List<BaseNumIdStruVo> processNotices;
+    private List<BpmnTemplateVo> templateVos;
 }

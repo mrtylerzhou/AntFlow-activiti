@@ -14,6 +14,6 @@ import java.util.List;
 @Service
 public class MybisService extends BizServiceImpl<BpmnConfServiceImpl> {
     public void getit() {
-        List<BpmnConf> list = service.list();
+        List<BpmnConf> list = getService().list();
     }
 }

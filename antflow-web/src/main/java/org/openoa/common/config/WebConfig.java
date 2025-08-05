@@ -50,11 +50,13 @@ public class WebConfig  implements WebMvcConfigurer {
 
         FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setWriterFeatures(JSONWriter.Feature.WriteNullListAsEmpty,
+       /* fastJsonConfig.setWriterFeatures(
+                JSONWriter.Feature.WriteNullListAsEmpty,
                 JSONWriter.Feature.WriteMapNullValue,
                 JSONWriter.Feature.WriteNullNumberAsZero,
                 JSONWriter.Feature.WriteNullStringAsEmpty,
-                JSONWriter.Feature.WriteNullBooleanAsFalse);
+                JSONWriter.Feature.WriteNullBooleanAsFalse
+        );*/
         //默认日期格式
         fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
         fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);

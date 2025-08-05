@@ -1,30 +1,21 @@
 package org.openoa.engine.bpmnconf.common;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import org.activiti.engine.HistoryService;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,8 +34,6 @@ public class ActivitiAdditionalInfoServiceImpl {
     @Autowired
     private RepositoryServiceImpl repositoryService;
     @Autowired
-    private HistoryService historyService;
-    @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
     private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
@@ -52,17 +41,7 @@ public class ActivitiAdditionalInfoServiceImpl {
     private TaskMgmtMapper taskMgmtMapper;
 
 
-    /**
-     * get a list of activiti by a historic process instance
-     *
-     * @param historicProcessInstance
-     * @return
-     */
-    public List<ActivityImpl> getActivitiList(HistoricProcessInstance historicProcessInstance) {
 
-        return getActivitiList(historicProcessInstance.getProcessDefinitionId());
-
-    }
     public List<ActivityImpl> getActivitiList(String procDefId){
         // get current process's defination entity by process definition id.then get all activities
         ProcessDefinitionEntity def = (ProcessDefinitionEntity) repositoryService
@@ -71,22 +50,7 @@ public class ActivitiAdditionalInfoServiceImpl {
 
         return activitiList;
     }
-    /**
-     * get historic variable instance map
-     *
-     * @param procInstId
-     * @return
-     */
-    public Multimap<String, HistoricVariableInstance> getVariableInstanceMap(String procInstId) {
-        List<HistoricVariableInstance> variableInstances = historyService.createHistoricVariableInstanceQuery().processInstanceId(procInstId).list();
 
-        Multimap<String, HistoricVariableInstance> listMultimap = ArrayListMultimap.create();
-        for (HistoricVariableInstance variableInstance : variableInstances) {
-            listMultimap.put(variableInstance.getVariableName(), variableInstance);
-        }
-
-        return listMultimap;
-    }
     public PvmActivity getNextElement(String elementId, List<ActivityImpl> activitiList) {
         for (ActivityImpl activity : activitiList) {
             if (elementId.equals(activity.getId())) {
@@ -132,11 +96,9 @@ public class ActivitiAdditionalInfoServiceImpl {
      * get assignees from activity engine
      *
      * @param elementId
-     * @param signUpNodeCollectionNameMap
-     * @param variableInstanceMap
      * @return
      */
-    public String getVerifyUserNameFromHis(String elementId, Map<String, String> signUpNodeCollectionNameMap, Multimap<String, HistoricVariableInstance> variableInstanceMap,Long variableId) {
+    public String getVerifyUserNameFromHis(String elementId, Long variableId) {
 
         String verifyUserName = StringUtils.EMPTY;
         List<BaseIdTranStruVo> assigneeMap = bpmVariableSignUpPersonnelService.getSignUpInfoByVariableAndElementId(variableId, elementId);
@@ -144,8 +106,8 @@ public class ActivitiAdditionalInfoServiceImpl {
             verifyUserName= StringUtils.join(assigneeMap.stream().map(BaseIdTranStruVo::getName).collect(Collectors.toList()), ',');
             return verifyUserName;
         }
-        String collectionName = signUpNodeCollectionNameMap.get(elementId);
-        if (!ObjectUtils.isEmpty(collectionName)) {
+        //String collectionName = signUpNodeCollectionNameMap.get(elementId);
+       /* if (!ObjectUtils.isEmpty(collectionName)) {
 
             List<String> emplIdsStr = Lists.newArrayList();
 
@@ -171,7 +133,7 @@ public class ActivitiAdditionalInfoServiceImpl {
                 verifyUserName=StringUtils.join(employeeInfo.values(),",");
             }
 
-        }
+        }*/
 
         return verifyUserName;
     }

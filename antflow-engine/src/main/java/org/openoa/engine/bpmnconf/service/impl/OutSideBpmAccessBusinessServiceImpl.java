@@ -33,6 +33,7 @@ import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
 import org.openoa.engine.vo.OutSideBpmAccessRespVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -53,6 +54,7 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
     private OutSideBpmAccessBusinessMapper outSideBpmAccessBusinessMapper;
 
     @Autowired
+    @Lazy
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
 
     @Autowired
@@ -66,8 +68,10 @@ public class OutSideBpmAccessBusinessServiceImpl extends ServiceImpl<OutSideBpmA
     private BpmVerifyInfoBizServiceImpl bpmVerifyInfoNewService;
 
     @Autowired
+    @Lazy
     private BpmnConfCommonServiceImpl bpmnConfCommonService;
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
 
     @Autowired

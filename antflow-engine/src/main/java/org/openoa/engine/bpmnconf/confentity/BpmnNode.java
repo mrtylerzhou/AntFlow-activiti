@@ -93,6 +93,8 @@ public class BpmnNode {
      */
     @TableField("is_sign_up")
     private Integer isSignUp;
+    @TableField("no_header_action")
+    private Integer noHeaderAction;
     /**
      * remark
      */

@@ -231,3 +231,109 @@ export const condition_filedValueTypeMap = new Map([
   ["data-range", "String"],
   ["date", "String"],
 ]);
+
+export const noticeUserList = [
+  {
+    value: "1",
+    label: "申请人",
+  },
+  {
+    value: "2",
+    label: "所有已审批人",
+  },
+  {
+    value: "3",
+    label: "当前节点审批人",
+  },
+  {
+    value: "4",
+    label: "被转发人",
+  },
+  {
+    value: "5",
+    label: "指定人员",
+  },
+  {
+    value: "6",
+    label: "指定角色",
+  },
+];
+export const messageSendTypeList = [
+  {
+    active: false,
+    id: 1,
+    name: "邮件",
+  },
+  {
+    active: false,
+    id: 2,
+    name: "短信",
+  },
+  {
+    active: false,
+    id: 3,
+    name: "app推送",
+  },
+  {
+    active: false,
+    id: 5,
+    name: "企微",
+  },
+  {
+    active: false,
+    id: 6,
+    name: "钉钉",
+  },
+  {
+    active: false,
+    id: 7,
+    name: "飞书",
+  },
+];
+export const eventTypeList = [
+  {
+    active: false,
+    id: 1,
+    name: "流程发起",
+  },
+  {
+    active: false,
+    id: 2,
+    name: "作废操作",
+  },
+  {
+    active: false,
+    id: 3,
+    name: "流程流转至当前节点",
+  },
+  {
+    active: false,
+    id: 4,
+    name: "同意操作",
+  },
+  {
+    active: false,
+    id: 5,
+    name: "不同意操作",
+  },
+  {
+    active: false,
+    id: 6,
+    name: "加批操作",
+  },
+  {
+    active: false,
+    id: 7,
+    name: "退回修改操作",
+  },
+  {
+    active: false,
+    id: 8,
+    name: "转发操作",
+  },
+  {
+    active: false,
+    id: 9,
+    name: "流程结束",
+  },
+];

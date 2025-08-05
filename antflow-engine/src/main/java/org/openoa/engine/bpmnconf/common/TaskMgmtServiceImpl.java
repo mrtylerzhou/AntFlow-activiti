@@ -9,6 +9,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.InformEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
@@ -16,6 +17,7 @@ import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseNumIdStruVo;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
@@ -26,14 +28,13 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +57,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     @Autowired(required = false)
     private Map<String, FormOperationAdaptor> formOperationAdaptorMap;
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
     @Autowired
     private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
@@ -169,11 +171,35 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
             Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
             for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
-                Integer flags = formCode2Flags.get(diyProcessInfoDTO.getKey());
+                String formCode = diyProcessInfoDTO.getKey();
+                Integer flags = formCode2Flags.get(formCode);
                 if(flags!=null){
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
                     diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
                 }
+                List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
+                if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                    List<BaseNumIdStruVo> processNotices=new ArrayList<>();
+
+                    for (ProcessNoticeEnum value : ProcessNoticeEnum.values()) {
+                        Integer type = value.getCode();
+                        String descByCode = value.getDesc();
+                        BaseNumIdStruVo struVo=new BaseNumIdStruVo();
+                        struVo.setId(type.longValue());
+                        struVo.setName(descByCode);
+                        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
+                           if(Objects.equals(value.getCode(),bpmProcessNotice.getType())){
+                               struVo.setActive(true);
+                           }
+                        }
+                        processNotices.add(struVo);
+                    }
+                    diyProcessInfoDTO.setProcessNotices(processNotices);
+                }
+                BpmnConfVo confVo=new BpmnConfVo();
+                confVo.setFormCode(formCode);
+                bpmnConfService.setBpmnTemplateVos(confVo);
+                diyProcessInfoDTO.setTemplateVos(confVo.getTemplateVos());
             }
         }
         return diyProcessInfoDTOS;
@@ -183,7 +209,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         List<DIYProcessInfoDTO> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
             String key=stringFormOperationAdaptorEntry.getKey();
-            ActivitiServiceAnno annotation = stringFormOperationAdaptorEntry.getValue().getClass().getAnnotation(ActivitiServiceAnno.class);
+            ActivitiServiceAnno annotation = ClassUtils.getUserClass(stringFormOperationAdaptorEntry.getValue()).getAnnotation(ActivitiServiceAnno.class);
             if (StringUtils.isEmpty(annotation.desc())){
                 continue;
             }

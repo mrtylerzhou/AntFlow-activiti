@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserMsgBathVo {
+public class UserMsgBatchVo {
 
     /**
      * user message vo

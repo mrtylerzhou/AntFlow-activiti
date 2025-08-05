@@ -5,8 +5,6 @@ import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.NotifyServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.TemplateMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +29,6 @@ public class ProcessServiceFactory {
     @Autowired
     protected TaskService taskService;
 
-    @Autowired
-    protected FormService formService;
-
-    @Autowired
-    protected HistoryService historyService;
 
     @Autowired
     protected ManagementService managementService;
@@ -43,17 +36,10 @@ public class ProcessServiceFactory {
     @Autowired
     protected BpmFlowruninfoServiceImpl bpmFlowruninfoMapper;
 
-    @Autowired
-    protected BpmVerifyInfoServiceImpl verifyInfoService;
 
     @Autowired
     protected BpmTaskconfigMapper bpmTaskconfigMapper;
 
-    @Autowired
-    protected ProcessConstants processConstants;
-
-    @Autowired
-    protected NotifyServiceImpl notifyService;
 
     @Autowired
     protected BpmBusinessProcessMapper bpmBusinessProcessMapper;
@@ -67,9 +53,6 @@ public class ProcessServiceFactory {
 
     @Autowired
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
-
-    @Autowired
-    protected TemplateMgmtServiceImpl templateMgmtService;
 
 
     @Autowired
