@@ -12,6 +12,7 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
+import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
@@ -252,9 +253,9 @@ public class BpmVerifyInfoServiceImpl extends ServiceImpl<BpmVerifyInfoMapper, B
 
 
         if(CollectionUtils.isEmpty(bpmnNodeIds)){
-            HistoricTaskInstance prevTask = processConstants.getPrevTask(elementId, procInstId);
+            ActHiTaskinst prevTask = processConstants.getPrevTask(elementId, procInstId);
             if(prevTask!=null){
-                String taskDefinitionKey = prevTask.getTaskDefinitionKey();
+                String taskDefinitionKey = prevTask.getTaskDefKey();
                bpmnNodeIds = bpmVariableSignUpService.getBaseMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
 
             }

@@ -32,6 +32,18 @@ export function saveInformationTemp(data) {
   });
 }
 /**
+ * 获取消息模板详情
+ * @returns object
+ */
+export function getInformationTemplateById(id) {
+  return http.get(
+    `${baseUrl}/informationTemplates/getInformationTemplateById?templateId=${id}`,
+    {
+      headers,
+    }
+  );
+}
+/**
  * 编辑消息模板
  * @param {*} data
  * @returns
@@ -80,7 +92,7 @@ export function getProcessEvents() {
  */
 export function getNoticeTypeByFormCode(formCode) {
   return http.get(
-    `${baseUrl}/informationTemplates/getNoticeTypeByFormCode?formCode==${formCode}`,
+    `${baseUrl}/informationTemplates/getNoticeTypeByFormCode?formCode=${formCode}`,
     {
       headers,
     }

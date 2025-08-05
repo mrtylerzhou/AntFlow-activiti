@@ -87,14 +87,18 @@
                             <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
                         </el-radio-group>
                     </div>
-                    <!-- <div class="approver_block">
+                    <div class="approver_block">
                         <p>✍审批人为空时</p>
                         <el-radio-group v-model="approverConfig.noHeaderAction" class="clear">
-                            <el-radio :value="1">自动审批通过/不允许发起</el-radio>
+                            <el-radio :value="0">不允许发起</el-radio>
                             <br />
+                            <!--注意,这里的跳过指的是不生成审批任务节点,即流程图里没有当前缺失审批人的节点-->
+                            <el-radio :value="1">跳过</el-radio>
+                            <br />
+                            <!--转给管理员需实现BpmnProcessAdminProvider接口-->
                             <el-radio :value="2">转交给审核管理员</el-radio>
                         </el-radio-group>
-                    </div> -->
+                    </div>
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
@@ -146,7 +150,7 @@
                     @changePermVal="changePermVal" />
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
-                <notice-conf :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
+                <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
@@ -190,6 +194,7 @@ let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
+let noticeStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
 let visible = computed({
@@ -245,7 +250,7 @@ watch(checkedHRBP, (val) => {
 const changeType = (val) => {
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
-    approverConfig.value.noHeaderAction = 2;
+    approverConfig.value.noHeaderAction = 0;
     checkedHRBP.value = '';
     if (val == 3) {
         approverConfig.value.directorLevel = 1;
@@ -293,19 +298,12 @@ const handleApprovalBtnSubOption = (val) => {
     approverConfig.value.property.afterSignUpWay = val && val == 9 ? 1 : 2;
     approverConfig.value.property.signUpType = val && val == 9 ? 1 : val;
 }
-const handleTabClick = (tab, event) => {
-    activeName.value = tab.paneName;
-    if (tab.paneName == 'formStep') {
-        formStepShow.value = true;
-    } else {
-        formStepShow.value = false;
-    }
-}
 
 /**条件抽屉的确认 */
 const saveApprover = () => {
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
+    console.log('保存审批人配置==', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,
@@ -323,13 +321,32 @@ const changePermVal = (data) => {
 }
 /**消息设置 */
 const handleFlowMsgSet = (data) => {
-    approverConfig.value.templateVos = [data];
+    approverConfig.value.templateVos = !proxy.isEmpty(data) ? [data] : [];
     store.setApproverConfig({
         value: approverConfig1.value.value,
         flag: true,
         id: approverConfig1.value.id
     })
 }
+/**
+ * 切换tab
+ * @param tab 当前tab
+ * @param event 
+ */
+const handleTabClick = (tab, event) => {
+    activeName.value = tab.paneName;
+    if (tab.paneName == 'formStep') {
+        formStepShow.value = true;
+    } else {
+        formStepShow.value = false;
+    }
+    if (tab.paneName == 'noticeStep') {
+        noticeStepShow.value = true;
+    } else {
+        noticeStepShow.value = false;
+    }
+}
+
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/dialog.scss";

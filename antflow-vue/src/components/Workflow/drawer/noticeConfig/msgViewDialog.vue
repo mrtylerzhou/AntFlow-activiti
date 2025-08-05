@@ -1,7 +1,7 @@
 <template>
     <!-- 查看消息模板对话框 -->
     <el-dialog title="查看消息模板" v-model="dialogVisible" width="650px" append-to-body>
-        <el-form :model="templateForm" ref="templateRef" label-width="130px" label-position="top"
+        <el-form :model="templateForm" ref="templateRef" :disabled="true" label-width="130px" label-position="top"
             style="margin: 0 20px;">
             <el-row>
                 <el-col :span="24">
@@ -34,6 +34,17 @@
                     <el-form-item label="通知内容" prop="systemContent">
                         <el-input v-model="templateForm.systemContent" type="textarea" placeholder="请输入通知内容"
                             :autosize="{ minRows: 5, maxRows: 5 }" style="height: 120px;" />
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="跳转页面" prop="jumpUrl">
+                        <el-radio-group v-model="templateForm.jumpUrl">
+                            <el-radio-button :value=1>流程审批页</el-radio-button>
+                            <el-radio-button :value=2>流程查看页</el-radio-button>
+                            <el-radio-button :value=3>流程待办页</el-radio-button>
+                        </el-radio-group>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -85,7 +96,7 @@ const { templateForm } = toRefs(data);
 watch(() => dialogVisible.value, (val) => {
     if (val) {
         reset();
-        //templateForm.value = props.formData;
+        templateForm.value = props.formData;
         getAllNoticeTypesList();
         getProcessEventsList();
     }

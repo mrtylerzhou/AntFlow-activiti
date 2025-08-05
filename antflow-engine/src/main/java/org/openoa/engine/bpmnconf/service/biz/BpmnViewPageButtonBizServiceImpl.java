@@ -26,7 +26,7 @@ public class BpmnViewPageButtonBizServiceImpl extends BizServiceImpl<BpmnViewPag
         if (ObjectUtils.isEmpty(viewPageButtons)) {
             return;
         }
-        service.deleteByConfId(confId);
+        getService().deleteByConfId(confId);
 
         List<Integer> viewPageStarts = viewPageButtons.getViewPageStart();
         if (!ObjectUtils.isEmpty(viewPageStarts)) {
@@ -34,7 +34,7 @@ public class BpmnViewPageButtonBizServiceImpl extends BizServiceImpl<BpmnViewPag
                     .stream()
                     .map(start -> BpmnViewPageButton.buildViewPageButton(confId, start, VIEW_PAGE_TYPE_START.getCode()))
                     .collect(Collectors.toList());
-            service.saveBatch(viewPageButtonList);
+            getService().saveBatch(viewPageButtonList);
         }
 
         List<Integer> viewPageOthers = viewPageButtons.getViewPageOther();
@@ -44,7 +44,7 @@ public class BpmnViewPageButtonBizServiceImpl extends BizServiceImpl<BpmnViewPag
                     .stream()
                     .map(other -> BpmnViewPageButton.buildViewPageButton(confId, other, VIEW_PAGE_TYPE_OTHER.getCode()))
                     .collect(Collectors.toList());
-            service.saveBatch(viewPageButtonList);
+            getService().saveBatch(viewPageButtonList);
         }
     }
 }

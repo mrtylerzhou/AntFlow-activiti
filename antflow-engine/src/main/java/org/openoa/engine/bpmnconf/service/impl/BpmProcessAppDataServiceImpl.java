@@ -13,6 +13,7 @@ import org.openoa.engine.bpmnconf.confentity.SysVersion;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppDataMapper;
 import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -30,12 +31,14 @@ public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataM
     private BpmProcessAppDataMapper bpmProcessAppDataMapper;
 
     @Autowired
+    @Lazy
     private SysVersionServiceImpl sysVersionService;
 
     @Autowired
     private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
 
     @Autowired
+    @Lazy
     private QuickEntryServiceImpl quickEntryService;
 
     /**

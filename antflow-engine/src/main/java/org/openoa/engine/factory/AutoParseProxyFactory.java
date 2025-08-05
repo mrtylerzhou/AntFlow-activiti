@@ -27,7 +27,9 @@ public class AutoParseProxyFactory {
     private static Map<String,Object> loadedInstances=new HashMap<>();
 
     public static synchronized <T> T getProxyInstance(Class<T> objToProxy,String paramTypeName,String returnTypeName) {
-        String simpleName = objToProxy.getSimpleName();
+        String[] split = paramTypeName.split("\\.");
+        String paramNameShortName = split[split.length - 1];
+        String simpleName =paramNameShortName+objToProxy.getSimpleName();
         if (loadedInstances.get(simpleName) == null) {
                 try {
                     return (T)getProxyObj(simpleName,objToProxy,paramTypeName,returnTypeName);

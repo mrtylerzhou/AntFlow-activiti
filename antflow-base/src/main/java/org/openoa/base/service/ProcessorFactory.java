@@ -51,7 +51,7 @@ public class ProcessorFactory {
                     ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                     Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
                     for (Type actualTypeArgument : actualTypeArguments) {
-                       if(cls.isAssignableFrom((Class<TEntity>) actualTypeArgument)){
+                       if(((Class<TEntity>) actualTypeArgument).isAssignableFrom(cls)){
                             processorsOfType.add(bean);
                        }
                     }

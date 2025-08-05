@@ -25,6 +25,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,16 +48,19 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Autowired
     private BpmProcessAppApplicationMapper bpmProcessAppApplicationMapper;
     @Autowired
+    @Lazy
     private BpmProcessAppDataServiceImpl processAppDataService;
     @Autowired
     private BpmProcessPermissionsServiceImpl processPermissionsService;
     @Autowired
+    @Lazy
     private SysVersionServiceImpl sysVersionService;
     @Autowired
     private BpmProcessApplicationTypeServiceImpl bpmProcessApplicationTypeService;
     @Autowired
     private BpmProcessCategoryServiceImpl bpmProcessCategoryService;
     @Autowired
+    @Lazy
     private QuickEntryServiceImpl quickEntryService;
     @Autowired
     private BpmProcessDeptServiceImpl processDeptService;
@@ -67,8 +71,7 @@ public class BpmProcessAppApplicationServiceImpl extends ServiceImpl<BpmProcessA
     @Autowired
     private ProcessBusinessContans processBusinessContans;
     @Autowired
-    private BpmProcessAppApplicationServiceImpl bpmProcessAppApplicationService;
-    @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
 
 

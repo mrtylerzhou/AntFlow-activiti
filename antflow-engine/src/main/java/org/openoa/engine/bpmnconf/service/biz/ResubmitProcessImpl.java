@@ -111,6 +111,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
 
         executeTaskCompletion(vo, task, bpmBusinessProcess);
+        vo.setStartUserId(bpmBusinessProcess.getCreateUser());//这里主要是为了发消息通知使用
     }
 
     private void executeTaskCompletion(BusinessDataVo vo, Task task, BpmBusinessProcess bpmBusinessProcess) {

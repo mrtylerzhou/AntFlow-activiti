@@ -172,5 +172,6 @@ public class BpmProcessDeptVo extends BaseVo {
     public List<Long> viewOfficeIds;
 
     public List<BaseIdTranStruVo> viewOfficeList;
+    private List<BpmnTemplateVo> templateVos;
 
 }

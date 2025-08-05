@@ -72,28 +72,30 @@
             </el-container>
         </el-aside>
         <el-container>
-            <div class="layout-middle">
-                <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
-                <div class="form-content" v-if="approveFormDataConfig">
-                    <el-tabs v-model="activeName" @tab-click="handleClick">
-                        <el-tab-pane label="表单信息" name="baseTab">
-                            <div v-if="activeName === 'baseTab'">
-                                <ApporveForm :approveFormData="approveFormDataConfig"
-                                    @handleRefreshList="refreshList" />
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="审批记录" name="flowStep">
-                            <div v-if="activeName === 'flowStep'">
-                                <FlowStepTable />
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="流程预览" name="flowReview">
-                            <div v-if="activeName === 'flowReview'">
-                                <ReviewWarp />
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
+            <div class="layout-middle" id="fullscreen">
+                <el-scrollbar>
+                    <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
+                    <div v-if="approveFormDataConfig">
+                        <el-tabs v-model="activeName" @tab-click="handleClick" class="content-tabs">
+                            <el-tab-pane label="表单信息" name="baseTab">
+                                <div v-if="activeName === 'baseTab'">
+                                    <ApporveForm :approveFormData="approveFormDataConfig"
+                                        @handleRefreshList="refreshList" />
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="审批记录" name="flowStep">
+                                <div v-if="activeName === 'flowStep'">
+                                    <FlowStepTable />
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="流程预览" name="flowReview">
+                                <div v-if="activeName === 'flowReview'">
+                                    <ReviewWarp />
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-scrollbar>
             </div>
         </el-container>
     </el-container>
@@ -197,6 +199,10 @@ const toggleFlowActive = (data, index) => {
 const handleClick = (tab, event) => {
     activeName.value = tab.paneName;
 }
+window.onload = function () {
+    var fullscreen = document.getElementById("fullscreen");
+    fullscreen.style.height = (window.innerHeight) + "px";
+}
 </script>
 
 <style lang="scss" scoped>
@@ -209,6 +215,7 @@ const handleClick = (tab, event) => {
     font-size: 12px;
     line-height: 2.0;
 }
+
 
 .empty-text {
     display: block;
@@ -257,21 +264,11 @@ const handleClick = (tab, event) => {
     margin-right: 10px;
     margin-top: 10px;
     width: 100%;
-    height: calc(-95px + 100vh);
+    height: 90vh;
     background-color: #f2f3f4f5;
 }
 
-.layout-middle .form-content {
-    box-shadow: var(--el-box-shadow-light);
-    border-bottom: 10px;
-    margin-top: 2px;
-    background-color: #fff;
-    height: calc(-97px + 100vh);
-    width: 100%;
-    padding: 10px;
-}
-
-.layout-middle .form-content .content-tabs {
+.layout-middle .content-tabs {
     padding: 10px;
 }
 

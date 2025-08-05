@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +40,6 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoServiceImpl verifyInfoService;
-    @Autowired
-    private HistoryService historyService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
@@ -109,7 +106,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         if(!vo.getIsOutSideAccessProc()){
             formFactory.getFormAdaptor(vo).cancellationData(vo);
         }
-
+        vo.setStartUserId(bpmBusinessProcess.getCreateUser());
     }
 
     @Override

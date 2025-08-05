@@ -1,12 +1,5 @@
 <template>
     <div class="approve-container">
-        <el-header>
-            <div class="approval-btns" v-for="btn in approvalButtons">
-                <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
-                    @click="clickApproveSubmit(btn.value)"> {{ btn.label }}
-                </el-button>
-            </div>
-        </el-header>
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
@@ -17,11 +10,17 @@
                 </div>
             </el-scrollbar>
         </el-main>
+        <el-footer>
+            <div class="approval-btns" v-for="btn in approvalButtons">
+                <el-button v-if="btn.label" :type="approveButtonColor[btn.value]"
+                    @click="clickApproveSubmit(btn.value)"> {{ btn.label }}
+                </el-button>
+            </div>
+        </el-footer>
         <transfer-dialog v-model:visible="dialogVisible" :isMultiple="isMultiple" :title="dialogTitle"
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
-        <label class="page-close-box" @click="close()"><img src="@/assets/images/antflow/back-close.png"></label>
     </div>
 </template>
 
@@ -34,6 +33,7 @@ import repulseDialog from './repulseDialog.vue';
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 let store = useStore();
@@ -117,7 +117,7 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (approveSubData.value.isLowCodeFlow == true || approveSubData.value.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
+                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接 
                         approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                     } else {
                         let componentFormData = JSON.parse(data);
@@ -148,7 +148,8 @@ const approveProcess = async (param) => {
         await processOperation(param).then((res) => {
             if (res.code == 200) {
                 proxy.$modal.msgSuccess("审批成功");
-                close();
+                emits("handleRefreshList");
+                //close();
             } else {
                 proxy.$modal.msgError("审批失败:" + res.errMsg);
             }
@@ -172,7 +173,7 @@ const approveUndertakeSubmit = async () => {
         await processOperation(approveSubData.value).then((resData) => {
             if (resData.code == 200) {
                 proxy.$modal.msgSuccess("承办成功");
-
+                emits("handleRefreshList");
             } else {
                 proxy.$modal.msgError("承办失败:" + resData.errMsg);
             }
@@ -204,7 +205,7 @@ const preview = async (viewData) => {
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
             }
             try {
-                if (viewData.isLowCodeFlow == true || viewData.isLowCodeFlow == 'true') {//低代码表单 和 外部表单接 
+                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接 
                     lfFormDataConfig.value = response.data.lfFormData;
                     lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
                     lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
@@ -259,16 +260,7 @@ function uniqueByMap(arr) {
     }
     const res = new Map();
     return arr.filter((item) => !res.has(item.value) && res.set(item.value, true));
-}
-
-/**
- * 关闭当前审批页
- */
-const close = async () => {
-    const obj = { path: "/flowTask/pendding" };
-    proxy.$tab.closeOpenPage(obj);
-}
-
+} 
 </script>
 <style lang="scss" scoped>
 .component {
@@ -285,17 +277,31 @@ const close = async () => {
     margin: 16px 5px;
 }
 
-.approve-container .el-header {
-    box-shadow: var(--el-box-shadow-light);
-    background-color: #f2f3f4f5;
+.approve-container {
+    position: relative;
+    height: 82vh;
+    /* 让容器撑满页面高度，确保footer在底部 */
+    display: flex;
+    flex-direction: column;
 }
 
 .approve-container .el-main {
     background-color: #fff;
     color: var(--el-text-color-primary);
-    border-radius: 5px;
-    height: 59vh;
+    flex: 1 1 auto;
     width: 100%;
+    margin-bottom: 0;
+    overflow: auto;
+    /* 让el-main自动撑满剩余高度 */
+}
+
+.approve-container .el-footer {
+    background-color: #f2f3f4f5;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
 }
 
 .approve-container .toolbar {

@@ -14,6 +14,7 @@ import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmProcessNameServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -45,8 +46,10 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
     @Autowired
     private RepositoryService repositoryService;
     @Autowired
+    @Lazy
     private BpmnConfCommonServiceImpl confCommonService;
     @Autowired
+    @Lazy
     private BpmnConfServiceImpl bpmnConfService;
     @Autowired
     private BpmProcessNameServiceImpl bpmProcessNameService;
@@ -118,6 +121,6 @@ public class BpmProcessDeptServiceImpl extends ServiceImpl<BpmProcessDeptMapper,
 
     public void editProcessConf(BpmProcessDeptVo vo) throws JiMuBizException {
         //todo save process's other info
-        processNoticeService.saveProcessNotice(vo.getProcessKey(), vo.getNotifyTypeIds());
+        processNoticeService.saveProcessNotice(vo);
     }
 }

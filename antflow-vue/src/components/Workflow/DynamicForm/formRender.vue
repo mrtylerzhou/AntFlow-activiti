@@ -77,9 +77,11 @@ const handlerFn = (w) => {
         w.options.disabled = true;
       } else if (info.perm == 'E') {
         w.options.readonly = false;
-      } else if (info.perm == 'H') {//隐藏字段处理：将所以字段类型转化为input格式，value 赋值为 ******
-        w.type = 'input';
-        w.options.type = 'text';
+      } else if (info.perm == 'H') {//隐藏字段处理：将所以字段类型转化为input格式，value 赋值为 ****** 
+        if (w.type != 'textarea' && w.options.type != 'input') {
+          w.type = 'input';
+          w.options.type = 'text';
+        }
         formData[w.options.name] = '******';
         delete w.options.format;
         delete w.options.valueFormat;
@@ -129,9 +131,10 @@ onBeforeMount(() => {
   advanceHandleFormData();
 })
 onMounted(() => {
-  vFormRef.value.setFormJson(JSON.parse(props.lfFormData || "{}"))
   nextTick(() => {
-    vFormRef.value.setFormData(JSON.parse(props.lfFieldsData || "{}"))
+    vFormRef.value.setFormJson(formJson)
+  }).then(() => {
+    vFormRef.value.setFormData(formData)
   })
 })
 const submitForm = () => {

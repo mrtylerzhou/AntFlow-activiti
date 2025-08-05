@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import jodd.bean.BeanUtil;
-import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -15,7 +14,7 @@ import org.openoa.base.entity.Employee;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
-import org.openoa.base.vo.UserMsgBathVo;
+import org.openoa.base.vo.UserMsgBatchVo;
 import org.openoa.base.vo.UserMsgVo;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.BpmnConfNoticeTemplateDetail;
@@ -27,7 +26,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -97,13 +95,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmApprovalMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (activitiBpmMsgVos==null) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -111,7 +109,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                         log.debug("工作流流转通知，流程编号{}，入参{}", o.getProcessId(), JSON.toJSON(o));
                     }
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_FLOW.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -142,13 +140,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmForwardedlMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmForwardedMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -156,7 +154,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                         log.debug("收到转发工作流通知，流程编号{}，入参{}", o.getProcessId(), JSON.toJSON(o));
                     }
                     String content = getContent(o, MsgNoticeTypeEnum.RECEIVE_FLOW_PROCESS.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -189,13 +187,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmFinishMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmFinishMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -205,7 +203,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     }
 
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_FINISH.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -237,13 +235,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmRejectMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmRejectMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -253,7 +251,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     }
 
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_REJECT.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -285,13 +283,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmOverTimeMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmOverTimeMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -301,7 +299,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     }
 
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_TIME_OUT.getCode());
-                    return buildUserMsgBathVo(o, content, 2);
+                    return buildUserMsgBatchVo(o, content, 2);
                 })
                 .collect(Collectors.toList()));
     }
@@ -333,13 +331,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmTerminationMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmTerminationMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -349,7 +347,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     }
 
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_STOP.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -381,13 +379,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param activitiBpmMsgVos
      */
     @Async
-    public void sendBpmGenerationApprovalMsgBath(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
+    public void sendBpmGenerationApprovalMsgBatch(List<ActivitiBpmMsgVo> activitiBpmMsgVos) {
 
         if (CollectionUtils.isEmpty(activitiBpmMsgVos)) {
             return;
         }
 
-        UserMsgUtils.sendMessageBath(activitiBpmMsgVos
+        UserMsgUtils.sendMessageBatch(activitiBpmMsgVos
                 .stream()
                 .filter(Objects::nonNull)
                 .map(o -> {
@@ -397,7 +395,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     }
 
                     String content = getContent(o, MsgNoticeTypeEnum.PROCESS_WAIR_VERIFY.getCode());
-                    return buildUserMsgBathVo(o, content);
+                    return buildUserMsgBatchVo(o, content);
                 })
                 .collect(Collectors.toList()));
     }
@@ -419,7 +417,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         }
 
 
-        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_ORIAL_TREATOR.getCode());
+        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_OPERATOR.getCode());
 
         doUserMsgSend(activitiBpmMsgVo, content);
     }
@@ -441,7 +439,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         }
 
 
-        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_NOW_TREATOR.getCode());
+        String content = getContent(activitiBpmMsgVo, MsgNoticeTypeEnum.PROCESS_CHANGE_NOW_OPERATOR.getCode());
 
         doUserMsgSend(activitiBpmMsgVo, content);
     }
@@ -452,9 +450,9 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param content
      * @return
      */
-    private UserMsgBathVo buildUserMsgBathVo(ActivitiBpmMsgVo o, String content) {
+    private UserMsgBatchVo buildUserMsgBatchVo(ActivitiBpmMsgVo o, String content) {
         content = StringUtils.join(content, baseSpace, SDF_DATETIME_PATTERN.format(new Date()));
-        return UserMsgBathVo
+        return UserMsgBatchVo
                 .builder()
                 .userMsgVo(bulidUserMsgVo(o, content))
                 .messageSendTypeEnums(Lists.newArrayList(getMessageSendTypeEnums(o.getProcessId(), o.getFormCode(), 1)))
@@ -484,9 +482,9 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                 .ssoSessionDomain(systemDomain)
                 .build();
     }
-    private UserMsgBathVo buildUserMsgBathVo(ActivitiBpmMsgVo o, String content, Integer selectMack) {
+    private UserMsgBatchVo buildUserMsgBatchVo(ActivitiBpmMsgVo o, String content, Integer selectMack) {
         content = StringUtils.join(content, baseSpace, SDF_DATETIME_PATTERN.format(new Date()));
-        return UserMsgBathVo
+        return UserMsgBatchVo
                 .builder()
                 .userMsgVo(bulidUserMsgVo(o, content))
                 .messageSendTypeEnums(Lists.newArrayList(getMessageSendTypeEnums(o.getProcessId(), o.getFormCode(), selectMack)))
@@ -545,7 +543,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         } else {
             content = bpmnConfNoticeTemplateDetail.getNoticeTemplateDetail();
         }
-        String result = replceTemplateDetail(activitiBpmMsgVo, content);
+        String result = replaceTemplateDetail(activitiBpmMsgVo, content);
         log.info("转换后数据content:{}", result);
         return result;
     }
@@ -556,7 +554,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @param content
      * @return
      */
-    public String replceTemplateDetail(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
+    public String replaceTemplateDetail(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
         List<NoticeReplaceEnum> noticeReplaceEnums = Lists.newArrayList();
         for (NoticeReplaceEnum noticeReplaceEnum : NoticeReplaceEnum.values()) {
             if (content.contains("{" + noticeReplaceEnum.getDesc() + "}")) {

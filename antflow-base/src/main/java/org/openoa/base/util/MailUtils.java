@@ -65,8 +65,8 @@ public class MailUtils {
      * @param mailInfos
      */
 
-    public void doSendMailBath(List<MailInfo> mailInfos) {
-        sendMailBathMain(mailInfos);
+    public void doSendMailBatch(List<MailInfo> mailInfos) {
+        sendMailBatchMain(mailInfos);
     }
 
     /**
@@ -74,8 +74,8 @@ public class MailUtils {
      *
      * @param mailInfos
      */
-    public  void sendMailBath(List<MailInfo> mailInfos) {
-        sendMailBathMain(mailInfos);
+    public  void sendMailBatch(List<MailInfo> mailInfos) {
+        sendMailBatchMain(mailInfos);
     }
 
     /**
@@ -83,7 +83,7 @@ public class MailUtils {
      *
      * @param mailInfos
      */
-    public  void sendMailBathMain(List<MailInfo> mailInfos) {
+    public  void sendMailBatchMain(List<MailInfo> mailInfos) {
         SendMailSession session = createSendMailSession();
         session.open();
         mailInfos.forEach(o -> {

@@ -48,10 +48,21 @@ const getFlowPreviewList = async (objData) => {
         param = props.previewConf;
     }
     proxy.$modal.loading();
-    let resData = await getFlowPreview(param);
-    proxy.$modal.closeLoading();
-    let formatData = FormatPreviewUtils.formatSettings(resData.data);
-    nodeConfig.value = formatData;
+    await getFlowPreview(param)
+        .then(res => {
+            proxy.$modal.closeLoading();
+            if (res.code != 200) {
+                proxy.$modal.msgError(res.errMsg || '获取流程预览失败');
+                return;
+            } else {
+                let formatData = FormatPreviewUtils.formatSettings(res.data);
+                nodeConfig.value = formatData;
+            }
+        })
+        .catch(err => {
+            proxy.$modal.closeLoading();
+            proxy.$modal.msgError(err.errMsg || '获取流程预览失败');
+        });
 }
 onMounted(async () => {
     zoomInit(antflowDesignRef, boxScaleRef, (val) => {

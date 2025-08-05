@@ -16,6 +16,7 @@ import { ref, computed } from 'vue';
 import { getViewBusinessProcess } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 let store = useStore()
 let viewConfig = computed(() => store.instanceViewConfig1)
@@ -55,7 +56,7 @@ const preview = async (param) => {
         if (response.code == 200) {
             const responseData = response.data;
             componentLoaded.value = true
-            if (responseData.isLowCodeFlow || responseData.isOutSideAccessProc) {//低代码表单 和 三方接入
+            if (isTrue(responseData.isLowCodeFlow)) {//低代码表单 和 三方接入
                 lfFormDataConfig.value = responseData.lfFormData;
                 lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
                 lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
@@ -76,7 +77,6 @@ preview(viewConfig.value);
 <style lang="scss" scoped>
 .component {
     background: white !important;
-    padding: 30px !important;
     max-width: 720px !important;
     min-height: 520px !important;
     left: 0 !important;

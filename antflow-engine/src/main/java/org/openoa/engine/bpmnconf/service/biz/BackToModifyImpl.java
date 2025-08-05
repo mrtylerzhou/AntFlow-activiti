@@ -1,5 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -8,17 +10,19 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.*;
+import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
+import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
-import org.openoa.base.constant.enums.ProcessDisagreeTypeEnum;
-import org.openoa.base.constant.enums.ProcessNodeEnum;
-import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNodeSubmit;
 import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
@@ -37,8 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,8 +56,6 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private TaskService taskService;
-    @Autowired
-    private HistoryService historyService;
 
     @Autowired
     private BpmVerifyInfoServiceImpl verifyInfoService;
@@ -83,6 +84,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
+    @Autowired
+    private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
     @Autowired
     private RuntimeService runtimeService;
 
@@ -121,12 +124,15 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         ProcessDisagreeTypeEnum processDisagreeTypeEnum = ProcessDisagreeTypeEnum.getByCode(backToModifyType);
         switch (processDisagreeTypeEnum) {
             case ONE_DISAGREE:
-                HistoricTaskInstance prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
+                ActHiTaskinst prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
                 if (prevTask == null) {
                     throw new JiMuBizException("无前置节点,无法回退上一节点!");
                 }
                 restoreNodeKey = taskData.getTaskDefinitionKey();
-                backToNodeKey = prevTask.getTaskDefinitionKey();
+                backToNodeKey = prevTask.getTaskDefKey();
+                if(ProcessNodeEnum.compare(backToNodeKey,restoreNodeKey)>0){
+                    backToNodeKey=ProcessNodeEnum.getGeneralPrevNode(restoreNodeKey);
+                }
                 break;
             case TWO_DISAGREE:
                 restoreNodeKey = ProcessNodeEnum.TOW_TASK_KEY.getDesc();
@@ -188,17 +194,57 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             try {
                 List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
                 List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());
-                if (strings.size() > 1) {
+                if (strings.size() > 0) {
                     strings = strings.stream().filter(a -> !a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), strings);
-
+                }
+                List<BpmVariableMultiplayer> moreNodes = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), backToNodeKey);
+                if(!CollectionUtils.isEmpty(moreNodes)&&moreNodes.stream().anyMatch(a-> SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(a.getSignType()))){
+                    Long id = moreNodes.get(0).getId();
+                  if(moreNodes.size()>1){
+                      LambdaQueryWrapper<BpmVariableMultiplayerPersonnel> updateWrapper = Wrappers.<BpmVariableMultiplayerPersonnel>lambdaQuery()
+                              .eq(BpmVariableMultiplayerPersonnel::getVariableMultiplayerId, id);
+                      BpmVariableMultiplayerPersonnel multiplayerPersonnel=new BpmVariableMultiplayerPersonnel();
+                      multiplayerPersonnel.setUndertakeStatus(0);
+                      bpmVariableMultiplayerPersonnelService.update(multiplayerPersonnel,updateWrapper);
+                  }
                 }
                 List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
                 if(tasks.size()>1){
                     Task firstTask = tasks.get(0);
-                    List<String> otherNewTaskIds = tasks.stream().map(TaskInfo::getId).distinct().filter(id -> !id.equals(firstTask.getId())).collect(Collectors.toList());
-                    taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), otherNewTaskIds);
-                    taskMgmtMapper.deleteTaskByTaskIds(otherNewTaskIds);
+                    Set<String> otherNewTaskIds = new HashSet<>();
+                    //单节点或签节点
+                    boolean isOneNodeSingleOrSign=moreNodes.size()==1&&SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(moreNodes.get(0).getSignType());
+                    //单人节点
+                    boolean isSingleSign=CollectionUtils.isEmpty(moreNodes);
+                    for (Task task : tasks) {
+                        if((isOneNodeSingleOrSign||isSingleSign)&&!task.getId().equals(firstTask.getId())){
+                            otherNewTaskIds.add(task.getId());
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(otherNewTaskIds)){
+                        List<String> otherNewTaskIdList = new ArrayList<>(otherNewTaskIds);
+                        taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), otherNewTaskIdList);
+                        taskMgmtMapper.deleteTaskByTaskIds(otherNewTaskIdList);
+                    }
+                    boolean isOneNodeAllSign=moreNodes.size()==1&&!SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(moreNodes.get(0).getSignType());
+                    List<Task> otherNewTasks=new ArrayList<>();
+                    for (Task task : tasks) {
+                        if((isOneNodeAllSign||isSingleSign)&&!task.getId().equals(firstTask.getId())){
+                            otherNewTasks.add(task);
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(otherNewTasks)){
+                        for (Task otherNewTask : otherNewTasks) {
+                            Map<String,Object> varMap=new HashMap<>();
+                            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, otherNewTask.getAssigneeName());
+                            try {
+                                taskService.complete(otherNewTask.getId(),varMap);
+                            }catch (Exception e){
+
+                            }
+                        }
+                    }
                 }
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);

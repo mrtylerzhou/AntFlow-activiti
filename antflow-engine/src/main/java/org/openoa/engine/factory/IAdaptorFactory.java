@@ -1,9 +1,11 @@
 package org.openoa.engine.factory;
 
 
+import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.interf.ProcessNoticeAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.interf.anno.AutoParse;
 import org.openoa.base.vo.BusinessDataVo;
@@ -45,4 +47,6 @@ public interface IAdaptorFactory {
 
     @AutoParse
     AbstractBusinessConfigurationAdaptor getBusinessConfigurationAdaptor(ConfigurationTableAdapterEnum tableAdapterEnum);
+    @AutoParse
+    ProcessNoticeAdaptor getProcessNoticeAdaptor(MessageSendTypeEnum messageSendTypeEnum);
 }

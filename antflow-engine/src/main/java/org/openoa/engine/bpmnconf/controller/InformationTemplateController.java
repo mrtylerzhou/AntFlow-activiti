@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.WildcardCharacterEnum;
 import org.openoa.base.dto.PageDto;
@@ -11,7 +12,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.confentity.BpmProcessNotice;
 import org.openoa.engine.bpmnconf.confentity.InformationTemplate;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableApproveRemindServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.InformationTemplateServiceImpl;
@@ -50,6 +51,14 @@ public class InformationTemplateController {
         return informationTemplateService.list(pageDto, informationTemplateVo);
     }
 
+    @GetMapping("/getInformationTemplateById")
+    public Result getInformationTemplateById(@Param("templateId")Long templateId){
+        if(templateId==null){
+            Result.newFailureResult("参数为空错误","模板Id不能为空");
+        }
+        InformationTemplateVo informationTemplateById = informationTemplateService.getInformationTemplateById(templateId);
+        return Result.newSuccessResult(informationTemplateById);
+    }
     /**
      * modify information template
      *
@@ -182,7 +191,7 @@ public class InformationTemplateController {
         for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
             Integer type = bpmProcessNotice.getType();
             String descByCode = ProcessNoticeEnum.getDescByCode(type);
-            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).build());
+            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).active(true).build());
         }
         return Result.newSuccessResult(lists);
     }

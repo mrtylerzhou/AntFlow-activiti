@@ -1,6 +1,5 @@
 package org.openoa.engine.conf.aspect;
 
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,27 +9,23 @@ import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.confentity.BpmnConf;
 import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
-import org.openoa.engine.bpmnconf.constant.enus.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.vo.BpmVariableMessageVo;
+import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 
@@ -51,6 +46,7 @@ public class BpmnSendMessageAspect {
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired
+    @Lazy
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
@@ -126,7 +122,7 @@ public class BpmnSendMessageAspect {
 
 
             //get bpmn variable message vo
-            vo = getBpmVariableMessageVo(businessDataVo);
+            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
 
             /**
              * 因为发起流程组装流程发送vo对象是一个后置操作，所以从流程引擎中查到的是发起节点的下一个节点
@@ -137,7 +133,7 @@ public class BpmnSendMessageAspect {
         } else {
 
             //get bpmn variable message vo
-            vo = getBpmVariableMessageVo(businessDataVo);
+            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
 
 
             //get process operation enum by operation type
@@ -163,58 +159,7 @@ public class BpmnSendMessageAspect {
 
     }
 
-    /**
-     * set send message vo
-     *
-     * @param businessDataVo
-     * @return
-     */
-    private BpmVariableMessageVo getBpmVariableMessageVo(BusinessDataVo businessDataVo) {
 
-        if (ObjectUtils.isEmpty(businessDataVo)) {
-            return  null;
-        }
-
-            //get event type by operation type
-            EventTypeEnum eventTypeEnum = EventTypeEnum.getEnumByOperationType(businessDataVo.getOperationType());
-
-            if (ObjectUtils.isEmpty(eventTypeEnum)) {
-                return null;
-            }
-
-
-            //default link type is process type
-            Integer type = 2;
-
-
-            //if event type is cancel operation then link type is view type
-            if (eventTypeEnum.equals(EventTypeEnum.PROCESS_CANCELLATION)) {
-                type = 1;
-            }
-
-
-            //build message vo
-            return bpmVariableMessageService.getBpmVariableMessageVo(BpmVariableMessageVo
-                    .builder()
-                    .processNumber(businessDataVo.getProcessNumber())
-                    .formCode(businessDataVo.getFormCode())
-                    .eventType(eventTypeEnum.getCode())
-                    .forwardUsers(Optional.ofNullable(businessDataVo.getUserIds())
-                            .orElse(Lists.newArrayList())
-                            .stream()
-                            .map(String::valueOf)
-                            .collect(Collectors.toList()))
-                    .signUpUsers(Optional.ofNullable(businessDataVo.getSignUpUsers())
-                            .orElse(Lists.newArrayList())
-                            .stream()
-                            .map(BaseIdTranStruVo::getId)
-                            .collect(Collectors.toList()))
-                    .messageType(eventTypeEnum.getIsInNode() ? 2 : 1)
-                    .eventTypeEnum(eventTypeEnum)
-                    .type(type)
-                    .build());
-
-    }
 
     /**
      * get BusinessDataVo
