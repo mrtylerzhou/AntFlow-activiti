@@ -32,9 +32,7 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
     //MultiTenantIdHolder为单库多租户,即靠tenantId字段区分租户
     @Autowired
     private MultiTenantIdHolder tenantIdHolder;
-    //MultiTenantInfoHolder为多数据源多租户,即不同租户数据源隔离
-    @Autowired
-    private MultiTenantInfoHolder multiTenantInfoHolder;
+
     @Override
     protected boolean shouldLog(HttpServletRequest request) {
         return true;
@@ -54,7 +52,7 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
                 tenantIdHolder.setCurrentTenantId(tenantId);
             }
             if(!StringUtils.isEmpty(tenantUser)){
-                multiTenantInfoHolder.setCurrentTenantId(tenantUser);
+                ThreadLocalContainer.set(StringConstants.TENANT_USER,tenantUser);
             }
             if(!StringUtils.isEmpty(userName)){
                 try {
