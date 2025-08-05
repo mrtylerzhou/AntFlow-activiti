@@ -7,6 +7,7 @@ import org.openoa.base.util.MDCLogUtil;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.conf.engineconfig.MultiTenantIdHolder;
+import org.openoa.engine.conf.engineconfig.MultiTenantInfoHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
@@ -28,8 +29,12 @@ import java.nio.charset.StandardCharsets;
 public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFilter {
     @Autowired
     private AfUserService userService;
+    //MultiTenantIdHolder为单库多租户,即靠tenantId字段区分租户
     @Autowired
     private MultiTenantIdHolder tenantIdHolder;
+    //MultiTenantInfoHolder为多数据源多租户,即不同租户数据源隔离
+    @Autowired
+    private MultiTenantInfoHolder multiTenantInfoHolder;
     @Override
     protected boolean shouldLog(HttpServletRequest request) {
         return true;
@@ -47,6 +52,9 @@ public class JiMuMDCCommonsRequestLoggingFilter extends CommonsRequestLoggingFil
             String tenantUser=request.getHeader(StringConstants.TENANT_USER);
             if(!StringUtils.isEmpty(tenantId)){
                 tenantIdHolder.setCurrentTenantId(tenantId);
+            }
+            if(!StringUtils.isEmpty(tenantUser)){
+                multiTenantInfoHolder.setCurrentTenantId(tenantUser);
             }
             if(!StringUtils.isEmpty(userName)){
                 try {

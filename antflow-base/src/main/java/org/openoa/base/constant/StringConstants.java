@@ -37,6 +37,7 @@ public class StringConstants {
     public static final String FORMCODE_NO_CAMAL="formCode";
     public static final String FORM_CODE="form_code";
 
+    public static final String DEFAULT_TENANT="default";
     public static final String TENANT_ID="tenantId";
     public static final String TENANT_USER="tenantUser";
     public static final String LOWCODE_FLOW_DICT_TYPE="lowcodeflow";

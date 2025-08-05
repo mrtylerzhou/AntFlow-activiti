@@ -30,6 +30,9 @@ public class MultiTenantInfoHolder extends TenantDataSourceRegistry implements T
     @Override
     public String getCurrentTenantId() {
         Object value = ThreadLocalContainer.get(StringConstants.TENANT_USER);
+        if(value!=null&&StringConstants.DEFAULT_TENANT.equalsIgnoreCase(value.toString())){
+            value="";
+        }
         return value==null?"":value.toString();
     }
 

@@ -15,7 +15,7 @@ public class MultiTenantIdHolder implements TenantIdHolder {
     @Override
     public String getCurrentTenantId() {
         Object value = ThreadLocalContainer.get(StringConstants.TENANT_ID);
-        return value==null||"default".equalsIgnoreCase(value.toString())?"":value.toString();
+        return value==null||StringConstants.DEFAULT_TENANT.equalsIgnoreCase(value.toString())?"":value.toString();
     }
 
     @Override
