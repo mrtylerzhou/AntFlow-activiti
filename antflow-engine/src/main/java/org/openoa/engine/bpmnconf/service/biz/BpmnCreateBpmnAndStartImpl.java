@@ -14,13 +14,18 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -45,10 +50,10 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
     private TaskService taskService;
 
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
 
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardService processForwardService;
     @Autowired
     private ProcessModelServiceImpl processModelService;;
 
@@ -87,13 +92,15 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
 
         // 3. Deploy the process to the engine
         repositoryService.createDeployment()
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .addBpmnModel(StringUtils.join(bpmnConfCommonVo.getProcessNum(), ".bpmn"), model)
                 .name(StringUtils.join(bpmnConfCommonVo.getProcessNum(), " deployment"))
                 .deploy();
 
         // 4. Start a process instance
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(bpmnConfCommonVo.getProcessNum(), bpmnStartConditions.getEntryId(),
-                startParamMap);
+        ProcessInstance processInstance =runtimeService
+                .startProcessInstanceByKeyAndTenantId(bpmnConfCommonVo.getProcessNum(),bpmnStartConditions.getEntryId(),startParamMap, MultiTenantUtil.getCurrentTenantId());
+
 
 
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
@@ -101,8 +108,8 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
                         .eq("ENTRY_ID", bpmnStartConditions.getEntryId()));
         if(Boolean.TRUE.equals(bpmnStartConditions.getIsMigration())){
              bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
-                    new QueryWrapper<BpmBusinessProcess>()
-                            .eq("BUSINESS_NUMBER", bpmnStartConditions.getProcessNum()));
+                   AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
+                            .eq(BpmBusinessProcess::getBusinessNumber, bpmnStartConditions.getProcessNum()));
             String procInstId = bpmBusinessProcess.getProcInstId();
             runtimeService.deleteProcessInstance(procInstId,"migration");
         }
@@ -121,7 +128,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
 
 
         //get the first task and complete it
-        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).taskTenantId(MultiTenantUtil.getCurrentTenantId()).list();
         if (!ObjectUtils.isEmpty(tasks)) {
             Task task = tasks.get(0);
             Map<String,Object> varMap=new HashMap<>();

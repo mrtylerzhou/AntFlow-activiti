@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.InformationTemplateMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.InformationTemplate">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.InformationTemplate">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="num" property="num"/>

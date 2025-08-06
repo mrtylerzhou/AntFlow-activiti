@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmVerifyInfo">
         <id column="id" property="id"/>
         <result column="run_info_id" property="runInfoId"/>
         <result column="verify_user_id" property="verifyUserId"/>

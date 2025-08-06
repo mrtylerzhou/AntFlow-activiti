@@ -1,6 +1,5 @@
 package org.openoa.base.util;
 
-import org.openoa.base.exception.JiMuBizException;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.springframework.util.CollectionUtils;
 

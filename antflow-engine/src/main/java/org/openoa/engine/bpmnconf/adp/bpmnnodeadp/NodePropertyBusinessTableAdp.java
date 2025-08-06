@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeBusinessTableConf;
+import org.openoa.base.entity.BpmnNodeBusinessTableConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.BusinessConfTableFieldEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeBusinessTableConfServiceImpl;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -94,6 +95,7 @@ public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
         bpmnNodeBusinessTableConf.setCreateUser(SecurityUtils.getLogInEmpName());
         bpmnNodeBusinessTableConf.setUpdateTime(new Date());
         bpmnNodeBusinessTableConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+        bpmnNodeBusinessTableConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeBusinessTableConfService.save(bpmnNodeBusinessTableConf);
     }
 

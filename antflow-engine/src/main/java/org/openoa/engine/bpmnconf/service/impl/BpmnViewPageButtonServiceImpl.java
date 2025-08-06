@@ -1,26 +1,23 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmnViewPageButton;
+import org.openoa.base.entity.BpmnViewPageButton;
 import org.openoa.engine.bpmnconf.mapper.BpmnViewPageButtonMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnViewPageButtonService;
+import org.openoa.engine.utils.AFWrappers;
+import org.springframework.stereotype.Repository;
 
 /**
  * @Classname BpmnViewPageButtonServiceImpl
  * @Description view pagebutton
  * @Created by AntOffice
  */
-@Service
-public class BpmnViewPageButtonServiceImpl extends ServiceImpl<BpmnViewPageButtonMapper, BpmnViewPageButton> {
+@Repository
+public class BpmnViewPageButtonServiceImpl extends ServiceImpl<BpmnViewPageButtonMapper, BpmnViewPageButton> implements BpmnViewPageButtonService {
 
-    @Autowired
-    private BpmnViewPageButtonMapper mapper;
-
+    @Override
     public Integer deleteByConfId(Long confId) {
-        int deleteSize = baseMapper.delete(new QueryWrapper<BpmnViewPageButton>().eq("conf_id", confId));
-        return deleteSize;
+        return baseMapper.delete( AFWrappers. <BpmnViewPageButton>lambdaTenantQuery().eq(BpmnViewPageButton::getConfId, confId));
     }
 
 }

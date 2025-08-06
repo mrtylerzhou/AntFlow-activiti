@@ -14,16 +14,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.base.entity.BpmFlowrunEntrust;
+import org.openoa.base.entity.BpmProcessForward;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
@@ -31,7 +31,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
-import org.openoa.engine.bpmnconf.util.ActivitiTemplateMsgUtils;
+import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.stereotype.Component;
@@ -109,7 +109,7 @@ public class BpmnTaskListener implements TaskListener {
 
         if (bpmnConf==null) {
             log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            throw new JiMuBizException("Task监听-查询流程配置数据为空");
+            throw new AFBizException("Task监听-查询流程配置数据为空");
         }
         if(extraInfo!=null){
             String expressionText = extraInfo.getExpressionText();

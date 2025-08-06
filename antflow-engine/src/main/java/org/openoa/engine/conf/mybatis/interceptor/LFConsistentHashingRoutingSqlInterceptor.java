@@ -1,6 +1,5 @@
 package org.openoa.engine.conf.mybatis.interceptor;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import net.sf.jsqlparser.JSQLParserException;
@@ -33,13 +32,11 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
-import org.openoa.engine.utils.BoundSqlUtils;
 import org.openoa.engine.utils.ConsistentHashingAlg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,7 +219,7 @@ public class LFConsistentHashingRoutingSqlInterceptor implements Interceptor, In
                 if (bpmBusinessProcess != null) {
                     return bpmBusinessProcess.getProcessinessKey();
                 } else {
-                    throw new JiMuBizException("无法根据低代码流程指定Id:" + parameterObject + "找到流程信息,对应的流程不存在!");
+                    throw new AFBizException("无法根据低代码流程指定Id:" + parameterObject + "找到流程信息,对应的流程不存在!");
                 }
             }
             if (!FORM_CODES_UPPER.contains(propertyName.toUpperCase())) {

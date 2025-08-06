@@ -9,8 +9,8 @@ import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.ConfDetailRequestDto;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmApproveTemplateServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmConditionsTemplateBizService;
 import org.openoa.engine.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.*;
 public class OutSideBpmBusinessController {
 
     @Autowired
-    private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
+    private OutSideBpmBusinessPartyBizService outSideBpmBusinessPartyBizService;
     @Autowired
     private BpmProcessAppApplicationServiceImpl outProcessAppApplicationService;
 
     @Autowired
-    private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;
+    private OutSideBpmConditionsTemplateBizService outSideBpmConditionsTemplateBizService;
 
     @Autowired
     private OutSideBpmApproveTemplateServiceImpl outSideBpmApproveTemplateService;
@@ -44,7 +44,7 @@ public class OutSideBpmBusinessController {
             searchVo.setName(vo.getRemark());
             searchVo.setRemark(vo.getRemark());
         }
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.listPage(page, searchVo));
+        return Result.newSuccessResult(outSideBpmBusinessPartyBizService.listPage(page, searchVo));
     }
 
     /**
@@ -52,7 +52,7 @@ public class OutSideBpmBusinessController {
      */
     @GetMapping("/businessParty/detail/{id}")
     public Result detail(@PathVariable("id") Integer id) {
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.detail(id));
+        return Result.newSuccessResult(outSideBpmBusinessPartyBizService.detail(id));
     }
 
     /**
@@ -60,7 +60,7 @@ public class OutSideBpmBusinessController {
      */
     @PostMapping("/businessParty/edit")
     public Result edit(@RequestBody OutSideBpmBusinessPartyVo vo) {
-        outSideBpmBusinessPartyService.edit(vo);
+        outSideBpmBusinessPartyBizService.edit(vo);
         return Result.newSuccessResult(null);
     }
 
@@ -79,7 +79,7 @@ public class OutSideBpmBusinessController {
         if (Strings.isNullOrEmpty(page.getOrderColumn())) {
             page.setOrderColumn("id");
         }
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.applicationsPageList(page, searchVo));
+        return Result.newSuccessResult(outSideBpmBusinessPartyBizService.applicationsPageList(page, searchVo));
     }
 
     /**
@@ -96,7 +96,7 @@ public class OutSideBpmBusinessController {
      */
     @GetMapping("/businessParty/applicationDetail/{id}")
     public Result applicationDetail(@PathVariable("id") Integer id) {
-        return Result.newSuccessResult(outSideBpmBusinessPartyService.getApplicationDetailById(id));
+        return Result.newSuccessResult(outSideBpmBusinessPartyBizService.getApplicationDetailById(id));
     }
 
 
@@ -109,7 +109,7 @@ public class OutSideBpmBusinessController {
      */
     @GetMapping("/conditionTemplate/listPage")
     public Result listPage(PageDto page, OutSideBpmConditionsTemplateVo vo) {
-        return Result.newSuccessResult(outSideBpmConditionsTemplateService.listPage(page, vo));
+        return Result.newSuccessResult(outSideBpmConditionsTemplateBizService.listPage(page, vo));
     }
 
     /**
@@ -120,7 +120,7 @@ public class OutSideBpmBusinessController {
      */
     @GetMapping("/conditionTemplate/selectListByTemp/{applicationId}")
     public Result selectConditionListByAppId(@PathVariable("applicationId") Integer applicationId) {
-        return Result.newSuccessResult(outSideBpmConditionsTemplateService.selectConditionListByAppId(applicationId));
+        return Result.newSuccessResult(outSideBpmConditionsTemplateBizService.getService().selectConditionListByAppId(applicationId));
     }
 
     /**
@@ -131,7 +131,7 @@ public class OutSideBpmBusinessController {
      */
     @PostMapping("/conditionTemplate/edit")
     public Result edit(@RequestBody OutSideBpmConditionsTemplateVo vo) {
-        outSideBpmConditionsTemplateService.edit(vo);
+        outSideBpmConditionsTemplateBizService.getService().edit(vo);
         return Result.success();
     }
 
@@ -143,7 +143,7 @@ public class OutSideBpmBusinessController {
      */
     @GetMapping("/conditionTemplate/delete/{id}")
     public Result delete(@PathVariable("id") Integer id) {
-        outSideBpmConditionsTemplateService.delete(id);
+        outSideBpmConditionsTemplateBizService.delete(id);
         return Result.newSuccessResult(null);
     }
 

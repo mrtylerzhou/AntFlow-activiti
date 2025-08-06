@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnConfLfFormdata;
+import org.openoa.base.entity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.base.vo.FormConfigWrapper;
@@ -50,12 +50,12 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         FormConfigWrapper formConfigWrapper = JSON.parseObject(lfForm, FormConfigWrapper.class);
         List<FormConfigWrapper.LFWidget> lfWidgetList = formConfigWrapper.getWidgetList();
         if(CollectionUtils.isEmpty(lfWidgetList)){
-            throw new JiMuBizException(Strings.lenientFormat("lowcode form has no widget,confId:%d,formCode:%s",confId,confVo.getFormCode()));
+            throw new AFBizException(Strings.lenientFormat("lowcode form has no widget,confId:%d,formCode:%s",confId,confVo.getFormCode()));
         }
         List<BpmnConfLfFormdataField> formdataFields=new ArrayList<>();
         parseWidgetListRecursively(lfWidgetList,confId,lfFormdata.getId(),formdataFields);
         if(CollectionUtils.isEmpty(formdataFields)){
-            throw new JiMuBizException(Strings.lenientFormat("lowcode form fields can not be empty,confId:%d,formCode:%s",confId,confVo.getFormCode()));
+            throw new AFBizException(Strings.lenientFormat("lowcode form fields can not be empty,confId:%d,formCode:%s",confId,confVo.getFormCode()));
         }
         lfFormdataFieldService.saveBatch(formdataFields);
     }
@@ -73,7 +73,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         Long confId = confVo.getId();
         List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
         if(CollectionUtils.isEmpty(bpmnConfLfFormdataList)){
-            throw  new JiMuBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
+            throw  new AFBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
         }
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         confVo.setLfFormData(lfFormdata.getFormdata());

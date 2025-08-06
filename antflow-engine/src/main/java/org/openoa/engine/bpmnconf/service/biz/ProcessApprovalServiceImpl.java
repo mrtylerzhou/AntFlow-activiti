@@ -6,27 +6,26 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.openoa.base.constant.enums.*;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ConfigFlowButtonContans;
-import org.openoa.base.constant.enums.ButtonPageTypeEnum;
-import org.openoa.base.constant.enums.ProcessButtonEnum;
-import org.openoa.base.constant.enums.ProcessNodeEnum;
-import org.openoa.base.constant.enums.SortTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
+import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
-import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
-import org.openoa.base.constant.enums.ProcessStateEnum;
-import org.openoa.base.constant.enums.ProcessTypeEnum;
-
+import org.openoa.engine.bpmnconf.service.impl.BpmProcessNameServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,9 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
-import static org.openoa.base.constant.enums.ProcessStateEnum.*;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
+import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
 /**
  * @Classname ProcessApprovalServiceImpl
@@ -51,25 +51,25 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private ButtonPreOperationService buttonPreOperationService;
     @Autowired
-    private BpmProcessNameRelevancyServiceImpl processNameRelevancyService;
+    private BpmProcessNameRelevancyService processNameRelevancyService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfCommonService;
     @Autowired
-    private BpmProcessForwardServiceImpl processForwardService;
+    private BpmProcessForwardBizService processForwardBizService;
     @Autowired
-    private BpmProcessNameServiceImpl bpmProcessNameService;
+    private BpmProcessNameService bpmProcessNameService;
     @Autowired
     private FormFactory formFactory;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private ProcessBusinessContans businessContans;
     @Autowired
     private ConfigFlowButtonContans configFlowButtonContans;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
 
@@ -92,9 +92,9 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @param pageDto
      * @param vo
      * @return
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
-    public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws JiMuBizException {
+    public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws AFBizException {
 
         LinkedHashMap<String, SortTypeEnum> orderFieldMap = Maps.newLinkedHashMap();
 
@@ -158,8 +158,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         if (!ObjectUtils.isEmpty(page.getRecords())) {
             if (vo.getType().equals(ProcessTypeEnum.ENTRUST_TYPE.getCode()) || vo.getType().equals(ProcessTypeEnum.ADMIN_TYPE.getCode())) {
-                processForwardService.loadProcessForward(SecurityUtils.getLogInEmpId());
-                processForwardService.loadTask(SecurityUtils.getLogInEmpId());
+                processForwardBizService.loadProcessForward(SecurityUtils.getLogInEmpId());
+                processForwardBizService.loadTask(SecurityUtils.getLogInEmpId());
             }
             this.getPcProcessData(page, vo.getType());
         }
@@ -193,7 +193,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
                 if (type.equals(ProcessTypeEnum.ENTRUST_TYPE.getCode())) {
                     // to check whether the forwarded record can process in batch
-                    record.setIsForward(processForwardService.isForward(record.getProcessInstanceId()));
+                    record.setIsForward(processForwardBizService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
                                 .taskName(record.getTaskName()).type(ProcessButtonEnum.VIEW_TYPE.getCode()).build()));
@@ -219,7 +219,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
-            throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
+            throw  new AFBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
         }
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
@@ -254,7 +254,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
 
         //check whether current node is a signup node and set the property
         String nodeId = businessDataVo.getProcessRecordInfo().getNodeId();
-        Boolean nodeIsSignUp = bpmVariableSignUpService.checkNodeIsSignUp(vo.getProcessNumber(), nodeId);
+        Boolean nodeIsSignUp = bpmVariableSignUpBizService.checkNodeIsSignUp(vo.getProcessNumber(), nodeId);
         businessDataVo.setIsSignUpNode(nodeIsSignUp);
         //add a "choose a verifier" button if it is a signup node
         if (nodeIsSignUp) {

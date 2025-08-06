@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.springframework.stereotype.Service;
 

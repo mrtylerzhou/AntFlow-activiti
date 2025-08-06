@@ -1,14 +1,9 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.activiti.engine.ManagementService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.RepositoryServiceImpl;
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -16,6 +11,9 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessCategoryMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessCategory">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmProcessCategory">
         <id column="id" property="id"/>
         <result column="process_type_name" property="processTypeName"/>
         <result column="is_del" property="isDel"/>

@@ -5,24 +5,26 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.entity.BpmVerifyInfo;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.TripleConsumer;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,9 +42,9 @@ public class BpmnProcessMigrationServiceImpl {
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
-    private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
-    private BpmVerifyInfoServiceImpl bpmVerifyInfoService;
+    private BpmVerifyInfoService bpmVerifyInfoService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
@@ -58,7 +60,7 @@ public class BpmnProcessMigrationServiceImpl {
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
         if(StringUtils.isBlank(procDefIdByInstId)){
-            throw new JiMuBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
+            throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
         }
         List<ActivityImpl> activitiList = additionalInfoService.getActivitiList(procDefIdByInstId);
         boolean currentExecuted=false;
@@ -71,7 +73,9 @@ public class BpmnProcessMigrationServiceImpl {
             // 查找当前流程实例的任务
             List<Task> tsks = taskService.createTaskQuery()
                     .processInstanceId(bpmBusinessProcess.getProcInstId())
-                    .taskDefinitionKey(activity.getId()).list();
+                    .taskDefinitionKey(activity.getId())
+                    .taskTenantId(MultiTenantUtil.getCurrentTenantId())
+                    .list();
             Map<String, BpmVerifyInfo> verifyInfoMap = new HashMap<>();
             if (!CollectionUtils.isEmpty(tsks)) {
                 verifyInfoMap= bpmVerifyInfoService.getByProcInstIdAndTaskDefKey(bpmBusinessProcess.getBusinessNumber(), id);

@@ -6,15 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
-import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleOutsideEmpConf;
+import org.openoa.base.entity.BpmnNodeRoleConf;
+import org.openoa.base.entity.BpmnNodeRoleOutsideEmpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -137,6 +136,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                                         .createUser(SecurityUtils.getLogInEmpName())
                                         .updateTime(new Date())
                                         .updateUser(SecurityUtils.getLogInEmpName())
+                                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                                         .build())
                         .collect(Collectors.toList()));
             }
@@ -155,6 +155,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                         bpmnNodeRoleOutsideEmpConf.setEmplName(baseIdTranStruVo.getName());
                         bpmnNodeRoleOutsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpName());
                         bpmnNodeRoleOutsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+                        bpmnNodeRoleOutsideEmpConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
                         bpmnNodeRoleOutsideEmpConfs.add(bpmnNodeRoleOutsideEmpConf);
                     }
                     bpmnNodeRoleOutsideEmpConfService.saveBatch(bpmnNodeRoleOutsideEmpConfs);

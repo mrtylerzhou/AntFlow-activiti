@@ -2,7 +2,7 @@ package org.openoa.base.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 /**
  *@Author JimuOffice
@@ -20,14 +20,14 @@ public class SecurityUtils {
     public static String getLogInEmpId(){
         BaseIdTranStruVo currentuser = (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
         if(currentuser==null){
-            throw new JiMuBizException("当前用户未登陆!");
+            throw new AFBizException("当前用户未登陆!");
         }
         return currentuser.getId();
     }
     public static String getLogInEmpIdStr(){
         BaseIdTranStruVo currentuser = (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
         if(currentuser==null){
-            throw new JiMuBizException("当前用户未登陆!");
+            throw new AFBizException("当前用户未登陆!");
         }
         return currentuser.getId();
     }
@@ -35,7 +35,7 @@ public class SecurityUtils {
     public static String getLogInEmpName(){
         BaseIdTranStruVo currentuser = (BaseIdTranStruVo) ThreadLocalContainer.get("currentuser");
         if(currentuser==null){
-            throw new JiMuBizException("当前用户未登陆!");
+            throw new AFBizException("当前用户未登陆!");
         }
         return currentuser.getName();
     }

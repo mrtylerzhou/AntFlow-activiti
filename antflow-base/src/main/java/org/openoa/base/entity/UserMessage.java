@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.vo.UrlParams;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -17,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_user_message")
-public class UserMessage {
+public class UserMessage implements TenantField, Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -66,7 +68,9 @@ public class UserMessage {
      * 0 for not deleted 1 for deleted
      */
     @TableField("is_del")
-    private Boolean del;
+    private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     @TableField("create_time")
     private Date createTime;
     @TableField("update_time")

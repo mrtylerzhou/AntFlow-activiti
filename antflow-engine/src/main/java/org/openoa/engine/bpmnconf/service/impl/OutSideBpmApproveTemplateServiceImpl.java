@@ -4,31 +4,30 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.entity.OutSideBpmApproveTemplate;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.confentity.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmApproveTemplateMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmApproveTemplateService;
 import org.openoa.engine.vo.OutSideBpmApproveTemplateVo;
-import org.openoa.engine.vo.OutSideBpmConditionsTemplateVo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * third party process service-conditions template configuration table service implementation
  * @since 0.5
  */
-@Service
-public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> {
+@Repository
+public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpmApproveTemplateMapper, OutSideBpmApproveTemplate> implements OutSideBpmApproveTemplateService {
 
-    @Autowired
-    private OutSideBpmApproveTemplateMapper OutSideBpmApproveTemplateMapper;
 
 
     /**
@@ -39,7 +38,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
      */
     public ResultAndPage<OutSideBpmApproveTemplateVo> listPage(PageDto pageDto, OutSideBpmApproveTemplateVo vo) {
         Page<OutSideBpmApproveTemplateVo> page = PageUtils.getPageByPageDto(pageDto);
-        List<OutSideBpmApproveTemplateVo> OutSideBpmApproveTemplateVos = OutSideBpmApproveTemplateMapper.selectPageList(page, vo);
+        List<OutSideBpmApproveTemplateVo> OutSideBpmApproveTemplateVos = getBaseMapper().selectPageList(page, vo);
         if (CollectionUtils.isEmpty(OutSideBpmApproveTemplateVos)) {
             return PageUtils.getResultAndPage(page);
         }
@@ -97,7 +96,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
                 .eq("approve_type_id", vo.getApproveTypeId());
         long existCount = this.count(templates);
         if (existCount > 0) {
-            throw new JiMuBizException(vo.getApproveTypeName() + "审批模板已存在");
+            throw new AFBizException(vo.getApproveTypeName() + "审批模板已存在");
         }
         OutSideBpmApproveTemplate templateEntity = this.getById(vo.getId());
         if (templateEntity != null) {
@@ -135,7 +134,7 @@ public class OutSideBpmApproveTemplateServiceImpl extends ServiceImpl<OutSideBpm
      */
     public String getRoelApiUrlByConfId(Long  confId){
 
-        return   OutSideBpmApproveTemplateMapper.selectRoleApiUrlByConfId(confId);
+        return   getBaseMapper().selectRoleApiUrlByConfId(confId);
     }
 
 

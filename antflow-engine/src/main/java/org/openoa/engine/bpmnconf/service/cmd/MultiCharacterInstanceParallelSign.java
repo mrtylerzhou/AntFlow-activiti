@@ -1,9 +1,5 @@
 package org.openoa.engine.bpmnconf.service.cmd;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
- 
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
@@ -11,6 +7,9 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
 import org.openoa.base.vo.BaseIdTranStruVo;
+
+import java.util.Date;
+import java.util.List;
 
 public class MultiCharacterInstanceParallelSign implements Command {
  

@@ -5,11 +5,11 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.openoa.base.constant.StringConstants;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmAccessBusiness;
+import org.openoa.base.entity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class FormFactory implements ApplicationContextAware {
         }
         ActivitiService activitiService = adaptorFactory.getActivitiService(vo);
         if (ObjectUtils.isEmpty(activitiService)) {
-            throw new JiMuBizException("form code does not have a processing bean！");
+            throw new AFBizException("form code does not have a processing bean！");
         }
         return (FormOperationAdaptor) activitiService;
     }
@@ -80,7 +80,7 @@ public class FormFactory implements ApplicationContextAware {
         }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
-            throw new JiMuBizException("can not get the processing bean by form code:{}!"+formCode);
+            throw new AFBizException("can not get the processing bean by form code:{}!"+formCode);
         }
         return JSON.parseObject(params, (Type) getFormTClass(formCode));
 
@@ -97,7 +97,7 @@ public class FormFactory implements ApplicationContextAware {
                 return cls;
             }
         }
-        throw new JiMuBizException("该表单未关联业务实现类或未关联实现类泛型！");
+        throw new AFBizException("该表单未关联业务实现类或未关联实现类泛型！");
     }
 
     @Override

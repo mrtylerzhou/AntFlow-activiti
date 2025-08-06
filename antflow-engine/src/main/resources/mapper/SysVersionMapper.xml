@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.SysVersionMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.SysVersion">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.SysVersion">
         <id column="id" property="id"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>

@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
+import org.openoa.base.entity.BpmnNodeButtonConf;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeButtonConfService;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -19,10 +22,11 @@ import static org.openoa.base.constant.enums.ButtonPageTypeEnum.INITIATE;
 import static org.openoa.base.constant.enums.ButtonTypeEnum.BUTTON_TYPE_RESUBMIT;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_START;
 
-@Service
-public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonConfMapper, BpmnNodeButtonConf> {
+@Repository
+public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonConfMapper, BpmnNodeButtonConf> implements BpmnNodeButtonConfService {
 
 
+    @Override
     public void editButtons(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId) {
         //delete the old configs
         this.getBaseMapper().delete(new QueryWrapper<BpmnNodeButtonConf>()
@@ -68,6 +72,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                     .buttonPageType(AUDIT.getCode())
                     .buttonType(BUTTON_TYPE_RESUBMIT.getCode())
                     .buttonName(ButtonTypeEnum.getDescByCode(BUTTON_TYPE_RESUBMIT.getCode()))
+                    .tenantId(MultiTenantUtil.getCurrentTenantId())
                     .build());
         }
     }
@@ -82,6 +87,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                         .buttonPageType(buttonPageTypeEnum.getCode())
                         .buttonType(o)
                         .buttonName(ButtonTypeEnum.getDescByCode(o))
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build())
                 .collect(Collectors.toList());
     }
