@@ -24,15 +24,12 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
     protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo nodeVo, Collection<BaseIdTranStruVo> emplList) {
         Integer missingAssigneeDealWay = nodeVo.getNoHeaderAction();
         emplList=emplList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty(emplList)){
+            return super.provideAssigneeList(nodeVo, emplList);
+        }
         missingAssigneeDealWay=missingAssigneeDealWay!=null?missingAssigneeDealWay:MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode();
-        if(CollectionUtils.isEmpty(emplList)&&missingAssigneeDealWay==MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode()){
-            throw new AFBizException("存在未找到审批人的节点,流程不允许发起!");
-        }
-        //如果是不允许并且审批人列表为空,前面已经抛出异常了,如果走到这里仍然是不允许,也不需要处理了(审批人不为空,直接往下走就行了,if里就不需要补偿了)
-        if(missingAssigneeDealWay!=MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode()){
-            BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
-            emplList.add(baseIdTranStruVo);
-        }
+        BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
+        emplList.add(baseIdTranStruVo);
         return super.provideAssigneeList(nodeVo, emplList);
     }
     @Override
