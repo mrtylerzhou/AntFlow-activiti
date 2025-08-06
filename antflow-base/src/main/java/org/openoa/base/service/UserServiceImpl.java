@@ -3,7 +3,8 @@ package org.openoa.base.service;
 import com.google.common.collect.Lists;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.mapper.UserMapper;
-import org.openoa.base.util.EmployeeUtil;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,9 +86,9 @@ public class UserServiceImpl implements AfUserService{
         return baseIdTranStruVo;
     }
     @Override
-    public BaseIdTranStruVo queryEmployeeDirectLeaderById(String employeeId){
-        BaseIdTranStruVo baseIdTranStruVo = userMapper.getDirectLeaderByEmployeeId(employeeId);
-        return baseIdTranStruVo;
+    public List<BaseIdTranStruVo> queryEmployeeDirectLeaderByIds(List<String> employeeIds){
+        List<BaseIdTranStruVo> users = userMapper.queryDirectLeaderByEmployeeIds(employeeIds);
+        return users;
     }
 
 

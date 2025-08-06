@@ -23,8 +23,8 @@ public class DirectLeaderPersonnelProvider extends AbstractMissingAssignNodeAssi
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         String startUserId = startConditionsVo.getStartUserId();
-        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeDirectLeaderById(startUserId);
+        List<BaseIdTranStruVo> assignees = userService.queryEmployeeDirectLeaderByIds(Lists.newArrayList(startUserId));
 
-        return  super.provideAssigneeList(bpmnNodeVo,Lists.newArrayList(baseIdTranStruVo));
+        return  super.provideAssigneeList(bpmnNodeVo,assignees);
     }
 }

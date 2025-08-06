@@ -23,7 +23,7 @@ public interface AfUserService {
 
     BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId);
 
-    BaseIdTranStruVo queryEmployeeDirectLeaderById(String employeeId);
+    List<BaseIdTranStruVo> queryEmployeeDirectLeaderByIds(List<String> employeeIds);
 
 
     Employee getEmployeeDetailById(String id);

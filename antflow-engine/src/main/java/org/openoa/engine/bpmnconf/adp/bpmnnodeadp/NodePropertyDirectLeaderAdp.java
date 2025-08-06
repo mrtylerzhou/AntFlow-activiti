@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;

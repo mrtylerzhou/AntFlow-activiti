@@ -2,6 +2,7 @@ package org.openoa.base.util;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.uuid.StringArgGenerator;
 import com.google.common.base.Strings;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -34,7 +35,12 @@ public class StrUtils {
         if (Strings.isNullOrEmpty(s)) {
             return null;
         }
-        String finalStr = getFirstPinYin(s);
+        String finalStr = getFirstPinYin(s,HanyuPinyinCaseType.UPPERCASE);
+
+        return finalStr;
+    }
+    public static String getFirstLettersSmall(String s){
+        String finalStr = getFirstPinYin(s,HanyuPinyinCaseType.LOWERCASE);
 
         return finalStr;
     }
@@ -77,9 +83,9 @@ public class StrUtils {
         String beanName = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
         return beanName;
     }
-    private static String getFirstPinYin(String hanyu) {
+    private static String getFirstPinYin(String hanyu,HanyuPinyinCaseType caseType) {
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
-        format.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+        format.setCaseType(caseType);
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
 
         StringBuilder firstPinyin = new StringBuilder();

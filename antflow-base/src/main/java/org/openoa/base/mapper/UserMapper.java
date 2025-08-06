@@ -30,7 +30,7 @@ public interface UserMapper {
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") String employeeId,@Param("tier") Integer tier);
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndEndGrade(@Param("employeeId") String employeeId,@Param("endGrade") Integer tier);
     BaseIdTranStruVo getHrpbByEmployeeId(@Param("employeeId") String employeeId);
-    BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
+    List<BaseIdTranStruVo> queryDirectLeaderByEmployeeIds(@Param("employeeIds") List<String> employeeIds);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
 
