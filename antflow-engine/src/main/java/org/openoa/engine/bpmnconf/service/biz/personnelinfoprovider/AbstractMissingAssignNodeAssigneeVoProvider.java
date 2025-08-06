@@ -14,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends AbstractNodeAssigneeVoProvider implements MissAssigneeProcessing {
     @Autowired
@@ -22,8 +23,8 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
     @Override
     protected List<BpmnNodeParamsAssigneeVo> provideAssigneeList(BpmnNodeVo nodeVo, Collection<BaseIdTranStruVo> emplList) {
         Integer missingAssigneeDealWay = nodeVo.getNoHeaderAction();
-        if((CollectionUtils.isEmpty(emplList)||emplList.stream().allMatch(Objects::isNull))&&
-            missingAssigneeDealWay==null||missingAssigneeDealWay==MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode()){
+        emplList=emplList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        if(CollectionUtils.isEmpty(emplList)&&(missingAssigneeDealWay==null||missingAssigneeDealWay==MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode())){
             throw new AFBizException("存在未找到审批人的节点,流程不允许发起!");
         }
         BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
