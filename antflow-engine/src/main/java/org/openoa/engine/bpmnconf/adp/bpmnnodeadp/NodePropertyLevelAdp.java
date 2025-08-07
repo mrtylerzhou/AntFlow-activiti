@@ -10,9 +10,10 @@ import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.FieldAttributeInfoVO;
 import org.openoa.base.vo.PersonnelRuleVO;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeAssignLevelConf;
+import org.openoa.base.entity.BpmnNodeAssignLevelConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeAssignLevelConfServiceImpl;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -83,6 +84,7 @@ public class NodePropertyLevelAdp extends BpmnNodeAdaptor {
         bpmnNodeAssignLevelConf.setCreateUser(SecurityUtils.getLogInEmpName());
         bpmnNodeAssignLevelConf.setUpdateTime(new Date());
         bpmnNodeAssignLevelConf.setUpdateUser(SecurityUtils.getLogInEmpName());
+        bpmnNodeAssignLevelConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeAssignLevelConfService.save(bpmnNodeAssignLevelConf);
     }
 

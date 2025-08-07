@@ -2,7 +2,7 @@ package org.openoa.engine.factory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.anno.AutoParse;
 import org.openoa.base.util.SpringBeanUtils;
 
@@ -76,7 +76,7 @@ public class AdaptorFactoryProxy {
             }else {
                 AutoParse autoParse = (AutoParse) declaredMethod.getAnnotation(AutoParse.class);
                 if(autoParse==null){
-                    throw new JiMuBizException("adaptor method has neither tagparser nor AutoParse Annotation");
+                    throw new AFBizException("adaptor method has neither tagparser nor AutoParse Annotation");
                 }
                 String paramTypeName=declaredMethodParameterTypes[0].getName();
                 String returnTypeName=declaredMethodReturnType.getName();

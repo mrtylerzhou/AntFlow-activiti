@@ -1,27 +1,24 @@
 package org.openoa.engine.lowflow.entity;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.annotation.*;
 import com.google.common.base.Strings;
 import lombok.Data;
-import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.TenantField;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SnowFlake;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnConfLfFormdataField;
 import org.springframework.util.CollectionUtils;
 
-import java.io.PipedReader;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.util.*;
 
 @Data
 @TableName("t_lf_main_field")
-public class LFMainField {
+public class LFMainField implements TenantField, Serializable {
     /**
      * 主键ID
      */
@@ -55,7 +52,8 @@ public class LFMainField {
     @TableLogic
     @TableField("is_del")
     private Integer isDel;
-
+    @TableField("tenant_id")
+    private String tenantId;
     /**
      * 创建人
      */
@@ -82,10 +80,10 @@ public class LFMainField {
 
     public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId,String formCode){
         if(CollectionUtils.isEmpty(fieldMap)){
-            throw new JiMuBizException("form data has no value");
+            throw new AFBizException("form data has no value");
         }
         if(CollectionUtils.isEmpty(fieldConfigMap)){
-            throw new JiMuBizException("field configs are empty,please check your logic");
+            throw new AFBizException("field configs are empty,please check your logic");
         }
         List<LFMainField> mainFields=new ArrayList<>(fieldMap.size());
         for (Map.Entry<String, Object> fieldId2ValueEntry : fieldMap.entrySet()) {
@@ -115,7 +113,7 @@ public class LFMainField {
         Integer fieldType = fieldConfig.getFieldType();
         LFFieldTypeEnum fieldTypeEnum = LFFieldTypeEnum.getByType(fieldType);
         if(fieldTypeEnum==null){
-            throw new JiMuBizException(Strings.lenientFormat("field type can not be empty,%s",fieldConfig));
+            throw new AFBizException(Strings.lenientFormat("field type can not be empty,%s",fieldConfig));
         }
         switch (fieldTypeEnum){
             case STRING:

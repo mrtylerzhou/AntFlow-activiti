@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper">
 
     <!-- common columns -->
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmFlowrunEntrust">
         <id column="id" property="id"/>
         <result column="runinfoid" property="runinfoid"/>
         <result column="runtaskid" property="runtaskid"/>
@@ -14,7 +14,7 @@
         <result column="is_view" property="isView"/>
     </resultMap>
 
-    <select id="getBpmEntrust" resultType="org.openoa.engine.bpmnconf.confentity.UserEntrust">
+    <select id="getBpmEntrust" resultType="org.openoa.base.entity.UserEntrust">
         SELECT w.receiver_id   as receiverId,
                w.receiver_name as receiverName,
                w.sender        as sender,
@@ -33,7 +33,7 @@
         WHERE runinfoid = #{runinfoid}
           AND `type` = 2;
     </select>
-    <select id="getEntrustByTaskId" resultType="org.openoa.engine.bpmnconf.confentity.BpmFlowrunEntrust">
+    <select id="getEntrustByTaskId" resultType="org.openoa.base.entity.BpmFlowrunEntrust">
         SELECT w.original,
         w.actual
         FROM bpm_flowrun_entrust w

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.engine.bpmnconf.confentity.DictData;
+import org.openoa.base.entity.DictData;
 
 import java.util.List;
 

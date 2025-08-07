@@ -10,9 +10,8 @@
         <result column="content" property="content"/>
         <result column="url" property="url"/>
         <result column="is_read" property="isRead"/>
-        <result column="is_del" property="del"/>
+        <result column="is_del" property="isDel"/>
         <result column="app_url" property="appUrl"/>
-        <result column="new_data" property="newDate"/>
         <result column="source" property="source"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>

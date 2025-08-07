@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper">
 
     <!-- common resultMap -->
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmnNode">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmnNode">
         <id column="id" property="id"/>
         <result column="conf_id" property="confId"/>
         <result column="node_id" property="nodeId"/>
@@ -30,7 +30,7 @@
     </sql>
 
     <!-- get self chosen nodes -->
-    <select id="customNode" resultType="org.openoa.engine.bpmnconf.confentity.BpmnNode"
+    <select id="customNode" resultType="org.openoa.base.entity.BpmnNode"
             parameterType="java.lang.String">
         SELECT a.id,
                a.conf_id           AS confId,

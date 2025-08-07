@@ -1,9 +1,10 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodePersonnelConf;
+import org.openoa.base.entity.BpmnNodePersonnelConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodePersonnelConfMapper;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodePersonnelConfService;
+import org.springframework.stereotype.Repository;
 
 /**
  *@Author JimuOffice
@@ -13,6 +14,6 @@ import org.springframework.stereotype.Service;
  * @return
  * @Version 1.0
  */
-@Service
-public class BpmnNodePersonnelConfServiceImpl extends ServiceImpl<BpmnNodePersonnelConfMapper, BpmnNodePersonnelConf> {
+@Repository
+public class BpmnNodePersonnelConfServiceImpl extends ServiceImpl<BpmnNodePersonnelConfMapper, BpmnNodePersonnelConf> implements BpmnNodePersonnelConfService {
 }

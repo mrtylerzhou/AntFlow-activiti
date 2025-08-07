@@ -1,22 +1,19 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.PersonnelRuleVO;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeCustomizeConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeRoleConf;
+import org.openoa.base.entity.BpmnNodeCustomizeConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeCustomizeConfServiceImpl;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class NodePropertyCustomizeAdp extends BpmnNodeAdaptor{
@@ -51,6 +48,7 @@ public class NodePropertyCustomizeAdp extends BpmnNodeAdaptor{
         BpmnNodeCustomizeConf customizeConf=new BpmnNodeCustomizeConf();
         customizeConf.setBpmnNodeId(bpmnNodeVo.getId());
         customizeConf.setSignType(bpmnNodePropertysVo.getSignType());
+        customizeConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         bpmnNodeCustomizeConfService.save(customizeConf);
     }
 

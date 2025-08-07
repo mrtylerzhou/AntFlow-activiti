@@ -23,7 +23,10 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import javafx.beans.binding.When;
 import org.activiti.engine.ActivitiException;
+import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 
 /**
  * A {@link DataSource} implementation that switches the currently used datasource based on the
@@ -65,6 +68,13 @@ public class TenantAwareDataSource implements DataSource {
     String tenantId = tenantInfoHolder.getCurrentTenantId();
     DataSource dataSource = dataSources.get(tenantId);
     if (dataSource == null) {
+      //如果用户没有传入tenantUser,并且没有获取到数据源,则尝试获取默认租户的
+      if(StringUtils.isEmpty(tenantId)){
+        dataSource=dataSources.get(StringConstants.DEFAULT_TENANT);
+        if(dataSource!=null){
+          return dataSource;
+        }
+      }
       throw new ActivitiException("Could not find a dataSource for tenant " + tenantId);
     }
     return dataSource;

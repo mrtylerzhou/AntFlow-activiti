@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.engine.bpmnconf.confentity.BpmTaskconfig;
-import org.springframework.stereotype.Repository;
+import org.openoa.base.entity.BpmTaskconfig;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmApproveTemplateMapper">
 
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmApproveTemplate">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.OutSideBpmApproveTemplate">
         <id column="id" property="id"/>
         <result column="business_party_id" property="businessPartyId"/>
         <result column="application_id" property="applicationId"/>

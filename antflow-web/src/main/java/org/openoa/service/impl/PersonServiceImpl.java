@@ -6,7 +6,7 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.entity.Person;
 import org.openoa.entity.Student;
 import org.openoa.base.entity.User;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.mapper.PersonMapper;
 import org.openoa.mapper.StudentMapper;
 import org.openoa.base.util.ThreadLocalContainer;
@@ -21,8 +21,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import javax.sql.DataSource;
 import java.util.Date;
 import java.util.Map;
-
-import static org.openoa.base.constant.StringConstants.*;
 
 /**
  *@Author JimuOffice
@@ -57,7 +55,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
         personMapper.deleteById(11);
         //TransactionStatus transactionStatus = TransactionAspectSupport.currentTransactionStatus();
         if(3==3){
-            throw new JiMuBizException("mock an exception throw out");
+            throw new AFBizException("mock an exception throw out");
         }
         personMapper.insert(person);
     }
@@ -69,7 +67,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
         user.setUserName("东西");
 
         if(3==3){
-            throw new JiMuBizException("mock an exception throw out");
+            throw new AFBizException("mock an exception throw out");
         }
     }
     @Transactional
@@ -81,7 +79,7 @@ public class PersonServiceImpl extends ServiceImpl<PersonMapper, Person> {
         studentMapper.deleteById(20);
 
         if(3==3){
-            throw new JiMuBizException("制造产生异常情况");
+            throw new AFBizException("制造产生异常情况");
         }
         studentMapper.insert(student);
     }

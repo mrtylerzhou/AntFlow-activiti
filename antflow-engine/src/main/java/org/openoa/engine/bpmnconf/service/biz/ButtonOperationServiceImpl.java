@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.factory.IAdaptorFactory;

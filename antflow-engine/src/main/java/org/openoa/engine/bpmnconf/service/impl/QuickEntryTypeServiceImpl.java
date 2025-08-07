@@ -2,11 +2,11 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.QuickEntryType;
+import org.openoa.base.entity.QuickEntryType;
 import org.openoa.engine.bpmnconf.mapper.QuickEntryTypeMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
 import org.openoa.engine.vo.QuickEntryVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -16,11 +16,8 @@ import java.util.List;
 /**
  * query entry curd service
  */
-@Service
-public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> {
-
-    @Autowired
-    private QuickEntryTypeMapper quickEntryTypeMapper;
+@Repository
+public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper, QuickEntryType> implements QuickEntryTypeService {
 
     /**
      * add quick entry
@@ -28,6 +25,7 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
      * @param vo
      * @return
      */
+    @Override
     public boolean addQuickEntryType(QuickEntryVo vo) {
         if (!CollectionUtils.isEmpty(vo.getTypes())) {
             List<QuickEntryType> quickEntryTypes = this.entryTypeList(vo.getId());
@@ -46,13 +44,7 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         return true;
     }
 
-    private List<QuickEntryType> entryTypeList(Integer quickEntryId) {
-        QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
-        wrapper.eq("is_del", 0);
-        wrapper.eq("quick_entry_id", quickEntryId);
-        return quickEntryTypeMapper.selectList(wrapper);
-    }
-
+    @Override
     public List<QuickEntryType> quickEntryTypeList(Boolean isApp) {
         QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
         wrapper.eq("is_del", 0);
@@ -61,6 +53,13 @@ public class QuickEntryTypeServiceImpl extends ServiceImpl<QuickEntryTypeMapper,
         } else {
             wrapper.eq("type", 1);
         }
-        return quickEntryTypeMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
+    }
+
+    private List<QuickEntryType> entryTypeList(Integer quickEntryId) {
+        QueryWrapper<QuickEntryType> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_del", 0);
+        wrapper.eq("quick_entry_id", quickEntryId);
+        return getBaseMapper().selectList(wrapper);
     }
 }

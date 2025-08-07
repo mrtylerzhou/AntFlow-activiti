@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.adp.orderedsignadp;
 
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
@@ -31,7 +31,7 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
     public List<String> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         BpmnNodePropertysVo propertysVo = nodeVo.getProperty();
         if(propertysVo==null){
-            throw new JiMuBizException("loop sign failure,node has no property!");
+            throw new AFBizException("loop sign failure,node has no property!");
         }
         String startUserId = bpmnStartConditions.getStartUserId();
 
@@ -52,23 +52,23 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
             }
         }
         if (loopNumberPlies==null && loopEndGrade==null) {
-            throw new JiMuBizException("组织线层层审批找人时，两个入参都为空！");
+            throw new AFBizException("组织线层层审批找人时，两个入参都为空！");
         }
         List<BaseIdTranStruVo> baseIdTranStruVos=null;
         if(loopNumberPlies!=null){
             baseIdTranStruVos= userService.queryLeadersByEmployeeIdAndTier(startUserId, loopNumberPlies);
             if(CollectionUtils.isEmpty(baseIdTranStruVos)){
-                throw new JiMuBizException("未能根据发起人找到层层审批人信息");
+                throw new AFBizException("未能根据发起人找到层层审批人信息");
             }
         }
         if(loopEndGrade!=null){
             baseIdTranStruVos=userService.queryLeadersByEmployeeIdAndGrade(startUserId, loopEndGrade);
             if(CollectionUtils.isEmpty(baseIdTranStruVos)){
-                throw new JiMuBizException("未能根据发起人找到汇报线审批人信息");
+                throw new AFBizException("未能根据发起人找到汇报线审批人信息");
             }
         }
         if(CollectionUtils.isEmpty(baseIdTranStruVos)){
-            throw new JiMuBizException("未能根据发起人找到审批人信息");
+            throw new AFBizException("未能根据发起人找到审批人信息");
         }
         List<String> approverIds = baseIdTranStruVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         List<String> finalApproverIds = new ArrayList<>();

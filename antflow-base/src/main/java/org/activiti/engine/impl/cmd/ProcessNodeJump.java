@@ -16,7 +16,7 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -298,7 +298,7 @@ public class ProcessNodeJump {
         TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(
                 taskId).singleResult();
         if (task == null) {
-            throw new JiMuBizException("任务实例未找到!");
+            throw new AFBizException("任务实例未找到!");
         }
         return task;
     }
@@ -530,7 +530,7 @@ public class ProcessNodeJump {
                         findTaskById(taskId).getProcessInstanceId())
                 .singleResult();
         if (processInstance == null) {
-            throw new JiMuBizException("流程实例未找到!");
+            throw new AFBizException("流程实例未找到!");
         }
         return processInstance;
     }

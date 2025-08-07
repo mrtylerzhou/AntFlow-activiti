@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.vo.BpmnConfVo;
 
 import java.util.List;

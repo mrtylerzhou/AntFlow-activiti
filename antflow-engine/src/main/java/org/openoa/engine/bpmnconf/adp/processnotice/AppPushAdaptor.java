@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.adp.processnotice;
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.vo.BaseMsgInfo;
 import org.openoa.base.vo.UserMsgVo;
-import org.openoa.engine.bpmnconf.util.UserMsgUtils;
+import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

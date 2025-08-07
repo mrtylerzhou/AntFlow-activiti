@@ -3,8 +3,8 @@ package org.openoa.engine.bpmnconf.service;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnConfLfFormdataField;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataFieldMapper;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class BpmnConfLfFormdataFieldServiceImpl extends ServiceImpl<BpmnConfLfFo
         List<BpmnConfLfFormdataField> allFields = this.list(Wrappers.<BpmnConfLfFormdataField>lambdaQuery()
                 .eq(BpmnConfLfFormdataField::getBpmnConfId, confId));
         if(CollectionUtils.isEmpty(allFields)){
-            throw new JiMuBizException("lowcode form data has no fields");
+            throw new AFBizException("lowcode form data has no fields");
         }
         Map<String,BpmnConfLfFormdataField> id2SelfMap=new HashMap<>();
         for (BpmnConfLfFormdataField field : allFields) {

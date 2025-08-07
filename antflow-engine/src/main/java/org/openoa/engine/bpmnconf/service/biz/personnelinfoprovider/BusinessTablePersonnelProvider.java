@@ -1,6 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
@@ -28,20 +28,20 @@ public class BusinessTablePersonnelProvider implements BpmnPersonnelProviderServ
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         BpmnNodePropertysVo property = bpmnNodeVo.getProperty();
         if(property==null){
-            throw new JiMuBizException("property can not be null");
+            throw new AFBizException("property can not be null");
         }
         Integer configurationTableType = property.getConfigurationTableType();
         Integer tableFieldType = property.getTableFieldType();
         if(tableFieldType==null){
-            throw new JiMuBizException("table field type can not be null!");
+            throw new AFBizException("table field type can not be null!");
         }
         BusinessConfTableFieldEnum tableFieldEnumByCode = BusinessConfTableFieldEnum.getTableFieldEnumByCode(tableFieldType);
         if(tableFieldEnumByCode==null){
-            throw new JiMuBizException("can not find BusinessConfTableFieldEnum by given fieldType");
+            throw new AFBizException("can not find BusinessConfTableFieldEnum by given fieldType");
         }
         ConfigurationTableAdapterEnum byTableFieldEnum = ConfigurationTableAdapterEnum.getByTableFieldEnum(tableFieldEnumByCode);
         if(byTableFieldEnum==null){
-            throw new JiMuBizException("can not find ConfigurationTableAdapterEnum by given fieldType");
+            throw new AFBizException("can not find ConfigurationTableAdapterEnum by given fieldType");
         }
         AbstractBusinessConfigurationAdaptor businessConfigurationAdaptor = adaptorFactory.getBusinessConfigurationAdaptor(byTableFieldEnum);
         List<BpmnNodeParamsAssigneeVo> bpmnNodeParamsAssigneeVos = businessConfigurationAdaptor.doFindBusinessPerson(bpmnNodeVo, startConditionsVo);

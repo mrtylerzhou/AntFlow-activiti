@@ -3,7 +3,7 @@ package org.openoa.base.constant.enums;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public enum JudgeOperatorEnum {
                 return value;
             }
         }
-        throw new JiMuBizException("操作符类型未定义");
+        throw new AFBizException("操作符类型未定义");
     }
     public static List<Integer> binaryOperator(){
         return Lists.newArrayList(6,7,8,9);

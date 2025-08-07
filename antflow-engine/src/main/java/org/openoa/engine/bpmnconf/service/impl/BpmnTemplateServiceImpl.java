@@ -2,24 +2,26 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.entity.BpmnTemplate;
 import org.openoa.base.util.AntCollectionUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.engine.bpmnconf.confentity.BpmnTemplate;
-import org.openoa.engine.bpmnconf.mapper.BpmnTemplateMapper;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnTemplateVo;
+import org.openoa.engine.bpmnconf.mapper.BpmnTemplateMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> {
+@Repository
+public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, BpmnTemplate> implements BpmnTemplateService {
 
+    @Override
     public void editBpmnTemplate(BpmnConfVo bpmnConfVo, Long confId) {
         List<BpmnTemplateVo> templateVos = bpmnConfVo.getTemplateVos();
         if (ObjectUtils.isEmpty(templateVos)) {
@@ -39,6 +41,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                     bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
                     bpmnTemplate.setFormCode(bpmnConfVo.getFormCode());
                     bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+                    bpmnTemplate.setTenantId(MultiTenantUtil.getCurrentTenantId());
                     return bpmnTemplate;
                 })
                 .collect(Collectors.toList());
@@ -46,6 +49,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
         this.saveBatch(bpmnTemplateList);
     }
 
+    @Override
     public void editBpmnTemplate(BpmnNodeVo bpmnNodeVo) {
         List<BpmnTemplateVo> templateVos = bpmnNodeVo.getTemplateVos();
         if (ObjectUtils.isEmpty(templateVos)) {
@@ -67,6 +71,7 @@ public class BpmnTemplateServiceImpl extends ServiceImpl<BpmnTemplateMapper, Bpm
                             bpmnTemplate.setMessageSendType(AntCollectionUtil.joinBaseNumIdTransVoToString(o.getMessageSendTypeList()));
                             bpmnTemplate.setFormCode(bpmnNodeVo.getFormCode());
                             bpmnTemplate.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+                            bpmnTemplate.setTenantId(MultiTenantUtil.getCurrentTenantId());
                             return bpmnTemplate;
                         })
                         .collect(Collectors.toList()));

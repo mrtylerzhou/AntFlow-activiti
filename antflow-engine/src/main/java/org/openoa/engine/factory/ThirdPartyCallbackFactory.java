@@ -17,18 +17,19 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.openoa.base.constant.enums.CallbackTypeEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmCallbackUrlConf;
+import org.openoa.base.entity.OutSideBpmCallbackUrlConf;
 import org.openoa.engine.bpmnconf.service.biz.BpmVerifyInfoBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
-import org.openoa.engine.bpmnconf.util.JsonUtils;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
+import org.openoa.engine.utils.JsonUtils;
 import org.openoa.engine.vo.CallbackReqVo;
 import org.openoa.engine.vo.CallbackRespVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
@@ -107,7 +108,7 @@ public class ThirdPartyCallbackFactory {
         try {
 
             if (ObjectUtils.isEmpty(bpmnConfVo.getBusinessPartyId())) {
-                throw new JiMuBizException("业务方缺失，操作失败！");
+                throw new AFBizException("业务方缺失，操作失败！");
             }
 
             CallbackAdaptor callbackAdaptor = getCallbackAdaptor(callbackTypeEnum.getBeanId());
@@ -132,7 +133,7 @@ public class ThirdPartyCallbackFactory {
             callbackReqVo.setEventType(callbackTypeEnum.getMark());
 
             //查询业务方标识
-            OutSideBpmBusinessPartyServiceImpl bean = SpringBeanUtils.getBean(OutSideBpmBusinessPartyServiceImpl.class);
+            OutSideBpmBusinessPartyBizService bean = SpringBeanUtils.getBean(OutSideBpmBusinessPartyBizService.class);
             String businessPartyMarkById = bean.getBusinessPartyMarkById(bpmnConfVo.getBusinessPartyId());
 
             //设置入参业务方标识
@@ -224,14 +225,14 @@ public class ThirdPartyCallbackFactory {
                 }
 
                 if (!StringUtils.isEmpty(messageStr)) {
-                    throw new JiMuBizException(messageStr);
+                    throw new AFBizException(messageStr);
                 } else {
-                    throw new JiMuBizException("工作流对外服务回调失败");
+                    throw new AFBizException("工作流对外服务回调失败");
                 }
 
             }
 
-        } catch (JiMuBizException e) {
+        } catch (AFBizException e) {
             log.error("工作流对外服务回调失败，回调类型：{}，请求头信息{}，入参：{}，出参：{}",
                     callbackTypeEnum.getMark(),
                     JSON.toJSONString(heads),

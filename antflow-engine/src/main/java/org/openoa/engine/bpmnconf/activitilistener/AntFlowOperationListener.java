@@ -5,7 +5,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
     @Autowired
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService variableMessageBizService;
     @Autowired
     private BpmVariableMessageListenerServiceImpl bpmVariableMessageListenerService;
 
@@ -32,7 +32,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(), SecurityUtils.getLogInEmpNameSafe());
         }
-        bpmVariableMessageService.sendTemplateMessages(businessData);
+        variableMessageBizService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -51,7 +51,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
-        bpmVariableMessageService.sendTemplateMessages(businessData);
+        variableMessageBizService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -117,7 +117,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onBackToModify(BusinessDataVo businessData) {
-        bpmVariableMessageService.sendTemplateMessages(businessData);
+        variableMessageBizService.sendTemplateMessages(businessData);
     }
 
     /**
@@ -125,7 +125,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onJp(BusinessDataVo businessData) {
-        bpmVariableMessageService.sendTemplateMessages(businessData);
+        variableMessageBizService.sendTemplateMessages(businessData);
     }
 
     /**

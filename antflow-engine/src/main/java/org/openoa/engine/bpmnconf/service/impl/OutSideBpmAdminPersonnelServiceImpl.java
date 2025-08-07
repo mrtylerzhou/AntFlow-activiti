@@ -3,10 +3,10 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmAdminPersonnel;
+import org.openoa.base.entity.OutSideBpmAdminPersonnel;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmAdminPersonnelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -15,17 +15,15 @@ import java.util.List;
  * thirdy party process service-business party admin personnel management
  * @since 0.5
  */
-@Service
-public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> {
-
-    @Autowired
-    private OutSideBpmAdminPersonnelMapper outSideBpmAdminPersonnelMapper;
+@Repository
+public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmAdminPersonnelMapper, OutSideBpmAdminPersonnel> implements OutSideBpmAdminPersonnelService {
 
     /**
      * query business party id list by employee id
      * @param employeeId
      * @return
      */
+    @Override
     public List<Integer> getBusinessPartyIdByEmployeeId(String employeeId, String... permCodes) {
 
         List<Integer> types = Lists.newArrayList();
@@ -36,7 +34,7 @@ public class OutSideBpmAdminPersonnelServiceImpl extends ServiceImpl<OutSideBpmA
             }
         }
 
-        return outSideBpmAdminPersonnelMapper.getBusinessPartyIdByEmployeeId(employeeId, types);
+        return getBaseMapper().getBusinessPartyIdByEmployeeId(employeeId, types);
     }
 
 

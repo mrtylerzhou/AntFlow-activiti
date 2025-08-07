@@ -8,12 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.adp.FilterDataAdaptor;
 import org.openoa.base.constant.enums.FilterDataEnum;
-import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.vo.PageSortVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -266,9 +265,9 @@ public class PageUtils {
      * @param <T>
      * @return
      */
-    public static <T> T getPageList(Integer page, Integer pageSize, Integer pageTotalCount, List<?> list) throws JiMuBizException {
+    public static <T> T getPageList(Integer page, Integer pageSize, Integer pageTotalCount, List<?> list) throws AFBizException {
         if (page > pageTotalCount) {
-            throw new JiMuBizException("999", "wrong page count info");
+            throw new AFBizException("999", "wrong page count info");
         }
         if (!page.equals(pageTotalCount)) {
             return (T) list.subList((page - 1) * pageSize, page * pageSize);

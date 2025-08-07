@@ -1,8 +1,8 @@
 package org.openoa.engine.bpmnconf.service.tagparser;
 
 import org.openoa.base.constant.StringConstants;
-import org.openoa.engine.factory.TagParser;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.factory.TagParser;
 
 public class ActivitiTagParser implements TagParser<String,BusinessDataVo> {
     @Override

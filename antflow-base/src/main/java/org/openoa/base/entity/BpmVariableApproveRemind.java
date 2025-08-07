@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.interf.TenantField;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_bpm_variable_approve_remind")
-public class BpmVariableApproveRemind {
+public class BpmVariableApproveRemind implements TenantField, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +54,8 @@ public class BpmVariableApproveRemind {
 
     @TableField("is_del")
     private Integer isDel;
+    @TableField("tenant_id")
+    private String tenantId;
     /**
      * create user
      */
