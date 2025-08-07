@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
@@ -11,7 +11,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.ProcessActionButtonVo;
 import org.openoa.engine.bpmnconf.common.ConfigFlowButtonContans;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +20,10 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.Map;
 
-import static org.openoa.base.constant.enums.ProcessOperationEnum.*;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
-import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_VIEW_BUSINESS_PROCESS;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
+import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
 @Service
 public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
@@ -36,13 +36,13 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
     @Autowired
     private ConfigFlowButtonContans configFlowButtonContans;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpBizService variableSignUpBizService;
 
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(businessDataVo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
-            throw  new JiMuBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
+            throw  new AFBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
         }
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
         businessDataVo =formFactory.getFormAdaptor(businessDataVo).queryData(businessDataVo);
@@ -68,7 +68,7 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
 
         //check whether current node is a signup node and set the property
         String nodeId = businessDataVo.getProcessRecordInfo().getNodeId();
-        Boolean nodeIsSignUp = bpmVariableSignUpService.checkNodeIsSignUp(businessDataVo.getProcessNumber(), nodeId);
+        Boolean nodeIsSignUp = variableSignUpBizService.checkNodeIsSignUp(businessDataVo.getProcessNumber(), nodeId);
         businessDataVo.setIsSignUpNode(nodeIsSignUp);
         //add a "choose a verifier" button if it is a signup node
         if (nodeIsSignUp) {

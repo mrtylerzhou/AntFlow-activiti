@@ -13,7 +13,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +106,7 @@ public class ProcessConstants extends ProcessServiceFactory {
         if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
             TaskMgmtVO taskMgmtVO = taskMgmtService.findByTask(TaskMgmtVO.builder().businessId(businessId).code(processCode).build());
             if (!ObjectUtils.isEmpty(taskMgmtVO)) {
-                throw new JiMuBizException("00", "current task is finished！！！");
+                throw new AFBizException("00", "current task is finished！！！");
             } else {
                 return taskMgmtVO.getTaskId();
             }
@@ -132,7 +132,7 @@ public class ProcessConstants extends ProcessServiceFactory {
             return null;
         }
         if(StringUtils.isEmpty(procInstId)){
-            throw new JiMuBizException("taskId不为空,流程实例Id不存在!");
+            throw new AFBizException("taskId不为空,流程实例Id不存在!");
         }
         List<ActHiTaskinst> list = actHiTaskinstService.queryRecordsByProcInstIdOrderByCreateTimeDesc(procInstId);
         ActHiTaskinst historicTaskInstance = list.stream().filter(a ->a.getEndTime()!=null&& !taskDefKey.equals(a.getTaskDefKey())).findFirst().orElse(null);

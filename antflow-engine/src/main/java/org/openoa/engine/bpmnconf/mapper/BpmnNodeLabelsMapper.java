@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeLabel;
+import org.openoa.base.entity.BpmnNodeLabel;
 
 @Mapper
 public interface BpmnNodeLabelsMapper extends BaseMapper<BpmnNodeLabel> {

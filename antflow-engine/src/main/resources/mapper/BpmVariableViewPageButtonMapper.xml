@@ -5,7 +5,7 @@
 
 
     <resultMap id="BaseResultMap"
-               type="org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton">
+               type="org.openoa.base.entity.BpmVariableViewPageButton">
         <id column="id" property="id"/>
         <result column="variable_id" property="variableId"/>
         <result column="view_type" property="viewType"/>
@@ -31,7 +31,7 @@
     </sql>
 
     <select id="getButtonsByProcessNumber"
-            resultType="org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton">
+            resultType="org.openoa.base.entity.BpmVariableViewPageButton">
         SELECT btn.id,
                btn.variable_id AS variableId,
                btn.view_type

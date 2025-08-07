@@ -3,8 +3,6 @@ package org.openoa.base.service;
 import org.apache.commons.lang3.EnumUtils;
 import org.openoa.base.interf.BusinessCallBackAdaptor;
 import org.openoa.base.util.SpringBeanUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 

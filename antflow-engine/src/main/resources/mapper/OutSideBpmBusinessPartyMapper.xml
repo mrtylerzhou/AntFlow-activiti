@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper">
 
     <!-- common field map -->
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.OutSideBpmBusinessParty">
         <id column="id" property="id"/>
         <result column="business_party_mark" property="businessPartyMark"/>
         <result column="name" property="name"/>

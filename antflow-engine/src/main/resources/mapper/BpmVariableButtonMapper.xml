@@ -4,7 +4,7 @@
 
     <!-- common resultMap -->
     <resultMap id="BaseResultMap"
-               type="org.openoa.engine.bpmnconf.confentity.BpmVariableButton">
+               type="org.openoa.base.entity.BpmVariableButton">
         <id column="id" property="id"/>
         <result column="variable_id" property="variableId"/>
         <result column="element_id" property="elementId"/>
@@ -32,7 +32,7 @@
 		updateTime
     </sql>
 
-    <select id="getButtonsByProcessNumber" resultType="org.openoa.engine.bpmnconf.confentity.BpmVariableButton">
+    <select id="getButtonsByProcessNumber" resultType="org.openoa.base.entity.BpmVariableButton">
         SELECT btn.id,
                btn.variable_id AS variableId,
                btn.element_id  AS elementId,

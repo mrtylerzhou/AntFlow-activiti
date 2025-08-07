@@ -2,10 +2,10 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.engine.bpmnconf.confentity.Department;
+import org.openoa.base.entity.Department;
 import org.openoa.engine.bpmnconf.mapper.DepartmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * @since 0.5
  */
 @Slf4j
-@Service
+@Repository
 public class DepartmentServiceImpl {
     @Autowired
     private DepartmentMapper departmentMapper;;

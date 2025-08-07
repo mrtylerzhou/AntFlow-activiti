@@ -9,6 +9,7 @@ import org.openoa.base.vo.ConfDetailRequestDto;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBizService;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
 import org.openoa.engine.vo.OutSideBpmAccessRespVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class OutSideBpmAccessController {
 
     @Autowired
-    private OutSideBpmAccessBusinessServiceImpl outSideBpmAccessBusinessService;
+    private OutSideBpmAccessBusinessBizService outSideBpmAccessBusinessService;
 
     @Autowired
     private OutSideBpmConditionsTemplateServiceImpl outSideBpmConditionsTemplateService;

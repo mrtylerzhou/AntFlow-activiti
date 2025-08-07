@@ -75,7 +75,7 @@ public class AutoParseProxyFactory {
             CtMethod newMethod = new CtMethod(declaredMethodReturnType, declaredMethodName, declaredMethodParameterTypes, targetClass);
             String body = "{\n" +
                     "    if ($1 == null) {\n" +
-                    "        throw new org.openoa.base.exception.JiMuBizException(\"provided data to find an adaptor method is null\");\n" +
+                    "        throw new org.openoa.base.exception.AFBizException(\"provided data to find an adaptor method is null\");\n" +
                     "    }\n" +
                     "    java.util.Collection beans = org.openoa.base.util.SpringBeanUtils.getBeans(" + returnTypeName + ".class);\n" +
                     "    java.util.Iterator iterator = beans.iterator();\n" +

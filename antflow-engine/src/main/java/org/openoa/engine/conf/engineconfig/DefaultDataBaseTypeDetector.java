@@ -1,7 +1,7 @@
 package org.openoa.engine.conf.engineconfig;
 
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 import javax.sql.DataSource;
@@ -21,7 +21,7 @@ public class DefaultDataBaseTypeDetector {
             String dbName = mapDatabaseType(databaseDriver);
             return dbName;
         } catch (SQLException e) {
-            throw new JiMuBizException("can not get database produce name"+e.getMessage());
+            throw new AFBizException("can not get database produce name"+e.getMessage());
         }
     }
 

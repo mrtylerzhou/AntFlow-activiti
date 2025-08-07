@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.common;
 
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
@@ -10,7 +9,7 @@ import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -19,10 +18,12 @@ import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessForward;
-import org.openoa.engine.bpmnconf.confentity.BpmVariable;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
+import org.openoa.base.entity.BpmProcessForward;
+import org.openoa.base.entity.BpmVariable;
+import org.openoa.base.entity.BpmVariableSignUp;
 import org.openoa.engine.bpmnconf.service.impl.*;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,9 +58,9 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
-    private BpmVerifyInfoServiceImpl verifyInfoService;
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
 
 
 
@@ -75,12 +76,12 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         }
         //check permissions
         if (!this.showProcessData(bpmBusinessProcess.getBusinessNumber())) {
-            throw new JiMuBizException("00", "current user has no access right！");
+            throw new AFBizException("00", "current user has no access right！");
         }
         //set task state
         processInfoVo.setTaskState(ProcessStateEnum.getDescByCode(bpmBusinessProcess.getProcessState()));
         //process's verify info
-        processInfoVo.setVerifyInfoList(verifyInfoService.verifyInfoList(bpmBusinessProcess));
+        processInfoVo.setVerifyInfoList(bpmVerifyInfoBizService.verifyInfoList(bpmBusinessProcess));
         //set process desc
         processInfoVo.setProcessTitle(bpmBusinessProcess.getDescription());
 
@@ -125,7 +126,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .eq(BpmVariableMultiplayer::getVariableId, variableId)
                     .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
             if(StringUtils.isBlank(nodeId)){
-                List<BpmVariableSignUp> signUpList = bpmVariableSignUpService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
+                List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
                 BpmVariableSignUp  signUpParent=null;
                 if(!CollectionUtils.isEmpty(signUpList)){
                     for (BpmVariableSignUp bpmVariableSignUp : signUpList) {

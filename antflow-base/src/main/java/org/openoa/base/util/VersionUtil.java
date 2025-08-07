@@ -1,7 +1,7 @@
 package org.openoa.base.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 
 public class VersionUtil {
 
@@ -9,9 +9,9 @@ public class VersionUtil {
 
      * @param nowAppVersion  App now version
      * @param lastAppVersion the mim support version
-     * @throws JiMuBizException
+     * @throws AFBizException
      */
-    public static void checkAppVersion(String nowAppVersion, String lastAppVersion) throws JiMuBizException {
+    public static void checkAppVersion(String nowAppVersion, String lastAppVersion) throws AFBizException {
         if (StringUtils.isNotEmpty(nowAppVersion) && StringUtils.isNotEmpty(lastAppVersion)) {
             String msg = "current version is not supported,please download the latest version!";
             Long longNowVersion = 0L;
@@ -22,7 +22,7 @@ public class VersionUtil {
             } catch (Exception e) {
             }
             if (longNowVersion < longLastVersion) {
-                throw new JiMuBizException(msg);
+                throw new AFBizException(msg);
             }
         }
     }

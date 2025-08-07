@@ -3,19 +3,17 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
+import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmProcessDeptVo;
-import org.openoa.engine.bpmnconf.confentity.BpmProcessPermissions;
-import org.openoa.engine.bpmnconf.confentity.Department;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessPermissionsMapper;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessPermissionsService;
 import org.openoa.engine.vo.GenericEmployee;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -23,13 +21,9 @@ import java.util.stream.Collectors;
  *
  * @since 0.5
  */
-@Service
-public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPermissionsMapper, BpmProcessPermissions> {
+@Repository
+public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPermissionsMapper, BpmProcessPermissions> implements BpmProcessPermissionsService {
 
-    @Autowired
-    private BpmProcessPermissionsMapper bpmProcessPermissionsMapper;
-    @Autowired
-    private DepartmentServiceImpl departmentService;
 
     public void saveProcessPermissions(BpmProcessDeptVo vo) {
         GenericEmployee genericEmployee =new GenericEmployee();
@@ -37,12 +31,12 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         genericEmployee.setUsername(SecurityUtils.getLogInEmpNameSafe());
         QueryWrapper<BpmProcessPermissions> permissionsWrapper = new QueryWrapper<>();
         permissionsWrapper.eq("process_key", vo.getProcessKey());
-        bpmProcessPermissionsMapper.delete(permissionsWrapper);
+        getBaseMapper().delete(permissionsWrapper);
 
         //employee's create permission
         if (!CollectionUtils.isEmpty(vo.getCreateUserIds())) {
             vo.getCreateUserIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
                         .userId(o)
                         .processKey(vo.getProcessKey())
@@ -54,7 +48,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //process department permissions
         if (!CollectionUtils.isEmpty(vo.getCreateDeptIds())) {
             vo.getCreateDeptIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
                         .depId(o)
                         .processKey(vo.getProcessKey())
@@ -66,7 +60,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //process department readonly permissions
         if (!CollectionUtils.isEmpty(vo.getViewdeptIds())) {
             vo.getViewdeptIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
                         .depId(o)
                         .processKey(vo.getProcessKey())
@@ -78,7 +72,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //employee readonly permissions
         if (!CollectionUtils.isEmpty(vo.getViewUserIds())) {
             vo.getViewUserIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
                         .userId(o)
                         .processKey(vo.getProcessKey())
@@ -90,7 +84,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //employee control permissions
         if (!CollectionUtils.isEmpty(vo.getControlUserIds())) {
             vo.getControlUserIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
                         .userId(o)
                         .processKey(vo.getProcessKey())
@@ -102,7 +96,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //department control permissions
         if (!CollectionUtils.isEmpty(vo.getControlDeptIds())) {
             vo.getControlDeptIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
                         .depId(o)
                         .processKey(vo.getProcessKey())
@@ -114,7 +108,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //permissions based on working place
         if (!CollectionUtils.isEmpty(vo.getCreateOfficeIds())) {
             vo.getCreateOfficeIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.CREATE_TYPE.getCode())
                         .officeId(o)
                         .processKey(vo.getProcessKey())
@@ -126,7 +120,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         //permissions based on working place
         if (!CollectionUtils.isEmpty(vo.getViewOfficeIds())) {
             vo.getViewOfficeIds().forEach(o -> {
-                bpmProcessPermissionsMapper.insert(BpmProcessPermissions.builder()
+                getBaseMapper().insert(BpmProcessPermissions.builder()
                         .permissionsType(ProcessJurisdictionEnum.VIEW_TYPE.getCode())
                         .officeId(o)
                         .processKey(vo.getProcessKey())
@@ -145,6 +139,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
      * @param isUser
      * @return
      */
+    @Override
     public List<BpmProcessPermissions> permissionsList(String processKey, Integer permissionsType, boolean isUser) {
         QueryWrapper<BpmProcessPermissions> permissionsWrapper = new QueryWrapper<>();
         permissionsWrapper.eq("process_key", processKey);
@@ -154,7 +149,7 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
         } else {
             permissionsWrapper.ne("dep_id", ' ');
         }
-        return bpmProcessPermissionsMapper.selectList(permissionsWrapper);
+        return getBaseMapper().selectList(permissionsWrapper);
     }
 
     /**
@@ -164,48 +159,14 @@ public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPerm
      * @param permissionsType
      * @return
      */
+    @Override
     public List<BpmProcessPermissions> permissionsList(String processKey, Integer permissionsType) {
         QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();
         wrapper.eq("process_key", processKey);
         wrapper.eq("permissions_type", permissionsType);
         wrapper.ne("office_id", ' ');
-        return bpmProcessPermissionsMapper.selectList(wrapper);
+        return getBaseMapper().selectList(wrapper);
     }
 
-    /**
-     * check whether the user has permission
-     */
-    public boolean getJurisdiction(String processKey) {
-        List<String> processKeyList = this.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CONTROL_TYPE.getCode());
-        if (processKeyList.contains(processKey)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * get a list of specified user's permissions
-     */
-    public List<String> getProcessKey(String userId, Integer type) {
-        QueryWrapper<BpmProcessPermissions> permissionsWrapper = new QueryWrapper<>();
-        permissionsWrapper.eq("permissions_type", type);
-        permissionsWrapper.eq("user_id", userId);
-        List<BpmProcessPermissions> list = bpmProcessPermissionsMapper.selectList(permissionsWrapper);
-        //根据员工获取下级部门
-        List<Department> departmentVos = departmentService.ListSubDepartmentByEmployeeId(userId);
-        List<Integer> depList = departmentVos.stream().map(Department::getId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(depList)) {
-            QueryWrapper<BpmProcessPermissions> wrapper = new QueryWrapper<>();
-            wrapper.eq("permissions_type", type);
-            wrapper.in("dep_id", depList);
-            List<BpmProcessPermissions> permissionsList = bpmProcessPermissionsMapper.selectList(wrapper);
-            list.addAll(permissionsList);
-        }
-
-        //deduplication
-        List<String> processKeyList = list.stream().map(BpmProcessPermissions::getProcessKey).distinct().collect(Collectors.toList());
-        return processKeyList;
-    }
 
 }

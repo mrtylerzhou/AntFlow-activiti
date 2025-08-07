@@ -1,7 +1,7 @@
 package org.openoa.base.util;
 
 import com.google.common.base.Strings;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class AssertUtil {
         errorMsg=Strings.lenientFormat(sb.toString(),params);
 
         if(ObjectUtils.isEmpty(object)){
-            throw new JiMuBizException(errorMsg);
+            throw new AFBizException(errorMsg);
         }
 
     }

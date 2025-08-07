@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.base.Strings;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
-import org.openoa.common.util.AssigneeVoBuildUtils;
 import org.openoa.base.vo.*;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.common.util.AssigneeVoBuildUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -28,11 +28,11 @@ public class UserPointedPersonnelProvider implements BpmnPersonnelProviderServic
     @Override
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList( BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         if(bpmnNodeVo==null){
-            throw new JiMuBizException("node can not be null!");
+            throw new AFBizException("node can not be null!");
         }
         BpmnNodePropertysVo propertysVo = bpmnNodeVo.getProperty();
         if (ObjectUtils.isEmpty(propertysVo) || ObjectUtils.isEmpty(propertysVo.getEmplIds())) {
-            throw new JiMuBizException("appointed assignee doest not meet basic condition,can not go on");
+            throw new AFBizException("appointed assignee doest not meet basic condition,can not go on");
         }
         String elementName=bpmnNodeVo.getNodeName();
         if(Strings.isNullOrEmpty(elementName)){
@@ -41,7 +41,7 @@ public class UserPointedPersonnelProvider implements BpmnPersonnelProviderServic
         if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
             List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
             if(CollectionUtils.isEmpty(emplList)){
-                throw new JiMuBizException("thirdy party process role node has no employee info");
+                throw new AFBizException("thirdy party process role node has no employee info");
             }
           return assigneeVoBuildUtils.buildVOs(emplList,elementName,false);
         }

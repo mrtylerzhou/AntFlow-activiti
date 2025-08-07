@@ -7,16 +7,16 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.confentity.BpmnConf;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfCommonServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
+import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.entity.OutSideBpmBusinessParty;
+import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
@@ -39,10 +39,10 @@ import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
 public class BpmnSendMessageAspect {
 
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService bpmVariableMessageBizService;
 
     @Autowired
-    private BpmnConfCommonServiceImpl bpmnConfCommonService;
+    private BpmnConfBizServiceImpl bpmnConfCommonService;
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired
@@ -58,7 +58,7 @@ public class BpmnSendMessageAspect {
         BusinessDataVo businessDataVo = getBusinessDataVo(joinPoint.getArgs());
 
         if (businessDataVo == null) {
-            throw new JiMuBizException("入参为空，请检查你的参数！");
+            throw new AFBizException("入参为空，请检查你的参数！");
         }
         
 
@@ -70,7 +70,7 @@ public class BpmnSendMessageAspect {
 
         //check whether form code is valid
         if (ObjectUtils.isEmpty(bpmnConf) || ObjectUtils.isEmpty(bpmnConf.getId())) {
-            throw new JiMuBizException("表单编号[" + businessDataVo.getFormCode() + "]未匹配到工作流配置，请检查入参或工作流相关配置");
+            throw new AFBizException("表单编号[" + businessDataVo.getFormCode() + "]未匹配到工作流配置，请检查入参或工作流相关配置");
         }
         if (bpmnConf.getIsOutSideProcess() == 1) {
             businessDataVo.setIsOutSideAccessProc(true);
@@ -122,7 +122,7 @@ public class BpmnSendMessageAspect {
 
 
             //get bpmn variable message vo
-            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
+            vo = bpmVariableMessageBizService.fromBusinessDataVo(businessDataVo);
 
             /**
              * 因为发起流程组装流程发送vo对象是一个后置操作，所以从流程引擎中查到的是发起节点的下一个节点
@@ -133,7 +133,7 @@ public class BpmnSendMessageAspect {
         } else {
 
             //get bpmn variable message vo
-            vo = bpmVariableMessageService.fromBusinessDataVo(businessDataVo);
+            vo = bpmVariableMessageBizService.fromBusinessDataVo(businessDataVo);
 
 
             //get process operation enum by operation type
@@ -154,7 +154,7 @@ public class BpmnSendMessageAspect {
                 vo.setIsOutside(true);
                 businessDataVo.setIsOutSideAccessProc(true);
             }
-            bpmVariableMessageService.sendTemplateMessagesAsync(vo);
+            bpmVariableMessageBizService.sendTemplateMessagesAsync(vo);
         }
 
     }
@@ -193,7 +193,7 @@ public class BpmnSendMessageAspect {
             ProcessOperationAdaptor bean = adaptorFactory.getProcessOperation(businessDataVo);
 
             if (bean==null) {
-                throw new JiMuBizException(StringUtils.join(processOperationEunm.getDesc(), "功能实现未匹配，方法执行失败！"));
+                throw new AFBizException(StringUtils.join(processOperationEunm.getDesc(), "功能实现未匹配，方法执行失败！"));
             }
 
 

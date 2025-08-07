@@ -15,15 +15,16 @@ import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsConf;
-import org.openoa.engine.bpmnconf.confentity.BpmnNodeConditionsParamConf;
+import org.openoa.base.entity.BpmnNodeConditionsConf;
+import org.openoa.base.entity.BpmnNodeConditionsParamConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper;
 import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsParamConfServiceImpl;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.engine.bpmnconf.util.BpmnConfNodePropertyConverter;
+import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
+import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -122,7 +123,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum
                         .getEnumByCode(nodeConditionsParamConf.getConditionParamType());
                 if(conditionTypeEnum==null){
-                    throw  new JiMuBizException("can not get ConditionTypeEnum by code:"+nodeConditionsParamConf.getConditionParamType());
+                    throw  new AFBizException("can not get ConditionTypeEnum by code:"+nodeConditionsParamConf.getConditionParamType());
                 }
                 Integer condGroup = nodeConditionsParamConf.getCondGroup();
                 String conditionParamJsom = nodeConditionsParamConf.getConditionParamJsom();
@@ -208,7 +209,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
             if(!CollectionUtils.isEmpty(voMap)){
                 BpmnNodeConditionsConfVueVo vueVo = voMap.get(columnDbname);
                 if(vueVo==null){
-                    throw new JiMuBizException("logic error!");
+                    throw new AFBizException("logic error!");
                 }
                 //String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
             }
@@ -254,6 +255,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
         bpmnNodeConditionsConf.setExtJson(bpmnNodeConditionsConfBaseVo.getExtJson());
         bpmnNodeConditionsConf.setCreateTime(new Date());
         bpmnNodeConditionsConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+        bpmnNodeConditionsConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         confMapper.insert(bpmnNodeConditionsConf);
 
 
@@ -283,7 +285,7 @@ public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
                     String columnDbname = extField.getColumnDbname();
                     ConditionTypeEnum conditionTypeEnum=ConditionTypeEnum.getEnumByCode(Integer.parseInt(columnId));
                     if(conditionTypeEnum==null){
-                        throw new JiMuBizException(Strings.lenientFormat("can not get node ConditionTypeEnum by code:%s",columnId));
+                        throw new AFBizException(Strings.lenientFormat("can not get node ConditionTypeEnum by code:%s",columnId));
                     }
                     Object conditionParam = null;
                     if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){

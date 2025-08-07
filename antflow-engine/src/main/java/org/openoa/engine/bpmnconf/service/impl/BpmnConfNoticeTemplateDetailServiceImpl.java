@@ -1,9 +1,10 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmnConfNoticeTemplateDetail;
+import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfNoticeTemplateDetailMapper;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
+import org.springframework.stereotype.Repository;
 
 /**
  * @Classname BpmnConfNoticeTemplateDetailServiceImpl
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @Date 2021-11-06 8:10
  * @Created by AntOffice
  */
-@Service
-public class BpmnConfNoticeTemplateDetailServiceImpl extends ServiceImpl<BpmnConfNoticeTemplateDetailMapper, BpmnConfNoticeTemplateDetail> {
+@Repository
+public class BpmnConfNoticeTemplateDetailServiceImpl extends ServiceImpl<BpmnConfNoticeTemplateDetailMapper, BpmnConfNoticeTemplateDetail> implements BpmnConfNoticeTemplateDetailService {
 
 }

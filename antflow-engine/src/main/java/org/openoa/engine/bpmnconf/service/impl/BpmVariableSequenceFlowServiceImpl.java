@@ -1,10 +1,10 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSequenceFlow;
+import org.openoa.base.entity.BpmVariableSequenceFlow;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableSequenceFlowMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSequenceFlowService;
+import org.springframework.stereotype.Repository;
 
 /**
  * @Classname BpmVariableSequenceFlowServiceImpl
@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
  * @Date 2021-11-27 15:39
  * @Created by AntOffice
  */
-@Service
-public class BpmVariableSequenceFlowServiceImpl extends ServiceImpl<BpmVariableSequenceFlowMapper, BpmVariableSequenceFlow> {
-    @Autowired
-    private BpmVariableSequenceFlowMapper mapper;
+@Repository
+public class BpmVariableSequenceFlowServiceImpl extends ServiceImpl<BpmVariableSequenceFlowMapper, BpmVariableSequenceFlow> implements BpmVariableSequenceFlowService {
+
 }

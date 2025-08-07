@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataMapper">
 
-    <select id="getByFormCode" resultType="org.openoa.engine.bpmnconf.confentity.BpmnConfLfFormdata">
+    <select id="getByFormCode" resultType="org.openoa.base.entity.BpmnConfLfFormdata">
         select tbclf.*
         from t_bpmn_conf_lf_formdata tbclf
         inner join t_bpmn_conf tbc on tbclf.bpmn_conf_id = tbc.id and tbc.effective_status = 1 and tbc.form_code=#{formCode}

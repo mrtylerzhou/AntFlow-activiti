@@ -3,9 +3,9 @@ package org.openoa.engine.bpmnconf.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.openoa.base.entity.BpmVariableSignUpPersonnel;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUpPersonnel;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 

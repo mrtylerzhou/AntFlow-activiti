@@ -8,7 +8,7 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
@@ -82,11 +82,11 @@ public class ActivitiAdditionalInfoServiceImpl {
     }
     public PvmActivity getNextElement(String elementId,String procInstId){
         if(StringUtils.isAnyBlank(elementId,procInstId)){
-            throw new JiMuBizException("获取流程下一节点失败,elementId或procInstId值为空!");
+            throw new AFBizException("获取流程下一节点失败,elementId或procInstId值为空!");
         }
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(procInstId);
         if(StringUtils.isBlank(procDefIdByInstId)){
-            throw new JiMuBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
+            throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
         }
         List<ActivityImpl> activitiList = getActivitiList(procDefIdByInstId);
         return getNextElement(elementId,activitiList);

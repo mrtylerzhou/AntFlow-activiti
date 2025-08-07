@@ -3,8 +3,7 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.openoa.engine.bpmnconf.confentity.Department;
-import org.springframework.stereotype.Repository;
+import org.openoa.base.entity.Department;
 
 import java.util.List;
 

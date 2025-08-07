@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.Result;
-import org.openoa.base.exception.JiMuBizException;
+import org.openoa.base.exception.AFBizException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -114,8 +114,8 @@ public class GlobalExceptionHandler {
         }
 
         // 业务异常捕获
-        if (throwable instanceof JiMuBizException) {
-            JiMuBizException e = (JiMuBizException) throwable;
+        if (throwable instanceof AFBizException) {
+            AFBizException e = (AFBizException) throwable;
             return buildResponseEntity(0, Integer.parseInt(e.getCode()), e.getMessage(), "");
         }
 

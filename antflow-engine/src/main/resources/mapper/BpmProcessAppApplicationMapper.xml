@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper">
 
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmProcessAppApplication">
         <id column="id" property="id"/>
         <result column="business_code" property="businessCode"/>
         <result column="process_name" property="title"/>
@@ -154,7 +154,7 @@
         </if>
         order by t.sort asc
     </select>
-    <select id="findProcessAppApplication" resultType="org.openoa.engine.bpmnconf.confentity.BpmProcessAppApplication">
+    <select id="findProcessAppApplication" resultType="org.openoa.base.entity.BpmProcessAppApplication">
         select id,
                process_key AS processKey,
                process_name AS processName,

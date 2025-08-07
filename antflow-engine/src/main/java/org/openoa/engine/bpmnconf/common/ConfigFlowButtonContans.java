@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.common;
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
@@ -13,17 +12,17 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.util.FilterUtil;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.ProcessActionButtonVo;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableButton;
+import org.openoa.base.entity.BpmVariableButton;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableSignUp;
-import org.openoa.engine.bpmnconf.confentity.BpmVariableViewPageButton;
+import org.openoa.base.entity.BpmVariableSignUp;
+import org.openoa.base.entity.BpmVariableViewPageButton;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -53,7 +52,7 @@ public class ConfigFlowButtonContans {
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
-    private BpmVariableSignUpServiceImpl variableSignUpService;
+    private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
 
@@ -212,7 +211,7 @@ public class ConfigFlowButtonContans {
     public boolean isMoreNode(String processNum,String procInstId, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
         if(list==null){
-            List<BpmVariableSignUp> signUpList = variableSignUpService.getSignUpList(processNum);
+            List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(processNum);
             if(!CollectionUtils.isEmpty(signUpList)){
                 List<String> subElementStrs = signUpList.stream().map(BpmVariableSignUp::getSubElements).collect(Collectors.toList());
                 for (String subElementStr : subElementStrs) {

@@ -6,19 +6,27 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
-import org.openoa.base.util.SecurityUtils;
-import org.openoa.common.constant.enus.ElementPropertyEnum;
 import org.openoa.base.constant.enums.ElementTypeEnum;
 import org.openoa.base.constant.enums.ViewPageTypeEnum;
-import org.openoa.engine.bpmnconf.confentity.*;
-import org.openoa.engine.bpmnconf.service.impl.*;
+import org.openoa.base.entity.*;
+import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.adaptor.BpmnInsertVariableSubs;
-import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.common.constant.enus.ElementPropertyEnum;
+import org.openoa.engine.bpmnconf.service.impl.*;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSequenceFlowService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableViewPageButtonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
@@ -28,26 +36,26 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-@Component
+@Service
 public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
 
     @Autowired
-    private BpmVariableServiceImpl bpmVariableService;
+    private BpmVariableService bpmVariableService;
 
     @Autowired
-    private BpmVariableViewPageButtonServiceImpl bpmVariableViewPageButtonService;
+    private BpmVariableViewPageButtonService bpmVariableViewPageButtonService;
 
     @Autowired
-    private BpmVariableButtonServiceImpl bpmVariableButtonService;
+    private BpmVariableButtonService bpmVariableButtonService;
 
     @Autowired
-    private BpmVariableSequenceFlowServiceImpl bpmVariableSequenceFlowService;
+    private BpmVariableSequenceFlowService bpmVariableSequenceFlowService;
 
     @Autowired
-    private BpmVariableSignUpServiceImpl bpmVariableSignUpService;
+    private BpmVariableSignUpService bpmVariableSignUpService;
 
     @Autowired
-    private BpmVariableMessageServiceImpl bpmVariableMessageService;
+    private BpmVariableMessageBizService bpmVariableMessageBizService;
 
 
     public void insertVariables(BpmnConfCommonVo bpmnConfCommonVo, BpmnStartConditionsVo bpmnStartConditions) {
@@ -58,7 +66,8 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 .processName(bpmnConfCommonVo.getProcessName())
                 .processDesc(bpmnConfCommonVo.getProcessDesc())
                 .processStartConditions(JSON.toJSONString(bpmnStartConditions))//process start condition
-                .createUser( SecurityUtils.getLogInEmpIdSafe().toString())
+                .createUser(SecurityUtils.getLogInEmpIdSafe())
+                .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .createTime(new Date())
                 .build();
         bpmVariableService.getBaseMapper().insert(bpmVariable);
@@ -114,6 +123,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                         .elementFromId(elementVo.getFlowFrom())
                         .elementToId(elementVo.getFlowTo())
                         .sequenceFlowType(1)//此版本默认无参连线
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build());
             }
         }
@@ -123,7 +133,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
         insertSignUp(variableId, signUpMultimap, elementList);
 
         // insert message data
-        bpmVariableMessageService.insertVariableMessage(variableId, bpmnConfCommonVo);
+        bpmVariableMessageBizService.insertVariableMessage(variableId, bpmnConfCommonVo);
 
     }
 
@@ -160,6 +170,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                         .elementId(key)
                         .nodeId(elementVo.getNodeId())
                         .subElements(JSON.toJSONString(subElements))
+                        .tenantId(MultiTenantUtil.getCurrentTenantId())
                         .build());
             }
 
@@ -232,6 +243,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                                 .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_START.getCode())
                                 .buttonType(o.getButtonType())
                                 .buttonName(o.getButtonName())
+                                .tenantId(MultiTenantUtil.getCurrentTenantId())
                                 .build();
                     })
                     .collect(Collectors.toList()));
@@ -248,6 +260,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                                 .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
                                 .buttonType(o.getButtonType())
                                 .buttonName(o.getButtonName())
+                                .tenantId(MultiTenantUtil.getCurrentTenantId())
                                 .build();
                     })
                     .collect(Collectors.toList()));

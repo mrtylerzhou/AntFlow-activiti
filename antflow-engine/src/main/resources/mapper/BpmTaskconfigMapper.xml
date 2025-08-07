@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmTaskconfigMapper">
 
     <!-- common resultMap -->
-    <resultMap id="BaseResultMap" type="org.openoa.engine.bpmnconf.confentity.BpmTaskconfig">
+    <resultMap id="BaseResultMap" type="org.openoa.base.entity.BpmTaskconfig">
         <id column="id" property="id"/>
         <result column="proc_def_id_" property="procDefId"/>
         <result column="task_def_key_" property="taskDefKey"/>
@@ -20,7 +20,7 @@
     </select>
 
     <!--query taskconfig by processKey and userId-->
-    <select id="findBpmTaskconfig" resultType="org.openoa.engine.bpmnconf.confentity.BpmTaskconfig">
+    <select id="findBpmTaskconfig" resultType="org.openoa.base.entity.BpmTaskconfig">
         select status as status, original_type as originalType
         from bpm_taskconfig w
         where w.proc_def_id_ = #{procDefId}

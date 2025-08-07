@@ -1,9 +1,8 @@
 package org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeConditionsConfBaseVo;
-import org.openoa.engine.bpmnconf.confentity.OutSideBpmConditionsTemplate;
+import org.openoa.base.entity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
