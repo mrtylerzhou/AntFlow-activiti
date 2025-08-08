@@ -32,7 +32,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(), SecurityUtils.getLogInEmpNameSafe());
         }
-        variableMessageBizService.sendTemplateMessages(businessData);
+
     }
 
     /**
@@ -51,7 +51,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
-        variableMessageBizService.sendTemplateMessages(businessData);
+
     }
 
     /**
@@ -59,7 +59,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onDisAgree(BusinessDataVo businessData) {
-        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
+
     }
 
     /**
@@ -78,7 +78,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_END_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
-        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
+
     }
 
     /**

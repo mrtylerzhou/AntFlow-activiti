@@ -30,7 +30,8 @@ public interface LFFormOperationAdaptor<T extends UDLFApplyVo> {
     void backToModifyData(T vo);
 
 
-    void cancellationData(T businessDataVo);
+    void cancellationData(T vo);
 
+    void finishData(T vo);
 
 }
