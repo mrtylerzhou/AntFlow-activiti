@@ -126,7 +126,7 @@
                 #{employeeId}
             </foreach>
         </where>
-        )
+
     </select>
 
     <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">
