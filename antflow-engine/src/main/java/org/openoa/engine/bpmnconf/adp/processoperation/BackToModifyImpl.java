@@ -12,8 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.ActHiTaskinst;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
@@ -25,10 +27,8 @@ import org.openoa.base.entity.BpmProcessNodeSubmit;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeSubmitServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.entity.BpmBusinessProcess;
 
@@ -105,15 +105,30 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
-
-        if (taskData == null) {
+        boolean isDrawBack=ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(vo.getOperationType());
+        if (taskData == null&&isDrawBack) {
             throw new AFBizException("当前流程已审批！");
         }
-
-        List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
-
         String restoreNodeKey;
         String backToNodeKey;
+        if(isDrawBack){
+            String createUser = bpmBusinessProcess.getCreateUser();
+            if(!SecurityUtils.getLogInEmpIdSafe().equals(createUser)){
+                throw new AFBizException(BusinessErrorEnum.RIGHT_VIOLATE.getCodeStr(),"只有发起人可以操作撤回");
+            }
+            if(taskList.size()>1){
+                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"流程已审批,不允许操作!");
+            }
+            String taskDefinitionKey = taskList.get(0).getTaskDefinitionKey();
+            String twoTaskKeyDesc = ProcessNodeEnum.TWO_TASK_KEY.getDesc();
+            if (ProcessNodeEnum.compare(taskDefinitionKey,twoTaskKeyDesc)>0) {
+                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
+            }
+            vo.setBackToModifyType(ProcessDisagreeTypeEnum.ONE_DISAGREE.getCode());
+        }
+        List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
+
+
 
         Integer backToModifyType = vo.getBackToModifyType();
         if (backToModifyType == null) {
@@ -137,7 +152,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 }
                 break;
             case TWO_DISAGREE:
-                restoreNodeKey = ProcessNodeEnum.TOW_TASK_KEY.getDesc();
+                restoreNodeKey = ProcessNodeEnum.TWO_TASK_KEY.getDesc();
                 backToNodeKey = ProcessNodeEnum.START_TASK_KEY.getDesc();
                 break;
             case THREE_DISAGREE://default behavior
@@ -291,6 +306,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Override
     public void setSupportBusinessObjects() {
+        addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK);
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
     }

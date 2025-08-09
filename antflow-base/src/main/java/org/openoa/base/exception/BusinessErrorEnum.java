@@ -81,7 +81,7 @@ public enum BusinessErrorEnum {
     PERMISSION_NO_ACCESS(1418300671, "当前按钮没有访问权限"),
     CONNECTION_RELATION_ERROR(1418300672, "关联关系不匹配"),
     RIGHT_VIOLATE(1418300673, "超出访问权限"),
-
+    RIGHT_INVALID(1418300674, "当前状态不允许操作"),
     /**
      * 配置错误
      */
@@ -107,6 +107,9 @@ public enum BusinessErrorEnum {
 
     public int getCode() {
         return code;
+    }
+    public String getCodeStr(){
+        return  String.valueOf(code);
     }
 
     public String getMsg() {
