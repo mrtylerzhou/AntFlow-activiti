@@ -4,13 +4,12 @@ import com.google.common.collect.Lists;
 import org.openoa.base.entity.Employee;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -81,9 +80,9 @@ public class UserServiceImpl implements AfUserService{
         return userMapper.getLeaderByLeventDepartment(employeeId,level);
     }
     @Override
-    public BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId){
-        BaseIdTranStruVo baseIdTranStruVo = userMapper.getHrpbByEmployeeId(employeeId);
-        return baseIdTranStruVo;
+    public List<BaseIdTranStruVo> queryEmployeeHrpbByEmployeeIds(List<String> employeeIds){
+        List<BaseIdTranStruVo> users = userMapper.queryHrpbByEmployeeIds(employeeIds);
+        return users;
     }
     @Override
     public List<BaseIdTranStruVo> queryEmployeeDirectLeaderByIds(List<String> employeeIds){
@@ -120,5 +119,11 @@ public class UserServiceImpl implements AfUserService{
     @Override
     public long checkEmployeeEffective(String id){
         return userMapper.checkEmployeeEffective(id);
+    }
+
+    @Override
+    public List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds) {
+        List<BaseIdTranStruVo> users = userMapper.queryDepartmentLeaderByIds(employeeIds);
+        return users;
     }
 }

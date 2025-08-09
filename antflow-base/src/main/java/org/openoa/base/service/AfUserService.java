@@ -21,7 +21,7 @@ public interface AfUserService {
 
     BaseIdTranStruVo queryLeaderByEmployeeIdAndLevel(String employeeId, Integer level);
 
-    BaseIdTranStruVo queryEmployeeHrpbByEmployeeId(String employeeId);
+    List<BaseIdTranStruVo> queryEmployeeHrpbByEmployeeIds(List<String> employeeIds);
 
     List<BaseIdTranStruVo> queryEmployeeDirectLeaderByIds(List<String> employeeIds);
 
@@ -31,4 +31,5 @@ public interface AfUserService {
     List<Employee> getEmployeeDetailByIds(Collection<String> ids);
 
     long checkEmployeeEffective(String id);
+    List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds);
 }

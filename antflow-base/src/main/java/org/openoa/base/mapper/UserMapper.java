@@ -29,7 +29,7 @@ public interface UserMapper {
     //if you want to use level leader sign functions,you must implement it
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") String employeeId,@Param("tier") Integer tier);
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndEndGrade(@Param("employeeId") String employeeId,@Param("endGrade") Integer tier);
-    BaseIdTranStruVo getHrpbByEmployeeId(@Param("employeeId") String employeeId);
+    List<BaseIdTranStruVo> queryHrpbByEmployeeIds(@Param("employeeIds") List<String> employeeId);
     List<BaseIdTranStruVo> queryDirectLeaderByEmployeeIds(@Param("employeeIds") List<String> employeeIds);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
@@ -38,4 +38,5 @@ public interface UserMapper {
 
     BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
 
+    List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds);
 }

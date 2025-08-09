@@ -107,13 +107,14 @@
     </select>
     <!--此sql主要展示通过用户id查找用户的hrbp作为审批人,实际中用户的表可能不是这样设计的,甚至没有hrbp,但是核心是根据指定条件找到配置的审批人规则里的审批人(不用关心流程引擎怎么调用的,当然也可以查看代码是怎么实现的,实现把审批人
     id和name查到即可)-->
-    <select id="getHrpbByEmployeeId" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+    <select id="queryHrpbByEmployeeIds" resultType="org.openoa.base.vo.BaseIdTranStruVo">
         select id,user_name as name from t_user where id=
         (select hrbp_id from t_user
         <where>
-            <if test="employeeId != null">
-                id = #{employeeId}
-            </if>
+            id in
+            <foreach collection="employeeIds" item="employeeId" open="(" separator="," close=")">
+                #{employeeId}
+            </foreach>
         </where>)
     </select>
     <!--用于展示根据发起人找到他的直属领导的方法,还是那句话,你的表可能不是这样的,但无所谓,根据传入的用户id查找到他的直属领导的id和name即可-->
@@ -198,5 +199,19 @@
         ) AS numbers
         WHERE path=(select td.path from t_department td  join  t_user tu on td.id=tu.department_id where tu.id=#{employeeId})
         ) and td2.level>#{endGrade}
+    </select>
+    <select id="queryDepartmentLeaderByIds" resultType="org.openoa.base.vo.BaseIdTranStruVo">
+        select id,user_name as name
+        from t_user
+        where id in (select td.leader_id
+        from t_user tu
+        inner join t_department td on tu.department_id = td.id
+        <where>
+            tu.id in
+            <foreach collection="employeeIds" item="employeeId" open="(" separator="," close=")">
+                #{employeeId}
+            </foreach>
+        </where>)
+        )
     </select>
 </mapper>
