@@ -109,7 +109,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
         bpmnStartConditionsVo.setStartUserId(businessDataVo.getStartUserId());
         bpmnStartConditionsVo.setApprovalEmpls(businessDataVo.getApprovalEmpls());
-
+        bpmnStartConditionsVo.setLowCodeFlow(businessDataVo.getIsLowCodeFlow()!=null&&businessDataVo.getIsLowCodeFlow()==1);
 
         //set start user dept id
 //        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());

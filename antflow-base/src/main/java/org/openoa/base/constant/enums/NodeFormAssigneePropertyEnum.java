@@ -1,0 +1,29 @@
+package org.openoa.base.constant.enums;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public enum NodeFormAssigneePropertyEnum {
+    FORM_ASSIGNEE(1,"formUsers","表单中的人员"),
+    FORM_ROLE(2,"formRoles","表单中的角色"),
+    FORM_USER_HRBP(3,"formUserHrbp","表单中人员的HRBP"),
+    FORM_USER_DIRECT_LEADER(4,"formUserDirectLeaders","表单中人员的直属领导"),
+    FORM_USER_DEPART_LEADER(5,"formUserDepartLeaders","表单中人员所在部门负责人"),
+    FORM_DEPART_LEADER(6,"formDepartLeaders","表单中部门的负责人"),
+    FORM_USER_LEVEL_LEADER(7,"formUserLevelLeaders","表单中人员多级领导"),
+    FORM_USER_LOOP_LEADER(8,"formUserLoopLeaders","表单中人员全部层级领导")
+
+    ;
+    private Integer code;
+    /**
+     * diy的预定义字段名,值必须传入指定的字段中,lf的不需要
+     * @see org.openoa.base.vo.FormRelatedAssignee
+     */
+    private String diyFieldNames;
+    private String desc;
+}

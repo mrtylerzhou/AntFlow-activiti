@@ -68,6 +68,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         bpmnStartConditionsVo.setEntryId(vo.getEntityName() + ":" + vo.getBusinessId());
         bpmnStartConditionsVo.setBusinessId(vo.getBusinessId());
         bpmnStartConditionsVo.setApprovalEmpls(vo.getApprovalEmpls());
+        bpmnStartConditionsVo.setLowCodeFlow(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1);
         if(Boolean.TRUE.equals(businessDataVo.getIsMigration())){
             bpmnStartConditionsVo.setIsMigration(vo.getIsMigration());
         }else{
