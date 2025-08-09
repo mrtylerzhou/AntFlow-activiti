@@ -13,15 +13,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class DepartmentLeaderPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
+public class DepartmentLeaderPersonnelProvider extends AbstractDifferentStandardAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
 
-    @Override
-    public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
-        String startUserId = startConditionsVo.getStartUserId();
-        List<BaseIdTranStruVo> assignees = userService.queryDepartmentLeaderByIds(Lists.newArrayList(startUserId));
 
-        return  super.provideAssigneeList(bpmnNodeVo,assignees);
+    @Override
+    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
+        return userService.queryDepartmentLeaderByIds(users);
     }
 }

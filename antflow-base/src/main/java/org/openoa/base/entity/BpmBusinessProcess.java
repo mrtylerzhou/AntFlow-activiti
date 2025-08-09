@@ -113,11 +113,13 @@ public class BpmBusinessProcess implements TenantField, Serializable {
     @TableField("PROC_INST_ID_")
     private String procInstId;
 
-    /**
-     * back to user id
-     */
     @TableField("back_user_id")
     private String backUserId;
+    /**
+     * 被审批人信息,是一个数组形式的json
+     */
+    @TableField("approval_users")
+    private String approvalUsers;
     /**
      * 0 no ,1 yes
      */

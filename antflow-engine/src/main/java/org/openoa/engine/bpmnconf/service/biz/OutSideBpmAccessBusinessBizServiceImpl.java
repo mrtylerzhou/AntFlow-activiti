@@ -19,9 +19,6 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmAccessBusinessMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBizService;
@@ -123,6 +120,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         businessDataVo.setOutSideType(BPMN_FLOW_TYPE_OUTSIDE);
         businessDataVo.setApproversList(vo.getApproversList());
         businessDataVo.setIsLowCodeFlow(Boolean.TRUE.equals(vo.getIsLowCodeFlow())?1:0);
+        businessDataVo.setApprovalEmpls(vo.getApprovalEmpls());
 
         //to check whether start user id empty
         if (StringUtil.isEmpty(vo.getUserId())) {

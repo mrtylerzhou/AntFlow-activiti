@@ -136,7 +136,7 @@ public class BpmVariableMessageVo implements Serializable {
     /**
      * to be implemented
      */
-    private String approvalEmplId;
+    private List<String> approvalEmplIds;
 
     /**
      * apply date(yyyy-MM-dd without time)

@@ -240,7 +240,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
             vo.setBpmnStartConditions(bpmnStartConditionsVo);
             //set approval employee id
-            vo.setApprovalEmplId(Optional.ofNullable(bpmnStartConditionsVo.getApprovalEmplId()).map(String::valueOf).orElse("0"));
+            vo.setApprovalEmplIds(Optional.ofNullable(bpmnStartConditionsVo.getApprovalEmpls()).orElse(Lists.newArrayList(BaseIdTranStruVo.builder().build())).stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
         }
 
 

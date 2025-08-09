@@ -9,6 +9,8 @@ import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,14 +19,12 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class DirectLeaderPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
+public class DirectLeaderPersonnelProvider extends AbstractDifferentStandardAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
-    @Override
-    public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
-        String startUserId = startConditionsVo.getStartUserId();
-        List<BaseIdTranStruVo> assignees = userService.queryEmployeeDirectLeaderByIds(Lists.newArrayList(startUserId));
 
-        return  super.provideAssigneeList(bpmnNodeVo,assignees);
+    @Override
+    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
+        return userService.queryEmployeeDirectLeaderByIds(users);
     }
 }

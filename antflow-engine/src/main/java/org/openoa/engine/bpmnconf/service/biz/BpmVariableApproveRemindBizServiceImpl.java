@@ -221,8 +221,9 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
                 if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
                     BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
-                    if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmplId())) {
-                        employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmplId());
+                    if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmpls())) {
+                        //todo
+                        //employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmpls());
                         bpmnTimeoutReminderVariableVo.setApprovalEmpl(employee.getUsername());
                     }
                 }

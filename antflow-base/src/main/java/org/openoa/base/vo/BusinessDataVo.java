@@ -122,12 +122,11 @@ public class BusinessDataVo extends PageDto implements Serializable {
      */
     private String bpmnName;
 
+
     /**
-     * approval users
+     * approvalEmp Ids
      */
-    private String emplId;
-
-
+    private List<BaseIdTranStruVo> approvalEmpls;
     private String paramStr;
 
     private String empId;

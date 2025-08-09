@@ -66,9 +66,9 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
     private String userId;
     private String userName;
     /**
-     * approval username
+     * approvalEmp Ids
      */
-    private String approvalUsername;
+    private List<BaseIdTranStruVo> approvalEmpls;
     /**
      * remark
      */

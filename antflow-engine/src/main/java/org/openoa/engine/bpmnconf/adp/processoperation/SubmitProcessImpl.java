@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
 
+import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         bpmnStartConditionsVo.setProcessNum(processNumber);
         bpmnStartConditionsVo.setEntryId(vo.getEntityName() + ":" + vo.getBusinessId());
         bpmnStartConditionsVo.setBusinessId(vo.getBusinessId());
+        bpmnStartConditionsVo.setApprovalEmpls(vo.getApprovalEmpls());
         if(Boolean.TRUE.equals(businessDataVo.getIsMigration())){
             bpmnStartConditionsVo.setIsMigration(vo.getIsMigration());
         }else{
@@ -98,6 +100,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                     .dataSourceId(vo.getDataSourceId())
                     .version(businessDataVo.getBpmnCode())
                     .tenantId(MultiTenantUtil.getCurrentTenantId())
+                    .approvalUsers(JSON.toJSONString(vo.getApprovalEmpls()))
                     .build());
             //the process number is predictable
             businessDataVo.setProcessNumber(businessDataVo.getFormCode() + "_" + vo.getBusinessId());
