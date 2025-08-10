@@ -153,5 +153,4 @@ public class BpmnStartConditionsVo {
     private boolean isPreview;
     private BusinessDataVo businessDataVo;
     private boolean isLowCodeFlow;
-    private FormRelatedAssignee formRelatedAssignees;
 }

@@ -3,11 +3,9 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 public abstract class AbstractCommonBpmnNodeAdaptor<TEntity> implements BpmnNodeAdaptor {
