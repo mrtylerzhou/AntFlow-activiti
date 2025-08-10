@@ -18,11 +18,11 @@ import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.entity.BpmnNodeConditionsConf;
 import org.openoa.base.entity.BpmnNodeConditionsParamConf;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper;
-import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsConfServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeConditionsParamConfServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsParamConfService;
 import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component("nodeTypeConditionsAdp")
-public class NodeTypeConditionsAdp extends BpmnNodeAdaptor {
+public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
 
     @Autowired
-    private BpmnNodeConditionsConfServiceImpl bpmnNodeConditionsConfService;
+    private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
 
     @Autowired
-    private BpmnNodeConditionsParamConfServiceImpl bpmnNodeConditionsParamConfService;
+    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
     @Autowired
     private BpmnNodeConditionsConfMapper confMapper;
     @Autowired

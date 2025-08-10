@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class NodePropertyCustomizeAdp extends BpmnNodeAdaptor{
+public class NodePropertyCustomizeAdp implements BpmnNodeAdaptor{
     @Autowired
     private BpmnNodeCustomizeConfServiceImpl bpmnNodeCustomizeConfService;
     @Override

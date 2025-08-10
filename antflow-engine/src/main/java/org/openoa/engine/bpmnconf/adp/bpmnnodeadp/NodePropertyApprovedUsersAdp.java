@@ -6,7 +6,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NodePropertyApprovedUsersAdp extends BpmnNodeAdaptor{
+public class NodePropertyApprovedUsersAdp implements BpmnNodeAdaptor{
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         bpmnNodeVo.setDeduplicationExclude(true);

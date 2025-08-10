@@ -6,7 +6,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NodePropertyDepartmentLeaderAdp extends BpmnNodeAdaptor{
+public class NodePropertyDepartmentLeaderAdp implements BpmnNodeAdaptor{
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         return null;

@@ -9,7 +9,7 @@ import org.openoa.base.vo.PersonnelRuleVO;
  * @author AntFlow
  * @since 0.5
  */
-public abstract class BpmnNodeAdaptor implements AdaptorService {
+public interface BpmnNodeAdaptor extends AdaptorService {
 
     /**
      * format BpmnNodeVo
@@ -17,13 +17,13 @@ public abstract class BpmnNodeAdaptor implements AdaptorService {
      * @param bpmnNodeVo
      * @return
      */
-    public abstract BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo);
-    public abstract PersonnelRuleVO formaFieldAttributeInfoVO();
+    BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo);
+    PersonnelRuleVO formaFieldAttributeInfoVO();
     /**
      * edit bpmn node info
      *
      * @param bpmnNodeVo
      */
-    public abstract void editBpmnNode(BpmnNodeVo bpmnNodeVo);
+    void editBpmnNode(BpmnNodeVo bpmnNodeVo);
 
 }

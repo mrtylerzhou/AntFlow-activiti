@@ -11,6 +11,7 @@ import org.openoa.base.entity.BpmnNodeHrbpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeHrbpConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeHrbpConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +25,10 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class NodePropertyHrbpAdp extends BpmnNodeAdaptor {
+public class NodePropertyHrbpAdp implements BpmnNodeAdaptor {
 
     @Autowired
-    private BpmnNodeHrbpConfServiceImpl bpmnNodeHrbpConfService;
+    private BpmnNodeHrbpConfService bpmnNodeHrbpConfService;
 
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {

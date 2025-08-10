@@ -159,6 +159,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         int hasStartUserChooseModules=0;
         int hasCopy=0;
         int hasLastNodeCopy=0;
+        int hasFormRelatedUsers=0;
 
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
@@ -168,6 +169,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
             if(NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty())){
                 hasStartUserChooseModules=BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.getCode();
+            }
+            if(NodePropertyEnum.NODE_PROPERTY_FORM_RELATED.getCode().equals(bpmnNodeVo.getNodeProperty())){
+                hasFormRelatedUsers=BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.getCode();
             }
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
@@ -231,7 +235,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
         ProcessorFactory.executePostProcessors(bpmnConfVo);
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy;
+        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy|hasFormRelatedUsers;
         if(currentFlags!=null&&currentFlags>0){
             Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, currentFlags);
             bpmnConfVo.setExtraFlags(binariedOr);

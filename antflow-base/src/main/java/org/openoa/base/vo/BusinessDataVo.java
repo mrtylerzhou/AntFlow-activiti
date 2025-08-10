@@ -246,5 +246,5 @@ public class BusinessDataVo extends PageDto implements Serializable {
     /**
      * 表单中的人员
      */
-    private FormRelatedAssignee formRelatedAssignees;
+    private Map<Long,List<String>> node2formRelatedAssignees;
 }

@@ -5,16 +5,17 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.openoa.base.interf.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * specified role approver configs
  */
 @Data
 @TableName("t_bpmn_node_form_related_user_conf")
-public class BpmnNodeFormRelatedUserConf implements Serializable {
+public class BpmnNodeFormRelatedUserConf implements BpmnNodeIdField, BpmnNodeSignTypeField, CreateUpdateField, IsDelField, TenantField,Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,7 +37,7 @@ public class BpmnNodeFormRelatedUserConf implements Serializable {
 
     /** value type see NodeFormAssigneePropertyEnum */
     @TableField("value_type")
-    private String valueType;
+    private Integer valueType;
 
     /** value type name */
     @TableField("value_type_name")
@@ -60,7 +61,7 @@ public class BpmnNodeFormRelatedUserConf implements Serializable {
 
     /** create time */
     @TableField(value = "create_time")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /** update user */
     @TableField("update_user")
@@ -68,5 +69,5 @@ public class BpmnNodeFormRelatedUserConf implements Serializable {
 
     /** update time */
     @TableField(value = "update_time")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 }

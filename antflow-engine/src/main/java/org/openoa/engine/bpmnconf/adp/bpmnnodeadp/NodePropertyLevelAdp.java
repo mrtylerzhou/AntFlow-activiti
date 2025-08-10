@@ -14,6 +14,7 @@ import org.openoa.base.entity.BpmnNodeAssignLevelConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeAssignLevelConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeAssignLevelConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +27,10 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class NodePropertyLevelAdp extends BpmnNodeAdaptor {
+public class NodePropertyLevelAdp implements BpmnNodeAdaptor {
 
     @Autowired
-    private BpmnNodeAssignLevelConfServiceImpl bpmnNodeAssignLevelConfService;
+    private BpmnNodeAssignLevelConfService bpmnNodeAssignLevelConfService;
 
     @Override
     public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {

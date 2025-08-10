@@ -16,6 +16,7 @@ import org.openoa.base.entity.BpmnNodeLoopConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLoopConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLoopConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -30,10 +31,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NodePropertyLoopAdp extends BpmnNodeAdaptor {
+public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
 
     @Autowired
-    private BpmnNodeLoopConfServiceImpl bpmnNodeLoopConfService;
+    private BpmnNodeLoopConfService bpmnNodeLoopConfService;
     @Autowired
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 

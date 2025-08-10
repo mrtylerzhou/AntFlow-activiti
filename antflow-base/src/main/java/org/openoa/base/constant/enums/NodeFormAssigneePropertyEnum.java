@@ -26,4 +26,27 @@ public enum NodeFormAssigneePropertyEnum {
      */
     private String diyFieldNames;
     private String desc;
+
+    public static NodeFormAssigneePropertyEnum getByCode(Integer code){
+        if(code==null){
+            return null;
+        }
+        for (NodeFormAssigneePropertyEnum value : NodeFormAssigneePropertyEnum.values()) {
+            if(value.getCode().equals(code)){
+                return value;
+            }
+        }
+        return null;
+    }
+    public static String getDescByCode(Integer code){
+        if(code==null){
+            return "";
+        }
+        for (NodeFormAssigneePropertyEnum value : NodeFormAssigneePropertyEnum.values()) {
+            if(value.getCode().equals(code)){
+                return value.desc;
+            }
+        }
+        return "";
+    }
 }

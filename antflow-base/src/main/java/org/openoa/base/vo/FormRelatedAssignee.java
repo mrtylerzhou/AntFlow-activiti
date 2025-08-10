@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class FormRelatedAssignee {
-    List<BaseIdTranStruVo> formUsers;
+    List<String> formUsers;
     List<String> formRoles;
     List<String> formUserHrbp;
     List<String> formUserDirectLeaders;

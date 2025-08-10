@@ -17,6 +17,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceImpl;
 
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodePersonnelConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -31,9 +32,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NodePropertyPersonnelAdp extends BpmnNodeAdaptor{
+public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
     @Autowired
-    private BpmnNodePersonnelConfServiceImpl bpmnNodePersonnelConfService;
+    private BpmnNodePersonnelConfService bpmnNodePersonnelConfService;
 
     @Autowired
     private BpmnNodePersonnelEmplConfServiceImpl bpmnNodePersonnelEmplConfService;

@@ -150,4 +150,9 @@ public class BpmnNodePropertysVo implements Serializable{
      * @see org.openoa.base.constant.enums.ConditionRelationShipEnum
      */
     private Boolean groupRelation=true;
+    /**
+     * @see org.openoa.base.constant.enums.NodeFormAssigneePropertyEnum
+     */
+    private Integer formAssigneeProperty;
+    private List<BaseIdTranStruVo> formInfos;
 }

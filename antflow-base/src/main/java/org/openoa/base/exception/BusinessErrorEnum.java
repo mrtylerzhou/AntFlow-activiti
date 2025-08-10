@@ -20,9 +20,11 @@ public enum BusinessErrorEnum {
     PARAMS_TYPE_ERROR(1418300273, "参数类型匹配错误"),
     PARAMS_IS_INVALID(1418300274, "参数无效"),
     STATUS_ERROR(1418300275, "状态异常"),
-    DATA_IS_OVER_MAXIMUM_LENGTH(1418300376, "数据长度超过最大长度:{}"),
-    FILE_FORMAT_ERROR(999008070, "文件格式不正确"),
-
+    DATA_IS_OVER_MAXIMUM_LENGTH(1418300276, "数据长度超过最大长度:{}"),
+    FILE_FORMAT_ERROR(1418300277, "文件格式不正确"),
+    PARAMS_MISMATCH(1418300278,"参数不匹配"),
+    PARAMS_NULL_AFTER_CONVERT(1418300279,"未定义的类型"),
+    CAN_NOT_GET_VALUE_FROM_DB(1418300280,"未能从数据库中获取到值"),
     /**
      * 数据处理错误
      */

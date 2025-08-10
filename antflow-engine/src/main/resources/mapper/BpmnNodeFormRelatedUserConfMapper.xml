@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeFormRelatedUserConfMapper">
+
+    <select id="queryByConfId" resultType="org.openoa.base.entity.BpmnNodeFormRelatedUserConf">
+        select tbnfruc.*
+        from t_bpmn_node tbn
+        inner join t_bpmn_node_form_related_user_conf tbnfruc on tbn.id = tbnfruc.bpmn_node_id
+        where tbn.conf_id =#{confId}
+    </select>
+</mapper>
