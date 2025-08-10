@@ -35,8 +35,8 @@ public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, Activ
     }
 
     @Override
-    public BizRefundVo initData(BizRefundVo vo) {
-        return null;
+    public void initData(BizRefundVo vo) {
+
     }
 
     @Override
@@ -47,14 +47,14 @@ public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, Activ
     }
 
     @Override
-    public BizRefundVo queryData(BizRefundVo vo) {
+    public void queryData(BizRefundVo vo) {
         BizRefund refund = bizRefundMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(refund,vo);
-        return vo;
+
     }
 
     @Override
-    public BizRefundVo submitData(BizRefundVo vo) {
+    public void submitData(BizRefundVo vo) {
         BizRefund entity=new BizRefund();
         BeanUtils.copyProperties(vo,entity);
         entity.setCreateTime(new Date());
@@ -67,11 +67,11 @@ public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, Activ
         vo.setProcessTitle("报销申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizRefund.class.getSimpleName());
-        return vo;
+
     }
 
     @Override
-    public BizRefundVo consentData(BizRefundVo vo) {
+    public void consentData(BizRefundVo vo) {
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizRefund entity = new BizRefund();
@@ -80,7 +80,7 @@ public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, Activ
             entity.setId(id);
             bizRefundMapper.updateById(entity);
         }
-        return vo;
+
     }
 
     @Override

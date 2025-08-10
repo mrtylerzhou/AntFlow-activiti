@@ -17,7 +17,7 @@ public interface BpmnNodeAdaptor extends AdaptorService {
      * @param bpmnNodeVo
      * @return
      */
-    BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo);
+    void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo);
     PersonnelRuleVO formaFieldAttributeInfoVO();
     /**
      * edit bpmn node info

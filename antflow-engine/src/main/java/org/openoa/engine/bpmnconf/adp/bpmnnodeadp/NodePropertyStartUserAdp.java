@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class NodePropertyStartUserAdp implements BpmnNodeAdaptor {
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         bpmnNodeVo.setDeduplicationExclude(true);
-        return bpmnNodeVo;
+
     }
 
     @Override

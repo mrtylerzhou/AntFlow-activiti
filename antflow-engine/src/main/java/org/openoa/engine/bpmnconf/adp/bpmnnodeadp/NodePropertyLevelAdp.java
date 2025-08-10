@@ -33,7 +33,7 @@ public class NodePropertyLevelAdp implements BpmnNodeAdaptor {
     private BpmnNodeAssignLevelConfService bpmnNodeAssignLevelConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeAssignLevelConf bpmnNodeAssignLevelConf = bpmnNodeAssignLevelConfService.getOne(new QueryWrapper<BpmnNodeAssignLevelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
@@ -47,7 +47,6 @@ public class NodePropertyLevelAdp implements BpmnNodeAdaptor {
                     .build());
         }
 
-        return bpmnNodeVo;
     }
 
     @Override

@@ -78,8 +78,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
-    public UDLFApplyVo initData(UDLFApplyVo vo) {
-        return null;
+    public void initData(UDLFApplyVo vo) {
+
     }
 
     @Override
@@ -98,7 +98,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
-    public UDLFApplyVo queryData(UDLFApplyVo vo) {
+    public void queryData(UDLFApplyVo vo) {
         LFMain lfMain = mainService.getById(vo.getBusinessId());
         if(lfMain==null){
             log.error("can not get lowcode from data by specified Id:{}",vo.getBusinessId());
@@ -199,11 +199,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         vo.setLfFormData(lfFormdata.getFormdata());
-        return vo;
+
     }
 
     @Override
-    public UDLFApplyVo submitData(UDLFApplyVo vo) {
+    public void submitData(UDLFApplyVo vo) {
         Map<String, Object> lfFields = vo.getLfFields();
         if(CollectionUtils.isEmpty(lfFields)){
             throw new AFBizException("form data does not contains any field");
@@ -266,13 +266,13 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             }
             vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
         }
-        return vo;
+
     }
 
     @Override
-    public UDLFApplyVo consentData(UDLFApplyVo vo) {
+    public void consentData(UDLFApplyVo vo) {
         if (!vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode()) && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
-            return vo;
+            return ;
         }
         Map<String, Object> lfFields = vo.getLfFields();
         if(CollectionUtils.isEmpty(lfFields)){
@@ -316,7 +316,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             }
             mainFieldService.updateById(field);
         }
-        return vo;
+
     }
 
     @Override

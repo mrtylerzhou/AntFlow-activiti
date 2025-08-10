@@ -20,19 +20,19 @@ public class NodePropertyCustomizeAdp implements BpmnNodeAdaptor{
     @Autowired
     private BpmnNodeCustomizeConfServiceImpl bpmnNodeCustomizeConfService;
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         List<BpmnNodeCustomizeConf> list = bpmnNodeCustomizeConfService.list(new QueryWrapper<BpmnNodeCustomizeConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (CollectionUtils.isEmpty(list)) {
-            return bpmnNodeVo;
+            return ;
         }
         BpmnNodeCustomizeConf customizeConf = list.get(0);
         bpmnNodeVo.setProperty(BpmnNodePropertysVo
                 .builder()
                 .signType(customizeConf.getSignType())
                 .build());
-        return bpmnNodeVo;
+
     }
 
     @Override

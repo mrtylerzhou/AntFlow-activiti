@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class NodePropertyDepartmentLeaderAdp implements BpmnNodeAdaptor{
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-        return null;
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+
     }
 
     @Override

@@ -29,7 +29,7 @@ public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
     private BpmnNodeOutSideAccessConfService bpmnNodeOutSideAccessConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeOutSideAccessConf nodeOutSideAccessConf = bpmnNodeOutSideAccessConfService.getOne(new QueryWrapper<BpmnNodeOutSideAccessConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
@@ -43,7 +43,6 @@ public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.OUT_SIDE_NODE.getCode());
         }
 
-        return bpmnNodeVo;
     }
 
     @Override

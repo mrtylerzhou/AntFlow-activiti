@@ -54,13 +54,13 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
     private BpmnConfLfFormdataFieldServiceImpl lfFormdataFieldService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeConditionsConf bpmnNodeConditionsConf = bpmnNodeConditionsConfService.getOne(new QueryWrapper<BpmnNodeConditionsConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (ObjectUtils.isEmpty(bpmnNodeConditionsConf)) {
-            return bpmnNodeVo;
+            return ;
         }
         //get conditions conf
 
@@ -87,7 +87,7 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
             setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
             bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
             bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
-            return bpmnNodeVo;
+            return ;
         }
 
 
@@ -219,7 +219,7 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
         bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
         bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
-        return bpmnNodeVo;
+
     }
 
     @Override

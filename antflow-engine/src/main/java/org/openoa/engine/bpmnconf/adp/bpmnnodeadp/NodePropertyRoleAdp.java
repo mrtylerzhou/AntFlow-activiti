@@ -39,13 +39,13 @@ public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
     private BpmnNodeRoleOutsideEmpConfServiceImpl bpmnNodeRoleOutsideEmpConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (CollectionUtils.isEmpty(list)) {
-            return bpmnNodeVo;
+            return ;
         }
         List<BaseIdTranStruVo> roles = list.stream().map(conf -> BaseIdTranStruVo.builder().id(conf.getRoleId()).name(conf.getRoleName()).build())
                 .collect(Collectors.toList());
@@ -68,7 +68,7 @@ public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
                 bpmnNodeVo.getProperty().setEmplList(emplList);
             }
         }
-        return bpmnNodeVo;
+
     }
 
     /**

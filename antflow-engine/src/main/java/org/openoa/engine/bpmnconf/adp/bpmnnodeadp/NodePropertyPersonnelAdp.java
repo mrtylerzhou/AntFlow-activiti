@@ -43,7 +43,7 @@ public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         BpmnNodePersonnelConf bpmnNodePersonnelConf = bpmnNodePersonnelConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnNodePersonnelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
@@ -73,7 +73,7 @@ public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
                    .emplList(getEmplList(emplIds,emplNames))
                    .build());
 
-        return bpmnNodeVo;
+
     }
 
     /**

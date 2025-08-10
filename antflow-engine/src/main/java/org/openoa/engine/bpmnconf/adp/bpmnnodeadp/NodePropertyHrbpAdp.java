@@ -31,7 +31,7 @@ public class NodePropertyHrbpAdp implements BpmnNodeAdaptor {
     private BpmnNodeHrbpConfService bpmnNodeHrbpConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeHrbpConf bpmnNodeHrbpConf = bpmnNodeHrbpConfService.getOne(new QueryWrapper<BpmnNodeHrbpConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
@@ -43,7 +43,6 @@ public class NodePropertyHrbpAdp implements BpmnNodeAdaptor {
                     .build());
         }
 
-        return bpmnNodeVo;
     }
 
     @Override

@@ -37,8 +37,8 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
     }
 
     @Override
-    public BizPurchaseVo initData(BizPurchaseVo vo) {
-        return null;
+    public void initData(BizPurchaseVo vo) {
+
     }
 
 
@@ -52,14 +52,14 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
     }
 
     @Override
-    public BizPurchaseVo queryData(BizPurchaseVo vo) {
+    public void queryData(BizPurchaseVo vo) {
         BizPurchase purchase = bizPurchaseMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(purchase,vo);
-        return vo;
+
     }
 
     @Override
-    public BizPurchaseVo submitData(BizPurchaseVo vo) {
+    public void submitData(BizPurchaseVo vo) {
         BizPurchase purchaseEntity=new BizPurchase();
         BeanUtils.copyProperties(vo,purchaseEntity);
 
@@ -73,11 +73,11 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
         vo.setProcessTitle("采购申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizPurchase.class.getSimpleName());
-        return vo;
+
     }
 
     @Override
-    public BizPurchaseVo consentData(BizPurchaseVo vo) {
+    public void consentData(BizPurchaseVo vo) {
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizPurchase purchaseEntity = new BizPurchase();
@@ -86,7 +86,7 @@ public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>,
             purchaseEntity.setId(id);
             bizPurchaseMapper.updateById(purchaseEntity);
         }
-        return vo;
+
     }
 
     @Override

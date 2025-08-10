@@ -39,7 +39,7 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
     private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeLoopConf bpmnNodeLoopConf = bpmnNodeLoopConfService.getOne(new QueryWrapper<BpmnNodeLoopConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
@@ -88,7 +88,6 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
         }
 
-        return bpmnNodeVo;
     }
 
     @Override

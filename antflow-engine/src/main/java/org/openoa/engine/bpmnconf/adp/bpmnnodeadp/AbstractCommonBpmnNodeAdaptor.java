@@ -16,10 +16,10 @@ public abstract class AbstractCommonBpmnNodeAdaptor<TEntity> implements BpmnNode
     private IService<TEntity> service;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         TEntity entity = queryEntity(bpmnNodeVo);
         setNodeProperty(bpmnNodeVo,entity);
-        return bpmnNodeVo;
+
     }
 
 
