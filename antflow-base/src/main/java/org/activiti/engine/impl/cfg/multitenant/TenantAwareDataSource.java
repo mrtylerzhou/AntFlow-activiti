@@ -20,10 +20,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.sql.DataSource;
-
-import javafx.beans.binding.When;
 import org.activiti.engine.ActivitiException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
