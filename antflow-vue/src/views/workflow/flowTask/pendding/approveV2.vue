@@ -185,7 +185,7 @@ const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
     approveFormDataConfig.value = {
         ...approveFormDataConfig.value,
-        formCode: data.processCode,
+        formCode: data.processKey,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
