@@ -2,6 +2,16 @@
 	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
 </p>
 
+<p align="center">
+ <img src="https://img.shields.io/badge/SpringBoot-2.7.17-blue" alt="Downloads">
+ <img src="https://img.shields.io/badge/Vue-3.5.15-yellow.svg" alt="Downloads">
+ <img src="https://img.shields.io/badge/MyBatisPlus-blue.svg" alt="Downloads">
+ <img src="https://img.shields.io/badge/activiti-yellow.svg" alt="Downloads">
+ <img src="https://img.shields.io/badge/vform-red.svg" alt="Downloads">
+ <img src="https://img.shields.io/badge/license-Apache 2.0-green.svg" alt="Downloads">
+ <img src="https://img.shields.io/badge/可商用-免费-purple.svg" alt="Downloads">
+</p>
+
 <h2 align="center" style="margin: 10px 0 10px; font-weight: bold;">🚀 开源、现代、零门槛 —— 企业级工作流触手可及 🏢</h2>
 <h2 align="center" style="margin: 10px 0 10px; font-weight: bold;">🔓 打破授权壁垒，让企业轻松拥有现代工作流 💼</h2>
 <h2 align="center" style="margin: 10px 0 10px; font-weight: bold;">🛑 拒绝伪开源，反对加密、加壳、混淆、联网验证等行为 ✅ 让企业产品合规 📄</h2>
@@ -17,6 +27,8 @@
 > 开发完成的企业或个人务必登记,登记只做开源案例推广使用,不收取任何费用.
 >
 > 如果AntFlow帮助到了你,也请积极回馈社区,点赞、向朋友介绍、推广、登记案例都是对我们的支持！
+
+<img src="https://img.shields.io/badge/AntFlow可用于个人或者公司项目,禁止二次开源(联系作者获得授权的除外)-注意-red.svg" alt="Downloads">
 
 # Antflow 简介
 
@@ -133,7 +145,7 @@ npm run dev
 
 我们发现，许多优秀的开源项目虽然免费实用，但缺乏易用的工作流平台，或者需要购买商业版才能使用完整的流程引擎功能。
 
-如果你希望将 AntFlow 集成到你的项目中，但又不想花费大量时间精力自行研究，我们可以提供一对一的集成服务 ——  
+如果你希望将 AntFlow 集成到你的项目中，但又不想花费大量时间精力自行研究，我们可以提供一对一的集成服务 ——
 **仅收取极低的服务费用（商业项目 10% 左右的价格，最高不超过 1000 元）**，具体细节欢迎加入 QQ 群联系群主私聊。
 
 ---
@@ -148,7 +160,7 @@ npm run dev
 
 ---
 
-🔧 AntFlow 是我们用心打造的一款现代化工作流引擎，  
+🔧 AntFlow 是我们用心打造的一款现代化工作流引擎，
 我们希望它不仅能帮助你提升效率，更能在开源道路上走得更远。
 
 🙏 如果你觉得我们做得还不错，也请随手点个 ⭐Star⭐，给我们更多动力！
@@ -160,6 +172,7 @@ npm run dev
 - 有捐赠的小伙伴（金额不限）可以联系作者领取一份 **独家提升开发技能的文档**
 - 加QQ574427343或者邮件到 574427343@qq.com邮箱 *注明 领取开发技能提升文档*
 - 文档宗旨在于提升初级、中级、高级等一线开发人员的编码意识，讲述**什么是好代码**，好代码的标准，**如何编写高质量代码**等
+
 ### 💕 捐赠列表（按时间排序,不区分java版还是.net版,两个仓库一并致谢）
 
 ```
