@@ -15,7 +15,7 @@ import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
  * 此类是antflow动作事件监听器,如果想要统一处理流程流转正常流转事件,请使用{@link BpmnTaskListener}
  */
 @Component
-public class AntFlowOperationListener implements WorkflowButtonHandler{
+public class AntFlowOperationListener implements WorkflowButtonOperationHandler {
     @Autowired
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
     @Autowired

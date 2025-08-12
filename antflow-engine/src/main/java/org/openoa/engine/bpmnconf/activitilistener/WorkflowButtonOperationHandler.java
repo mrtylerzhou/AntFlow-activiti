@@ -1,9 +1,8 @@
 package org.openoa.engine.bpmnconf.activitilistener;
 
-import org.openoa.base.interf.ProcessFinishListener;
 import org.openoa.base.vo.BusinessDataVo;
 
-public interface WorkflowButtonHandler {
+public interface WorkflowButtonOperationHandler {
 
     /**
      * 流程提交
