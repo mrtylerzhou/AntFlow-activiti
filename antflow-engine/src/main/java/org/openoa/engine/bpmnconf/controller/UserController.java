@@ -14,11 +14,13 @@ import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.*;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @IgnoreLog
 @RequestMapping("/user")
@@ -32,9 +34,10 @@ public class UserController {
     private SqlSessionFactory sqlSessionFactory;
     @Autowired
     private TenantInfoHolder infoHolder;
-
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
     @RequestMapping("/queryUserByNameFuzzy")
     public Result queryUserByNameFuzzy(String userName){
@@ -88,5 +91,17 @@ public class UserController {
     public Result<List<BaseIdTranStruVo>> getRoleInfo(){
         LinkedList<BaseIdTranStruVo> list = roleMapper.selectAll();
         return Result.newSuccessResult(list);
+    }
+    @GetMapping("/queryNodeAssigneesByNodeId")
+    public Result<List<BaseIdTranStruVo>> queryNodeAssigneesByNodeId(@RequestParam("processNumber")String processNumber,@RequestParam("nodeId")String nodeId){
+        List<BaseInfoTranStructVo> baseInfoTranStructVos = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(processNumber, nodeId);
+        List<BaseIdTranStruVo> nodeAssignees = baseInfoTranStructVos.stream().map(a -> BaseIdTranStruVo.builder().id(a.getId()).name(a.getName()).build()).collect(Collectors.toList());
+        return Result.newSuccessResult(nodeAssignees);
+    }
+    @GetMapping("/queryNodeAssigneesByElementId")
+    public Result<List<BaseIdTranStruVo>> queryNodeAssigneeByElementId(@RequestParam("processNumber")String processNumber,@RequestParam("elementId")String elementId){
+        List<BaseIdTranStruVo> assigneeByElementId = bpmVariableMultiplayerMapper.getAssigneeByElementId(processNumber, elementId);
+        List<BaseIdTranStruVo> nodeAssignees = assigneeByElementId.stream().map(a -> BaseIdTranStruVo.builder().id(a.getId()).name(a.getName()).build()).collect(Collectors.toList());
+        return Result.newSuccessResult(nodeAssignees);
     }
 }
