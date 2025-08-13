@@ -28,7 +28,7 @@ public class RemoveAssigneeProcessImpl implements ProcessOperationAdaptor {
         if(userInfos.size()>1){
             throw new AFBizException("减签只能选择一个人");
         }
-        if(!StringUtils.isEmpty(processNumber)){
+        if(StringUtils.isEmpty(processNumber)){
             throw new AFBizException("请指定流程编号");
         }
         if(StringUtils.isEmpty(taskDefKey)){
