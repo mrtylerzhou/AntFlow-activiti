@@ -41,7 +41,9 @@
             <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
             <el-table-column label="状态" align="center" prop="effectiveStatus">
                <template #default="item">
-                  <el-tag>{{ item.row.taskState }}</el-tag>
+                  <el-tag v-if="item.row.processState == 2" type="primary">{{ item.row.taskState }}</el-tag>
+                  <el-tag v-else-if="item.row.processState == 6" type="danger">{{ item.row.taskState }}</el-tag>
+                  <el-tag v-else type="success">{{ item.row.taskState }}</el-tag>
                </template>
             </el-table-column>
             <!-- <el-table-column label="创建时间" align="center" prop="createTime" width="180">
