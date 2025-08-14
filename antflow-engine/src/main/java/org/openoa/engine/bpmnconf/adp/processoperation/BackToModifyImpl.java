@@ -106,7 +106,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
         boolean isDrawBack=ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(vo.getOperationType());
-        if (taskData == null&&isDrawBack) {
+        if(isDrawBack){
+            taskData=taskList.get(0);
+        }
+        if (taskData == null) {
             throw new AFBizException("当前流程已审批！");
         }
         String restoreNodeKey;
@@ -124,7 +127,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             if (ProcessNodeEnum.compare(taskDefinitionKey,twoTaskKeyDesc)>0) {
                 throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
             }
-            vo.setBackToModifyType(ProcessDisagreeTypeEnum.ONE_DISAGREE.getCode());
+            vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());
         }
         List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
 
@@ -212,7 +215,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
                 List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());
                 if (strings.size() > 0) {
-                    strings = strings.stream().filter(a -> !a.equals(taskData.getTaskDefinitionKey())).collect(Collectors.toList());
+                    Task finalTaskData = taskData;
+                    strings = strings.stream().filter(a -> !a.equals(finalTaskData.getTaskDefinitionKey())).collect(Collectors.toList());
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), strings);
                 }
                 List<BpmVariableMultiplayer> moreNodes = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), backToNodeKey);

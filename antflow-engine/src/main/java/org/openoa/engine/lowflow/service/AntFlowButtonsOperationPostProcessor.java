@@ -81,6 +81,9 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
             case BUTTON_TYPE_ADD_FUTURE_ASSIGNEE:
                 workflowButtonHandler.onAddFutureAssignee(vo);
                 break;
+            case BUTTON_TYPE_PROCESS_DRAW_BACK:
+                workflowButtonHandler.onProcessDrawBack(vo);
+                break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);
         }

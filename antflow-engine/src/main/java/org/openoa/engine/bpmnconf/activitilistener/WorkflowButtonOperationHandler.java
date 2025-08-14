@@ -59,6 +59,7 @@ public interface WorkflowButtonOperationHandler {
      */
     void onBackToModify(BusinessDataVo businessData);
 
+    void onProcessDrawBack(BusinessDataVo businessData);
     /**
      * 加批
      */
