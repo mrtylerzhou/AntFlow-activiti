@@ -1,5 +1,6 @@
 package org.openoa.engine.lowflow.service;
 
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 
 /**
@@ -32,6 +33,6 @@ public interface LFFormOperationAdaptor<T extends UDLFApplyVo> {
 
     void cancellationData(T vo);
 
-    void finishData(T vo);
+    void finishData(BusinessDataVo vo);
 
 }

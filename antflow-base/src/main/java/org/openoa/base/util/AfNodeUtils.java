@@ -1,5 +1,6 @@
 package org.openoa.base.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.springframework.util.CollectionUtils;
 
@@ -41,6 +42,9 @@ public class AfNodeUtils {
         }
         BpmnNodeVo node = mapNodes.get(nodeId);
         String nodeFrom = node.getNodeFrom();
+        if(StringUtils.isEmpty(nodeFrom)){
+            return node;
+        }
         BpmnNodeVo fromNode = mapNodes.get(nodeFrom);
         if (types.contains(fromNode.getNodeType())) {
             if (!includeDeduplicated && node.getParams().getIsNodeDeduplication() == 0) {

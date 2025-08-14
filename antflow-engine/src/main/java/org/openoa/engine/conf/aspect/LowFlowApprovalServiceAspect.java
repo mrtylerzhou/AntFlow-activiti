@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.lowflow.service.LFFormOperationAdaptor;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,10 @@ public class LowFlowApprovalServiceAspect {
             if(args.length>1){
                 throw new AFBizException("切面方法错误,请联系管理员!");
             }
-            UDLFApplyVo arg = (UDLFApplyVo)args[0];
+            UDLFApplyVo arg = null;
+            if(!"finishData".equals(methodName)){
+                arg=(UDLFApplyVo)args[0];
+            }
             if(CollectionUtils.isEmpty(lfFormOperationAdaptors)){
                 lfFormOperationAdaptors=new ArrayList<>();
             }
@@ -119,6 +123,9 @@ public class LowFlowApprovalServiceAspect {
                 if ("cancellationData".equals(methodName)) {
                     // 作废前处理
                     lfFormOperationAdaptor.cancellationData(arg);
+                }
+                if("finishData".equals(methodName)){
+                    lfFormOperationAdaptor.finishData((BusinessDataVo)args[0]);
                 }
 
             }
