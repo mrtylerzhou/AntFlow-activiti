@@ -799,7 +799,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
 
         BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
-        if(dataVo.getIsOutSideAccessProc()){
+        if(dataVo.getIsOutSideAccessProc()&&(dataVo.getIsLowCodeFlow()==null||dataVo.getIsLowCodeFlow()==0)){
             //set conditions before preview
             bpmnStartConditionsVo.setTemplateMarkIds(dataVo.getTemplateMarkIds());
             bpmnStartConditionsVo.setOutSideType(dataVo.getOutSideType());
