@@ -17,8 +17,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.openoa.base.constant.enums.ButtonPageTypeEnum.AUDIT;
-import static org.openoa.base.constant.enums.ButtonPageTypeEnum.INITIATE;
+import static org.openoa.base.constant.enums.ButtonPageTypeEnum.*;
 import static org.openoa.base.constant.enums.ButtonTypeEnum.BUTTON_TYPE_RESUBMIT;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_START;
 
@@ -41,6 +40,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
             BpmnNodeButtonConfBaseVo buttonConfBaseVo=new BpmnNodeButtonConfBaseVo();
             buttonConfBaseVo.setStartPage(Lists.newArrayList());
             buttonConfBaseVo.setApprovalPage(Lists.newArrayList(2));
+            buttonConfBaseVo.setViewPage(Lists.newArrayList());
             buttons=buttonConfBaseVo;
             //return; todo for easy testing purposes
         }
@@ -48,17 +48,22 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
         //start page buttons
         List<Integer> startPageButtons = buttons.getStartPage();
         if (!ObjectUtils.isEmpty(startPageButtons)) {
-            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, buttons.getStartPage(), INITIATE));
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId,startPageButtons, INITIATE));
         }
 
         //approval page
         List<Integer> approvalPageButtons = buttons.getApprovalPage();
         if (!ObjectUtils.isEmpty(approvalPageButtons)) {
-            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, buttons.getApprovalPage(), AUDIT));
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, approvalPageButtons, AUDIT));
             //check whether the approval page buttons contains the resubmit button, if yes, set isHaveCxtjButton to true
             if (buttons.getApprovalPage().contains(BUTTON_TYPE_RESUBMIT.getCode())) {
                 isHaveCxtjButton = true;
             }
+        }
+        //view page buttons
+        List<Integer> viewPageButtons = buttons.getViewPage();
+        if(!ObjectUtils.isEmpty(viewPageButtons)){
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId,viewPageButtons,TO_VIEW));
         }
 
         //if the initiator node and the approval page buttons do not contain the resubmit button, then configure the default resubmit button
