@@ -12,7 +12,7 @@ public enum ProcessOperationEnum {
     BUTTON_TYPE_UNDERTAKE(10, "承办"),
     BUTTON_TYPE_CHANGE_ASSIGNEE(11,  "变更处理人"),
     BUTTON_TYPE_STOP(12,  "终止"),
-    BUTTON_TYPE_FORWARD(15,  "转发"),
+    BUTTON_TYPE_FORWARD(15,  "抄送"),
     BUTTON_TYPE_BACK_TO_MODIFY(18, "退回修改"),
     BUTTON_TYPE_JP(19,"加批"),
     BUTTON_TYPE_ZB(21,"转办"),
