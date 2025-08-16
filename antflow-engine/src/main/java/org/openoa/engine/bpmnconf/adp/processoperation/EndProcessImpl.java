@@ -59,7 +59,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         String verifyUserName = StringUtils.EMPTY;
 
         String verifyUserId = StringUtils.EMPTY;
-
+        boolean isAbandon=ProcessOperationEnum.BUTTON_TYPE_ABANDON.getCode().equals(vo.getOperationType());
         if (vo.getIsOutSideAccessProc()) {
             Map<String, Object> objectMap = vo.getObjectMap();
             if (!CollectionUtils.isEmpty(objectMap)) {
@@ -78,6 +78,9 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         }
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
         Task taskData;
+        if(isAbandon){
+            taskData=taskList.get(0);
+        }
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
         } else {

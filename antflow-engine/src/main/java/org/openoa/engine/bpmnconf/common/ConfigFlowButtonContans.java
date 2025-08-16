@@ -163,7 +163,9 @@ public class ConfigFlowButtonContans {
                 //process complete, filter invalid button
                 for (ProcessActionButtonVo processActionButtonVo : toViewButtons) {
                     if (!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_ABANDONED.getCode())
-                    ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())) {
+                    ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())
+                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_STOP.getCode())
+                    ) {
                         toViewButtonsComplete.add(processActionButtonVo);
                     }
 
