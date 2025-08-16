@@ -838,6 +838,7 @@ CREATE TABLE if not exists `t_bpmn_node_button_conf`
     `remark`           varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`           tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no 1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
+      start_page_only  tinyint          default 0                 null comment 'only for start user page,0 no 1 yes',
     `create_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `create_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'asits name says',
     `update_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',

@@ -11,9 +11,11 @@ import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeButtonConfService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +84,16 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
         }
     }
 
+    @Override
+    public List<BpmnNodeButtonConf> queryByNodeIds(List<String> nodeIds,ButtonPageTypeEnum typeEnum) {
+        List<BpmnNodeButtonConf> bpmnNodeButtonConfs = this.list(AFWrappers.<BpmnNodeButtonConf>lambdaTenantQuery()
+                .eq(BpmnNodeButtonConf::getButtonPageType, typeEnum.getCode())
+                .in(BpmnNodeButtonConf::getBpmnNodeId, nodeIds));
+        return bpmnNodeButtonConfs;
+    }
+
     private List<BpmnNodeButtonConf> getBpmnNodeButtonConfs(Long bpmnNodeId, List<Integer> buttons, ButtonPageTypeEnum buttonPageTypeEnum) {
+        List<Integer> startUserOnlyButtons=Lists.newArrayList(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode());
         return buttons
                 .stream()
                 .distinct()
@@ -93,6 +104,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                         .buttonType(o)
                         .buttonName(ButtonTypeEnum.getDescByCode(o))
                         .tenantId(MultiTenantUtil.getCurrentTenantId())
+                        .startPageOnly(startUserOnlyButtons.contains(o)?1:0)
                         .build())
                 .collect(Collectors.toList());
     }
