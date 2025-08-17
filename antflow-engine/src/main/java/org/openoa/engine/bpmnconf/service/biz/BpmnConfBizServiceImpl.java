@@ -771,6 +771,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         JSONObject object = JSON.parseObject(params);
         object.put("formCode", detail.getFormCode());
+        BusinessDataVo cachedBusinessDataVo = object.getObject("businessDataVo", BusinessDataVo.class);
 
         BusinessDataVo vo = formFactory.dataFormConversion(JSON.toJSONString(object),null);
         vo.setIsOutSideAccessProc(Objects.equals(1,detail.getIsOutSideProcess()));
@@ -779,8 +780,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         //set a flag to indicate whether is a start page preview
         vo.setIsStartPagePreview(isStartPagePreview);
 
-        BpmnStartConditionsExtendVo bpmnStartConditionsExtendVo = new BpmnStartConditionsExtendVo();
-        bpmnStartConditionsExtendVo.setLowCodeFlow(true);
+        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();;
+
+
+        bpmnStartConditionsVo.setLowCodeFlow(true);
         //set start user information
         String startUserId;
         if (isStartPagePreview) {
@@ -798,11 +801,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
         }
         if (!ObjectUtils.isEmpty(startUserId)) {
-            bpmnStartConditionsExtendVo.setStartUserId(startUserId);
+            bpmnStartConditionsVo.setStartUserId(startUserId);
             //todo set startcondition
         }
 
-        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
+
         if(dataVo.getIsOutSideAccessProc()&&(dataVo.getIsLowCodeFlow()==null||dataVo.getIsLowCodeFlow()==0)){
             //set conditions before preview
             bpmnStartConditionsVo.setTemplateMarkIds(dataVo.getTemplateMarkIds());
@@ -818,9 +821,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
 
 
-        BeanUtils.copyProperties(bpmnStartConditionsExtendVo, bpmnStartConditionsVo, StrUtils.getNullPropertyNames(bpmnStartConditionsExtendVo));
         bpmnStartConditionsVo.setApproversList(dataVo.getApproversList());
         bpmnStartConditionsVo.setPreview(true);
+        bpmnStartConditionsVo.setBusinessDataVo(cachedBusinessDataVo);
         BpmnConfVo bpmnConfVo = getBpmnConfVo(bpmnStartConditionsVo, detail);
         PreviewNode previewNode = new PreviewNode();
         previewNode.setBpmnName(detail.getBpmnName());

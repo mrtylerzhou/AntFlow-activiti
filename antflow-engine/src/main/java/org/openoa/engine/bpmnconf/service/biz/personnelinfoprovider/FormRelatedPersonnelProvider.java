@@ -2,13 +2,11 @@ package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.identity.User;
 import org.openoa.base.constant.enums.NodeFormAssigneePropertyEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.service.AfRoleService;
 import org.openoa.base.service.AfUserService;
-import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
 import org.openoa.base.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,9 +28,9 @@ public class FormRelatedPersonnelProvider extends AbstractMissingAssignNodeAssig
     public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
         Long id = bpmnNodeVo.getId();
         BusinessDataVo businessDataVo = startConditionsVo.getBusinessDataVo();
-        Map<Long, List<String>> node2formRelatedAssignees = businessDataVo.getNode2formRelatedAssignees();
+        Map<String, List<String>> node2formRelatedAssignees = businessDataVo.getNode2formRelatedAssignees();
         List<BaseIdTranStruVo> assignees=new ArrayList<>();
-        List<String> ids = node2formRelatedAssignees.get(id);
+        List<String> ids = node2formRelatedAssignees.get(String.valueOf(id));
         if(CollectionUtils.isEmpty(ids)){
             log.warn(Strings.lenientFormat("节点:%d,名称:%s,未获取到表单相关人员配置",id,bpmnNodeVo.getNodeName()));
             return new ArrayList<>();

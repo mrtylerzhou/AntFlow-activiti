@@ -5,7 +5,9 @@ import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.common.adaptor.AbstractBpmnPersonnelAdaptor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FormRelatedPersonnelAdaptor extends AbstractBpmnPersonnelAdaptor {
     public FormRelatedPersonnelAdaptor(BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService,@Qualifier("formRelatedPersonnelProvider") BpmnPersonnelProviderService bpmnPersonnelProviderService) {
         super(bpmnEmployeeInfoProviderService, bpmnPersonnelProviderService);

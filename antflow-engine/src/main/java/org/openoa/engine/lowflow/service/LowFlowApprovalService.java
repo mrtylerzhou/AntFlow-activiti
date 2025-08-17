@@ -21,12 +21,9 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
-import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
-import org.openoa.base.vo.FormRelatedAssignee;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
@@ -239,16 +236,17 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
                 throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
             }
-            Map<Long, List<String>> node2formRelatedAssignees = new HashMap<>();
+            Map<String, List<String>> node2formRelatedAssignees = new HashMap<>();
             for (BpmnNodeFormRelatedUserConf bpmnNodeFormRelatedUserConf : bpmnNodeFormRelatedUserConfs) {
                 Long bpmnNodeId = bpmnNodeFormRelatedUserConf.getBpmnNodeId();
                 String valueJson = bpmnNodeFormRelatedUserConf.getValueJson();
                 if (StringUtils.isEmpty(valueJson)) {
                     throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
                 }
-                List<String> formNames = JSON.parseArray(valueJson, String.class);
+                List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
                 List<String> formValues = new ArrayList<>();
-                for (String formName : formNames) {
+                for (BaseIdTranStruVo formInfo : formInfos) {
+                    String formName=formInfo.getId();
                     //用于存储人员相关的表单一般是下拉框,值可能是单个,也可能是数组
                     Object formVal = lfFields.get(formName);
                     if (formVal instanceof Iterable) {
@@ -262,7 +260,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                         formValues.add(formVal.toString());
                     }
                 }
-                node2formRelatedAssignees.put(bpmnNodeId,formValues);
+                node2formRelatedAssignees.put(bpmnNodeId.toString(),formValues);
             }
             vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
         }
