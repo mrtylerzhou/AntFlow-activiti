@@ -64,7 +64,9 @@ let props = defineProps({
 onMounted(() => {
     const elementList = document.getElementsByClassName("node-wrap-box");
     for (let element of elementList) {
+        element.classList.remove("current-node");
         const customNodeKey = element.getAttribute('data-node-key');
+        if (customNodeKey == 'Gb2') continue;
         if (customNodeKey == props.nodeConfig.currentNodeId) {
             element.classList.toggle("current-node");
         }
@@ -104,5 +106,7 @@ onMounted(() => {
 
 .current-node {
     border: 3px solid #1890ff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #1890ff;
 }
 </style>
