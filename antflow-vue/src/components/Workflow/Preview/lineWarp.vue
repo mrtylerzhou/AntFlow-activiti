@@ -7,7 +7,7 @@
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
         <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')"
-            :data-node-key="nodeConfig.nodeId">
+            :data-node-key="nodeConfig.nodeId" @click="clickNodeBtn(nodeConfig)">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
@@ -24,7 +24,7 @@
             <div class="branch-box">
                 <button class="add-branch">并行审批</button>
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
-                    <div class="condition-node">
+                    <div class="condition-node" @click="clickNodeBtn(item)">
                         <div class="condition-node-box">
                             <div class="node-wrap-box" :data-node-key="item.nodeId">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
@@ -54,6 +54,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
+import { inject, onMounted } from 'vue';
 import { bgColors } from '@/utils/antflow/const'
 let props = defineProps({
     nodeConfig: {
@@ -72,6 +73,11 @@ onMounted(() => {
         }
     }
 });
+
+const handleClickNode = inject("onClickNode", true);
+const clickNodeBtn = (data) => {
+    handleClickNode(data);
+};
 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>

@@ -108,6 +108,21 @@ export const dynamicRoutes = [
       },
     ],
   },
+  {
+    path: "/workflow/instance/removeSign",
+    component: Layout,
+    hidden: true,
+    permissions: ["system:user:edit"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowRemoveSign"),
+        name: "removeSign",
+        meta: { title: "流程减签", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

@@ -270,6 +270,8 @@ window.onload = function () {
 
 .layout-middle .content-tabs {
     padding: 10px;
+    min-width: 680px;
+    overflow: auto;
 }
 
 .list-flex-cards {

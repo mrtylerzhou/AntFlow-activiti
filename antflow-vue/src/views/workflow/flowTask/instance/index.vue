@@ -56,9 +56,39 @@
                   <span>{{ parseTime(scope.row.runTime, '{y}-{m}-{d} {h}:{i}') }}</span>
                </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="100" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" fixed="right" width="160" align="center" class-name="small-padding fixed-width">
                <template #default="scope">
                   <el-button link type="primary" icon="View" @click="handlePreview(scope.row)">查看</el-button>
+                  <el-button link type="primary" size="small">
+                     <el-dropdown>
+                        <el-button link size="small" type="primary">
+                           更多<el-icon class="el-icon--left"><arrow-down /></el-icon>
+                        </el-button>
+                        <template #dropdown>
+                           <el-dropdown-menu>
+                              <el-dropdown-item @click="handleFlowRemoveSign(scope.row)">
+                                 <el-icon>
+                                    <Remove />
+                                 </el-icon>减签
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowAddSign(scope.row)">
+                                 <el-icon>
+                                    <CirclePlus />
+                                 </el-icon>加签
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowAddSign(scope.row)">
+                                 <el-icon>
+                                    <Switch />
+                                 </el-icon>变更
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowChange(scope.row)">
+                                 <el-icon>
+                                    <RefreshLeft />
+                                 </el-icon>撤销</el-dropdown-item>
+                           </el-dropdown-menu>
+                        </template>
+                     </el-dropdown>
+                  </el-button>
                </template>
             </el-table-column>
          </el-table>
@@ -73,6 +103,8 @@
 import { getAllProcesslistPage } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import { onMounted } from "vue";
+const router = useRouter();
 const { proxy } = getCurrentInstance();
 let store = useStore()
 let { setPreviewDrawer, setPreviewDrawerConfig } = store
@@ -107,6 +139,9 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
+onMounted(() => {
+   getList();
+});
 /** 查询流程监控列表 */
 const getList = async () => {
    loading.value = true;
@@ -145,5 +180,34 @@ function handlePreview(row) {
    })
 }
 
-getList();
+/** 减签 */
+function handleFlowRemoveSign(row) {
+   proxy.$modal.msgSuccess("减签")
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/removeSign/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 加签 */
+function handleFlowAddSign(row) {
+   proxy.$modal.msgSuccess("加签")
+}
+
+/** 变更 */
+function handleFlowChange(row) {
+   proxy.$modal.msgSuccess("变更")
+}
+
+/** 撤销 */
+function handleFlowCancel(row) {
+   proxy.$confirm('确认撤销编号为"' + row.processNumber + '"的流程吗？', "提示").then(() => {
+      proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
+      // flowCancel(ow.processNumber).then(response => {
+      //    proxy.$modal.msgSuccess("撤销成功" )
+      // })
+   }).catch(() => { })
+}
+
 </script>
