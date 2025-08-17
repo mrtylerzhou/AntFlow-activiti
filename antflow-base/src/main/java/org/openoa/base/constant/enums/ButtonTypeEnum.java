@@ -7,7 +7,7 @@ import lombok.Getter;
  * @since 0.5
  * @Created by AntOffice
  */
-public enum ButtonTypeEnum {
+public enum ButtonTypeEnum implements AfEnumBase{
     BUTTON_TYPE_PREVIEW(0, "预览"),
     BUTTON_TYPE_SUBMIT(1, "提交"),
     BUTTON_TYPE_RESUBMIT(2, "重新提交"),

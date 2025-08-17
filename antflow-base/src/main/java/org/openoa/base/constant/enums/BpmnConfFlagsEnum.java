@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public enum BpmnConfFlagsEnum {
+public enum BpmnConfFlagsEnum implements AfEnumBase{
     NOTHING(0,"不存在"),
     HAS_NODE_LABELS(0b1,"包含节点标签(任意节点包含标签)"),
     HAS_STARTUSER_CHOOSE_MODULES(0b10,"是否包含发起人自选模块"),

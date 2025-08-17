@@ -7,7 +7,7 @@ import org.openoa.base.exception.AFBizException;
 /**
  * process node enum
  */
-public enum ProcessNodeEnum {
+public enum ProcessNodeEnum implements AfEnumBase {
 
     START_TASK_KEY(1, "task1418018332271"),
     TWO_TASK_KEY(2, "task1418018332272"),
@@ -228,7 +228,7 @@ public enum ProcessNodeEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * notice template wildcard
  */
-public enum WildcardCharacterEnum {
+public enum WildcardCharacterEnum implements AfEnumBase{
 
     ONE_CHARACTER(1, "{工作流名称}", "bpmnName", false, "\\{工作流名称\\}"),
     TWO_CHARACTER(2, "{流程编号}", "processNumber", false, "\\{流程编号\\}"),

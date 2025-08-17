@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessJurisdictionEnum {
+public enum ProcessJurisdictionEnum implements AfEnumBase{
 
     VIEW_TYPE(1,"查看"),
     CREATE_TYPE(2,"创建"),
@@ -14,7 +14,7 @@ public enum ProcessJurisdictionEnum {
 
     @Getter
     private String desc;
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
     public String getDesc() {

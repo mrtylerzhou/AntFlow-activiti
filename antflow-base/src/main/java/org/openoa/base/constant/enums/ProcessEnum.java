@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessEnum {
+public enum ProcessEnum implements AfEnumBase{
     /**
      * process category
      */
@@ -57,7 +57,7 @@ public enum ProcessEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

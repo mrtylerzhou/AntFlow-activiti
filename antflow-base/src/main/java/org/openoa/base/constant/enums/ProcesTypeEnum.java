@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcesTypeEnum {
+public enum ProcesTypeEnum implements AfEnumBase{
     //third party account
     THIRD_PARTY_ACCOUNT(1, "DSFZH"),
     ;
@@ -13,7 +13,7 @@ public enum ProcesTypeEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

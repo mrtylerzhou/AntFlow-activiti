@@ -3,7 +3,7 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 
 @Getter
-public enum OrderNodeTypeEnum {
+public enum OrderNodeTypeEnum implements AfEnumBase{
     TEST_ORDERED_SIGN(1, "示例顺序节点"),
     OUT_SIDE_NODE(2, "外部系统传入节点"),
     LOOP_NODE(3, "循环节点")

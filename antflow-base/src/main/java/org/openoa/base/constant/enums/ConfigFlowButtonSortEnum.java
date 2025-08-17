@@ -11,7 +11,7 @@ import lombok.Getter;
  * @return
  * @Version 1.0
  */
-public enum ConfigFlowButtonSortEnum {
+public enum ConfigFlowButtonSortEnum implements AfEnumBase {
     SUBMIT(1, "提交", 1),
     AGAIN_SUBMIT(2, "重新提交", 2), // 2重新提交
     AGREED(3, "同意", 10),
@@ -41,7 +41,7 @@ public enum ConfigFlowButtonSortEnum {
     @Getter
     private final Integer sort;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

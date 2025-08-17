@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessOperationEnum {
+public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_SUBMIT(1 ,"流程提交"),
     BUTTON_TYPE_RESUBMIT(2, "重新提交"),
     BUTTON_TYPE_AGREE(3,"同意"),

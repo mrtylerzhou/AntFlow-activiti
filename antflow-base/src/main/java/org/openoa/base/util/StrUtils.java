@@ -2,7 +2,6 @@ package org.openoa.base.util;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.fasterxml.uuid.StringArgGenerator;
 import com.google.common.base.Strings;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;

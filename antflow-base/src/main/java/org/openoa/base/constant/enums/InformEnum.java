@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum InformEnum {
+public enum InformEnum  implements AfEnumBase{
 
     APPLICANT(1, "申请人", "startUser"),
     ALL_APPROVER(2, "所有已审批人", "approveds"),

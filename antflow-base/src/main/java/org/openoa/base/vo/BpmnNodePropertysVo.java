@@ -155,4 +155,9 @@ public class BpmnNodePropertysVo implements Serializable{
      */
     private Integer formAssigneeProperty;
     private List<BaseIdTranStruVo> formInfos;
+    private String udrAssigneeProperty;
+    private String ext1;
+    private String ext2;
+    private String ext3;
+    private String ext4;
 }

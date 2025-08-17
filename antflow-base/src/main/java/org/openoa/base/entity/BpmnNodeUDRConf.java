@@ -14,8 +14,8 @@ import java.util.Date;
  * specified role approver configs
  */
 @Data
-@TableName("t_bpmn_node_form_related_user_conf")
-public class BpmnNodeFormRelatedUserConf implements BpmnNodeIdField, BpmnNodeSignTypeField, CreateUpdateField, IsDelField, TenantField,Serializable {
+@TableName("t_bpmn_node_udr_conf")
+public class BpmnNodeUDRConf implements BpmnNodeIdField, BpmnNodeSignTypeField, CreateUpdateField, IsDelField, TenantField,Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,14 +36,22 @@ public class BpmnNodeFormRelatedUserConf implements BpmnNodeIdField, BpmnNodeSig
     private Integer signType;
 
     /** value type
-     * @see org.openoa.base.constant.enums.NodeFormAssigneePropertyEnum
+     * @see org.openoa.base.constant.enums.AFGenericValueTypeEnum
      * */
     @TableField("value_type")
     private Integer valueType;
+    @TableField("value_name")
+    private String valueName;
 
-    /** value type name */
-    @TableField("value_type_name")
-    private String valueTypeName;
+    @TableField("udr_property")
+    private String udrProperty;
+    @TableField("urd_property_name")
+    private String udrPropertyName;
+    /*自定义扩展字段*/
+    private String ext1;
+    private String ext2;
+    private String ext3;
+    private String ext4;
 
     /** remark */
     @TableField("remark")

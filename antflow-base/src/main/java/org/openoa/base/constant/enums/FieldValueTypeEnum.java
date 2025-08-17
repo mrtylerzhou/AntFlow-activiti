@@ -8,7 +8,7 @@ import lombok.Getter;
  * @Version 1.0
  */
 @Getter
-public enum FieldValueTypeEnum {
+public enum FieldValueTypeEnum implements AfEnumBase{
     STRING(1,"String"),
     NUMBER(2,"Number"),
     NUMBERCHOICE(5,"NumberChoice"),

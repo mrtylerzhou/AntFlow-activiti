@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum NodeFormAssigneePropertyEnum {
+public enum NodeFormAssigneePropertyEnum implements AfEnumBase{
     FORM_ASSIGNEE(1,"表单中的人员"),
     FORM_ROLE(2,"表单中的角色"),
     FORM_USER_HRBP(3,"表单中人员的HRBP"),

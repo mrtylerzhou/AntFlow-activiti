@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 @Getter
-public enum ConditionRelationShipEnum {
+public enum ConditionRelationShipEnum implements AfEnumBase{
 
     AND(0,false,"and"), OR(1,true,"or");
 

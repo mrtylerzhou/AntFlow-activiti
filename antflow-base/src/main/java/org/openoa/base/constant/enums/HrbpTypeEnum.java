@@ -8,7 +8,7 @@ import lombok.Getter;
  * @Version 1.0
  */
 @Getter
-public enum HrbpTypeEnum {
+public enum HrbpTypeEnum implements AfEnumBase{
     HRBP(0,"hrbp"),
     HRBP_LEADER(2,"hrbp leader")
     ;
