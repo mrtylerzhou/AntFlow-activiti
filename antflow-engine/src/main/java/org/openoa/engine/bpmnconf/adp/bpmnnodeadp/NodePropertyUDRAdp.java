@@ -9,6 +9,8 @@ import org.openoa.base.entity.BpmnNodeUDRConf;
 import org.openoa.base.entity.DictData;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
+import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.PersonnelRuleVO;
@@ -36,17 +38,12 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
             throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
         }
         Integer nodeProperty = bpmnNodeVo.getNodeProperty();
+
         if(!Objects.equals(NodePropertyEnum.NODE_PROPERTY_ZDY_RULES.getCode(), nodeProperty)){
             throw new AFBizException(BusinessErrorEnum.PARAMS_MISMATCH.getCodeStr(),"logic error,please contact Administrator");
         }
         String udrProperty = bpmnNodeUDRConf.getUdrProperty();
-        if(StringUtils.isEmpty(udrProperty)){
-            throw new AFBizException(BusinessErrorEnum.PARAMS_NOT_COMPLETE.getCodeStr(),"param is incomplete,udrProperty is not in present");
-        }
-        List<DictData> udrRules = dicDataService.queryDicDataByCategory(AFSpecialDictCategoryEnum.USER_DEFINED_RULE_FOR_ASSIGNEE.getDesc());
-        if(udrRules.stream().noneMatch(a -> udrProperty.equalsIgnoreCase(a.getValue()))){
-            throw new AFBizException(BusinessErrorEnum.PARAMS_NULL_AFTER_CONVERT.getCodeStr(), Strings.lenientFormat("undefined property %s for udrProperty"),udrProperty);
-        }
+        String udrPropertyName = bpmnNodeUDRConf.getUdrPropertyName();
         String ext1 = bpmnNodeUDRConf.getExt1();
         String ext2 = bpmnNodeUDRConf.getExt2();
         String ext3 = bpmnNodeUDRConf.getExt3();
@@ -56,7 +53,7 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         bpmnNodeVo.setProperty(BpmnNodePropertysVo
                 .builder()
                 .signType(signType)
-                .udrAssigneeProperty(udrProperty)
+                .udrAssigneeProperty(BaseIdTranStruVo.builder().id(udrProperty).name(udrPropertyName).build())
                 .udrValueJson(valueJson)
                 .ext1(ext1)
                 .ext2(ext2)
@@ -70,17 +67,20 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         BpmnNodeUDRConf udrConf=new BpmnNodeUDRConf();
         BpmnNodePropertysVo property = nodeVo.getProperty();
         Integer signType = property.getSignType();
-        String udrAssigneeProperty = property.getUdrAssigneeProperty();
+        BaseIdTranStruVo udrAssigneeProperty = property.getUdrAssigneeProperty();
         String udrValueJson = property.getUdrValueJson();
         String ext1 = property.getExt1();
         String ext2 = property.getExt2();
         String ext3 = property.getExt3();
         String ext4 = property.getExt4();
         udrConf.setSignType(signType);
-        udrConf.setUdrProperty(udrAssigneeProperty);
+        udrConf.setUdrProperty(udrAssigneeProperty.getId());
+        udrConf.setUdrPropertyName(udrAssigneeProperty.getName());
         udrConf.setValueJson(udrValueJson);
+        udrConf.setBpmnNodeId(nodeVo.getId());
+        udrConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
         List<DictData> udrRules = dicDataService.queryDicDataByCategory(AFSpecialDictCategoryEnum.USER_DEFINED_RULE_FOR_ASSIGNEE.getDesc());
-        List<DictData> dictData = udrRules.stream().filter(a -> udrAssigneeProperty.equalsIgnoreCase(a.getValue())).collect(Collectors.toList());
+        List<DictData> dictData = udrRules.stream().filter(a -> udrAssigneeProperty.getId().equalsIgnoreCase(a.getValue())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(dictData)){
             throw new AFBizException(BusinessErrorEnum.PARAMS_NULL_AFTER_CONVERT.getCodeStr(), Strings.lenientFormat("undefined property %s for udrAssigneeProperty"),udrAssigneeProperty);
         }
@@ -106,14 +106,11 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         if (property.getSignType()==null) {
             property.setSignType(1);
         }
-        String udrAssigneeProperty = property.getUdrAssigneeProperty();
-        if(StringUtils.isEmpty(udrAssigneeProperty)){
+        BaseIdTranStruVo udrAssigneeProperty = property.getUdrAssigneeProperty();
+        if(udrAssigneeProperty==null){
             throw new AFBizException(BusinessErrorEnum.PARAMS_NOT_COMPLETE.getCodeStr(),"节点扩展参数:udrAssigneeProperty不能为空!");
         }
-        String udrValueJson = property.getUdrValueJson();
-        if(StringUtils.isEmpty(udrValueJson)){
-            throw new AFBizException(BusinessErrorEnum.PARAMS_NOT_COMPLETE.getCodeStr(),"节点扩展参数:udrValueJson不能为空!");
-        }
+
         //在字典中是否存在不再校验了,后面入库时要使用,直接在那里校验了,减少不必要查库
     }
 

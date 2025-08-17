@@ -157,7 +157,7 @@ public class BpmnNodePropertysVo implements Serializable{
     private List<BaseIdTranStruVo> formInfos;
     //用户在UDRPersonnelProvider类里自动取出自定义属性json然后自己转换为合适类型
     private String udrValueJson;
-    private String udrAssigneeProperty;
+    private BaseIdTranStruVo udrAssigneeProperty;
     private String ext1;
     private String ext2;
     private String ext3;
