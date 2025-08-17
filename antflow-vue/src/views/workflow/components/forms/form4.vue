@@ -5,7 +5,7 @@
             <el-row :class="{ disableClss: props.isPreview }">
                 <el-col :span="24">
                     <el-form-item label="采购人姓名" prop="purchaseUserName">
-                        <el-input v-model="form.purchaseUserName" style="width: 220px;" placeholder="请输入采购人姓名" />
+                        <el-input v-model="form.purchaseUserName" style="width: 220px;" disabled />
                     </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -41,6 +41,7 @@
 
 <script setup>
 import { ref, reactive, getCurrentInstance } from 'vue';
+import Cookies from "js-cookie";
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -63,9 +64,9 @@ let props = defineProps({
 });
 
 const ruleFormRef = ref(null);
-
+const _userName = decodeURIComponent(Cookies.get('userName'));
 /**定义表单字段和预览，根据实际业务表单修改*/
-const { purchaseUserName, purchaseDate, planProcurementTotalMoney, remark } = props.previewData;
+const { purchaseUserName = _userName, purchaseDate, planProcurementTotalMoney, remark } = props.previewData;
 const form = reactive({ purchaseUserName, purchaseDate, planProcurementTotalMoney, remark });
 /**表单字段验证，根据实际业务表单修改*/
 let rules = {

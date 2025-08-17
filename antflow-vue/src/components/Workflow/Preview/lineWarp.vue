@@ -7,7 +7,7 @@
 <template>
     <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
         <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')"
-            :data-node-key="nodeConfig.nodeId">
+            :data-node-key="nodeConfig.nodeId" @click="clickNodeBtn(nodeConfig)">
             <div class="title"
                 :style="(nodeConfig.isNodeDeduplication == 1 ? `background: rgb(${bgColors[0]});` : `background: rgb(${bgColors[nodeConfig.nodeType]});`)">
                 <span>{{ nodeConfig.nodeName }}</span>
@@ -26,7 +26,7 @@
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
                     <div class="condition-node">
                         <div class="condition-node-box">
-                            <div class="node-wrap-box" :data-node-key="item.nodeId">
+                            <div class="node-wrap-box" :data-node-key="item.nodeId" @click="clickNodeBtn(item)">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
@@ -54,6 +54,7 @@
     <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
+import { inject, onMounted } from 'vue';
 import { bgColors } from '@/utils/antflow/const'
 let props = defineProps({
     nodeConfig: {
@@ -64,12 +65,31 @@ let props = defineProps({
 onMounted(() => {
     const elementList = document.getElementsByClassName("node-wrap-box");
     for (let element of elementList) {
+        element.classList.remove("current-node");
         const customNodeKey = element.getAttribute('data-node-key');
+        if (customNodeKey == 'Gb2') continue;
         if (customNodeKey == props.nodeConfig.currentNodeId) {
             element.classList.toggle("current-node");
         }
     }
 });
+
+const handleClickNode = inject("onClickNode", true);
+const clickNodeBtn = (data) => {
+    if (data.beforeNodeIds && data.beforeNodeIds.includes(data.nodeId)) {
+        return;
+    }
+    const elementList = document.getElementsByClassName("node-wrap-box");
+    for (let element of elementList) {
+        element.classList.remove("active-node");
+        const customNodeKey = element.getAttribute('data-node-key');
+        if (customNodeKey == data.nodeId) {
+            element.classList.toggle("active-node");
+        }
+    }
+
+    handleClickNode(data);
+};
 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
 </script>
@@ -104,5 +124,13 @@ onMounted(() => {
 
 .current-node {
     border: 3px solid #1890ff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #1890ff;
+}
+
+.active-node {
+    border: 3px solid #30b08f;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #30b08f;
 }
 </style>
