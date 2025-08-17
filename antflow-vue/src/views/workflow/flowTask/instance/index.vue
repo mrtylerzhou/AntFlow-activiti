@@ -182,7 +182,6 @@ function handlePreview(row) {
 
 /** 减签 */
 function handleFlowRemoveSign(row) {
-   proxy.$modal.msgSuccess("减签")
    const processNumber = row.processNumber
    router.push({
       path: "/workflow/instance/removeSign/processNumber/" + processNumber,
@@ -192,7 +191,11 @@ function handleFlowRemoveSign(row) {
 
 /** 加签 */
 function handleFlowAddSign(row) {
-   proxy.$modal.msgSuccess("加签功能开发中，敬请期待！")
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/addSign/processNumber/" + processNumber,
+      query: row
+   });
 }
 
 /** 变更 */

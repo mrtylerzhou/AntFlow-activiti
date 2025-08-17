@@ -123,6 +123,21 @@ export const dynamicRoutes = [
       },
     ],
   },
+  {
+    path: "/workflow/instance/addSign",
+    component: Layout,
+    hidden: true,
+    permissions: ["system:user:edit"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowAddSign"),
+        name: "addSign",
+        meta: { title: "流程加签", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

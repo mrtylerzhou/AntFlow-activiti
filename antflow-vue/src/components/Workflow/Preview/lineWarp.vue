@@ -24,9 +24,9 @@
             <div class="branch-box">
                 <button class="add-branch">并行审批</button>
                 <div class="col-box" v-for="(item, index) in nodeConfig.parallelNodes" :key="index">
-                    <div class="condition-node" @click="clickNodeBtn(item)">
+                    <div class="condition-node">
                         <div class="condition-node-box">
-                            <div class="node-wrap-box" :data-node-key="item.nodeId">
+                            <div class="node-wrap-box" :data-node-key="item.nodeId" @click="clickNodeBtn(item)">
                                 <div class="title" :style="`background: rgb(${bgColors[4]});`">
                                     <span class="editable-title">{{ item.nodeName }}</span>
                                 </div>
@@ -76,6 +76,18 @@ onMounted(() => {
 
 const handleClickNode = inject("onClickNode", true);
 const clickNodeBtn = (data) => {
+    if (data.beforeNodeIds && data.beforeNodeIds.includes(data.nodeId)) {
+        return;
+    }
+    const elementList = document.getElementsByClassName("node-wrap-box");
+    for (let element of elementList) {
+        element.classList.remove("active-node");
+        const customNodeKey = element.getAttribute('data-node-key');
+        if (customNodeKey == data.nodeId) {
+            element.classList.toggle("active-node");
+        }
+    }
+
     handleClickNode(data);
 };
 
@@ -114,5 +126,11 @@ const clickNodeBtn = (data) => {
     border: 3px solid #1890ff;
     border-radius: 7px;
     box-shadow: 3px 3px 5px #1890ff;
+}
+
+.active-node {
+    border: 3px solid #30b08f;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #30b08f;
 }
 </style>
