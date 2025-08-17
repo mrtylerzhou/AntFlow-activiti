@@ -23,9 +23,9 @@
                             <el-descriptions-item label="发起时间">
                                 {{ queryForm.createTime }}
                             </el-descriptions-item>
-                            <el-descriptions-item label="流程状态" :span="2">
+                            <!-- <el-descriptions-item label="流程状态" :span="2">
                                 <el-tag type="success"> {{ queryForm.taskState }}</el-tag>
-                            </el-descriptions-item>
+                            </el-descriptions-item> -->
                         </el-descriptions>
                     </div>
                 </el-col>
@@ -43,6 +43,15 @@
 
                         <el-empty v-if="optFrom.userInfos.length === 0" description="请点击左侧审批人节点" />
                         <div v-else>
+                            <el-form :inline="true">
+                                <el-form-item label="节点名称">
+                                    <el-input v-model="optNodeName" disabled style="width: 200px" />
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="success" icon="CirclePlus"
+                                        @click="addApproveUser">新增审批人</el-button>
+                                </el-form-item>
+                            </el-form>
                             <el-table v-loading="loading" :data="optFrom.userInfos" class="mb10"
                                 style="height: 400px; width: 97%">
                                 <el-table-column prop="id" label="审批人ID" width="180" />
@@ -82,7 +91,7 @@ const queryForm = route.query;
 let store = useStore()
 let { setPreviewDrawerConfig } = store
 const loading = ref(false);
-const assigneeList = ref([]);
+const optNodeName = ref(null);
 const optFrom = ref({
     operationType: 24,
     formCode: queryForm.processKey,
@@ -111,6 +120,7 @@ const clickNode = (data) => {
         return;
     }
     loading.value = true;
+    optNodeName.value = data.nodeName;
     optFrom.value.userInfos = data.params?.assigneeList
         .map(item => {
             return {
@@ -128,6 +138,11 @@ provide("onClickNode", clickNode)
 const handleDeleteUser = (row) => {
     optFrom.value.userInfos = optFrom.value.userInfos.filter(item => item.id != row.id)
 }
+
+const addApproveUser = () => {
+    proxy.$modal.msgSuccess("操作成功");
+}
+
 const handleCancel = () => {
     const obj = { path: "/workflow/instance/removeSign" };
     proxy.$tab.closeOpenPage(obj);
