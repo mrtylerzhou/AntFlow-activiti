@@ -41,23 +41,23 @@
                         <el-alert title="加/减/变更都是针对当前正在审批的节点,每次都能只处理一个人.不允许多个人同时操作." type="warning" show-icon
                             :closable="false" />
 
-                        <el-empty v-if="optFrom.userInfos.length === 0" description="请点击左侧审批人节点" />
+                        <el-empty v-if="assigneeList.length === 0" description="请点击左侧审批人节点" />
                         <div v-else>
                             <el-form :inline="true">
                                 <el-form-item label="节点名称">
                                     <el-input v-model="optNodeName" disabled style="width: 200px" />
                                 </el-form-item>
                             </el-form>
-                            <el-table v-loading="loading" :data="optFrom.userInfos" class="mb10"
+                            <el-table v-loading="loading" :data="assigneeList" class="mb10"
                                 style="height: 400px; width: 97%">
                                 <el-table-column prop="id" label="审批人ID" width="180" />
                                 <el-table-column prop="name" label="审批人姓名" width="180" />
                                 <el-table-column label="操作" fixed="right" align="left"
                                     class-name="small-padding fixed-width">
                                     <template #default="scope">
-                                        <el-button link type="danger" icon="Delete" :disabled="optFrom.userInfos.length <= 1
+                                        <el-button link type="danger" icon="Delete" :disabled="assigneeList.length <= 1
                                             || scope.row.isDeduplication == 1
-                                            || isChangedCount != optFrom.userInfos.length"
+                                            || isChangedCount != assigneeList.length"
                                             @click="handleDeleteUser(scope.row)">删除</el-button>
                                     </template>
                                 </el-table-column>
@@ -98,6 +98,8 @@ let optFrom = ref({
     userInfos: []
 });
 
+const assigneeList = ref([]);
+
 let isChangedCount = 0;
 onBeforeMount(() => {
     setPreviewDrawerConfig({
@@ -118,7 +120,7 @@ const clickNode = (data) => {
     optFrom.value.nodeId = data.Id;
     optFrom.value.operationType = data.currentNodeId == data.nodeId ? 24 : 27; //当前节点加签 未来节点加签 
     isChangedCount = data.params?.assigneeList.length || 0;
-    optFrom.value.userInfos = data.params?.assigneeList
+    assigneeList.value = data.params?.assigneeList
         .map(item => {
             return {
                 id: item.assignee,
@@ -133,7 +135,8 @@ const clickNode = (data) => {
 }
 provide("onClickNode", clickNode)
 const handleDeleteUser = (row) => {
-    optFrom.value.userInfos = optFrom.value.userInfos.filter(item => item.id != row.id)
+    optFrom.value.userInfos = [assigneeList.value.find(item => item.id == row.id)]
+    assigneeList.value = assigneeList.value.filter(item => item.id != row.id)
 }
 
 const handleCancel = () => {

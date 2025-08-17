@@ -40,7 +40,7 @@
                     <div class="p20">
                         <el-alert title="加/减/变更都是针对当前正在审批的节点,每次都能只处理一个人.不允许多个人同时操作." type="warning" show-icon
                             :closable="false" />
-                        <el-empty v-if="optFrom.userInfos.length === 0" description="请点击左侧审批人节点" />
+                        <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                         <div v-else>
                             <el-form :inline="true">
                                 <el-form-item label="节点名称">
@@ -51,7 +51,7 @@
                                         @click="addApproveUser">新增审批人</el-button>
                                 </el-form-item>
                             </el-form>
-                            <el-table v-loading="loading" :data="optFrom.userInfos" class="mb10"
+                            <el-table v-loading="loading" :data="checkedUserList" class="mb10"
                                 style="height: 400px; width: 97%">
                                 <el-table-column prop="id" label="审批人ID" width="180" />
                                 <el-table-column prop="name" label="审批人姓名" width="180" />
@@ -73,7 +73,7 @@
                 </el-col>
             </el-row>
         </el-scrollbar>
-        <select-user-dialog v-model:visible="approverUserVisible" :data="checkedUserList" @change="sureUserApprover" />
+        <select-user-dialog v-model:visible="approverUserVisible" @change="sureUserApprover" />
         <label class="page-close-box" @click="handleCancel"><img src="@/assets/images/antflow/back-close.png"></label>
     </div>
 </template>
@@ -123,20 +123,22 @@ const sureUserApprover = (data) => {
         proxy.$modal.msgError("每次最多添加一个审批人");
         return;
     }
-    if (optFrom.value.userInfos.length > isChangedCount) {
+    if (checkedUserList.value.length > isChangedCount) {
         proxy.$modal.msgError("每次最多添加一个审批人");
         return;
     }
-    if (optFrom.value.userInfos.some((c) => c.id == data[0].targetId)) {
+    if (checkedUserList.value.some((c) => c.id == data[0].targetId)) {
         proxy.$modal.msgError("用户已被选中");
     } else {
-        optFrom.value.userInfos.push(...data.map(item => {
+        const checkedList = data.map(item => {
             return {
                 id: item.targetId,
                 name: item.name,
                 canDelete: true
             }
-        }))
+        })
+        checkedUserList.value.push(...checkedList)
+        optFrom.value.userInfos = checkedList
     }
     approverUserVisible.value = false;
 }
@@ -150,7 +152,7 @@ const clickNode = (data) => {
     optFrom.value.nodeId = data.Id;
     optFrom.value.operationType = data.currentNodeId == data.nodeId ? 25 : 28; //当前节点加签 未来节点加签 
     isChangedCount = data.params?.assigneeList.length || 0;
-    optFrom.value.userInfos = data.params?.assigneeList
+    checkedUserList.value = data.params?.assigneeList
         .map(item => {
             return {
                 id: item.assignee,
@@ -165,6 +167,7 @@ const clickNode = (data) => {
 }
 provide("onClickNode", clickNode)
 const handleDeleteUser = (row) => {
+    checkedUserList.value = checkedUserList.value.filter(item => item.id != row.id)
     optFrom.value.userInfos = optFrom.value.userInfos.filter(item => item.id != row.id)
 }
 
