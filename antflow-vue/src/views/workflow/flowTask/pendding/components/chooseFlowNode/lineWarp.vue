@@ -73,6 +73,13 @@ onMounted(() => {
     const elementList = document.getElementsByClassName("node-wrap-box");
     for (let element of elementList) {
         const customNodeKey = element.getAttribute('data-node-key');
+        if ('Gb2' == customNodeKey) {
+            element.classList.remove("not-allowed");
+            element.classList.toggle("not-allowed");
+            continue;
+        }
+        element.classList.remove("not-allowed");
+        element.classList.remove("current-node");
         element.classList.remove("checked-node");
         if (props.nodeConfig.afterNodeIds.indexOf(customNodeKey) > -1) {
             element.classList.toggle("not-allowed");
@@ -80,7 +87,7 @@ onMounted(() => {
         }
         if (customNodeKey == props.nodeConfig.currentNodeId) {
             element.classList.toggle("not-allowed");
-            element.classList.toggle("active");
+            element.classList.toggle("current-node");
             continue;
         }
     }
@@ -95,17 +102,27 @@ const handleChecked = (item) => {
         return;
     }
     if ('Gb2' == item.nodeId) {
+        for (let element of elementList) {
+            const customNodeKey = element.getAttribute('data-node-key');
+            if ('Gb2' == customNodeKey) {
+                element.classList.remove("not-allowed");
+                element.classList.toggle("not-allowed");
+                break;
+            }
+        }
         return;
     }
     for (let element of elementList) {
+        element.classList.remove("not-allowed");
+        element.classList.remove("checked-node");
         const customNodeKey = element.getAttribute('data-node-key');
-        if (element.classList.contains('not-allowed')) {
+        if (element.classList.contains("not-allowed")) {
             continue;
         }
         if (customNodeKey == item.nodeId) {
             element.classList.toggle("checked-node");
         } else {
-            element.classList.remove("checked-node");
+            element.classList.toggle("not-allowed");
             continue;
         }
     }
@@ -142,10 +159,14 @@ const handleChecked = (item) => {
 
 .checked-node {
     border: 5px solid #13ce66;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #13ce66;
 }
 
 .current-node {
-    border: 5px solid #1890ff;
+    border: 3px solid #1890ff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 5px #1890ff;
 }
 
 .not-allowed {

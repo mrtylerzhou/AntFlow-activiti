@@ -3,14 +3,14 @@ package org.openoa.base.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@Entity
-@Table(name = "ACT_HI_TASKINST")
+@TableName("ACT_HI_TASKINST")
 public class ActHiTaskinst {
 
 

@@ -1,7 +1,7 @@
 <template>
     <div style="text-align:center;">
         <section class="antflow-design" ref="antflowDesignRef">
-            <div class="zoom">
+            <div class="zoom" style="">
                 <div class="zoom-out" @click="zoomOut" title="缩小"></div>
                 <span>{{ nowVal }}%</span>
                 <div class="zoom-in" @click="zoomIn" title="放大"></div>

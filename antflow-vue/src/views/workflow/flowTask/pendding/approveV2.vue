@@ -185,7 +185,7 @@ const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
     approveFormDataConfig.value = {
         ...approveFormDataConfig.value,
-        formCode: data.processCode,
+        formCode: data.processKey,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
@@ -270,6 +270,8 @@ window.onload = function () {
 
 .layout-middle .content-tabs {
     padding: 10px;
+    min-width: 680px;
+    overflow: auto;
 }
 
 .list-flex-cards {

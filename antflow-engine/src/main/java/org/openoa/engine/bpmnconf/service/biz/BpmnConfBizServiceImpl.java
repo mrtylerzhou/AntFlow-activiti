@@ -159,7 +159,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         int hasStartUserChooseModules=0;
         int hasCopy=0;
         int hasLastNodeCopy=0;
-        int hasFormRelatedUsers=0;
 
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
@@ -169,9 +168,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
             if(NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty())){
                 hasStartUserChooseModules=BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.getCode();
-            }
-            if(NodePropertyEnum.NODE_PROPERTY_FORM_RELATED.getCode().equals(bpmnNodeVo.getNodeProperty())){
-                hasFormRelatedUsers=BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.getCode();
             }
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
@@ -235,7 +231,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
         ProcessorFactory.executePostProcessors(bpmnConfVo);
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy|hasFormRelatedUsers;
+        Integer currentFlags=hasStartUserChooseModules|hasCopy|hasLastNodeCopy;
         if(currentFlags!=null&&currentFlags>0){
             Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, currentFlags);
             bpmnConfVo.setExtraFlags(binariedOr);
@@ -771,7 +767,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         JSONObject object = JSON.parseObject(params);
         object.put("formCode", detail.getFormCode());
-        BusinessDataVo cachedBusinessDataVo = object.getObject("businessDataVo", BusinessDataVo.class);
 
         BusinessDataVo vo = formFactory.dataFormConversion(JSON.toJSONString(object),null);
         vo.setIsOutSideAccessProc(Objects.equals(1,detail.getIsOutSideProcess()));
@@ -780,10 +775,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         //set a flag to indicate whether is a start page preview
         vo.setIsStartPagePreview(isStartPagePreview);
 
-        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();;
-
-
-        bpmnStartConditionsVo.setLowCodeFlow(true);
+        BpmnStartConditionsExtendVo bpmnStartConditionsExtendVo = new BpmnStartConditionsExtendVo();
+        bpmnStartConditionsExtendVo.setLowCodeFlow(true);
         //set start user information
         String startUserId;
         if (isStartPagePreview) {
@@ -801,11 +794,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
         }
         if (!ObjectUtils.isEmpty(startUserId)) {
-            bpmnStartConditionsVo.setStartUserId(startUserId);
+            bpmnStartConditionsExtendVo.setStartUserId(startUserId);
             //todo set startcondition
         }
 
-
+        BpmnStartConditionsVo bpmnStartConditionsVo = new BpmnStartConditionsVo();
         if(dataVo.getIsOutSideAccessProc()&&(dataVo.getIsLowCodeFlow()==null||dataVo.getIsLowCodeFlow()==0)){
             //set conditions before preview
             bpmnStartConditionsVo.setTemplateMarkIds(dataVo.getTemplateMarkIds());
@@ -821,9 +814,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }
 
 
+        BeanUtils.copyProperties(bpmnStartConditionsExtendVo, bpmnStartConditionsVo, StrUtils.getNullPropertyNames(bpmnStartConditionsExtendVo));
         bpmnStartConditionsVo.setApproversList(dataVo.getApproversList());
         bpmnStartConditionsVo.setPreview(true);
-        bpmnStartConditionsVo.setBusinessDataVo(cachedBusinessDataVo);
         BpmnConfVo bpmnConfVo = getBpmnConfVo(bpmnStartConditionsVo, detail);
         PreviewNode previewNode = new PreviewNode();
         previewNode.setBpmnName(detail.getBpmnName());
