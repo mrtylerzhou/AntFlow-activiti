@@ -35,13 +35,6 @@ public class BpmnNodeUDRConf implements BpmnNodeIdField, BpmnNodeSignTypeField, 
     @TableField("sign_type")
     private Integer signType;
 
-    /** value type
-     * @see org.openoa.base.constant.enums.AFGenericValueTypeEnum
-     * */
-    @TableField("value_type")
-    private Integer valueType;
-    @TableField("value_name")
-    private String valueName;
 
     @TableField("udr_property")
     private String udrProperty;

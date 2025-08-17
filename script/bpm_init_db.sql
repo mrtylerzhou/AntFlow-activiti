@@ -1706,8 +1706,6 @@ create table t_bpmn_node_udr_conf
         primary key,
     bpmn_node_id    bigint                                 not null comment 'node id',
     value_json      varchar(3000)                          not null comment 'value as json array',
-    value_type smallint not null comment 'see AFGenericValueTypeEnum',
-    value_name        varchar(256)                           null,
     sign_type       int                                    not null comment 'sign type 1 all sign,2 or sign',
     udr_property varchar(255)                                not null,
     urd_property_name varchar(255)                           null,

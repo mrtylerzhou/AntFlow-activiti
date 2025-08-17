@@ -52,10 +52,12 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         String ext3 = bpmnNodeUDRConf.getExt3();
         String ext4 = bpmnNodeUDRConf.getExt4();
         Integer signType = bpmnNodeUDRConf.getSignType();
+        String valueJson = bpmnNodeUDRConf.getValueJson();
         bpmnNodeVo.setProperty(BpmnNodePropertysVo
                 .builder()
                 .signType(signType)
                 .udrAssigneeProperty(udrProperty)
+                .udrValueJson(valueJson)
                 .ext1(ext1)
                 .ext2(ext2)
                 .ext3(ext3)
@@ -69,12 +71,14 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         BpmnNodePropertysVo property = nodeVo.getProperty();
         Integer signType = property.getSignType();
         String udrAssigneeProperty = property.getUdrAssigneeProperty();
+        String udrValueJson = property.getUdrValueJson();
         String ext1 = property.getExt1();
         String ext2 = property.getExt2();
         String ext3 = property.getExt3();
         String ext4 = property.getExt4();
         udrConf.setSignType(signType);
         udrConf.setUdrProperty(udrAssigneeProperty);
+        udrConf.setValueJson(udrValueJson);
         List<DictData> udrRules = dicDataService.queryDicDataByCategory(AFSpecialDictCategoryEnum.USER_DEFINED_RULE_FOR_ASSIGNEE.getDesc());
         List<DictData> dictData = udrRules.stream().filter(a -> udrAssigneeProperty.equalsIgnoreCase(a.getValue())).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(dictData)){
@@ -105,6 +109,10 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
         String udrAssigneeProperty = property.getUdrAssigneeProperty();
         if(StringUtils.isEmpty(udrAssigneeProperty)){
             throw new AFBizException(BusinessErrorEnum.PARAMS_NOT_COMPLETE.getCodeStr(),"节点扩展参数:udrAssigneeProperty不能为空!");
+        }
+        String udrValueJson = property.getUdrValueJson();
+        if(StringUtils.isEmpty(udrValueJson)){
+            throw new AFBizException(BusinessErrorEnum.PARAMS_NOT_COMPLETE.getCodeStr(),"节点扩展参数:udrValueJson不能为空!");
         }
         //在字典中是否存在不再校验了,后面入库时要使用,直接在那里校验了,减少不必要查库
     }
