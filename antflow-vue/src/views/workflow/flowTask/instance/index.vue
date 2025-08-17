@@ -76,12 +76,12 @@
                                     <CirclePlus />
                                  </el-icon>加签
                               </el-dropdown-item>
-                              <el-dropdown-item @click="handleFlowAddSign(scope.row)">
+                              <el-dropdown-item @click="handleFlowChange(scope.row)">
                                  <el-icon>
                                     <Switch />
                                  </el-icon>变更
                               </el-dropdown-item>
-                              <el-dropdown-item @click="handleFlowChange(scope.row)">
+                              <el-dropdown-item @click="handleFlowCancel(scope.row)">
                                  <el-icon>
                                     <RefreshLeft />
                                  </el-icon>撤销</el-dropdown-item>
@@ -192,12 +192,12 @@ function handleFlowRemoveSign(row) {
 
 /** 加签 */
 function handleFlowAddSign(row) {
-   proxy.$modal.msgSuccess("加签")
+   proxy.$modal.msgSuccess("加签功能开发中，敬请期待！")
 }
 
 /** 变更 */
 function handleFlowChange(row) {
-   proxy.$modal.msgSuccess("变更")
+   proxy.$modal.msgSuccess("变更功能开发中，敬请期待！")
 }
 
 /** 撤销 */
