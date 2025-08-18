@@ -19,9 +19,6 @@ import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 import org.openoa.base.vo.UserMsgBatchVo;
 import org.openoa.base.vo.UserMsgVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeOvertimeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
@@ -52,8 +49,6 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     private BpmProcessNodeOvertimeService processNodeOvertimeService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
-    @Autowired
-    private BpmnConfNoticeTemplateDetailService bpmnConfNoticeTemplateDetailService;
 
 
     @Value("${system.domain:test}")
