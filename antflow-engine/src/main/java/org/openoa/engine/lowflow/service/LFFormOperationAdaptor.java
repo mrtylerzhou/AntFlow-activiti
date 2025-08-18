@@ -1,5 +1,6 @@
 package org.openoa.engine.lowflow.service;
 
+import org.openoa.base.interf.ProcessFinishListener;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
 
@@ -8,7 +9,7 @@ import org.openoa.engine.lowflow.vo.UDLFApplyVo;
  * 如果你熟悉LFFormOperationAdaptor
  * @param <T>
  */
-public interface LFFormOperationAdaptor<T extends UDLFApplyVo> {
+public interface LFFormOperationAdaptor<T extends UDLFApplyVo>  extends ProcessFinishListener {
 
     void previewSetCondition(T vo);
 
@@ -33,6 +34,5 @@ public interface LFFormOperationAdaptor<T extends UDLFApplyVo> {
 
     void cancellationData(T vo);
 
-    void finishData(BusinessDataVo vo);
 
 }
