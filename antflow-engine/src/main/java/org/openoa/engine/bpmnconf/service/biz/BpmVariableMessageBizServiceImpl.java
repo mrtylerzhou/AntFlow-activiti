@@ -15,7 +15,6 @@ import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfRoleService;
-import org.openoa.base.service.AfRoleServiceImpl;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.DateUtil;
@@ -621,13 +620,13 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             return;
         }
 
-        List<Employee> employeeDetailByIds = employeeService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
-        if(ObjectUtils.isEmpty(employeeDetailByIds)){
+        List<DetailedUser> detailedUserDetailByIds = employeeService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
+        if(ObjectUtils.isEmpty(detailedUserDetailByIds)){
             return;
         }
 
         //send messages
-        sendMessage(vo, bpmnTemplateVo, employeeDetailByIds);
+        sendMessage(vo, bpmnTemplateVo, detailedUserDetailByIds);
 
     }
 
@@ -636,9 +635,9 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      *
      * @param vo
      * @param bpmnTemplateVo
-     * @param employees
+     * @param detailedUsers
      */
-    private void sendMessage(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo, List<Employee> employees) {
+    private void sendMessage(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo, List<DetailedUser> detailedUsers) {
         //query all types of the messages
         List<MessageSendTypeEnum> messageSendTypeEnums = bpmProcessNoticeService.processNoticeList(vo.getFormCode())
                 .stream()
@@ -667,7 +666,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             if (Objects.isNull(messageSendTypeEnum)) {
                 continue;
             }
-            UserMsgUtils.sendMessageBatchNoUserMessage(employees
+            UserMsgUtils.sendMessageBatchNoUserMessage(detailedUsers
                     .stream()
                     .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
                             vo.getTaskId(), emailUrl, appUrl,messageSendTypeEnum))
@@ -798,7 +797,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      * @param messageSendTypeEnum
      * @return
      */
-    private UserMsgBatchVo getUserMsgBatchVo(Employee o, String title, String content, String taskId,
+    private UserMsgBatchVo getUserMsgBatchVo(DetailedUser o, String title, String content, String taskId,
                                              String emailUrl, String appUrl, MessageSendTypeEnum messageSendTypeEnum) {
         return UserMsgBatchVo
                 .builder()

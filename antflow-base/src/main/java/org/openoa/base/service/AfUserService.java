@@ -1,6 +1,6 @@
 package org.openoa.base.service;
 
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.vo.BaseIdTranStruVo;
 
 import java.util.Collection;
@@ -26,9 +26,9 @@ public interface AfUserService {
     List<BaseIdTranStruVo> queryEmployeeDirectLeaderByIds(List<String> employeeIds);
 
 
-    Employee getEmployeeDetailById(String id);
+    DetailedUser getEmployeeDetailById(String id);
 
-    List<Employee> getEmployeeDetailByIds(Collection<String> ids);
+    List<DetailedUser> getEmployeeDetailByIds(Collection<String> ids);
 
     long checkEmployeeEffective(String id);
     List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds);

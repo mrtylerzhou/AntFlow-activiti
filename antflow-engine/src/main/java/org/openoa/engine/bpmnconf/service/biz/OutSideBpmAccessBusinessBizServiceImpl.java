@@ -212,10 +212,10 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         }
 
 
-        Employee employee = !StringUtils.isEmpty(vo.getUserName())?Employee.builder().id(vo.getUserId()).username(vo.getUserName()).build():getEmployeeByUserId(vo.getUserId());
+        DetailedUser detailedUser = !StringUtils.isEmpty(vo.getUserName())? DetailedUser.builder().id(vo.getUserId()).username(vo.getUserName()).build():getEmployeeByUserId(vo.getUserId());
 
 
-        if (employee==null) {
+        if (detailedUser ==null) {
             throw new AFBizException("发起人不合法，无法预览流程");
         }
         //query condition template
@@ -237,8 +237,8 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
                 .builder()
                 .isOutSideAccessProc(true)
                 .formCode(vo.getFormCode())
-                .startUserId(employee.getId())
-                .startUserName(employee.getUsername())
+                .startUserId(detailedUser.getId())
+                .startUserName(detailedUser.getUsername())
                 .templateMarks(vo.getTemplateMarks())
                 .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
                 .build();
@@ -293,12 +293,12 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         if (!StringUtil.isEmpty(vo.getProcessBreakUserId())) {
             Map<String, Object> objectMap = Maps.newHashMap();
             vo.setUserId(vo.getProcessBreakUserId());
-            Employee employee = getEmployeeByUserId(vo.getUserId());
-            if (employee!=null) {
-                objectMap.put("employeeId", employee.getId());
-                objectMap.put("employeeName", employee.getUsername());
+            DetailedUser detailedUser = getEmployeeByUserId(vo.getUserId());
+            if (detailedUser !=null) {
+                objectMap.put("employeeId", detailedUser.getId());
+                objectMap.put("employeeName", detailedUser.getUsername());
                 businessDataVo.setObjectMap(objectMap);
-                businessDataVo.setStartUserId(employee.getId().toString());
+                businessDataVo.setStartUserId(detailedUser.getId().toString());
             }
         }
 
@@ -375,15 +375,15 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
      *
      * @return
      */
-    private Employee getEmployeeByUserId(String userName) {
+    private DetailedUser getEmployeeByUserId(String userName) {
         Map<String, String> stringStringMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(Lists.newArrayList(userName));
         if(stringStringMap.isEmpty()){
             return null;
         }
-        Employee employee=new Employee();
-        employee.setId(userName);
-        employee.setUsername(stringStringMap.get(userName));
-        return employee;
+        DetailedUser detailedUser =new DetailedUser();
+        detailedUser.setId(userName);
+        detailedUser.setUsername(stringStringMap.get(userName));
+        return detailedUser;
     }
     /**
      * get process record

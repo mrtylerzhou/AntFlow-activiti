@@ -1,7 +1,7 @@
 package org.openoa.base.service;
 
 import com.google.common.collect.Lists;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -97,7 +96,7 @@ public class UserServiceImpl implements AfUserService{
      * @return
      */
     @Override
-    public Employee getEmployeeDetailById(String id){
+    public DetailedUser getEmployeeDetailById(String id){
         return userMapper.getEmployeeDetailById(id);
     }
 
@@ -107,7 +106,7 @@ public class UserServiceImpl implements AfUserService{
      * @return
      */
     @Override
-    public List<Employee> getEmployeeDetailByIds(Collection<String> ids){
+    public List<DetailedUser> getEmployeeDetailByIds(Collection<String> ids){
         return userMapper.getEmployeeDetailByIds(ids);
     }
 

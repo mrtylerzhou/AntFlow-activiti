@@ -6,15 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.entity.OutSideBpmAdminPersonnel;
 import org.openoa.base.entity.OutSideBpmBusinessParty;
 import org.openoa.base.entity.OutSideBpmCallbackUrlConf;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.ResultAndPage;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAdminPersonnelServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmCallbackUrlConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmBusinessPartyService;
@@ -141,12 +139,12 @@ public class OutSideBpmCallbackUrlConfBizServiceImpl implements OutSideBpmCallba
 
             if (!CollectionUtils.isEmpty(outSideBpmAdminPersonnels)) {
 
-                List<Employee> employees = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
+                List<DetailedUser> detailedUsers = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
                         .stream()
                         .map(OutSideBpmAdminPersonnel::getEmployeeId)
                         .collect(Collectors.toList()));
 
-                outSideBpmCallbackUrlConfVo.setInterfaceAdmins(employees.stream().map(o -> Employee
+                outSideBpmCallbackUrlConfVo.setInterfaceAdmins(detailedUsers.stream().map(o -> DetailedUser
                                 .builder()
                                 .id(o.getId())
                                 .username(o.getUsername())

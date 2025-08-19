@@ -3,7 +3,7 @@
 <mapper namespace="org.openoa.base.mapper.UserMapper">
 
     <!--employeeMap can be implemented or not,if not,you can write just like fieldxx as userName in the sql-->
-    <resultMap id="employeeMap" type="org.openoa.base.entity.Employee">
+    <resultMap id="employeeMap" type="org.openoa.base.entity.DetailedUser">
         <id column="id" property="id"/>
         <result column="department_id" property="departmentId"/>
         <result column="user_name" property="username"/>
