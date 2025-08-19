@@ -22,7 +22,6 @@ import org.openoa.base.vo.UserMsgVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
