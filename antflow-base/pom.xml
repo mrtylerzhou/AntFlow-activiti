@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-base</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <name>antflow-base</name>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -165,7 +165,7 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -17,7 +17,7 @@
     </parent>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
