@@ -206,12 +206,16 @@ function handleFlowAddSign(row) {
 
 /** 变更 */
 function handleFlowChange(row) {
-   proxy.$modal.msgSuccess("变更功能开发中，敬请期待！")
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/changeSign/processNumber/" + processNumber,
+      query: row
+   });
 }
 
 /** 撤回 */
 function handleFlowCancel(row) {
-   proxy.$confirm('确认撤回编号为"' + row.processNumber + '"的流程吗？', "提示").then(() => {
+   proxy.$confirm('确认撤回编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
       proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
       // flowCancel(ow.processNumber).then(response => {
       //    proxy.$modal.msgSuccess("撤销成功" )
@@ -220,7 +224,7 @@ function handleFlowCancel(row) {
 }
 /** 作废 */
 function handleFlowRepeal(row) {
-   proxy.$confirm('确认作废编号为"' + row.processNumber + '"的流程吗？', "提示").then(() => {
+   proxy.$confirm('确认作废编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
       proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
       // flowCancel(ow.processNumber).then(response => {
       //    proxy.$modal.msgSuccess("作废成功" )

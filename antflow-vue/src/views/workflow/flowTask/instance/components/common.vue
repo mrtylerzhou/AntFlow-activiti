@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { provide, onBeforeMount } from 'vue';
+import { provide, readonly, onBeforeMount } from 'vue';
 import { processOperation } from '@/api/workflow/index';
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import { useStore } from '@/store/modules/workflow';
@@ -58,7 +58,7 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute()
 const queryForm = route.query;
-
+let originalNodeUserList = ref([]);
 let emits = defineEmits(["clickNodeOpt"]);
 
 let store = useStore()
@@ -102,6 +102,8 @@ const clickNode = (data) => {
                 isDeduplication: item.isDeduplication
             }
         }) || [];
+
+    originalNodeUserList.value = optFrom.value.userInfos;
     //.filter((c) => c.isDeduplication == 0)
     emits("clickNodeOpt", optFrom);
 }
@@ -131,6 +133,7 @@ const handleSubmit = (data) => {
 defineExpose({
     handleSubmit,
     handleCancel,
+    originalNodeUserList: readonly(originalNodeUserList),
     optFrom
 })
 </script>

@@ -60,7 +60,11 @@ const handleCancel = () => {
 }
 
 const handleReset = () => {
-    location.reload()
+    loading.value = true;
+    checkedUserList.value = commonRef.value.originalNodeUserList;
+    setTimeout(() => {
+        loading.value = false;
+    }, 300);
 } 
 </script>
 <style lang="scss" scoped>
