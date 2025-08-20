@@ -220,7 +220,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(taskData.getProcessInstanceId(), strings);
                 }
                 List<BpmVariableMultiplayer> moreNodes = bpmVariableMultiplayerService.getBaseMapper().isMoreNode(bpmBusinessProcess.getBusinessNumber(), backToNodeKey);
-                if(!CollectionUtils.isEmpty(moreNodes)&&moreNodes.stream().anyMatch(a-> SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(a.getSignType()))){
+               /* if(!CollectionUtils.isEmpty(moreNodes)&&moreNodes.stream().anyMatch(a-> SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(a.getSignType()))){
                     Long id = moreNodes.get(0).getId();
                   if(moreNodes.size()>1){
                       LambdaQueryWrapper<BpmVariableMultiplayerPersonnel> updateWrapper = Wrappers.<BpmVariableMultiplayerPersonnel>lambdaQuery()
@@ -229,7 +229,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                       multiplayerPersonnel.setUndertakeStatus(0);
                       bpmVariableMultiplayerPersonnelService.update(multiplayerPersonnel,updateWrapper);
                   }
-                }
+                }*/
                 List<Task> tasks = taskService.createTaskQuery().processInstanceId(taskData.getProcessInstanceId()).taskDefinitionKey(backToNodeKey).list();
                 if(tasks.size()>1){
                     Task firstTask = tasks.get(0);
