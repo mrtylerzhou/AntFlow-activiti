@@ -11,14 +11,15 @@ import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeButtonConfService;
+import org.openoa.engine.utils.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.openoa.base.constant.enums.ButtonPageTypeEnum.AUDIT;
-import static org.openoa.base.constant.enums.ButtonPageTypeEnum.INITIATE;
+import static org.openoa.base.constant.enums.ButtonPageTypeEnum.*;
 import static org.openoa.base.constant.enums.ButtonTypeEnum.BUTTON_TYPE_RESUBMIT;
 import static org.openoa.base.constant.enums.NodeTypeEnum.NODE_TYPE_START;
 
@@ -41,6 +42,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
             BpmnNodeButtonConfBaseVo buttonConfBaseVo=new BpmnNodeButtonConfBaseVo();
             buttonConfBaseVo.setStartPage(Lists.newArrayList());
             buttonConfBaseVo.setApprovalPage(Lists.newArrayList(2));
+            buttonConfBaseVo.setViewPage(Lists.newArrayList());
             buttons=buttonConfBaseVo;
             //return; todo for easy testing purposes
         }
@@ -48,17 +50,22 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
         //start page buttons
         List<Integer> startPageButtons = buttons.getStartPage();
         if (!ObjectUtils.isEmpty(startPageButtons)) {
-            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, buttons.getStartPage(), INITIATE));
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId,startPageButtons, INITIATE));
         }
 
         //approval page
         List<Integer> approvalPageButtons = buttons.getApprovalPage();
         if (!ObjectUtils.isEmpty(approvalPageButtons)) {
-            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, buttons.getApprovalPage(), AUDIT));
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId, approvalPageButtons, AUDIT));
             //check whether the approval page buttons contains the resubmit button, if yes, set isHaveCxtjButton to true
             if (buttons.getApprovalPage().contains(BUTTON_TYPE_RESUBMIT.getCode())) {
                 isHaveCxtjButton = true;
             }
+        }
+        //view page buttons
+        List<Integer> viewPageButtons = buttons.getViewPage();
+        if(!ObjectUtils.isEmpty(viewPageButtons)){
+            this.saveBatch(getBpmnNodeButtonConfs(bpmnNodeId,viewPageButtons,TO_VIEW));
         }
 
         //if the initiator node and the approval page buttons do not contain the resubmit button, then configure the default resubmit button
@@ -77,7 +84,16 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
         }
     }
 
+    @Override
+    public List<BpmnNodeButtonConf> queryByNodeIds(List<String> nodeIds,ButtonPageTypeEnum typeEnum) {
+        List<BpmnNodeButtonConf> bpmnNodeButtonConfs = this.list(AFWrappers.<BpmnNodeButtonConf>lambdaTenantQuery()
+                .eq(BpmnNodeButtonConf::getButtonPageType, typeEnum.getCode())
+                .in(BpmnNodeButtonConf::getBpmnNodeId, nodeIds));
+        return bpmnNodeButtonConfs;
+    }
+
     private List<BpmnNodeButtonConf> getBpmnNodeButtonConfs(Long bpmnNodeId, List<Integer> buttons, ButtonPageTypeEnum buttonPageTypeEnum) {
+        List<Integer> startUserOnlyButtons=Lists.newArrayList(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode());
         return buttons
                 .stream()
                 .distinct()
@@ -88,6 +104,7 @@ public class BpmnNodeButtonConfServiceImpl extends ServiceImpl<BpmnNodeButtonCon
                         .buttonType(o)
                         .buttonName(ButtonTypeEnum.getDescByCode(o))
                         .tenantId(MultiTenantUtil.getCurrentTenantId())
+                        .startPageOnly(startUserOnlyButtons.contains(o)?1:0)
                         .build())
                 .collect(Collectors.toList());
     }

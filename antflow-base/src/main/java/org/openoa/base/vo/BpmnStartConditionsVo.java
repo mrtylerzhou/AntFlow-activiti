@@ -56,12 +56,10 @@ public class BpmnStartConditionsVo {
     private Long startUserServicesCompanyId;
 
     /**
-     * approvalEmp Id
+     * approvalEmp Ids
      */
-    private String approvalEmplId;
-    /**
-     * approval emp ids
-     */
+    private List<BaseIdTranStruVo> approvalEmpls;
+
     private List<String> employeeIds;
 
     /**

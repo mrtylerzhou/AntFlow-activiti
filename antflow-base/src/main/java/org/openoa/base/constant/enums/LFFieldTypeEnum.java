@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-public enum LFFieldTypeEnum {
+public enum LFFieldTypeEnum implements AfEnumBase{
     STRING(1,"字符串"),//string
     NUMBER(2,"数字"),//int
     DATE(3,"日期"),//date
@@ -38,5 +38,10 @@ public enum LFFieldTypeEnum {
             }
         }
         return null;
+    }
+
+    @Override
+    public Integer getCode() {
+        return this.type;
     }
 }

@@ -14,6 +14,7 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeRoleConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -27,10 +28,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
+public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
 
     @Autowired
-    private BpmnNodeRoleConfServiceImpl bpmnNodeRoleConfService;
+    private BpmnNodeRoleConfService bpmnNodeRoleConfService;
     @Autowired
     private BpmnRoleInfoProvider roleInfoProvider;
 
@@ -38,13 +39,13 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
     private BpmnNodeRoleOutsideEmpConfServiceImpl bpmnNodeRoleOutsideEmpConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (CollectionUtils.isEmpty(list)) {
-            return bpmnNodeVo;
+            return ;
         }
         List<BaseIdTranStruVo> roles = list.stream().map(conf -> BaseIdTranStruVo.builder().id(conf.getRoleId()).name(conf.getRoleName()).build())
                 .collect(Collectors.toList());
@@ -67,7 +68,7 @@ public class NodePropertyRoleAdp extends BpmnNodeAdaptor {
                 bpmnNodeVo.getProperty().setEmplList(emplList);
             }
         }
-        return bpmnNodeVo;
+
     }
 
     /**

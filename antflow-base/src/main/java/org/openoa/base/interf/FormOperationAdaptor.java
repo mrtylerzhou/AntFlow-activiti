@@ -22,7 +22,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T
      */
-    T initData(T vo);
+    void initData(T vo);
 
     /**
      * process's launch parameters,most of the time,it is a must method,even  rough you do not have any start conditions,you should always define a new empty one
@@ -37,7 +37,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo businessId the business id for a specified process,it will passed by antflow engine,and you should use it to query business data
      * @return business data
      */
-    T queryData(T vo);
+    void queryData(T vo);
 
     /**
      * a method to submit data for a process,most of the times,it is a must method,it is used to submit business data for a process
@@ -45,7 +45,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T(business data)
      */
-    T submitData(T vo);
+    void submitData(T vo);
 
     /**
      * when an approver submit his/her approve,it will call this method to do some business logic,it is not a must method most of the times
@@ -53,7 +53,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T(business data)
      */
-    T consentData(T vo);
+    void consentData(T vo);
 
     /**
      * this method is called when a process is back to modify,it is not a must method most of the times

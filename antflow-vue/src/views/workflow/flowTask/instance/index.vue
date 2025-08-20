@@ -84,7 +84,13 @@
                               <el-dropdown-item @click="handleFlowCancel(scope.row)">
                                  <el-icon>
                                     <RefreshLeft />
-                                 </el-icon>撤销</el-dropdown-item>
+                                 </el-icon>撤回
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowRepeal(scope.row)">
+                                 <el-icon>
+                                    <CircleClose />
+                                 </el-icon>作废
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -200,17 +206,29 @@ function handleFlowAddSign(row) {
 
 /** 变更 */
 function handleFlowChange(row) {
-   proxy.$modal.msgSuccess("变更功能开发中，敬请期待！")
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/changeSign/processNumber/" + processNumber,
+      query: row
+   });
 }
 
-/** 撤销 */
+/** 撤回 */
 function handleFlowCancel(row) {
-   proxy.$confirm('确认撤销编号为"' + row.processNumber + '"的流程吗？', "提示").then(() => {
+   proxy.$confirm('确认撤回编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
       proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
       // flowCancel(ow.processNumber).then(response => {
       //    proxy.$modal.msgSuccess("撤销成功" )
       // })
    }).catch(() => { })
 }
-
+/** 作废 */
+function handleFlowRepeal(row) {
+   proxy.$confirm('确认作废编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
+      proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
+      // flowCancel(ow.processNumber).then(response => {
+      //    proxy.$modal.msgSuccess("作废成功" )
+      // })
+   }).catch(() => { })
+}
 </script>

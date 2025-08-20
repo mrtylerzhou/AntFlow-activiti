@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * @Author tylerzhou
  */
-public enum ProcessBusinessCallBackTypeEnum implements BusinessCallBackFace {
+public enum ProcessBusinessCallBackTypeEnum implements BusinessCallBackFace,AfEnumBase {
     Send_MQ_Message(1, ProcessEventSendMessageAdaptor.class,"发送事件消息到mq队列")
     ,;
     @Getter

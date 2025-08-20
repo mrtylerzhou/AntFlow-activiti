@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public enum OpLogFlagEnum {
+public enum OpLogFlagEnum implements AfEnumBase{
 
     SUCCESS(0, "成功"), FAILURE(1, "失败"), BusinessException(2, "业务异常");
 

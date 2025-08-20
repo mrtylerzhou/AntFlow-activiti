@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeButtonConfMapper">
+
+
+    <select id="queryConfByBpmnConde" resultType="org.openoa.base.entity.BpmnNodeButtonConf">
+        select tbnbc.*
+        from t_bpmn_conf tbc
+        inner join t_bpmn_node tbn on tbc.id = tbn.conf_id
+        inner join t_bpmn_node_button_conf tbnbc on tbn.id=tbnbc.bpmn_node_id and tbnbc.start_page_only=1
+        where tbc.bpmn_code=#{bpmnCode}
+    </select>
+</mapper>

@@ -1,0 +1,25 @@
+package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
+
+import com.google.common.collect.Lists;
+import org.openoa.base.service.AfUserService;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnNodeParamsAssigneeVo;
+import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+
+@Component
+public class DepartmentLeaderPersonnelProvider extends AbstractDifferentStandardAssignNodeAssigneeVoProvider{
+    @Autowired
+    private AfUserService userService;
+
+
+    @Override
+    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
+        return userService.queryDepartmentLeaderByIds(users);
+    }
+}

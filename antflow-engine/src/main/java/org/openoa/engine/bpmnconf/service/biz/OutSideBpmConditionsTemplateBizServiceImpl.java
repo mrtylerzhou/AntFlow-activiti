@@ -17,7 +17,6 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
-import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmConditionsTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.vo.OutSideBpmBusinessPartyVo;
@@ -95,13 +94,13 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                 .collect(Collectors.toMap(OutSideBpmBusinessParty::getId, o -> o));
 
         //qeury employee info,for mapping purpose
-        Map<String, Employee> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmConditionsTemplateVos
+        Map<String, DetailedUser> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmConditionsTemplateVos
                         .stream()
                         .map(OutSideBpmConditionsTemplateVo::getCreateUserId)
                         .distinct()
                         .collect(Collectors.toList()))
                 .stream()
-                .collect(Collectors.toMap(Employee::getId, o -> o));
+                .collect(Collectors.toMap(DetailedUser::getId, o -> o));
 
 
         for (OutSideBpmConditionsTemplateVo outSideBpmConditionsTemplateVo : outSideBpmConditionsTemplateVos) {
@@ -111,9 +110,9 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                 outSideBpmConditionsTemplateVo.setBusinessPartyName(outSideBpmBusinessParty.getName());
             }
 
-            Employee employee = employeeMap.get(outSideBpmConditionsTemplateVo.getCreateUserId());
-            if (employee!=null) {
-                outSideBpmConditionsTemplateVo.setCreateUserName(employee.getUsername());
+            DetailedUser detailedUser = employeeMap.get(outSideBpmConditionsTemplateVo.getCreateUserId());
+            if (detailedUser !=null) {
+                outSideBpmConditionsTemplateVo.setCreateUserName(detailedUser.getUsername());
             }
 
 

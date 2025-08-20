@@ -9,6 +9,7 @@ import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,14 +18,12 @@ import java.util.List;
  * @Version 1.0
  */
 @Component
-public class HrbpPersonnelProvider extends AbstractMissingAssignNodeAssigneeVoProvider{
+public class HrbpPersonnelProvider extends AbstractDifferentStandardAssignNodeAssigneeVoProvider{
     @Autowired
     private AfUserService userService;
-    @Override
-    public List<BpmnNodeParamsAssigneeVo> getAssigneeList(BpmnNodeVo bpmnNodeVo, BpmnStartConditionsVo startConditionsVo) {
-        String startUserId = startConditionsVo.getStartUserId();
-        BaseIdTranStruVo baseIdTranStruVo = userService.queryEmployeeHrpbByEmployeeId(startUserId);
 
-        return  super.provideAssigneeList(bpmnNodeVo, Lists.newArrayList(baseIdTranStruVo));
+    @Override
+    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
+        return userService.queryEmployeeHrpbByEmployeeIds(users);
     }
 }

@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ButtonPageTypeEnum {
+public enum ButtonPageTypeEnum implements AfEnumBase{
 
     INITIATE(1, "initiate","发起页"),
     AUDIT(2, "audit","审批页"),
@@ -17,7 +17,7 @@ public enum ButtonPageTypeEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

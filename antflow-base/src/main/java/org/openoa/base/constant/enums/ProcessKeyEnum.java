@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * process key enum
  */
-public enum ProcessKeyEnum {
+public enum ProcessKeyEnum implements AfEnumBase {
 
     ;
 
@@ -14,7 +14,7 @@ public enum ProcessKeyEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

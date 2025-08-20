@@ -14,6 +14,7 @@ const headers = {
 };
 
 /**
+ * Obsoleted
  * 获取全部 LF FormCodes 在流程设计时选择使用
  * @param { String } formCode
  * @returns

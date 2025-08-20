@@ -10,7 +10,7 @@ import lombok.Getter;
  * @return
  * @Version 1.0
  */
-public enum ProcessTypeEnum {
+public enum ProcessTypeEnum implements AfEnumBase{
     /**
      * process type
      */
@@ -28,7 +28,7 @@ public enum ProcessTypeEnum {
 
     @Getter
     private String desc;
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
     public String getDesc() {

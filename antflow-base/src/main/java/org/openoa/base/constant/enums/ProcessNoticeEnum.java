@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessNoticeEnum {
+public enum ProcessNoticeEnum implements AfEnumBase{
     /**
      * 流程审批状态
      */
@@ -19,7 +19,7 @@ public enum ProcessNoticeEnum {
 
     @Getter
     private String desc;
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
     public String getDesc() {

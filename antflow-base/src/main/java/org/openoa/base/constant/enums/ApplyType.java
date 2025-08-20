@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ApplyType {
+public enum ApplyType implements AfEnumBase{
 
     PROCESS_TYPE(1, "流程"),
     APP_TYPE(2, "应用"),;
@@ -12,7 +12,7 @@ public enum ApplyType {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

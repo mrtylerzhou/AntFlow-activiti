@@ -48,6 +48,7 @@ public class BpmnNodeVo  implements Serializable {
      * 7 for self-select module 8 for related configuration table
      */
     private Integer nodeProperty;
+
     /**
      * node property name
      */

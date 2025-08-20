@@ -18,7 +18,6 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
-import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
@@ -402,13 +401,13 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
         }
 
         //get emp list
-        Map<String, Employee> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
+        Map<String, DetailedUser> employeeMap = employeeService.getEmployeeDetailByIds(outSideBpmAdminPersonnels
                         .stream()
                         .map(OutSideBpmAdminPersonnel::getEmployeeId)
                         .distinct()
                         .collect(Collectors.toList()))
                 .stream()
-                .collect(Collectors.toMap(Employee::getId, o -> o));
+                .collect(Collectors.toMap(DetailedUser::getId, o -> o));
 
 
         List<OutSideBpmAdminPersonnel> adminPersonnels = outSideBpmAdminPersonnels
@@ -436,7 +435,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                                 .builder()
                                 .id(o.getEmployeeId())
                                 .name(!StringUtils.isEmpty(o.getEmployeeName())?o.getEmployeeName(): Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
-                                        .orElse(new Employee()).getUsername())
+                                        .orElse(new DetailedUser()).getUsername())
                                 .build())
                         .collect(Collectors.toList());
                 BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getListField(), personnelsList);
@@ -454,7 +453,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                 String personnelsStr = StringUtils.join(bpmAdminPersonnels
                         .stream()
                         .map(o -> Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
-                                .orElse(new Employee()).getUsername())
+                                .orElse(new DetailedUser()).getUsername())
                         .collect(Collectors.toList()), ",");
                 BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getStrField(), personnelsStr);
             }

@@ -20,9 +20,11 @@ public enum BusinessErrorEnum {
     PARAMS_TYPE_ERROR(1418300273, "参数类型匹配错误"),
     PARAMS_IS_INVALID(1418300274, "参数无效"),
     STATUS_ERROR(1418300275, "状态异常"),
-    DATA_IS_OVER_MAXIMUM_LENGTH(1418300376, "数据长度超过最大长度:{}"),
-    FILE_FORMAT_ERROR(999008070, "文件格式不正确"),
-
+    DATA_IS_OVER_MAXIMUM_LENGTH(1418300276, "数据长度超过最大长度:{}"),
+    FILE_FORMAT_ERROR(1418300277, "文件格式不正确"),
+    PARAMS_MISMATCH(1418300278,"参数不匹配"),
+    PARAMS_NULL_AFTER_CONVERT(1418300279,"未定义的类型"),
+    CAN_NOT_GET_VALUE_FROM_DB(1418300280,"未能从数据库中获取到值"),
     /**
      * 数据处理错误
      */
@@ -81,7 +83,7 @@ public enum BusinessErrorEnum {
     PERMISSION_NO_ACCESS(1418300671, "当前按钮没有访问权限"),
     CONNECTION_RELATION_ERROR(1418300672, "关联关系不匹配"),
     RIGHT_VIOLATE(1418300673, "超出访问权限"),
-
+    RIGHT_INVALID(1418300674, "当前状态不允许操作"),
     /**
      * 配置错误
      */
@@ -107,6 +109,9 @@ public enum BusinessErrorEnum {
 
     public int getCode() {
         return code;
+    }
+    public String getCodeStr(){
+        return  String.valueOf(code);
     }
 
     public String getMsg() {

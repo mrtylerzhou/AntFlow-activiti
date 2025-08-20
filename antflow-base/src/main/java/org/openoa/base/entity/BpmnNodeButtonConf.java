@@ -56,6 +56,9 @@ public class BpmnNodeButtonConf implements TenantField, Serializable {
     private Integer isDel;
     @TableField("tenant_id")
     private String tenantId;
+    //0 for no and 1 for yes
+    @TableField("start_page_only")
+    private Integer startPageOnly;
     /**
      * create by
      */

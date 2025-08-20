@@ -5,7 +5,7 @@ import org.openoa.base.adp.FilterDataAdaptor;
 import org.openoa.base.adp.SecurityAccountDeviceFilterDataAdp;
 
 //todo
-public enum FilterDataEnum {
+public enum FilterDataEnum  implements AfEnumBase{
 
     FD_SECURITY_ACCOUNT_DEVICE(1, "账号与设备关联表漏斗数据", SecurityAccountDeviceFilterDataAdp.class),
 

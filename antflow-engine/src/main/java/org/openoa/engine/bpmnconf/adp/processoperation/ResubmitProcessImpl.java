@@ -11,10 +11,8 @@ import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
-import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.entity.BpmVerifyInfo;
-import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnProcessMigrationServiceImpl;
 import org.openoa.base.exception.AFBizException;
@@ -122,9 +120,9 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     private void executeTaskCompletion(BusinessDataVo vo, Task task, BpmBusinessProcess bpmBusinessProcess) {
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
-        BusinessDataVo businessDataVo = vo;
+
         if (!vo.getIsOutSideAccessProc()) {
-            businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
+             formFactory.getFormAdaptor(vo).consentData(vo);
         }
 
         //save process verify info
@@ -144,12 +142,12 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
 
 
         //if process digest is not empty then update process digest
-        if (!ObjectUtils.isEmpty(businessDataVo) && !ObjectUtils.isEmpty(businessDataVo.getProcessDigest())) {
+        if (!ObjectUtils.isEmpty(vo) && !ObjectUtils.isEmpty(vo.getProcessDigest())) {
             bpmBusinessProcessService.update(BpmBusinessProcess
                     .builder()
-                    .processDigest(businessDataVo.getProcessDigest())
+                    .processDigest(vo.getProcessDigest())
                     .build(), new QueryWrapper<BpmBusinessProcess>()
-                    .eq("BUSINESS_NUMBER", businessDataVo.getProcessNumber()));
+                    .eq("BUSINESS_NUMBER", vo.getProcessNumber()));
         }
 
         if (vo.getOperationType().intValue() == BUTTON_TYPE_JP.getCode().intValue()) {

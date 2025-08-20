@@ -12,7 +12,12 @@ export const isEmpty = (data) =>
 export const isEmptyArray = (data) =>
   Array.isArray(data)
     ? data.length === 0
-    : data === null || data === undefined || data == ""
+    : data === null ||
+      data === undefined ||
+      data == "" ||
+      data == [] ||
+      data == "{}" ||
+      data == "null"
     ? true
     : false;
 

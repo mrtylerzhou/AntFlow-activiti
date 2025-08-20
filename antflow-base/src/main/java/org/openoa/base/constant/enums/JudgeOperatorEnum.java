@@ -14,7 +14,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Getter
-public enum JudgeOperatorEnum {
+public enum JudgeOperatorEnum implements AfEnumBase{
     GTE(1,">="),
     GT(2,">"),
     LTE(3,"<="),
@@ -55,5 +55,10 @@ public enum JudgeOperatorEnum {
     }
     public static List<Integer> binaryOperator(){
         return Lists.newArrayList(6,7,8,9);
+    }
+
+    @Override
+    public String getDesc() {
+        return this.symbol;
     }
 }

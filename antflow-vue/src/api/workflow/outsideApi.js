@@ -50,7 +50,7 @@ export function setApiWorkFlowData(data) {
 }
 
 /**
- * 获取接入业务方列表
+ * 获取Sass租户列表
  * @param { page } 分页
  * @param { vo } 条件
  * @returns
@@ -65,7 +65,7 @@ export function getBusinessPartyList(page, vo) {
   });
 }
 /**
- * 获取接入业务方详情
+ * 获取租户详情
  * @param { Number } id
  * @returns
  */
@@ -76,7 +76,7 @@ export function getBusinessPartyDetail(id) {
 }
 
 /**
- * 编辑接入业务方
+ * 编辑/新增租户
  * @param {*} param
  * @returns
  */
@@ -86,7 +86,7 @@ export function setBusinessParty(data) {
   });
 }
 /**
- * 获取业务方应用列表
+ * 获取应用列表
  * @param {*} page
  * @param {*} vo
  * @returns
@@ -104,7 +104,7 @@ export function getApplicationsPageList(page, vo) {
 }
 
 /**
- * 添加业务方应用
+ * 添加业应用
  * @param {*} data
  * @returns
  */
@@ -127,19 +127,10 @@ export function getApplicationDetail(id) {
   );
 }
 
-/**
- * 获取业务方k-v
- * @returns
- */
-export function getPartyMarkKV() {
-  return http.get(`${baseUrl}/outSideBpm/businessParty/getPartyMarkKV`, {
-    headers,
-  });
-}
-
 /** 应用关联条件模板 * /
 
 /**
+ * Obsoleted
  * 获取条件模板列表
  * @param {*} param 
  * @returns 
@@ -152,6 +143,7 @@ export function getConditionTemplatelist(applicationId) {
 }
 
 /**
+ * Obsoleted
  * 添加条件模板
  * @param {*} param
  * @returns
@@ -162,6 +154,7 @@ export function setConditionTemplate(data) {
   });
 }
 /**
+ * Obsoleted
  * 审批人模板列表
  * @param {*} param
  * @returns

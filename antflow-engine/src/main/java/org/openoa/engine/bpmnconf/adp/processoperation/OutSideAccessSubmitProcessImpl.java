@@ -1,6 +1,8 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +14,6 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.service.AfUserService;
-import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
@@ -27,11 +28,9 @@ import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServi
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -109,8 +108,8 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
 
 
         bpmnStartConditionsVo.setStartUserId(businessDataVo.getStartUserId());
-
-        //bpmnStartConditionsVo.setApprovalEmplId(Long.parseLong(businessDataVo.getEmplId()));
+        bpmnStartConditionsVo.setApprovalEmpls(businessDataVo.getApprovalEmpls());
+        bpmnStartConditionsVo.setLowCodeFlow(businessDataVo.getIsLowCodeFlow()!=null&&businessDataVo.getIsLowCodeFlow()==1);
 
         //set start user dept id
 //        Department department = departmentService.getDepartmentByEmployeeId(businessDataVo.getStartUserId());
@@ -138,10 +137,15 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
         //set process title
         String processTitlePrefix;
         if (ApprovalFormCodeEnum.exist(businessDataVo.getFormCode())) {
+            List<BaseIdTranStruVo> approvalEmpls = businessDataVo.getApprovalEmpls();
+            if (CollectionUtils.isEmpty(approvalEmpls)){
+                approvalEmpls=new ArrayList<>();
+            }
+            List<String> approvalEmplIds=approvalEmpls.stream().map(a->a.getId()).collect(Collectors.toList());
             // 被审批人
             processTitlePrefix = Optional
-                    .ofNullable(employeeService.getById(bpmnStartConditionsVo.getApprovalEmplId()))
-                    .orElse(new BaseIdTranStruVo()).getName();
+                    .ofNullable(employeeService.queryUserByIds(approvalEmplIds))
+                    .orElse(Lists.newArrayList(BaseIdTranStruVo.builder().build())).stream().map(BaseIdTranStruVo::getName).collect(Collectors.joining(","));
         } else {
             //start user
             processTitlePrefix = businessDataVo.getSubmitUser();
@@ -160,7 +164,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
                 .version(businessDataVo.getBpmnCode())
                 .isOutSideProcess(1)
                 .isLowCodeFlow(businessDataVo.getIsLowCodeFlow())
-                //.approvalUserId(businessDataVo.getEmplId())
+                .approvalUsers(JSON.toJSONString(businessDataVo.getApprovalEmpls()))
                 .build();
         //save business process info
         bpmBusinessProcessService.addBusinessProcess(bpmBusinessProcess);

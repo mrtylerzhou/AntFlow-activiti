@@ -15,7 +15,7 @@ import static org.openoa.base.constant.enums.CallbackTypeEnum.*;
  * 此类是antflow动作事件监听器,如果想要统一处理流程流转正常流转事件,请使用{@link BpmnTaskListener}
  */
 @Component
-public class AntFlowOperationListener implements WorkflowButtonHandler{
+public class AntFlowOperationListener implements WorkflowButtonOperationHandler {
     @Autowired
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
     @Autowired
@@ -32,7 +32,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_STARTED_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(), SecurityUtils.getLogInEmpNameSafe());
         }
-        variableMessageBizService.sendTemplateMessages(businessData);
+
     }
 
     /**
@@ -51,7 +51,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_COMMIT_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
-        variableMessageBizService.sendTemplateMessages(businessData);
+
     }
 
     /**
@@ -59,7 +59,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
      */
     @Override
     public void onDisAgree(BusinessDataVo businessData) {
-        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
+
     }
 
     /**
@@ -78,7 +78,7 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
             thirdPartyCallBackService.doCallback( PROC_END_CALL_BACK, businessData.getBpmnConfVo(),
                     businessData.getProcessNumber(), businessData.getBusinessId(),SecurityUtils.getLogInEmpNameSafe());
         }
-        bpmVariableMessageListenerService.sendProcessMessages(EventTypeEnum.PROCESS_DISAGREE,businessData);
+
     }
 
     /**
@@ -184,6 +184,10 @@ public class AntFlowOperationListener implements WorkflowButtonHandler{
     public void onAddFutureAssignee(BusinessDataVo businessData) {
     }
 
+    @Override
+    public void onProcessDrawBack(BusinessDataVo businessData) {
+
+    }
 
     /**
      * 需要注意的是外部SaaS工作流完成并不走这里

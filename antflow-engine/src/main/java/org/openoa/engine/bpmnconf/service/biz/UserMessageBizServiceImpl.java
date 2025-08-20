@@ -2,7 +2,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.constant.enums.MessageLimit;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.entity.UserEmailSend;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
@@ -224,7 +224,7 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
     @Override
     public Boolean sendMessagePre(SendParam sendParam) {
         //check receiver
-        Employee detail =employeeService.getEmployeeDetailById(sendParam.getUserId());
+        DetailedUser detail =employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
             throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
