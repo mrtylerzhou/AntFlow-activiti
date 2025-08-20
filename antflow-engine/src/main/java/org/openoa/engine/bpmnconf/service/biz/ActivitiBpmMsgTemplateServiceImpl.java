@@ -12,20 +12,16 @@ import org.openoa.base.constant.enums.NoticeReplaceEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 import org.openoa.base.vo.UserMsgBatchVo;
 import org.openoa.base.vo.UserMsgVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNodeOvertimeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,8 +48,6 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     private BpmProcessNodeOvertimeService processNodeOvertimeService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
-    @Autowired
-    private BpmnConfNoticeTemplateDetailService bpmnConfNoticeTemplateDetailService;
 
 
     @Value("${system.domain:test}")
@@ -474,12 +468,12 @@ public class ActivitiBpmMsgTemplateServiceImpl {
      * @return
      */
     private UserMsgVo bulidUserMsgVo(ActivitiBpmMsgVo activitiBpmMsgVo, String content) {
-        Employee employee = getEmployee(activitiBpmMsgVo.getUserId(), activitiBpmMsgVo);
+        DetailedUser detailedUser = getEmployee(activitiBpmMsgVo.getUserId(), activitiBpmMsgVo);
         return UserMsgVo
                 .builder()
                 .userId(activitiBpmMsgVo.getUserId())
-                .email(employee.getEmail())
-                .mobile(employee.getMobile())
+                .email(detailedUser.getEmail())
+                .mobile(detailedUser.getMobile())
                 .title(baseTitle)
                 .content(content)
                 .emailUrl(activitiBpmMsgVo.getEmailUrl())
@@ -510,13 +504,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
         UserMsgUtils.sendMessages(userMsgVo, messageSendTypeEnums);
     }
 
-    private Employee getEmployee(String employeeId, ActivitiBpmMsgVo activitiBpmMsgVo) {
-        Employee employee = employeeService.getEmployeeDetailById(employeeId);
-        if (employee==null) {
-            employee = new Employee();
+    private DetailedUser getEmployee(String employeeId, ActivitiBpmMsgVo activitiBpmMsgVo) {
+        DetailedUser detailedUser = employeeService.getEmployeeDetailById(employeeId);
+        if (detailedUser ==null) {
+            detailedUser = new DetailedUser();
             log.error("流程消息查询员工信息失败，消息入参{}", JSON.toJSON(activitiBpmMsgVo));
         }
-        return employee;
+        return detailedUser;
     }
     private MessageSendTypeEnum[] getMessageSendTypeEnums(String processId, String formCode, Integer selectMack) {
         if (selectMack == 1) {
@@ -569,13 +563,13 @@ public class ActivitiBpmMsgTemplateServiceImpl {
             }
         }
         if (!CollectionUtils.isEmpty(noticeReplaceEnums)) {
-            Employee employee = null;
+            DetailedUser detailedUser = null;
             if (noticeReplaceEnums.stream().anyMatch(NoticeReplaceEnum::getIsSelectEmpl)) {
-                employee = employeeService.getEmployeeDetailById(activitiBpmMsgVo.getOtherUserId());
+                detailedUser = employeeService.getEmployeeDetailById(activitiBpmMsgVo.getOtherUserId());
             }
             for (NoticeReplaceEnum noticeReplaceEnum : noticeReplaceEnums) {
                 if (noticeReplaceEnum.getIsSelectEmpl()) {
-                    String name = Optional.ofNullable(employee).orElse(new Employee()).getUsername();
+                    String name = Optional.ofNullable(detailedUser).orElse(new DetailedUser()).getUsername();
                     content = content.replace("{" + noticeReplaceEnum.getDesc() + "}", name);
                 } else {
                     String property = Optional.ofNullable(BeanUtil.pojo.getProperty(activitiBpmMsgVo, noticeReplaceEnum.getFilName()))

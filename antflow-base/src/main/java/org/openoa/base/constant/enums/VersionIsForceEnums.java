@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum VersionIsForceEnums {
+public enum VersionIsForceEnums implements AfEnumBase{
 
     /**
      * is forece to update 0 no 1 yes
@@ -13,7 +13,7 @@ public enum VersionIsForceEnums {
     ;
 
     @Getter
-    private int code;
+    private Integer code;
 
     @Getter
     private String desc;

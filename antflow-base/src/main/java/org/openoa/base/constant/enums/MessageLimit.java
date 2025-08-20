@@ -1,6 +1,6 @@
 package org.openoa.base.constant.enums;
 
-public enum MessageLimit {
+public enum MessageLimit implements AfEnumBase{
     EMAIL_A_DAY(80, "每日每人最多收取");
 
     private int code;
@@ -11,7 +11,7 @@ public enum MessageLimit {
         this.desc = desc;
     }
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

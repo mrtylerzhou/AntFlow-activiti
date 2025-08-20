@@ -1,11 +1,9 @@
 package org.openoa.base.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.openoa.base.entity.Employee;
 
 import java.util.Date;
 import java.util.List;

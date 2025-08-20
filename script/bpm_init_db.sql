@@ -38,7 +38,7 @@ CREATE TABLE if not exists `t_bpmn_node`
     `node_from`         varchar(60)         NOT NULL DEFAULT '' COMMENT 'its prev node',
     `node_froms`        varchar(255)                 DEFAULT NULL COMMENT 'all its prev nodes',
     `batch_status`      int            NOT NULL DEFAULT '0' COMMENT 'can the process approved in batch,0:no,1:Yes',
-    `approval_standard` int           NOT NULL DEFAULT '2' COMMENT 'approve standard,current not used',
+    `approval_standard` int           NOT NULL DEFAULT '1' COMMENT 'approve standard,1 startup user,2 approved',
     `node_name`         varchar(255)                 DEFAULT NULL COMMENT 'node name',
     `node_display_name` varchar(255)                  DEFAULT '' COMMENT 'node display name shown in web or app',
     `annotation`        varchar(255)                 DEFAULT NULL COMMENT 'annotation on this conf',
@@ -56,7 +56,8 @@ CREATE TABLE if not exists `t_bpmn_node`
     `update_user`       varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`       timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `index_conf_id` (`conf_id`) USING BTREE
+    KEY `index_conf_id` (`conf_id`) USING BTREE,
+    KEY `t_bpmn_node_dx2` (`node_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='the conf,s node table';
@@ -73,7 +74,9 @@ CREATE TABLE if not exists `t_bpmn_node_to`
     `create_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+     KEY `t_bpmn_node_to_idx1` (`bpmn_node_id`),
+     KEY `t_bpmn_node_to_idx2` (`node_to`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='审批流节点走向表';
@@ -146,7 +149,8 @@ CREATE TABLE if not exists `t_bpmn_view_page_button`
     `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user` varchar(50)                  DEFAULT '' COMMENT '更新人（邮箱前缀）',
     `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_view_page_button_idx1` (`conf_id`)
 ) ENGINE = InnoDB
    COMMENT ='审批流查看页按钮配置表';
 
@@ -169,7 +173,9 @@ CREATE TABLE if not exists `t_bpmn_template`
     `create_user` varchar(50)        DEFAULT '' COMMENT 'create user',
     `update_time` timestamp  NULL     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user` varchar(50)        DEFAULT '' COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_template_idx1` (`conf_id`),
+    KEY `t_bpmn_template_idx2` (`node_id`)
 ) ENGINE = InnoDB
    COMMENT ='notice template';
 
@@ -209,7 +215,8 @@ CREATE TABLE if not exists `bpm_business`
     `process_key`      varchar(50) DEFAULT NULL COMMENT 'as its name says',
     `is_del`           int      DEFAULT '0',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `bpm_business_idx1` (`business_id`)
 ) ENGINE = InnoDB
    COMMENT ='process draft';
 
@@ -247,7 +254,8 @@ CREATE TABLE if not exists `bpm_flowruninfo`
     `createdate`    timestamp  NOT NULL     DEFAULT CURRENT_TIMESTAMP NULL COMMENT 'create time',
      `is_del`           int      DEFAULT '0',
       `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `bpm_flowruninfo_idx1` (`runinfoid`)
 ) ENGINE = InnoDB
   COMMENT ='process run time info';
 
@@ -261,7 +269,8 @@ CREATE TABLE if not exists `bpm_manual_notify`
     `update_time` timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
      `is_del`           int      DEFAULT '0',
       `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `bpm_manual_notify_idx1` (`business_id`)
 ) ENGINE = InnoDB
    COMMENT ='manual notify';
 
@@ -278,7 +287,10 @@ CREATE TABLE if not exists `t_bpmn_approve_remind`
     `create_user` varchar(50)        DEFAULT '' COMMENT 'create user',
     `update_time` timestamp  NOT NULL     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     `update_user` varchar(50)        DEFAULT '' COMMENT 'update user',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+     KEY `t_bpmn_approve_remind_idx1` (`conf_id`),
+     KEY `t_bpmn_approve_remind_idx2` (`node_id`),
+     KEY `t_bpmn_approve_remind_idx3` (`template_id`)
 ) ENGINE = InnoDB
    COMMENT ='approvement remind';
 
@@ -299,7 +311,8 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
     `create_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_node_conditions_conf_idx1` (`bpmn_node_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='node,s conditions conf';
@@ -321,7 +334,8 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
     `create_time`             timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`             varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`             timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_node_conditions_param_conf_idx1` (`bpmn_node_conditions_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='condition params conf';
@@ -339,7 +353,8 @@ CREATE TABLE if not exists `t_bpmn_node_sign_up_conf`
     `create_time`       timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`       varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`       timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_node_sign_up_conf_idx1` (`bpmn_node_id`)
 ) ENGINE = InnoDB
    COMMENT ='node sign up conf';
 
@@ -411,7 +426,9 @@ CREATE TABLE if not exists `bpm_process_node_record`
     `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `is_del`             int               DEFAULT '0',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `bpm_process_node_record_idx1` (`processInstance_id`),
+    KEY `bpm_process_node_record_idx2` (`task_id`)
 ) ENGINE = InnoDB
    COMMENT ='process over time node record';
 
@@ -426,7 +443,8 @@ CREATE TABLE if not exists `bpm_process_node_submit`
     `state`              tinyint             DEFAULT NULL COMMENT 'state',
     `is_del`             int              DEFAULT '0',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_processInstance_Id` (`processInstance_Id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='process node submit';
@@ -519,7 +537,8 @@ CREATE TABLE if not exists `t_bpm_variable_button`
     `update_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id` (`variable_id`) USING BTREE
+    KEY `variable_id` (`variable_id`) USING BTREE,
+    KEY `t_bpm_variable_button__idx2` (`element_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='variable button table';
@@ -605,7 +624,9 @@ CREATE TABLE if not exists `t_bpm_variable_sequence_flow`
     `create_time`              timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`              varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`              timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpm_variable_sequence_flow_idx1` (`variable_id`),
+    KEY `t_bpm_variable_sequence_flow_idx2` (`element_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='sequence flow table';
@@ -719,7 +740,8 @@ CREATE TABLE if not exists `bpm_verify_info`
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `BPM_IDX__INFOR` (`business_type`, `business_id`) USING BTREE,
-    KEY `process_code_index` (`process_code`) USING BTREE
+    KEY `process_code_index` (`process_code`) USING BTREE,
+     KEY `bpm_verify_info_idx3` (`run_info_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='verify info';
@@ -737,7 +759,8 @@ CREATE TABLE if not exists `t_default_template`
     `create_user` varchar(255)        DEFAULT '' COMMENT 'as its name says',
     `update_time` timestamp NOT NULL     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user` varchar(255)        DEFAULT '' COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_default_template_idx1` (`template_id`)
 ) ENGINE = InnoDB
    COMMENT ='default tempalte';
 
@@ -838,11 +861,13 @@ CREATE TABLE if not exists `t_bpmn_node_button_conf`
     `remark`           varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`           tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no 1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
+      start_page_only  tinyint          default 0                 null comment 'only for start user page,0 no 1 yes',
     `create_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `create_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'asits name says',
     `update_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
     `update_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_node_button_conf_idx1` (`bpmn_node_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='node button conf';
@@ -866,6 +891,7 @@ CREATE TABLE if not exists `bpm_business_process`
     `data_source_id`   bigint   DEFAULT NULL COMMENT 'data source id',
     `PROC_INST_ID_`    varchar(64)  DEFAULT '' COMMENT 'process instance id',
     `back_user_id`     varchar(64)      DEFAULT NULL COMMENT 'back to user id',
+     `approval_users`     varchar(3000)      DEFAULT NULL COMMENT 'support multiple users,they are json array',
      user_name           varchar(255)           null,
      is_out_side_process tinyint     default 0  null comment 'is it an outside process,0 no,1 yes',
       is_lowcode_flow     tinyint     default 0  null comment '是否是低代码工作流0,否,1是',
@@ -911,7 +937,8 @@ CREATE TABLE if not exists `t_bpmn_node_personnel_conf`
     `create_time`  timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`  varchar(50)  DEFAULT NULL COMMENT 'as its name says',
     `update_time`  timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `t_bpmn_node_personnel_conf_idx1` (`bpmn_node_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='node person conf table';
@@ -929,7 +956,9 @@ CREATE TABLE if not exists `t_bpmn_node_personnel_empl_conf`
     `create_time`           timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
     `update_user`           varchar(30)  DEFAULT NULL COMMENT 'as its name says',
     `update_time`           timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+     KEY `t_bpmn_node_personnel_empl_conf_idx1` (`bpmn_node_personne_id`),
+     KEY `t_bpmn_node_personnel_empl_conf_idx2` (`empl_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='node assignee employee conf';
@@ -942,7 +971,9 @@ CREATE TABLE IF NOT EXISTS `bpm_process_operation`
     `type`         int      DEFAULT NULL COMMENT '1:batch submit 2:entrust',
      `is_del`                tinyint DEFAULT NULL COMMENT '0:no,1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+     KEY `bpm_process_operation_idx1` (`process_key`),
+     KEY `bpm_process_operation_idx2` (`process_node`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='process operation table';
@@ -956,7 +987,10 @@ CREATE TABLE if not exists `bpm_process_node_back`
     `process_key` varchar(100) DEFAULT NULL COMMENT 'process key',
      `is_del`                tinyint DEFAULT NULL COMMENT '0:no,1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+     KEY `bpm_process_node_back_idx1` (`node_key`),
+     KEY `bpm_process_node_back_idx2` (`node_id`),
+     KEY `bpm_process_node_back_idx3` (`process_key`)
 ) ENGINE = InnoDB
    COMMENT ='process node back table';
 
@@ -991,7 +1025,8 @@ CREATE TABLE if not exists `t_user_message`
       create_user varchar(50)  null,
       update_user varchar(50)  null,
       app_url     varchar(255) null comment 'appurl',
-       source      int          null
+       source      int          null,
+        KEY `t_user_message_idx1` (`user_id`)
 ) ENGINE = InnoDB
   ;
 
@@ -1034,7 +1069,9 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_out_side_access_conf` (
    `create_time` timestamp not null default CURRENT_TIMESTAMP  COMMENT 'as its name says',
    `update_user` varchar(50) DEFAULT NULL COMMENT 'as its name says',
    `update_time`  timestamp not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+     KEY `t_bpmn_node_out_side_access_conf_idx1` (`bpmn_node_id`),
+     KEY `t_bpmn_node_out_side_access_conf_idx2` (`node_mark`)
 ) ENGINE=InnoDB  COMMENT='node conf for outside access';
 
 CREATE TABLE IF NOT EXISTS  bpm_process_app_application
@@ -1066,7 +1103,8 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
     is_all           tinyint  default 0                 null,
     state            tinyint  default 1                 null,
     sort             int                                null,
-    source           varchar(255)                       null
+    source           varchar(255)                       null,
+    KEY `bpm_process_app_application_idx1` (`business_code`)
 )comment 'BPM Process Application Table';
 
 
@@ -1084,7 +1122,8 @@ CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
     `type` INT COMMENT 'Type (1 for version app, 2 for app data)',
     `is_del` int NOT NULL DEFAULT '0' COMMENT '0 for normal 1 for delete',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `bpm_process_app_data_idx1` (`process_key`)
 ) ENGINE=InnoDB COMMENT='App Online Process Data Table';
 
 CREATE TABLE IF NOT EXISTS `bpm_process_application_type` (
@@ -1099,7 +1138,8 @@ CREATE TABLE IF NOT EXISTS `bpm_process_application_type` (
       `visble_state` INT COMMENT 'Visibility state (0 for hidden, 1 for visible)',
       `create_time` timestamp not null default current_timestamp COMMENT 'Creation time',
       `common_use_state` INT COMMENT 'Common use state',
-      PRIMARY KEY (`id`)
+      PRIMARY KEY (`id`),
+       KEY `bpm_process_application_type_idx1` (`application_id`)
 ) ENGINE=InnoDB  COMMENT='BPM Process Application Type Table';
 
 CREATE TABLE IF NOT EXISTS `bpm_process_category` (
@@ -1148,7 +1188,9 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
      PRIMARY KEY (`id`),
      KEY `idx_bpm_conf_id` (`bpmn_conf_id`),
-     KEY `idx_business_party_id` (`business_party_id`)
+     KEY `idx_business_party_id` (`business_party_id`),
+     KEY `t_out_side_bpm_access_business__idx3` (`process_number`),
+     KEY `t_out_side_bpm_access_business_idx4` (`form_code`)
 ) ENGINE=InnoDB ;
 
 CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
@@ -1164,7 +1206,8 @@ CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation time',
     `update_user` varchar(50) DEFAULT NULL COMMENT 'Updater user',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Update time',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+     KEY `t_out_side_bpm_admin_personnel_idx1` (`business_party_id`)
 ) ENGINE=InnoDB  COMMENT='Workflow External Service - Business Party Administrator Table';
 
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_business_party` (
@@ -1179,7 +1222,8 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_business_party` (
        `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation time',
        `update_user` varchar(50) DEFAULT NULL COMMENT 'Updater user',
        `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  COMMENT 'Update time',
-       PRIMARY KEY (`id`)
+       PRIMARY KEY (`id`),
+       KEY `t_out_side_bpm_business_party_idx1` (`business_party_mark`)
 ) ENGINE=InnoDB  COMMENT='Table for storing business party information in the external BPM system';
 
 CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
@@ -1200,7 +1244,9 @@ CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
     is_del                tinyint     default 0 comment '0 for normal,1 for delete',
     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     create_time           timestamp DEFAULT CURRENT_TIMESTAMP comment 'as its name says',
-    update_time           timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'as its name says'
+    update_time           timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment 'as its name says',
+    KEY `t_out_side_bpm_callback_url_conf_idx1` (`business_party_id`),
+    KEY `t_out_side_bpm_callback_url_conf_idx2` (`application_id`)
 ) comment 'business party callback url conf';
 
 -- ----------------------------
@@ -1225,7 +1271,9 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_approve_template` (
      `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
      `create_user_id` varchar(64) NULL COMMENT 'as its name says',
-     PRIMARY KEY (`id`)
+     PRIMARY KEY (`id`),
+      KEY `t_out_side_bpm_approve_template_idx1` (`business_party_id`),
+      KEY `t_out_side_bpm_approve_template_idx2` (`application_id`)
 ) ENGINE=InnoDB  COMMENT='outside access process,approve template config';
 
 -- ----------------------------
@@ -1246,7 +1294,8 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_conditions_template` (
      `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
      `create_user_id` varchar(64) NULL COMMENT 'as its name says',
-     PRIMARY KEY (`id`)
+     PRIMARY KEY (`id`),
+     KEY `t_out_side_bpm_conditions_template_idx1` (`business_party_id`)
 ) ENGINE=InnoDB  COMMENT='outside access process,condition template config';
 
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpmn_node_conditions_conf` (
@@ -1260,7 +1309,9 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpmn_node_conditions_conf` (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP  COMMENT 'as its name says',
     `update_user` VARCHAR(50) NULL COMMENT 'as its name says',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+     KEY `t_out_side_bpmn_node_conditions_conf_idx1` (`bpmn_node_id`),
+     KEY `t_out_side_bpmn_node_conditions_conf_idx2` (`out_side_id`)
 ) ENGINE=InnoDB  COMMENT='outside access process,business party,s conditions configs';
 
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_call_back_record` (
@@ -1278,7 +1329,9 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_call_back_record` (
      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
      `update_user` VARCHAR(50) NULL COMMENT 'update user',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-     PRIMARY KEY (`id`)
+     PRIMARY KEY (`id`),
+     KEY `t_out_side_bpm_call_back_record_idx1` (`process_number`),
+     KEY `t_out_side_bpm_call_back_record_idx2` (`tenant_id`)
 ) ENGINE=InnoDB  COMMENT='Table for storing callback records';
 
 CREATE TABLE IF NOT EXISTS  `t_quick_entry` (
@@ -1340,7 +1393,8 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
      `update_user` VARCHAR(50) DEFAULT NULL COMMENT 'update user',
      `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-     PRIMARY KEY (`id`)
+     PRIMARY KEY (`id`),
+     KEY `t_bpmn_node_role_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='specified role approver configs';
 
 create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
@@ -1355,7 +1409,8 @@ create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
     update_user varchar(255)          null,
    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
    `is_del` TINYINT NOT NULL DEFAULT '0' COMMENT '0:normal,1:deleted',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId'
+    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
+     KEY `t_bpmn_node_role_outside_emp_conf_idx1` (`node_id`)
 )
     comment 'approver info for a specified outsie business party''s specified role';
 
@@ -1375,7 +1430,8 @@ CREATE TABLE IF NOT EXISTS  `t_bpmn_node_loop_conf` (
    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
    `update_user` VARCHAR(50) NULL COMMENT 'update user',
    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`id`),
+   KEY `t_bpmn_node_loop_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='loop approvement config';
 
 CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
@@ -1390,7 +1446,8 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP  COMMENT 'create time',
     `update_user` VARCHAR(255) NULL COMMENT 'update user',
     `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `t_bpmn_node_assign_level_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='specified level approvement config';
 
 CREATE TABLE `t_bpmn_node_hrbp_conf` (
@@ -1404,7 +1461,8 @@ CREATE TABLE `t_bpmn_node_hrbp_conf` (
   `create_time` DATETIME NULL COMMENT 'create time',
   `update_user` VARCHAR(255) NULL COMMENT 'update user',
   `update_time` DATETIME NULL COMMENT 'update time',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `t_bpmn_node_hrbp_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='hrpb config entity';
 
 
@@ -1421,7 +1479,8 @@ create table t_bpmn_conf_lf_formdata
 	update_user varchar(255) null,
 	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_bpmn_conf_lf_formdata_pk
-		primary key (id)
+		primary key (id),
+	 KEY `t_bpmn_conf_lf_formdata__idx1` (`bpmn_conf_id`)
 )ENGINE=InnoDB ;
 
 create table if not exists t_bpmn_conf_lf_formdata_field
@@ -1440,7 +1499,9 @@ create table if not exists t_bpmn_conf_lf_formdata_field
 	update_user varchar(255) null,
 	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_bpmn_conf_lf_formdata_field_pk
-		primary key (id)
+		primary key (id),
+	 KEY `t_bpmn_conf_lf_formdata_field_idx1` (`bpmn_conf_id`),
+      KEY `t_bpmn_conf_lf_formdata_field_idx2` (`formdata_id`)
 )ENGINE=InnoDB  comment '低代码配置字段明细表';
 
 
@@ -1459,7 +1520,10 @@ create table if not exists t_bpmn_node_lf_formdata_field_control
 	update_user varchar(255) null,
 	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_bpmn_node_lf_formdata_field_control_pk
-		primary key (id)
+		primary key (id),
+	KEY `t_bpmn_node_lf_formdata_field_control_idx1` (`node_id`),
+    KEY `t_bpmn_node_lf_formdata_field_control_dx2` (`formdata_id`),
+    KEY `t_bpmn_node_lf_formdata_field_control_dx3` (`field_id`)
 )ENGINE=InnoDB ;
 
 -- ----------------------------
@@ -1477,7 +1541,9 @@ create table t_lf_main
 	update_user varchar(255) null,
 	update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_lf_main_pk
-		primary key (id)
+		primary key (id),
+     KEY `t_lf_main_dx2` (`form_code`),
+     KEY `t_lf_main_idx1` (`conf_id`)
 )ENGINE=InnoDB  comment '低代码表单主表';
 
 -- ----------------------------
@@ -1504,7 +1570,10 @@ create table t_lf_main_field
     update_user varchar(255) null,
     update_time timestamp default current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	constraint t_lf_main_field_pk
-		primary key (id)
+		primary key (id),
+	KEY `t_lf_main_field_dx1` (`main_id`),
+     KEY `t_lf_main_field_idx2` (`form_code`),
+     KEY `t_lf_main_field_idx3` (`field_id`)
 )ENGINE=InnoDB  comment '低代码表单字段值表';
 
 create table t_dict_main
@@ -1531,7 +1600,9 @@ create table t_dict_data
     dict_sort   int       default 0                 null comment '字典排序',
     dict_label  varchar(100) default ''                null comment '字典标签',
     dict_value  varchar(100) default ''                null comment '字典键值',
+    dic_value_type         tinyint                                null comment '0:string,1.number,3.namevalue object,4 array of namevalue object,5.array of string,6.array of number',
     dict_type   varchar(100) default ''                null comment '字典类型',
+    dict_second_level_type varchar(100)                           null,
     css_class   varchar(100)                           null comment '样式属性（其他样式扩展）',
     list_class  varchar(100)                           null comment '表格回显样式',
     is_default  char         default 'N'               null comment '是否默认（Y是 N否）',
@@ -1541,56 +1612,15 @@ create table t_dict_data
     create_time timestamp    default CURRENT_TIMESTAMP,
     update_user varchar(255)                           null,
     update_time timestamp    default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-    remark      varchar(500)                           null comment '备注'
+    remark      varchar(500)                           null comment '备注',
+    KEY `t_dict_data_idx1` (`dict_type`),
+    KEY `t_dict_data_idx2` (`dict_second_level_type`)
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
 ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ----------------------------
--- Table structure for t_bpmn_conf_lf_formdata
--- ----------------------------
-DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata`;
-CREATE TABLE `t_bpmn_conf_lf_formdata`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `bpmn_conf_id` bigint NOT NULL,
-  `formdata` longtext  NULL,
-  `is_del` tinyint NOT NULL DEFAULT 0,
-   `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-  `create_user` varchar(255)  NULL DEFAULT NULL,
-  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_user` varchar(255)  NULL DEFAULT NULL,
-  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 32  ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;
-
-
-
--- ----------------------------
--- Table structure for t_bpmn_conf_lf_formdata_field
--- ----------------------------
-DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata_field`;
-CREATE TABLE `t_bpmn_conf_lf_formdata_field`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `bpmn_conf_id` bigint NULL DEFAULT NULL,
-  `formdata_id` bigint NULL DEFAULT NULL,
-  `field_id` varchar(255)  NULL DEFAULT NULL,
-  `field_name` varchar(255)  NULL DEFAULT NULL,
-  `field_type` tinyint NULL DEFAULT NULL,
-  `is_condition` tinyint NULL DEFAULT 0 COMMENT '是否是流程条件,0否,1是',
-  `is_del` tinyint NOT NULL DEFAULT 0,
-   `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-  `create_user` varchar(255)  NULL DEFAULT NULL,
-  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_user` varchar(255)  NULL DEFAULT NULL,
-  `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 28  COMMENT = '低代码配置字段明细表' ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 
 
@@ -1609,7 +1639,8 @@ create table t_bpmn_node_labels
     update_user       varchar(32)         default ''                null comment '更新人（邮箱前缀）',
     update_time       timestamp           default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
 	constraint t_bpmn_node_labels_pk
-		primary key (id)
+		primary key (id),
+    KEY `t_bpmn_node_labels_idx1` (`nodeid`)
 )
 comment 'process node labels,to store additional custom information';
 create index indx_node_id
@@ -1622,7 +1653,9 @@ create table t_bpm_dynamic_condition_choosen
 	node_id varchar(100) null comment '被选中条件节点的id',
 	node_from      varchar(100) null,
 	constraint t_bpm_dynamic_condition_choosen_pk
-		primary key (id)
+		primary key (id),
+    KEY `indx_process_number` (`process_number`),
+     KEY `t_bpm_dynamic_condition_choosen_idx2` (`node_id`)
 )
 comment '流程动态条件选择条件记录表';
 create index indx_process_number
@@ -1640,8 +1673,55 @@ CREATE TABLE `t_bpmn_node_customize_conf` (
   `create_time` DATETIME NULL COMMENT 'create time',
   `update_user` VARCHAR(255) NULL COMMENT 'update user',
   `update_time` DATETIME NULL COMMENT 'update time',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `t_bpmn_node_customize_conf_dx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='customize config entity';
+
+
+
+create table t_bpmn_node_form_related_user_conf
+(
+    id              bigint auto_increment comment 'auto incr id'
+        primary key,
+    bpmn_node_id    bigint                                 not null comment 'node id',
+    value_json      varchar(3000)                          not null comment 'value as json array',
+    sign_type       int                                    not null comment 'sign type 1 all sign,2 or sign',
+    value_type      int                            not null comment 'value type see NodeFormAssigneePropertyEnum',
+    value_type_name varchar(64)                            not null comment 'value type name',
+    remark          varchar(255)                           null comment 'remark',
+    is_del          tinyint      default 0                 not null comment '0:normal,1:deleted',
+    tenant_id       varchar(255) default ''                not null comment 'tenantId',
+    create_user     varchar(50)                            not null comment 'create user',
+    create_time     timestamp    default CURRENT_TIMESTAMP not null comment 'create time',
+    update_user     varchar(50)                            null comment 'update user',
+    update_time     timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'update time'
+)
+    comment 'specified role approver configs';
+
+
+
+create table t_bpmn_node_udr_conf
+(
+    id              bigint auto_increment comment 'auto incr id'
+        primary key,
+    bpmn_node_id    bigint                                 not null comment 'node id',
+    value_json      varchar(3000)                          not null comment 'value as json array',
+    sign_type       int                                    not null comment 'sign type 1 all sign,2 or sign',
+    udr_property varchar(255)                                not null,
+    urd_property_name varchar(255)                           null,
+    ext1  varchar(255) comment 'customize field 1',
+    ext2  varchar(255) comment 'customize field 1',
+    ext3  varchar(255) comment 'customize field 1',
+    ext4  varchar(255) comment 'customize field 1',
+    remark          varchar(255)                           null comment 'remark',
+    is_del          tinyint      default 0                 not null comment '0:normal,1:deleted',
+    tenant_id       varchar(255) default ''                not null comment 'tenantId',
+    create_user     varchar(50)                            not null comment 'create user',
+    create_time     timestamp    default CURRENT_TIMESTAMP not null comment 'create time',
+    update_user     varchar(50)                            null comment 'update user',
+    update_time     timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'update time'
+)
+    comment 'user custom assignee rule config,udr for user defined rules';
 
 -- ----------------------------
 -- Table structure for t_user_role

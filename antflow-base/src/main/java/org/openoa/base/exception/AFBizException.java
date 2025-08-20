@@ -41,6 +41,9 @@ public class AFBizException extends RuntimeException {
         this(code, message, null);
     }
 
+    public AFBizException(BusinessErrorEnum businessErrorEnum){
+        this(businessErrorEnum.getCodeStr(),businessErrorEnum.getMsg());
+    }
     public AFBizException(String message) {
         this("1", message);
     }

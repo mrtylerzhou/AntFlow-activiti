@@ -61,6 +61,10 @@ public class LowFlowApprovalServiceAspect {
     public Object aroundCancellationData(ProceedingJoinPoint joinPoint) throws Throwable {
         return logAndProceed(joinPoint, "cancellationData");
     }
+    @Around("execution(* org.openoa.engine.lowflow.service.LowFlowApprovalService.finishData(..))")
+    public Object aroundFinishData(ProceedingJoinPoint joinPoint) throws Throwable {
+        return logAndProceed(joinPoint, "finishData");
+    }
 
 
 

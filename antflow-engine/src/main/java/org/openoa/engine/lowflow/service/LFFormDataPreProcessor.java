@@ -11,7 +11,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
-import org.openoa.engine.bpmnconf.service.BpmnConfLfFormdataFieldServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
 import org.openoa.base.vo.FormConfigWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

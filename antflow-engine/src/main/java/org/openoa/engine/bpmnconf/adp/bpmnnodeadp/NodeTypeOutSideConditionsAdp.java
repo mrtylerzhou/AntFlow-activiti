@@ -26,11 +26,11 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
     private OutSideBpmnNodeConditionsConfServiceImpl outSideBpmnNodeConditionsConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-        BpmnNodeVo nodeVo = super.formatToBpmnNodeVo(bpmnNodeVo);
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+       super.formatToBpmnNodeVo(bpmnNodeVo);
 
         if(StringUtil.isEmpty(bpmnNodeVo.getConditionsUrl())){
-            return nodeVo;
+            return ;
         }
 
 
@@ -44,13 +44,12 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
 
 
         //set outside conditions url to node property
-        nodeVo.getProperty().getConditionsConf().setOutSideConditionsUrl(outSideConditionsUrl);
+        bpmnNodeVo.getProperty().getConditionsConf().setOutSideConditionsUrl(outSideConditionsUrl);
 
 
         //set node type
-        nodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode());
+        bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode());
 
-        return nodeVo;
     }
 
     @Override

@@ -1,5 +1,27 @@
 
 -- ----------------------------
+-- 初始化自定义审批人规则字典数据
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人1', 'zdysp1', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人2', 'zdysp2', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人3', 'zdysp3', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人4', 'zdysp4', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人5', 'zdysp5', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人6', 'zdysp6', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人7', 'zdysp7', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人8', 'zdysp8', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人1', 'zdysp9', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+INSERT INTO t_dict_data(`dict_label`, `dict_value`, `dic_value_type`, `remark`,`dict_type`, `dict_second_level_type`, `css_class`, `list_class`,`is_default`, `is_del`, `tenant_id`, `create_user`)
+VALUES ( '自定义审批人1', 'zdysp10', NULL, NULL, 'udr', NULL, NULL, NULL, 'N', 0, '', '系统');
+-- ----------------------------
 -- Records of t_user
 -- 表字段很多,大部分是为了demo展示使用,引擎用到的核心数据字段是id和name,其它的都是非必须
 -- 关于用户表demo数据的使用说明

@@ -35,8 +35,8 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
     }
 
     @Override
-    public BizUcarRefuelVo initData(BizUcarRefuelVo vo) {
-        return null;
+    public void initData(BizUcarRefuelVo vo) {
+
     }
 
 
@@ -48,14 +48,14 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
     }
 
     @Override
-    public BizUcarRefuelVo queryData(BizUcarRefuelVo vo) {
+    public void queryData(BizUcarRefuelVo vo) {
         BizUcarfuel ucarFuel = bizUcarfuelMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(ucarFuel,vo);
-        return vo;
+
     }
 
     @Override
-    public BizUcarRefuelVo submitData(BizUcarRefuelVo vo) {
+    public void submitData(BizUcarRefuelVo vo) {
         BizUcarfuel ucarFuel=new BizUcarfuel();
         BeanUtils.copyProperties(vo,ucarFuel);
 
@@ -67,11 +67,10 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
         vo.setProcessTitle("加油上报");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizUcarfuel.class.getSimpleName());
-        return vo;
     }
 
     @Override
-    public BizUcarRefuelVo consentData(BizUcarRefuelVo vo) {
+    public void consentData(BizUcarRefuelVo vo) {
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizUcarfuel ucarFuel = new BizUcarfuel();
@@ -80,7 +79,6 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
             ucarFuel.setId(id);
             bizUcarfuelMapper.updateById(ucarFuel);
         }
-        return vo;
     }
 
     @Override

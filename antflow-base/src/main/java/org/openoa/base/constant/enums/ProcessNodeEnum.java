@@ -7,10 +7,10 @@ import org.openoa.base.exception.AFBizException;
 /**
  * process node enum
  */
-public enum ProcessNodeEnum {
+public enum ProcessNodeEnum implements AfEnumBase {
 
     START_TASK_KEY(1, "task1418018332271"),
-    TOW_TASK_KEY(2, "task1418018332272"),
+    TWO_TASK_KEY(2, "task1418018332272"),
     THREE_TASK_KEY(3, "task1418018332273"),
     FOUR_TASK_KEY(4, "task1418018332274"),
     FIVE_TASK_KEY(5, "task1418018332275"),
@@ -19,15 +19,15 @@ public enum ProcessNodeEnum {
     EIGHT_TASK_KEY(8, "task1418018332278"),
     NINE_TASK_KEY(9, "task1418018332279"),
     TEN_TASK_KEY(10, "task1418018332280"),
-    THIRTEEN_TASK_KEY(11, "task1418018332281"),
-    FOURTTEEN_TASK_KEY(12, "task1418018332282"),
-    FIFTTEEN_TASK_KEY(13, "task1418018332283"),
+    ELEVEN_TASK_KEY(11, "task1418018332281"),
+    TWELVE_TASK_KEY(12, "task1418018332282"),
+    THIRTEEN_TASK_KEY(13, "task1418018332283"),
     FOURTEEN_TASK_KEY(14, "task1418018332284"),
-    SEX_TASK_KEY(15, "task1418018332285"),
-    SEXTEEN_TASK_KEY(16, "task1418018332286"),
+    FIFTEEN_TASK_KEY(15, "task1418018332285"),
+    SIXTEEN_TASK_KEY(16, "task1418018332286"),
     SEVENTEEN_TASK_KEY(17, "task1418018332287"),
     EIGHTEEN_TASK_KEY(18, "task1418018332288"),
-    NIGHTEEN_TASK_KEY(19, "task1418018332289"),
+    NINETEEN_TASK_KEY(19, "task1418018332289"),
     TWENTY_TASK_KEY(20, "task1418018332290"),
     TWENTYONE_TASK_KEY(21, "task1418018332291"),
     TWENTYTWO_TASK_KEY(22, "task1418018332292"),
@@ -228,7 +228,7 @@ public enum ProcessNodeEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

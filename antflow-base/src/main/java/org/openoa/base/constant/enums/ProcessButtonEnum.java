@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessButtonEnum {
+public enum ProcessButtonEnum implements AfEnumBase{
     //disagree
     DISAGREE_TYPE(1, "不同意"),
     //agree
@@ -47,7 +47,7 @@ public enum ProcessButtonEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

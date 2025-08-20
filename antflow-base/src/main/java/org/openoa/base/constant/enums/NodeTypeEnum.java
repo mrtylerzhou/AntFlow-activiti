@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum NodeTypeEnum {
+public enum NodeTypeEnum implements AfEnumBase{
 
     NODE_TYPE_START(1, "发起人节点", 0),
     NODE_TYPE_GATEWAY(2, "网关节点", 0),

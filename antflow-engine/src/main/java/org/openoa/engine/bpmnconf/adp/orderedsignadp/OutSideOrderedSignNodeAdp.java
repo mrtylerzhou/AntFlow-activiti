@@ -36,12 +36,12 @@ public class OutSideOrderedSignNodeAdp extends AbstractOrderedSignNodeAdp {
         if(embedNodeVo==null){
             return Lists.newArrayList("0");
         }
-        List<Long> assigneeIdList = embedNodeVo.getAssigneeIdList();
+        List<String> assigneeIdList = embedNodeVo.getAssigneeIdList();
         if(CollectionUtils.isEmpty(assigneeIdList)){
             return Lists.newArrayList("0");
         }
 
-        return Lists.newArrayList(AntCollectionUtil.numberToStringList(assigneeIdList));
+        return Lists.newArrayList(assigneeIdList);
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ElementTypeEnum {
+public enum ElementTypeEnum implements AfEnumBase{
 
     ELEMENT_TYPE_START_EVENT(1, "StartEvent"),
     ELEMENT_TYPE_USER_TASK(2, "UserTask"),

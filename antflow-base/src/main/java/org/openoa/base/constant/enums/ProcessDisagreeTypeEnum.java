@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * process not agree type
  */
-public enum ProcessDisagreeTypeEnum {
+public enum ProcessDisagreeTypeEnum implements AfEnumBase{
 
     //node submit type (1:Return to the previous node to submit the next node
     // 2:Return to the initiator to submit the next node
@@ -24,7 +24,7 @@ public enum ProcessDisagreeTypeEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

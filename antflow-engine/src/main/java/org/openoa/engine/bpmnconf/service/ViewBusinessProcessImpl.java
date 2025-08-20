@@ -45,7 +45,7 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
             throw  new AFBizException(String.format("processNumber%s,its data not in existence!",businessDataVo.getProcessNumber()));
         }
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
-        businessDataVo =formFactory.getFormAdaptor(businessDataVo).queryData(businessDataVo);
+        formFactory.getFormAdaptor(businessDataVo).queryData(businessDataVo);
 
         //set the businessId
         businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());

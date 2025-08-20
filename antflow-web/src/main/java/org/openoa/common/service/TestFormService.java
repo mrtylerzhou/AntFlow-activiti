@@ -31,8 +31,8 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo initData(ThirdPartyAccountApplyVo vo) {
-        return null;
+    public void initData(ThirdPartyAccountApplyVo vo) {
+
     }
 
     @Override
@@ -45,14 +45,13 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
     }
 
     @Override
-    public ThirdPartyAccountApplyVo queryData(ThirdPartyAccountApplyVo vo) {
+    public void queryData(ThirdPartyAccountApplyVo vo) {
         ThirdPartyAccountApply accountApply = thirdPartyAccountApplyMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(accountApply,vo);
-        return vo;
     }
 
     @Override
-    public ThirdPartyAccountApplyVo submitData(ThirdPartyAccountApplyVo vo) {
+    public void submitData(ThirdPartyAccountApplyVo vo) {
         ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
         BeanUtils.copyProperties(vo,thirdPartyAccountApply);
         thirdPartyAccountApplyMapper.insert(thirdPartyAccountApply);
@@ -60,11 +59,11 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
         vo.setProcessTitle("第三方账号申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(ThirdPartyAccountApply.class.getSimpleName());
-        return vo;
+
     }
 
     @Override
-    public ThirdPartyAccountApplyVo consentData(ThirdPartyAccountApplyVo vo) {
+    public void consentData(ThirdPartyAccountApplyVo vo) {
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             ThirdPartyAccountApply thirdPartyAccountApply=new ThirdPartyAccountApply();
@@ -73,7 +72,7 @@ public class TestFormService implements FormOperationAdaptor<ThirdPartyAccountAp
             thirdPartyAccountApply.setId(id);
             thirdPartyAccountApplyMapper.updateById(thirdPartyAccountApply);
         }
-        return vo;
+
     }
 
     @Override
