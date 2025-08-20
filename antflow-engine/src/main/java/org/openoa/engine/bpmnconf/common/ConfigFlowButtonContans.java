@@ -286,18 +286,24 @@ public class ConfigFlowButtonContans {
                     .map(ActHiTaskinst::getTaskDefKey)
                     .distinct()
                     .collect(Collectors.toList());
-            List<String> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
-             bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
-            //只能显示在发起人页的按钮不应显示在其它页面
-            if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
-                bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(hisTaskDefKeys)){
+                List<String> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
+                bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
+                //只能显示在发起人页的按钮不应显示在其它页面
+                if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
+                    bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
+                }
             }
+
         }
 
-        List<ProcessActionButtonVo> processActionButtonVos = bpmnNodeButtonConfs.stream().map(item -> ProcessActionButtonVo.builder().buttonType(item.getButtonType())
-                .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
-                .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build())
-                .collect(Collectors.toList());
-        return processActionButtonVos;
+        if(!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
+            List<ProcessActionButtonVo> processActionButtonVos = bpmnNodeButtonConfs.stream().map(item -> ProcessActionButtonVo.builder().buttonType(item.getButtonType())
+                            .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
+                            .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build())
+                    .collect(Collectors.toList());
+            return processActionButtonVos;
+        }
+       return new ArrayList<>();
     }
 }
