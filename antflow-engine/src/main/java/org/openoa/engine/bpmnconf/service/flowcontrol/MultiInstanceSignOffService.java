@@ -8,6 +8,7 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
@@ -30,6 +31,7 @@ public class MultiInstanceSignOffService {
     private final BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
     private final BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     private final BpmFlowrunEntrustServiceImpl flowrunEntrustService;
+    private final BpmVariableMapper bpmVariableMapper;
     private final ActHiTaskinstServiceImpl actHiTaskinstService;
 
     public MultiInstanceSignOffService(@Autowired ProcessEngine processEngine,
@@ -37,6 +39,7 @@ public class MultiInstanceSignOffService {
                                        BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper,
                                        BpmBusinessProcessServiceImpl bpmBusinessProcessService,
                                        BpmFlowrunEntrustServiceImpl flowrunEntrustService,
+                                       BpmVariableMapper bpmVariableMapper,
                                        ActHiTaskinstServiceImpl actHiTaskinstService) {
         this.runtimeService = processEngine.getRuntimeService();
         this.taskService = processEngine.getTaskService();
@@ -44,12 +47,13 @@ public class MultiInstanceSignOffService {
         this.bpmVariableMultiplayerMapper = bpmVariableMultiplayerMapper;
         this.bpmBusinessProcessService = bpmBusinessProcessService;
         this.flowrunEntrustService = flowrunEntrustService;
+        this.bpmVariableMapper = bpmVariableMapper;
         this.actHiTaskinstService = actHiTaskinstService;
     }
 
     /**
      * 执行减签操作
-     * 只用会签节点可以减签(顺序会签减签相当于跳过了当前节点,不允许通过此方法操作),或签需要承办,承办以后只有一个审批人,因此承办以后无法再减签了,承办前可以
+     * 只有会签节点可以减签(顺序会签减签相当于跳过了当前节点,不允许通过此方法操作),或签需要承办,承办以后只有一个审批人,因此承办以后无法再减签了,承办前可以
      * @param processNumber 流程实例ID
      * @param userToRemove      需移除的用户ID
      */
@@ -124,6 +128,9 @@ public class MultiInstanceSignOffService {
         Integer updatedCompleted = (Integer) runtimeService.getVariable(myExecution.getParentId(), "nrOfCompletedInstances");
         int activeInstances = assigneeList.size() - updatedCompleted;
         runtimeService.setVariable(myExecution.getParentId(), "nrOfActiveInstances", activeInstances);
+
+        //更新流程变更
+        bpmVariableMapper.invalidNodeAssignee(processNumber,taskDefKey,userToRemove);
     }
 
 

@@ -3,12 +3,17 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
+import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,5 +39,23 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
     @Override
     public String getVarNameByProcessNumberAndElementId(String processNum, String elementId){
         return  bpmVariableMultiplayerMapper.getVarNameByElementId(processNum,elementId);
+    }
+    @Override
+    public void addNodeAssignees(String processNumber, String elementId, List<BaseIdTranStruVo> assignees){
+        List<BpmVariableMultiplayer> multiplayers = this.baseMapper.querymultiplayersbyprocesselementid(processNumber, elementId);
+        List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels=new ArrayList<>();
+        for (BaseIdTranStruVo assignee : assignees) {
+            BpmVariableMultiplayerPersonnel multiplayerPersonnel = BpmVariableMultiplayerPersonnel
+                    .builder()
+                    .variableMultiplayerId(multiplayers.get(0).getId())
+                    .assignee(assignee.getId())
+                    .assigneeName(assignee.getName())
+                    .undertakeStatus(0)
+                    .remark("管理员加签")
+                    .build();
+            bpmVariableMultiplayerPersonnels.add(multiplayerPersonnel);
+        }
+        BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService = SpringBeanUtils.getBean(BpmVariableMultiplayerPersonnelServiceImpl.class);
+        bpmVariableMultiplayerPersonnelService.saveBatch(bpmVariableMultiplayerPersonnels);
     }
 }

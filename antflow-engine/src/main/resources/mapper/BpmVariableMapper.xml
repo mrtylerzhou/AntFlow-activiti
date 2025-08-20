@@ -24,4 +24,20 @@
         set tbvmp.undertake_status=0
         where tbv.process_num = #{processNum}
     </update>
+    <update id="invalidNodeAssignee">
+        update t_bpm_variable_multiplayer_personnel tbvmp
+        inner join t_bpm_variable_multiplayer tbvm on tbvmp.variable_multiplayer_id = tbvm.id
+        inner join t_bpm_variable tbv on tbvm.variable_id = tbv.id
+        set tbvmp.is_del=1 , tbvmp.remark='管理员减签'
+        where tbv.process_num = #{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee=#{assignee}
+    </update>
+    <select id="querymultiplayersbyprocesselementid"
+            resultType="org.openoa.common.entity.BpmVariableMultiplayer">
+
+        select tbvm.*
+        from t_bpm_variable tbv
+        inner join t_bpm_variable_multiplayer tbvm on tbvm.variable_id = tbv.id
+        where tbv.process_num = #{processNum}
+        and tbvm.element_id = #{elementId}
+    </select>
 </mapper>
