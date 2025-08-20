@@ -14,4 +14,5 @@ public interface BpmVariableMapper extends BaseMapper<BpmVariable> {
                                         @Param("nodeId") String nodeId);
     List<String> getNodeIdsByeElementId(@Param("processNum") String processNum,
                                       @Param("elementId") String elementId);
+    void resetUnderStatusByProcessNumber(@Param("processNum")String processNum);
 }

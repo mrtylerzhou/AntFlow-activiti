@@ -282,7 +282,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
         }
 
-
+        variableMapper.resetUnderStatusByProcessNumber(bpmBusinessProcess.getBusinessNumber());
         //parallel tasks reject
            /* for (Task task : taskList) {
                 Map<String,Object> varMap=new HashMap<>();
