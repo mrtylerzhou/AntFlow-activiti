@@ -22,7 +22,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, toRaw, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 import selectUserDialog from '@/components/Workflow/dialog/selectUserDialog.vue';
 const { proxy } = getCurrentInstance();
@@ -41,12 +41,19 @@ let approverUserVisible = ref(false);
 let checkedUserList = ref([]);
 let changeUserId = ref(null);
 let optFrom = ref(null)
+let isCanSubmit = ref(true);
+watch(() => optFrom.value?.userInfos, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.length == 0;
+    }
+});
+
 /**点击流程图节点回调*/
 const handleClickNode = (data) => {
     loading.value = true;
     optFrom.value = data.value;
     checkedUserList.value = data.value.userInfos;
-    optFrom.value.userInfos = [...checkedUserList.value];
+    optFrom.value.userInfos = [];
     setTimeout(() => {
         loading.value = false;
     }, 300);
