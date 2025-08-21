@@ -119,7 +119,7 @@
     </select>
     <!--用于展示根据发起人找到他的直属领导的方法,还是那句话,你的表可能不是这样的,但无所谓,根据传入的用户id查找到他的直属领导的id和name即可-->
     <select id="queryDirectLeaderByEmployeeIds" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        select id,user_name as name from t_user where id =(
+        select id,user_name as name from t_user where id in (
         select leader_id from t_user
         <where>
            id in
@@ -127,7 +127,7 @@
                 #{employeeId}
             </foreach>
         </where>
-
+        )
     </select>
 
     <select id="selectAll" resultType="org.openoa.base.vo.BaseIdTranStruVo">
