@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { getAllProcesslistPage } from "@/api/workflow/index";
+import { getAllProcesslistPage, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
 import { onMounted } from "vue";
@@ -215,20 +215,47 @@ function handleFlowChange(row) {
 
 /** 撤回 */
 function handleFlowCancel(row) {
+   let pramForm = {
+      operationType: 29,
+      formCode: row.processKey,
+      processNumber: row.processNumber,
+      isLowCodeFlow: row.isLowCodeFlow
+   };
    proxy.$confirm('确认撤回编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
-      proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
-      // flowCancel(ow.processNumber).then(response => {
-      //    proxy.$modal.msgSuccess("撤销成功" )
-      // })
+      //proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
+      proxy.$modal.loading();
+      processOperation(pramForm).then((res) => {
+         if (res.code == 200) {
+            proxy.$modal.msgSuccess("操作成功");
+            //close();
+         } else {
+            proxy.$modal.msgError("操作失败:" + res.errMsg);
+         }
+      });
+      proxy.$modal.closeLoading();
    }).catch(() => { })
 }
 /** 作废 */
 function handleFlowRepeal(row) {
+   let pramForm = {
+      operationType: 7,
+      formCode: row.processKey,
+      processNumber: row.processNumber,
+      isLowCodeFlow: row.isLowCodeFlow
+   };
    proxy.$confirm('确认作废编号为"' + row.processNumber + '"的流程吗？', "温馨提示").then(() => {
-      proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
-      // flowCancel(ow.processNumber).then(response => {
-      //    proxy.$modal.msgSuccess("作废成功" )
-      // })
+      //proxy.$modal.msgSuccess("撤销功能开发中，敬请期待！")
+      proxy.$modal.loading();
+      processOperation(pramForm).then((res) => {
+         if (res.code == 200) {
+            proxy.$modal.msgSuccess("操作成功");
+            //close();
+         } else {
+            proxy.$modal.msgError("操作失败:" + res.errMsg);
+         }
+      });
+      proxy.$modal.closeLoading();
    }).catch(() => { })
 }
+
 </script>
