@@ -596,7 +596,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
         Integer isOutSideProcess = bpmBusinessProcess.getIsOutSideProcess();
         Map<String, String> stringStringMap = null;
         if(Objects.equals(isOutSideProcess,1)){
-            stringStringMap=tasks.stream().collect(Collectors.toMap(BpmVerifyInfoVo::getVerifyUserId, BpmVerifyInfoVo::getVerifyUserName,(k1, k2)->k1));
+            stringStringMap=tasks.stream().collect(Collectors.toMap(BpmVerifyInfoVo::getVerifyUserId, v->Optional.ofNullable(v.getVerifyUserName()).orElse(""),(k1, k2)->k1));
         }else{
             stringStringMap= bpmnEmployeeInfoProviderService.provideEmployeeInfo(verifyUserIds);
         }
