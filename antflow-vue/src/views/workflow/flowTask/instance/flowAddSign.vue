@@ -89,7 +89,12 @@ const sureUserApprover = (data) => {
             }
         })
         checkedUserList.value.push(...checkedList)
-        optFrom.value.userInfos = checkedList
+        optFrom.value.userInfos = [...checkedList.map(item => {
+            return {
+                id: item.id,
+                name: item.name
+            }
+        })];
     }
     approverUserVisible.value = false;
 }
