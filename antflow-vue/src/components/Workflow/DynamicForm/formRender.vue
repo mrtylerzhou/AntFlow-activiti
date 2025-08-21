@@ -92,8 +92,8 @@ const handlerFn = (w) => {
       }
     }
   } else {
-    w.options.disabled = false;
-    w.options.readonly = false;
+    w.options.disabled = true;
+    w.options.readonly = true;
   }
 }
 /**递归处理表单中所有字段 */
