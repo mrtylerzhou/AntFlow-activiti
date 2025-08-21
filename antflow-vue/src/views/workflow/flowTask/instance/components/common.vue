@@ -68,6 +68,7 @@ let optFrom = ref({
     formCode: queryForm.processKey,
     processNumber: queryForm.processNumber,
     taskDefKey: queryForm.taskName,
+    isLowCodeFlow: queryForm.isLowCodeFlow,
     nodeId: null,
     nodeName: null,
     userInfos: []
@@ -84,6 +85,19 @@ onBeforeMount(() => {
     })
 })
 
+let props = defineProps({
+    currentOptId: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    afterOptId: {
+        type: Number,
+        required: true,
+        default: 0,
+    }
+});
+
 /**点击流程图节点 */
 const clickNode = (data) => {
     if (data.beforeNodeIds.includes(data.nodeId) || data.params.isNodeDeduplication == 1) {
@@ -92,7 +106,7 @@ const clickNode = (data) => {
     }
     optFrom.value.nodeName = data.nodeName;
     optFrom.value.nodeId = data.Id;
-    optFrom.value.operationType = data.currentNodeId == data.nodeId ? 24 : 27; //当前节点加签 未来节点加签 
+    optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX 
     //isChangedCount = data.params?.assigneeList.length || 0;
     optFrom.value.userInfos = data.params?.assigneeList
         .map(item => {

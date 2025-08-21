@@ -1,6 +1,6 @@
 <template>
     <div>
-        <common ref="commonRef" @clickNodeOpt="handleClickNode">
+        <common ref="commonRef" @clickNodeOpt="handleClickNode" :currentOptId="11" :afterOptId="26">
             <template #userChoose>
                 <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                 <div v-else>
