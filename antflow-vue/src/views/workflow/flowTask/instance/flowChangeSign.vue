@@ -46,7 +46,7 @@ const handleClickNode = (data) => {
     loading.value = true;
     optFrom.value = data.value;
     checkedUserList.value = data.value.userInfos;
-    optFrom.value.userInfos = [];
+    optFrom.value.userInfos = [...checkedUserList.value];
     setTimeout(() => {
         loading.value = false;
     }, 300);
@@ -74,25 +74,14 @@ const sureUserApprover = (data) => {
         if (idx !== -1) {
             checkedUserList.value.splice(idx, 1, ...checkedList)
         }
-        optFrom.value.userInfos.push(...checkedList);
+        optFrom.value.userInfos = [...checkedUserList.value];
     }
     approverUserVisible.value = false;
 }
 
 const addApproveUser = (row) => {
-    if (!proxy.isEmptyArray(optFrom.value.userInfos)) {
-        proxy.$confirm("之前的操作将会被重置，是否继续？").then(() => {
-            checkedUserList.value = toRaw(commonRef.value.originalNodeUserList);
-        }).then(() => {
-            optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-            changeUserId.value = row.id;
-            approverUserVisible.value = true;
-        }).catch(() => { })
-    } else {
-        optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-        changeUserId.value = row.id;
-        approverUserVisible.value = true;
-    }
+    changeUserId.value = row.id;
+    approverUserVisible.value = true;
 }
 const handleSubmit = () => {
     commonRef.value.handleSubmit(optFrom.value);
