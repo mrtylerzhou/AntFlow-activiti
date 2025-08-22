@@ -52,7 +52,14 @@ watch(() => optFrom.value?.userInfos, (newVal) => {
 const handleClickNode = (data) => {
     loading.value = true;
     optFrom.value = data.value;
-    checkedUserList.value = data.value.userInfos;
+    checkedUserList.value = data.value.userInfos.map(item => {
+        return {
+            id: item.id,
+            name: item.name,
+            canChange: item.isDeduplication !== 1,
+        }
+    });
+
     optFrom.value.userInfos = [];
     setTimeout(() => {
         loading.value = false;
@@ -77,6 +84,7 @@ const sureUserApprover = (data) => {
                 name: item.name
             }
         })
+
         const idx = checkedUserList.value.findIndex(item => item.id == changeUserId.value)
         if (idx !== -1) {
             checkedUserList.value.splice(idx, 1, ...checkedList)
