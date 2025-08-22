@@ -226,6 +226,7 @@ function handleFlowCancel(row) {
       proxy.$modal.loading();
       processOperation(pramForm).then((res) => {
          if (res.code == 200) {
+            getList();
             proxy.$modal.msgSuccess("操作成功");
             //close();
          } else {
@@ -248,6 +249,7 @@ function handleFlowRepeal(row) {
       proxy.$modal.loading();
       processOperation(pramForm).then((res) => {
          if (res.code == 200) {
+            getList();
             proxy.$modal.msgSuccess("操作成功");
             //close();
          } else {
