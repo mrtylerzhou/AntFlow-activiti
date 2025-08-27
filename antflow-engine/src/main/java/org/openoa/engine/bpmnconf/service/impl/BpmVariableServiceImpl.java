@@ -58,4 +58,14 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
         BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService = SpringBeanUtils.getBean(BpmVariableMultiplayerPersonnelServiceImpl.class);
         bpmVariableMultiplayerPersonnelService.saveBatch(bpmVariableMultiplayerPersonnels);
     }
+    @Override
+    public void  updateAssignee(String processNumber,String elementId,String assignee,BaseIdTranStruVo newAssigneeInfo){
+        int updateSingle = this.baseMapper.updateSingle(processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
+        if(updateSingle<=0){
+            int updateMultiPlayer = this.baseMapper.updateMultiPlayer(processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
+            if(updateMultiPlayer<=0){
+                log.warn("单人节点和多人节点变量均更新失败!,请查看条件");
+            }
+        }
+    }
 }

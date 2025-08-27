@@ -22,7 +22,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, toRaw, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 import selectUserDialog from '@/components/Workflow/dialog/selectUserDialog.vue';
 const { proxy } = getCurrentInstance();
@@ -41,11 +41,25 @@ let approverUserVisible = ref(false);
 let checkedUserList = ref([]);
 let changeUserId = ref(null);
 let optFrom = ref(null)
+let isCanSubmit = ref(true);
+watch(() => optFrom.value?.userInfos, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.length == 0;
+    }
+});
+
 /**点击流程图节点回调*/
 const handleClickNode = (data) => {
     loading.value = true;
     optFrom.value = data.value;
-    checkedUserList.value = data.value.userInfos;
+    checkedUserList.value = data.value.userInfos.map(item => {
+        return {
+            id: item.id,
+            name: item.name,
+            canChange: item.isDeduplication !== 1,
+        }
+    });
+
     optFrom.value.userInfos = [];
     setTimeout(() => {
         loading.value = false;
@@ -70,29 +84,24 @@ const sureUserApprover = (data) => {
                 name: item.name
             }
         })
+
         const idx = checkedUserList.value.findIndex(item => item.id == changeUserId.value)
         if (idx !== -1) {
             checkedUserList.value.splice(idx, 1, ...checkedList)
         }
-        optFrom.value.userInfos.push(...checkedList);
+        optFrom.value.userInfos = [...checkedUserList.value.map(item => {
+            return {
+                id: item.id,
+                name: item.name
+            }
+        })];
     }
     approverUserVisible.value = false;
 }
 
 const addApproveUser = (row) => {
-    if (!proxy.isEmptyArray(optFrom.value.userInfos)) {
-        proxy.$confirm("之前的操作将会被重置，是否继续？").then(() => {
-            checkedUserList.value = toRaw(commonRef.value.originalNodeUserList);
-        }).then(() => {
-            optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-            changeUserId.value = row.id;
-            approverUserVisible.value = true;
-        }).catch(() => { })
-    } else {
-        optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-        changeUserId.value = row.id;
-        approverUserVisible.value = true;
-    }
+    changeUserId.value = row.id;
+    approverUserVisible.value = true;
 }
 const handleSubmit = () => {
     commonRef.value.handleSubmit(optFrom.value);

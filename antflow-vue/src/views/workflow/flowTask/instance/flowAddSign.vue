@@ -25,7 +25,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 import selectUserDialog from '@/components/Workflow/dialog/selectUserDialog.vue';
 const { proxy } = getCurrentInstance();
@@ -44,6 +44,13 @@ let isChangedCount = 0;
 let approverUserVisible = ref(false);
 let checkedUserList = ref([]);
 let optFrom = ref(null)
+
+let isCanSubmit = ref(true);
+watch(() => optFrom.value?.userInfos, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.length == 0;
+    }
+});
 /**点击流程图节点回调*/
 const handleClickNode = (data) => {
     optFrom.value = data.value;
@@ -82,7 +89,12 @@ const sureUserApprover = (data) => {
             }
         })
         checkedUserList.value.push(...checkedList)
-        optFrom.value.userInfos = checkedList
+        optFrom.value.userInfos = [...checkedList.map(item => {
+            return {
+                id: item.id,
+                name: item.name
+            }
+        })];
     }
     approverUserVisible.value = false;
 }

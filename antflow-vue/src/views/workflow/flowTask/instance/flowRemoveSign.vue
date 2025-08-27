@@ -24,7 +24,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 const commonRef = useTemplateRef("commonRef");
 let loading = ref(false);
@@ -40,6 +40,12 @@ let optFrom = ref(null);
 let checkedUserList = ref([]);
 let isChangedCount = 0;
 
+let isCanSubmit = ref(true);
+watch(() => optFrom.value?.userInfos, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.length == 0;
+    }
+});
 /**点击流程图节点回调*/
 const handleClickNode = (data) => {
     optFrom.value = data.value;
