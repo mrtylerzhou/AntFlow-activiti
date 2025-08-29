@@ -13,7 +13,7 @@
           "hidden": false,
           "component": "workflow/taskCenter/index",
           "meta": {
-            "title": "发起请求",
+            "title": "流程中心",
             "icon": "guide",
             "affix": false,
             "noCache": false,
@@ -85,18 +85,6 @@
           }
         },
         {
-          "name": "approve",
-          "path": "pendding/approve",
-          "hidden": true,
-          "component": "workflow/flowTask/pendding/approve",
-          "meta": {
-            "title": "流程审批",
-            "icon": "",
-            "noCache": true,
-            "link": null
-          }
-        },
-        {
           "name": "approveV2",
           "path": "/approveV2",
           "hidden": true,
@@ -157,78 +145,6 @@
             "title": "流程设计",
             "icon": "",
             "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "lf-FlowDesign",
-          "path": "lf-design",
-          "hidden": true,
-          "component": "workflow/flowDesign/lf",
-          "meta": {
-            "title": "低代码表单流程设计",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "diy-FlowDesign",
-          "path": "diy-design",
-          "hidden": true,
-          "component": "workflow/flowDesign/diy",
-          "meta": {
-            "title": "自定义表单流程设计",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "flowPreview",
-          "path": "flowPreview",
-          "hidden": true,
-          "component": "workflow/flowPreview/index",
-          "meta": {
-            "title": "流程模板预览",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "startFlow",
-          "path": "/startFlow/index",
-          "hidden": true,
-          "component": "workflow/startFlow/index",
-          "meta": {
-            "title": "发起申请流程",
-            "icon": "",
-            "noCache": true,
-            "link": null
-          }
-        },
-        {
-          "name": "startOutside",
-          "path": "/startOutside/index",
-          "hidden": true,
-          "component": "workflow/startOutside/index",
-          "meta": {
-            "title": "业务方表单发起测试",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "version",
-          "path": "flow-version",
-          "hidden": true,
-          "component": "workflow/flowList/version",
-          "meta": {
-            "title": "版本管理",
-            "icon": "",
-            "noCache": true,
             "link": null
           }
         }

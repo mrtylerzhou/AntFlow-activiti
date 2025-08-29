@@ -109,10 +109,112 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/startFlow/index",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/startFlow/index",
+        component: () => import("@/views/workflow/startFlow/index"),
+        name: "startFlow",
+        meta: {
+          title: "发起流程申请",
+          activeMenu: "/taskCenter",
+        },
+      },
+    ],
+  },
+  {
+    path: "/startOutside/index",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/startOutside/index",
+        component: () => import("@/views/workflow/startOutside/index"),
+        name: "startOutside",
+        meta: {
+          title: "发起流程申请",
+          activeMenu: "/taskCenter",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/diy-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/diy-design",
+        component: () => import("@/views/workflow/flowDesign/diy"),
+        name: "diy-design",
+        meta: {
+          title: "流程设计",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/lf-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/lf-design",
+        component: () => import("@/views/workflow/flowDesign/lf"),
+        name: "lf-design",
+        meta: {
+          title: "流程设计",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/flowPreview",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowPreview",
+        component: () => import("@/views/workflow/flowPreview/index"),
+        name: "flowPreview",
+        meta: {
+          title: "流程预览",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/flow-version",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flow-version",
+        component: () => import("@/views/workflow/flowList/version"),
+        name: "version",
+        meta: {
+          title: "版本管理",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/workflow/instance/removeSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",
@@ -127,7 +229,7 @@ export const dynamicRoutes = [
     path: "/workflow/instance/addSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",
@@ -142,7 +244,7 @@ export const dynamicRoutes = [
     path: "/workflow/instance/changeSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",

@@ -51,9 +51,9 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-          @pagination="getList" />
       </el-table>
+      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+        @pagination="getList" />
     </div>
     <!-- 添加或修改委托对话框 -->
     <el-dialog :title="title" v-model="open" width="550px" append-to-body>

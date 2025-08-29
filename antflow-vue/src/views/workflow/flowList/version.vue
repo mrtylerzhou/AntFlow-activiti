@@ -1,22 +1,20 @@
 <template>
-
-
    <div class="app-container">
-
       <div class="query-box">
-         <div class="mb-4 fl">
-            <el-alert type="warning" show-icon :closable="false">
-               <div class="marquee-container">
-                  <div class="marquee-text">【温馨提示】点击【启用】按钮，流程设计才能生效哦</div>
-               </div>
-            </el-alert>
-         </div>
-         <div class="mb-4 fr">
-            <el-button type="primary" plain @click="backPage()"><el-icon>
-                  <Back />
-               </el-icon>返回 </el-button>
-         </div>
-
+         <el-row class="mb10">
+            <el-col :span="12">
+               <el-alert type="warning" show-icon :closable="false">
+                  <div class="marquee-container">
+                     <div class="marquee-text">【温馨提示】点击【启用】按钮，流程设计才能生效哦</div>
+                  </div>
+               </el-alert>
+            </el-col>
+            <el-col :span="12" style="text-align: right;">
+               <el-button type="primary" plain @click="backPage()"><el-icon>
+                     <Back />
+                  </el-icon>返回 </el-button>
+            </el-col>
+         </el-row>
       </div>
       <div class="table-box">
          <el-table v-loading="loading" :data="configList">

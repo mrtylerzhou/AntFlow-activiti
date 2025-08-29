@@ -49,9 +49,9 @@
             <!-- <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button> -->
           </template>
         </el-table-column>
-        <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
-          @pagination="getList" />
       </el-table>
+      <pagination v-show="total > 0" :total="total" v-model:page="page.page" v-model:limit="page.pageSize"
+        @pagination="getList" />
     </div>
   </div>
 </template>

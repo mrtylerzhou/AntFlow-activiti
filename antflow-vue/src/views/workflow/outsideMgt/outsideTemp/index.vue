@@ -59,9 +59,9 @@
                   </el-tooltip>
                </template>
             </el-table-column>
-            <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-               @pagination="getList" />
          </el-table>
+         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+            @pagination="getList" />
       </div>
    </div>
 </template>
