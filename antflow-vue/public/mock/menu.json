@@ -159,7 +159,7 @@
       "alwaysShow": true,
       "meta": {
         "title": "流程运维",
-        "icon": "clipboard",
+        "icon": "redis-list",
         "noCache": false,
         "link": null
       },
@@ -222,7 +222,7 @@
       "component": "Layout",
       "alwaysShow": true,
       "meta": {
-        "title": "Saas流程管理",
+        "title": "Saas流程",
         "icon": "component",
         "noCache": false,
         "link": null
@@ -234,7 +234,7 @@
           "hidden": false,
           "component": "workflow/outsideMgt/outsideJoin/index",
           "meta": {
-            "title": "Saas租户管理",
+            "title": "Saas租户",
             "icon": "",
             "noCache": false,
             "link": null
@@ -271,30 +271,6 @@
           "component": "workflow/outsideMgt/outsideDesign/index",
           "meta": {
             "title": "流程设计",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "outsideflowPreview",
-          "path": "preview",
-          "hidden": true,
-          "component": "workflow/outsideMgt/preview/index",
-          "meta": {
-            "title": "三方流程模板预览",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        },
-        {
-          "name": "app-setting",
-          "path": "app-setting",
-          "hidden": true,
-          "component": "workflow/outsideMgt/outsideApp/Setting/index",
-          "meta": {
-            "title": "应用设置",
             "icon": "",
             "noCache": false,
             "link": null

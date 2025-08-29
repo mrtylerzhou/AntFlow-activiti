@@ -136,7 +136,7 @@ export const dynamicRoutes = [
         component: () => import("@/views/workflow/startOutside/index"),
         name: "startOutside",
         meta: {
-          title: "发起流程申请",
+          title: "Saas流程申请",
           activeMenu: "/taskCenter",
         },
       },
@@ -153,7 +153,7 @@ export const dynamicRoutes = [
         component: () => import("@/views/workflow/flowDesign/diy"),
         name: "diy-design",
         meta: {
-          title: "流程设计",
+          title: "DIY流程设计",
           activeMenu: "/workflow/flowList",
         },
       },
@@ -170,7 +170,24 @@ export const dynamicRoutes = [
         component: () => import("@/views/workflow/flowDesign/lf"),
         name: "lf-design",
         meta: {
-          title: "流程设计",
+          title: "LF流程设计",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/flow-version",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flow-version",
+        component: () => import("@/views/workflow/flowList/version"),
+        name: "version",
+        meta: {
+          title: "版本管理",
           activeMenu: "/workflow/flowList",
         },
       },
@@ -194,18 +211,54 @@ export const dynamicRoutes = [
     ],
   },
   {
-    path: "/workflow/flow-version",
+    path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,
     permissions: ["system"],
     children: [
       {
-        path: "/workflow/flow-version",
-        component: () => import("@/views/workflow/flowList/version"),
-        name: "version",
+        path: "/outsideMgt/preview",
+        component: () => import("@/views/workflow/outsideMgt/preview/index"),
+        name: "outsideFlowPreview",
         meta: {
-          title: "版本管理",
-          activeMenu: "/workflow/flowList",
+          title: "Saas流程预览",
+          activeMenu: "/outsideMgt/outsideTemp",
+        },
+      },
+    ],
+  },
+  {
+    path: "/outsideMgt/outsideDesign",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/outsideMgt/outsideDesign",
+        component: () =>
+          import("@/views/workflow/outsideMgt/outsideDesign/index"),
+        name: "outsideFlowDesign",
+        meta: {
+          title: "Saas流程复制",
+          activeMenu: "/outsideMgt/outsideTemp",
+        },
+      },
+    ],
+  },
+  {
+    path: "/outsideMgt/app-setting",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/outsideMgt/app-setting",
+        component: () =>
+          import("@/views/workflow/outsideMgt/outsideApp/Setting/index"),
+        name: "app-setting",
+        meta: {
+          title: "应用配置",
+          activeMenu: "/outsideMgt/outsideApp",
         },
       },
     ],
