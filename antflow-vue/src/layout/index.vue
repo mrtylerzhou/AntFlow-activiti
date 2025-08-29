@@ -14,7 +14,6 @@
 </template>
 
 <script setup>
-import { ElMessageBox } from 'element-plus'
 import { useWindowSize } from '@vueuse/core'
 import Sidebar from './components/Sidebar/index.vue'
 import { AppMain, Navbar, Settings, TagsView } from './components'

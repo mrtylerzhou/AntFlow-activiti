@@ -1,12 +1,26 @@
 <template>
-  <div class="form-container">
-    <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
-    </v-form-render>
-    <el-button v-if="!isPreview && props.showSubmit" type="primary" @click="submitForm">提交</el-button>
-    <div style="margin-top: 20px;">
-      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
-        @chooseApprove="chooseApprovers" />
-    </div>
+  <div class="app-container">
+    <el-row :gutter="20">
+      <el-col :span="hasChooseApprove == 'true' ? 16 : 24">
+        <el-container class="form-container"
+          :style="hasChooseApprove == 'true' ? {} : { maxWidth: '80vw', margin: '0 auto' }">
+          <el-main>
+            <el-scrollbar>
+              <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
+              </v-form-render>
+            </el-scrollbar>
+          </el-main>
+          <el-footer>
+            <div v-if="!isPreview && props.showSubmit">
+              <el-button type="primary" @click="submitForm">提交</el-button>
+            </div>
+          </el-footer>
+        </el-container>
+      </el-col>
+      <el-col :span="8" v-if="hasChooseApprove == 'true'">
+        <TagApproveSelect v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -215,13 +229,43 @@ defineExpose({
 </script>
 <style scoped lang="scss">
 .form-container {
-  background: white !important;
-  padding: 10px;
-  max-width: 750px;
-  min-height: 95%;
+  position: relative;
   left: 0;
   bottom: 0;
   right: 0;
   margin: auto;
+  padding-bottom: 2px;
+  min-height: 70vh;
+  background: #eee !important;
+  /* 新增父级定位 */
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container .el-main {
+  background-color: #fff;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 让el-main高度自动填满父级，减去footer */
+  margin-bottom: 60px;
+  /* 与footer高度保持一致，确保不被footer遮挡 */
+}
+
+.form-container .el-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  background-color: #fff;
+  margin-top: 2px;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  display: flex;
+  justify-content: flex-end;
+  /* 居右显示 */
+  align-items: center;
+  /* 垂直居中 */
+  padding-right: 24px;
 }
 </style>

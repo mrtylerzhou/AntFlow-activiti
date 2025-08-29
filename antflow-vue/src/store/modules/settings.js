@@ -19,7 +19,6 @@ const {
 } = defaultSettings;
 
 const storageSetting = JSON.parse(localStorage.getItem("layout-setting")) || "";
-const versionSetting = localStorage.getItem("version-setting") || "v1.0.0";
 
 const useSettingsStore = defineStore("settings", {
   state: () => ({
@@ -55,7 +54,6 @@ const useSettingsStore = defineStore("settings", {
         : storageSetting.footerVisible,
     footerContent: footerContent,
     isDark: isDark.value,
-    version: versionSetting,
   }),
   actions: {
     // 修改布局设置

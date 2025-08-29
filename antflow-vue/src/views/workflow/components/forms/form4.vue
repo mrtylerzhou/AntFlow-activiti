@@ -1,41 +1,51 @@
 <template>
-    <div class="form-container">
-        <el-form ref="ruleFormRef" :model="form" :rules="rules"
-            style="max-width: 600px;min-height: 100px; margin: auto;">
-            <el-row :class="{ disableClss: props.isPreview }">
-                <el-col :span="24">
-                    <el-form-item label="采购人姓名" prop="purchaseUserName">
-                        <el-input v-model="form.purchaseUserName" style="width: 220px;" disabled />
-                    </el-form-item>
-                </el-col>
-                <el-col :span="24">
-                    <el-form-item label="采购日期" prop="purchaseDate">
-                        <el-date-picker v-model="form.purchaseDate" type="datetime" placeholder="请选择采购日期"
-                            format="YYYY/MM/DD HH:mm" />
-                    </el-form-item>
-                </el-col>
-                <el-col :span="24">
-                    <el-form-item label="采购金额" prop="planProcurementTotalMoney">
-                        <el-input v-model="form.planProcurementTotalMoney" style="width: 220px;"
-                            placeholder="请输入采购金额" />
-                    </el-form-item>
-                </el-col>
-                <el-col :span="24">
-                    <el-form-item label="备注说明" prop="remark">
-                        <el-input v-model="form.remark" type="textarea" placeholder="请输入备注说明" :maxlength="100"
-                            show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
-                            :style="{ width: '100%' }"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="24" v-if="!props.isPreview && props.showSubmit">
-                    <el-form-item>
-                        <el-button type="primary" @click="handleSubmit">提交</el-button>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-        </el-form>
-        <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
-            @chooseApprove="chooseApprovers" />
+    <div class="app-container">
+        <el-row :gutter="20">
+            <el-col :span="hasChooseApprove == 'true' ? 16 : 24">
+                <div class="form-container"
+                    :style="hasChooseApprove == 'true' ? {} : { maxWidth: '80vw', margin: '0 auto' }">
+                    <el-main>
+                        <el-form ref="ruleFormRef" :model="form" :rules="rules"
+                            style="max-width: 600px;min-height: 100px; margin: auto;">
+                            <el-row :class="{ disableClss: props.isPreview }">
+                                <el-col :span="24">
+                                    <el-form-item label="采购人姓名" prop="purchaseUserName">
+                                        <el-input v-model="form.purchaseUserName" style="width: 220px;" disabled />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="采购日期" prop="purchaseDate">
+                                        <el-date-picker v-model="form.purchaseDate" type="datetime"
+                                            placeholder="请选择采购日期" format="YYYY/MM/DD HH:mm" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="采购金额" prop="planProcurementTotalMoney">
+                                        <el-input v-model="form.planProcurementTotalMoney" style="width: 220px;"
+                                            placeholder="请输入采购金额" />
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="备注说明" prop="remark">
+                                        <el-input v-model="form.remark" type="textarea" placeholder="请输入备注说明"
+                                            :maxlength="100" show-word-limit :autosize="{ minRows: 4, maxRows: 4 }"
+                                            :style="{ width: '100%' }"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-main>
+                    <el-footer>
+                        <div v-if="!props.isPreview && props.showSubmit">
+                            <el-button type="primary" @click="handleSubmit">提交</el-button>
+                        </div>
+                    </el-footer>
+                </div>
+            </el-col>
+            <el-col :span="8" v-if="hasChooseApprove == 'true'">
+                <TagApproveSelect v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -141,13 +151,43 @@ defineExpose({
 }
 
 .form-container {
-    background: white !important;
-    padding: 10px;
-    max-width: 750px;
-    min-height: 95%;
+    position: relative;
     left: 0;
     bottom: 0;
     right: 0;
     margin: auto;
+    padding-bottom: 2px;
+    min-height: 70vh;
+    background: #eee !important;
+    /* 新增父级定位 */
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container .el-main {
+    background-color: #fff;
+    flex: 1 1 auto;
+    min-height: 0;
+    /* 让el-main高度自动填满父级，减去footer */
+    margin-bottom: 60px;
+    /* 与footer高度保持一致，确保不被footer遮挡 */
+}
+
+.form-container .el-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background-color: #fff;
+    margin-top: 2px;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    display: flex;
+    justify-content: flex-end;
+    /* 居右显示 */
+    align-items: center;
+    /* 垂直居中 */
+    padding-right: 24px;
 }
 </style>

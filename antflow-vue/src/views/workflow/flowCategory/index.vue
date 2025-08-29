@@ -75,9 +75,9 @@
                             </template>
                         </el-table-column>
                     </el-table>
+                    <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
+                        v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
                 </div>
-                <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page"
-                    v-model:limit="pageDto.pageSize" @pagination="getLFPageList" />
             </el-tab-pane>
             <el-tab-pane label="流程分类(DIY)" name="DIYTab">
                 <div class="query-box">

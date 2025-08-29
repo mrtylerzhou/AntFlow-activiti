@@ -89,27 +89,6 @@
 .clickable {
   cursor: pointer;
 }
-/**** 注释掉 ruoyi.scss中的  main-container全局样式****/
-.app-container {
-  margin: 10px 10px 10px 10px;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
-  // height: 80vh;
-  background-color: #fff;
-  min-width: 780px;
-}
-
-.query-box {
-  background-color: #fff;
-}
-
-.table-box {
-  padding: 10px;
-  background-color: #fff;
-}
 
 .page-close-box {
   position: absolute;

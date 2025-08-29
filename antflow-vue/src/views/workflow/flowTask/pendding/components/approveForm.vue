@@ -264,7 +264,7 @@ function uniqueByMap(arr) {
 </script>
 <style lang="scss" scoped>
 .component {
-    background: white !important;
+    background: #fff !important;
     padding: 10px !important;
     max-width: 720px !important;
     left: 0 !important;
@@ -275,6 +275,7 @@ function uniqueByMap(arr) {
 .approval-btns {
     float: left;
     margin: 16px 5px;
+
 }
 
 .approve-container {
@@ -296,12 +297,15 @@ function uniqueByMap(arr) {
 }
 
 .approve-container .el-footer {
-    background-color: #f2f3f4f5;
     position: sticky;
     bottom: 0;
     left: 0;
     width: 100%;
     z-index: 10;
+    background-color: #fff;
+    margin-top: 2px;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .approve-container .toolbar {

@@ -8,7 +8,12 @@
 .el-drawer__header .el-drawer__title {
   font-size: 16px !important;
 }
-
+.el-main {
+  padding: 0px !important;
+}
+.el-avatar {
+  background-color: #1890ff;
+}
 .el-dialog {
   width: 520px;
   border: 1px solid #dde1e5 !important;
