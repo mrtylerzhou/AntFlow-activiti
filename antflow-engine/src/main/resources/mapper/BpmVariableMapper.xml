@@ -51,6 +51,6 @@
         inner join t_bpm_variable_multiplayer tbvm on tbvmp.variable_multiplayer_id=tbvm.id
         inner join t_bpm_variable tbv on tbvm.variable_id=tbv.id
         set tbvmp.assignee=#{newAssignee},tbvmp.assignee_name=#{newAssigneeName}
-        where tbv.process_num==#{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee=#{assignee}
+        where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee=#{assignee}
     </update>
 </mapper>
