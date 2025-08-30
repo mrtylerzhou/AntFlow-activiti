@@ -118,8 +118,7 @@ const clickNode = (data) => {
     optFrom.value.nodeName = data.nodeName;
     optFrom.value.nodeId = data.Id;
     optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX 
-    //isChangedCount = data.params?.assigneeList.length || 0;
-    optFrom.value.userInfos = data.params?.assigneeList
+    const nodeUserList = data.params?.assigneeList
         .map(item => {
             return {
                 id: item.assignee,
@@ -128,9 +127,9 @@ const clickNode = (data) => {
             }
         }) || [];
 
-    originalNodeUserList.value = optFrom.value.userInfos;
+    originalNodeUserList.value = nodeUserList;
     //.filter((c) => c.isDeduplication == 0)
-    emits("clickNodeOpt", optFrom);
+    emits("clickNodeOpt", optFrom, nodeUserList);
 }
 provide("onClickNode", clickNode)
 const handleCancel = () => {

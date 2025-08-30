@@ -5,7 +5,7 @@
                 <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                 <div v-else>
                     <el-form :inline="true">
-                        <el-form-item label="节点名称">
+                        <el-form-item label="当前操作节点名称">
                             <el-input v-model="optFrom.nodeName" disabled style="width: 200px" />
                         </el-form-item>
                     </el-form>
@@ -47,12 +47,17 @@ watch(() => optFrom.value?.userInfos, (newVal) => {
     }
 });
 /**点击流程图节点回调*/
-const handleClickNode = (data) => {
+const handleClickNode = (data, nodeUsers) => {
     optFrom.value = data.value;
-    isChangedCount = data.value.userInfos.length || 0;
-    checkedUserList.value = data.value.userInfos;
-    optFrom.value.userInfos = [];
+    isChangedCount = nodeUsers.length || 0;
+    checkedUserList.value = nodeUsers.map(item => {
+        return {
+            ...item,
+            canChange: item.isDeduplication !== 1,
+        }
+    });
 }
+
 /**移除审批人 */
 const handleDeleteUser = (row) => {
     optFrom.value.userInfos = [checkedUserList.value.find(item => item.id == row.id)]

@@ -5,11 +5,12 @@
                 <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                 <div v-else>
                     <el-form :inline="true">
-                        <el-form-item label="节点名称">
+                        <el-form-item label="当前操作节点名称">
                             <el-input v-model="optFrom.nodeName" disabled style="width: 200px" />
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="success" icon="CirclePlus" @click="addApproveUser">新增审批人</el-button>
+                            <el-button type="success" icon="CirclePlus" :disabled="!isCanSubmit"
+                                @click="addApproveUser">新增审批人</el-button>
                         </el-form-item>
                     </el-form>
                     <el-table v-loading="loading" :data="checkedUserList" class="mb10"
@@ -46,23 +47,21 @@ let checkedUserList = ref([]);
 let optFrom = ref(null)
 
 let isCanSubmit = ref(true);
-watch(() => optFrom.value?.userInfos, (newVal) => {
+watch(() => optFrom.value, (newVal) => {
     if (newVal) {
-        isCanSubmit.value = newVal.length == 0;
+        isCanSubmit.value = newVal.userInfos?.length == 0;
     }
-});
+}, { deep: true });
 /**点击流程图节点回调*/
-const handleClickNode = (data) => {
+const handleClickNode = (data, nodeUsers) => {
     optFrom.value = data.value;
-    isChangedCount = data.value.userInfos.length || 0;
-    checkedUserList.value = data.value.userInfos.map(item => {
+    isChangedCount = nodeUsers.length || 0;
+    checkedUserList.value = nodeUsers.map(item => {
         return {
-            id: item.id,
-            name: item.name,
+            ...item,
             canDelete: false
         }
     });
-    optFrom.value.userInfos = [];
 }
 
 /**选择审批人确认按钮 */
@@ -114,10 +113,10 @@ const handleCancel = () => {
 }
 const handleReset = () => {
     loading.value = true;
+    optFrom.value = { ...commonRef.value.optFrom };
     checkedUserList.value = commonRef.value.originalNodeUserList.map(item => {
         return {
-            id: item.id,
-            name: item.name,
+            ...item,
             canDelete: false
         }
     });
