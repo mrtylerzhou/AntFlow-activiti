@@ -113,7 +113,7 @@ const handleCancel = () => {
 }
 const handleReset = () => {
     loading.value = true;
-    optFrom.value = { ...commonRef.value.optFrom };
+    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
     checkedUserList.value = commonRef.value.originalNodeUserList.map(item => {
         return {
             ...item,

@@ -114,7 +114,7 @@ const handleCancel = () => {
 }
 const handleReset = () => {
     loading.value = true;
-    optFrom.value = { ...commonRef.value.optFrom };
+    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
     nodeUserList.value = [...commonRef.value.originalNodeUserList];
     setTimeout(() => {
         loading.value = false;

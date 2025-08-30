@@ -41,11 +41,11 @@ let checkedUserList = ref([]);
 let isChangedCount = 0;
 
 let isCanSubmit = ref(true);
-watch(() => optFrom.value?.userInfos, (newVal) => {
+watch(() => optFrom.value, (newVal) => {
     if (newVal) {
-        isCanSubmit.value = newVal.length == 0;
+        isCanSubmit.value = newVal.userInfos?.length == 0;
     }
-});
+}, { deep: true });
 /**点击流程图节点回调*/
 const handleClickNode = (data, nodeUsers) => {
     optFrom.value = data.value;
@@ -72,6 +72,7 @@ const handleCancel = () => {
 
 const handleReset = () => {
     loading.value = true;
+    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
     checkedUserList.value = commonRef.value.originalNodeUserList;
     setTimeout(() => {
         loading.value = false;
