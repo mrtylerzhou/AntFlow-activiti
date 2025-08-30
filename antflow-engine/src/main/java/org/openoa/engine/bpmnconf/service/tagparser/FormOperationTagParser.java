@@ -39,6 +39,9 @@ public class FormOperationTagParser implements TagParser<ProcessOperationAdaptor
                 }
             }else{
                 Integer outSideType = data.getOutSideType();
+                if(outSideType==null){
+                    outSideType=1;
+                }
                 String outSideMarker=outSideType==0?ProcessOperationEnum.getOutSideMarker():ProcessOperationEnum.getOutSideAccessmarker();
                 if(processOperationAdaptor.isSupportBusinessObject(outSideMarker,poEnum)){
                     return processOperationAdaptor;
