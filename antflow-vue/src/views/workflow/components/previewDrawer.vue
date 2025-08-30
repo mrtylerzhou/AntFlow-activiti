@@ -72,7 +72,7 @@ const closeDrawer = () => {
 handleTabClick({ paneName: "baseTab" }) 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .tabs-header-wrap {
   position: relative;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="approve-container">
+    <div class="approve-container" :style="{ height: (height - 170) + 'px' }">
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
@@ -26,6 +26,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
+import { useWindowSize } from '@vueuse/core'
 import Cookies from "js-cookie";
 import transferDialog from './transferDialog.vue';
 import approveDialog from './approveDialog.vue';
@@ -36,6 +37,7 @@ import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/c
 import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
+const { width, height } = useWindowSize()
 let store = useStore();
 let instanceViewConfig = computed(() => store.instanceViewConfig1)
 const activeName = ref('baseTab');
@@ -264,9 +266,8 @@ function uniqueByMap(arr) {
 </script>
 <style lang="scss" scoped>
 .component {
-    background: white !important;
-    padding: 10px !important;
-    max-width: 720px !important;
+    background: #fff !important;
+    max-width: 900px !important;
     left: 0 !important;
     right: 0 !important;
     /* margin: auto !important;*/
@@ -275,11 +276,11 @@ function uniqueByMap(arr) {
 .approval-btns {
     float: left;
     margin: 16px 5px;
+
 }
 
 .approve-container {
     position: relative;
-    height: 82vh;
     /* 让容器撑满页面高度，确保footer在底部 */
     display: flex;
     flex-direction: column;
@@ -296,12 +297,15 @@ function uniqueByMap(arr) {
 }
 
 .approve-container .el-footer {
-    background-color: #f2f3f4f5;
     position: sticky;
     bottom: 0;
     left: 0;
     width: 100%;
     z-index: 10;
+    background-color: #fff;
+    margin-top: 2px;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .approve-container .toolbar {

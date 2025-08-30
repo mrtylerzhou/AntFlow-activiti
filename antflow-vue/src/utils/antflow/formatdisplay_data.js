@@ -40,6 +40,7 @@ export class FormatDisplayUtils {
       isLowCodeFlow: nodeData.isLowCodeFlow,
       lfFormData: nodeData.lfFormData,
       lfFormDataId: nodeData.lfFormDataId,
+      viewPageButtons: nodeData.viewPageButtons,
       property: nodeData.property,
       remark: nodeData.remark,
       isDel: 0,

@@ -1,11 +1,17 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <scroll-pane ref="scrollPaneRef" class="tags-view-wrapper" @scroll="handleScroll">
-      <router-link v-for="tag in visitedViews" :key="tag.path" :data-path="tag.path"
+      <router-link
+        v-for="tag in visitedViews"
+        :key="tag.path"
+        :data-path="tag.path"
         :class="{ 'active': isActive(tag), 'has-icon': tagsIcon }"
-        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }" class="tags-view-item"
-        :style="activeStyle(tag)" @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
-        @contextmenu.prevent="openMenu(tag, $event)">
+        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
+        class="tags-view-item"
+        :style="activeStyle(tag)"
+        @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
+        @contextmenu.prevent="openMenu(tag, $event)"
+      >
         <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" />
         {{ tag.title }}
         <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
@@ -137,7 +143,7 @@ function initTags() {
   for (const tag of res) {
     // Must have tag name
     if (tag.name) {
-      useTagsViewStore().addVisitedView(tag)
+       useTagsViewStore().addVisitedView(tag)
     }
   }
 }
@@ -285,9 +291,9 @@ function handleScroll() {
       }
 
       &.active {
-        background-color: #1890ff;
+        background-color: #42b983;
         color: #fff;
-        border-color: #1890ff;
+        border-color: #42b983;
 
         &::before {
           content: '';

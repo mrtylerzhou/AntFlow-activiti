@@ -57,7 +57,7 @@
                                     </div>
                                 </div>
                             </el-card>
-                            <div style="width: 100%;">
+                            <div style="width: 100%;" v-if="dataList.length !== 0">
                                 <el-button :loading="loadingMore" :disabled="pageDto.page == 1" type="primary"
                                     style="width: 45%;float: left;"
                                     @click.prevent="loadMoreFlowList('before')">上一页</el-button>

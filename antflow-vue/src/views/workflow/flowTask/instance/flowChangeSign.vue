@@ -5,7 +5,7 @@
                 <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                 <div v-else>
                     <el-form :inline="true">
-                        <el-form-item label="节点名称">
+                        <el-form-item label="当前操作节点名称">
                             <el-input v-model="optFrom.nodeName" disabled style="width: 200px" />
                         </el-form-item>
                     </el-form>
@@ -22,7 +22,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -31,22 +31,39 @@
 </template>
 
 <script setup>
-import { ref, toRaw, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 import selectUserDialog from '@/components/Workflow/dialog/selectUserDialog.vue';
 const { proxy } = getCurrentInstance();
 const commonRef = useTemplateRef("commonRef");
 let loading = ref(false);
 let approverUserVisible = ref(false);
+let nodeUserList = ref([]);
 let checkedUserList = ref([]);
 let changeUserId = ref(null);
 let optFrom = ref(null)
+let isCanSubmit = ref(true);
+
+watch(() => optFrom.value, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.userInfos?.length == 0;
+    }
+}, { deep: true });
+watch(() => nodeUserList.value, (newVal) => {
+    if (newVal) {
+        checkedUserList.value = [...newVal];
+    }
+});
 /**点击流程图节点回调*/
-const handleClickNode = (data) => {
+const handleClickNode = (data, nodeUsers) => {
     loading.value = true;
     optFrom.value = data.value;
-    checkedUserList.value = data.value.userInfos;
-    optFrom.value.userInfos = [];
+    checkedUserList.value = nodeUsers.map(item => {
+        return {
+            ...item,
+            canChange: item.isDeduplication !== 1,
+        }
+    });
     setTimeout(() => {
         loading.value = false;
     }, 300);
@@ -70,29 +87,24 @@ const sureUserApprover = (data) => {
                 name: item.name
             }
         })
+
         const idx = checkedUserList.value.findIndex(item => item.id == changeUserId.value)
         if (idx !== -1) {
             checkedUserList.value.splice(idx, 1, ...checkedList)
         }
-        optFrom.value.userInfos.push(...checkedList);
+        optFrom.value.userInfos = [...checkedUserList.value.map(item => {
+            return {
+                id: item.id,
+                name: item.name
+            }
+        })];
     }
     approverUserVisible.value = false;
 }
 
 const addApproveUser = (row) => {
-    if (!proxy.isEmptyArray(optFrom.value.userInfos)) {
-        proxy.$confirm("之前的操作将会被重置，是否继续？").then(() => {
-            checkedUserList.value = toRaw(commonRef.value.originalNodeUserList);
-        }).then(() => {
-            optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-            changeUserId.value = row.id;
-            approverUserVisible.value = true;
-        }).catch(() => { })
-    } else {
-        optFrom.value.userInfos = [{ id: row.id, name: row.name }];
-        changeUserId.value = row.id;
-        approverUserVisible.value = true;
-    }
+    changeUserId.value = row.id;
+    approverUserVisible.value = true;
 }
 const handleSubmit = () => {
     commonRef.value.handleSubmit(optFrom.value);
@@ -102,7 +114,8 @@ const handleCancel = () => {
 }
 const handleReset = () => {
     loading.value = true;
-    checkedUserList.value = commonRef.value.originalNodeUserList;
+    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
+    nodeUserList.value = [...commonRef.value.originalNodeUserList];
     setTimeout(() => {
         loading.value = false;
     }, 300);

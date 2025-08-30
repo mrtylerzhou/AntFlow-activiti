@@ -1,12 +1,21 @@
 <template>
-  <div class="form-container">
-    <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
-    </v-form-render>
-    <el-button v-if="!isPreview && props.showSubmit" type="primary" @click="submitForm">提交</el-button>
-    <div style="margin-top: 20px;">
-      <TagApproveSelect v-if="hasChooseApprove == 'true'" v-model:formCode="formCode"
-        @chooseApprove="chooseApprovers" />
-    </div>
+  <div class="app-container">
+    <el-row :gutter="20">
+      <el-col :span="hasChooseApprove == 'true' ? 16 : 24">
+        <div class="form-container" :style="hasChooseApprove == 'true' ? {} : { maxWidth: '80vw', margin: '0 auto' }">
+          <div class="el-main">
+            <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
+            </v-form-render>
+          </div>
+          <div class="el-footer" v-if="!isPreview && props.showSubmit">
+            <el-button type="primary" @click="submitForm">提交</el-button>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="8" v-if="hasChooseApprove == 'true'">
+        <TagApproveSelect v-model:formCode="formCode" @chooseApprove="chooseApprovers" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -215,13 +224,25 @@ defineExpose({
 </script>
 <style scoped lang="scss">
 .form-container {
-  background: white !important;
-  padding: 10px;
-  max-width: 750px;
-  min-height: 95%;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  /* 新增父级定位 */
+  display: flex;
+  flex-direction: column;
   margin: auto;
+  background: #eee !important;
+}
+
+.form-container .el-main {
+  background-color: #fff;
+  flex: 1 1 auto;
+}
+
+.form-container .el-footer {
+  background-color: #fff;
+  border-top: 2px solid #f0f0f0;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 24px;
 }
 </style>

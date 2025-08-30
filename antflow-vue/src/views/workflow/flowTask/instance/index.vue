@@ -98,9 +98,9 @@
                </template>
             </el-table-column>
          </el-table>
+         <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
+            @pagination="getList" />
       </div>
-      <pagination v-show="total > 0" :total="total" v-model:page="pageDto.page" v-model:limit="pageDto.pageSize"
-         @pagination="getList" />
       <previewDrawer v-if="visible" />
    </div>
 </template>
@@ -226,6 +226,7 @@ function handleFlowCancel(row) {
       proxy.$modal.loading();
       processOperation(pramForm).then((res) => {
          if (res.code == 200) {
+            getList();
             proxy.$modal.msgSuccess("操作成功");
             //close();
          } else {
@@ -248,6 +249,7 @@ function handleFlowRepeal(row) {
       proxy.$modal.loading();
       processOperation(pramForm).then((res) => {
          if (res.code == 200) {
+            getList();
             proxy.$modal.msgSuccess("操作成功");
             //close();
          } else {

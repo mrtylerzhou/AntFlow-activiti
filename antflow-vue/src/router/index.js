@@ -109,10 +109,165 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/startFlow/index",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/startFlow/index",
+        component: () => import("@/views/workflow/startFlow/index"),
+        name: "startFlow",
+        meta: {
+          title: "发起流程申请",
+          activeMenu: "/taskCenter",
+        },
+      },
+    ],
+  },
+  {
+    path: "/startOutside/index",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/startOutside/index",
+        component: () => import("@/views/workflow/startOutside/index"),
+        name: "startOutside",
+        meta: {
+          title: "Saas流程申请",
+          activeMenu: "/taskCenter",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/diy-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/diy-design",
+        component: () => import("@/views/workflow/flowDesign/diy"),
+        name: "diy-design",
+        meta: {
+          title: "DIY流程设计",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/lf-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/lf-design",
+        component: () => import("@/views/workflow/flowDesign/lf"),
+        name: "lf-design",
+        meta: {
+          title: "LF流程设计",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/flow-version",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flow-version",
+        component: () => import("@/views/workflow/flowList/version"),
+        name: "version",
+        meta: {
+          title: "版本管理",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/flowPreview",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowPreview",
+        component: () => import("@/views/workflow/flowPreview/index"),
+        name: "flowPreview",
+        meta: {
+          title: "流程预览",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
+    path: "/outsideMgt/preview",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/outsideMgt/preview",
+        component: () => import("@/views/workflow/outsideMgt/preview/index"),
+        name: "outsideFlowPreview",
+        meta: {
+          title: "Saas流程预览",
+          activeMenu: "/outsideMgt/outsideTemp",
+        },
+      },
+    ],
+  },
+  {
+    path: "/outsideMgt/outsideDesign",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/outsideMgt/outsideDesign",
+        component: () =>
+          import("@/views/workflow/outsideMgt/outsideDesign/index"),
+        name: "outsideFlowDesign",
+        meta: {
+          title: "Saas流程复制",
+          activeMenu: "/outsideMgt/outsideTemp",
+        },
+      },
+    ],
+  },
+  {
+    path: "/outsideMgt/app-setting",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/outsideMgt/app-setting",
+        component: () =>
+          import("@/views/workflow/outsideMgt/outsideApp/Setting/index"),
+        name: "app-setting",
+        meta: {
+          title: "应用配置",
+          activeMenu: "/outsideMgt/outsideApp",
+        },
+      },
+    ],
+  },
+  {
     path: "/workflow/instance/removeSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",
@@ -127,7 +282,7 @@ export const dynamicRoutes = [
     path: "/workflow/instance/addSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",
@@ -142,7 +297,7 @@ export const dynamicRoutes = [
     path: "/workflow/instance/changeSign",
     component: Layout,
     hidden: true,
-    permissions: ["system:user:edit"],
+    permissions: ["system"],
     children: [
       {
         path: "processNumber/:processNumber",

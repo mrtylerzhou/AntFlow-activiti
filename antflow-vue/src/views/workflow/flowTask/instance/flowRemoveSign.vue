@@ -5,7 +5,7 @@
                 <el-empty v-if="checkedUserList.length === 0" description="请点击左侧审批人节点" />
                 <div v-else>
                     <el-form :inline="true">
-                        <el-form-item label="节点名称">
+                        <el-form-item label="当前操作节点名称">
                             <el-input v-model="optFrom.nodeName" disabled style="width: 200px" />
                         </el-form-item>
                     </el-form>
@@ -24,7 +24,7 @@
                     </el-table>
                     <el-button @click="handleCancel">返回</el-button>
                     <el-button type="warning" @click="handleReset">重置操作</el-button>
-                    <el-button type="primary" @click="handleSubmit">提交修改</el-button>
+                    <el-button type="primary" @click="handleSubmit" :disabled="isCanSubmit">提交修改</el-button>
                 </div>
             </template>
         </common>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef } from 'vue';
 import common from "./components/common.vue"
 const commonRef = useTemplateRef("commonRef");
 let loading = ref(false);
@@ -40,13 +40,24 @@ let optFrom = ref(null);
 let checkedUserList = ref([]);
 let isChangedCount = 0;
 
+let isCanSubmit = ref(true);
+watch(() => optFrom.value, (newVal) => {
+    if (newVal) {
+        isCanSubmit.value = newVal.userInfos?.length == 0;
+    }
+}, { deep: true });
 /**点击流程图节点回调*/
-const handleClickNode = (data) => {
+const handleClickNode = (data, nodeUsers) => {
     optFrom.value = data.value;
-    isChangedCount = data.value.userInfos.length || 0;
-    checkedUserList.value = data.value.userInfos;
-    optFrom.value.userInfos = [];
+    isChangedCount = nodeUsers.length || 0;
+    checkedUserList.value = nodeUsers.map(item => {
+        return {
+            ...item,
+            canChange: item.isDeduplication !== 1,
+        }
+    });
 }
+
 /**移除审批人 */
 const handleDeleteUser = (row) => {
     optFrom.value.userInfos = [checkedUserList.value.find(item => item.id == row.id)]
@@ -61,6 +72,7 @@ const handleCancel = () => {
 
 const handleReset = () => {
     loading.value = true;
+    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
     checkedUserList.value = commonRef.value.originalNodeUserList;
     setTimeout(() => {
         loading.value = false;

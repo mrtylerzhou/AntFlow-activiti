@@ -8,43 +8,12 @@
 .el-drawer__header .el-drawer__title {
   font-size: 16px !important;
 }
-
-.drawer-title {
-  padding: 0px 0px 15px 20px !important;
-  color: #323232 !important;
-  font-size: 16px !important;
-  margin-bottom: 0px !important;
+.el-main {
+  padding: 0px !important;
 }
-
-.demo-drawer__content {
-  display: flex !important;
-  flex-direction: column !important;
-  height: 85vh !important;
+.el-avatar {
+  background-color: #1890ff;
 }
-
-.drawer_content {
-  flex: 1 !important;
-  height: calc(-205px + 100vh) !important;
-}
-
-.demo-drawer__content > div {
-  border-top: 1px solid #f2f2f2 !important;
-  margin-top: 15px;
-}
-
-.demo-drawer__footer {
-  padding: 10px 30px !important;
-  border-top: 1px solid #f2f2f2 !important;
-  position: fixed;
-  bottom: 0;
-  width: 670px;
-}
-
-.demo-drawer__footer .el-button {
-  float: right !important;
-  margin-right: 10px !important;
-}
-
 .el-dialog {
   width: 520px;
   border: 1px solid #dde1e5 !important;

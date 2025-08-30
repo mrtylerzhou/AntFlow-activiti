@@ -6,7 +6,7 @@
                     <template #label>
                         填写表单
                     </template>
-                    <div class="component">
+                    <div>
                         <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
                             :isPreview="false" :showSubmit="true" @handleBizBtn="handleSubmit">
                         </component>
@@ -154,13 +154,5 @@ function close() {
     font-weight: 600;
     font-size: 16px;
     color: #383838;
-}
-
-.component {
-    height: 70vh;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    overflow: auto;
-    background-color: #f5f5f7;
 }
 </style>

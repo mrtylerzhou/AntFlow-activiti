@@ -199,7 +199,7 @@
     <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
 </template>
 <script setup>
-import { ref, watch, computed, watchEffect } from 'vue'
+import { ref, watch, computed } from 'vue'
 import ConditionDialog from "../dialog/selectConditionDialog.vue";
 import { useStore } from '@/store/modules/workflow'
 import { optTypes, opt1s } from '@/utils/antflow/const'

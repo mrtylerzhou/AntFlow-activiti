@@ -2,10 +2,11 @@
     <div v-if="canShowComponent">
         <el-row>
             <el-col :span="24">
-                <span class="optional-approver-title">
+                <div class="optional-approver-title">
                     <el-icon style="color: orange">
                         <Avatar />
-                    </el-icon>自选审批人</span>
+                    </el-icon>自选审批人
+                </div>
                 <div class="optional-approver-content">
                     <div v-for="node in approvaNodeList" :key="node.id" class="optional-node-title">
                         {{ node.nodeName }}
@@ -124,14 +125,16 @@ const formatReturnData = (nodeArr) => {
 
 .optional-approver-content {
     padding: 1px 20px 0;
-    border-bottom: 1px solid #f2f2f2;
-    min-height: 160px;
+    width: 100%;
+
+    min-height: 572px;
     overflow: hidden;
     margin-bottom: 20px;
+    border-bottom: 1px solid #f2f2f2;
     border: 1px solid var(--el-border-color);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    width: 100%;
+    background-color: #fff;
 }
 
 .optional-node-title {

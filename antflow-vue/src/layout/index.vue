@@ -14,14 +14,13 @@
 </template>
 
 <script setup>
-import { ElMessageBox } from 'element-plus'
 import { useWindowSize } from '@vueuse/core'
+import { ElMessageBox } from 'element-plus'
 import Sidebar from './components/Sidebar/index.vue'
 import { AppMain, Navbar, Settings, TagsView } from './components'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
-import { getCurrentVersion } from "@/api/workflow/mock"
-
+import packageConfig from '../../package.json';
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme)
 const sideTheme = computed(() => settingsStore.sideTheme)
@@ -71,14 +70,12 @@ const timerCheckVersion = setInterval(() => {
 function checkVersion() {
   const versionSetting = settingsStore.version
   if (!versionSetting) return
-  getCurrentVersion().then(res => {
-    if (res.version !== versionSetting && res.must) {
-      clearInterval(timerCheckVersion);
-      reloadNotifier(res.version);
-    } else {
-      clearInterval(timerCheckVersion);
-    }
-  })
+  if (packageConfig.version !== versionSetting) {
+    clearInterval(timerCheckVersion);
+    reloadNotifier(packageConfig.version);
+  } else {
+    clearInterval(timerCheckVersion);
+  }
 }
 function reloadNotifier(version) {
   ElMessageBox.confirm('检测到有新版本，点击“立即刷新”获取最新版本', '发现新版本', {

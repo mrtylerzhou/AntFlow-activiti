@@ -188,7 +188,12 @@ export class NodeUtils {
       appId: null,
       deduplicationType: 1,
       effectiveStatus: 0,
-      isLowCodeFlow: 1,
+      isLowCodeFlow: 1, //是否低代码流程 0:否，1:是
+      isOutSideProcess: 0, //是否外部流程 0:否，1:是
+      viewPageButtons: {
+        viewPageStart: [],
+        viewPageOther: [],
+      },
       remark: "",
       isDel: 0,
       nodes: [

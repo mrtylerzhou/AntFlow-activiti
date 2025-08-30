@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `t_bpmn_conf`;
 CREATE TABLE if not exists `t_bpmn_conf`
 (
     `id`                  int           NOT NULL AUTO_INCREMENT COMMENT 'Auto Incr ID',
@@ -28,6 +29,7 @@ CREATE TABLE if not exists `t_bpmn_conf`
   AUTO_INCREMENT = 1
    COMMENT ='process main configuration table';
 
+DROP TABLE IF EXISTS `t_bpmn_node`;
 CREATE TABLE if not exists `t_bpmn_node`
 (
     `id`                bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -62,6 +64,7 @@ CREATE TABLE if not exists `t_bpmn_node`
   AUTO_INCREMENT = 1
    COMMENT ='the conf,s node table';
 
+DROP TABLE IF EXISTS `t_bpmn_node_to`;
 CREATE TABLE if not exists `t_bpmn_node_to`
 (
     `id`           bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -81,6 +84,7 @@ CREATE TABLE if not exists `t_bpmn_node_to`
   AUTO_INCREMENT = 1
    COMMENT ='审批流节点走向表';
 
+DROP TABLE IF EXISTS `t_bpmn_node_business_table_conf`;
 CREATE TABLE if not exists `t_bpmn_node_business_table_conf`
 (
     `id`                       int           NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -100,6 +104,7 @@ CREATE TABLE if not exists `t_bpmn_node_business_table_conf`
 ) ENGINE = InnoDB
   COMMENT ='node conf,s business conf table';
 
+DROP TABLE IF EXISTS `t_bpmn_conf_notice_template`;
 CREATE TABLE if not exists `t_bpmn_conf_notice_template`
 (
     `id`          int              NOT NULL AUTO_INCREMENT,
@@ -116,6 +121,7 @@ CREATE TABLE if not exists `t_bpmn_conf_notice_template`
   AUTO_INCREMENT = 1
    COMMENT ='process,s notice template';
 
+DROP TABLE IF EXISTS `t_bpmn_conf_notice_template_detail`;
 CREATE TABLE if not exists `t_bpmn_conf_notice_template_detail`
 (
     `id`                     int             NOT NULL AUTO_INCREMENT,
@@ -135,6 +141,7 @@ CREATE TABLE if not exists `t_bpmn_conf_notice_template_detail`
   AUTO_INCREMENT = 1
    COMMENT ='notice template detail';
 
+DROP TABLE IF EXISTS `t_bpmn_view_page_button`;
 CREATE TABLE if not exists `t_bpmn_view_page_button`
 (
     `id`          int            NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -154,6 +161,7 @@ CREATE TABLE if not exists `t_bpmn_view_page_button`
 ) ENGINE = InnoDB
    COMMENT ='审批流查看页按钮配置表';
 
+DROP TABLE IF EXISTS `t_bpmn_template`;
 CREATE TABLE if not exists `t_bpmn_template`
 (
     `id`          int    NOT NULL AUTO_INCREMENT,
@@ -179,6 +187,7 @@ CREATE TABLE if not exists `t_bpmn_template`
 ) ENGINE = InnoDB
    COMMENT ='notice template';
 
+DROP TABLE IF EXISTS `t_information_template`;
 CREATE TABLE if not exists `t_information_template`
 (
     `id`             bigint   NOT NULL AUTO_INCREMENT,
@@ -204,6 +213,7 @@ CREATE TABLE if not exists `t_information_template`
 ) ENGINE = InnoDB
    COMMENT ='消息模板';
 
+DROP TABLE IF EXISTS `bpm_business`;
 CREATE TABLE if not exists `bpm_business`
 (
     `id`               bigint NOT NULL AUTO_INCREMENT,
@@ -220,6 +230,7 @@ CREATE TABLE if not exists `bpm_business`
 ) ENGINE = InnoDB
    COMMENT ='process draft';
 
+DROP TABLE IF EXISTS `bpm_flowrun_entrust`;
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (
     `id`          int NOT NULL AUTO_INCREMENT,
@@ -241,6 +252,7 @@ CREATE TABLE if not exists `bpm_flowrun_entrust`
    COMMENT ='entrust and forward view conf table';
 
 
+DROP TABLE IF EXISTS `bpm_flowruninfo`;
 CREATE TABLE if not exists `bpm_flowruninfo`
 (
     `id`            bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -259,6 +271,7 @@ CREATE TABLE if not exists `bpm_flowruninfo`
 ) ENGINE = InnoDB
   COMMENT ='process run time info';
 
+DROP TABLE IF EXISTS `bpm_manual_notify`;
 CREATE TABLE if not exists `bpm_manual_notify`
 (
     `id`          int     NOT NULL AUTO_INCREMENT,
@@ -274,6 +287,7 @@ CREATE TABLE if not exists `bpm_manual_notify`
 ) ENGINE = InnoDB
    COMMENT ='manual notify';
 
+DROP TABLE IF EXISTS `t_bpmn_approve_remind`;
 CREATE TABLE if not exists `t_bpmn_approve_remind`
 (
     `id`          bigint NOT NULL AUTO_INCREMENT,
@@ -296,6 +310,7 @@ CREATE TABLE if not exists `t_bpmn_approve_remind`
 
 
 
+DROP TABLE IF EXISTS `t_bpmn_node_conditions_conf`;
 CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
 (
     `id`           bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -317,6 +332,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_conf`
   AUTO_INCREMENT = 1
   COMMENT ='node,s conditions conf';
 
+DROP TABLE IF EXISTS `t_bpmn_node_conditions_param_conf`;
 CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
 (
     `id`                      bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -340,6 +356,7 @@ CREATE TABLE if not exists `t_bpmn_node_conditions_param_conf`
   AUTO_INCREMENT = 1
   COMMENT ='condition params conf';
 
+DROP TABLE IF EXISTS `t_bpmn_node_sign_up_conf`;
 CREATE TABLE if not exists `t_bpmn_node_sign_up_conf`
 (
     `id`                bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -361,6 +378,7 @@ CREATE TABLE if not exists `t_bpmn_node_sign_up_conf`
 
 
 
+DROP TABLE IF EXISTS `bpm_process_dept`;
 CREATE TABLE if not exists `bpm_process_dept`
 (
     `id`           bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -381,6 +399,7 @@ CREATE TABLE if not exists `bpm_process_dept`
 ) ENGINE = InnoDB
    COMMENT ='process and department join table,used to control access right';
 
+DROP TABLE IF EXISTS `bpm_process_forward`;
 CREATE TABLE if not exists `bpm_process_forward`
 (
     `id`                 int      NOT NULL AUTO_INCREMENT,
@@ -404,6 +423,7 @@ CREATE TABLE if not exists `bpm_process_forward`
    COMMENT ='process forward table';
 
 
+DROP TABLE IF EXISTS `bpm_process_node_overtime`;
 CREATE TABLE if not exists `bpm_process_node_overtime`
 (
     `id`          bigint NOT NULL AUTO_INCREMENT,
@@ -418,6 +438,7 @@ CREATE TABLE if not exists `bpm_process_node_overtime`
 ) ENGINE = InnoDB
    COMMENT ='process approve overtime notice';
 
+DROP TABLE IF EXISTS `bpm_process_node_record`;
 CREATE TABLE if not exists `bpm_process_node_record`
 (
     `id`                 bigint NOT NULL AUTO_INCREMENT,
@@ -432,6 +453,7 @@ CREATE TABLE if not exists `bpm_process_node_record`
 ) ENGINE = InnoDB
    COMMENT ='process over time node record';
 
+DROP TABLE IF EXISTS `bpm_process_node_submit`;
 CREATE TABLE if not exists `bpm_process_node_submit`
 (
     `id`                 bigint NOT NULL AUTO_INCREMENT,
@@ -449,6 +471,7 @@ CREATE TABLE if not exists `bpm_process_node_submit`
   AUTO_INCREMENT = 1
   COMMENT ='process node submit';
 
+DROP TABLE IF EXISTS `bpm_process_notice`;
 create table bpm_process_notice
 (
     id          int auto_increment
@@ -463,6 +486,7 @@ create table bpm_process_notice
     comment 'process notice table';
 
 
+DROP TABLE IF EXISTS `bpm_taskconfig`;
 CREATE TABLE if not exists `bpm_taskconfig`
 (
     `id`            bigint NOT NULL AUTO_INCREMENT,
@@ -481,6 +505,7 @@ CREATE TABLE if not exists `bpm_taskconfig`
 
 
 
+DROP TABLE IF EXISTS `t_bpm_variable`;
 CREATE TABLE if not exists `t_bpm_variable`
 (
     `id`                       bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -503,6 +528,7 @@ CREATE TABLE if not exists `t_bpm_variable`
   AUTO_INCREMENT = 1
    COMMENT ='process variable table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_approve_remind`;
 CREATE TABLE if not exists `t_bpm_variable_approve_remind`
 (
     `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -521,6 +547,7 @@ CREATE TABLE if not exists `t_bpm_variable_approve_remind`
 ) ENGINE = InnoDB
    COMMENT ='process remind variable';
 
+DROP TABLE IF EXISTS `t_bpm_variable_button`;
 CREATE TABLE if not exists `t_bpm_variable_button`
 (
     `id`               bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -543,6 +570,7 @@ CREATE TABLE if not exists `t_bpm_variable_button`
   AUTO_INCREMENT = 1
    COMMENT ='variable button table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_message`;
 CREATE TABLE if not exists `t_bpm_variable_message`
 (
     `id`           bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -564,6 +592,7 @@ CREATE TABLE if not exists `t_bpm_variable_message`
 ) ENGINE = InnoDB
    COMMENT ='variable message table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_multiplayer`;
 CREATE TABLE if not exists `t_bpm_variable_multiplayer`
 (
     `id`              bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -587,6 +616,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer`
   AUTO_INCREMENT = 1
   COMMENT ='process multiplayer variable table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_multiplayer_personnel`;
 CREATE TABLE if not exists `t_bpm_variable_multiplayer_personnel`
 (
     `id`                      bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -607,6 +637,7 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer_personnel`
   AUTO_INCREMENT = 1
    COMMENT ='multiplayer assignees variable table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_sequence_flow`;
 CREATE TABLE if not exists `t_bpm_variable_sequence_flow`
 (
     `id`                       bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -631,6 +662,7 @@ CREATE TABLE if not exists `t_bpm_variable_sequence_flow`
   AUTO_INCREMENT = 1
    COMMENT ='sequence flow table';
 
+DROP TABLE IF EXISTS `t_bpm_variable_sign_up`;
 CREATE TABLE if not exists `t_bpm_variable_sign_up`
 (
     `id`                bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -653,6 +685,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up`
    COMMENT ='process sign up node table';
 
 
+DROP TABLE IF EXISTS `t_bpm_variable_sign_up_personnel`;
 CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
 (
     `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -675,6 +708,7 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
 
 
 
+DROP TABLE IF EXISTS `t_bpm_variable_single`;
 CREATE TABLE if not exists `t_bpm_variable_single`
 (
     `id`                  bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -700,6 +734,7 @@ CREATE TABLE if not exists `t_bpm_variable_single`
    COMMENT ='node single assignee table';
 
 
+DROP TABLE IF EXISTS `t_bpm_variable_view_page_button`;
 CREATE TABLE if not exists `t_bpm_variable_view_page_button`
 (
     `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -720,6 +755,7 @@ CREATE TABLE if not exists `t_bpm_variable_view_page_button`
    COMMENT ='start up view page button params';
 
 
+DROP TABLE IF EXISTS `bpm_verify_info`;
 CREATE TABLE if not exists `bpm_verify_info`
 (
     `id`               bigint NOT NULL AUTO_INCREMENT,
@@ -748,6 +784,7 @@ CREATE TABLE if not exists `bpm_verify_info`
 
 
 
+DROP TABLE IF EXISTS `t_default_template`;
 CREATE TABLE if not exists `t_default_template`
 (
     `id`          bigint NOT NULL AUTO_INCREMENT,
@@ -766,6 +803,7 @@ CREATE TABLE if not exists `t_default_template`
 
 
 
+DROP TABLE IF EXISTS `t_user_email_send`;
 CREATE TABLE if not exists `t_user_email_send`
 (
     `id`          int      NOT NULL AUTO_INCREMENT,
@@ -785,6 +823,7 @@ CREATE TABLE if not exists `t_user_email_send`
    COMMENT ='user email send';
 
 -- 此表和租户无关
+DROP TABLE IF EXISTS `t_method_replay`;
 create table if not exists t_method_replay
 (
     id                   int auto_increment
@@ -805,6 +844,7 @@ create index t_method_replay_NOW_TIME_index
     on t_method_replay (NOW_TIME);
 
 
+DROP TABLE IF EXISTS `t_user_entrust`;
 CREATE TABLE if not exists `t_user_entrust`
 (
     `id`            int      NOT NULL AUTO_INCREMENT,
@@ -828,6 +868,7 @@ CREATE TABLE if not exists `t_user_entrust`
 
 
 
+DROP TABLE IF EXISTS `t_user_message_status`;
 CREATE TABLE if not exists `t_user_message_status`
 (
     `id`                     int     NOT NULL AUTO_INCREMENT,
@@ -851,6 +892,7 @@ CREATE TABLE if not exists `t_user_message_status`
 ) ENGINE = InnoDB
    COMMENT ='user receive message table';
 
+DROP TABLE IF EXISTS `t_bpmn_node_button_conf`;
 CREATE TABLE if not exists `t_bpmn_node_button_conf`
 (
     `id`               bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -872,6 +914,7 @@ CREATE TABLE if not exists `t_bpmn_node_button_conf`
   AUTO_INCREMENT = 1
    COMMENT ='node button conf';
 
+DROP TABLE IF EXISTS `bpm_business_process`;
 CREATE TABLE if not exists `bpm_business_process`
 (
     `id`               bigint  NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -908,6 +951,7 @@ CREATE TABLE if not exists `bpm_business_process`
 
 
 
+DROP TABLE IF EXISTS `bpm_process_name_relevancy`;
 CREATE TABLE if not exists `bpm_process_name_relevancy`
 (
     `id`              bigint NOT NULL AUTO_INCREMENT,
@@ -925,6 +969,7 @@ CREATE TABLE if not exists `bpm_process_name_relevancy`
 
 
 
+DROP TABLE IF EXISTS `t_bpmn_node_personnel_conf`;
 CREATE TABLE if not exists `t_bpmn_node_personnel_conf`
 (
     `id`           int NOT NULL AUTO_INCREMENT COMMENT 'd',
@@ -943,6 +988,7 @@ CREATE TABLE if not exists `t_bpmn_node_personnel_conf`
   AUTO_INCREMENT = 1
   COMMENT ='node person conf table';
 
+DROP TABLE IF EXISTS `t_bpmn_node_personnel_empl_conf`;
 CREATE TABLE if not exists `t_bpmn_node_personnel_empl_conf`
 (
     `id`                    int    NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -963,6 +1009,7 @@ CREATE TABLE if not exists `t_bpmn_node_personnel_empl_conf`
   AUTO_INCREMENT = 1
   COMMENT ='node assignee employee conf';
 
+DROP TABLE IF EXISTS `bpm_process_operation`;
 CREATE TABLE IF NOT EXISTS `bpm_process_operation`
 (
     `id`           bigint NOT NULL AUTO_INCREMENT,
@@ -978,6 +1025,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_operation`
   AUTO_INCREMENT = 1
    COMMENT ='process operation table';
 
+DROP TABLE IF EXISTS `bpm_process_node_back`;
 CREATE TABLE if not exists `bpm_process_node_back`
 (
     `id`          bigint NOT NULL AUTO_INCREMENT,
@@ -995,6 +1043,7 @@ CREATE TABLE if not exists `bpm_process_node_back`
    COMMENT ='process node back table';
 
 
+DROP TABLE IF EXISTS `bpm_process_name`;
 CREATE TABLE if not exists `bpm_process_name`
 (
     `id`           bigint NOT NULL AUTO_INCREMENT,
@@ -1007,6 +1056,7 @@ CREATE TABLE if not exists `bpm_process_name`
   AUTO_INCREMENT = 1
    COMMENT ='process advanced search table';
 
+DROP TABLE IF EXISTS `t_user_message`;
 CREATE TABLE if not exists `t_user_message`
 (
       id          bigint auto_increment
@@ -1030,6 +1080,7 @@ CREATE TABLE if not exists `t_user_message`
 ) ENGINE = InnoDB
   ;
 
+DROP TABLE IF EXISTS `t_op_log`;
 CREATE TABLE IF NOT EXISTS `t_op_log`
 (
     `id`             bigint NOT NULL AUTO_INCREMENT,
@@ -1057,6 +1108,7 @@ CREATE TABLE IF NOT EXISTS `t_op_log`
 
 
 
+DROP TABLE IF EXISTS `t_bpmn_node_out_side_access_conf`;
 CREATE TABLE IF NOT EXISTS `t_bpmn_node_out_side_access_conf` (
    `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
    `bpmn_node_id` bigint NOT NULL COMMENT 'bpmn_node_id',
@@ -1074,6 +1126,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_out_side_access_conf` (
      KEY `t_bpmn_node_out_side_access_conf_idx2` (`node_mark`)
 ) ENGINE=InnoDB  COMMENT='node conf for outside access';
 
+DROP TABLE IF EXISTS `bpm_process_app_application`;
 CREATE TABLE IF NOT EXISTS  bpm_process_app_application
 (
     id               int auto_increment comment 'Primary key'
@@ -1108,6 +1161,7 @@ CREATE TABLE IF NOT EXISTS  bpm_process_app_application
 )comment 'BPM Process Application Table';
 
 
+DROP TABLE IF EXISTS `bpm_process_app_data`;
 CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
     `process_key` VARCHAR(50) COMMENT 'Process key',
@@ -1126,8 +1180,9 @@ CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
     KEY `bpm_process_app_data_idx1` (`process_key`)
 ) ENGINE=InnoDB COMMENT='App Online Process Data Table';
 
+DROP TABLE IF EXISTS `bpm_process_application_type`;
 CREATE TABLE IF NOT EXISTS `bpm_process_application_type` (
-      `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
+      `id` BIGINT AUTO_INCREMENT COMMENT 'PRIMARY KEY',
       `application_id` BIGINT COMMENT 'Application ID',
       `category_id` BIGINT COMMENT 'Category ID',
       `is_del` INT COMMENT 'Deletion flag (0 for not deleted, 1 for deleted)',
@@ -1142,6 +1197,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_application_type` (
        KEY `bpm_process_application_type_idx1` (`application_id`)
 ) ENGINE=InnoDB  COMMENT='BPM Process Application Type Table';
 
+DROP TABLE IF EXISTS `bpm_process_category`;
 CREATE TABLE IF NOT EXISTS `bpm_process_category` (
     `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
     `process_type_name` VARCHAR(255) COMMENT 'Process type name',
@@ -1154,6 +1210,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_category` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB COMMENT='BPM Process Category Table';
 
+DROP TABLE IF EXISTS `bpm_process_permissions`;
 CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
       `id` BIGINT AUTO_INCREMENT COMMENT 'Primary key',
       `user_id` varchar(64) COMMENT 'User ID',
@@ -1169,6 +1226,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_permissions` (
 ) ENGINE=InnoDB  COMMENT='process permission';
 
 
+DROP TABLE IF EXISTS `t_out_side_bpm_access_business`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      `id` BIGINT AUTO_INCREMENT,
      `business_party_id` BIGINT NOT NULL,
@@ -1193,6 +1251,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_access_business` (
      KEY `t_out_side_bpm_access_business_idx4` (`form_code`)
 ) ENGINE=InnoDB ;
 
+DROP TABLE IF EXISTS `t_out_side_bpm_admin_personnel`;
 CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
     `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Auto increment ID',
     `business_party_id` bigint DEFAULT NULL COMMENT 'Business party main table ID',
@@ -1210,6 +1269,7 @@ CREATE TABLE  IF NOT EXISTS  `t_out_side_bpm_admin_personnel` (
      KEY `t_out_side_bpm_admin_personnel_idx1` (`business_party_id`)
 ) ENGINE=InnoDB  COMMENT='Workflow External Service - Business Party Administrator Table';
 
+DROP TABLE IF EXISTS `t_out_side_bpm_business_party`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_business_party` (
        `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Auto incr id',
        `business_party_mark` varchar(50) DEFAULT NULL COMMENT 'Business party mark',
@@ -1226,6 +1286,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_business_party` (
        KEY `t_out_side_bpm_business_party_idx1` (`business_party_mark`)
 ) ENGINE=InnoDB  COMMENT='Table for storing business party information in the external BPM system';
 
+DROP TABLE IF EXISTS `t_out_side_bpm_callback_url_conf`;
 CREATE TABLE IF NOT EXISTS  t_out_side_bpm_callback_url_conf
 (
     id                    bigint auto_increment comment 'auto increment id'
@@ -1298,6 +1359,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_conditions_template` (
      KEY `t_out_side_bpm_conditions_template_idx1` (`business_party_id`)
 ) ENGINE=InnoDB  COMMENT='outside access process,condition template config';
 
+DROP TABLE IF EXISTS `t_out_side_bpmn_node_conditions_conf`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpmn_node_conditions_conf` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
     `bpmn_node_id` BIGINT NULL COMMENT 'node id',
@@ -1314,6 +1376,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpmn_node_conditions_conf` (
      KEY `t_out_side_bpmn_node_conditions_conf_idx2` (`out_side_id`)
 ) ENGINE=InnoDB  COMMENT='outside access process,business party,s conditions configs';
 
+DROP TABLE IF EXISTS `t_out_side_bpm_call_back_record`;
 CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_call_back_record` (
      `id` INT NOT NULL AUTO_INCREMENT COMMENT 'auto increment id',
      `process_number` VARCHAR(50) NULL COMMENT 'process number',
@@ -1334,6 +1397,7 @@ CREATE TABLE IF NOT EXISTS  `t_out_side_bpm_call_back_record` (
      KEY `t_out_side_bpm_call_back_record_idx2` (`tenant_id`)
 ) ENGINE=InnoDB  COMMENT='Table for storing callback records';
 
+DROP TABLE IF EXISTS `t_quick_entry`;
 CREATE TABLE IF NOT EXISTS  `t_quick_entry` (
      `id` INT AUTO_INCREMENT PRIMARY KEY,
      `title` VARCHAR(100) NOT NULL,
@@ -1348,6 +1412,7 @@ CREATE TABLE IF NOT EXISTS  `t_quick_entry` (
      INDEX `idx_route` (`route`)
 ) ENGINE=InnoDB ;
 
+DROP TABLE IF EXISTS `t_quick_entry_type`;
 CREATE TABLE  IF NOT EXISTS `t_quick_entry_type` (
       `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
       `quick_entry_id` BIGINT NOT NULL,
@@ -1360,6 +1425,7 @@ CREATE TABLE  IF NOT EXISTS `t_quick_entry_type` (
 
 ) ENGINE=InnoDB  COMMENT='quick entry type config';
 
+DROP TABLE IF EXISTS `t_sys_version`;
 CREATE TABLE IF NOT EXISTS  `t_sys_version` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -1380,6 +1446,7 @@ CREATE TABLE IF NOT EXISTS  `t_sys_version` (
     INDEX `idx_version` (`version`) -- Optional index for improved performance on `version` queries
 ) ENGINE=InnoDB  COMMENT='sys version control';
 
+DROP TABLE IF EXISTS `t_bpmn_node_role_conf`;
 CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
      `bpmn_node_id` BIGINT NOT NULL COMMENT 'node id',
@@ -1397,6 +1464,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_role_conf` (
      KEY `t_bpmn_node_role_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='specified role approver configs';
 
+DROP TABLE IF EXISTS `t_bpmn_node_role_outside_emp_conf`;
 create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
 (
     id          int auto_increment comment 'auto incr id'
@@ -1415,6 +1483,7 @@ create table if NOT EXISTS t_bpmn_node_role_outside_emp_conf
     comment 'approver info for a specified outsie business party''s specified role';
 
 
+DROP TABLE IF EXISTS `t_bpmn_node_loop_conf`;
 CREATE TABLE IF NOT EXISTS  `t_bpmn_node_loop_conf` (
    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
    `bpmn_node_id` BIGINT NULL COMMENT 'node id',
@@ -1434,6 +1503,7 @@ CREATE TABLE IF NOT EXISTS  `t_bpmn_node_loop_conf` (
    KEY `t_bpmn_node_loop_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='loop approvement config';
 
+DROP TABLE IF EXISTS `t_bpmn_node_assign_level_conf`;
 CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
     `bpmn_node_id` BIGINT NULL COMMENT 'node id',
@@ -1450,6 +1520,7 @@ CREATE TABLE IF NOT EXISTS `t_bpmn_node_assign_level_conf` (
     KEY `t_bpmn_node_assign_level_conf_idx1` (`bpmn_node_id`)
 ) ENGINE=InnoDB  COMMENT='specified level approvement config';
 
+DROP TABLE IF EXISTS `t_bpmn_node_hrbp_conf`;
 CREATE TABLE `t_bpmn_node_hrbp_conf` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
   `bpmn_node_id` BIGINT NULL COMMENT 'node id',
@@ -1467,6 +1538,7 @@ CREATE TABLE `t_bpmn_node_hrbp_conf` (
 
 
 
+DROP TABLE IF EXISTS `t_bpmn_conf_lf_formdata`;
 create table t_bpmn_conf_lf_formdata
 (
 	id bigint auto_increment,
@@ -1482,8 +1554,8 @@ create table t_bpmn_conf_lf_formdata
 		primary key (id),
 	 KEY `t_bpmn_conf_lf_formdata__idx1` (`bpmn_conf_id`)
 )ENGINE=InnoDB ;
-
-create table if not exists t_bpmn_conf_lf_formdata_field
+DROP TABLE IF EXISTS t_bpmn_conf_lf_formdata_field;
+create table t_bpmn_conf_lf_formdata_field
 (
 	id bigint auto_increment,
 	bpmn_conf_id bigint null,
@@ -1505,7 +1577,8 @@ create table if not exists t_bpmn_conf_lf_formdata_field
 )ENGINE=InnoDB  comment '低代码配置字段明细表';
 
 
-create table if not exists t_bpmn_node_lf_formdata_field_control
+DROP TABLE IF EXISTS t_bpmn_node_lf_formdata_field_control;
+create table t_bpmn_node_lf_formdata_field_control
 (
 	id bigint auto_increment,
 	node_id bigint not null,
@@ -1529,6 +1602,7 @@ create table if not exists t_bpmn_node_lf_formdata_field_control
 -- ----------------------------
 -- 此表为路由表,通过lf.main.table.count控制,默认为2个,索引从0开始,需要自己手动创建
 -- ----------------------------
+DROP TABLE IF EXISTS t_lf_main;
 create table t_lf_main
 (
 	id bigint auto_increment,
@@ -1549,6 +1623,7 @@ create table t_lf_main
 -- ----------------------------
 -- 此表为路由表,通过lf.field.table.count控制,默认为10个,索引从0开始,需要自己手动创建
 -- ----------------------------
+DROP TABLE IF EXISTS t_lf_main_field;
 create table t_lf_main_field
 (
 	id bigint auto_increment,
@@ -1576,6 +1651,7 @@ create table t_lf_main_field
      KEY `t_lf_main_field_idx3` (`field_id`)
 )ENGINE=InnoDB  comment '低代码表单字段值表';
 
+DROP TABLE IF EXISTS t_dict_main;
 create table t_dict_main
 (
     id          bigint auto_increment comment '字典主键'
@@ -1593,6 +1669,7 @@ create table t_dict_main
         unique (dict_type)
 ) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
 
+DROP TABLE IF EXISTS t_dict_data;
 create table t_dict_data
 (
     id          bigint auto_increment comment '字典编码'
@@ -1617,14 +1694,10 @@ create table t_dict_data
     KEY `t_dict_data_idx2` (`dict_second_level_type`)
 ) comment '字典表子表,用于存储字典值,一般现有系统都有自己的字典表,可以替换掉,给出sql能查出需要的数据就可以了';
 
-ALTER TABLE bpm_process_node_submit ADD INDEX idx_processInstance_Id(processInstance_Id);
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-
-
-
-
+DROP TABLE IF EXISTS t_bpmn_node_labels;
 create table t_bpmn_node_labels
 (
 	id bigint auto_increment,
@@ -1646,6 +1719,7 @@ comment 'process node labels,to store additional custom information';
 create index indx_node_id
 	on t_bpmn_node_labels (nodeid);
 
+DROP TABLE IF EXISTS t_bpm_dynamic_condition_choosen;
 create table t_bpm_dynamic_condition_choosen
 (
 	id bigint auto_increment,
@@ -1658,10 +1732,10 @@ create table t_bpm_dynamic_condition_choosen
      KEY `t_bpm_dynamic_condition_choosen_idx2` (`node_id`)
 )
 comment '流程动态条件选择条件记录表';
-create index indx_process_number
-    on t_bpm_dynamic_condition_choosen (process_number);
 
 
+
+DROP TABLE IF EXISTS t_bpmn_node_customize_conf;
 CREATE TABLE `t_bpmn_node_customize_conf` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'auto incr id',
   `bpmn_node_id` BIGINT NULL COMMENT 'node id',
@@ -1678,7 +1752,7 @@ CREATE TABLE `t_bpmn_node_customize_conf` (
 ) ENGINE=InnoDB  COMMENT='customize config entity';
 
 
-
+DROP TABLE IF EXISTS t_bpmn_node_form_related_user_conf;
 create table t_bpmn_node_form_related_user_conf
 (
     id              bigint auto_increment comment 'auto incr id'
@@ -1699,7 +1773,7 @@ create table t_bpmn_node_form_related_user_conf
     comment 'specified role approver configs';
 
 
-
+DROP TABLE IF EXISTS t_bpmn_node_udr_conf;
 create table t_bpmn_node_udr_conf
 (
     id              bigint auto_increment comment 'auto incr id'
@@ -1735,6 +1809,8 @@ CREATE TABLE `t_user_role`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 19  COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS t_department;
 create table t_department
 (
     id          int auto_increment comment 'Primary key'
@@ -1756,9 +1832,8 @@ create table t_department
 ) comment 'department info';
 
 
-
 DROP TABLE IF EXISTS `t_user`;
-create table if not exists t_user
+create table t_user
 (
     id             int auto_increment
         primary key,
@@ -1776,15 +1851,12 @@ create table if not exists t_user
 );
 
 
-
 DROP TABLE IF EXISTS `t_role`;
 CREATE TABLE `t_role`  (
      `id` int NOT NULL AUTO_INCREMENT,
      `role_name` varchar(255)  NULL DEFAULT NULL,
      PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 9  ROW_FORMAT = Dynamic;
-
-
 
 
 -- ----------------------------
@@ -1861,7 +1933,8 @@ CREATE TABLE `t_biz_refund`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1  ROW_FORMAT = Dynamic;
 
-CREATE TABLE IF NOT EXISTS  `t_biz_account_apply`
+DROP TABLE IF EXISTS t_biz_account_apply;
+CREATE TABLE `t_biz_account_apply`
 (
     `id`                 int NOT NULL AUTO_INCREMENT,
     `account_type`       tinyint   DEFAULT NULL COMMENT 'account type',

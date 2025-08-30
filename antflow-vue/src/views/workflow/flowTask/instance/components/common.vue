@@ -1,6 +1,11 @@
 <template>
     <div class="app-container">
-        <el-scrollbar height="83vh">
+        <el-scrollbar :style="{
+            height: `calc(${height}px - ${scrollOffset.height}px)`,
+            width: `calc(${width}px - ${scrollOffset.width}px)`,
+            minHeight: '400px',
+            minWidth: '800px'
+        }">
             <el-row>
                 <el-col :span="24">
                     <div class="mb10">
@@ -51,6 +56,7 @@
 
 <script setup>
 import { provide, readonly, onBeforeMount } from 'vue';
+import { useWindowSize } from '@vueuse/core'
 import { processOperation } from '@/api/workflow/index';
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import { useStore } from '@/store/modules/workflow';
@@ -59,6 +65,11 @@ const router = useRouter();
 const route = useRoute()
 const queryForm = route.query;
 let originalNodeUserList = ref([]);
+const { width, height } = useWindowSize()
+const scrollOffset = reactive({
+    height: 120,
+    width: 230
+})
 let emits = defineEmits(["clickNodeOpt"]);
 
 let store = useStore()
@@ -107,8 +118,7 @@ const clickNode = (data) => {
     optFrom.value.nodeName = data.nodeName;
     optFrom.value.nodeId = data.Id;
     optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX 
-    //isChangedCount = data.params?.assigneeList.length || 0;
-    optFrom.value.userInfos = data.params?.assigneeList
+    const nodeUserList = data.params?.assigneeList
         .map(item => {
             return {
                 id: item.assignee,
@@ -117,9 +127,9 @@ const clickNode = (data) => {
             }
         }) || [];
 
-    originalNodeUserList.value = optFrom.value.userInfos;
+    originalNodeUserList.value = nodeUserList;
     //.filter((c) => c.isDeduplication == 0)
-    emits("clickNodeOpt", optFrom);
+    emits("clickNodeOpt", optFrom, nodeUserList);
 }
 provide("onClickNode", clickNode)
 const handleCancel = () => {
