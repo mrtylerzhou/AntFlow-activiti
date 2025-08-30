@@ -1,6 +1,11 @@
 <template>
     <div class="app-container">
-        <el-scrollbar height="83vh">
+        <el-scrollbar :style="{
+            height: `calc(${height}px - ${scrollOffset.height}px)`,
+            width: `calc(${width}px - ${scrollOffset.width}px)`,
+            minHeight: '400px',
+            minWidth: '800px'
+        }">
             <el-row>
                 <el-col :span="24">
                     <div class="mb10">
@@ -51,6 +56,7 @@
 
 <script setup>
 import { provide, readonly, onBeforeMount } from 'vue';
+import { useWindowSize } from '@vueuse/core'
 import { processOperation } from '@/api/workflow/index';
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import { useStore } from '@/store/modules/workflow';
@@ -59,6 +65,11 @@ const router = useRouter();
 const route = useRoute()
 const queryForm = route.query;
 let originalNodeUserList = ref([]);
+const { width, height } = useWindowSize()
+const scrollOffset = reactive({
+    height: 120,
+    width: 230
+})
 let emits = defineEmits(["clickNodeOpt"]);
 
 let store = useStore()

@@ -24,7 +24,7 @@ const imgSrc = computed(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .tabs-header-img {
     position: absolute;
     top: 0;

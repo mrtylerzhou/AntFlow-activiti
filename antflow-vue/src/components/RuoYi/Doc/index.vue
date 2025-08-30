@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('http://doc.ruoyi.vip/ruoyi-vue')
+const url = ref('http://antflow.top/')
 
 function goto() {
   window.open(url.value)
