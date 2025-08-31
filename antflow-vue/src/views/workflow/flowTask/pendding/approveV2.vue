@@ -74,9 +74,10 @@
         <el-container>
             <div class="layout-middle" id="fullscreen">
                 <el-scrollbar>
-                    <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
-                    <div v-if="approveFormDataConfig">
-                        <el-tabs v-model="activeName" @tab-click="handleClick" class="content-tabs">
+                    <div style="min-width:650px;">
+                        <el-empty v-if="!approveFormDataConfig || dataList.length === 0"
+                            description="这里空空的,请点击左侧代办列表" />
+                        <el-tabs v-else v-model="activeName" @tab-click="handleClick" class="content-tabs">
                             <el-tab-pane label="表单信息" name="baseTab">
                                 <div v-if="activeName === 'baseTab'">
                                     <ApporveForm :approveFormData="approveFormDataConfig"
