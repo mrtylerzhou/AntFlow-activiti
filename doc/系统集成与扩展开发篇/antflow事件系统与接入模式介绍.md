@@ -28,8 +28,7 @@ antflow自定义（DIY）流程需要实现FormOperationAdaptor，这是一个�
 
 低代码实现原理是将低代码本身做为一个DIY流程，实现类是LowFlowApprovalService，由于它是一个通用的处理所有低代码流程的一个服务，但是有些低代码流程又需要处理一定的业务逻辑，因此设计了LFFormOperationAdaptor
 
-需要注意的是实现此类的服务不能再加 `@ActivitiServiceAnno`注解了，而是使用spring 普通的service注解，和FormOperationAdaptor api都相同，差异在于实现了LFFormOperationAdaptor的服务并不能自动确定是哪个低代码流程，因此
-需要从BusinessDataVo中取出formcode判断和当前要处理业务的formCode是否相同，只有相同才处理业务！
+需要注意的是实现此类的服务不能再加 `@ActivitiServiceAnno`注解了，而是使用spring 普通的service注解，和FormOperationAdaptor api都相同,需要注意的是实现了LFFormOperationAdaptor的服务的名字需要和低代码流程的formcode保持一致,参看TestLfFormOperationAdaptor
 
 ### 1.3全局钩子函数
 

@@ -8,7 +8,10 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.lowflow.service.LFFormOperationAdaptor;
 import org.openoa.engine.lowflow.vo.UDLFApplyVo;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -18,9 +21,10 @@ import java.util.List;
 @Slf4j
 @Aspect
 @Component
-public class LowFlowApprovalServiceAspect {
+public class LowFlowApprovalServiceAspect implements ApplicationContextAware {
     @Autowired(required = false)
     private List<LFFormOperationAdaptor> lfFormOperationAdaptors;
+    private ApplicationContext applicationContext;
 
     @Around("execution(* org.openoa.engine.lowflow.service.LowFlowApprovalService.previewSetCondition(..))")
     public Object aroundPreviewSetCondition(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -78,13 +82,26 @@ public class LowFlowApprovalServiceAspect {
                 throw new AFBizException("切面方法错误,请联系管理员!");
             }
             UDLFApplyVo arg = null;
+            String formCode="";
             if(!"finishData".equals(methodName)){
                 arg=(UDLFApplyVo)args[0];
+                formCode=arg.formCode;
+            }else{
+                formCode=((BusinessDataVo)args[0]).formCode;
             }
             if(CollectionUtils.isEmpty(lfFormOperationAdaptors)){
                 lfFormOperationAdaptors=new ArrayList<>();
             }
+
             for (LFFormOperationAdaptor lfFormOperationAdaptor : lfFormOperationAdaptors) {
+                String[] beanNamesForType = applicationContext.getBeanNamesForType(lfFormOperationAdaptor.getClass());
+                if(beanNamesForType.length == 0){
+                    continue;
+                }
+                String beanName=beanNamesForType[0];
+                if(!formCode.equals(beanName)){
+                    continue;
+                }
                 if ("queryData".equals(methodName)) {
                     // 查询前处理
                     lfFormOperationAdaptor.queryData(arg);
@@ -136,5 +153,10 @@ public class LowFlowApprovalServiceAspect {
             log.error("[LowFlowAOP] !!! 方法 {} 抛出异常: {}", methodName, t.getMessage(), t);
             throw t;
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext=applicationContext;
     }
 }
