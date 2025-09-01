@@ -36,8 +36,8 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public BizLeaveTimeVo initData(BizLeaveTimeVo vo) {
-        return null;
+    public void initData(BizLeaveTimeVo vo) {
+
     }
 
 
@@ -50,14 +50,14 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
     }
 
     @Override
-    public BizLeaveTimeVo queryData(BizLeaveTimeVo vo) {
+    public void queryData(BizLeaveTimeVo vo) {
         BizLeaveTime leaveTime = bizLeaveTimeMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(leaveTime,vo);
-        return vo;
+
     }
 
     @Override
-    public BizLeaveTimeVo submitData(BizLeaveTimeVo vo) {
+    public void submitData(BizLeaveTimeVo vo) {
         BizLeaveTime leaveTime=new BizLeaveTime();
         BeanUtils.copyProperties(vo,leaveTime);
 
@@ -71,11 +71,11 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
         vo.setProcessTitle("请假申请");
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(BizLeaveTime.class.getSimpleName());
-        return vo;
+
     }
 
     @Override
-    public BizLeaveTimeVo consentData(BizLeaveTimeVo vo) {
+    public void consentData(BizLeaveTimeVo vo) {
         if (vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode())){
             BizLeaveTime leaveTime = new BizLeaveTime();
@@ -84,7 +84,7 @@ public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTime
             leaveTime.setId(id);
             bizLeaveTimeMapper.updateById(leaveTime);
         }
-        return vo;
+
     }
 
     @Override

@@ -3,10 +3,10 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 
 @Getter
-public enum LFControlTypeEnum {
+public enum LFControlTypeEnum implements AfEnumBase{
     SELECT(1,"select","下拉框"),
     ;
-    private final int code;
+    private final Integer code;
     private final String name;
     private final String desc;
 

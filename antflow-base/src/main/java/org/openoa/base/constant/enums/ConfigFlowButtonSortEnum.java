@@ -11,7 +11,7 @@ import lombok.Getter;
  * @return
  * @Version 1.0
  */
-public enum ConfigFlowButtonSortEnum {
+public enum ConfigFlowButtonSortEnum implements AfEnumBase {
     SUBMIT(1, "提交", 1),
     AGAIN_SUBMIT(2, "重新提交", 2), // 2重新提交
     AGREED(3, "同意", 10),
@@ -23,13 +23,14 @@ public enum ConfigFlowButtonSortEnum {
     CHANGE_TYPE(11, "变更处理人", 4),
     END_TYPE(12, "终止", 5),
     ADD_APPROVAL_PEOPLE(13, "添加审批人", 6),
-    FORWARDING(15, "转发", 12),
+    FORWARDING(15, "抄送", 12),
     BACK_EDIT(18, "退回修改", 8),
     BUTTON_TYPE_JP(19, "加批", 19),
     SCAN_HELP(20, "扫码帮助", 20),
     ZB(21, "转办", 21),
     CHOOSE_ASSIGNEE(22,"自选审批人",22),
-    BACK_TO_ANY_NODE(23,"退回任意节点",23)
+    BACK_TO_ANY_NODE(23,"退回任意节点",23),
+    PROCESS_DRAW_BACK(29,"撤回",29),
             ;
     @Getter
     private final Integer code;
@@ -40,7 +41,7 @@ public enum ConfigFlowButtonSortEnum {
     @Getter
     private final Integer sort;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

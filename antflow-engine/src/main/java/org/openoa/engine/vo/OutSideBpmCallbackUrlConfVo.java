@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -118,7 +118,7 @@ public class OutSideBpmCallbackUrlConfVo implements Serializable {
     /**
      * api admin list
      */
-    private List<Employee> interfaceAdmins;
+    private List<DetailedUser> interfaceAdmins;
 
     /**
      * bpmn name

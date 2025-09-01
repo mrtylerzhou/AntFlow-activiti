@@ -17,7 +17,6 @@ import org.openoa.base.util.DateUtil;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableApproveRemindBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
@@ -115,20 +114,20 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
         String emplId = bpmnTimeoutReminderTaskVo.getAssignee();
 
         //todo this module should be redesigned
-        Employee employee = employeeService.getEmployeeDetailById(emplId);
+        DetailedUser detailedUser = employeeService.getEmployeeDetailById(emplId);
 
 
         //format message content
-        InformationTemplateVo informationTemplateVo = getInformationTemplateVo(bpmnTimeoutReminderVariableVo, bpmnApproveRemindVo, employee);
+        InformationTemplateVo informationTemplateVo = getInformationTemplateVo(bpmnTimeoutReminderVariableVo, bpmnApproveRemindVo, detailedUser);
 
         //send email
-        sendMail(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee, informationTemplateVo);
+        sendMail(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
 
         //send message and app push
-        sendMessageAndPush(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee, informationTemplateVo);
+        sendMessageAndPush(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
 
         //set inside message
-        insertUserMessage(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee, informationTemplateVo);
+        insertUserMessage(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
     }
     /**
      * query remind variable to map
@@ -212,8 +211,8 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
                 //set applicant,applydate,apply time
 
-                Employee employee = employeeService.getEmployeeDetailById(val.getCreateUser());
-                bpmnTimeoutReminderVariableVo.setStartUser(employee.getUsername());
+                DetailedUser detailedUser = employeeService.getEmployeeDetailById(val.getCreateUser());
+                bpmnTimeoutReminderVariableVo.setStartUser(detailedUser.getUsername());
                 bpmnTimeoutReminderVariableVo.setApplyDate(DateUtil.SDF_DATE_PATTERN.format(val.getCreateTime()));
                 bpmnTimeoutReminderVariableVo.setApplyTime(DateUtil.SDF_DATETIME_PATTERN.format(val.getCreateTime()));
 
@@ -221,9 +220,10 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
                 if (!ObjectUtils.isEmpty(bpmVariable.getProcessStartConditions())) {
                     BpmnStartConditionsVo bpmnStartConditionsVo = JSON.parseObject(bpmVariable.getProcessStartConditions(), BpmnStartConditionsVo.class);
-                    if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmplId())) {
-                        employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmplId());
-                        bpmnTimeoutReminderVariableVo.setApprovalEmpl(employee.getUsername());
+                    if (!ObjectUtils.isEmpty(bpmnStartConditionsVo) && !ObjectUtils.isEmpty(bpmnStartConditionsVo.getApprovalEmpls())) {
+                        //todo
+                        //employee = employeeService.getEmployeeDetailById(bpmnStartConditionsVo.getApprovalEmpls());
+                        bpmnTimeoutReminderVariableVo.setApprovalEmpl(detailedUser.getUsername());
                     }
                 }
 
@@ -282,11 +282,11 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      *
      * @param bpmnTimeoutReminderVariableVo
      * @param bpmnApproveRemindVo
-     * @param employee
+     * @param detailedUser
      * @return
      */
     private InformationTemplateVo getInformationTemplateVo(BpmnTimeoutReminderVariableVo bpmnTimeoutReminderVariableVo,
-                                                           BpmnApproveRemindVo bpmnApproveRemindVo, Employee employee) {
+                                                           BpmnApproveRemindVo bpmnApproveRemindVo, DetailedUser detailedUser) {
         Map<Integer, String> wildcardCharacterMap = Maps.newHashMap();
         wildcardCharacterMap.put(ONE_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getProcessName());//process name
         wildcardCharacterMap.put(TWO_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getProcessNum());//process number
@@ -294,7 +294,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
         wildcardCharacterMap.put(FOUR_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getApprovalEmpl());//
         wildcardCharacterMap.put(FIVE_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getApplyDate());//apply date
         wildcardCharacterMap.put(SIX_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getApplyTime());//apply time
-        wildcardCharacterMap.put(EIGHT_CHARACTER.getCode(), employee.getUsername());//current approver
+        wildcardCharacterMap.put(EIGHT_CHARACTER.getCode(), detailedUser.getUsername());//current approver
         return informationTemplateUtils.translateInformationTemplate(InformationTemplateVo
                 .builder()
                 .id(bpmnApproveRemindVo.getTemplateId())
@@ -308,12 +308,12 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      * @param emailUrl
      * @param appUrl
      * @param emplId
-     * @param employee
+     * @param detailedUser
      * @param informationTemplateVo
      */
     private void sendMail(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                          Employee employee, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
+                          DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
+        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
                 informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent());
         UserMsgUtils.sendMessagesNoUserMessage(userMsgVo, MAIL);
     }
@@ -325,18 +325,18 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      * @param emailUrl
      * @param appUrl
      * @param emplId
-     * @param employee
+     * @param detailedUser
      * @param title
      * @param content
      * @return
      */
     private UserMsgVo getUserMsgVo(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                                   Employee employee, String title, String content) {
+                                   DetailedUser detailedUser, String title, String content) {
         return UserMsgVo
                 .builder()
                 .userId(emplId)
-                .email(employee.getEmail())
-                .mobile(employee.getMobile())
+                .email(detailedUser.getEmail())
+                .mobile(detailedUser.getMobile())
                 .title(title)
                 .content(content)
                 .emailUrl(emailUrl)
@@ -447,12 +447,12 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      * @param emailUrl
      * @param appUrl
      * @param emplId
-     * @param employee
+     * @param detailedUser
      * @param informationTemplateVo
      */
     private void insertUserMessage(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                                   Employee employee, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
+                                   DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
+        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
                 informationTemplateVo.getSystemTitle(), informationTemplateVo.getSystemContent());
         UserMsgUtils.insertUserMessage(userMsgVo);
     }
@@ -464,12 +464,12 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      * @param emailUrl
      * @param appUrl
      * @param emplId
-     * @param employee
+     * @param detailedUser
      * @param informationTemplateVo
      */
     private void sendMessageAndPush(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                                    Employee employee, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, employee,
+                                    DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
+        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
                 StringUtils.EMPTY, informationTemplateVo.getNoteContent());
         UserMsgUtils.sendMessagesNoUserMessage(userMsgVo, MESSAGE, PUSH);
     }

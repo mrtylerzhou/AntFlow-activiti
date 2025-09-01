@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum JumpUrlEnum {
+public enum JumpUrlEnum implements AfEnumBase{
 
     PROCESS_APPROVE(1, "流程审批页"),
     PROCESS_VIEW(2, "流程查看页"),

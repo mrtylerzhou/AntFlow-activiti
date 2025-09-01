@@ -57,7 +57,7 @@
                                     </div>
                                 </div>
                             </el-card>
-                            <div style="width: 100%;">
+                            <div style="width: 100%;" v-if="dataList.length !== 0">
                                 <el-button :loading="loadingMore" :disabled="pageDto.page == 1" type="primary"
                                     style="width: 45%;float: left;"
                                     @click.prevent="loadMoreFlowList('before')">上一页</el-button>
@@ -74,9 +74,10 @@
         <el-container>
             <div class="layout-middle" id="fullscreen">
                 <el-scrollbar>
-                    <el-empty v-if="!approveFormDataConfig" description="这里空空的,请点击左侧代办列表" />
-                    <div v-if="approveFormDataConfig">
-                        <el-tabs v-model="activeName" @tab-click="handleClick" class="content-tabs">
+                    <div style="min-width:650px;">
+                        <el-empty v-if="!approveFormDataConfig || dataList.length === 0"
+                            description="这里空空的,请点击左侧代办列表" />
+                        <el-tabs v-else v-model="activeName" @tab-click="handleClick" class="content-tabs">
                             <el-tab-pane label="表单信息" name="baseTab">
                                 <div v-if="activeName === 'baseTab'">
                                     <ApporveForm :approveFormData="approveFormDataConfig"
@@ -185,7 +186,7 @@ const toggleFlowActive = (data, index) => {
     activeIndex.value = index;
     approveFormDataConfig.value = {
         ...approveFormDataConfig.value,
-        formCode: data.processCode,
+        formCode: data.processKey,
         processNumber: data.processNumber,
         taskId: data.taskId,
         isOutSideAccess: data.isOutSideProcess,
@@ -270,6 +271,8 @@ window.onload = function () {
 
 .layout-middle .content-tabs {
     padding: 10px;
+    min-width: 680px;
+    overflow: auto;
 }
 
 .list-flex-cards {

@@ -6,6 +6,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.base.vo.BusinessDataVo;
@@ -35,6 +36,8 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
     private BpmFlowrunEntrustService bpmFlowrunEntrustService;
+    @Autowired
+    private BpmVariableService bpmVariableService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -60,6 +63,7 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
                 taskMgmtMapper.updateaActinst(taskMgmtVO);
                 taskMgmtMapper.updateaTaskinst(taskMgmtVO);
                 taskMgmtMapper.updateTask(taskMgmtVO);
+                bpmVariableService.updateAssignee(bpmBusinessProcess.getBusinessNumber(),taskDefKey,assignee,BaseIdTranStruVo.builder().id(user).name(userName+"*").build());
             }
 
         }
@@ -68,5 +72,6 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_CHANGE_ASSIGNEE);
+        addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_CHANGE_ASSIGNEE);
     }
 }

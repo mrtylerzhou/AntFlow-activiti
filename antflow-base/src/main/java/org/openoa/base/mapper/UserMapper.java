@@ -3,7 +3,7 @@ package org.openoa.base.mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.TaskMgmtVO;
 
@@ -21,16 +21,16 @@ public interface UserMapper {
     //must be implemented
     List<BaseIdTranStruVo> queryByIds(@Param("userIds") Collection<String> userIds);
     //must be implemented
-    Employee getEmployeeDetailById(@Param("employeeId") String id);
+    DetailedUser getEmployeeDetailById(@Param("employeeId") String id);
     //must be implemented
-    List<Employee> getEmployeeDetailByIds(@Param("employeeIds")Collection<String> ids);
+    List<DetailedUser> getEmployeeDetailByIds(@Param("employeeIds")Collection<String> ids);
     long checkEmployeeEffective(@Param("employeeId") String id);
 
     //if you want to use level leader sign functions,you must implement it
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndTier(@Param("employeeId") String employeeId,@Param("tier") Integer tier);
     List<BaseIdTranStruVo> getLevelLeadersByEmployeeIdAndEndGrade(@Param("employeeId") String employeeId,@Param("endGrade") Integer tier);
-    BaseIdTranStruVo getHrpbByEmployeeId(@Param("employeeId") String employeeId);
-    BaseIdTranStruVo getDirectLeaderByEmployeeId(@Param("employeeId") String employeeId);
+    List<BaseIdTranStruVo> queryHrpbByEmployeeIds(@Param("employeeIds") List<String> employeeId);
+    List<BaseIdTranStruVo> queryDirectLeaderByEmployeeIds(@Param("employeeIds") List<String> employeeIds);
 
     LinkedList<BaseIdTranStruVo> selectAll(@Param("roleId") Integer roleId);
 
@@ -38,4 +38,5 @@ public interface UserMapper {
 
     BaseIdTranStruVo getLeaderByLeventDepartment(@Param("startUserId") String startUserId,@Param("assignLevelGrade")Integer departmentLevel);
 
+    List<BaseIdTranStruVo> queryDepartmentLeaderByIds(List<String> employeeIds);
 }

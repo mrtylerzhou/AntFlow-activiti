@@ -9,7 +9,7 @@ import java.util.Objects;
  * @Author tylerzhou
  * Date on 2021/8/18
  */
-public enum MsgProcessEventEnum {
+public enum MsgProcessEventEnum implements AfEnumBase{
     NULL(0, "空"),
     PROCESS_SUBMIT(1, "流程提交操作"),
     PROCESS_RESUBMIT(2, "重新提交"),

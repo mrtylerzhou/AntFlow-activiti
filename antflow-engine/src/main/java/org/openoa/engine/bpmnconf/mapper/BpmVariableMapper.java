@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.BpmVariable;
+import org.openoa.common.entity.BpmVariableMultiplayer;
 
 import java.util.List;
 
@@ -14,4 +15,9 @@ public interface BpmVariableMapper extends BaseMapper<BpmVariable> {
                                         @Param("nodeId") String nodeId);
     List<String> getNodeIdsByeElementId(@Param("processNum") String processNum,
                                       @Param("elementId") String elementId);
+    void resetUnderStatusByProcessNumber(@Param("processNum")String processNum);
+    void invalidNodeAssignee(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee);
+    List<BpmVariableMultiplayer> querymultiplayersbyprocesselementid(@Param("processNum") String processNum, @Param("elementId")String elementId);
+    int updateSingle(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
+    int updateMultiPlayer(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
 }

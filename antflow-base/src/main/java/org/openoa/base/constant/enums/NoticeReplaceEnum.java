@@ -3,7 +3,7 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-public enum NoticeReplaceEnum {
+public enum NoticeReplaceEnum implements AfEnumBase{
 
     PROCESS_TYPE(1, "流程类型", "processType", false),
     PROCESS_NAME(2, "流程名称", "processName", false),

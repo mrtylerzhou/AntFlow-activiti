@@ -32,7 +32,7 @@ public class OutSideBpmAccessEmbedNodeVo implements Serializable {
     /**
      * node assignee list
      */
-    private List<Long> assigneeIdList;
+    private List<String> assigneeIdList;
 
 
 }

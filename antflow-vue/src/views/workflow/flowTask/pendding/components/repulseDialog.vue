@@ -8,7 +8,7 @@
                     <el-col :span="24">
                         <el-form-item label="退回类型" prop="backToModifyType">
                             <el-radio-group v-model="repulseForm.backToModifyType">
-                                <el-radio-button value=1>
+                                <el-radio-button value="1">
                                     上一节点
                                     <el-popover placement="top-start" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible1" effect="dark" content="退回上一个审批节点">
@@ -19,7 +19,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value=2>
+                                <el-radio-button value="2">
                                     发起人
                                     <el-popover placement="top-start" title="【重新流转】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible2" effect="dark"
@@ -31,7 +31,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value=3>
+                                <el-radio-button value="3">
                                     发起人
                                     <el-popover placement="top-start" title="【回到当前节点】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible3" effect="dark"
@@ -43,7 +43,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value=4>
+                                <el-radio-button value="4">
                                     任意节点
                                     <el-popover placement="top-start" title="【回到下一节点】" :width="200" aria-hidden="true"
                                         :visible="openVisible && tipsVisible4" effect="dark"
@@ -55,7 +55,7 @@
                                         </template>
                                     </el-popover>
                                 </el-radio-button>
-                                <el-radio-button value=5>
+                                <el-radio-button value="5">
                                     任意节点
                                     <el-popover placement="top-start" :width="200" title="【回到当前节点】" aria-hidden="true"
                                         :visible="openVisible && tipsVisible5" effect="dark"
@@ -88,12 +88,11 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <div class="mb-4">
-                    <el-button type="warning" plain round v-for="btnTxt in quickAnswerList"
-                        @click="repulseForm.remark = btnTxt">
+                <span v-for="btnTxt in quickAnswerList">
+                    <el-button type="warning" plain round @click="repulseForm.remark = btnTxt">
                         {{ btnTxt }}
                     </el-button>
-                </div>
+                </span>
             </el-form>
             <template #footer>
                 <div class="dialog-footer">
@@ -124,7 +123,7 @@ const emits = defineEmits(['update:visible', 'clickConfirm']);
 let checkedFlowNode = ref(null);
 const repulseFormRef = ref(null);
 const repulseForm = reactive({
-    backToModifyType: 3,
+    backToModifyType: '3',
     backToNodeId: '',
     remark: ''
 });
@@ -141,6 +140,9 @@ let openFlowNodeVisible = computed({
 
 let openVisible = computed({
     get() {
+        repulseForm.backToModifyType = '3';
+        repulseForm.backToNodeId = '';
+        repulseForm.remark = '';
         return props.visible
     },
     set(val) {
@@ -149,15 +151,15 @@ let openVisible = computed({
 })
 const chooseNodeVisible = computed({
     get() {
-        return repulseForm.backToModifyType == 4 || repulseForm.backToModifyType == 5
+        return repulseForm.backToModifyType == '4' || repulseForm.backToModifyType == '5'
     }
 });
 
-const tipsVisible1 = computed(() => repulseForm.backToModifyType == 1);
-const tipsVisible2 = computed(() => repulseForm.backToModifyType == 2);
-const tipsVisible3 = computed(() => repulseForm.backToModifyType == 3);
-const tipsVisible4 = computed(() => repulseForm.backToModifyType == 4);
-const tipsVisible5 = computed(() => repulseForm.backToModifyType == 5);
+const tipsVisible1 = computed(() => repulseForm.backToModifyType == '1');
+const tipsVisible2 = computed(() => repulseForm.backToModifyType == '2');
+const tipsVisible3 = computed(() => repulseForm.backToModifyType == '3');
+const tipsVisible4 = computed(() => repulseForm.backToModifyType == '4');
+const tipsVisible5 = computed(() => repulseForm.backToModifyType == '5');
 
 const quickAnswerList = ["不同意", "有异议", "不支持", "无法核实", "需要补充材料", "不符合要求"];
 let rules = {

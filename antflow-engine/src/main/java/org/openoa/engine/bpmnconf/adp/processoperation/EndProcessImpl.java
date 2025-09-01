@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
@@ -27,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
@@ -59,7 +61,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         String verifyUserName = StringUtils.EMPTY;
 
         String verifyUserId = StringUtils.EMPTY;
-
+        boolean isAbandon=ProcessOperationEnum.BUTTON_TYPE_ABANDON.getCode().equals(vo.getOperationType());
         if (vo.getIsOutSideAccessProc()) {
             Map<String, Object> objectMap = vo.getObjectMap();
             if (!CollectionUtils.isEmpty(objectMap)) {
@@ -76,8 +78,15 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         if (vo.getFlag()) {
             processState = END_STATE.getCode();
         }
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
+        if(CollectionUtils.isEmpty(taskList)){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前流程实例不存在!");
+        }
         Task taskData;
+        if(isAbandon){
+            taskData=taskList.get(0);
+        }
+        taskList=taskList.stream().filter(a->SecurityUtils.getLogInEmpId().equals(a.getAssignee())).collect(Collectors.toList());
         if (!ObjectUtils.isEmpty(taskList)) {
             taskData = taskList.get(0);
         } else {

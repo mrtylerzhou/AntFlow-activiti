@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -65,7 +66,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 .processNum(bpmnConfCommonVo.getProcessNum())
                 .processName(bpmnConfCommonVo.getProcessName())
                 .processDesc(bpmnConfCommonVo.getProcessDesc())
-                .processStartConditions(JSON.toJSONString(bpmnStartConditions))//process start condition
+                .processStartConditions(JSON.toJSONString(bpmnStartConditions,JSONWriter.Feature.WriteNonStringKeyAsString))//process start condition
                 .createUser(SecurityUtils.getLogInEmpIdSafe())
                 .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .createTime(new Date())

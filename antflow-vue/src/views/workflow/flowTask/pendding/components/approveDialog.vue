@@ -13,14 +13,14 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <div class="mb-4" v-if="title === '同意'">
-                    <el-button type="primary" plain round v-for="btnTxt in quickAnswerOK"
+                <div v-if="title === '同意'">
+                    <el-button type="primary" class="mb5" plain round v-for="btnTxt in quickAnswerOK"
                         @click="approveForm.remark = btnTxt">
                         {{ btnTxt }}
                     </el-button>
                 </div>
-                <div class="mb-4" v-if="title === '不同意'">
-                    <el-button type="danger" plain round v-for="btnTxt in quickAnswerNO"
+                <div v-if="title === '不同意'">
+                    <el-button type="danger" class="mb5" plain round v-for="btnTxt in quickAnswerNO"
                         @click="approveForm.remark = btnTxt">
                         {{ btnTxt }}
                     </el-button>

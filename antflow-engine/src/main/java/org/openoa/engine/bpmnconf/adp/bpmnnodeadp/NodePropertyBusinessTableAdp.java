@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
+public class NodePropertyBusinessTableAdp implements BpmnNodeAdaptor {
 
     @Autowired
     private BpmnNodeBusinessTableConfServiceImpl bpmnNodeBusinessTableConfService;
 
     @Override
-    public BpmnNodeVo formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = bpmnNodeBusinessTableConfService.getOne(new QueryWrapper<BpmnNodeBusinessTableConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
@@ -39,7 +39,7 @@ public class NodePropertyBusinessTableAdp extends BpmnNodeAdaptor {
                     .build());
         }
 
-        return bpmnNodeVo;
+
     }
 
     @Override

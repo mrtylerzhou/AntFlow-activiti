@@ -5,7 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonHandler;
+import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonOperationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FormOperationFinishAspect {
     @Autowired
-    private WorkflowButtonHandler workflowButtonHandler;
+    private WorkflowButtonOperationHandler workflowButtonHandler;
 
     /**
      * 对所有实现了 FormOperationAdaptor 接口的类的 finishData 方法做切面

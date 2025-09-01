@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
-import org.openoa.base.entity.Employee;
+import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
@@ -27,7 +27,7 @@ public class UserMessagePreServiceImpl {
     public Boolean sendMessagePre(SendParam sendParam) {
 
         //query receiver's info
-        Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
+        DetailedUser detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
             throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
@@ -71,7 +71,7 @@ public class UserMessagePreServiceImpl {
     @Async
     public Boolean sendMessagePre(SendParam sendParam, MessageSendTypeEnum messageSendTypeEnum) {
         //get receiver's info
-        Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
+        DetailedUser detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
         if (detail == null) {
             throw new AFBizException("999999", "发送消息失败，不存在的用户!");
         }
@@ -123,7 +123,7 @@ public class UserMessagePreServiceImpl {
             try {
                 Thread.sleep(200);
                 //query receiver's info
-                Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
+                DetailedUser detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
                 if (detail == null) {
                     throw new AFBizException("999999", "发送消息失败，不存在的用户!");
                 }
@@ -175,7 +175,7 @@ public class UserMessagePreServiceImpl {
             try {
                 Thread.sleep(200);
                 //search receiver
-                Employee detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
+                DetailedUser detail = employeeService.getEmployeeDetailById(sendParam.getUserId());
                 if (detail == null) {
                     throw new AFBizException("999999", "发送消息失败，不存在的用户!");
                 }

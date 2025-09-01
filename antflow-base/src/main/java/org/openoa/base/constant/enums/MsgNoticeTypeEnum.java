@@ -8,7 +8,7 @@ import lombok.Getter;
  * @Date 2021-11-06 8:19
  * @Created by AntOffice
  */
-public enum MsgNoticeTypeEnum {
+public enum MsgNoticeTypeEnum implements  AfEnumBase{
     //消息通知类型
     PROCESS_FLOW(1, "工作流流转通知", "您有1个{流程类型}{流程名称}{流程编号}需要处理"),
     RECEIVE_FLOW_PROCESS(2, "收到转发工作流通知", "您有1个{流程类型}{流程名称}{流程编号}需要查看"),

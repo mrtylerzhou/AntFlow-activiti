@@ -223,45 +223,45 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
-        BusinessDataVo businessDataVo = null;
+
         if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
             FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
-            businessDataVo=formAdaptor.queryData(vo);
+            formAdaptor.queryData(vo);
         }else{
-            businessDataVo=vo;
+
         }
 
         //set the businessId
-        businessDataVo.setBusinessId(bpmBusinessProcess.getBusinessId());
+        vo.setBusinessId(bpmBusinessProcess.getBusinessId());
 
         // set some other important information
-        businessDataVo.setFormCode(vo.getFormCode());
-        businessDataVo.setProcessNumber(vo.getProcessNumber());
+        vo.setFormCode(vo.getFormCode());
+        vo.setProcessNumber(vo.getProcessNumber());
 
         // checking process right,and set some information that from business table
-        businessDataVo.setProcessRecordInfo(businessContans.processInfo(bpmBusinessProcess));
-        businessDataVo.setProcessKey(bpmBusinessProcess.getBusinessNumber());
-        businessDataVo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(REJECT_STATE.getCode()));
+        vo.setProcessRecordInfo(businessContans.processInfo(bpmBusinessProcess));
+        vo.setProcessKey(bpmBusinessProcess.getBusinessNumber());
+        vo.setProcessState(!bpmBusinessProcess.getProcessState().equals(END_STATE.getCode()) && !bpmBusinessProcess.getProcessState().equals(REJECT_STATE.getCode()));
 
-        boolean flag = businessDataVo.getProcessRecordInfo().getStartUserId().equals(SecurityUtils.getLogInEmpIdStr());
+        boolean flag = vo.getProcessRecordInfo().getStartUserId().equals(SecurityUtils.getLogInEmpIdStr());
 
         boolean isJurisdiction=false;//todo not implemented at the moment
         // set operating buttons
 
-        businessDataVo.getProcessRecordInfo().setPcButtons(configFlowButtonContans.getButtons(bpmBusinessProcess.getBusinessNumber(),
-                businessDataVo.getProcessRecordInfo().getNodeId(), isJurisdiction, flag));
+        vo.getProcessRecordInfo().setPcButtons(configFlowButtonContans.getButtons(bpmBusinessProcess.getBusinessNumber(),
+                vo.getProcessRecordInfo().getNodeId(), isJurisdiction, flag));
 
 
         //check whether current node is a signup node and set the property
-        String nodeId = businessDataVo.getProcessRecordInfo().getNodeId();
+        String nodeId = vo.getProcessRecordInfo().getNodeId();
         Boolean nodeIsSignUp = bpmVariableSignUpBizService.checkNodeIsSignUp(vo.getProcessNumber(), nodeId);
-        businessDataVo.setIsSignUpNode(nodeIsSignUp);
+        vo.setIsSignUpNode(nodeIsSignUp);
         //add a "choose a verifier" button if it is a signup node
         if (nodeIsSignUp) {
             //set the add approver button
-            addApproverButton(businessDataVo);
+            addApproverButton(vo);
         }
-        return businessDataVo;
+        return vo;
     }
     /**
      * some statics about my tobe done list,my new process,etc regarding today

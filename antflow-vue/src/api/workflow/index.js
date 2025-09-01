@@ -130,8 +130,9 @@ export function getBpmnConflistPage(pageDto, taskMgmtVO) {
 
 /**
  * 审批,发起审批
- * @param {*} data
- * operationType 1 发起 2 重新提交 3 审批
+ * @param {object} data
+ * @param operationType 1 发起 2 重新提交 3 审批, 7 作废, 11 当前节点变更处理人,15 抄送, 24 当前节点减签,25 当前节点加签
+ *  26 未来节点变更处理人, 27 未来节点减签,28 未来节点加签 29 撤回
  * @returns
  */
 export function processOperation(data) {
@@ -144,7 +145,7 @@ export function processOperation(data) {
 
 /**
  * 获取审批进度数据
- * @param { Number } id
+ * @param { object } param
  * @returns
  */
 export function getBpmVerifyInfoVos(param) {
@@ -156,7 +157,7 @@ export function getBpmVerifyInfoVos(param) {
 
 /**
  * 流程预览
- * @param {*} param
+ * @param {*} data
  * @returns
  */
 export function getFlowPreview(data) {
@@ -227,6 +228,7 @@ export function getEntrustListPage(pageDto, taskMgmtVO) {
 }
 /**
  *  委托详情
+ * @param {Number} id
  * @returns
  */
 export function entrustDetail(id) {
@@ -234,6 +236,7 @@ export function entrustDetail(id) {
 }
 /**
  * 设置委托
+ * @param {*} data
  * @returns
  */
 export function setEntrust(data) {

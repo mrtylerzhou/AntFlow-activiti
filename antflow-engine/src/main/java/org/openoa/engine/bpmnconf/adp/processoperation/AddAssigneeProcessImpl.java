@@ -14,13 +14,12 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
-import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.utils.MultiInstanceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,8 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
     private ActivitiAdditionalInfoServiceImpl additionalInfoService;
     @Autowired
     private BpmFlowrunEntrustService flowrunEntrustService;
+    @Autowired
+    private BpmVariableService bpmVariableService;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -110,6 +111,7 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         BaseIdTranStruVo userinfo = userInfos.get(0);
         flowrunEntrustService.addFlowrunEntrust(userinfo.getId(),userinfo.getName(),"0","管理员加签",task.getId(),0,
                 task.getProcessInstanceId(),bpmBusinessProcess.getProcessinessKey());
+        bpmVariableService.addNodeAssignees(processNumber,task.getTaskDefinitionKey(),userInfos);
     }
 
     @Override

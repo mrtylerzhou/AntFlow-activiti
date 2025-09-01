@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum BusinessPartyTypeEnum {
+public enum BusinessPartyTypeEnum implements AfEnumBase{
 
     BUSINESS_PARTY_TYPE_Embed(1, "嵌入式"),
     BUSINESS_PARTY_TYPE_ACCESS(2, "调入式"),

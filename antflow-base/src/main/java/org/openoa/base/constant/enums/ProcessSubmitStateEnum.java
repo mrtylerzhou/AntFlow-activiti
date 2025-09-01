@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ProcessSubmitStateEnum {
+public enum ProcessSubmitStateEnum implements AfEnumBase{
     /**
      * process submit status
      */
@@ -22,7 +22,7 @@ public enum ProcessSubmitStateEnum {
     @Getter
     private String desc;
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

@@ -7,9 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,10 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
     protected BpmFlowrunEntrustService bpmFlowrunEntrustService;
     @Autowired
     protected BpmBusinessProcessService businessProcessService;
+    @Autowired
+    protected BpmVariableService bpmVariableService;
+    @Autowired
+    protected BpmVariableMapper bpmVariableMapper;
 
     protected void checkParam(BusinessDataVo vo){
         String processNumber = vo.getProcessNumber();
@@ -74,8 +80,12 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         List<String> assigneeIds = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         if (action == 1) {
             currentList.addAll(assigneeIds);
+            for (String assigneeId : assigneeIds) {
+                bpmVariableMapper.invalidNodeAssignee(processNumber,taskdefKey,assigneeId);
+            }
         } else if (action == 2) {
             currentList.removeAll(assigneeIds);
+            bpmVariableService.addNodeAssignees(processNumber,taskdefKey,userInfos);
         }else {
             throw new AFBizException("action is not 1 or 2");
         }

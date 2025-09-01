@@ -7,7 +7,7 @@ import lombok.Getter;
  * @since 0.5
  * @Created by AntOffice
  */
-public enum ButtonTypeEnum {
+public enum ButtonTypeEnum implements AfEnumBase{
     BUTTON_TYPE_PREVIEW(0, "预览"),
     BUTTON_TYPE_SUBMIT(1, "提交"),
     BUTTON_TYPE_RESUBMIT(2, "重新提交"),
@@ -20,12 +20,13 @@ public enum ButtonTypeEnum {
     BUTTON_TYPE_CHANGE_ASSIGNEE(11, "变更处理人"),
     BUTTON_TYPE_STOP(12, "终止"),
     BUTTON_TYPE_ADD_ASSIGNEE(13, "添加审批人"),
-    BUTTON_TYPE_FORWARD(15, "转发"),
+    BUTTON_TYPE_FORWARD(15, "抄送"),
     BUTTON_TYPE_BACK_TO_MODIFY(18, "退回修改"),
     BUTTON_TYPE_JP(19,"加批"),
     BUTTON_TYPE_ZB(21,"转办"),
     BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
     BUTTON_TYPE_BACK_TO_ANY_NODE(23,"退回任意节点"),
+    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回")
     ;
 
     @Getter

@@ -6,7 +6,7 @@ package org.openoa.base.constant.enums;
  * @Date 2021-11-04 7:18
  * @Created by AntOffice
  */
-public enum ViewPageTypeEnum {
+public enum ViewPageTypeEnum implements AfEnumBase{
     VIEW_PAGE_TYPE_START(1, "发起人"),
     VIEW_PAGE_TYPE_OTHER(2, "其他审批人"),
     ;

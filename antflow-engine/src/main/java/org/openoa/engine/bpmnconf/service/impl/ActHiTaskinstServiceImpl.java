@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.engine.bpmnconf.mapper.ActHiTaskinstMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +35,11 @@ public class ActHiTaskinstServiceImpl extends ServiceImpl<ActHiTaskinstMapper, A
         return this.list(hisQryWrapper);
     }
     public ActHiTaskinst queryLastHisRecord(String procInstId,String assigneeId){
-        LambdaQueryWrapper<ActHiTaskinst> hisQryWrapper = Wrappers.<ActHiTaskinst>lambdaQuery()
+        List<ActHiTaskinst> list = this.list(Wrappers.<ActHiTaskinst>lambdaQuery()
                 .eq(ActHiTaskinst::getProcInstId, procInstId)
-                .eq(ActHiTaskinst::getAssignee,assigneeId)
-                .orderByDesc(ActHiTaskinst::getEndTime);
-        return this.list(hisQryWrapper).get(0);
+                .eq(ActHiTaskinst::getAssignee, assigneeId)
+                .orderByDesc(ActHiTaskinst::getEndTime));
+        return !CollectionUtils.isEmpty(list)?list.get(0):null;
     }
     public ActHiTaskinst queryByTaskId(String taskId){
         return this.getById(taskId);

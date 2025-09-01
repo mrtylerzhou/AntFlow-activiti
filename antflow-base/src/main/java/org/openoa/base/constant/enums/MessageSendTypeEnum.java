@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum MessageSendTypeEnum {
+public enum MessageSendTypeEnum implements AfEnumBase{
     ALL(50, "所有类型"),
     MAIL(1, "邮件")
     , MESSAGE(2, "短信"),

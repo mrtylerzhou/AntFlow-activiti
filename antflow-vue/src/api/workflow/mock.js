@@ -9,15 +9,6 @@ import http from "@/utils/axios";
 let baseUrl = import.meta.env.BASE_URL;
 let baseApiUrl = import.meta.env.VITE_APP_BASE_API;
 let workflowUrl = import.meta.env.VITE_APP_BASE_API;
-/**
- * 获取版本信息
- */
-export function getCurrentVersion() {
-  const headers = {
-    "Cache-Control": "no-cache",
-  };
-  return http.get(`${baseUrl}version.json`, { headers });
-}
 
 /**
  * 用户登录

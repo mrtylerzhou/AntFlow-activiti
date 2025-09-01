@@ -3,7 +3,7 @@ package org.openoa.engine.lowflow.service;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.service.AntFlowOrderPostProcessor;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonHandler;
+import org.openoa.engine.bpmnconf.activitilistener.WorkflowButtonOperationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostProcessor<BusinessDataVo> {
 
     @Autowired
-    private WorkflowButtonHandler workflowButtonHandler;
+    private WorkflowButtonOperationHandler workflowButtonHandler;
 
     @Override
     public void postProcess(BusinessDataVo vo) {
@@ -80,6 +80,9 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
                 break;
             case BUTTON_TYPE_ADD_FUTURE_ASSIGNEE:
                 workflowButtonHandler.onAddFutureAssignee(vo);
+                break;
+            case BUTTON_TYPE_PROCESS_DRAW_BACK:
+                workflowButtonHandler.onProcessDrawBack(vo);
                 break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);

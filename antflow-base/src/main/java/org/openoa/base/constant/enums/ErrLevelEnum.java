@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum ErrLevelEnum {
+public enum ErrLevelEnum implements AfEnumBase {
 
     ERR_LEVEL_ERR(1, "错误"),
     ERR_LEVEL_WORNING(2, "提醒"),;

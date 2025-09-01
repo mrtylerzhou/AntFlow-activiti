@@ -2,7 +2,7 @@ package org.openoa.base.constant.enums;
 
 import lombok.Getter;
 
-public enum BpmnNodeParamTypeEnum {
+public enum BpmnNodeParamTypeEnum implements AfEnumBase{
 
 
     BPMN_NODE_PARAM_SINGLE(1, "单人"),

@@ -6,10 +6,13 @@
                     <template #label>
                         填写表单
                     </template>
-                    <div class="component">
-                        <component ref="formRef" v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormData"
-                            :isPreview="false" :showSubmit="true" @handleBizBtn="handleSubmit">
-                        </component>
+                    <div>
+                        <div v-if="componentLoaded">
+                            <component ref="formRef" v-if="componentLoaded" :is="loadedComponent"
+                                :lfFormData="lfFormData" :isPreview="false" :showSubmit="true"
+                                @handleBizBtn="handleSubmit">
+                            </component>
+                        </div>
                     </div>
                 </el-tab-pane>
 

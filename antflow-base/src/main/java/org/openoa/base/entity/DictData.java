@@ -21,8 +21,12 @@ public class DictData implements TenantField, Serializable {
     private String label;
     @TableField("dict_value")
     private String value;
+    @TableField("dic_value_type")
+    private Integer valueType;
     @TableField("dict_type")
     private String dictType;
+    @TableField("dict_second_level_type")
+    private String dicSecondLevelType;
     @TableField("css_class")
     private String cssClass;
     @TableField("list_class")

@@ -118,7 +118,6 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 import { getDIYFromCodeData } from "@/api/workflow/index"
 import { getLFActiveFormCodePageList } from "@/api/workflow/lowcodeApi"
 import { getOutSideFormCodePageList } from "@/api/workflow/outsideApi"
-import msgIcon from '@/components/Workflow/components/msgIcon.vue';
 const { proxy } = getCurrentInstance();
 let worlflowList = ref([]);
 let lfFlowList = ref([]);

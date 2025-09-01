@@ -150,4 +150,16 @@ public class BpmnNodePropertysVo implements Serializable{
      * @see org.openoa.base.constant.enums.ConditionRelationShipEnum
      */
     private Boolean groupRelation=true;
+    /**
+     * @see org.openoa.base.constant.enums.NodeFormAssigneePropertyEnum
+     */
+    private Integer formAssigneeProperty;
+    private List<BaseIdTranStruVo> formInfos;
+    //用户在UDRPersonnelProvider类里自动取出自定义属性json然后自己转换为合适类型
+    private String udrValueJson;
+    private BaseIdTranStruVo udrAssigneeProperty;
+    private String ext1;
+    private String ext2;
+    private String ext3;
+    private String ext4;
 }

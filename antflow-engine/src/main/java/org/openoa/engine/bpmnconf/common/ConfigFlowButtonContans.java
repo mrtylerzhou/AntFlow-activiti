@@ -8,21 +8,22 @@ import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
-import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.*;
 import org.openoa.base.util.FilterUtil;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.ProcessActionButtonVo;
-import org.openoa.base.entity.BpmVariableButton;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.base.entity.BpmVariableSignUp;
-import org.openoa.base.entity.BpmVariableViewPageButton;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnNodeButtonConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeButtonConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -55,6 +56,10 @@ public class ConfigFlowButtonContans {
     private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ActHiTaskinstServiceImpl actHiTaskinstService;
+    @Autowired
+    private BpmnNodeButtonConfBizService bpmnNodeButtonConfBizService;
 
     /**get pc buttons
      * @param elementId  elementId
@@ -92,6 +97,12 @@ public class ConfigFlowButtonContans {
                         .getButtonsByProcessNumber(processNum);
 
                 toViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
+                //节点单独配置覆盖全局的,由于查看页并没有当前节点概念,因此取的是当前审批人所在的所有节点的按钮权限
+                List<ProcessActionButtonVo> nodeConfButtons = getNodeConfButtons(bpmBusinessProcess,isInitiate);
+
+                if(!CollectionUtils.isEmpty(nodeConfButtons)){
+                    toViewButtons=nodeConfButtons;
+                }
             }
             if (isJurisdiction) {
 
@@ -144,10 +155,17 @@ public class ConfigFlowButtonContans {
 
                 toViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
 
-
+                //节点单独配置覆盖全局的,由于查看页并没有当前节点概念,因此取的是当前审批人所在的所有节点的按钮权限
+                List<ProcessActionButtonVo> nodeConfButtons = getNodeConfButtons(bpmBusinessProcess,isInitiate);
+                if(!CollectionUtils.isEmpty(nodeConfButtons)){
+                    toViewButtons=nodeConfButtons;
+                }
                 //process complete, filter invalid button
                 for (ProcessActionButtonVo processActionButtonVo : toViewButtons) {
-                    if (!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_ABANDONED.getCode())) {
+                    if (!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_ABANDONED.getCode())
+                    ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())
+                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_STOP.getCode())
+                    ) {
                         toViewButtonsComplete.add(processActionButtonVo);
                     }
 
@@ -256,4 +274,36 @@ public class ConfigFlowButtonContans {
         return lists;
     }
 
+    private List<ProcessActionButtonVo> getNodeConfButtons(BpmBusinessProcess bpmBusinessProcess,Boolean isInitiate){
+        List<BpmnNodeButtonConf> bpmnNodeButtonConfs=null;
+        if(isInitiate){
+            bpmnNodeButtonConfs= bpmnNodeButtonConfBizService.getMapper().queryConfByBpmnConde(bpmBusinessProcess.getVersion());
+
+        }else{
+            List<String> hisTaskDefKeys = actHiTaskinstService
+                    .queryRecordsByProcInstId(bpmBusinessProcess.getProcInstId())
+                    .stream().filter(a -> a.getEndTime() != null&& SecurityUtils.getLogInEmpIdSafe().equals(a.getAssignee()))
+                    .map(ActHiTaskinst::getTaskDefKey)
+                    .distinct()
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(hisTaskDefKeys)){
+                List<String> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
+                bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
+                //只能显示在发起人页的按钮不应显示在其它页面
+                if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
+                    bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
+                }
+            }
+
+        }
+
+        if(!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
+            List<ProcessActionButtonVo> processActionButtonVos = bpmnNodeButtonConfs.stream().map(item -> ProcessActionButtonVo.builder().buttonType(item.getButtonType())
+                            .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
+                            .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build())
+                    .collect(Collectors.toList());
+            return processActionButtonVos;
+        }
+       return new ArrayList<>();
+    }
 }
