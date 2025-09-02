@@ -1800,6 +1800,24 @@ create table t_bpmn_node_udr_conf
 )
     comment 'user custom assignee rule config,udr for user defined rules';
 
+
+CREATE TABLE `t_bpm_process_audit` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `process_number` varchar(64) DEFAULT NULL COMMENT '流程编号',
+  `form_code` varchar(50) DEFAULT NULL,
+  `field_name` varchar(64) DEFAULT NULL,
+  `old_value` varchar(256) DEFAULT NULL,
+  `new_value` varchar(256) DEFAULT NULL,
+  `tenant_id` varchar(255) DEFAULT NULL,
+  `task_name` varchar(64) DEFAULT NULL,
+  `task_def_key` varchar(64) DEFAULT NULL,
+  `create_user` varchar(50) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `t_bpm_process_audit_idx1` (`process_number`),
+  KEY `t_bpm_process_audit_idx2` (`task_def_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='流程审计表';
+
 -- ----------------------------
 -- Table structure for t_user_role
 -- ----------------------------
