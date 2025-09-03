@@ -7,6 +7,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
@@ -94,7 +95,11 @@ public class BpmnProcessMigrationServiceImpl {
                     }
                 }
 
+                int index=0;
                 for (Task tsk : tsks) {
+                    if(index==tsks.size()-1){
+                        vo.setOperationType(ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode());
+                    }
                     if (!CollectionUtils.isEmpty(verifyInfoMap)) {
                         BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
                         vo.setStartUserId(tsk.getAssignee());
@@ -121,6 +126,7 @@ public class BpmnProcessMigrationServiceImpl {
                     }
                     tripleConsumer.accept(vo, tsk, bpmBusinessProcess);
                 }
+                index++;
             }
             if (currentTaskDefKey.equals(id)) {
                 currentExecuted = true;
