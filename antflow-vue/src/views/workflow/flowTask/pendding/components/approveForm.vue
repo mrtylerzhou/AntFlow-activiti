@@ -3,9 +3,10 @@
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
-                    <component ref="componentFormRef" :key="approveSubData.taskId" :is="loadedComponent"
-                        :previewData="componentData" :isPreview="false" :lfFormData="lfFormDataConfig"
-                        :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs">
+                    <component ref="componentFormRef"
+                        :key="Math.random().toString(36).slice(2) + Date.now().toString(36)" :is="loadedComponent"
+                        :previewData="componentData" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
+                        :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit">
                     </component>
                 </div>
             </el-scrollbar>
@@ -47,6 +48,7 @@ let approveDialogTitle = ref("审批");
 let dialogVisible = ref(false);
 let dialogTitle = ref('');
 let isMultiple = ref(false);//false 转办，true 加批
+let hasResubmit = ref(false);//是否包含重新提交按钮
 let approvalButtons = ref([]);
 let loadedComponent = ref(null);
 let componentData = ref(null);
@@ -205,6 +207,8 @@ const preview = async (viewData) => {
                     return a.value - b.value
                 });
                 approvalButtons.value = uniqueByMap(approvalButtons.value);
+                //判断是否包含 重新提交 按钮
+                hasResubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             }
             try {
                 if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接 
