@@ -148,6 +148,12 @@ onMounted(() => {
     vFormRef.value.setFormData(formData)
   })
 })
+onBeforeUnmount(() => {
+  // 清除数据
+  Object.keys(formJson).forEach(key => delete formJson[key]);
+  Object.keys(formData).forEach(key => delete formData[key]);
+  lfFieldPermData.splice(0, lfFieldPermData.length);
+})
 const submitForm = () => {
   vFormRef.value.getFormData().then(res => {
     //replaceEmptyStringWithNull(res);

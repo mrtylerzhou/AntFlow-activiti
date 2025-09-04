@@ -3,7 +3,8 @@
         <el-main>
             <el-scrollbar>
                 <div v-if="componentLoaded" class="component">
-                    <component ref="componentFormRef" :key="approveSubData.taskId" :is="loadedComponent"
+                    <component ref="componentFormRef"
+                        :key="Math.random().toString(36).slice(2) + Date.now().toString(36)" :is="loadedComponent"
                         :previewData="componentData" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
                         :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit">
                     </component>
