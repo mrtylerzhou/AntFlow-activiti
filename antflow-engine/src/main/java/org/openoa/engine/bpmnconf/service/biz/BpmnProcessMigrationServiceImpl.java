@@ -1,7 +1,9 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
@@ -48,6 +50,8 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmVerifyInfoService bpmVerifyInfoService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
+    @Autowired
+    private HistoryService historyService;
 
     public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
         String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
@@ -59,7 +63,12 @@ public class BpmnProcessMigrationServiceImpl {
         submitVo.setOperationType(PROCESS_SUBMIT.getCode());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
-        String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
+        //String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
+        HistoricProcessInstance historicInstance = historyService
+                .createHistoricProcessInstanceQuery()
+                .processInstanceId(bpmBusinessProcess.getProcInstId())
+                .singleResult();
+        String procDefIdByInstId = historicInstance.getProcessDefinitionId();
         if(StringUtils.isBlank(procDefIdByInstId)){
             throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
         }
