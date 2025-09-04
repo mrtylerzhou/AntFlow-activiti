@@ -296,7 +296,7 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
      * @return
      */
     public Map<String, Object> findTaskById(@Param("taskId") String taskId);
-    public String findProcDefIdByInstId(String procInstId);
+    public String findProcDefIdByInstId(@Param("procInstId") String procInstId);
 
     void deleteExecutionsByProcinstIdAndTaskDefKeys(@Param("procInstId")String procInstId,@Param("taskDefKeys") List<String> taskdefkeys);
     void deleteTaskByProcinstIdAndTaskDefKeys(@Param("procInstId")String procInstId,@Param("taskDefKeys") List<String> taskdefkeys);
