@@ -124,7 +124,7 @@
         <dependency>
             <groupId>org.javers</groupId>
             <artifactId>javers-core</artifactId>
-            <version>6.14.0</version>
+            <version>7.8.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
