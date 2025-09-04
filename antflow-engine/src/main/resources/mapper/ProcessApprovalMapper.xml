@@ -70,8 +70,8 @@
         <if test="taskMgmtVO.applyUserId!=null">
             and s.userId = #{taskMgmtVO.applyUserId}
         </if>
-        <if test="taskMgmtVO.processName!=null and  taskMgmtVO.processName!=''">
-            and s.processKey like CONCAT('%', #{taskMgmtVO.processName},'%')
+        <if test="taskMgmtVO.processKey!=null and  taskMgmtVO.processKey!=''">
+            and s.processKey like CONCAT('%', #{taskMgmtVO.processKey},'%')
         </if>
         <if test="taskMgmtVO.description!=null and  taskMgmtVO.description!=''">
             and s.description like CONCAT('%', #{taskMgmtVO.description},'%')
