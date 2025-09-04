@@ -101,8 +101,10 @@ const handlerFn = (w) => {
       }
     }
   } else {
-    w.options.disabled = true;
-    w.options.readonly = true;
+    if (props.isPreview == true) {
+      w.options.disabled = true;
+      w.options.readonly = true;
+    }
   }
 }
 /**递归处理表单中所有字段 */
