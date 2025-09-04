@@ -80,12 +80,13 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         List<String> assigneeIds = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         if (action == 1) {
             currentList.addAll(assigneeIds);
+            bpmVariableService.addNodeAssignees(processNumber,taskdefKey,userInfos);
+        } else if (action == 2) {
+            currentList.removeAll(assigneeIds);
             for (String assigneeId : assigneeIds) {
                 bpmVariableMapper.invalidNodeAssignee(processNumber,taskdefKey,assigneeId);
             }
-        } else if (action == 2) {
-            currentList.removeAll(assigneeIds);
-            bpmVariableService.addNodeAssignees(processNumber,taskdefKey,userInfos);
+
         }else {
             throw new AFBizException("action is not 1 or 2");
         }
