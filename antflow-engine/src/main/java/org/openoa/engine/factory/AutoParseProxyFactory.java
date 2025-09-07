@@ -97,7 +97,7 @@ public class AutoParseProxyFactory {
             targetClass.addMethod(newMethod);
         }
 
-        Class<?> target = targetClass.toClass();
+        Class<?> target = targetClass.toClass(IAdaptorFactory.class);
         Object newInstance = target.getDeclaredConstructor().newInstance();
         targetClass.detach();
         loadedInstances.put(objName,newInstance);

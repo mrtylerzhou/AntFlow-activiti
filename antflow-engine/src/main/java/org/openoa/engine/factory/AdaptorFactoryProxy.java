@@ -104,7 +104,7 @@ public class AdaptorFactoryProxy {
         }
 
 
-        Class<?> target = targetClass.toClass();
+        Class<?> target = targetClass.toClass(IAdaptorFactory.class);
         Object newInstance = target.newInstance();
         targetClass.detach();
         loadedInstance = newInstance;
