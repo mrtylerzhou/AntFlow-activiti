@@ -19,6 +19,7 @@ import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.DateUtil;
+import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.*;
@@ -204,7 +205,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         BpmnConfVo bpmnConfVo = vo.getBpmnConfVo();
         Long confId =bpmnConfVo.getId();
         String formCode = vo.getFormCode();
-        LFMain main=new LFMain();
+        String currentTenantId = MultiTenantUtil.getCurrentTenantId();
+        LFMain main = new LFMain();
+        main.setTenantId(currentTenantId);
         main.setId(SnowFlake.nextId());
         main.setConfId(confId);
         main.setFormCode(formCode);
