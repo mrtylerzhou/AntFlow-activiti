@@ -15,17 +15,18 @@
         <version>2.7.17</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-   <groupId>io.github.mrtylerzhou</groupId>
+    <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow</artifactId>
     <version>1.2.1</version>
     <name>antflow</name>
     <description>ant flow process engine for every one</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>1.8</java.version>
         <drools.version>6.5.0.Final</drools.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
 
@@ -276,7 +277,7 @@
         <plugins>
 
             <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>

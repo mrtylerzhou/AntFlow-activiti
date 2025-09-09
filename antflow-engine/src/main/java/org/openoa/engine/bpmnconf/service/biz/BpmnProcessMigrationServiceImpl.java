@@ -1,15 +1,12 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
-import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
@@ -50,8 +47,6 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmVerifyInfoService bpmVerifyInfoService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
-    @Autowired
-    private HistoryService historyService;
 
     public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
         String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
@@ -63,12 +58,7 @@ public class BpmnProcessMigrationServiceImpl {
         submitVo.setOperationType(PROCESS_SUBMIT.getCode());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
-        //String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
-        HistoricProcessInstance historicInstance = historyService
-                .createHistoricProcessInstanceQuery()
-                .processInstanceId(bpmBusinessProcess.getProcInstId())
-                .singleResult();
-        String procDefIdByInstId = historicInstance.getProcessDefinitionId();
+        String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
         if(StringUtils.isBlank(procDefIdByInstId)){
             throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
         }
@@ -104,11 +94,7 @@ public class BpmnProcessMigrationServiceImpl {
                     }
                 }
 
-                int index=0;
                 for (Task tsk : tsks) {
-                    if(index==tsks.size()-1){
-                        vo.setOperationType(ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode());
-                    }
                     if (!CollectionUtils.isEmpty(verifyInfoMap)) {
                         BpmVerifyInfo bpmVerifyInfo = verifyInfoMap.get(tsk.getTaskDefinitionKey() + tsk.getAssignee());
                         vo.setStartUserId(tsk.getAssignee());
@@ -135,7 +121,6 @@ public class BpmnProcessMigrationServiceImpl {
                     }
                     tripleConsumer.accept(vo, tsk, bpmBusinessProcess);
                 }
-                index++;
             }
             if (currentTaskDefKey.equals(id)) {
                 currentExecuted = true;
