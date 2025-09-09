@@ -24,9 +24,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch, ref, getCurrentInstance } from 'vue';
+import { computed, watch, ref, getCurrentInstance } from 'vue';
 import TagUserSelect from "@/components/BizSelects/TagUserSelect/index.vue";
-import { getUsers } from "@/api/workflow/mock.js";
 const { proxy } = getCurrentInstance()
 let props = defineProps({
   visible: {
@@ -47,7 +46,6 @@ let form = ref({
   selectList: [],
   remark: ''
 })
-let list = ref([])
 let emits = defineEmits(['update:visible', 'change'])
 let visibleDialog = computed({
   get() {
@@ -66,23 +64,6 @@ let rules = {
   selectList: [{ required: true, message: '', trigger: ['change', 'blur'] }],
   remark: [{ required: true, message: '请输入备注', trigger: ['change', 'blur'] }]
 };
-onMounted(async () => {
-  await getUserList();
-});
-
-const getUserList = async () => {
-  await getUsers().then(res => {
-    if (res.code == 200) {
-      list.value = res.data.map(item => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      });
-    }
-  });
-}
-
 /**
  * 保存
  */
