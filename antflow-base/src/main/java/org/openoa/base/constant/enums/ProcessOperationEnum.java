@@ -23,8 +23,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_CHANGE_FUTURE_ASSIGNEE(26,"变更未来节点处理人"),
     BUTTON_TYPE_REMOVE_FUTURE_ASSIGNEE(27,"未来节点减签"),
     BUTTON_TYPE_ADD_FUTURE_ASSIGNEE(28,"未来节点加签"),
-    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回"),
-    BUTTON_TYPE_SAVE_DRAFT(30,"保存草稿"),
+    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回")
     ;
 
     @Getter

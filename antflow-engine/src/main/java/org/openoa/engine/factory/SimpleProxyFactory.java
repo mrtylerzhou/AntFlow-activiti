@@ -82,7 +82,7 @@ public class SimpleProxyFactory {
             targetClass.addMethod(newMethod);
         }
 
-        Class<?> target = targetClass.toClass(IAdaptorFactory.class);
+        Class<?> target = targetClass.toClass();
         Object newInstance = target.getDeclaredConstructor().newInstance();
         targetClass.detach();
         loadedInstances.put(objName,newInstance);

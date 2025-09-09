@@ -6,7 +6,7 @@
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
     <name>antflow-spring-boot-starter</name>
-    <version>1.2.1</version>
+    <version>${antflow.version}</version>
     <properties>
 
         <!-- 主版本        -->
