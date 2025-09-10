@@ -213,23 +213,20 @@ CREATE TABLE if not exists `t_information_template`
 ) ENGINE = InnoDB
    COMMENT ='消息模板';
 
-DROP TABLE IF EXISTS `bpm_business_draft`;
-CREATE TABLE if not exists `bpm_business_draft`
+DROP TABLE IF EXISTS `bpm_business`;
+CREATE TABLE if not exists `bpm_business`
 (
     `id`               bigint NOT NULL AUTO_INCREMENT,
-    `bpmn_code`      varchar(64)   DEFAULT NULL COMMENT 'business id',
+    `business_id`      varchar(64)   DEFAULT NULL COMMENT 'business id',
     `create_time`      timestamp    not null default CURRENT_TIMESTAMP COMMENT 'as its name says',
     `process_code`     varchar(50)  DEFAULT NULL COMMENT 'process Number',
     `create_user_name` varchar(50)  DEFAULT NULL COMMENT 'as its name says',
     `create_user`      varchar(50)   DEFAULT NULL COMMENT 'as its name says',
     `process_key`      varchar(50) DEFAULT NULL COMMENT 'as its name says',
-     `draft_json`       text                                   null,
     `is_del`           int      DEFAULT '0',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     PRIMARY KEY (`id`) USING BTREE,
-     constraint bpm_business_draft_unq1
-            unique (bpmn_code, create_user),
-    KEY `bpm_business_idx1` (`process_key`)
+    KEY `bpm_business_idx1` (`business_id`)
 ) ENGINE = InnoDB
    COMMENT ='process draft';
 
@@ -1799,24 +1796,6 @@ create table t_bpmn_node_udr_conf
     update_time     timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'update time'
 )
     comment 'user custom assignee rule config,udr for user defined rules';
-
-
-CREATE TABLE `t_bpm_process_audit` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `process_number` varchar(64) DEFAULT NULL COMMENT '流程编号',
-  `form_code` varchar(50) DEFAULT NULL,
-  `field_name` varchar(64) DEFAULT NULL,
-  `old_value` varchar(256) DEFAULT NULL,
-  `new_value` varchar(256) DEFAULT NULL,
-  `tenant_id` varchar(255) DEFAULT NULL,
-  `task_name` varchar(64) DEFAULT NULL,
-  `task_def_key` varchar(64) DEFAULT NULL,
-  `create_user` varchar(50) DEFAULT NULL,
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `t_bpm_process_audit_idx1` (`process_number`),
-  KEY `t_bpm_process_audit_idx2` (`task_def_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='流程审计表';
 
 -- ----------------------------
 -- Table structure for t_user_role

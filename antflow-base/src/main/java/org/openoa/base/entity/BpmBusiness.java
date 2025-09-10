@@ -21,16 +21,16 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("bpm_business_draft")
-public class BpmBusinessDraft implements TenantField, Serializable {
+@TableName("bpm_business")
+public class BpmBusiness implements TenantField, Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**
      * business id
      */
-    @TableField("bpmn_code")
-    private String bpmnCode;
+    @TableField("business_id")
+    private String businessId;
     /**
      * create time
      */
@@ -57,8 +57,6 @@ public class BpmBusinessDraft implements TenantField, Serializable {
      */
     @TableField("process_key")
     private String processKey;
-    @TableField("draft_json")
-    private String draftJson;
 
     @TableField("is_del")
     public Integer isDel;
