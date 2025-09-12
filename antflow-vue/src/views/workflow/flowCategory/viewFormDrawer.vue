@@ -66,6 +66,8 @@ const handleLFTemp = async (row) => {
             } else {
                 proxy.$modal.msgWarning("未定义业务表单组件");
             }
+        }).catch((err) => {
+            proxy.$modal.msgWarning("未定义业务表单组件");
         });
     } else {//自定义表单
         loadedComponent.value = await loadDIYComponent(row.key)
