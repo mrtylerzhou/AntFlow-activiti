@@ -1,3 +1,4 @@
+/*
 package org.openoa.engine.conf.engineconfig;
 
 import com.google.common.collect.Lists;
@@ -45,7 +46,8 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         MultiSchemaMultiTenantProcessEngineConfiguration configuration = new MultiSchemaMultiTenantProcessEngineConfiguration(tenantInfoHolder);
 
 
-      /*  Map<DataSource,String > stringDataSourceMap = mbpDynamicDataSourceDetector.detectMybatisPlusDynamicDataSource();
+      */
+/*  Map<DataSource,String > stringDataSourceMap = mbpDynamicDataSourceDetector.detectMybatisPlusDynamicDataSource();
         if(!CollectionUtils.isEmpty(stringDataSourceMap)){
             int index=0;
             for (Map.Entry<DataSource, String> dataSourceStringEntry : stringDataSourceMap.entrySet()) {
@@ -59,7 +61,8 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
                 }
                 index++;
             }
-        }*/
+        }*//*
+
         // 配置默认数据源
         configuration.setDataSource(tenantAwareDataSource);
         configuration.setDatabaseType(DefaultDataBaseTypeDetector.detectDataSourceDbType(tenantInfoHolder.getDefaultDataSource()));
@@ -106,3 +109,4 @@ public class MultiSchemaMultiTenantDataSourceProcessEngineAutoConfiguration exte
         }
     }
 }
+*/

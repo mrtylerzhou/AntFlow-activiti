@@ -32,7 +32,7 @@ public class UserController {
     private UserMapper userMapper;
     @Autowired
     private SqlSessionFactory sqlSessionFactory;
-    @Autowired
+    @Autowired(required = false)
     private TenantInfoHolder infoHolder;
     @Autowired
     private RoleMapper roleMapper;

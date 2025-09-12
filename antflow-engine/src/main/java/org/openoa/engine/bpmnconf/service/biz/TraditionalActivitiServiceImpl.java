@@ -23,7 +23,7 @@ public class TraditionalActivitiServiceImpl {
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
-    @Autowired
+    @Autowired(required = false)
     private MultiTenantInfoHolder tenantInfoHolder;
 
     @Autowired
