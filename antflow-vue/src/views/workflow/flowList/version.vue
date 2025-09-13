@@ -114,10 +114,10 @@ const handleEdit = (row) => {
    };
    if (row.isLowCodeFlow == '1') {
       let obj = { path: "/workflow/lf-design", query: params };
-      proxy.$tab.openPage(obj);
+      proxy.$tab.closeOpenPage(obj);
    } else {
       let obj = { path: "/workflow/diy-design", query: params };
-      proxy.$tab.openPage(obj);
+      proxy.$tab.closeOpenPage(obj);
    }
 }
 /**
