@@ -5,6 +5,13 @@
             style="margin: 0 20px;">
             <el-row>
                 <el-col :span="24">
+                    <el-form-item label="模板名称" prop="name">
+                        <el-input v-model="templateForm.name" placeholder="请输入唯一模板名称" />
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
                     <el-form-item label="事件类型" prop="event">
                         <el-select v-model="templateForm.event" placeholder="请选择事件类型" style="width: 240px">
                             <el-option v-for="item in eventOptions" :key="item.id" :label="item.name"
@@ -14,27 +21,7 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-row>
-                <el-col :span="24">
-                    <el-form-item label="模板名称" prop="name">
-                        <el-input v-model="templateForm.name" placeholder="请输入唯一模板名称" />
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="24">
-                    <el-form-item label="主题" prop="systemTitle">
-                        <el-input v-model="templateForm.systemTitle" type="textarea" placeholder="请输入主题"
-                            :autosize="{ minRows: 3, maxRows: 3 }" style="height: 55px;" />
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <div class="mb-4">
-                <el-button style="margin: 5px;" type="success" link v-for="btnTxt in wildcardList"
-                    @click="templateForm.systemTitle += btnTxt">
-                    {{ btnTxt }}
-                </el-button>
-            </div>
+
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="通知内容" prop="systemContent">
@@ -43,6 +30,12 @@
                     </el-form-item>
                 </el-col>
             </el-row>
+            <div class="mb-4">
+                <el-button style="margin: 5px;" type="success" link v-for="btnTxt in wildcardList"
+                    @click="templateForm.systemContent += btnTxt">
+                    {{ btnTxt }}
+                </el-button>
+            </div>
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="跳转页面" prop="jumpUrl">
