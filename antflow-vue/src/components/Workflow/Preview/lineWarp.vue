@@ -87,8 +87,9 @@ const clickNodeBtn = (data) => {
             element.classList.toggle("active-node");
         }
     }
-
-    handleClickNode(data);
+    if (typeof handleClickNode === 'function') {
+        handleClickNode(data);
+    }
 };
 
 //console.log("props.nodeConfig==============",JSON.stringify(props.nodeConfig)) 
