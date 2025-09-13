@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <el-tabs :tab-position="tabPosition" v-model="activeName" class="demo-tabs">
+        <el-tabs :tab-position="tabPosition" v-model="activeName">
             <el-tab-pane label="通用模板" name="comTemplate">
                 <com-template-list v-if="activeName == 'comTemplate'" />
             </el-tab-pane>
@@ -18,20 +18,17 @@ const tabPosition = ref('left')
 const activeName = ref('comTemplate')
 </script>
 <style scoped>
-.demo-tabs>.el-tabs__content {
-    padding: 32px;
-    color: #6b778c;
-    font-size: 32px;
-    font-weight: 600;
+::v-deep(.el-tabs__item.is-left.is-active) {
+    background-color: var(--current-color) !important;
+    color: var(--navbar-bg);
 }
 
-.el-tabs--left .el-tabs__item.is-left {
-    text-align: right;
-    background: #fff;
+::v-deep(.el-tabs__header) {
+    min-height: 300px;
 }
 
-.el-tabs--right .el-tabs__content,
-.el-tabs--left .el-tabs__content {
-    height: 100%;
+::v-deep(.el-tabs__header) {
+    background-color: var(--navbar-bg) !important;
+    font-size: 18px;
 }
 </style>
