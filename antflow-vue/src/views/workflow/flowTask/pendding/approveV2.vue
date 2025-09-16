@@ -183,6 +183,9 @@ const loadMoreFlowList = async (type) => {
 }
 
 const toggleFlowActive = (data, index) => {
+    if (proxy.isEmpty(data)) {
+        return;
+    }
     activeIndex.value = index;
     approveFormDataConfig.value = {
         ...approveFormDataConfig.value,
