@@ -311,11 +311,13 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         for (LFMainField field : lfMainFields){
-            String f_value = lfFields.get(field.getFieldId()).toString();
-            if (!Objects.equals(f_value, "******")){
-                field.setFieldValue(f_value);
+            if (lfFields.containsKey(field.getFieldId()) && lfFields.get(field.getFieldId()) != null) {
+                String f_value = lfFields.get(field.getFieldId()).toString();
+                if (!Objects.equals(f_value, "******")){
+                    field.setFieldValue(f_value);
+                }
+                mainFieldService.updateById(field);
             }
-            mainFieldService.updateById(field);
         }
 
     }
