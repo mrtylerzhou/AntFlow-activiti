@@ -24,6 +24,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNodeSubmitBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyAttachmentService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
+    @Autowired
+    private BpmVerifyAttachmentService bpmVerifyAttachmentService;
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -140,8 +143,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                 .processCode(vo.getProcessNumber())
                 .build();
 
-
-        //if process digest is not empty then update process digest
+        //if process digest is not empty, then update process digest
         if (!ObjectUtils.isEmpty(vo) && !ObjectUtils.isEmpty(vo.getProcessDigest())) {
             bpmBusinessProcessService.update(BpmBusinessProcess
                     .builder()
@@ -156,6 +158,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
         if(!StringConstants.CURRENT_USER_ALREADY_PROCESSED.equals(bpmVerifyInfo.getVerifyDesc())){
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+
+            bpmVerifyAttachmentService.addVerifyAttachmentBatch(vo.getVerifyAttachments(), bpmVerifyInfo.getId());
         }
 
 

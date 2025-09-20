@@ -17,7 +17,6 @@ import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmVerifyInfoServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.TripleConsumer;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;

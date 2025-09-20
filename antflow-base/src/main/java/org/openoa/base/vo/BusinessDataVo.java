@@ -247,4 +247,9 @@ public class BusinessDataVo extends PageDto implements Serializable {
      * 表单中的人员
      */
     private Map<String,List<String>> node2formRelatedAssignees;
+
+    /**
+     * 审批附件
+     */
+    private List<BpmVerifyAttachmentVo> verifyAttachments;
 }

@@ -782,7 +782,26 @@ CREATE TABLE if not exists `bpm_verify_info`
   AUTO_INCREMENT = 1
    COMMENT ='verify info';
 
-
+-- ----------------------------
+-- bpm_verify_attachment 审批记录附件
+-- ----------------------------
+drop table if exists bpm_verify_attachment;
+create table bpm_verify_attachment
+(
+  id            		 			bigint(20)     not null auto_increment    comment '主键ID',
+  verify_info_id     			    bigint(20)     not null                   comment 'bpm_verify_info表的id',
+  file_path     	   			    varchar(255)   not null                   comment '文件存储路径',
+  new_file_name      			    varchar(255)   not null                	  comment '新文件名',
+  original_file_name                varchar(255)   not null                	  comment '原文件名',
+  file_size                         int(20)        default null 			  comment '文件大小',
+  file_type							varchar(255)    default null               comment '文件类型',
+  file_url     						varchar(255)   default null               comment 'Sha256加密',
+  is_del      						tinyint(1)     default 0                  comment '是否删除 0-否 1-是',
+  create_time   					datetime                                  comment '创建时间',
+  remark        					varchar(500)    default null              comment '备注',
+  tenant_id        					varchar(255)    default null              comment '租户id',
+  primary key (id)
+) engine=innodb comment = '审批记录附件';
 
 DROP TABLE IF EXISTS `t_default_template`;
 CREATE TABLE if not exists `t_default_template`
