@@ -172,6 +172,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
             }
+            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())&&Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())){
+                BpmnNodeLabelVO copyNodeV2 = NodeLabelConstants.copyNodeV2;
+                if(CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
+                    bpmnNodeVo.setLabelList(Lists.newArrayList(copyNodeV2));
+                }else{
+                    bpmnNodeVo.getLabelList().add(copyNodeV2);
+                }
+            }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
 
@@ -1523,6 +1531,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
         if(!CollectionUtils.isEmpty(nodeLabels)){
             List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
+            if (labelVOList.stream().anyMatch(a-> NodeLabelConstants.copyNodeV2.getLabelValue().equals(a.getLabelValue()))) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
         }
 
