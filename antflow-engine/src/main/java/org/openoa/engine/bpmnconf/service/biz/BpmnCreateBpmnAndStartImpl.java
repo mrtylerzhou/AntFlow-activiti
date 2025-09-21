@@ -24,7 +24,7 @@ import org.openoa.common.service.ProcessModelServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;

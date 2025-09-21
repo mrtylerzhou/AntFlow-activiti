@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
@@ -15,7 +14,6 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
-import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -25,7 +23,6 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.BpmProcessForward;
-import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
@@ -33,6 +30,7 @@ import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.base.util.AFWrappers;
 import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
@@ -139,14 +137,19 @@ public class BpmnTaskListener implements TaskListener {
                         }
                         if(StringConstants.COPY_NODEV2.equals(nodeLabelVO.getLabelValue())){
                             isCarbonCopyNode=true;
-                            bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
-                                    .createTime(new Date())
-                                    .createUserId(SecurityUtils.getLogInEmpId())
-                                    .forwardUserId(delegateTask.getAssignee())
-                                    .ForwardUserName(delegateTask.getAssignee())
-                                    .processInstanceId(procInstId)
-                                    .processNumber(processNumber)
-                                    .build());
+                            List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(AFWrappers.<BpmProcessForward>lambdaTenantQuery()
+                                    .eq(BpmProcessForward::getProcessInstanceId, procInstId)
+                                    .eq(BpmProcessForward::getForwardUserId, delegateTask.getAssignee()));
+                            if(CollectionUtils.isEmpty(bpmProcessForwards)){
+                                bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
+                                        .createTime(new Date())
+                                        .createUserId(SecurityUtils.getLogInEmpId())
+                                        .forwardUserId(delegateTask.getAssignee())
+                                        .ForwardUserName(delegateTask.getAssignee())
+                                        .processInstanceId(procInstId)
+                                        .processNumber(processNumber)
+                                        .build());
+                            }
                         }
                     }
                 }

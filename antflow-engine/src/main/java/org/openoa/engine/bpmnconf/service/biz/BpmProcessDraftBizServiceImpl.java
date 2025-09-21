@@ -12,7 +12,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDraftBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

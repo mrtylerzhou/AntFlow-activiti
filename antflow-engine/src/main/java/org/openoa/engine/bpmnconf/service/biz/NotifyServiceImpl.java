@@ -15,7 +15,6 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.mapper.*;
-import org.openoa.engine.bpmnconf.service.impl.BpmTaskconfigServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmTaskconfigService;
 import org.openoa.engine.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;

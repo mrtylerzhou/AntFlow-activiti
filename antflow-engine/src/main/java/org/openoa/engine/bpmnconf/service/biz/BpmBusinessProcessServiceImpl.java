@@ -9,7 +9,7 @@ import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

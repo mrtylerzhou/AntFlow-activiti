@@ -14,7 +14,6 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeLoopConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLoopConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLoopConfService;
 import org.springframework.beans.factory.annotation.Autowired;

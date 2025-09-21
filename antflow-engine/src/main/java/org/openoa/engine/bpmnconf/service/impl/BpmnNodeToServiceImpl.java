@@ -7,7 +7,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeToMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeToService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

@@ -9,7 +9,7 @@ import org.openoa.engine.bpmnconf.adp.bpmnnodeadp.BpmnNodeAdaptor;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeToServiceImpl;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;

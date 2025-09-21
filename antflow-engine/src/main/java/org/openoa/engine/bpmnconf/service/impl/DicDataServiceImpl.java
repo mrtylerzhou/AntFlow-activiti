@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.DictData;
 import org.openoa.engine.bpmnconf.mapper.DicDataMapper;
 import org.openoa.engine.bpmnconf.service.interf.DicDataService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

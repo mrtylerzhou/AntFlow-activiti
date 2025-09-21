@@ -19,7 +19,6 @@ import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.adaptor.BpmnInsertVariableSubs;
 import org.openoa.common.constant.enus.ElementPropertyEnum;
-import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;

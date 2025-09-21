@@ -7,7 +7,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmBusinessService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 

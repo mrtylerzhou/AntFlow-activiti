@@ -1,7 +1,5 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.pvm.PvmActivity;
@@ -15,9 +13,9 @@ import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
@@ -142,6 +140,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             backToModifyType = ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode();
         }
         ProcessDisagreeTypeEnum processDisagreeTypeEnum = ProcessDisagreeTypeEnum.getByCode(backToModifyType);
+        String backToNodeId=vo.getBackToNodeId();
         switch (processDisagreeTypeEnum) {
             case ONE_DISAGREE:
                 ActHiTaskinst prevTask = processConstants.getPrevTask(taskData.getTaskDefinitionKey(), procInstId);
@@ -163,7 +162,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 backToNodeKey = ProcessNodeEnum.START_TASK_KEY.getDesc();
                 break;
             case FOUR_DISAGREE:
-                String elementId = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                if (!NodeUtil.isCurrentNodeNoneOperational(backToNodeId)) {
+                    throw new AFBizException("不可退回到目标节点,请重试!");
+                }
+                String elementId = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
                 backToNodeKey = elementId;
                 PvmActivity nextElement = additionalInfoService.getNextElement(elementId, bpmBusinessProcess.getProcInstId());
 
@@ -180,7 +182,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 break;
             case FIVE_DISAGREE:
                 restoreNodeKey = taskData.getTaskDefinitionKey();
-                backToNodeKey = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), vo.getBackToNodeId()).get(0);
+                if(!NodeUtil.isCurrentNodeNoneOperational(backToNodeId)){
+                    throw new AFBizException("不可退回到目标节点,请重试!");
+                }
+                backToNodeKey = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
                 break;
             default:
                 throw new AFBizException("未支持的退回类型!");

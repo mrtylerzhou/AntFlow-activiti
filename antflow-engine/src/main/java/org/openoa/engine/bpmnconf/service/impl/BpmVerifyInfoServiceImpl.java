@@ -11,7 +11,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyInfoService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 

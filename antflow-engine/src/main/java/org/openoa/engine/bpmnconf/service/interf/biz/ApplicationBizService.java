@@ -4,7 +4,7 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppApplicationMapper;
-import org.openoa.engine.bpmnconf.service.interf.repository.ApplicationService;
+import org.openoa.engine.bpmnconf.service.interf.ApplicationService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessCategoryVo;
 

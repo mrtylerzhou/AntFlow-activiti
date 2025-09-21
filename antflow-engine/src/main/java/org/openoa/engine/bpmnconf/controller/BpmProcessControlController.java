@@ -7,10 +7,8 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseNumIdStruVo;
 import org.openoa.base.vo.BpmProcessDeptVo;
-import org.openoa.engine.bpmnconf.mapper.DicDataMapper;
 import org.openoa.engine.bpmnconf.service.interf.DicDataService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
-import org.openoa.engine.utils.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

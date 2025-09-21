@@ -11,7 +11,6 @@ import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeRoleConf;
 import org.openoa.base.entity.BpmnNodeRoleOutsideEmpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeRoleConfService;

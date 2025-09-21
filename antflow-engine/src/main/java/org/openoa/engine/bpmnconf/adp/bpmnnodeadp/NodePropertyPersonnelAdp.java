@@ -13,7 +13,6 @@ import org.openoa.base.entity.BpmnNodePersonnelConf;
 import org.openoa.base.entity.BpmnNodePersonnelEmplConf;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceImpl;
 
 import org.openoa.base.util.MultiTenantUtil;

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.CallbackTypeEnum;
 import org.openoa.base.interf.MethodReplay;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableMessageServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableMessageService;
 import org.openoa.engine.factory.ThirdPartyCallbackFactory;
 import org.springframework.beans.factory.annotation.Autowired;
