@@ -188,7 +188,7 @@ let noticeIconShow = computed(() => {
 /**节点名称展示 */
 let showText = computed(() => {
     if (!props.nodeConfig.nodeType) return '';
-    if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '所有人';
+    if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '发起人';
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
 });
