@@ -206,6 +206,14 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         if(CollectionUtils.isEmpty(lfFields)){
             throw new AFBizException("form data does not contains any field");
         }
+        //判断字段值是否超长，主要是判断vform表单中的富文本编辑器
+        for (Map.Entry<String, Object> entry : lfFields.entrySet()) {
+            Object value = entry.getValue();
+            String valueStr = value == null ? "" : value.toString();
+            if (valueStr.length() > 2000) {
+                entry.setValue("该字段超出了表字段设计的最大长度，不做存储，防止antflow表字段长度溢出");
+            }
+        }
         BpmnConfVo bpmnConfVo = vo.getBpmnConfVo();
         Long confId =bpmnConfVo.getId();
         String formCode = vo.getFormCode();
