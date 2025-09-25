@@ -3,7 +3,6 @@ package org.openoa.engine.utils;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Joiner;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
@@ -78,7 +77,7 @@ public class BpmnConfNodePropertyConverter {
                 currentGroupConditionTypes.add(columnIdInt);
                 String fieldName = enumByCode.getFieldName();
                 String columnDbname = newModel.getColumnDbname();
-                if(!fieldName.equals(columnDbname) && !StringUtil.isEmpty(columnDbname)){
+                if(!fieldName.equals(columnDbname) && !ObjectUtils.isEmpty(columnDbname)){
                     //if it is a lowcode flow condition,its name defined in ConditionTypeEnum is a constant,it is lfConditions,it is always not equals to the name specified
                     if(!StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME.equals(fieldName)){
                         throw new AFBizException(String.format("columnDbname:%s is not a valid name",columnDbname));

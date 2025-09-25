@@ -1,8 +1,6 @@
 package org.openoa.engine.bpmnconf.adp.orderedsignadp;
 
 import com.google.common.collect.Lists;
-import jodd.util.StringUtil;
-import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.OutSideBpmAccessEmbedNodeVo;
@@ -10,6 +8,7 @@ import org.openoa.common.adaptor.bpmnelementadp.AbstractOrderedSignNodeAdp;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class OutSideOrderedSignNodeAdp extends AbstractOrderedSignNodeAdp {
         String nodeMark = nodeVo.getProperty().getNodeMark();
         //outside embed node
         List<OutSideBpmAccessEmbedNodeVo> embedNodes = bpmnStartConditions.getEmbedNodes();
-        if(StringUtil.isEmpty(nodeMark)|| CollectionUtils.isEmpty(embedNodes)){
+        if(ObjectUtils.isEmpty(nodeMark)|| CollectionUtils.isEmpty(embedNodes)){
             return Lists.newArrayList("0");
         }
         OutSideBpmAccessEmbedNodeVo embedNodeVo = embedNodes

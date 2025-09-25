@@ -3,13 +3,10 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
-import jodd.util.StringUtil;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.OutSideBpmBusinessParty;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.OutSideBpmProcesses;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAdminPersonnelServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmAdminPersonnelService;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +81,7 @@ public class OutSideBpmBaseServiceImpl {
 
 
             //if name is not empty,then filter by name
-            if (!StringUtil.isEmpty(name)) {
+            if (!ObjectUtils.isEmpty(name)) {
                 outSideBpmBusinessPartyVos = outSideBpmBusinessPartyVos
                         .stream()
                         .filter(o -> o.getName().contains(name))
@@ -110,7 +108,7 @@ public class OutSideBpmBaseServiceImpl {
 
 
         //if name is not empty,then filter data by name
-        if (!StringUtil.isEmpty(name)) {
+        if (!ObjectUtils.isEmpty(name)) {
             wrapper.like("bpmn_name", name);
         }
 

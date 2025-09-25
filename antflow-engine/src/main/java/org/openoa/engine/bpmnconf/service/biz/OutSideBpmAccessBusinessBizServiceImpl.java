@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.dto.PageDto;
@@ -34,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,7 +123,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         businessDataVo.setApprovalEmpls(vo.getApprovalEmpls());
 
         //to check whether start user id empty
-        if (StringUtil.isEmpty(vo.getUserId())) {
+        if (ObjectUtils.isEmpty(vo.getUserId())) {
             throw new AFBizException("发起人用户名为空，无法发起流程！");
         }
 
@@ -191,7 +191,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
 
 
         //check whether business party mark is empty
-        if (StringUtil.isEmpty(vo.getBusinessPartyMark())) {
+        if (ObjectUtils.isEmpty(vo.getBusinessPartyMark())) {
             throw new AFBizException("业务方标识为空，无法发起流程！");
         }
 
@@ -207,7 +207,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         }
 
         //校验发起人是否为空
-        if (StringUtil.isEmpty(vo.getUserId())) {
+        if (ObjectUtils.isEmpty(vo.getUserId())) {
             throw new AFBizException("发起人用户名为空，无法预览流程！");
         }
 
@@ -271,11 +271,11 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
     @Override
     public void processBreak(OutSideBpmAccessBusinessVo vo) {
 
-        if (StringUtil.isEmpty(vo.getFormCode())) {
+        if (ObjectUtils.isEmpty(vo.getFormCode())) {
             throw new AFBizException("表单编号为空，无法终止流程");
         }
 
-        if (StringUtil.isEmpty(vo.getProcessNumber())) {
+        if (ObjectUtils.isEmpty(vo.getProcessNumber())) {
             throw new AFBizException("流程编号为空，无法终止流程");
         }
 
@@ -290,7 +290,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         businessDataVo.setOutSideType(1);
 
 
-        if (!StringUtil.isEmpty(vo.getProcessBreakUserId())) {
+        if (!ObjectUtils.isEmpty(vo.getProcessBreakUserId())) {
             Map<String, Object> objectMap = Maps.newHashMap();
             vo.setUserId(vo.getProcessBreakUserId());
             DetailedUser detailedUser = getEmployeeByUserId(vo.getUserId());

@@ -7,7 +7,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -201,7 +201,7 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                             .build());
                 }
 
-                return returnList.stream().filter(o -> !StringUtil.isEmpty(o.getApplicationName())).collect(Collectors.toList());
+                return returnList.stream().filter(o -> !ObjectUtils.isEmpty(o.getApplicationName())).collect(Collectors.toList());
 
             }
         }
