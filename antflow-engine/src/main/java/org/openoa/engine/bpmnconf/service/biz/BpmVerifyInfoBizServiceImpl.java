@@ -432,6 +432,9 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                     for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
 
                         for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
+                            if (CollectionUtils.isEmpty(verifyInfoVo.getVerifyUserIds())) {
+                                verifyInfoVo.setVerifyUserIds(Lists.newArrayList());
+                            }
                             if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
                                 idTranStruVos.add(baseIdTranStruVo);
                             }

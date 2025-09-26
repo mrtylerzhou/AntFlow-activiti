@@ -8,10 +8,9 @@ import org.openoa.engine.bpmnconf.mapper.BpmVerifyAttachmentMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyAttachmentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * //todo 审批附件 服务层实现
@@ -31,7 +30,7 @@ public class BpmVerifyAttachmentServiceImpl extends ServiceImpl<BpmVerifyAttachm
 
     @Override
     public void addVerifyAttachmentBatch(List<BpmVerifyAttachmentVo> list,Long verifyInfoId) {
-        if (ObjectUtils.isEmpty(list) || verifyInfoId == null) {
+        if (CollectionUtils.isEmpty(list) || verifyInfoId == null) {
             return;
         }
         List<BpmVerifyAttachment> entityList = new ArrayList<>();
@@ -48,7 +47,7 @@ public class BpmVerifyAttachmentServiceImpl extends ServiceImpl<BpmVerifyAttachm
     @Override
     public List<BpmVerifyAttachmentVo> getBpmVerifyAttachment(Long verifyInfoId) {
         List<BpmVerifyAttachmentVo> vos = this.getBaseMapper().getVerifyAttachmentList(verifyInfoId);
-        if (!ObjectUtils.isEmpty(vos)) {
+        if (!CollectionUtils.isEmpty(vos)) {
             return vos;
         }
         return new ArrayList<>();
