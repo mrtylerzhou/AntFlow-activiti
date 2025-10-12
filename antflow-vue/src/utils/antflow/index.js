@@ -61,9 +61,11 @@ All.prototype = {
       const levelMap = {
         1: "直接主管",
         2: "第二主管",
-        3: "第三主管"
+        3: "第三主管",
       };
-      let level = levelMap[nodeConfig.directorLevel] || `第${nodeConfig.directorLevel}级主管`;
+      let level =
+        levelMap[nodeConfig.directorLevel] ||
+        `第${nodeConfig.directorLevel}级主管`;
       if (nodeConfig.signType == 2) {
         return level + "会签";
       } else {
@@ -243,9 +245,10 @@ All.prototype = {
     if (nodeConfig.nodeApproveList.length != 0) {
       return this.arrToStr(nodeConfig.nodeApproveList);
     } else {
-      if (nodeConfig.ccSelfSelectFlag == 1) {
-        return "发起人自选";
-      }
+      // if (nodeConfig.ccSelfSelectFlag == 1) {
+      //   return "发起人自选";
+      // }
+      return "";
     }
   },
   toggleStrClass(item, key) {

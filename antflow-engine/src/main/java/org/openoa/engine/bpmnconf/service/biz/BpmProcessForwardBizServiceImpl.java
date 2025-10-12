@@ -40,7 +40,9 @@ public class BpmProcessForwardBizServiceImpl implements BpmProcessForwardBizServ
             return;
         }
         for (BpmProcessForward next : list) {
-            map.put(next.getProcessInstanceId(), next);
+            if(!StringUtils.isEmpty(next.getProcessInstanceId())){
+                map.put(next.getProcessInstanceId(), next);
+            }
         }
         processForwardMap.putAll(map);
     }

@@ -87,4 +87,8 @@ public class BpmVerifyInfoVo implements Serializable {
      *sort
      */
     private Integer sort;
+    /**
+     * 审批附件
+     */
+    private List<BpmVerifyAttachmentVo> verifyAttachments;
 }

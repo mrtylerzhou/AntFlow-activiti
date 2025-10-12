@@ -83,14 +83,11 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
             throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前流程实例不存在!");
         }
         Task taskData;
-        if(isAbandon){
-            taskData=taskList.get(0);
-        }
-        taskList=taskList.stream().filter(a->SecurityUtils.getLogInEmpId().equals(a.getAssignee())).collect(Collectors.toList());
-        if (!ObjectUtils.isEmpty(taskList)) {
+        if (isAbandon) {
             taskData = taskList.get(0);
         } else {
-            throw  new AFBizException("当前流程已审批!");
+            taskData = taskList.stream().filter(task -> SecurityUtils.getLogInEmpId().equals(task.getAssignee()))
+                    .findFirst().orElseThrow(() -> new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(), "当前流程已审批!"));
         }
         //update process state
         bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()

@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
-import jodd.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -22,6 +21,7 @@ import org.openoa.base.vo.UserMsgVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
+import org.openoa.engine.utils.ReflectionUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -572,7 +572,7 @@ public class ActivitiBpmMsgTemplateServiceImpl {
                     String name = Optional.ofNullable(detailedUser).orElse(new DetailedUser()).getUsername();
                     content = content.replace("{" + noticeReplaceEnum.getDesc() + "}", name);
                 } else {
-                    String property = Optional.ofNullable(BeanUtil.pojo.getProperty(activitiBpmMsgVo, noticeReplaceEnum.getFilName()))
+                    String property = Optional.ofNullable(ReflectionUtils.getProperty(activitiBpmMsgVo, noticeReplaceEnum.getFilName()))
                             .orElse("").toString();
                     content = content.replace("{" + noticeReplaceEnum.getDesc() + "}", property);
                 }

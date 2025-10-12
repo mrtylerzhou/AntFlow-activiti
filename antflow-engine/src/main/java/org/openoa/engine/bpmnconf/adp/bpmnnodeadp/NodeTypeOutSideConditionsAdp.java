@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
@@ -13,6 +12,7 @@ import org.openoa.engine.bpmnconf.service.impl.OutSideBpmnNodeConditionsConfServ
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 /**
  * @author AntFlow
@@ -29,12 +29,9 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
        super.formatToBpmnNodeVo(bpmnNodeVo);
 
-        if(StringUtil.isEmpty(bpmnNodeVo.getConditionsUrl())){
+        if(ObjectUtils.isEmpty(bpmnNodeVo.getConditionsUrl())){
             return ;
         }
-
-
-
         //get conditions conf by node id
         OutSideBpmnNodeConditionsConf outSideBpmnNodeConditionsConf = outSideBpmnNodeConditionsConfService.getOne(new QueryWrapper<OutSideBpmnNodeConditionsConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));

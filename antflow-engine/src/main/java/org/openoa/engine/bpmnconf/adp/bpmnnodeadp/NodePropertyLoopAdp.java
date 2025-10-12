@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
-import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
@@ -14,12 +13,12 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeLoopConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeLoopConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLoopConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -45,13 +44,13 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (bpmnNodeLoopConf!=null) {
-            List<Serializable> list =!StringUtil.isEmpty(bpmnNodeLoopConf.getLoopEndPerson())
+            List<Serializable> list =!ObjectUtils.isEmpty(bpmnNodeLoopConf.getLoopEndPerson())
                     ? Arrays.asList(bpmnNodeLoopConf.getLoopEndPerson().split(","))
                     .stream()
                     .map(Long::new)
                     .collect(Collectors.toList())
                     : new ArrayList<>();
-            List<Serializable> noList = !StringUtil.isEmpty(bpmnNodeLoopConf.getNoparticipatingStaffIds())
+            List<Serializable> noList = !ObjectUtils.isEmpty(bpmnNodeLoopConf.getNoparticipatingStaffIds())
                     ? Arrays.asList(bpmnNodeLoopConf.getNoparticipatingStaffIds().split(","))
                     .stream()
                     .map(Long::new)

@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.SortTypeEnum;
 import org.openoa.base.dto.PageDto;
@@ -13,6 +12,7 @@ import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +66,7 @@ public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEn
     public Page<QuickEntryVo> getPcProcessData(Page<QuickEntryVo> page) {
         return page.setRecords(page.getRecords().stream()
                 .map(o -> {
-                    if (!StringUtil.isEmpty(o.getTypeIds())) {
+                    if (!ObjectUtils.isEmpty(o.getTypeIds())) {
                         List<Integer> list = new ArrayList<>();
                         String[] split = o.getTypeIds().split("\\,");
                         if (split.length > 0) {
@@ -93,7 +93,7 @@ public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEn
         if (limitSize==null) {
             limitSize = 10;
         }
-        if (!StringUtil.isEmpty(search)) {
+        if (!ObjectUtils.isEmpty(search)) {
             return getBaseMapper().searchQuickEntry(search, limitSize);
         }
         return Collections.EMPTY_LIST;

@@ -46,7 +46,10 @@
                 </el-icon>
                 <div>
                     <p>我的草稿</p>
-                    <span>0</span>
+                    <span><el-icon size="50">
+                            <Right />
+                        </el-icon>
+                    </span>
                 </div>
             </div>
         </el-col>
@@ -84,7 +87,7 @@ const handleTodayCreate = () => {
     proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDraft = () => {
-    const obj = { path: "/approveV2" };
+    const obj = { path: "/flowTask/copyToMe" };
     proxy.$tab.openPage(obj);
 }
 </script>

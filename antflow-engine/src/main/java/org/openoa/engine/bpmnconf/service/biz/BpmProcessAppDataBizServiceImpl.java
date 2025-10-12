@@ -1,7 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.entity.BpmProcessAppApplication;
@@ -9,9 +8,6 @@ import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.base.entity.QuickEntry;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.QuickEntryServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.SysVersionServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
@@ -21,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -136,7 +133,7 @@ public class BpmProcessAppDataBizServiceImpl implements BpmProcessAppDataBizServ
             return StringUtils.EMPTY;
         }
 
-        if (!StringUtil.isEmpty(bpmProcessAppApplication.getBusinessCode())) {
+        if (!ObjectUtils.isEmpty(bpmProcessAppApplication.getBusinessCode())) {
             return StringUtils.join(bpmProcessAppApplication.getBusinessCode(), "_", bpmProcessAppApplication.getProcessKey());
         }
 

@@ -25,10 +25,6 @@ import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.LFMainFieldServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.LFMainServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
@@ -205,6 +201,14 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Map<String, Object> lfFields = vo.getLfFields();
         if(CollectionUtils.isEmpty(lfFields)){
             throw new AFBizException("form data does not contains any field");
+        }
+        //判断字段值是否超长，主要是判断vform表单中的富文本编辑器
+        for (Map.Entry<String, Object> entry : lfFields.entrySet()) {
+            Object value = entry.getValue();
+            String valueStr = value == null ? "" : value.toString();
+            if (valueStr.length() > 2000) {
+                entry.setValue("该字段超出了表字段设计的最大长度，不做存储，防止antflow表字段长度溢出");
+            }
         }
         BpmnConfVo bpmnConfVo = vo.getBpmnConfVo();
         Long confId =bpmnConfVo.getId();

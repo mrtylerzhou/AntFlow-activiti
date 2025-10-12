@@ -138,7 +138,7 @@ const reErr = ({ childNode }) => {
         else if (nodeType == 3) {
             reErr(childNode);
         }
-        else if (nodeType == 4 || nodeType == 5) {
+        else if (nodeType == 4 || nodeType == 6) {
             if (error) {
                 tipList.value.push({
                     name: nodeName,

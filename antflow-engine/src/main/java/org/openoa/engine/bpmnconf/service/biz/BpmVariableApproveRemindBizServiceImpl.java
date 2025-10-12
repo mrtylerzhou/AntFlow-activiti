@@ -6,7 +6,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import jodd.bean.BeanCopy;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.openoa.engine.utils.ReflectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -192,7 +192,8 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
             if (!ObjectUtils.isEmpty(bpmVariable)) {
                 BpmnTimeoutReminderVariableVo bpmnTimeoutReminderVariableVo = new BpmnTimeoutReminderVariableVo();
-                BeanCopy.from(bpmVariable).to(bpmnTimeoutReminderVariableVo).copy();
+                //BeanCopy.from(bpmVariable).to(bpmnTimeoutReminderVariableVo).copy();
+                ReflectionUtils.copyProperties(bpmVariable, bpmnTimeoutReminderVariableVo);
                 bpmnTimeoutReminderVariableVo.setProcessinessKey(val.getProcessinessKey());
                 bpmnTimeoutReminderVariableVo.setBusinessId(val.getBusinessId());
                 bpmnTimeoutReminderVariableVo.setEntryId(val.getEntryId());

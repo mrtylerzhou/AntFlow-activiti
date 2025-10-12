@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.exception.AFBizException;
@@ -15,6 +14,7 @@ import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +63,7 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
      */
     @Override
     public BpmProcessAppApplicationVo getApplicationUrl(String businessCode, String processKey) {
-        if (!StringUtil.isEmpty(businessCode) &&!StringUtil.isEmpty(processKey)) {
+        if (!ObjectUtils.isEmpty(businessCode) &&!ObjectUtils.isEmpty(processKey)) {
 
             List<BpmProcessAppApplication> list = this.list(
                     AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
@@ -74,13 +74,13 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
                 BpmProcessAppApplication application = list.get(0);
                 BpmProcessAppApplicationVo vo = new BpmProcessAppApplicationVo();
                BeanUtils.copyProperties(application, vo);
-                if (!StringUtil.isEmpty(vo.getLookUrl())) {
+                if (!ObjectUtils.isEmpty(vo.getLookUrl())) {
                     vo.setLookUrl(StringEscapeUtils.unescapeHtml4(vo.getLookUrl()));
                 }
-                if (!StringUtil.isEmpty(vo.getSubmitUrl())) {
+                if (!ObjectUtils.isEmpty(vo.getSubmitUrl())) {
                     vo.setSubmitUrl(StringEscapeUtils.unescapeHtml4(vo.getSubmitUrl()));
                 }
-                if (!StringUtil.isEmpty(vo.getConditionUrl())) {
+                if (!ObjectUtils.isEmpty(vo.getConditionUrl())) {
                     vo.setConditionUrl(StringEscapeUtils.unescapeHtml4(vo.getConditionUrl()));
                 }
                 return vo;
@@ -95,14 +95,14 @@ public class ApplicationServiceImpl extends ServiceImpl<BpmProcessAppApplication
      */
     @Override
     public List<BaseApplicationVo> getApplicationKeyList(BpmProcessAppApplicationVo applicationVo) {
-        if (applicationVo==null || StringUtil.isEmpty(applicationVo.getBusinessCode())) {
+        if (applicationVo==null || ObjectUtils.isEmpty(applicationVo.getBusinessCode())) {
             return Lists.newArrayList();
         }
         List<BpmProcessAppApplication> list = this.list(
                 AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
                         .eq(BpmProcessAppApplication::getBusinessCode,applicationVo.getBusinessCode()));
         return list.stream()
-                .filter(o -> !StringUtil.isEmpty(o.getProcessKey()))
+                .filter(o -> !ObjectUtils.isEmpty(o.getProcessKey()))
                 .map(o -> BaseApplicationVo
                         .builder()
                         .id(o.getProcessKey())

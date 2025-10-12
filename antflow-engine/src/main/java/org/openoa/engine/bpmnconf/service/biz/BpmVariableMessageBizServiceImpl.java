@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import jodd.bean.BeanUtil;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
@@ -36,6 +35,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeServ
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
+import org.openoa.engine.utils.ReflectionUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -688,7 +688,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             if (StringUtils.isEmpty(wildcardCharacterEnum.getFilName())) {
                 continue;
             }
-            Object property = BeanUtil.pojo.getProperty(vo, wildcardCharacterEnum.getFilName());
+            Object property = ReflectionUtils.getProperty(vo, wildcardCharacterEnum.getFilName());
             if (property!=null) {
                 if (wildcardCharacterEnum.getIsSearchEmpl()) {
                     if (property instanceof List) {
@@ -774,7 +774,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                     continue;
                 }
                 //todo check whether the result is valid
-                Object filObject = BeanUtil.pojo.getProperty(vo, informEnum.getFilName());
+                Object filObject = ReflectionUtils.getProperty(vo, informEnum.getFilName());
                 if (filObject instanceof List) {
                     sendUsers.addAll((List) filObject);
                 } else if (filObject!=null) {

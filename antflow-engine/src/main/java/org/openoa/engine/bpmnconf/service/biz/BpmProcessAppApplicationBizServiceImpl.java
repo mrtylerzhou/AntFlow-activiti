@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.constant.enums.ApplyType;
@@ -14,7 +13,6 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
-import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
@@ -24,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -84,12 +83,12 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
     public Page<BpmProcessAppApplicationVo> getPcProcessData(Page<BpmProcessAppApplicationVo> page) {
         return page.setRecords(page.getRecords().stream()
                 .map(o -> {
-                    if (!StringUtil.isEmpty(o.getEntrance())) {
+                    if (!ObjectUtils.isEmpty(o.getEntrance())) {
                         o.setName(o.getTitle() + "," + o.getEntrance());
                     } else {
                         o.setName(o.getTitle());
                     }
-                    if (!StringUtil.isEmpty(o.getTypeIds())) {
+                    if (!ObjectUtils.isEmpty(o.getTypeIds())) {
                         String[] split = o.getTypeIds().split(",");
                         List<Long> list = new ArrayList<>();
                         if (split.length > 1) {
@@ -343,11 +342,11 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
                         o -> o,
                         (a, b) -> a));
         return list.stream().peek(o -> {
-            if (!StringUtil.isEmpty(o.getProcessKey())) {
+            if (!ObjectUtils.isEmpty(o.getProcessKey())) {
                 o.setSource(o.getEffectiveSource());
 
                 //如果该应用是外部应用 则code为业务标识前缀+code
-                if (!StringUtil.isEmpty(o.getBusinessCode())) {
+                if (!ObjectUtils.isEmpty(o.getBusinessCode())) {
                     o.setProcessCode(o.getBusinessCode() + "_" + o.getProcessKey());
                     o.setProcessKey(o.getProcessCode());
                 } else {
@@ -425,7 +424,7 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
         List<BpmProcessAppApplication> appApplications = this.getMapper().selectList(new QueryWrapper<BpmProcessAppApplication>().eq("is_del", 0).eq("apply_type", 2));
         if (!CollectionUtils.isEmpty(appApplications)) {
             for (BpmProcessAppApplication appApplication : appApplications) {
-                if (!StringUtil.isEmpty(appApplication.getPermissionsCode())) {
+                if (!ObjectUtils.isEmpty(appApplication.getPermissionsCode())) {
 
                 } else {
                     processKey.add(appApplication.getProcessKey());

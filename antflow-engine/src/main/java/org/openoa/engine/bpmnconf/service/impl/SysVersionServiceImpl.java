@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jodd.util.StringUtil;
 import org.openoa.base.constant.enums.VersionIsForceEnums;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.base.exception.AFBizException;
@@ -13,6 +12,7 @@ import org.openoa.engine.vo.SysVersionVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      */
     @Override
     public AppVersionVo getAppVersion(String application, String appVersion) {
-        if (StringUtil.isEmpty(application) || StringUtil.isEmpty(appVersion)) {
+        if (ObjectUtils.isEmpty(application) || ObjectUtils.isEmpty(appVersion)) {
             return null;
         }
         List<SysVersion> list;
@@ -156,7 +156,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      */
     @Override
     public List<SysVersion> listVersion(Long id, String version, Integer index, Boolean isDel) {
-        if ((id==null) && (StringUtil.isEmpty(version)) && (index==null) && (!isDel)) {
+        if ((id==null) && (ObjectUtils.isEmpty(version)) && (index==null) && (!isDel)) {
             //listVersion params can not be all null
             return Collections.EMPTY_LIST;
         }
@@ -164,7 +164,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         if (id!=null) {
             wrapper.eq("id", id);
         }
-        if (!StringUtil.isEmpty(version)) {
+        if (!ObjectUtils.isEmpty(version)) {
             wrapper.eq("version", version);
         }
         if (index!=null) {
@@ -204,7 +204,7 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
      */
     @Override
     public SysVersion getInfoByVersion(String version) {
-        if (StringUtil.isEmpty(version)) {
+        if (ObjectUtils.isEmpty(version)) {
             throw new AFBizException( "版本号错误!");
         }
         return getOne(new QueryWrapper<SysVersion>().eq("version", version));

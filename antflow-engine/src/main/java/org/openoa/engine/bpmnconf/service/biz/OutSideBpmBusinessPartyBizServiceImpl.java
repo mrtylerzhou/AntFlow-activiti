@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jodd.bean.BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.AdminPersonnelTypeEnum;
 import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
@@ -20,6 +19,7 @@ import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.OutSideBpmBusinessPartyMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmBusinessPartyBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
+import org.openoa.engine.utils.ReflectionUtils;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.NodeRolePersonVo;
 import org.openoa.engine.vo.OutSideBpmApplicationVo;
@@ -195,7 +195,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
 
             //add records in batch
             for (AdminPersonnelTypeEnum typeEnum : AdminPersonnelTypeEnum.values()) {
-                Object property = BeanUtil.pojo.getProperty(vo, typeEnum.getIdsField());
+                Object property = ReflectionUtils.getProperty(vo, typeEnum.getIdsField());
                 if (property != null && property instanceof List) {
                     List<String> ids = (List<String>) property;
                     outSideBpmAdminPersonnelService.saveBatch(ids
@@ -438,7 +438,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                                         .orElse(new DetailedUser()).getUsername())
                                 .build())
                         .collect(Collectors.toList());
-                BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getListField(), personnelsList);
+                ReflectionUtils.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getListField(), personnelsList);
 
                 //admin's id list
                 List<String> idsList = bpmAdminPersonnels
@@ -446,7 +446,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                         .map(OutSideBpmAdminPersonnel::getEmployeeId)
                         .distinct()
                         .collect(Collectors.toList());
-                BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getIdsField(), idsList);
+                ReflectionUtils.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getIdsField(), idsList);
 
             } else {
                 //format name
@@ -455,7 +455,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                         .map(o -> Optional.ofNullable(employeeMap.get(o.getEmployeeId()))
                                 .orElse(new DetailedUser()).getUsername())
                         .collect(Collectors.toList()), ",");
-                BeanUtil.pojo.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getStrField(), personnelsStr);
+                ReflectionUtils.setProperty(outSideBpmBusinessPartyVo, personnelTypeEnum.getStrField(), personnelsStr);
             }
 
         }

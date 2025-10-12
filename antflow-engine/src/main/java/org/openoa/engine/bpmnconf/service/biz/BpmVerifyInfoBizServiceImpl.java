@@ -19,6 +19,7 @@ import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmVerifyAttachmentVo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -36,6 +37,7 @@ import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyAttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -101,6 +103,10 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private BpmVariableMapper bpmVariableMapper;
     @Autowired
     private BpmnNodeMapper bpmnNodeMapper;
+
+    @Autowired
+    private BpmVerifyAttachmentService bpmVerifyAttachmentService;
+
 
     @Override
     public List<BpmVerifyInfoVo> getVerifyInfoList(String processCode) {
@@ -173,7 +179,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                 sort++;
                 bpmVerifyInfoSortVos.add(vo);
 
-
                 bpmVerifyInfoVo.setTaskName(actHiTaskinst.getName());
                 bpmVerifyInfoVo.setVerifyUserId(lastAssignee);
                 if (!StringUtils.isEmpty(lastAssigneeName)) {
@@ -189,6 +194,11 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                 bpmVerifyInfoVo.setVerifyStatusName(StringUtils.EMPTY);
             }
 
+            if (!StringUtils.isEmpty(bpmVerifyInfoVo.getId()) && bpmVerifyInfoVo.getId().matches("\\d+")) {
+                Long verifyInfoId = Long.parseLong(bpmVerifyInfoVo.getId());
+                List<BpmVerifyAttachmentVo> bpmVerifyAttachmentList = bpmVerifyAttachmentService.getBpmVerifyAttachment(verifyInfoId);
+                bpmVerifyInfoVo.setVerifyAttachments(bpmVerifyAttachmentList);
+            }
             bpmVerifyInfoVo.setSort(sort);
             bpmVerifyInfoSortVos.add(bpmVerifyInfoVo);
             sort++;
@@ -422,6 +432,9 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                     for (BaseIdTranStruVo baseIdTranStruVo : baseIdTranStruVos) {
 
                         for (BpmVerifyInfoVo verifyInfoVo : verifyInfoVos) {
+                            if (CollectionUtils.isEmpty(verifyInfoVo.getVerifyUserIds())) {
+                                verifyInfoVo.setVerifyUserIds(Lists.newArrayList());
+                            }
                             if(!verifyInfoVo.getVerifyUserIds().contains(baseIdTranStruVo.getId())){
                                 idTranStruVos.add(baseIdTranStruVo);
                             }

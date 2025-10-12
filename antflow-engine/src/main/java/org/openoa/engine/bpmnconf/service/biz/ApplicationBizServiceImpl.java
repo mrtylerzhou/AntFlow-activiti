@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import jodd.util.StringUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.SortTypeEnum;
@@ -30,6 +29,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class ApplicationBizServiceImpl  implements ApplicationBizService {
     public void edit(BpmProcessAppApplicationVo vo) {
         BpmProcessAppApplication application = new BpmProcessAppApplication();
         BeanUtils.copyProperties(vo, application);
-        if (!StringUtil.isEmpty(application.getRoute())) {
+        if (!ObjectUtils.isEmpty(application.getRoute())) {
             application.setRoute(StringEscapeUtils.unescapeHtml4(application.getRoute()));
         }
         if (vo.getId()!=null) {
@@ -94,7 +94,7 @@ public class ApplicationBizServiceImpl  implements ApplicationBizService {
                             .builder()
                             .applicationId(application.getId().longValue())
                             .processTypes(vo.getProcessTypes())
-                            .visbleState(!StringUtil.isEmpty(vo.getBusinessCode()) ? 0 : 1)
+                            .visbleState(!ObjectUtils.isEmpty(vo.getBusinessCode()) ? 0 : 1)
                             .build());
 
 
@@ -136,7 +136,7 @@ public class ApplicationBizServiceImpl  implements ApplicationBizService {
                                         .builder()
                                         .applicationId(sonId.longValue())
                                         .processTypes(newTypes)
-                                        .visbleState(!StringUtil.isEmpty(vo.getBusinessCode()) ? 0 : 1)
+                                        .visbleState(!ObjectUtils.isEmpty(vo.getBusinessCode()) ? 0 : 1)
                                         .build());
                     }
                 }
@@ -279,7 +279,7 @@ public class ApplicationBizServiceImpl  implements ApplicationBizService {
      */
     @Override
     public List<BpmProcessAppApplicationVo> getParentApplicationList(BpmProcessAppApplicationVo applicationVo) {
-        List<BpmProcessAppApplication> list = applicationVo!=null && !StringUtil.isEmpty(applicationVo.getBusinessCode())
+        List<BpmProcessAppApplication> list = applicationVo!=null && !ObjectUtils.isEmpty(applicationVo.getBusinessCode())
                 ? this.getService().list(
                 AFWrappers.<BpmProcessAppApplication>lambdaTenantQuery()
                         .eq(BpmProcessAppApplication::getBusinessCode,applicationVo.getBusinessCode())

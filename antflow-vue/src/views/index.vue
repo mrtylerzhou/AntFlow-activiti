@@ -160,13 +160,26 @@
           </el-collapse>
         </el-card>
       </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="12">
+        <el-card shadow="always">
+          <template v-slot:header>
+            <div class="clearfix">
+              <span>柱状图</span>
+            </div>
+          </template>
+          <div class="body">
+            <BarLabelRotation style="height: 580px" />
+          </div>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup name="Index">
-import shortcuts from "@/components/Dashboard/Shortcuts";
+import shortcuts from "@/components/Dashboard/Shortcuts"
 import useSettingsStore from '@/store/modules/settings'
+import BarLabelRotation from '@/components/ECharts/eZhuZhuangTu/BarLabelRotation.vue'
 const settingsStore = useSettingsStore()
 const version = settingsStore.version;
 console.log("VITE_APP_ENV=======", import.meta.env.VITE_APP_ENV);
