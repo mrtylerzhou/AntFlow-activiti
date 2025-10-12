@@ -40,6 +40,7 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmit
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -257,6 +258,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     }
                     if(!CollectionUtils.isEmpty(otherNewTasks)){
                         for (Task otherNewTask : otherNewTasks) {
+
+                            if(otherNewTaskIds.contains(otherNewTask.getId())){
+                                continue;
+                            }
                             Map<String,Object> varMap=new HashMap<>();
                             varMap.put(StringConstants.TASK_ASSIGNEE_NAME, otherNewTask.getAssigneeName());
                             try {
