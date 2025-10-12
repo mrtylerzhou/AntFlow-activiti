@@ -22,6 +22,7 @@
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
+        <ToBackStateImg v-if="hasResubmit" />
     </div>
 </template>
 
@@ -32,6 +33,7 @@ import Cookies from "js-cookie";
 import transferDialog from './transferDialog.vue';
 import approveDialog from './approveDialog.vue';
 import repulseDialog from './repulseDialog.vue';
+import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
@@ -116,6 +118,8 @@ const clickApproveSubmit = async (btnType) => {
  */
 const approveSubmit = async (param) => {
     approveSubData.value.approvalComment = param.remark;
+    approveSubData.value.verifyAttachments = param.verifyAttachments;
+
     approveSubData.value.operationType = handleClickType.value;
     if (handleClickType.value == approvalButtonConf.resubmit || handleClickType.value == approvalButtonConf.agree) {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
@@ -142,6 +146,7 @@ const approveSubmit = async (param) => {
  * @param param 
  */
 const approveProcess = async (param) => {
+    console.log('approveProcess==========param=============', JSON.stringify(param));
     proxy.$modal.confirm('确定完成操作吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
