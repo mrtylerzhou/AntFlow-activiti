@@ -10,8 +10,12 @@
                                 <el-button icon="Search" @click="handleQuery" />
                             </template>
                         </el-input>
-                        <el-button icon="Refresh" @click="getList"
-                            style="width: 30px; height: 30px; margin: 0px 10px;" />
+                        <el-badge v-if="total > 0" :value="total" :offset="[-10, 5]">
+                            <el-button icon="Refresh" @click="getList"
+                                style="width: 30px; height: 30px; margin: 0px 5px;" />
+                        </el-badge>
+                        <el-button v-else icon="Refresh" @click="getList"
+                            style="width: 30px; height: 30px; margin: 0px 5px;" />
                     </div>
                 </el-header>
                 <el-main>
@@ -36,7 +40,9 @@
                                         </p>
                                         <p class="card-time">
                                             <span>审批状态：</span>
-                                            <span class="card-time-value">{{ item.taskState }}</span>
+                                            <span class="card-time-value">
+                                                <el-tag type="primary">{{ item.taskState }}</el-tag>
+                                            </span>
                                         </p>
                                         <p class="card-time">
                                             <span>发起时间：</span>
@@ -57,15 +63,9 @@
                                     </div>
                                 </div>
                             </el-card>
-                            <div style="width: 100%;" v-if="dataList.length !== 0">
-                                <el-button :loading="loadingMore" :disabled="pageDto.page == 1" type="primary"
-                                    style="width: 45%;float: left;"
-                                    @click.prevent="loadMoreFlowList('before')">上一页</el-button>
-                                <el-button :loading="loadingMore" :disabled="pageDto.page * pageDto.pageSize >= total"
-                                    type="primary" style="width: 45%;float: right;"
-                                    @click.prevent="loadMoreFlowList('after')">下一页</el-button>
-
-                            </div>
+                            <pagination v-show="total > pageDto.pageSize" :total="total" v-model:page="pageDto.page"
+                                :pagerCount="5" :layout="layoutSize" v-model:limit="pageDto.pageSize"
+                                @pagination="getList" />
                         </div>
                     </el-scrollbar>
                 </el-main>
@@ -103,7 +103,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
+import Cookies from "js-cookie";
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
@@ -124,7 +125,7 @@ const data = reactive({
     form: {},
     pageDto: {
         page: 1,
-        pageSize: 5
+        pageSize: 10
     },
     taskMgmtVO: {
         processNumber: undefined,
@@ -137,6 +138,8 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
+const userId = Cookies.get("userId");
+const layoutSize = 'pager';
 onMounted(async () => {
     await getList();
 });
@@ -235,7 +238,7 @@ window.onload = function () {
 }
 
 .layout-setup .el-aside {
-    width: 260px;
+    width: 270px;
     color: var(--el-text-color-primary);
     background: #cccccc59;
 }
@@ -288,7 +291,7 @@ window.onload = function () {
 }
 
 .item-card {
-    width: 260px;
+    width: 270px;
     box-shadow: var(--el-box-shadow-light);
 }
 
@@ -365,6 +368,10 @@ window.onload = function () {
     color: #222;
     font-weight: 500;
     margin-left: 2px;
+}
+
+.card-time-value .el-tag {
+    margin-right: 8px;
 }
 
 .card-user {

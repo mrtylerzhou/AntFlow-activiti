@@ -75,19 +75,19 @@ const getTodo = () => {
 }
 getTodo();
 const handleTodo = () => {
-    const obj = { path: "/flowTask/pendding" };
+    const obj = { path: "/flowtask/pendding" };
     proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDone = () => {
-    const obj = { path: "/flowTask/approved" };
+    const obj = { path: "/flowtask/approved" };
     proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayCreate = () => {
-    const obj = { path: "/flowTask/mytask" };
+    const obj = { path: "/flowtask/mytask" };
     proxy.$tab.closeOpenPage(obj);
 }
 const handleTodayDraft = () => {
-    const obj = { path: "/flowTask/copyToMe" };
+    const obj = { path: "/flowtask/copyToMe" };
     proxy.$tab.openPage(obj);
 }
 </script>

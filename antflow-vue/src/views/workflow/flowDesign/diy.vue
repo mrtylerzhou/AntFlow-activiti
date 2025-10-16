@@ -75,6 +75,11 @@ onMounted(async () => {
     proxy.$modal.loading();
     if (route.query.id) {
         mockjson = await getApiWorkFlowData({ id: route.query.id });
+        if (!mockjson.code || mockjson.code != 200) {
+            proxy.$modal.closeLoading();
+            proxy.$modal.msgError("获取API数据失败" + JSON.stringify(mockjson.errMsg));
+            return;
+        }
     } else {
         mockjson = NodeUtils.createStartNode();
     }

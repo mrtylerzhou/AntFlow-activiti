@@ -23,8 +23,8 @@
       ]
     },
     {
-      "name": "flowTask",
-      "path": "/flowTask",
+      "name": "flowtask",
+      "path": "/flowtask",
       "hidden": false,
       "redirect": "noRedirect",
       "component": "Layout",
