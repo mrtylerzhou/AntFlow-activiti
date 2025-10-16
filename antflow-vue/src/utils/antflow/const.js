@@ -75,13 +75,26 @@ export class approvalButtonConf {
   static resubmit = 2; //重新提交
   static agree = 3; //同意
   static noAgree = 4; //拒绝
+  static repulse = 6; //退回上节点修改
+  static invalid = 7; //作废
   static print = 8; //打印
   static undertake = 10; //承办
+  static changeApprove = 11; //变更处理人
   static terminate = 12; //终止
   static forward = 15; //转发
   static repulse = 18; //退回
   static addApproval = 19; //加批
   static transfer = 21; //转办
+  static selectApprove = 22; //自选审批人
+  static backToAnyNode = 23; //退回任意节点
+  static currentNodeReduceSign = 24; //当前节点减签
+  static currentNodeAddSign = 25; //当前节点加签
+  static futureNodeChangeApprove = 26; //未来节点变更处理人
+  static futureNodeReduceSign = 27; //未来节点减签
+  static futureNodeAddSign = 28; //未来节点加签
+  static withdraw = 29; //流程撤回
+  static inApproval = 99; //处理中
+  static completed = 100; //已完成
 
   static buttonsObj = {
     0: "预览",
@@ -90,18 +103,24 @@ export class approvalButtonConf {
     3: "同意", //拒绝
     4: "不同意", //拒绝
     6: "退回上节点修改", //退回上节点修改
+    7: "作废", //
     8: "打印", //打印
     10: "承办", //承办
-    11: "变更处理人", //变更处理人
+    11: "当前节点变更处理人", //变更处理人
     12: "终止", //终止
     13: "添加审批人", //添加审批人
     15: "转发", //转发
     18: "退回", //退回修改
     19: "加批", //加批
-    20: "加批", //扫码帮助
     21: "转办", //转办
     22: "自选审批人", //自选审批人
     23: "退回任意节点", //退回任意节点
+    24: "当前节点减签",
+    25: "当前节点加签",
+    26: "未来节点变更处理人",
+    27: "未来节点减签",
+    28: "未来节点加签",
+    29: "流程撤回",
   };
 }
 /**
