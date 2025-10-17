@@ -104,7 +104,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import Cookies from "js-cookie";
 import FlowStepTable from '@/components/Workflow/Preview/flowStepTable.vue';
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue';
 import ApporveForm from "./components/approveForm.vue";
@@ -118,7 +117,6 @@ const activeIndex = ref(null);
 const activeName = ref('baseTab');
 const dataList = ref([]);
 const loading = ref(true);
-const loadingMore = ref(false);
 const total = ref(0);
 const approveFormDataConfig = ref(null);
 const data = reactive({
@@ -138,7 +136,6 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
-const userId = Cookies.get("userId");
 const layoutSize = 'pager';
 onMounted(async () => {
     await getList();
@@ -148,13 +145,16 @@ async function handleQuery() {
     pageDto.value.page = 1;
     await getList();
 }
-/** 查询岗位列表 */
+/** 查询代办列表 */
 async function getList() {
     loading.value = true;
+    console.log(pageDto.value, taskMgmtVO.value);
     await getPenddinglistPage(pageDto.value, taskMgmtVO.value).then(response => {
         dataList.value = response.data;
         total.value = response.pagination.totalCount;
-        loading.value = false;
+        setTimeout(() => {
+            loading.value = false;
+        }, 300);
     }).catch((r) => {
         loading.value = false;
         console.log(r);
@@ -165,26 +165,9 @@ async function getList() {
  * 刷新列表
 */
 const refreshList = async () => {
-    loadingMore.value = true;
     await getList();
-    loadingMore.value = false;
     toggleFlowActive(dataList.value[0], 0);
 }
-/**
- * 上一页下一页
-*/
-const loadMoreFlowList = async (type) => {
-    loadingMore.value = true;
-    if (type === 'after') {
-        pageDto.value.page++;
-    } else {
-        pageDto.value.page = pageDto.value.page > 1 ? pageDto.value.page - 1 : 1;
-    }
-    await getList();
-    loadingMore.value = false;
-    toggleFlowActive(dataList.value[0], 0);
-}
-
 const toggleFlowActive = (data, index) => {
     if (proxy.isEmpty(data)) {
         return;
