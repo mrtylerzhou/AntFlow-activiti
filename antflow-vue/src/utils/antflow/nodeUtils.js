@@ -39,13 +39,13 @@ export class NodeUtils {
       childNode: child,
       error: true,
       property: {
-        afterSignUpWay: 2,
+        afterSignUpWay: 1,
         signUpType: 1,
       },
       lfFieldControlVOs: [],
       buttons: {
         startPage: [1],
-        approvalPage: [3, 4, 18, 21],
+        approvalPage: [3, 4, 18, 19, 21],
         viewPage: [0],
       },
       nodeApproveList: [],
@@ -322,12 +322,12 @@ export class NodeUtils {
       lfFieldControlVOs: [],
       templateVos: [], //消息通知设置
       property: {
-        afterSignUpWay: 2, //是否回到加批人 1:是，2:否
+        afterSignUpWay: 1, //是否回到加批人 1:是，2:否
         signUpType: 1, //加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
       },
       buttons: {
         startPage: [1],
-        approvalPage: [3, 4, 18, 21],
+        approvalPage: [3, 4, 18, 19, 21],
         viewPage: [0],
       },
       error: true,

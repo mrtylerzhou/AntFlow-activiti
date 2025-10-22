@@ -5,7 +5,7 @@
                 <el-header>
                     <div class="toolbar">
                         <el-input v-model="taskMgmtVO.processNumber" placeholder="请输入关键字" clearable
-                            style="width: 200px">
+                            style="width: 225px">
                             <template #append>
                                 <el-button icon="Search" @click="handleQuery" />
                             </template>
@@ -221,14 +221,13 @@ window.onload = function () {
 }
 
 .layout-setup .el-aside {
-    width: 270px;
+    width: 300px;
     color: var(--el-text-color-primary);
     background: #cccccc59;
 }
 
 .layout-aside .el-header {
     position: relative;
-    background-color: #f2f3f4f5;
     color: var(--el-text-color-primary);
     border-radius: 5px;
 }
@@ -274,7 +273,7 @@ window.onload = function () {
 }
 
 .item-card {
-    width: 270px;
+    width: 290px;
     box-shadow: var(--el-box-shadow-light);
 }
 
