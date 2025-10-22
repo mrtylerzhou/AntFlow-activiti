@@ -56,7 +56,7 @@ public class ChangeAssigneeProcessImpl implements ProcessOperationAdaptor {
             String user = userInfos.get(i).getId();
             String userName=userInfos.get(i).getName();
             String assignee = task.getAssignee();
-            String assigneeName=task.getDescription();
+            String assigneeName = task.getAssigneeName();
             if(!userIds.contains(assignee)){
                 bpmFlowrunEntrustService.addFlowrunEntrust(user,userName,assignee,assigneeName,task.getId(),0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey());
                 TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().applyUser(user).applyUserName(userName).taskId(task.getId()).build();
