@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 public class BaseInfoTranStructVo extends BaseIdTranStruVo{
     private String varName;
     private String variableId;
+    private String elementId;
 }

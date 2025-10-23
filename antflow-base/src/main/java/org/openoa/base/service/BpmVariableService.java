@@ -14,4 +14,6 @@ public interface BpmVariableService extends IService<BpmVariable> {
     void addNodeAssignees(String processNumber, String elementId, List<BaseIdTranStruVo> assignees);
 
     void  updateAssignee(String processNumber, String elementId, String assignee, BaseIdTranStruVo newAssigneeInfo);
+
+    void updateAssigneeById(String id, String processNumber,String elementId,String assignee,BaseIdTranStruVo newAssigneeInfo);
 }

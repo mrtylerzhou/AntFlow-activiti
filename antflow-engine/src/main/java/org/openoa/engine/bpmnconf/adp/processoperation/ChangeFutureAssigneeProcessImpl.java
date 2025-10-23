@@ -7,6 +7,7 @@ import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseInfoTranStructVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -43,6 +44,9 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
     @Autowired
     private BpmVariableMultiplayerPersonnelMapper variableMultiplayerPersonnelMapper;
 
+    @Autowired
+    private BpmVariableService bpmVariableService;
+
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         String processNumber = vo.getProcessNumber();
@@ -65,7 +69,7 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
         if(userInfos.size()!=assignees.size()){
             throw new AFBizException("审批人数量和流程中审批人数量不一致");
         }
-        Map<BaseIdTranStruVo,BaseIdTranStruVo> changedAssignees=new HashMap<>();
+        Map<BaseInfoTranStructVo,BaseIdTranStruVo> changedAssignees=new HashMap<>();
         for (int i = 0; i < assignees.size(); i++) {
             BaseInfoTranStructVo currentAssignee = assignees.get(i);
             BaseIdTranStruVo mayChangedAssignee = userInfos.get(i);
@@ -76,31 +80,35 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
             }
         }
         if(CollectionUtils.isEmpty(changedAssignees)){
-           throw  new AFBizException("当前审批人未发生变更!勿需操作!");
+            throw  new AFBizException("当前审批人未发生变更!勿需操作!");
         }
         String varName = assignees.get(0).getVarName();
-        String variableId=assignees.get(0).getVariableId();//单人的是single表id,多人的是multiplayer personnel表id
+        //String variableId=assignees.get(0).getVariableId();//单人的是single表id,多人的是multiplayer personnel表id
         List<String> assigneeIds = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         taskMgmtService.changeFutureAssignees(bpmBusinessProcess.getProcInstId(), varName, assigneeIds);
         //由于是未来节点,审批任务还没有生成,因此获取不到taskId,这里记录的是nodeId
-        for (Map.Entry<BaseIdTranStruVo, BaseIdTranStruVo> old2newAssignees : changedAssignees.entrySet()) {
-            BaseIdTranStruVo oldAssignee = old2newAssignees.getKey();
+        for (Map.Entry<BaseInfoTranStructVo, BaseIdTranStruVo> old2newAssignees : changedAssignees.entrySet()) {
+            BaseInfoTranStructVo oldAssignee = old2newAssignees.getKey();
             BaseIdTranStruVo newAssignee = old2newAssignees.getValue();
             flowrunEntrustService.addFlowrunEntrust(newAssignee.getId(),newAssignee.getName(),oldAssignee.getId(),oldAssignee.getName(),
                     nodeId,0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey());
-            if(assignees.size()>1){//大于1是多人节点,多人节点variableId取的是t_bpm_variable_multiplayer_personnel表的id
-                LambdaUpdateWrapper<BpmVariableMultiplayerPersonnel> updateWrapper = Wrappers.<BpmVariableMultiplayerPersonnel>lambdaUpdate();
-                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssignee,newAssignee.getId());
-                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssigneeName,newAssignee.getName()+"*");
-                updateWrapper.eq(BpmVariableMultiplayerPersonnel::getId,variableId);
-                variableMultiplayerPersonnelMapper.update(null,updateWrapper);
-            }else{//虽然是在循环里执行,走到这里只应该走一次
-                LambdaUpdateWrapper<BpmVariableSingle> updateWrapper = Wrappers.<BpmVariableSingle>lambdaUpdate();
-                updateWrapper.set(BpmVariableSingle::getAssignee,newAssignee.getId());
-                updateWrapper.set(BpmVariableSingle::getAssigneeName,newAssignee.getName()+"*");
-                updateWrapper.eq(BpmVariableSingle::getId,variableId);
-                variableSingleMapper.update(null,updateWrapper);
-            }
+
+            bpmVariableService.updateAssigneeById(oldAssignee.getVariableId(), bpmBusinessProcess.getBusinessNumber(), oldAssignee.getElementId(),
+                    oldAssignee.getId(),BaseIdTranStruVo.builder().id(newAssignee.getId()).name(newAssignee.getName()+"*").build());
+
+//            if(assignees.size()>1){//大于1是多人节点,多人节点variableId取的是t_bpm_variable_multiplayer_personnel表的id
+//                LambdaUpdateWrapper<BpmVariableMultiplayerPersonnel> updateWrapper = Wrappers.<BpmVariableMultiplayerPersonnel>lambdaUpdate();
+//                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssignee,newAssignee.getId());
+//                updateWrapper.set(BpmVariableMultiplayerPersonnel::getAssigneeName,newAssignee.getName()+"*");
+//                updateWrapper.eq(BpmVariableMultiplayerPersonnel::getId,variableId);
+//                variableMultiplayerPersonnelMapper.update(null,updateWrapper);
+//            }else{//虽然是在循环里执行,走到这里只应该走一次
+//                LambdaUpdateWrapper<BpmVariableSingle> updateWrapper = Wrappers.<BpmVariableSingle>lambdaUpdate();
+//                updateWrapper.set(BpmVariableSingle::getAssignee,newAssignee.getId());
+//                updateWrapper.set(BpmVariableSingle::getAssigneeName,newAssignee.getName()+"*");
+//                updateWrapper.eq(BpmVariableSingle::getId,variableId);
+//                variableSingleMapper.update(null,updateWrapper);
+//            }
         }
     }
 
