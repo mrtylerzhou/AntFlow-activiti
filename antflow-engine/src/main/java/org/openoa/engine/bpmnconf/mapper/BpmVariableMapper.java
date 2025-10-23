@@ -20,4 +20,6 @@ public interface BpmVariableMapper extends BaseMapper<BpmVariable> {
     List<BpmVariableMultiplayer> querymultiplayersbyprocesselementid(@Param("processNum") String processNum, @Param("elementId")String elementId);
     int updateSingle(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
     int updateMultiPlayer(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
+    int updateSingleById(@Param("id") String id, @Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
+    int updateMultiPlayerById(@Param("id") String id, @Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
 }

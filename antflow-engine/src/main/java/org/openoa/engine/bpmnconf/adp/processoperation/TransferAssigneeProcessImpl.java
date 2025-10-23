@@ -54,10 +54,10 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
             String assignee = task.getAssignee();
             if (assignee.equals(originalUserId)) {
                 bpmFlowrunEntrustService.addFlowrunEntrust(transferToUserId, transferToUserName, originalUserId, originalUserName, task.getId(), 0, bpmBusinessProcess.getProcInstId(), vo.getProcessKey());
-
-                taskMgmtMapper.updateaActinst(TaskMgmtVO.builder().applyUser(transferToUserId).applyUserName(transferToUserName).taskId(task.getId()).build());
-                taskMgmtMapper.updateaTaskinst(TaskMgmtVO.builder().applyUser(transferToUserId).applyUserName(transferToUserName).taskId(task.getId()).build());
-                taskMgmtMapper.updateTask(TaskMgmtVO.builder().applyUser(transferToUserId).applyUserName(transferToUserName).taskId(task.getId()).build());
+                TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().applyUser(transferToUserId).applyUserName(transferToUserName).taskId(task.getId()).build();
+                taskMgmtMapper.updateaActinst(taskMgmtVO);
+                taskMgmtMapper.updateaTaskinst(taskMgmtVO);
+                taskMgmtMapper.updateTask(taskMgmtVO);
                 matched=true;
             }
 
