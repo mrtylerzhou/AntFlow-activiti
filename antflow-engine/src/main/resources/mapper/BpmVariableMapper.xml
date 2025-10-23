@@ -57,7 +57,7 @@
         update t_bpm_variable_single tbvs
             inner join t_bpm_variable tbv on tbvs.variable_id = tbv.id
             set tbvs.assignee=#{newAssignee},assignee_name=#{newAssigneeName}
-        where tbvmp.id=#{id} and tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee=#{assignee}
+        where tbvs.id=#{id} and tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee=#{assignee}
     </update>
     <update id="updateMultiPlayerById">
         update t_bpm_variable_multiplayer_personnel tbvmp
