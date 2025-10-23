@@ -217,7 +217,7 @@
     {
       "name": "outsideMgt",
       "path": "/outsideMgt",
-      "hidden": false,
+      "hidden": true,
       "redirect": "noRedirect",
       "component": "Layout",
       "alwaysShow": true,
