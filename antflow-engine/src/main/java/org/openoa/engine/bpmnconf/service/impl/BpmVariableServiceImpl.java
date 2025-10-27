@@ -79,4 +79,14 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
             }
         }
     }
+
+    @Override
+    public List<String> getElementIdsdByNodeId(String processNumber, String nodeId) {
+        return this.baseMapper.getElementIdsdByNodeId(processNumber, nodeId);
+    }
+
+    @Override
+    public List<String> getVarNamesdByNodeId(String processNumber, String nodeId) {
+        return this.baseMapper.getVarNamesdByNodeId(processNumber, nodeId);
+    }
 }

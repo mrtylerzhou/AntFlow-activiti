@@ -102,9 +102,9 @@ public class MultiInstanceSignOffService {
         }
         // 2. 获取并更新参与者列表
         List<String> assigneeList = (List<String>) runtimeService.getVariable(myExecution.getId(), variableName);
-        if (!assigneeList.remove(userToRemove)) {
-            throw new RuntimeException("用户 " + userToRemove + " 不在参与者列表中");
-        }
+//        if (!assigneeList.remove(userToRemove)) {
+//            throw new RuntimeException("用户 " + userToRemove + " 不在参与者列表中");
+//        }
         runtimeService.setVariable(myExecution.getParentId(), "personnelList2", assigneeList);
         taskMgmtMapper.deleteExecutionById(myExecution.getId());
         taskMgmtMapper.deletTask(currentAssigneeTask.getId());

@@ -10,6 +10,13 @@
         select tbvm.element_id from t_bpm_variable tbv join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvm.node_id=#{nodeId}
     </select>
+    <select id="getVarNamesdByNodeId" resultType="java.lang.String">
+        select tbvs.assignee_param_name from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
+        where tbv.process_num=#{processNum} and tbvs.node_id=#{nodeId}
+        union all
+        select tbvm.collection_name from t_bpm_variable tbv join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
+        where tbv.process_num=#{processNum} and tbvm.node_id=#{nodeId}
+    </select>
     <select id="getNodeIdsByeElementId" resultType="java.lang.String">
         select tbvs.node_id from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
         where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId}

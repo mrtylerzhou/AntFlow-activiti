@@ -57,7 +57,7 @@
 <script setup>
 import { provide, readonly, onBeforeMount } from 'vue';
 import { useWindowSize } from '@vueuse/core'
-import { processOperation } from '@/api/workflow/index';
+import { processOperation, loadNodeOperationUser } from '@/api/workflow/index';
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import { useStore } from '@/store/modules/workflow';
 const { proxy } = getCurrentInstance();
@@ -118,18 +118,38 @@ const clickNode = (data) => {
     optFrom.value.nodeName = data.nodeName;
     optFrom.value.nodeId = data.Id;
     optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX 
-    const nodeUserList = data.params?.assigneeList
-        .map(item => {
-            return {
-                id: item.assignee,
-                name: item.assigneeName,
-                isDeduplication: item.isDeduplication
-            }
-        }) || [];
+    
+    loadNodeOperationUserList();
+
+    
+}
+const loadNodeOperationUserList = (data) => {
+    optFrom.value.userInfos =  [];
+    const queryDate = {
+        processNumber: queryForm.processNumber,
+        nodeId: optFrom.value.nodeId
+    }
+
+    proxy.$modal.loading();
+    loadNodeOperationUser(queryDate).then((res) => {
+        if (res.code == 200) {
+           const nodeUserList = res?.data
+            .map(item => {
+                return {
+                    id: item.id,
+                    name: item.name,
+                    isDeduplication: 0
+                }
+            }) || [];
 
     originalNodeUserList.value = nodeUserList;
     //.filter((c) => c.isDeduplication == 0)
     emits("clickNodeOpt", optFrom, nodeUserList);
+        } else {
+            proxy.$modal.msgError("查询失败:" + res.errMsg);
+        }
+    });
+    proxy.$modal.closeLoading();
 }
 provide("onClickNode", clickNode)
 const handleCancel = () => {
@@ -151,12 +171,14 @@ const handleSubmit = (data) => {
         } else {
             proxy.$modal.msgError("操作失败:" + res.errMsg);
         }
+        loadNodeOperationUserList();
     });
     proxy.$modal.closeLoading();
 }
 defineExpose({
     handleSubmit,
     handleCancel,
+    loadNodeOperationUserList,
     originalNodeUserList: readonly(originalNodeUserList),
     optFrom
 })

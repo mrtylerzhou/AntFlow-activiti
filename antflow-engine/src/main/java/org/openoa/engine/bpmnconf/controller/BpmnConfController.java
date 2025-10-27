@@ -106,6 +106,14 @@ public class BpmnConfController {
     }
 
     /**
+     * 获取节点当前实际操作人（DIY/LF）
+     */
+    @PostMapping("/loadNodeOperationUser")
+    public Result<List<BaseIdTranStruVo>> loadNodeOperationUser(@RequestBody String params) {
+        return Result.newSuccessResult(bpmnConfCommonService.loadNodeOperationUser(params));
+    }
+
+    /**
      * 获取审批进度数据信息
      *
      * @param processNumber

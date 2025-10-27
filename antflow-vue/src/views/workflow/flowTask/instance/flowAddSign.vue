@@ -112,17 +112,18 @@ const handleCancel = () => {
     commonRef.value.handleCancel();
 }
 const handleReset = () => {
-    loading.value = true;
-    optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
-    checkedUserList.value = commonRef.value.originalNodeUserList.map(item => {
-        return {
-            ...item,
-            canDelete: false
-        }
-    });
-    setTimeout(() => {
-        loading.value = false;
-    }, 300);
+    commonRef.value.loadNodeOperationUserList();
+    //loading.value = true;
+    //optFrom.value = { ...commonRef.value.optFrom, userInfos: [] };
+    // checkedUserList.value = commonRef.value.originalNodeUserList.map(item => {
+    //     return {
+    //         ...item,
+    //         canDelete: false
+    //     }
+    // });
+    // setTimeout(() => {
+    //     loading.value = false;
+    // }, 300);
 } 
 </script>
 <style lang="scss" scoped>

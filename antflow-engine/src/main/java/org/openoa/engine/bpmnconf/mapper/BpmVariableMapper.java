@@ -13,6 +13,8 @@ public interface BpmVariableMapper extends BaseMapper<BpmVariable> {
     //one node can have multiple elements,but all of them share the same elementId,so if the results contains multiple results,they are all the same
     List<String> getElementIdsdByNodeId(@Param("processNum") String processNum,
                                         @Param("nodeId") String nodeId);
+    List<String> getVarNamesdByNodeId(@Param("processNum") String processNum,
+                                        @Param("nodeId") String nodeId);
     List<String> getNodeIdsByeElementId(@Param("processNum") String processNum,
                                       @Param("elementId") String elementId);
     void resetUnderStatusByProcessNumber(@Param("processNum")String processNum);

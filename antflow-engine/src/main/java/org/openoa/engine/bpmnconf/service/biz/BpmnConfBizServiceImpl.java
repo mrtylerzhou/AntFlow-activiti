@@ -9,13 +9,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.service.AfUserService;
+import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -46,6 +52,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
@@ -120,7 +127,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
     @Autowired
     private TaskMgmtServiceImpl TaskMgmtService;
-
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private TaskService taskService;
+    @Autowired
+    protected BpmBusinessProcessService bpmBusinessProcessService;
+    @Autowired
+    private BpmVariableService bpmVariableService;
+    @Autowired
+    private AfUserService userService;
 
     @Override
     @Transactional
@@ -840,6 +856,93 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         previewNode.setBeforeNodeIds(nodeFromResults);
         return previewNode;
 
+    }
+
+    @Override
+    public List<BaseIdTranStruVo> loadNodeOperationUser(String params) {
+        JSONObject jsonObject = JSONObject.parseObject(params);
+        String processNumber = jsonObject.getString("processNumber");
+        String nodeId = jsonObject.getString("nodeId");
+
+        List<BaseIdTranStruVo> userList = new ArrayList<>();
+        BpmnNode bpmnNode = nodeService.getById(nodeId);
+        if(null == bpmnNode) {
+            return userList;
+        }
+
+        QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
+        wrapper.eq("process_num", processNumber);
+        BpmVariable bpmnVariable = bpmVariableBizService.getService().getOne(wrapper);
+
+        BpmnConfVo detail = detail(bpmnVariable.getBpmnCode());
+
+        //当前节点
+        String currentNodeIdStr = bpmVerifyInfoBizService.findCurrentNodeIds(processNumber);
+        List<String> currentNodeIds = Lists.newArrayList(currentNodeIdStr.split(","));
+
+        List<BpmnNodeVo> bpmnNodeList = detail.getNodes();
+        Map<String, BpmnNodeVo> bpmnNodeVoMap = bpmnNodeList.stream().collect(Collectors.toMap(BpmnNodeVo::getNodeId, b -> b, (v1, v2) -> v1));
+
+        //后续未来节点
+        List<String> afterNodeIds = new ArrayList<>();
+        processNodeToRecursively(currentNodeIds, bpmnNodeVoMap, afterNodeIds);
+
+        //当前节点的过去节点
+//        List<String> beforeNodeIds = new ArrayList<>();
+//        Set<String> allNodeIds = bpmnNodeVoMap.keySet();
+//        allNodeIds.stream().filter(o -> !afterNodeIds.contains(o)&&!currentNodeIds.contains(o)).forEach(beforeNodeIds::add);
+
+        BpmBusinessProcess bpmBusinessProcess = this.bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        if(null == bpmBusinessProcess) {
+            return userList;
+        }
+
+        Collection<String> userIds = new ArrayList<>();
+
+        //拿到选中节点 当前节点直接获取 task 未处理任务 未来节点获取getVariables 拿到实际操作人配置
+        if(currentNodeIds.contains(bpmnNode.getNodeId())) {
+            List<String> elementList = this.bpmVariableService.getElementIdsdByNodeId(processNumber, nodeId);
+            if(elementList.isEmpty()) {
+                return userList;
+            }
+
+            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId())
+                    .taskDefinitionKey(elementList.get(0))
+                    .list();
+
+            for (Task task : list) {
+                userIds.add(task.getAssignee());
+            }
+        }
+
+        if(afterNodeIds.contains(bpmnNode.getNodeId())) {
+            List<String> varNameList = this.bpmVariableService.getVarNamesdByNodeId(processNumber, nodeId);
+            if(varNameList.isEmpty()) {
+                return userList;
+            }
+
+            Collection<String> varNames = new ArrayList<String>();
+            varNames.add(varNameList.get(0));
+            Map<String, Object> varNameMap = runtimeService.getVariables(bpmBusinessProcess.getProcInstId(), varNames);
+            //Map<String, Object> map4 = runtimeService.getVariablesLocal(bpmBusinessProcess.getProcInstId(), varNames);
+            if(varNameMap.containsKey(varNameList.get(0))) {
+                List<String> list = (List<String>) varNameMap.get(varNameList.get(0));
+                userIds.addAll(list);
+            }
+        }
+
+        if(!userIds.isEmpty()) {
+            List<BaseIdTranStruVo> userInfoList = userService.queryUserByIds(userIds);
+            Map<String, BaseIdTranStruVo> userInfoMap = userInfoList.stream().collect(Collectors.
+                    toMap(BaseIdTranStruVo::getId, Function.identity()));
+            for (String userId : userIds) {
+                if(userInfoMap.containsKey(userId)) {
+                    userList.add(userInfoMap.get(userId));
+                }
+            }
+        }
+
+        return userList;
     }
 
     /**

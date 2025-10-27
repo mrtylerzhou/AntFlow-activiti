@@ -79,30 +79,39 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
             throw new AFBizException("不支持非多实例节点!");
         }
         String collectionName = MultiInstanceUtils.getCollectionNameByBehavior(activityBehavior);
-        Object variable = taskService.getVariable(task.getId(), collectionName);
+        Object currentValue = taskService.getVariable(task.getId(), collectionName);
         List<String> assigneeValues=new ArrayList<>();
-        Iterable iterable = (Iterable) variable;
-        Iterator iterator = iterable.iterator();
+        List<String> currentList = new ArrayList<>((List<String>) currentValue);
         List<String> assignees = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
-        while (iterator.hasNext()){
-            Object next = iterator.next();
-            String nextValue = next.toString();
-            if (assignees.contains(nextValue)) {
-               continue;
+
+        if (activityBehavior instanceof SequentialMultiInstanceBehavior){
+            //顺序会签 重复添加校验
+            assignees.removeAll(currentList);
+            if(assignees.isEmpty()) {
+                throw new AFBizException("不可重复添加已存在的操作人!");
             }
-            assigneeValues.add(nextValue);
-            //添加在当前任务审批人后面
-            if(task.getAssignee().equals(nextValue)){
-               assigneeValues.addAll(assignees);
+
+            assigneeValues = currentList;
+            assigneeValues.addAll(assignees);
+        }else{
+            List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId())
+                    .taskDefinitionKey(taskDefKey)
+                    .list();
+            List<String> userIds = list.stream().map(Task::getAssignee).collect(Collectors.toList());
+
+            //会签/或签 重复校验
+            assignees.removeAll(userIds);
+            if(assignees.isEmpty()) {
+                throw new AFBizException("不可重复添加已存在的操作人!");
             }
         }
-        Map<String, Object> variables = new HashMap<>();
-        variables.put(collectionName, assigneeValues);
+
         Command command=null;
         if(activityBehavior instanceof ParallelMultiInstanceBehavior){
             command=new MultiCharacterInstanceParallelSign(task.getId(), userInfos);
-
         }else if (activityBehavior instanceof SequentialMultiInstanceBehavior){
+            Map<String, Object> variables = new HashMap<>();
+            variables.put(collectionName, assigneeValues);
             command = new MultiCharacterInstanceSequentialSign(task.getId(), variables);
         }else {
             throw new AFBizException("不支持加签的节点类型!");

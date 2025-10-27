@@ -648,7 +648,9 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private Map<String, List<BaseIdTranStruVo>> getNodeApproveds(Long variableId) {
 
         Map<String, List<BaseIdTranStruVo>> nodeApprovedsMap = Maps.newHashMap();
-        List<BpmVariableSingle> variableSingles = bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId));
+        List<BpmVariableSingle> variableSingles = bpmVariableSingleService.getBaseMapper().
+                selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId)
+                        .eq("is_del", 0));
 
         if (!variableSingles.isEmpty()) {
             for (BpmVariableSingle bpmVariableSingle : variableSingles) {
@@ -659,7 +661,10 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         if (!bpmVariableMultiplayers.isEmpty()) {
             for (BpmVariableMultiplayer bpmVariableMultiplayer : bpmVariableMultiplayers) {
-                List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels = bpmVariableMultiplayerPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayerPersonnel>().eq("variable_multiplayer_id", bpmVariableMultiplayer.getId()));
+                List<BpmVariableMultiplayerPersonnel> bpmVariableMultiplayerPersonnels = bpmVariableMultiplayerPersonnelService.getBaseMapper().
+                        selectList(new QueryWrapper<BpmVariableMultiplayerPersonnel>()
+                                .eq("variable_multiplayer_id", bpmVariableMultiplayer.getId())
+                        .eq("is_del", 0));
                 if (!ObjectUtils.isEmpty(bpmVariableMultiplayerPersonnels)) {
                     nodeApprovedsMap.put(bpmVariableMultiplayer.getElementId(), bpmVariableMultiplayerPersonnels.stream().map(a->BaseIdTranStruVo.builder().id(a.getAssignee()).name(a.getAssigneeName()).build()).collect(Collectors.toList()));
                 }

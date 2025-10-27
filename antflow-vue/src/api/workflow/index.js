@@ -171,6 +171,21 @@ export function getFlowPreview(data) {
 }
 
 /**
+ * 流程节点当前操作人
+ * @param {*} data
+ * @returns
+ */
+export function loadNodeOperationUser(data) {
+  // let paramA = {
+  //   "formCode": "DSFZH_WMA",
+  //    "accountType":1
+  // }
+  return http.post(`${baseUrl}/bpmnConf/loadNodeOperationUser`, data, {
+    headers,
+  });
+}
+
+/**
  * 流程生效
  * @param {*} data
  * @returns

@@ -46,4 +46,6 @@ public interface BpmnConfBizService extends BizService<BpmnConfMapper, BpmnConfS
     void effectiveBpmnConf(Integer id);
 
     ResultAndPage<BpmnConfVo> selectPage(PageDto pageDto, BpmnConfVo vo);
+
+    List<BaseIdTranStruVo> loadNodeOperationUser(String params);
 }
