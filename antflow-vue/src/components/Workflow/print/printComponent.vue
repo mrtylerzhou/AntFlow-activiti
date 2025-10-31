@@ -65,6 +65,8 @@ const { width, height } = useWindowSize()
 
 const printSection = ref(null);
 
+const printLoaded = inject('printLoaded');
+
 let props = defineProps({
     isPreview: {
         type: Boolean,
@@ -93,15 +95,17 @@ onMounted(async () => {
   await nextTick(()=>{
       // 等待DOM更新
       
-       printhtml2canvas();
+       setTimeout(() => {
+            printhtml2canvas();
+        }, 3300);
+       
   }); 
  
 });
 
 const printhtml2canvas = () => {
-  const element = proxy.$refs['printSection']; // 获取需要打印的DOM元素
-  console.log(element)
-      html2canvas(element, {
+    const element = proxy.$refs['printSection']; // 获取需要打印的DOM元素
+    html2canvas(element, {
         useCORS:true,
         width: element.width,
         height: element.height,
@@ -109,28 +113,68 @@ const printhtml2canvas = () => {
         onclone: function (clonedDoc) {
             // I made the div hidden and here I am changing it to visible
             clonedDoc.getElementById('printSection').style.display = 'block';
+
+            // 解决select内容遮挡
+            clonedDoc.querySelectorAll('div.el-select__placeholder').forEach(ele => {
+                const height = ele.getBoundingClientRect().height
+                // 将transform设置为none，并改用calc的方式计算定位
+                ele.setAttribute('style', `transform: none;top: calc(50% - ${height / 2}px);`)
+            })
+
+            // 解决input内容向上偏移问题
+            clonedDoc.querySelectorAll('input').forEach(input => {
+                input.style.height = '32px'
+                input.style.lineHeight = '14px'
+                input.style.paddingTop = '6px'
+            })
+
+            // 解决boxShadow边框渲染粗问题
+            clonedDoc.querySelectorAll('.el-input__wrapper,.el-select__wrapper,.el-textarea__inner').forEach(border => {
+                border.style.border = '1px solid var(--el-input-border-color,var(--el-border-color))'
+                border.style.boxShadow = 'none'
+            })
+
+            const tableNode = clonedDoc.querySelectorAll('.el-table__header,.el-table__body');
+            //el-table 打印不全的问题
+            for (let k6 = 0; k6 < tableNode.length; k6++) {
+                const tableItem = tableNode[k6];
+                tableItem.style.width = '100%';
+                const child = tableItem.childNodes;
+                for (let i = 0; i < child.length; i++) {
+                    const element = child[i];
+                    if (element.localName === 'colgroup') {
+                        element.innerHTML = '';
+                    }
+                }
+            }
+            //el-table 格子里面打印超过格子的问题
+            let cells = clonedDoc.querySelectorAll('.cell');
+            for (let k7 = 0; k7 < cells.length; k7++) {
+                const cell = cells[k7];
+                cell.style.width = '100%';
+                cell.removeAttribute('style')
+            }
         }
-      }).then(canvas => {
+        }).then(canvas => {
         // 将canvas转换为图片并打印
         const imgData = canvas.toDataURL('image/png');
-       
+        
         const newWin = window.open("");
         newWin.document.body.style.height = "95%";
         var img = newWin.document.createElement('img');
         img.src = imgData;
         img.style.height = "auto";
         img.style.width = "100%";
-        console.log(imgData)
         newWin.document.body.appendChild(img);
         
         setTimeout(() => {
             newWin.print();
             newWin.close();
 
-            //将previewComponent printLoaded 设置为false 销毁
+            printLoaded.value = false;
         }, 300);
-        
-      });
+    
+    });
 }
 
 

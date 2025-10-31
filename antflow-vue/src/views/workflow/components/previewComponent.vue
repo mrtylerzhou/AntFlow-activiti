@@ -10,8 +10,7 @@
                 <el-header class="el-header">
                     <span v-for="btn in initiatorPermBtns" style="margin-right: 5px;">
                         <el-button v-if="btn.show == 1" :type="buttonColor[btn.buttonType]" @click="clickButten(btn)">
-                            {{ btn.name }} </el-button>
-                        <el-button type="success" @click="clickButten(btn)">打印</el-button>    
+                            {{ btn.name }} </el-button>  
                     </span>
                     <span style="margin-right: 5px;">
                         <el-button type="success" @click="clickPrint()">打印</el-button>    
@@ -76,7 +75,8 @@ let loadedComponent = ref(null);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
-let printLoaded = ref(false);
+const printLoaded = ref(false);
+provide('printLoaded', printLoaded);
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
 
