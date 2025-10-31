@@ -2,6 +2,7 @@
   <div>
     <el-drawer v-model="visible" v-if="visible" title="流程预览" :size="800" :with-header="false" :destroy-on-close="true">
       <span style="font-weight: bold;">流程详情</span>
+      
       <el-divider />
       <div class="tabs-header-wrap">
         <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
@@ -25,6 +26,7 @@
       </div>
       <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/antflow/back-close.png"></label>
     </el-drawer>
+     
   </div>
 
 </template>
@@ -36,6 +38,7 @@ import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
 import ProcessStateImg from './ProcessStateImg.vue'
+
 let store = useStore()
 let { setPreviewDrawer } = store
 let previewDrawer = computed(() => store.previewDrawer)

@@ -12,7 +12,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center" prop="type">
                 <template #default="item">
-                    <el-tag :type="item.row.type" :size="item.row.size">{{ item.row.verifyStatusName }}</el-tag>
+                    <el-tag style="display: flex;" :type="item.row.type" :size="item.row.size">{{ item.row.verifyStatusName }}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column label="审批意见" align="center" prop="remark" />

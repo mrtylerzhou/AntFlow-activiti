@@ -7,10 +7,14 @@
         </div>
         <el-scrollbar>
             <el-container>
-                <el-header v-if="initiatorPermBtns.length > 0" class="el-header">
+                <el-header class="el-header">
                     <span v-for="btn in initiatorPermBtns" style="margin-right: 5px;">
                         <el-button v-if="btn.show == 1" :type="buttonColor[btn.buttonType]" @click="clickButten(btn)">
                             {{ btn.name }} </el-button>
+                        <el-button type="success" @click="clickButten(btn)">打印</el-button>    
+                    </span>
+                    <span style="margin-right: 5px;">
+                        <el-button type="success" @click="clickPrint()">打印</el-button>    
                     </span>
                 </el-header>
                 <el-main>
@@ -21,6 +25,9 @@
                     </div>
                 </el-main>
             </el-container>
+            
+            <PrintComponent v-if="printLoaded" :isPreview="true" />
+           
         </el-scrollbar>
     </div>
 </template>
@@ -31,6 +38,7 @@ import { getViewBusinessProcess, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
+import PrintComponent from "@/components/Workflow/print/printComponent.vue"
 const { proxy } = getCurrentInstance();
 const { width, height } = useWindowSize()
 let store = useStore()
@@ -68,6 +76,7 @@ let loadedComponent = ref(null);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+let printLoaded = ref(false);
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
 
@@ -134,6 +143,10 @@ const preview = async (param) => {
     });
 }
 preview(viewConfig.value);
+
+const clickPrint = () => {
+  printLoaded.value = true
+}
 </script>
 <style lang="scss" scoped>
 .component {
@@ -156,4 +169,5 @@ preview(viewConfig.value);
     display: flex;
     align-items: center;
 }
+
 </style>

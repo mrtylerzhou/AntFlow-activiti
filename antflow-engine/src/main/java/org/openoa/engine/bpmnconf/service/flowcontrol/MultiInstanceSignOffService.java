@@ -105,7 +105,8 @@ public class MultiInstanceSignOffService {
 //        if (!assigneeList.remove(userToRemove)) {
 //            throw new RuntimeException("用户 " + userToRemove + " 不在参与者列表中");
 //        }
-        runtimeService.setVariable(myExecution.getParentId(), "personnelList2", assigneeList);
+        //不进行更新 当前加批没有新增配置 当前减批也不要去更新配置
+        //runtimeService.setVariable(myExecution.getParentId(), variableName, assigneeList);
         taskMgmtMapper.deleteExecutionById(myExecution.getId());
         taskMgmtMapper.deletTask(currentAssigneeTask.getId());
         flowrunEntrustService.addFlowrunEntrust("0","管理员减签",userToRemove,userToRemoveName,
