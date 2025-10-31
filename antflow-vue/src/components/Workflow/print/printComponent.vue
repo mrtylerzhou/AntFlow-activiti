@@ -14,11 +14,6 @@
                 </template>
                 <el-container>
                     <el-main>
-                        <template v-slot:header>
-                            <div class="clearfix">
-                                <span>可用流程(DIY)</span>
-                            </div>
-                        </template>
                         <div v-if="componentLoaded" class="component">
                             <component :is="loadedComponent" :previewData="componentData" :lfFormData="lfFormDataConfig"
                                 :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview">
