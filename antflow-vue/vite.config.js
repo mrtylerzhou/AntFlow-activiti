@@ -40,20 +40,20 @@ export default defineConfig(({ mode, command }) => {
           chunkFileNames: "static/js/[name]-[hash].js",
           entryFileNames: "static/js/[name]-[hash].js",
           assetFileNames: "static/[ext]/[name]-[hash].[ext]",
-        },
-        manualChunks(id) {
-          // 将 vForm 库单独打包
-          if (id.includes("lib/vForm")) {
-            return "lib-vForm";
-          }
-          // 按一级目录拆分第三方依赖
-          if (id.includes("node_modules")) {
-            return id
-              .toString()
-              .split("node_modules/")[1]
-              .split("/")[0]
-              .toString();
-          }
+          manualChunks(id) {
+            // 将 vForm 库单独打包
+            if (id.includes("lib/vForm")) {
+              return "lib-vForm";
+            }
+            // 按一级目录拆分第三方依赖
+            if (id.includes("node_modules")) {
+              return id
+                .toString()
+                .split("node_modules/")[1]
+                .split("/")[0]
+                .toString();
+            }
+          },
         },
       },
       commonjsOptions: {
