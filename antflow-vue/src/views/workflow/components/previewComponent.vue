@@ -10,10 +10,10 @@
                 <el-header class="el-header">
                     <span v-for="btn in initiatorPermBtns" style="margin-right: 5px;">
                         <el-button v-if="btn.show == 1" :type="buttonColor[btn.buttonType]" @click="clickButten(btn)">
-                            {{ btn.name }} </el-button>  
+                            {{ btn.name }} </el-button>
                     </span>
                     <span style="margin-right: 5px;">
-                        <el-button type="success" @click="clickPrint()">打印</el-button>    
+                        <el-button type="primary" @click="openInNewPage">打印预览</el-button>
                     </span>
                 </el-header>
                 <el-main>
@@ -24,9 +24,6 @@
                     </div>
                 </el-main>
             </el-container>
-            
-            <PrintComponent v-if="printLoaded" :isPreview="true" />
-           
         </el-scrollbar>
     </div>
 </template>
@@ -37,7 +34,7 @@ import { getViewBusinessProcess, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
-import PrintComponent from "@/components/Workflow/print/printComponent.vue"
+import { useRouter } from 'vue-router'; // 新增
 const { proxy } = getCurrentInstance();
 const { width, height } = useWindowSize()
 let store = useStore()
@@ -75,8 +72,7 @@ let loadedComponent = ref(null);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
-const printLoaded = ref(false);
-provide('printLoaded', printLoaded);
+
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
 
@@ -144,9 +140,18 @@ const preview = async (param) => {
 }
 preview(viewConfig.value);
 
-const clickPrint = () => {
-  printLoaded.value = true
-}
+const router = useRouter(); // 新增
+/** 新窗口打开当前预览 */
+const openInNewPage = () => {
+    if (!viewConfig.value) return;
+    const query = {
+        formCode: viewConfig.value.formCode,
+        processNumber: viewConfig.value.processNumber,
+        isLowCodeFlow: viewConfig.value.isLowCodeFlow
+    };
+    const routeData = router.resolve({ path: '/flowDevOps/flowPrint', query });
+    window.open(routeData.href, '_blank');
+};
 </script>
 <style lang="scss" scoped>
 .component {
@@ -169,5 +174,4 @@ const clickPrint = () => {
     display: flex;
     align-items: center;
 }
-
 </style>

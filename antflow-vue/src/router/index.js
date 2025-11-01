@@ -308,6 +308,19 @@ export const dynamicRoutes = [
       },
     ],
   },
+  {
+    path: "/flowDevOps/flowPrint",
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/flowDevOps/flowPrint",
+        component: () => import("@/views/workflow/flowPrint/index"),
+        name: "flowPrint",
+        meta: { title: "流程打印预览" },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
