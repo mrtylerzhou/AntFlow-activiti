@@ -279,7 +279,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
         } else {
             try {
-                processNodeJump.commitProcess(taskData.getId(), null, backToNodeKey);
+                processNodeJump.commitProcess(taskData.getId(), null, backToNodeKey, procInstId);
             } catch (Exception e) {
                 log.error("流程回退出错了!", e);
                 throw new AFBizException("流程回退出错了!");

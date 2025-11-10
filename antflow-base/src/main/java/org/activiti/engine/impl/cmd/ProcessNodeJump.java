@@ -7,9 +7,11 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
+import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
+import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
@@ -126,7 +128,31 @@ public class ProcessNodeJump {
             taskService.complete(taskId, variables);
         } else {
             try {
-                turnTransition(taskId, activityId, variables);
+                turnTransition(taskId, activityId, variables, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * @param taskId     current task id
+     * @param variables  variables
+     * @param activityId activiti id
+     *                  if it is empty,then default to submit
+     * @throws Exception
+     */
+    public void commitProcess(String taskId, Map<String, Object> variables,
+                              String activityId, String procInstId) {
+        if (variables == null) {
+            variables = new HashMap<>();
+        }
+
+        if (StringUtils.isEmpty(activityId)) {
+            taskService.complete(taskId, variables);
+        } else {
+            try {
+                turnTransition(taskId, activityId, variables, procInstId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -142,7 +168,7 @@ public class ProcessNodeJump {
      * @throws Exception
      */
     private void turnTransition(String taskId, String activityId,
-                                Map<String, Object> variables) throws Exception {
+                                Map<String, Object> variables, String procInstId) throws Exception {
         // 当前节点
         ActivityImpl currActivity = findActivitiImpl(taskId, null);
         // 清空当前流向
@@ -157,6 +183,25 @@ public class ProcessNodeJump {
 
         // 执行转向任务
         taskService.complete(taskId, variables);
+        if(!currActivity.getId().equals(activityId)) {
+            ActivityBehavior activityBehavior = currActivity.getActivityBehavior();
+            if (activityBehavior instanceof SequentialMultiInstanceBehavior){
+                if(null!= procInstId && !procInstId.isEmpty()) {
+                    boolean isDo = true;
+                    while (isDo) {
+                        List<Task> tasks = taskService.createTaskQuery().processInstanceId(procInstId).taskDefinitionKey(currActivity.getId()).list();
+                        if(tasks.isEmpty()) {
+                            isDo = false;
+                        }
+
+                        for (Task task:tasks) {
+                            taskService.complete(task.getId(), variables);
+                        }
+                    }
+                }
+            }
+        }
+
         // 删除目标节点新流入
         pointActivity.getIncomingTransitions().remove(newTransition);
 
