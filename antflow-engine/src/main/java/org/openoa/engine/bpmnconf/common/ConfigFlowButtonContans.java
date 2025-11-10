@@ -288,7 +288,9 @@ public class ConfigFlowButtonContans {
                     .collect(Collectors.toList());
             if(!CollectionUtils.isEmpty(hisTaskDefKeys)){
                 List<String> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
-                bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
+                if (!nodeIdsByElementIds.isEmpty()) {
+                    bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
+                }
                 //只能显示在发起人页的按钮不应显示在其它页面
                 if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
                     bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
