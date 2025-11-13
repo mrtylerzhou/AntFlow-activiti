@@ -100,13 +100,23 @@ public class BpmnBusinessController {
         if (StringUtils.isEmpty(formCode)) {
             throw new AFBizException("参数formCode不能为空!");
         }
+        List<BpmnNodeVo> nodeVos = new ArrayList<>();
+        BpmnNode parentNode = new BpmnNode();
         List<BpmnNode> nodesByFormCodeAndProperty = bpmnNodeMapper.getNodesByFormCodeAndProperty(formCode, NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode());
-        List<BpmnNodeVo> nodeVos = nodesByFormCodeAndProperty.stream().map(a -> {
+        Map<String, BpmnNode> nodeVoMap = nodesByFormCodeAndProperty.stream().collect(Collectors.toMap(e -> e.getNodeFrom(), e -> e));
+        for (int i = 0; i < nodeVoMap.size(); i++) {
+            BpmnNode node = new BpmnNode();
+            if (nodeVos.isEmpty()){
+                node = nodeVoMap.get("Gb2");
+            }else {
+                node = nodeVoMap.get(parentNode.getNodeId());
+            }
             BpmnNodeVo bpmnNodeVo = new BpmnNodeVo();
-            bpmnNodeVo.setId(a.getId());
-            bpmnNodeVo.setNodeName(a.getNodeName());
-            return bpmnNodeVo;
-        }).collect(Collectors.toList());
+            bpmnNodeVo.setId(node.getId());
+            bpmnNodeVo.setNodeName(node.getNodeName());
+            nodeVos.add(bpmnNodeVo);
+            parentNode = node;
+        }
         return Result.newSuccessResult(nodeVos);
     }
 
