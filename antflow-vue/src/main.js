@@ -16,7 +16,7 @@ import App from "./App";
 import store from "./store";
 import router from "./router";
 import directive from "./directive"; // directive
-
+import nbPrint from "vue3-print-nb";
 // 注册指令
 import plugins from "./plugins"; // plugins
 import { download } from "@/utils/request";
@@ -96,7 +96,7 @@ app.use(elementIcons);
 app.component("svg-icon", SvgIcon);
 app.use(VForm3); //全局注册VForm3，同时注册了v-form-designer、v-form-render等组件
 directive(app);
-
+app.use(nbPrint);
 // 使用element-plus 并且设置全局的大小
 app.use(ElementPlus, {
   locale: locale,

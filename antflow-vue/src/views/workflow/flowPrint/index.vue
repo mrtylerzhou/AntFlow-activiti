@@ -1,10 +1,10 @@
 <template>
     <div class="drawer-div">
         <div style="margin:10px auto; text-align:center;">
-            <el-button type="success" @click="clickPrint()">打 印</el-button>
+            <el-button type="success" v-print="printOption">打 印</el-button>
             <el-button @click="closeWin()">关 闭</el-button>
         </div>
-        <div ref="printSection" id="printSection">
+        <div id="printTable">
             <el-card style="margin-bottom: 10px;">
                 <template v-slot:header>
                     <div class="clearfix">
@@ -34,104 +34,37 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
-import html2canvas from 'html2canvas';
 import flowBizForm from "./components/flowBizForm.vue";
 import flowStepTable from "./components/flowStepTable.vue";
-const { proxy } = getCurrentInstance();
-const printSection = ref(null);
 
-const printhtml2canvas = () => {
-    const element = proxy.$refs['printSection']; // 获取需要打印的DOM元素
-    const options = {
-        useCORS: true,
-        width: element.width,
-        height: element.height,
-        scale: 2,
-        onclone: function (clonedDoc) {
-            const ps = clonedDoc.getElementById('printSection');
-            Object.assign(ps.style, {
-                display: 'block',
-                margin: '0 auto',
-                width: '780px',
-            });
-            // 解决select内容遮挡
-            clonedDoc.querySelectorAll('div.el-select__placeholder').forEach(ele => {
-                const height = ele.getBoundingClientRect().height
-                // 将transform设置为none，并改用calc的方式计算定位
-                ele.setAttribute('style', `transform: none;top: calc(50% - ${height / 2}px);`)
-            })
-
-            // 解决input内容向上偏移问题
-            clonedDoc.querySelectorAll('input').forEach(input => {
-                input.style.height = '32px'
-                input.style.lineHeight = '14px'
-                input.style.paddingTop = '6px'
-            })
-
-            // 解决boxShadow边框渲染粗问题
-            clonedDoc.querySelectorAll('.el-input__wrapper,.el-select__wrapper,.el-textarea__inner').forEach(border => {
-                border.style.border = '1px solid var(--el-input-border-color,var(--el-border-color))'
-                border.style.boxShadow = 'none'
-            })
-
-            const tableNode = clonedDoc.querySelectorAll('.el-table__header,.el-table__body');
-            //el-table 打印不全的问题
-            for (let k6 = 0; k6 < tableNode.length; k6++) {
-                const tableItem = tableNode[k6];
-                tableItem.style.width = '100%';
-                const child = tableItem.childNodes;
-                for (let i = 0; i < child.length; i++) {
-                    const element = child[i];
-                    if (element.localName === 'colgroup') {
-                        element.innerHTML = '';
-                    }
-                }
-            }
-            //el-table 格子里面打印超过格子的问题
-            let cells = clonedDoc.querySelectorAll('.cell');
-            for (let k7 = 0; k7 < cells.length; k7++) {
-                const cell = cells[k7];
-                cell.style.width = '100%';
-                cell.removeAttribute('style')
-            }
-        }
-    }; html2canvas(element, options).then(canvas => {
-        // 将canvas转换为图片并打印
-        const imgData = canvas.toDataURL('image/png');
-        const newWin = window.open("");
-
-        Object.assign(newWin.document.body.style, {
-            display: 'flex',
-            height: '720px',
-            margin: '0',
-            padding: '0',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-        });
-
-        const img = newWin.document.createElement('img');
-        Object.assign(img.style, {
-            display: 'block',
-            width: '720px',
-            height: 'auto',
-            margin: '20px auto',
-        });
-        img.src = imgData;
-        newWin.document.body.appendChild(img);
-        img.onload = () => {
-            newWin.focus();
-            newWin.print();
-            newWin.close();
-        };
-        img.onerror = () => {
-            newWin.close();
-        };
-    });
-}
-const clickPrint = () => {
-    printhtml2canvas();
+const printOption = {
+    id: 'printTable', // 打印元素的id 不需要携带#号
+    // preview: true, // 开启打印预览
+    // previewTitle: '打印预览', // 打印预览标题
+    // previewPrintBtnLabel: '确认打印', // 打印预览打印按钮文字
+    //popTitle: '流程信息', // 页眉标题 默认浏览器标题 空字符串时显示undefined 使用html语言
+    // 头部文字 默认空 在节点中添加 DOM 节点， 并用,(Print local range only)分隔多个节点
+    //extraHead: '测试',
+    // 新的 CSS 样式表， 并使用,（仅打印本地范围）分隔多个节点
+    //extraCss: '<meta http-equiv="Content-Language"content="zh-cn"/>',
+    previewBeforeOpenCallback: () => {
+        console.log("触发打印预览打开前回调");
+    },
+    previewOpenCallback: () => {
+        console.log("触发打开打印预览回调");
+    },
+    beforeOpenCallback: () => {
+        console.log("触发打印工具打开前回调");
+    },
+    openCallback: () => {
+        console.log("触发打开打印工具回调");
+    },
+    closeCallback: () => {
+        console.log("触发关闭打印工具回调");
+    },
+    clickMounted: () => {
+        console.log("触发点击打印回调");
+    }
 }
 const closeWin = () => {
     window.close();
@@ -139,10 +72,29 @@ const closeWin = () => {
 </script>
 <style lang="scss" scoped>
 .drawer-div {
-    width: 1280px;
+    width: 800px;
     margin: 0 auto;
     border-radius: 4px;
     background: #fff;
     display: block;
+}
+
+@page {
+    size: auto;
+    margin: 0mm;
+}
+
+body,
+html,
+div {
+    height: auto !important;
+}
+
+@media print {
+    #printTable {
+        width: 800px;
+        zoom: 0.8;
+        margin: 0 auto;
+    }
 }
 </style>
