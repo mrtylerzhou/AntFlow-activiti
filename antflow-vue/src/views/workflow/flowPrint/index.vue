@@ -5,30 +5,35 @@
             <el-button @click="closeWin()">关 闭</el-button>
         </div>
         <div id="printTable">
-            <el-card style="margin-bottom: 10px;">
-                <template v-slot:header>
-                    <div class="clearfix">
-                        <span>表单信息</span>
-                    </div>
-                </template>
-                <el-container>
-                    <el-main>
-                        <flow-biz-form />
-                    </el-main>
-                </el-container>
-            </el-card>
-            <el-card>
-                <template v-slot:header>
-                    <div class="clearfix">
-                        <span>审批记录</span>
-                    </div>
-                </template>
-                <el-container>
-                    <el-main>
-                        <flow-step-table />
-                    </el-main>
-                </el-container>
-            </el-card>
+            <div v-if="formCode == 'LEAVE_WMA'">
+                <leveTimeTable />
+            </div>
+            <div v-else>
+                <el-card style="margin-bottom: 10px;">
+                    <template v-slot:header>
+                        <div class="clearfix">
+                            <span>表单信息</span>
+                        </div>
+                    </template>
+                    <el-container>
+                        <el-main>
+                            <flow-biz-form />
+                        </el-main>
+                    </el-container>
+                </el-card>
+                <el-card>
+                    <template v-slot:header>
+                        <div class="clearfix">
+                            <span>审批记录</span>
+                        </div>
+                    </template>
+                    <el-container>
+                        <el-main>
+                            <flow-step-table />
+                        </el-main>
+                    </el-container>
+                </el-card>
+            </div>
         </div>
 
     </div>
@@ -36,7 +41,9 @@
 <script setup>
 import flowBizForm from "./components/flowBizForm.vue";
 import flowStepTable from "./components/flowStepTable.vue";
-
+import leveTimeTable from "./components/leveTimeTable.vue";
+const { query } = useRoute();
+const { formCode } = query;
 const printOption = {
     id: 'printTable', // 打印元素的id 不需要携带#号
     // preview: true, // 开启打印预览
@@ -93,7 +100,7 @@ div {
 @media print {
     #printTable {
         width: 800px;
-        zoom: 0.8;
+        zoom: 0.95;
         margin: 0 auto;
     }
 }
