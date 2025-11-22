@@ -20,6 +20,8 @@ import nbPrint from "vue3-print-nb";
 // 注册指令
 import plugins from "./plugins"; // plugins
 import { download } from "@/utils/request";
+// 解决非被动事件监听警告，提升滚动性能
+import "default-passive-events";
 
 // svg图标
 import "virtual:svg-icons-register";
