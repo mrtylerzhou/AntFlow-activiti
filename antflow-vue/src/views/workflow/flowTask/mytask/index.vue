@@ -107,7 +107,7 @@ const data = reactive({
 });
 const { pageDto, taskMgmtVO } = toRefs(data);
 
-/** 查询岗位列表 */
+/** 查询列表 */
 async function getList() {
    loading.value = true;
    await getMyRequestlistPage(pageDto.value, taskMgmtVO.value).then(response => {
