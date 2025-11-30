@@ -72,7 +72,7 @@
 </template>
 
 <script setup name="selectUserDialog">
-import { onMounted, watch } from "vue";
+import { ref } from "vue";
 import { getUserPageList } from "@/api/workflow/mock";
 const { proxy } = getCurrentInstance();
 let emits = defineEmits(["update:visible", "change"]);
@@ -112,7 +112,6 @@ let visibleDialog = computed({
           userName: item.name,
         };
       });
-      getPageList();
     }
     return props.visible;
   },
@@ -121,9 +120,6 @@ let visibleDialog = computed({
   },
 });
 
-onMounted(() => {
-  getPageList();
-});
 // 用户数据
 const getPageList = () => {
   loading.value = true;
@@ -143,7 +139,7 @@ const getPageList = () => {
     proxy.$modal.msgError("获取用户列表失败" + res.message);
   });
 }
-
+getPageList();
 /** 搜索按钮操作 */
 function handleQuery() {
   pageDto.value.page = 1;
@@ -192,7 +188,6 @@ const closeDialog = () => {
   handleClose();
 };
 const handleClose = () => {
-  userList.value = [];
   checkedUsersList.value = [];
   emits("update:visible", false);
 };

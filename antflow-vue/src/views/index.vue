@@ -160,7 +160,7 @@
           </el-collapse>
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="12">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" style="display: none;">
         <el-card shadow="always">
           <template v-slot:header>
             <div class="clearfix">
