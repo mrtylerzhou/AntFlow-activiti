@@ -14,6 +14,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.ObjectUtils;
 
+import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -77,11 +78,26 @@ public class StrUtils {
         return (String[]) emptyNames.toArray(result);
     }
 
+    public static String getBeanNameStandard(Class<?> cls) {
+        if (cls == null) {
+            throw new IllegalArgumentException("Class must not be null");
+        }
+        return Introspector.decapitalize(cls.getSimpleName());
+    }
+    @Deprecated
     public static String getBeanName(Class<?>cls){
         String simpleName = cls.getSimpleName();
         String beanName = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
         return beanName;
     }
+
+    public static String nullOrBlankToWhiteSpace(String value){
+        if(value==null|| value.isEmpty()){
+            return " ";
+        }
+        return value;
+    }
+
     private static String getFirstPinYin(String hanyu,HanyuPinyinCaseType caseType) {
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
         format.setCaseType(caseType);

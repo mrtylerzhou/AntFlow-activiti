@@ -11,10 +11,13 @@ import org.openoa.base.vo.BpmnNodeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import java.security.cert.TrustAnchor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum.SKIP;
 
 public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends AbstractNodeAssigneeVoProvider implements MissAssigneeProcessing {
     @Autowired
@@ -30,6 +33,9 @@ public abstract class AbstractMissingAssignNodeAssigneeVoProvider  extends Abstr
         missingAssigneeDealWay=missingAssigneeDealWay!=null?missingAssigneeDealWay:MissingAssigneeProcessStragtegyEnum.NOT_ALLOWED.getCode();
         BaseIdTranStruVo baseIdTranStruVo = processMissAssignee(missingAssigneeDealWay);
         emplList.add(baseIdTranStruVo);
+        if (MissingAssigneeProcessStragtegyEnum.getByCode(missingAssigneeDealWay)==SKIP) {
+            nodeVo.getParams().setIsNodeDeduplication(1);
+        }
         return super.provideAssigneeList(nodeVo, emplList);
     }
     @Override
