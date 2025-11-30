@@ -914,7 +914,7 @@ public class NodePropertyPositionAdp extends BpmnNodeAdaptor {
 
   /**
    * 格式化字段属性信息VO
-   *
+   * 此方法为实现完全配置化设置的,目前并没用用起来,用户实现时可以留空
    * @return 人员规则VO
    */
   @Override

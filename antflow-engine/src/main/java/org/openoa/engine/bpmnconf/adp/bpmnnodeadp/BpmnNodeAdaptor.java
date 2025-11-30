@@ -18,6 +18,7 @@ public interface BpmnNodeAdaptor extends AdaptorService {
      * @return
      */
     void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo);
+    //此方法转时未用起来,用户实现时留空即可
     PersonnelRuleVO formaFieldAttributeInfoVO();
     /**
      * edit bpmn node info
