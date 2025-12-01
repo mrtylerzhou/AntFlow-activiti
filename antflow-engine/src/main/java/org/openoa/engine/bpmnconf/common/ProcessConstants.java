@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -11,13 +12,18 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.NodeUtil;
+import org.openoa.base.vo.BpmnNodeLabelVO;
+import org.openoa.base.vo.NodeLabelConstants;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -135,7 +141,16 @@ public class ProcessConstants extends ProcessServiceFactory {
             throw new AFBizException("taskId不为空,流程实例Id不存在!");
         }
         List<ActHiTaskinst> list = actHiTaskinstService.queryRecordsByProcInstIdOrderByCreateTimeDesc(procInstId);
-        ActHiTaskinst historicTaskInstance = list.stream().filter(a ->a.getEndTime()!=null&& !taskDefKey.equals(a.getTaskDefKey())).findFirst().orElse(null);
+        ActHiTaskinst historicTaskInstance = list.stream().filter(a ->{
+            boolean b= a.getEndTime()!=null&& !taskDefKey.equals(a.getTaskDefKey());
+            String formKey = a.getFormKey();
+            boolean c=true;
+            if(!StringUtils.isEmpty(formKey)){
+                NodeExtraInfoDTO extraInfoDTO = JSON.parseObject(formKey, NodeExtraInfoDTO.class);
+                c=NodeUtil.nodeLabelContainsAny(extraInfoDTO,NodeLabelConstants.copyNodeV2.getLabelValue());
+            }
+            return b&&c;
+        }).findFirst().orElse(null);
         return historicTaskInstance;
     }
 }

@@ -8,7 +8,6 @@ import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeOutSideAccessConfServiceImpl;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeOutSideAccessConfService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,15 +5,12 @@ import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.entity.BpmProcessApplicationType;
 import org.openoa.base.entity.BpmProcessCategory;
 import org.openoa.base.exception.AFBizException;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessAppApplicationServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessCategoryServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessApplicationTypeBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessCategoryService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.BpmProcessApplicationTypeVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 

@@ -43,7 +43,19 @@ public class StringConstants {
     public static final String LOWCODE_FLOW_DICT_TYPE="lowcodeflow";
     public static final String DYNAMIC_CONDITION_NODE="af_syslabel_dynamiccondition";
     public static final String COPY_NODE="af_syslabel_copynode";
+    public static final String COPY_NODEV2="af_syslabel_copynodeV2";
     public static final String CONDITION_CHANGED="condition_changed";
     public static final String LASTNODE_COPY="af_syslabel_lastnode_copy";
     public static final String EXPRESSION_FIELD_NAME="expression";
+
+    public static class ActVarKeys {
+        public static String PROCINSTID="procInstId";
+        public static String ENTRY_ID="entryId";
+        public static String BUSINESS_ID = "businessId";
+        public static String BPMNCODE = "bpmnCode";
+        public static String FORMCODE = "formCode";
+        public static String PROCERSS_NUMBER = "processNumber";
+        public static String Is_OUTSIDEPROC = "isOutsideProc";
+        public static String BPMN_NAME = "bpmnName";
+    }
 }

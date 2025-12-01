@@ -3,10 +3,9 @@ package org.openoa.engine.bpmnconf.service.biz;
 import org.openoa.base.constant.enums.MsgNoticeTypeEnum;
 import org.openoa.base.entity.BpmnConfNoticeTemplate;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfNoticeTemplateDetailServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfNoticeTemplateDetailService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

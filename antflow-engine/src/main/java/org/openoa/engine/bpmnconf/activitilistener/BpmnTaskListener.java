@@ -3,7 +3,6 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
@@ -12,9 +11,10 @@ import org.activiti.engine.impl.el.FixedValue;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
-import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -23,7 +23,6 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.BpmProcessForward;
-import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
@@ -31,15 +30,16 @@ import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.base.util.AFWrappers;
 import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @ description: bpmn node execution listener
@@ -48,6 +48,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
+@Scope("prototype")
 public class BpmnTaskListener implements TaskListener {
 
     private FixedValue extraInfo;
@@ -103,14 +104,10 @@ public class BpmnTaskListener implements TaskListener {
         String startUser = Optional.ofNullable(delegateTask.getVariable("startUser"))
                 .map(Object::toString)
                 .orElse(StringUtils.EMPTY);
-        //bpmn conf
-        BpmnConf bpmnConf = bpmnConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnConf>()
-                .eq("bpmn_code", bpmnCode));
-
-        if (bpmnConf==null) {
-            log.error("Task监听-查询流程配置数据为空，流程编号{}", processNumber);
-            throw new AFBizException("Task监听-查询流程配置数据为空");
-        }
+        boolean isOutside=Optional.ofNullable(delegateTask.getVariable(StringConstants.ActVarKeys.Is_OUTSIDEPROC)).map(t->Boolean.valueOf(t.toString())).orElse(false);
+        String procInstId=Optional.ofNullable(delegateTask.getVariable(StringConstants.ActVarKeys.PROCINSTID)).map(Object::toString).orElse(StringUtils.EMPTY);
+        String bpmnName=Optional.ofNullable(delegateTask.getVariable(StringConstants.ActVarKeys.BPMN_NAME)).map(Object::toString).orElse(StringUtils.EMPTY);
+        boolean isCarbonCopyNode=false;
         if(extraInfo!=null){
             String expressionText = extraInfo.getExpressionText();
             if(!StringUtils.isEmpty(expressionText)){
@@ -138,11 +135,38 @@ public class BpmnTaskListener implements TaskListener {
                                 bpmProcessForwardService.update(processForward, qryWrapper);
                             }
                         }
+                        if(StringConstants.COPY_NODEV2.equals(nodeLabelVO.getLabelValue())){
+                            isCarbonCopyNode=true;
+                            List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(AFWrappers.<BpmProcessForward>lambdaTenantQuery()
+                                    .eq(BpmProcessForward::getProcessInstanceId, procInstId)
+                                    .eq(BpmProcessForward::getForwardUserId, delegateTask.getAssignee()));
+                            if(CollectionUtils.isEmpty(bpmProcessForwards)){
+                                bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
+                                        .createTime(new Date())
+                                        .createUserId(SecurityUtils.getLogInEmpId())
+                                        .forwardUserId(delegateTask.getAssignee())
+                                        .ForwardUserName(delegateTask.getAssignee())
+                                        .processInstanceId(procInstId)
+                                        .processNumber(processNumber)
+                                        .build());
+                            }
+                        }
                     }
                 }
             }
         }
-        boolean isOutside = Optional.ofNullable(bpmnConf.getIsOutSideProcess()).orElse(0).equals(1);
+
+        if(isCarbonCopyNode){
+            if(delegateTask instanceof  TaskEntity){
+                delegateTask.setAssignee(AFSpecialAssigneeEnum.CC_NODE.getId());
+                String assigneeName=AFSpecialAssigneeEnum.CC_NODE.getDesc()+"("+((TaskEntity) delegateTask).getAssigneeName()+")";
+                ((TaskEntity)delegateTask).setAssigneeName(assigneeName);
+                Map<String,Object> varMap=new HashMap<>();
+                varMap.put(StringConstants.TASK_ASSIGNEE_NAME,assigneeName);
+                ((TaskEntity) delegateTask).complete(varMap,false);
+            }
+        }
+
         //set process entrust info
         String oldUserId = delegateTask.getAssignee();
         String oldUserName="";
@@ -219,7 +243,7 @@ public class BpmnTaskListener implements TaskListener {
                             .bpmnCode(bpmnCode)
                             .formCode(formCode)
                             .processType("")//todo set process type
-                            .processName(bpmnConf.getBpmnName())
+                            .processName(bpmnName)
                             .emailUrl(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),
                                     processInforVo , isOutside))
                             .url(processBusinessContans.getRoute(ProcessNoticeEnum.EMAIL_TYPE.getCode(),

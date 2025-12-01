@@ -9,7 +9,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmFlowrunEntrustVo;
 import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 

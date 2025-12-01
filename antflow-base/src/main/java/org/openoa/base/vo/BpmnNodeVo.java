@@ -42,6 +42,7 @@ public class BpmnNodeVo  implements Serializable {
     private Integer nodeType;
     private Boolean isParallel;
     private Boolean isDynamicCondition;
+    private Boolean isCarbonCopyNode;
     private boolean aggregationNode;
     /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP

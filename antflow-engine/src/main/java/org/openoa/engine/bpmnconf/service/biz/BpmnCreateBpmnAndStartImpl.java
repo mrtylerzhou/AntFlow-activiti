@@ -21,11 +21,10 @@ import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnConfCommonVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.common.service.ProcessModelServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnBizCustomService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnCreateBpmnAndStart;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -100,8 +99,12 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
         // 4. Start a process instance
         ProcessInstance processInstance =runtimeService
                 .startProcessInstanceByKeyAndTenantId(bpmnConfCommonVo.getProcessNum(),bpmnStartConditions.getEntryId(),startParamMap, MultiTenantUtil.getCurrentTenantId());
-
-
+        runtimeService.setVariable(processInstance.getId(), StringConstants.ActVarKeys.PROCINSTID,processInstance.getId());
+        Map<String,Object> extraRuntimeVariables=new HashMap<>();
+        extraRuntimeVariables.put(StringConstants.ActVarKeys.Is_OUTSIDEPROC,bpmnStartConditions.getIsOutSideAccessProc());
+        extraRuntimeVariables.put(StringConstants.ActVarKeys.PROCINSTID,processInstance.getId());
+        extraRuntimeVariables.put(StringConstants.ActVarKeys.BPMN_NAME,bpmnConfCommonVo.getBpmnName());
+        runtimeService.setVariables(processInstance.getId(),extraRuntimeVariables);
 
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBaseMapper().selectOne(
                 new QueryWrapper<BpmBusinessProcess>()

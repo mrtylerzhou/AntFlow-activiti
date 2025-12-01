@@ -22,6 +22,7 @@ import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
+import org.openoa.base.service.BpmNodeLabelsService;
 import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.*;
@@ -37,11 +38,12 @@ import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.*;
+import org.openoa.engine.bpmnconf.service.interf.ApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.biz.*;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,6 +189,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
+            }
+            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())&&Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())){
+                BpmnNodeLabelVO copyNodeV2 = NodeLabelConstants.copyNodeV2;
+                if(CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
+                    bpmnNodeVo.setLabelList(Lists.newArrayList(copyNodeV2));
+                }else{
+                    bpmnNodeVo.getLabelList().add(copyNodeV2);
+                }
             }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
@@ -1626,6 +1636,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         List<BpmnNodeLabel> nodeLabels = bpmnNodeLabelsVoMap.get(bpmnNode.getId());
         if(!CollectionUtils.isEmpty(nodeLabels)){
             List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
+            if (NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.copyNodeV2.getLabelValue())) {
+                bpmnNodeVo.setDeduplicationExclude(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
         }
 

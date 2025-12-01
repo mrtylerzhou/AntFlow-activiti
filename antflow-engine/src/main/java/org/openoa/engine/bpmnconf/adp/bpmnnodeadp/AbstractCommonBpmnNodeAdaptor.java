@@ -2,7 +2,11 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.google.common.collect.Lists;
+import org.openoa.base.constant.enums.NodeTypeEnum;
+import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.vo.NodeLabelConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 

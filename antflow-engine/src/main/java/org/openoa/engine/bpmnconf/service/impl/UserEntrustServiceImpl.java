@@ -12,7 +12,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.mapper.UserEntrustMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.UserEntrustService;
-import org.openoa.engine.utils.AFWrappers;
+import org.openoa.base.util.AFWrappers;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;

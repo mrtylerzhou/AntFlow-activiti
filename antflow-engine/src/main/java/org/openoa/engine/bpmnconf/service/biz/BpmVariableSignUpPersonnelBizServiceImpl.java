@@ -12,7 +12,6 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
