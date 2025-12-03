@@ -337,6 +337,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
+    public void onProcessRecover(BusinessDataVo businessData) {
+
+    }
+
+    @Override
     public void finishData(BusinessDataVo vo) {
 
     }

@@ -15,6 +15,7 @@ import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.persistence.entity.*;
 import org.activiti.engine.impl.variable.*;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.AFExecutionEntity;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
@@ -23,6 +24,7 @@ import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
+import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,8 @@ public class TaskRecoverProcessImpl implements ProcessOperationAdaptor {
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
     private TaskMgmtServiceImpl taskMgmtService;
+    @Autowired
+    private FormFactory formFactory;
 
 
     @Override
@@ -101,6 +105,8 @@ public class TaskRecoverProcessImpl implements ProcessOperationAdaptor {
                 .list();
 
         taskMgmtMapper.deleteHisActInst(historicActivityInstanceList.get(0));
+        bpmBusinessProcessService.updateProcessStatus(processNumber, ProcessStateEnum.HANDLING_STATE);
+        formFactory.getFormAdaptor(vo).onProcessRecover(vo);
 
     }
 

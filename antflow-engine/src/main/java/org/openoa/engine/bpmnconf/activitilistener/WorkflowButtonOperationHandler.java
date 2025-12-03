@@ -105,4 +105,10 @@ public interface WorkflowButtonOperationHandler {
      */
     void onAddFutureAssignee(BusinessDataVo businessData);
     void onFinishData(BusinessDataVo vo);
+
+    /**
+     * 流程审批完成(正常完成/拒绝/中止)以后重新恢复流程
+     * @param businessData
+     */
+    void onProcessRecover(BusinessDataVo businessData);
 }

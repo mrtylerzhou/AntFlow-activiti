@@ -1,6 +1,7 @@
 package org.openoa.base.interf;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,4 +31,5 @@ public interface BpmBusinessProcessService extends IService<BpmBusinessProcess> 
     boolean checkProcessData(String entryId);
 
     void updateProcessIsDel(String processNumber);
+    void updateProcessStatus(String processNumber, ProcessStateEnum processStateEnum);
 }

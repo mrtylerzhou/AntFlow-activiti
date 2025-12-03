@@ -175,4 +175,11 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
         bpmBusinessProcess.setIsDel(1);
         this.updateById(bpmBusinessProcess);
     }
+
+    @Override
+    public void updateProcessStatus(String processNumber, ProcessStateEnum processStateEnum) {
+        BpmBusinessProcess bpmBusinessProcess = this.getBaseMapper().selectOne(Wrappers.<BpmBusinessProcess>lambdaQuery().eq(BpmBusinessProcess::getBusinessNumber, processNumber));
+        bpmBusinessProcess.setProcessState(processStateEnum.getCode());
+        this.updateById(bpmBusinessProcess);
+    }
 }

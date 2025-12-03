@@ -23,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -90,8 +91,13 @@ public class FormFactory implements ApplicationContextAware {
         FormOperationAdaptor bean = getFormAdaptor(BusinessDataVo.builder().formCode(key).build());
         if (!ObjectUtils.isEmpty(bean)) {
 
-            Type[] interfacesTypes = ClassUtils.getUserClass(bean).getGenericInterfaces();
-            ParameterizedType p = (ParameterizedType) interfacesTypes[0];
+            Type[] genericTypes = ClassUtils.getUserClass(bean).getGenericInterfaces();
+            if(genericTypes.length==0){
+                Type[] type=new Type[1];
+                type[0] = ClassUtils.getUserClass(bean).getGenericSuperclass();
+                genericTypes=type;
+            }
+            ParameterizedType p = (ParameterizedType) genericTypes[0];
             Class<?> cls = (Class) p.getActualTypeArguments()[0];
             if (!ObjectUtils.isEmpty(cls)) {
                 return cls;

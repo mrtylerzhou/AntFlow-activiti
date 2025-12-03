@@ -69,6 +69,8 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      */
     void cancellationData(T businessDataVo);
 
+    //流程完结以后(正常完成,被发起人拒绝,终止以后重新恢复
+    void onProcessRecover(BusinessDataVo businessData);
 
 
 }

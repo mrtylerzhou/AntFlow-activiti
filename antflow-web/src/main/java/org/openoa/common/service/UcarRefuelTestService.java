@@ -7,8 +7,10 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
 import org.openoa.entity.BizUcarfuel;
 import org.openoa.mapper.BizUcarFuelMapper;
+import org.openoa.vo.BizPurchaseVo;
 import org.openoa.vo.BizUcarRefuelVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import java.util.Date;
  */
 @ActivitiServiceAnno(svcName = "UCARREFUEl_WMA",desc = "加油上报")
 //formAdaptor
-public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuelVo>, ActivitiService {
+public class UcarRefuelTestService extends AbstractFormOperationAdaptor<BizUcarRefuelVo> {
 
     @Autowired
     private BizUcarFuelMapper bizUcarfuelMapper;
@@ -75,7 +77,7 @@ public class UcarRefuelTestService implements FormOperationAdaptor<BizUcarRefuel
                 && !vo.getOperationType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode()) ){
             BizUcarfuel ucarFuel = new BizUcarfuel();
             BeanUtils.copyProperties(vo,ucarFuel);
-            Integer id=  Integer.valueOf((vo.getBusinessId()).toString());
+            Integer id=  Integer.valueOf((vo.getBusinessId()));
             ucarFuel.setId(id);
             bizUcarfuelMapper.updateById(ucarFuel);
         }
