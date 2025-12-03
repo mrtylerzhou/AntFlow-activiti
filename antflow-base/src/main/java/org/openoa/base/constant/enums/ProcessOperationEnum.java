@@ -25,6 +25,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_ADD_FUTURE_ASSIGNEE(28,"未来节点加签"),
     BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回"),
     BUTTON_TYPE_SAVE_DRAFT(30,"保存草稿"),
+    BUTTON_TYPE_RECOVER_TO_HIS(31,"恢复已结束流程")
     ;
 
     @Getter

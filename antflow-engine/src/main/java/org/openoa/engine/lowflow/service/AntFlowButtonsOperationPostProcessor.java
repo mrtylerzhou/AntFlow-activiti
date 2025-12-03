@@ -84,6 +84,9 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
             case BUTTON_TYPE_PROCESS_DRAW_BACK:
                 workflowButtonHandler.onProcessDrawBack(vo);
                 break;
+            case BUTTON_TYPE_RECOVER_TO_HIS:
+                //todo
+                break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);
         }
