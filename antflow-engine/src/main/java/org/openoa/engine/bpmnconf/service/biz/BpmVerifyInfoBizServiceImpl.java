@@ -17,6 +17,7 @@ import org.openoa.base.entity.*;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.util.AFWrappers;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyAttachmentVo;
@@ -744,6 +745,17 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                         .processCode(processNumber)
                         .build()
         )).orElse(Arrays.asList()),procInstId);
+    }
+
+    @Override
+    public BpmVerifyInfo getLastProcessNodeByAssignee(String processNumber, String assignee) {
+        List<BpmVerifyInfo> bpmVerifyInfos = getMapper().selectList(AFWrappers.<BpmVerifyInfo>lambdaTenantQuery()
+                .eq(BpmVerifyInfo::getProcessCode, processNumber)
+                .eq(BpmVerifyInfo::getVerifyUserId, assignee));
+        if(CollectionUtils.isEmpty(bpmVerifyInfos)){
+            return null;
+        }
+        return bpmVerifyInfos.get(0);
     }
 
 }
