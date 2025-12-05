@@ -129,7 +129,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             }
             vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());
         }else if(isOtherApproverDrawBack){
-            vo.setBackToModifyType(ProcessDisagreeTypeEnum.FIVE_DISAGREE.ordinal());
+            vo.setBackToModifyType(ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode());
         }
         List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
 

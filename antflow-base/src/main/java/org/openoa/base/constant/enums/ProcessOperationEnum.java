@@ -27,6 +27,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_SAVE_DRAFT(30,"保存草稿"),
     BUTTON_TYPE_RECOVER_TO_HIS(31,"恢复已结束流程"),
     BUTTON_TYPE_DRAW_BACK_AGREE(32,"撤销同意"),
+    BUTTON_TYPE_PROCESS_MOVE_AHEAD(33,"流程推进"),
     ;
 
     @Getter

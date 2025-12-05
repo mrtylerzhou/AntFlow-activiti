@@ -90,6 +90,9 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
             case BUTTON_TYPE_DRAW_BACK_AGREE:
                 //todo
                 break;
+            case BUTTON_TYPE_PROCESS_MOVE_AHEAD:
+                //todo
+                break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);
         }
