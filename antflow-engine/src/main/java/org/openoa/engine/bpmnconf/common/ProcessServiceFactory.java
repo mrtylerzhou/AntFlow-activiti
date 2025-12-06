@@ -63,7 +63,5 @@ public class ProcessServiceFactory {
 
 
     @Autowired
-    protected TaskMgmtServiceImpl taskMgmtService;
-    @Autowired
     protected UserMessageServiceImpl userMessageService;
 }

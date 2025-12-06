@@ -190,13 +190,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
             }
-            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())&&Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())){
-                BpmnNodeLabelVO copyNodeV2 = NodeLabelConstants.copyNodeV2;
-                if(CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
-                    bpmnNodeVo.setLabelList(Lists.newArrayList(copyNodeV2));
-                }else{
-                    bpmnNodeVo.getLabelList().add(copyNodeV2);
+            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())){
+                BpmnNodeLabelVO nodeLabelVO=null;
+                if (Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())) {
+                   nodeLabelVO = NodeLabelConstants.copyNodeV2;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutomaticNode())){
+                    nodeLabelVO=NodeLabelConstants.automaticNode;
                 }
+               if(nodeLabelVO!=null){
+                   bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
+               }
             }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
@@ -1381,7 +1384,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param bpmnNodeList bpmnNodeList
      * @return List
      */
-    private List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList, String conditionsUrl) {
+    public List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList, String conditionsUrl) {
 
 
         List<Long> idList = bpmnNodeList.stream().map(BpmnNode::getId).collect(Collectors.toList());

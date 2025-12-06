@@ -36,6 +36,7 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.base.interf.LFFormOperationAdaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -221,7 +222,11 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         List<DIYProcessInfoDTO> results=new ArrayList<>();
         for (Map.Entry<String, FormOperationAdaptor> stringFormOperationAdaptorEntry : formOperationAdaptorMap.entrySet()) {
             String key=stringFormOperationAdaptorEntry.getKey();
-            ActivitiServiceAnno annotation = ClassUtils.getUserClass(stringFormOperationAdaptorEntry.getValue()).getAnnotation(ActivitiServiceAnno.class);
+            FormOperationAdaptor formOperationAdaptor = stringFormOperationAdaptorEntry.getValue();
+            if(formOperationAdaptor instanceof LFFormOperationAdaptor){
+                continue;
+            }
+            ActivitiServiceAnno annotation = ClassUtils.getUserClass(formOperationAdaptor).getAnnotation(ActivitiServiceAnno.class);
             if (StringUtils.isEmpty(annotation.desc())){
                 continue;
             }

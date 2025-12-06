@@ -24,7 +24,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBiz
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmBusinessPartyService;
 import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmConditionsTemplateService;
-import org.openoa.engine.lowflow.vo.UDLFApplyVo;
+import org.openoa.base.vo.UDLFApplyVo;
 import org.openoa.engine.vo.OutSideBpmAccessBusinessVo;
 import org.openoa.engine.vo.OutSideBpmAccessProcessRecordVo;
 import org.openoa.engine.vo.OutSideBpmAccessRespVo;

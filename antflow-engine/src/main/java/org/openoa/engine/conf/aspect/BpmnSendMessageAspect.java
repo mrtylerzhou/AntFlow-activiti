@@ -17,6 +17,7 @@ import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +43,7 @@ public class BpmnSendMessageAspect {
     private BpmVariableMessageBizService bpmVariableMessageBizService;
 
     @Autowired
-    private BpmnConfBizServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfCommonService;
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired

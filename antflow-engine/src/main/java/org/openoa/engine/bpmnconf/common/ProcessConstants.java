@@ -17,6 +17,7 @@ import org.openoa.base.entity.ActHiTaskinst;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.NodeUtil;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.NodeLabelConstants;
 import org.openoa.base.vo.TaskMgmtVO;
@@ -110,7 +111,7 @@ public class ProcessConstants extends ProcessServiceFactory {
     public String getTaskId(String businessId, String processCode) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().businessId(businessId).businessNumber(processCode).build());
         if (!ObjectUtils.isEmpty(bpmBusinessProcess)) {
-            TaskMgmtVO taskMgmtVO = taskMgmtService.findByTask(TaskMgmtVO.builder().businessId(businessId).code(processCode).build());
+            TaskMgmtVO taskMgmtVO = SpringBeanUtils.getBean(TaskMgmtServiceImpl.class).findByTask(TaskMgmtVO.builder().businessId(businessId).code(processCode).build());
             if (!ObjectUtils.isEmpty(taskMgmtVO)) {
                 throw new AFBizException("00", "current task is finished！！！");
             } else {

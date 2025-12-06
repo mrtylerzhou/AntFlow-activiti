@@ -1,7 +1,6 @@
-package org.openoa.engine.lowflow.vo;
+package org.openoa.base.vo;
 
 import lombok.Data;
-import org.openoa.base.vo.BusinessDataVo;
 
 import java.util.Map;
 

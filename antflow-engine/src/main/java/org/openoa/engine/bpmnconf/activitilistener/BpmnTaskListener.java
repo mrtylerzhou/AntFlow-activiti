@@ -14,10 +14,12 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
+import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.ActivitiBpmMsgVo;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BpmnNodeLabelVO;
+import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
@@ -31,9 +33,10 @@ import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.openoa.base.util.AFWrappers;
+import org.openoa.engine.factory.FormFactory;
 import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
-import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -75,6 +78,8 @@ public class BpmnTaskListener implements TaskListener {
     private BpmVariableMapper bpmVariableMapper;
     @Resource
     private BpmProcessForwardServiceImpl bpmProcessForwardService;
+    @Autowired
+    private FormFactory formFactory;
 
 
     @Override
@@ -151,6 +156,29 @@ public class BpmnTaskListener implements TaskListener {
                                         .build());
                             }
                         }
+                        if (StringConstants.AUTOMATIC_NODE.equals(nodeLabelVO.getLabelValue())){
+                            BpmnConf bpmnConf = bpmnConfService.getOne(AFWrappers.<BpmnConf>lambdaTenantQuery()
+                                    .eq(BpmnConf::getFormCode, formCode)
+                                    .eq(BpmnConf::getEffectiveStatus, 1));
+
+                            BusinessDataVo vo=new BusinessDataVo();
+                            vo.setProcessNumber(processNumber);
+                            vo.setTaskDefKey(delegateTask.getTaskDefinitionKey());
+                            vo.setFormCode(formCode);
+                            vo.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
+                            vo.setFormData(formCode);
+                            vo.setIsOutSideAccessProc(Objects.equals(bpmnConf.getIsOutSideProcess(),1));
+                            FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
+                            if(formAdaptor==null){
+                                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+                            }
+
+                            BusinessDataVo convertedBusinessDatavo = formFactory.dataFormConversion(vo);
+                            Boolean conditionResult = formAdaptor.automaticCondition(convertedBusinessDatavo);
+                            formAdaptor.automaticAction(convertedBusinessDatavo,conditionResult);
+
+                        }
+
                     }
                 }
             }

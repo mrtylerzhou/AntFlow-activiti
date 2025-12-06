@@ -47,6 +47,7 @@ public class StringConstants {
     public static final String CONDITION_CHANGED="condition_changed";
     public static final String LASTNODE_COPY="af_syslabel_lastnode_copy";
     public static final String EXPRESSION_FIELD_NAME="expression";
+    public static final String AUTOMATIC_NODE="auto_node";
 
     public static class ActVarKeys {
         public static String PROCINSTID="procInstId";
