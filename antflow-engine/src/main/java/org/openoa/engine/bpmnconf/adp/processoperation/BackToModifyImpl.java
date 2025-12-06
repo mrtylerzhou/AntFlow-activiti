@@ -229,7 +229,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         }
         //boolean userTaskParallel = ProcessDefinitionUtils.isUserTaskParallel(taskData.getProcessInstanceId(), backToNodeKey);
         if (ProcessDefinitionUtils.isUserTaskParallel(taskData)) {
-            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId(), bpmVariableMultiplayerService);
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
             try {
                 List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
                 List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());

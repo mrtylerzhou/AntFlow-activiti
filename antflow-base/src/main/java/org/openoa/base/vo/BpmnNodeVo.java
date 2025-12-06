@@ -190,7 +190,7 @@ public class BpmnNodeVo  implements Serializable {
             this.prevId= Arrays.asList(nodeFroms.split(","));
         }
     }
-    public void updateLabelListPossible(BpmnNodeLabelVO labelVO){
+    public void setOrAddLabelList(BpmnNodeLabelVO labelVO){
         if(!CollectionUtils.isEmpty(this.labelList)){
             this.labelList.add(labelVO);
         }else{

@@ -22,7 +22,7 @@ public interface BpmBusinessProcessService extends IService<BpmBusinessProcess> 
 
     BpmBusinessProcess getBpmBusinessProcess(BpmBusinessProcess bpmBusinessProcess);
 
-    boolean updateBpmBusinessProcess(String procInstId);
+    boolean updateBpmBusinessProcess(String procInstId,ProcessStateEnum processStateEnum);
 
     List<BpmBusinessProcess> listBpmBusinessProcess(List<String> processNumbers);
 

@@ -14,9 +14,9 @@ public class StartActivityCmd implements Command<Void>
 
 	private String _executionId;
 	private final String variableName;
-	private final String variableValue;
+	private final Object variableValue;
 
-	public StartActivityCmd(String executionId, ActivityImpl activity,String variableName,String variableValue)
+	public StartActivityCmd(String executionId, ActivityImpl activity,String variableName,Object variableValue)
 	{
 		_activity = activity;
 		_executionId = executionId;
