@@ -119,12 +119,12 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
         }
         if (!StringUtils.isEmpty(taskDefKey) && Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
 
-            Long variableId = Optional.ofNullable(bpmnVariableService.lambdaQuery().eq(BpmVariable::getProcessNum, processInfoVo.getProcessNumber()).last(" limit 1").one()).map(BpmVariable::getId).orElse(null);
+            Long variableId = Optional.ofNullable(bpmnVariableService.lambdaQuery().eq(BpmVariable::getProcessNum, processInfoVo.getProcessNumber()).list().get(0)).map(BpmVariable::getId).orElse(null);
             String elementId = processInfoVo.getNodeId();
             String nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
                     .eq(BpmVariableMultiplayer::getElementId, elementId)
                     .eq(BpmVariableMultiplayer::getVariableId, variableId)
-                    .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+                    .list().get(0)).map(BpmVariableMultiplayer::getNodeId).orElse(null);
             if(StringUtils.isBlank(nodeId)){
                 List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
                 BpmVariableSignUp  signUpParent=null;
@@ -146,7 +146,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
                             .eq(BpmVariableMultiplayer::getElementId, elementId)
                             .eq(BpmVariableMultiplayer::getVariableId, variableId)
-                            .last(" limit 1").one()).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+                            .list().get(0)).map(BpmVariableMultiplayer::getNodeId).orElse(null);
                 }
             }
             if (StringUtils.isNotBlank(nodeId)) {
