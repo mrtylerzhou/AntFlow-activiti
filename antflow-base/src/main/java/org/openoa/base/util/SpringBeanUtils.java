@@ -45,8 +45,8 @@ public class SpringBeanUtils implements ApplicationContextAware {
     public static <T> T getBean(Class<T> tClass) {
         return applicationContext.getBean(tClass);
     }
-    public static  Map<String,?> getBeansOfType(Class clsz){
-        Map<String,?> beansOfType = applicationContext.getBeansOfType(clsz);
+    public static <T>  Map<String,T> getBeansOfType(Class clsz){
+        Map<String,T> beansOfType = applicationContext.getBeansOfType(clsz);
         return beansOfType;
     }
     public static <T> T getBean(String name, Class<T> tClass) {

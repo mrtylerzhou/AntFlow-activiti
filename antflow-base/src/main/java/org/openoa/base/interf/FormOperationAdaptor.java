@@ -1,7 +1,11 @@
 package org.openoa.base.interf;
 
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * FormOperationAdaptor is the core interface to adapt different business data to a process
@@ -31,6 +35,20 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      */
     BpmnStartConditionsVo launchParameters(T vo);
 
+
+    /**
+     * 自动条件,用户可以在页面设置条件,也可以完全通过此方法自定义条件
+     * @param businessDataVo
+     * @return
+     */
+    Boolean automaticCondition(T businessDataVo);
+
+    /**
+     * 执行的动作,可以执行预定制的动作,也可以自己定义一个或者多个动作来执行
+     * @param businessDataVo
+     * @param conditionResult 结果来自于 automaticCondition,如果需要无条件执行一个动作,automaticCondition返回null即可
+     */
+    void  automaticAction(T businessDataVo,Boolean conditionResult);
     /**
      * query business data,most of the times,it is a must method,it is used to query business data for a process for approvers reference
      *
@@ -72,5 +90,16 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
     //流程完结以后(正常完成,被发起人拒绝,终止以后重新恢复
     void onProcessRecover(BusinessDataVo businessData);
 
-
+   default Map<String,FormOperationAdaptor> getNoneLFFormOperationAdaptors(){
+       Map<String, FormOperationAdaptor> beansOfType = SpringBeanUtils.getBeansOfType(FormOperationAdaptor.class);
+       Map<String, FormOperationAdaptor> resultMap=new HashMap<>();
+       for (String beanName : beansOfType.keySet()) {
+           FormOperationAdaptor formOperationAdaptor = beansOfType.get(beanName);
+           if(formOperationAdaptor instanceof LFFormOperationAdaptor){
+               continue;
+           }
+           resultMap.put(beanName,formOperationAdaptor);
+       }
+       return resultMap;
+   }
 }

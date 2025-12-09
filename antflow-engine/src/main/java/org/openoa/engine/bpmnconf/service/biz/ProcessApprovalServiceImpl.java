@@ -23,6 +23,7 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.openoa.engine.factory.ButtonPreOperationService;
@@ -46,7 +47,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
  */
 @Service
 @Slf4j
-public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMapper, TaskMgmtVO> {
+public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMapper, TaskMgmtVO> implements ProcessApprovalService {
     @Autowired
     private ButtonPreOperationService buttonPreOperationService;
     @Autowired
@@ -79,6 +80,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @param formCode
      * @return
      */
+    @Override
     public BusinessDataVo buttonsOperation(String params, String formCode) {
         BusinessDataVo vo = buttonPreOperationService.buttonsPreOperation(params, formCode);
         return vo;
@@ -93,6 +95,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @return
      * @throws AFBizException
      */
+    @Override
     public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws AFBizException {
 
         LinkedHashMap<String, SortTypeEnum> orderFieldMap = Maps.newLinkedHashMap();
@@ -214,8 +217,13 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             }
         }
     }
+    @Override
     public BusinessDataVo getBusinessInfo(String params, String formCode) {
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
+        return getBusinessInfo(vo);
+    }
+    @Override
+    public BusinessDataVo getBusinessInfo(BusinessDataVo vo){
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
             throw  new AFBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
@@ -265,6 +273,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     /**
      * some statics about my tobe done list,my new process,etc regarding today
      */
+    @Override
     public TaskMgmtVO processStatistics() {
 
         // set value

@@ -49,4 +49,14 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
     public void onProcessRecover(BusinessDataVo businessData) {
 
     }
+
+    @Override
+    public Boolean automaticCondition(BusinessDataVo vo) {
+        return null;
+    }
+
+    @Override
+    public void automaticAction(BusinessDataVo autoActionDto,Boolean conditionResult) {
+
+    }
 }

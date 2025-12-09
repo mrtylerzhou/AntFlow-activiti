@@ -628,7 +628,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             if (!CollectionUtils.isEmpty(strs)) {
                 taskName = String.join("||", strs);
             }
-            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).collect(Collectors.joining(","));
+            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).distinct().collect(Collectors.joining(","));
             taskInfors.add(BpmVerifyInfoVo.builder()
                     .verifyUserIds(verifyUserIds)
                     .verifyUserName(verifyUserName)
