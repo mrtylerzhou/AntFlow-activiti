@@ -31,6 +31,7 @@ import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.openoa.base.listener.StartEngineEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -57,13 +58,16 @@ public abstract class AbstractProcessEngineConfiguration {
         return processEngineFactoryBean;
     }
 
-  public SpringProcessEngineConfiguration processEngineConfigurationBean(Resource[] processDefinitions,
-                                                                         DataSource dataSource,
-                                                                         PlatformTransactionManager transactionManager,
-                                                                         SpringAsyncExecutor springAsyncExecutor)
+  public SpringProcessEngineConfiguration processEngineConfigurationBean(
+          List<StartEngineEventListener> startEngineEventListeners,
+          Resource[] processDefinitions,
+          DataSource dataSource,
+          PlatformTransactionManager transactionManager,
+          SpringAsyncExecutor springAsyncExecutor)
         throws IOException {
 
     SpringProcessEngineConfiguration engine = new SpringProcessEngineConfiguration();
+    engine.setStartEngineEventListeners(startEngineEventListeners);
     if (processDefinitions != null && processDefinitions.length > 0) {
       engine.setDeploymentResources(processDefinitions);
     }

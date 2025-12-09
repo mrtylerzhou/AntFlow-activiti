@@ -12,9 +12,10 @@ public class DefaultTaskFlowControlServiceFactory
 
 	@Autowired
 	ProcessEngine _processEngine;
-
-	public TaskFlowControlService create(String processId, BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService)
+	@Autowired
+	private  BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
+	public TaskFlowControlService create(String processInstanceId)
 	{
-		return new DefaultTaskFlowControlService( _processEngine, processId,bpmVariableMultiplayerService);
+		return new DefaultTaskFlowControlService( _processEngine, processInstanceId,bpmVariableMultiplayerService);
 	}
 }
