@@ -101,7 +101,7 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
                     .taskName(task.getName())
                     .taskId(task.getId())
                     .runInfoId(processInstanceId)
-                    .verifyUserId(actualName)
+                    .verifyUserId(actual)
                     .verifyUserName("管理员-"+actualName)
                     .taskDefKey(task.getTaskDefinitionKey())
                     .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
