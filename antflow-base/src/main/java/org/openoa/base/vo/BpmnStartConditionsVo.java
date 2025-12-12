@@ -143,7 +143,7 @@ public class BpmnStartConditionsVo {
     /**
      * embedded node(though its name is embedded node,but it it also for api access process)
      */
-    private List<OutSideBpmAccessEmbedNodeVo> embedNodes;
+    private Map<String, BpmEmbedNodeVo> embedNodes;
     /**
      * third party level nodes
      */

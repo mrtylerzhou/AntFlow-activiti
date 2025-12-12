@@ -1,6 +1,7 @@
 package org.openoa.base.constant.enums;
 
 import lombok.Getter;
+import org.openoa.base.vo.BaseIdTranStruVo;
 
 @Getter
 public enum AFSpecialAssigneeEnum implements AfEnumBase{
@@ -17,5 +18,8 @@ public enum AFSpecialAssigneeEnum implements AfEnumBase{
         this.code = code;
         this.id = id;
         this.desc = desc;
+    }
+    public static BaseIdTranStruVo buildToBeRemoved(){
+        return new BaseIdTranStruVo(TO_BE_REMOVED.getId(), TO_BE_REMOVED.getDesc());
     }
 }
