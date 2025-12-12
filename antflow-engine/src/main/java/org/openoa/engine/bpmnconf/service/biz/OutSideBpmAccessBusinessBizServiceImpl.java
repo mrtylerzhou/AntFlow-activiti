@@ -134,7 +134,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
         businessDataVo.setEmpId(SecurityUtils.getLogInEmpIdSafe());
         businessDataVo.setSubmitUser(SecurityUtils.getLogInEmpNameSafe());
         //set embed nodes
-        businessDataVo.setEmbedNodes(reSetEmbedNodes(vo.getEmbedNodes()));
+        businessDataVo.setEmbedNodes(vo.getEmbedNodes());
         //call common service to start the process
         processApprovalService.buttonsOperationTransactional(businessDataVo);
         //query inserted data
@@ -240,7 +240,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
                 .startUserId(detailedUser.getId())
                 .startUserName(detailedUser.getUsername())
                 .templateMarks(vo.getTemplateMarks())
-                .embedNodes(reSetEmbedNodes(vo.getEmbedNodes()))
+                .embedNodes(vo.getEmbedNodes())
                 .build();
 
         if(!CollectionUtils.isEmpty(outSideBpmConditionsTemplates)){
@@ -307,19 +307,7 @@ public class OutSideBpmAccessBusinessBizServiceImpl implements OutSideBpmAccessB
 
     }
 
-    /**
-     * reset embed node
-     *
-     * @param embedNodes
-     * @return
-     */
-    private List<OutSideBpmAccessEmbedNodeVo> reSetEmbedNodes(List<OutSideBpmAccessEmbedNodeVo> embedNodes) {
 
-        if (CollectionUtils.isEmpty(embedNodes)) {
-            return embedNodes;
-        }
-        return embedNodes;
-    }
 
     /**
      * assemble preview node list

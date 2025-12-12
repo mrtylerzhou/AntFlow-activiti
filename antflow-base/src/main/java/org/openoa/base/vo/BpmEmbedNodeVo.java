@@ -17,12 +17,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OutSideBpmAccessEmbedNodeVo implements Serializable {
+public class BpmEmbedNodeVo implements Serializable {
 
-    /**
-     * node mark
-     */
-    private String nodeMark;
 
     /**
      * node name
@@ -32,7 +28,7 @@ public class OutSideBpmAccessEmbedNodeVo implements Serializable {
     /**
      * node assignee list
      */
-    private List<String> assigneeIdList;
+    private List<BaseIdTranStruVo> assigneeList;
 
 
 }
