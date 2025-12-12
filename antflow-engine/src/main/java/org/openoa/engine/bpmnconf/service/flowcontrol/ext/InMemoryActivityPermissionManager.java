@@ -4,11 +4,13 @@ import org.openoa.base.entity.ActivityPermissionEntity;
 import org.openoa.base.entity.SimpleActivityPermissionEntity;
 import org.openoa.engine.bpmnconf.service.flowcontrol.ActivityPermissionManager;
 import org.openoa.engine.bpmnconf.service.flowcontrol.ActivityPermissionManagerEx;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
+@Service
 public class InMemoryActivityPermissionManager implements ActivityPermissionManager, ActivityPermissionManagerEx
 {
 	Map<String, ActivityPermissionEntity> _entryMap = new HashMap<String, ActivityPermissionEntity>();

@@ -21,4 +21,9 @@ public interface TaskFlowControlService
 	List<String> moveTov2(List<Task> currentTaskEntitys, String currentTaskDefKey, ActivityImpl activity);
 
 	List<String> moveTo(List<Task> currentTaskEntitys, String currentTaskDefKey, String targetTaskDefinitionKey) throws Exception;
+
+	ActivityImpl split(String targetTaskDefinitionKey, String... assignee) throws Exception;
+
+	ActivityImpl split(String targetTaskDefinitionKey, boolean isSequential, String... assignees)
+			throws Exception;
 }

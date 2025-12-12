@@ -386,4 +386,12 @@ public class ActivitiTest {
         }
         return Result.success();
     }
+    @RequestMapping("/splitTask")
+    public Result splitTask(String processNumber,String taskDefKey) throws Exception {
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        String procinstId=bpmBusinessProcess.getProcInstId();
+        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procinstId);
+        ActivityImpl split = taskFlowControlService.split(taskDefKey, "10", "11","12");
+        return Result.success();
+    }
 }

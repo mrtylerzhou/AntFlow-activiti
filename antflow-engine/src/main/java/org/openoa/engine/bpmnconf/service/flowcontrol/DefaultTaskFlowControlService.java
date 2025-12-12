@@ -17,7 +17,6 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.RuntimeActivityDefinitionEntityIntepreter;
-import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 public class DefaultTaskFlowControlService implements TaskFlowControlService
 {
 
-	RuntimeActivityDefinitionManager _activitiesCreationStore;
 	ProcessDefinitionEntity _processDefinition;
 
 	ProcessEngine _processEngine;
@@ -269,6 +267,12 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		return moveTov2(currentTaskEntitys,currentTaskDefKey, activity);
 	}
 
+	@Override
+	public ActivityImpl split(String targetTaskDefinitionKey, String... assignee) throws Exception
+	{
+		return split(targetTaskDefinitionKey, true, assignee);
+	}
+	@Override
 	public ActivityImpl split(String targetTaskDefinitionKey, boolean isSequential, String... assignees)
 			throws Exception
 	{
@@ -300,6 +304,6 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	private void recordActivitiesCreation(SimpleRuntimeActivityDefinitionEntity info) throws Exception
 	{
 		info.serializeProperties();
-		_activitiesCreationStore.save(info);
+		SpringBeanUtils.getBean(RuntimeActivityDefinitionManager.class).save(info);
 	}
 }
