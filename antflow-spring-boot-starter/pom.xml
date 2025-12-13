@@ -6,11 +6,11 @@
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
     <name>antflow-spring-boot-starter</name>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
     <properties>
 
         <!-- 主版本        -->
-        <antflow.version>1.3.0</antflow.version>
+        <antflow.version>1.4.0</antflow.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
