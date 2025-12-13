@@ -68,6 +68,9 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
     return createOutgoingTransition(transitionId, null);
   }
 
+  public void addOutgoingTransitions(TransitionImpl transition){
+    this.outgoingTransitions.add(transition);
+  }
   public TransitionImpl createOutgoingTransition(String transitionId, Expression skipExpression) {
     TransitionImpl transition = new TransitionImpl(transitionId, skipExpression, processDefinition);
     transition.setSource(this);

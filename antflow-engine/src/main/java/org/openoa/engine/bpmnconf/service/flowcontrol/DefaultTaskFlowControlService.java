@@ -289,18 +289,16 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		ActivityImpl clone = new MultiInstanceActivityCreator().createActivities(_processEngine, _processDefinition,
 				info)[0];
 
-		TaskEntity currentTaskEntity = getCurrentTask();
-		executeCommand(new CreateAndTakeTransitionCmd(currentTaskEntity.getExecutionId(), clone));
-		executeCommand(new DeleteRunningTaskCmd(currentTaskEntity));
+		List<Task> currentTaskEntitys = getCurrentTasks();
+		for (Task currentTaskEntity : currentTaskEntitys) {
+			executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
+		}
+		executeCommand(new CreateAndTakeTransitionCmd(currentTaskEntitys.get(0).getExecutionId(), clone));
 
 		recordActivitiesCreation(info);
 		return clone;
 	}
-	private TaskEntity getCurrentTask()
-	{
-		return (TaskEntity) _processEngine.getTaskService().createTaskQuery().processInstanceId(_processInstanceId)
-				.active().singleResult();
-	}
+
 	private void recordActivitiesCreation(SimpleRuntimeActivityDefinitionEntity info) throws Exception
 	{
 		info.serializeProperties();
