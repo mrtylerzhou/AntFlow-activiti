@@ -82,7 +82,7 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
         Task task;
         if (!ObjectUtils.isEmpty(vo.getTaskId())) {
-            task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())).findFirst().orElse(null);
+            task = tasks.stream().filter(o -> o.getId().equals(vo.getTaskId())&&o.getAssignee().equals(SecurityUtils.getLogInEmpIdStr())).findFirst().orElse(null);
         } else {
             task = tasks.get(0);
             if (StringUtils.isEmpty(task.getAssigneeName())) {

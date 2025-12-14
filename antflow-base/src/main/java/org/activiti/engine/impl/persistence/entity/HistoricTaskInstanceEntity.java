@@ -60,6 +60,11 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
       this.processDefinitionId = execution.getProcessDefinitionId();
       this.processInstanceId = execution.getProcessInstanceId();
       this.executionId = execution.getId();
+    }else{
+      this.processInstanceId=task.getProcessInstanceId();
+      this.processDefinitionId=task.getProcessDefinitionId();
+      this.formKey=task.getFormKey();
+      this.assigneeName=task.getAssigneeName();
     }
     this.name = task.getName();
     this.parentTaskId = task.getParentTaskId();

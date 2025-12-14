@@ -36,6 +36,7 @@ public class MultiCharacterInstanceParallelSign implements Command {
 		newExecutionEntity.setActive(true);
 		newExecutionEntity.setConcurrent(true);
 		newExecutionEntity.setScope(false);
+		newExecutionEntity.setProcessDefinitionId(taskEntity.getProcessDefinitionId());
 		TaskEntity newTaskEntity = new TaskEntity();
 		newTaskEntity.setAssignee(userInfos.get(0).getId());
 		newTaskEntity.setAssigneeName(userInfos.get(0).getName());
