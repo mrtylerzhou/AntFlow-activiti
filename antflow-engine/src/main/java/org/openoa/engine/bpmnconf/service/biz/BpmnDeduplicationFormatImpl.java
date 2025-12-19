@@ -1,11 +1,15 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.DeduplicationTypeEnum;
+import org.openoa.base.constant.enums.DuplicationProcessStrategyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.*;
+import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnDeduplicationFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -66,7 +70,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //deduplication on single node
             if (bpmnNodeVo.getParams().getParamType().equals(1)) {
 
-                singlePlayerNodeDeduplication(bpmnNodeVo,new HashSet<>(), new ArrayList<>(Collections.singletonList(initiator)));
+                singlePlayerNodeDeduplication(bpmnNodeVo,new HashSet<>(), new ArrayList<>(Collections.singletonList(initiator)),bpmnStartConditions);
                 nodeVoList.add(bpmnNodeVo);
                 continue;
             }
@@ -74,7 +78,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //deduplication on multiplayer node
             if (bpmnNodeVo.getParams().getParamType().equals(2)) {
                 //multi assignee node deduplication
-                multiPlayerNodeDeduplication(bpmnNodeVo, new HashSet<>(),new ArrayList<>(Collections.singletonList(initiator)), false);
+                multiPlayerNodeDeduplication(bpmnNodeVo, new HashSet<>(),new ArrayList<>(Collections.singletonList(initiator)), false,bpmnStartConditions);
                 nodeVoList.add(bpmnNodeVo);
             }
 
@@ -92,7 +96,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
             if (bpmnNode.getParams().getParamType().equals(1)) {
 
-                singlePlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList);
+                singlePlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList,bpmnStartConditions);
                 continue;
             }
 
@@ -101,7 +105,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
                 Collections.reverse(bpmnNode.getParams().getAssigneeList());
 
-                multiPlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList, true);
+                multiPlayerNodeDeduplication(bpmnNode,new HashSet<>(), approverList, true,bpmnStartConditions);
 
                 Collections.reverse(bpmnNode.getParams().getAssigneeList());
             }
@@ -144,7 +148,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
         BpmnNodeVo bpmnNodeVo = mapNodes.get(startNodeId);
 
         // 使用递归处理并行网关
-        processNodeRecursively(bpmnNodeVo,new HashSet<>(), mapNodes, approverList);
+        processNodeRecursively(bpmnNodeVo,new HashSet<>(), mapNodes, approverList,bpmnStartConditions);
 
         return bpmnConfVo;
 
@@ -156,7 +160,8 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
      * @param mapNodes   节点映射表
      * @param approverList 已处理的审批人列表
      */
-    private void processNodeRecursively(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNodes, Map<String, BpmnNodeVo> mapNodes, List<String> approverList) {
+    private void processNodeRecursively(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNodes, Map<String,
+            BpmnNodeVo> mapNodes, List<String> approverList,BpmnStartConditionsVo bpmnStartConditions) {
 
         String nextId=null;
         do {
@@ -167,7 +172,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
                 for (String parallelNodeToId : parallelNodeToIds) {
                     BpmnNodeVo parallelNodeTo = mapNodes.get(parallelNodeToId);
                     if (parallelNodeTo != null) {
-                        processNodeRecursively(parallelNodeTo,alreadyProcessedNodes, mapNodes, approverList);
+                        processNodeRecursively(parallelNodeTo,alreadyProcessedNodes, mapNodes, approverList,bpmnStartConditions);
                     }
                 }
 
@@ -176,9 +181,9 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
 
             // 处理单节点去重
             if (bpmnNodeVo.getParams().getParamType()!=null&&bpmnNodeVo.getParams().getParamType().equals(1)) {
-                singlePlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList);
+                singlePlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList,bpmnStartConditions);
             }else if (bpmnNodeVo.getParams().getParamType()!=null&&bpmnNodeVo.getParams().getParamType().equals(2)) {
-                multiPlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList, true);
+                multiPlayerNodeDeduplication(bpmnNodeVo,alreadyProcessedNodes, approverList, true,bpmnStartConditions);
             }
 
             String nodeTo = getNodeTo(bpmnNodeVo);
@@ -218,7 +223,7 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
      * @param bpmnNodeVo
      * @param approverList
      */
-    private void singlePlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList) {
+    private void singlePlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList,BpmnStartConditionsVo bpmnStartConditions) {
 
         if(bpmnNodeVo.isDeduplicationExclude()||alreadyProcessedNods.contains(bpmnNodeVo.getNodeId())){
             return;
@@ -234,9 +239,18 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             //if it is already in exist,the deduplicate it
             assignee.setIsDeduplication(1);
             bpmnNodeVo.getParams().setIsNodeDeduplication(1);
+            if(DeduplicationTypeEnum.DEDUPLICATION_TYPE_SKIP_NEXT.getCode().equals(bpmnStartConditions.getDeduplicationType())){
+                approverList.clear();
+                approverList.add(assignee.getAssignee());
+            }
         } else {
             //if it is not duplicated,then add it in to the approverlist
-            approverList.add(assignee.getAssignee());
+            if(DeduplicationTypeEnum.DEDUPLICATION_TYPE_SKIP_NEXT.getCode().equals(bpmnStartConditions.getDeduplicationType())){
+                approverList.clear();
+                approverList.add(assignee.getAssignee());
+            }else{
+                approverList.add(assignee.getAssignee());
+            }
         }
         alreadyProcessedNods.add(bpmnNodeVo.getNodeId());
     }
@@ -245,10 +259,10 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
      * multiplayer node deduplication
      *
      * @param bpmnNodeVo   node
-     * @param approverList alredy iterated approver list
+     * @param approverList already iterated approver list
      * @param flag         true forward,false backward
      */
-    private void multiPlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList, Boolean flag) {
+    private void multiPlayerNodeDeduplication(BpmnNodeVo bpmnNodeVo,Set<String> alreadyProcessedNods, List<String> approverList, Boolean flag, BpmnStartConditionsVo bpmnStartConditions) {
 
 
         if(bpmnNodeVo.isDeduplicationExclude()||alreadyProcessedNods.contains(bpmnNodeVo.getNodeId())){
@@ -271,13 +285,20 @@ public class BpmnDeduplicationFormatImpl implements BpmnDeduplicationFormat {
             }
 
             if (approverList.contains(assignee.getAssignee())) {
-
                 assignee.setIsDeduplication(1);
+                if(DeduplicationTypeEnum.DEDUPLICATION_TYPE_SKIP_NEXT.getCode().equals(bpmnStartConditions.getDeduplicationType())){
+                    approverList.clear();
+                    approverList.add(assignee.getAssignee());
+                }
             } else {
 
                 if (flag) {
-
-                    approverList.add(assignee.getAssignee());
+                    if(DeduplicationTypeEnum.DEDUPLICATION_TYPE_SKIP_NEXT.getCode().equals(bpmnStartConditions.getDeduplicationType())){
+                        approverList.clear();
+                        approverList.add(assignee.getAssignee());
+                    }else{
+                        approverList.add(assignee.getAssignee());
+                    }
                 }
 
                 isNodeDeduplication = 0;

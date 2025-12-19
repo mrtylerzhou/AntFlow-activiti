@@ -1136,6 +1136,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             } else if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_BACKWARD.getCode())) {
                 //deduplication backword
                 bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo, bpmnStartConditions);
+            }else if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_SKIP_NEXT.getCode())){
+                bpmnStartConditions.setDeduplicationType(DEDUPLICATION_TYPE_SKIP_NEXT.getCode());
+                bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo,bpmnStartConditions);
             }
         }
 
