@@ -121,10 +121,14 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
 
             Long variableId = Optional.ofNullable(bpmnVariableService.lambdaQuery().eq(BpmVariable::getProcessNum, processInfoVo.getProcessNumber()).list().get(0)).map(BpmVariable::getId).orElse(null);
             String elementId = processInfoVo.getNodeId();
-            String nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
+            String nodeId = null;
+            List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmnVariableMultiplayerService.lambdaQuery()
                     .eq(BpmVariableMultiplayer::getElementId, elementId)
                     .eq(BpmVariableMultiplayer::getVariableId, variableId)
-                    .list().get(0)).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+                    .list();
+            if(!CollectionUtils.isEmpty(bpmVariableMultiplayers)){
+                nodeId = bpmVariableMultiplayers.get(0).getNodeId();
+            }
             if(StringUtils.isBlank(nodeId)){
                 List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
                 BpmVariableSignUp  signUpParent=null;
@@ -143,10 +147,14 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 }
                 if(signUpParent!=null){
                     elementId=signUpParent.getElementId();
-                    nodeId = Optional.ofNullable(bpmnVariableMultiplayerService.lambdaQuery()
+                    nodeId = null;
+                    List<BpmVariableMultiplayer> signUpBpmVariableMultiplayers = bpmnVariableMultiplayerService.lambdaQuery()
                             .eq(BpmVariableMultiplayer::getElementId, elementId)
                             .eq(BpmVariableMultiplayer::getVariableId, variableId)
-                            .list().get(0)).map(BpmVariableMultiplayer::getNodeId).orElse(null);
+                            .list();
+                    if(!CollectionUtils.isEmpty(signUpBpmVariableMultiplayers)){
+                        nodeId = signUpBpmVariableMultiplayers.get(0).getNodeId();
+                    }
                 }
             }
             if (StringUtils.isNotBlank(nodeId)) {
