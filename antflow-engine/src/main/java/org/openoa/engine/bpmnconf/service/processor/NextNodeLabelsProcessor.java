@@ -96,24 +96,41 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(AFWrappers.<BpmProcessForward>lambdaTenantQuery()
                 .eq(BpmProcessForward::getProcessInstanceId, procInstId)
                 .eq(BpmProcessForward::getForwardUserId, assignee));
+
+        String asseeName="";
+        if(delegateTask instanceof TaskEntity){
+            delegateTask.setAssignee(AFSpecialAssigneeEnum.CC_NODE.getId());
+            assigneeName=AFSpecialAssigneeEnum.CC_NODE.getDesc()+"("+((TaskEntity) delegateTask).getAssigneeName()+")";
+            ((TaskEntity)delegateTask).setAssigneeName(asseeName);
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME,asseeName);
+            ((TaskEntity) delegateTask).complete(varMap,false);
+        }
         if(CollectionUtils.isEmpty(bpmProcessForwards)){
             bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
                     .createTime(new Date())
-                    .createUserId(SecurityUtils.getLogInEmpId())
+                    .createUserId(assignee)
                     .forwardUserId(assignee)
                     .ForwardUserName(assigneeName)
                     .processInstanceId(procInstId)
                     .processNumber(processNumber)
                     .build());
         }
-        if(delegateTask instanceof TaskEntity){
-            delegateTask.setAssignee(AFSpecialAssigneeEnum.CC_NODE.getId());
-            String asseeName=AFSpecialAssigneeEnum.CC_NODE.getDesc()+"("+((TaskEntity) delegateTask).getAssigneeName()+")";
-            ((TaskEntity)delegateTask).setAssigneeName(asseeName);
-            Map<String,Object> varMap=new HashMap<>();
-            varMap.put(StringConstants.TASK_ASSIGNEE_NAME,asseeName);
-            ((TaskEntity) delegateTask).complete(varMap,false);
-        }
+        BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                .builder()
+                .verifyDate(new Date())
+                .taskName(delegateTask.getName())
+                .taskId(delegateTask.getId())
+                .runInfoId(procInstId)
+                .verifyUserId(delegateTask.getAssignee())
+                .verifyUserName(assigneeName)
+                .taskDefKey(delegateTask.getTaskDefinitionKey())
+                .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                .verifyDesc("(抄送给"+assigneeName+")")
+                .processCode(processNumber)
+                .build();
+        bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+
     }
 
     private void processCopy(String elementId, String processNumber, String procInstId,BpmnNodeLabelVO nodeLabelVO) {

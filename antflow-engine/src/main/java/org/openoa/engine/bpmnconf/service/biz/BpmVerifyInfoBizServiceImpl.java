@@ -12,6 +12,7 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.*;
 import org.openoa.base.service.BpmVariableService;
@@ -159,7 +160,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
         for (BpmVerifyInfoVo bpmVerifyInfoVo : bpmVerifyInfoVos) {
             if (bpmVerifyInfoVo.getVerifyStatus() == 3 || bpmVerifyInfoVo.getVerifyStatus() == 6) {
                 bpmVerifyInfoVo.setTaskName(actHiTaskinst.getName());
-
+                bpmVerifyInfoVo.setVerifyUserName(bpmVerifyInfoVo.getVerifyUserName()+StringConstants.AF_VERIFYSTATUS_REJECT);
                 bpmVerifyInfoVo.setVerifyStatusName("审批拒绝");
                 noApproval = true; //有审批拒绝，则流程结束
             }
@@ -221,6 +222,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             taskVo.setSort(sort);
             taskVo.setVerifyStatus(99);
             taskVo.setVerifyStatusName("处理中");
+            taskVo.setVerifyUserName(taskVo.getVerifyUserName()+StringConstants.AF_VERIFYSTATUS_IN_PROCESS);
             bpmVerifyInfoVos.add(taskVo);
 
             List<BpmFlowrunEntrust> flowrunEntrustList = bpmFlowrunEntrustService.list(
@@ -548,6 +550,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             //If can not get the approvers info,then get it from activity engine
             verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElements.get(0).getId(), variableId);
         }
+        verifyUserName+=StringConstants.AF_VERIFYSTATUS_TO_BE_PROCESS;
         StringBuilder nameSb=new StringBuilder();
         StringBuilder elementIdSb=new StringBuilder();
         for (int i = 0; i < nextElements.size(); i++) {

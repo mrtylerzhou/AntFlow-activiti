@@ -51,6 +51,16 @@ public class StringConstants {
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
+    public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
+    public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";
+    public static final String AF_NODE_OR_SIGN_SUFFIX ="\uD83D\uDD02";
+    public static final String AF_NODE_SIGN_SUFFIX ="\uD83D\uDD00";
+    public static final String AF_NODE_SIGN_IN_ORDER_SUFFIX ="\uD83D\uDD03";
+    public static final String AF_VERIFYSTATUS_IN_PROCESS="⌛⌛⌛";
+    public static final String AF_VERIFYSTATUS_TO_BE_PROCESS="\uD83D\uDD53";
+    public static final String AF_VERIFYSTATUS_REJECT="⛔";
+    public static final String AF_DEFAULT_NODE_NAME ="审核人";
+
 
     public static class ActVarKeys {
         public static String PROCINSTID="procInstId";
