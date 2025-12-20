@@ -49,6 +49,8 @@ public class StringConstants {
     public static final String EXPRESSION_FIELD_NAME="expression";
     public static final String AUTOMATIC_NODE="auto_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
+    public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
+    public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
 
     public static class ActVarKeys {
         public static String PROCINSTID="procInstId";
