@@ -1140,6 +1140,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnStartConditions.setDeduplicationType(DEDUPLICATION_TYPE_SKIP_NEXT.getCode());
                 bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo,bpmnStartConditions);
             }
+            bpmnStartConditions.setDuplicationProcessStrategy(DuplicationProcessStrategyEnum.SKIP.getCode());
         }
 
         //self chosen module deduplication

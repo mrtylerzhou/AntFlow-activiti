@@ -20,7 +20,9 @@ import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.factory.FormFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -38,6 +40,8 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     private BpmVariableMapper bpmVariableMapper;
     @Resource
     private FormFactory formFactory;
+    @Autowired
+    private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     
     @Override
     public void postProcess(BpmNextTaskDto bpmnNextTaskDto) {
@@ -59,6 +63,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
             processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide);
+            processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
         }
     }
 
@@ -158,6 +163,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                     .verifyDesc(StringConstants.AF_AUTO_SKIP_COMMENT)
                     .processCode(processNumber)
                     .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
         }
     }
     @Override

@@ -26,7 +26,7 @@ public class NextNodeProcessNoticeSendProcessor implements AntFlowNextNodeBefore
 
         DelegateTask delegateTask = bpmNextTaskDto.getDelegateTask();
         String formCode = bpmNextTaskDto.getFormCode();
-        String processNumber = delegateTask.getProcessInstanceId();
+        String processNumber = bpmNextTaskDto.getProcessNumber();
         String bpmnCode = bpmNextTaskDto.getBpmnCode();
         String bpmnName = bpmNextTaskDto.getBpmnName();
         Boolean isOutside = bpmNextTaskDto.getIsOutSide();
