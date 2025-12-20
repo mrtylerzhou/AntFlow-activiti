@@ -1645,8 +1645,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
             if (NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.copyNodeV2.getLabelValue())) {
                 bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsCarbonCopyNode(true);
             }
             bpmnNodeVo.setLabelList(labelVOList);
+
         }
 
         return bpmnNodeVo;
