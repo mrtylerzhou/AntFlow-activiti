@@ -54,12 +54,18 @@ public class ProcessorFactory {
             for (ResolvableType rType : allTypes) {
                 if (rType.getType() instanceof ParameterizedType) {
                     ParameterizedType parameterizedType = (ParameterizedType) rType.getType();
-                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                    for (Type actualTypeArgument : actualTypeArguments) {
-                       if(((Class<TEntity>) actualTypeArgument).isAssignableFrom(cls)){
-                            processorsOfType.add(bean);
-                       }
+                    if(processorCls.isAssignableFrom(rType.resolve())){
+                        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                        for (Type actualTypeArgument : actualTypeArguments) {
+                            if(actualTypeArgument instanceof Class){
+                                if((cls.isAssignableFrom((Class<TEntity>) actualTypeArgument))){
+                                    processorsOfType.add(bean);
+                                }
+                            }
+
+                        }
                     }
+
                 }
             }
         }

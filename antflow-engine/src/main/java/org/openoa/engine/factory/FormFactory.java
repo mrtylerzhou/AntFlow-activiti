@@ -130,10 +130,14 @@ public class FormFactory implements ApplicationContextAware {
                 if (rType.getType() instanceof ParameterizedType) {
                     ParameterizedType parameterizedType = (ParameterizedType) rType.getType();
                     Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                    for (Type actualTypeArgument : actualTypeArguments) {
-                        if (BusinessDataVo.class.isAssignableFrom((Class<?>) actualTypeArgument)) {
-                            p=(ParameterizedType)rType.getType();
-                            break;
+                    if(FormOperationAdaptor.class.isAssignableFrom(rType.resolve())){
+                        for (Type actualTypeArgument : actualTypeArguments) {
+                            if(actualTypeArgument instanceof Class){
+                                if (BusinessDataVo.class.isAssignableFrom((Class<?>) actualTypeArgument)) {
+                                    p=(ParameterizedType)rType.getType();
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
