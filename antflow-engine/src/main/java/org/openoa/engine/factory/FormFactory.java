@@ -9,6 +9,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.AfTypeUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.OutSideBpmAccessBusiness;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +30,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Classname FormFactory
@@ -122,15 +125,18 @@ public class FormFactory implements ApplicationContextAware {
         FormOperationAdaptor bean = getFormAdaptor(BusinessDataVo.builder().formCode(key).build());
         if (!ObjectUtils.isEmpty(bean)) {
             ParameterizedType p=null;
-            Type[] genericTypes = ClassUtils.getUserClass(bean).getGenericInterfaces();
-            if(genericTypes.length>0){
-                for (Type genericType : genericTypes) {
-                    if (genericType instanceof BusinessDataVo) {
-                        p=(ParameterizedType)genericType;
+            Set<ResolvableType> allTypes = AfTypeUtils.getAllTypes(ResolvableType.forClass(ClassUtils.getUserClass(bean)));
+            for (ResolvableType rType : allTypes) {
+                if (rType.getType() instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) rType.getType();
+                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                    for (Type actualTypeArgument : actualTypeArguments) {
+                        if (BusinessDataVo.class.isAssignableFrom((Class<?>) actualTypeArgument)) {
+                            p=(ParameterizedType)rType.getType();
+                            break;
+                        }
                     }
                 }
-            }else{
-                p= (ParameterizedType)ClassUtils.getUserClass(bean).getGenericSuperclass();
             }
 
             Class<?> cls = (Class) p.getActualTypeArguments()[0];
