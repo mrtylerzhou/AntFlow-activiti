@@ -18,6 +18,7 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.base.util.PropertyUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -734,7 +735,12 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
 
         //specified roles
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
-            List<BaseIdTranStruVo> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            List<BaseIdTranStruVo> users = null;
+            if(Boolean.TRUE.equals(vo.getIsOutside())&& !PropertyUtil.isFullSaSSMode()){
+                users=roleService.querySassUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            }else{
+                users= roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            }
             if (!CollectionUtils.isEmpty(users)) {
                 sendUsers.addAll(users.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
             }
