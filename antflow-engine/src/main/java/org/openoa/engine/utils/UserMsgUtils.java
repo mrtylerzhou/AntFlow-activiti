@@ -37,7 +37,7 @@ public class UserMsgUtils {
         MessageServiceImpl messageService = getMessageService();
 
         //do execute send message method
-        doSendMessages(userMsgVo, messageService, messageSendTypeEnums);
+        doSendMessages(userMsgVo, messageSendTypeEnums);
 
         //write user messages to db
         insertUserMessage(userMsgVo, messageService);
@@ -53,7 +53,7 @@ public class UserMsgUtils {
         MessageServiceImpl messageService = getMessageService();
 
         //do execute send message method
-        doSendMessages(userMsgVo, messageService, messageSendTypeEnums);
+        doSendMessages(userMsgVo, messageSendTypeEnums);
 
     }
 
@@ -73,10 +73,9 @@ public class UserMsgUtils {
      * do send messages
      *
      * @param userMsgVo
-     * @param messageService
      * @param messageSendTypeEnums
      */
-    private static void doSendMessages(UserMsgVo userMsgVo, MessageServiceImpl messageService, MessageSendTypeEnum[] messageSendTypeEnums) {
+    private static void doSendMessages(UserMsgVo userMsgVo,  MessageSendTypeEnum[] messageSendTypeEnums) {
         if (!ObjectUtils.isEmpty(messageSendTypeEnums)) {
 
             if (!checkEmployeeStatus(userMsgVo.getUserId())) {
@@ -84,17 +83,17 @@ public class UserMsgUtils {
             }
 
             List<MessageSendTypeEnum> messageSendTypeEnumList = Lists.newArrayList(messageSendTypeEnums);
-            //send email
-            if (messageSendTypeEnumList.contains(MAIL)) {
-                sendMail(userMsgVo, messageService);
-            }
-            //send text message
-            if (messageSendTypeEnumList.contains(MESSAGE)) {
-                sendSms(userMsgVo, messageService);
-            }
-            //app push
-            if (messageSendTypeEnumList.contains(PUSH)) {
-                sendAppPush(userMsgVo, messageService);
+            for (MessageSendTypeEnum messageSendTypeEnum : messageSendTypeEnumList) {
+                if(messageSendTypeEnum==null){
+                   continue;
+                }
+                IAdaptorFactory adaptorFactory = SpringBeanUtils.getBean(IAdaptorFactory.class);
+                ProcessNoticeAdaptor processNoticeAdaptor = adaptorFactory.getProcessNoticeAdaptor(messageSendTypeEnum);
+                if(processNoticeAdaptor!=null){
+                    processNoticeAdaptor.sendMessageBatchByType(Lists.newArrayList(userMsgVo));
+                }else{
+                    log.warn("未实现的消息发送策略!{}",messageSendTypeEnum);
+                }
             }
         }
     }
@@ -103,25 +102,12 @@ public class UserMsgUtils {
      * set messages all(email、text message and App-PUSH so for)
      *
      * @param userMsgVo
-     * @param messageService
      */
-    private static void sendAllMsg(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
-        //send email
-        sendMail(userMsgVo, messageService);
-        //send text message
-        sendSms(userMsgVo, messageService);
-        //send app push
-        sendAppPush(userMsgVo, messageService);
+    private static void sendAllMsg(UserMsgVo userMsgVo) {
+        MessageSendTypeEnum[] messageSendTypeEnums= (MessageSendTypeEnum[])Arrays.stream(values()).filter(messageSendTypeEnum -> messageSendTypeEnum!= ALL).toArray();
+        doSendMessages(userMsgVo, messageSendTypeEnums);
     }
 
-    /**
-     * get send message service
-     *
-     * @return
-     */
-    private static MessageServiceImpl getMessageService() {
-        return SpringBeanUtils.getBean(MessageServiceImpl.class);
-    }
 
     /**
      * insert in site messages
@@ -146,8 +132,9 @@ public class UserMsgUtils {
      * @param messageService
      */
     private static void sendAppPush(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
-        BaseMsgInfo baseMsgInfo = buildBaseMsgInfo(userMsgVo);
-        messageService.sendAppPush(baseMsgInfo, userMsgVo.getUserId());
+        MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
+        messageSendTypeEnums[0]= PUSH;
+        doSendMessages(userMsgVo, messageSendTypeEnums);
     }
 
     /**
@@ -157,8 +144,9 @@ public class UserMsgUtils {
      * @param messageService
      */
     private static void sendSms(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
-        MessageInfo messageInfo = buildMessageInfo(userMsgVo);
-        messageService.sendSms(messageInfo, userMsgVo.getUserId());
+        MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
+        messageSendTypeEnums[0]=MESSAGE;
+        doSendMessages(userMsgVo, messageSendTypeEnums);
     }
 
     /**
@@ -168,8 +156,9 @@ public class UserMsgUtils {
      * @param messageService
      */
     private static void sendMail(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
-        MailInfo mailInfo = buildMailInfo(userMsgVo);
-        messageService.sendMail(mailInfo, userMsgVo.getUserId());
+        MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
+        messageSendTypeEnums[0]=MAIL;
+        doSendMessages(userMsgVo, messageSendTypeEnums);
     }
 
 
@@ -279,44 +268,10 @@ public class UserMsgUtils {
                 .collect(Collectors.toList()));
     }
 
-    /**
-     * send app push in batch
-     *
-     * @param messageService
-     */
-    private static void sendAppPushBatch(MessageServiceImpl messageService, List<UserMsgVo> userMsgVos) {
-        Map<String, BaseMsgInfo> map = Maps.newHashMap();
-        userMsgVos.forEach(o -> {
-            map.put(o.getUserId(), buildBaseMsgInfo(o));
-        });
-        messageService.sendAppPushBatch(map);
-    }
 
-    /**
-     * send text message in batch
-     *
-     * @param messageService
-     */
-    private static void sendSmsBatch(MessageServiceImpl messageService,  List<UserMsgVo> userMsgVos) {
-        Map<String, MessageInfo> map = Maps.newHashMap();
-        userMsgVos.forEach(o -> {
-            map.put(o.getUserId(), buildMessageInfo(o));
-        });
-        messageService.sendSmsBatch(map);
-    }
 
-    /**
-     * send emails in batch
-     *
-     * @param messageService
-     */
-    private static void sendMailBatch(MessageServiceImpl messageService, List<UserMsgVo> userMsgVos) {
-        Map<String, MailInfo> map = Maps.newHashMap();
-        userMsgVos.forEach(o -> {
-            map.put(o.getUserId(), buildMailInfo(o));
-        });
-        messageService.sendMailBatch(map);
-    }
+
+
 
     /**
      * get user messages
@@ -463,4 +418,13 @@ public class UserMsgUtils {
 
         return true;
     }
+    /**
+     * get send message service
+     *
+     * @return
+     */
+    private static MessageServiceImpl getMessageService() {
+        return SpringBeanUtils.getBean(MessageServiceImpl.class);
+    }
+
 }

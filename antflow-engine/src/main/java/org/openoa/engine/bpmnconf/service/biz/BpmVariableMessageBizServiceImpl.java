@@ -60,7 +60,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private BpmVariableApproveRemindService bpmVariableApproveRemindService;
 
     @Autowired
-    private AfUserService employeeService;
+    private AfUserService userService;
     @Autowired
     private AfRoleService roleService;
 
@@ -621,7 +621,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             return;
         }
 
-        List<DetailedUser> detailedUserDetailByIds = employeeService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
+        List<DetailedUser> detailedUserDetailByIds = userService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
         if(ObjectUtils.isEmpty(detailedUserDetailByIds)){
             return;
         }
@@ -697,7 +697,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         if (ObjectUtils.isEmpty(propertys)) {
                             continue;
                         }
-                        List<String> emplNames = employeeService.queryUserByIds(propertys)
+                        List<String> emplNames = userService.queryUserByIds(propertys)
                                 .stream()
                                 .map(BaseIdTranStruVo::getName).collect(Collectors.toList());
                         if (!ObjectUtils.isEmpty(emplNames)) {
@@ -705,7 +705,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         }
                     } else {
                         if(!property.toString().equals("0")){
-                            BaseIdTranStruVo employee = employeeService.getById(property.toString());
+                            BaseIdTranStruVo employee = userService.getById(property.toString());
                             if (employee!=null) {
                                 wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getName());
                             }
