@@ -2,7 +2,6 @@ package org.openoa.engine.utils;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.MessageSendTypeEnum;
@@ -49,7 +48,7 @@ public class UserMsgUtils {
      * @param userMsgVo
      * @param messageSendTypeEnums
      */
-    public static void sendMessagesNoUserMessage(UserMsgVo userMsgVo, MessageSendTypeEnum... messageSendTypeEnums) {
+    public static void sendGeneralPurposeMessages(UserMsgVo userMsgVo, MessageSendTypeEnum... messageSendTypeEnums) {
         MessageServiceImpl messageService = getMessageService();
 
         //do execute send message method
@@ -82,8 +81,8 @@ public class UserMsgUtils {
                 return;
             }
 
-            List<MessageSendTypeEnum> messageSendTypeEnumList = Lists.newArrayList(messageSendTypeEnums);
-            for (MessageSendTypeEnum messageSendTypeEnum : messageSendTypeEnumList) {
+
+            for (MessageSendTypeEnum messageSendTypeEnum : messageSendTypeEnums) {
                 if(messageSendTypeEnum==null){
                    continue;
                 }
@@ -103,7 +102,7 @@ public class UserMsgUtils {
      *
      * @param userMsgVo
      */
-    private static void sendAllMsg(UserMsgVo userMsgVo) {
+    public static void sendAllMsg(UserMsgVo userMsgVo) {
         MessageSendTypeEnum[] messageSendTypeEnums= (MessageSendTypeEnum[])Arrays.stream(values()).filter(messageSendTypeEnum -> messageSendTypeEnum!= ALL).toArray();
         doSendMessages(userMsgVo, messageSendTypeEnums);
     }
@@ -129,9 +128,8 @@ public class UserMsgUtils {
      * send app push
      *
      * @param userMsgVo
-     * @param messageService
      */
-    private static void sendAppPush(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
+    public static void sendAppPush(UserMsgVo userMsgVo) {
         MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
         messageSendTypeEnums[0]= PUSH;
         doSendMessages(userMsgVo, messageSendTypeEnums);
@@ -141,9 +139,8 @@ public class UserMsgUtils {
      * send text message
      *
      * @param userMsgVo
-     * @param messageService
      */
-    private static void sendSms(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
+    public static void sendSms(UserMsgVo userMsgVo) {
         MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
         messageSendTypeEnums[0]=MESSAGE;
         doSendMessages(userMsgVo, messageSendTypeEnums);
@@ -153,9 +150,8 @@ public class UserMsgUtils {
      * send email
      *
      * @param userMsgVo
-     * @param messageService
      */
-    private static void sendMail(UserMsgVo userMsgVo, MessageServiceImpl messageService) {
+    public static void sendMail(UserMsgVo userMsgVo) {
         MessageSendTypeEnum[] messageSendTypeEnums=new MessageSendTypeEnum[1];
         messageSendTypeEnums[0]=MAIL;
         doSendMessages(userMsgVo, messageSendTypeEnums);
