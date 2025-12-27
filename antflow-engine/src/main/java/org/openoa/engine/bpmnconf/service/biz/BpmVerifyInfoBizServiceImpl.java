@@ -567,7 +567,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(elementIdSb.toString()).taskName(nameSb.toString()).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
         //add to verify infos
-        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
+        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName())&&!CollectionUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserIds()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
             boolean noneMatch = bpmVerifyInfoVos.stream()
                     .filter(a -> !StringUtils.isEmpty(a.getElementId()))
                     .noneMatch(vo -> vo.getElementId().equals(bpmVerifyInfoVo.getElementId()));
