@@ -168,7 +168,7 @@ public class UserMsgUtils {
         MessageServiceImpl messageService = getMessageService();
 
         //send messages in batch
-        doSendMessageBatch(userMsgBatchVos, messageService);
+        doSendMessageBatch(userMsgBatchVos);
 
         //insert in site messages in batch
         insertUserMessageBatch(userMsgBatchVos, messageService);
@@ -180,12 +180,10 @@ public class UserMsgUtils {
      *
      * @param userMsgBatchVos
      */
-    public static void sendMessageBatchNoUserMessage(List<UserMsgBatchVo> userMsgBatchVos) {
-
-        MessageServiceImpl messageService = getMessageService();
+    public static void sendGeneralPurposeMessages(List<UserMsgBatchVo> userMsgBatchVos) {
 
         //执行发送信息(批量)
-        doSendMessageBatch(userMsgBatchVos, messageService);
+        doSendMessageBatch(userMsgBatchVos);
 
     }
 
@@ -209,10 +207,8 @@ public class UserMsgUtils {
      */
     public static void sendMessageBatchNoInsertUserMessageBatch(List<UserMsgBatchVo> userMsgBatchVos) {
 
-        MessageServiceImpl messageService = getMessageService();
 
-
-        doSendMessageBatch(userMsgBatchVos, messageService);
+        doSendMessageBatch(userMsgBatchVos);
 
     }
 
@@ -220,9 +216,8 @@ public class UserMsgUtils {
      * send messages in batch
      *
      * @param userMsgBatchVos
-     * @param messageService
      */
-    private static void doSendMessageBatch(List<UserMsgBatchVo> userMsgBatchVos, MessageServiceImpl messageService) {
+    private static void doSendMessageBatch(List<UserMsgBatchVo> userMsgBatchVos) {
 
 
         Map<MessageSendTypeEnum, List<UserMsgVo>> grouped = userMsgBatchVos.stream()

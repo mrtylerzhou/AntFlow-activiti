@@ -667,7 +667,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             if (Objects.isNull(messageSendTypeEnum)) {
                 continue;
             }
-            UserMsgUtils.sendMessageBatchNoUserMessage(detailedUsers
+            UserMsgUtils.sendGeneralPurposeMessages(detailedUsers
                     .stream()
                     .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
                             vo.getTaskId(), emailUrl, appUrl,messageSendTypeEnum))
