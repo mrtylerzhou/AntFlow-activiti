@@ -40,7 +40,7 @@ public class BpmnViewPageButtonBizServiceImpl extends BizServiceImpl<BpmnViewPag
         List<Integer> viewPageOthers = viewPageButtons.getViewPageOther();
 
         if (!ObjectUtils.isEmpty(viewPageOthers)) {
-            List<BpmnViewPageButton> viewPageButtonList = viewPageStarts
+            List<BpmnViewPageButton> viewPageButtonList = viewPageOthers
                     .stream()
                     .map(other -> BpmnViewPageButton.buildViewPageButton(confId, other, VIEW_PAGE_TYPE_OTHER.getCode()))
                     .collect(Collectors.toList());

@@ -1674,14 +1674,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (!ObjectUtils.isEmpty(bpmnNodeButtonConfs)) {
 
             BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
-
-
             buttons.setStartPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.INITIATE));
-
-
             buttons.setApprovalPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.AUDIT));
             buttons.setViewPage(getButtons(bpmnNodeButtonConfs,ButtonPageTypeEnum.TO_VIEW));
-
             bpmnNodeVo.setButtons(buttons);
 
         }

@@ -11,7 +11,9 @@ import org.openoa.base.service.BpmNodeLabelsService;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.NodeLabelConstants;
+import org.openoa.base.vo.ProcessActionButtonVo;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -96,5 +98,19 @@ public class NodeUtil {
         }
 
         elementVo.setElementName(elementName);
+    }
+    /** deduplicate buttons by type
+     * @param initiateButtons
+     * @return
+     */
+    public static List<ProcessActionButtonVo> repeatButtonFilter(List<ProcessActionButtonVo> initiateButtons) {
+        if(ObjectUtils.isEmpty(initiateButtons)){
+            return Lists.newArrayList();
+        }
+        List<ProcessActionButtonVo> lists = initiateButtons
+                .stream()
+                .filter(FilterUtil.distinctByKeys(ProcessActionButtonVo::getButtonType))
+                .collect(Collectors.toList());
+        return lists;
     }
 }

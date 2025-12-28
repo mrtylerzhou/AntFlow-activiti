@@ -256,7 +256,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         // set operating buttons
 
         vo.getProcessRecordInfo().setPcButtons(configFlowButtonContans.getButtons(bpmBusinessProcess.getBusinessNumber(),
-                vo.getProcessRecordInfo().getNodeId(), isJurisdiction, flag));
+                vo.getProcessRecordInfo().getNodeId(),vo.getProcessRecordInfo().getViewNodeIds(), isJurisdiction, flag));
 
 
         //check whether current node is a signup node and set the property

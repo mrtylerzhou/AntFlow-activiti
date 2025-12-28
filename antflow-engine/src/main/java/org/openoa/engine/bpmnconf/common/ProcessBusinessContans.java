@@ -100,11 +100,19 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 .build());
         //modify notice
         userMessageService.readNode(processInstanceId);
-        List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).taskAssignee(SecurityUtils.getLogInEmpId()).list();
+        List<Task> list = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
         String taskDefKey = "";
+        List<String> viewNodeIds=null;
         if (!ObjectUtils.isEmpty(list)) {
-            taskDefKey = list.get(0).getTaskDefinitionKey();
+            List<Task> currentAssigneeTasks = list.stream().filter(a -> a.getAssignee().equals(SecurityUtils.getLogInEmpId())).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(currentAssigneeTasks)){
+                taskDefKey = list.get(0).getTaskDefinitionKey();
+                viewNodeIds=currentAssigneeTasks.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
+            }else{
+                viewNodeIds=list.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
+            }
             processInfoVo.setTaskId(list.get(0).getId());
+            processInfoVo.setViewNodeIds(viewNodeIds);
             processInfoVo.setNodeId(taskDefKey);
 
         } else {
@@ -117,6 +125,17 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 }
             }
         }
+
+      /*  Long currentUserHisTaskCount = actHiTaskinstService
+                .getBaseMapper()
+                .selectCount(new LambdaQueryWrapper<ActHiTaskinst>()
+                        .eq(ActHiTaskinst::getProcInstId, bpmBusinessProcess.getProcInstId())
+                        .eq(ActHiTaskinst::getAssignee, SecurityUtils.getLogInEmpId())
+                );*/
+        //如果viewNodeIds有值,则说明当前用户不是正在审批的流程办理人,如果此人即不在当前正在办理任务中也不在历史任务中,则此人截至目前非流程办理人(可能未来节点会是办理人,未来节点截至当前审批节点是无法查看流程审批任务的)
+       /* if (!CollectionUtils.isEmpty(viewNodeIds)&&currentUserHisTaskCount==0){
+            throw new NotImplementedException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前用户非流程办理人!");
+        }*/
         if (!StringUtils.isEmpty(taskDefKey) && Objects.equals(bpmBusinessProcess.getIsLowCodeFlow(), 1)) {
 
             Long variableId = Optional.ofNullable(bpmnVariableService.lambdaQuery().eq(BpmVariable::getProcessNum, processInfoVo.getProcessNumber()).list().get(0)).map(BpmVariable::getId).orElse(null);

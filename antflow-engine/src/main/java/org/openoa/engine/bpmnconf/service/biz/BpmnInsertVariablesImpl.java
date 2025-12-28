@@ -222,6 +222,21 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                     .collect(Collectors.toList()));
         }
 
+        if(!ObjectUtils.isEmpty(elementVo.getButtons().getViewPage())){
+            bpmVariableButtonService.saveBatch(elementVo.getButtons().getViewPage()
+                    .stream()
+                    .map(o -> {
+                        return BpmVariableButton
+                                .builder()
+                                .variableId(variableId)
+                                .elementId(elementId)
+                                .buttonPageType(ButtonPageTypeEnum.TO_VIEW.getCode())
+                                .buttonType(o.getButtonType())
+                                .buttonName(o.getButtonName())
+                                .build();
+                    })
+                    .collect(Collectors.toList()));
+        }
     }
 
     /**
