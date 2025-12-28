@@ -1680,7 +1680,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
 
             buttons.setApprovalPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.AUDIT));
-
+            buttons.setViewPage(getButtons(bpmnNodeButtonConfs,ButtonPageTypeEnum.TO_VIEW));
 
             bpmnNodeVo.setButtons(buttons);
 
