@@ -92,9 +92,7 @@ public abstract class DateUtil {
      * @return
      */
     public static Date getDayStart(Date oDate) {
-        DateTime jdt = new DateTime(oDate);
-        jdt.withTime(0, 0, 0, 0);
-        return jdt.toDate();
+        return new DateTime(oDate).withTime(0, 0, 0, 0).toDate();
     }
 
     /**
@@ -117,9 +115,7 @@ public abstract class DateUtil {
      * @return
      */
     public static Date getDayEnd(Date oDate) {
-        DateTime jdt = new DateTime(oDate);
-        jdt.withTime(23, 59, 59, 999);
-        return jdt.toDate();
+        return new DateTime(oDate).withTime(23, 59, 59, 999).toDate();
     }
 
     /**
