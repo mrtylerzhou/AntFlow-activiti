@@ -11,5 +11,5 @@ public interface OutSideBpmCallbackUrlConfService extends IService<OutSideBpmCal
 
     void edit(OutSideBpmCallbackUrlConfVo vo);
 
-    OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId);
+    OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(String formCode, Long businessPartyId);
 }
