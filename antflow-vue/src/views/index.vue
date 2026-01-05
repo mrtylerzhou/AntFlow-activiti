@@ -51,8 +51,12 @@
                 target="_blank">http://antflow.top</el-link>
             </p>
             <p>
-              <i class="el-icon-user-solid"></i> QQ群：
+              <i class="el-icon-user-solid"></i> QQ群Java：
               <a>972107977</a>
+            </p>
+            <p>
+              <i class="el-icon-user-solid"></i> QQ群DotNet：
+              <a>629171398</a>
             </p>
             <p>
               <i class="el-icon-user-solid"></i> 邮箱：
