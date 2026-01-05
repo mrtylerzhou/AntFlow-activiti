@@ -7,8 +7,10 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
 import org.openoa.entity.BizRefund;
 import org.openoa.mapper.BizRefundMapper;
+import org.openoa.vo.BizLeaveTimeVo;
 import org.openoa.vo.BizRefundVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import java.util.Date;
  */
 @ActivitiServiceAnno(svcName = "BXSP_WMA",desc = "报销审批测试")
 //formAdaptor
-public class BXSPTestService implements FormOperationAdaptor<BizRefundVo>, ActivitiService {
+public class BXSPTestService extends AbstractFormOperationAdaptor<BizRefundVo> {
 
     @Autowired
     private BizRefundMapper bizRefundMapper;

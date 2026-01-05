@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.OutSideBpmAccessEmbedNodeVo;
+import org.openoa.base.vo.BpmEmbedNodeVo;
 import org.openoa.base.vo.OutSideLevelNodeVo;
 
 import java.io.Serializable;
@@ -126,7 +126,7 @@ public class OutSideBpmAccessBusinessVo implements Serializable {
     /**
      * embedded mode
      */
-    private List<OutSideBpmAccessEmbedNodeVo> embedNodes;
+    private Map<String,BpmEmbedNodeVo> embedNodes;
 
     /**
      * out side level nodes

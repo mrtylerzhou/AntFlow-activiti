@@ -28,7 +28,7 @@ import org.openoa.base.entity.BpmnConfLfFormdataField;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
-import org.openoa.engine.lowflow.vo.UDLFApplyVo;
+import org.openoa.base.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +89,16 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             startConditionsVo.setLfConditions(vo.getLfFields());
         }
         return startConditionsVo;
+    }
+
+    @Override
+    public Boolean automaticCondition(UDLFApplyVo businessDataVo) {
+        return null;
+    }
+
+    @Override
+    public void automaticAction(UDLFApplyVo businessDataVo,Boolean conditionResult) {
+
     }
 
     @Override
@@ -333,6 +343,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public void cancellationData(UDLFApplyVo vo) {
+
+    }
+
+    @Override
+    public void onProcessRecover(BusinessDataVo businessData) {
 
     }
 

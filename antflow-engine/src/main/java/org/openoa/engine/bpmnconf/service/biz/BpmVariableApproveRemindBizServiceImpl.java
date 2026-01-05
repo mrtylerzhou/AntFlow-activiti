@@ -316,7 +316,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                           DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
         UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
                 informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent());
-        UserMsgUtils.sendMessagesNoUserMessage(userMsgVo, MAIL);
+        UserMsgUtils.sendGeneralPurposeMessages(userMsgVo, MAIL);
     }
 
     /**
@@ -472,7 +472,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                                     DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
         UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
                 StringUtils.EMPTY, informationTemplateVo.getNoteContent());
-        UserMsgUtils.sendMessagesNoUserMessage(userMsgVo, MESSAGE, PUSH);
+        UserMsgUtils.sendGeneralPurposeMessages(userMsgVo, MESSAGE, PUSH);
     }
 
 }

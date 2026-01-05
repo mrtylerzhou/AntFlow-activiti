@@ -104,8 +104,9 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
-        boolean isDrawBack=ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(vo.getOperationType());
-        if(isDrawBack){
+        boolean isStartUserDrawBack=ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(vo.getOperationType());
+        boolean isOtherApproverDrawBack=ProcessOperationEnum.BUTTON_TYPE_DRAW_BACK_AGREE.getCode().equals(vo.getOperationType());
+        if(isStartUserDrawBack||isOtherApproverDrawBack){
             taskData=taskList.get(0);
         }
         if (taskData == null) {
@@ -113,7 +114,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         }
         String restoreNodeKey;
         String backToNodeKey;
-        if(isDrawBack){
+        if(isStartUserDrawBack){
             String createUser = bpmBusinessProcess.getCreateUser();
             if(!SecurityUtils.getLogInEmpIdSafe().equals(createUser)){
                 throw new AFBizException(BusinessErrorEnum.RIGHT_VIOLATE.getCodeStr(),"只有发起人可以操作撤回");
@@ -127,6 +128,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
             }
             vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());
+        }else if(isOtherApproverDrawBack){
+            vo.setBackToModifyType(ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode());
         }
         List<String> taskDefKeys = taskList.stream().map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
 
@@ -166,7 +169,17 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 if (!NodeUtil.isCurrentNodeNoneOperational(backToNodeId)) {
                     throw new AFBizException("不可退回到目标节点,请重试!");
                 }
-                String elementId = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
+                String elementId = null;
+                if(isOtherApproverDrawBack){
+                    String logInEmpId = SecurityUtils.getLogInEmpId();
+                    BpmVerifyInfo lastProcessNodeByAssignee = bpmVerifyInfoBizService.getLastProcessNodeByAssignee(bpmBusinessProcess.getBusinessNumber(), logInEmpId);
+                    if(lastProcessNodeByAssignee==null){
+                        throw new AFBizException(BusinessErrorEnum.DATA_NOT_FOUND.getCodeStr(),"未能找到当前用户的审批信息");
+                    }
+                    elementId=lastProcessNodeByAssignee.getTaskDefKey();
+                }else {
+                    elementId= variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
+                }
                 backToNodeKey = elementId;
                 PvmActivity nextElement = additionalInfoService.getNextElement(elementId, bpmBusinessProcess.getProcInstId());
 
@@ -216,7 +229,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         }
         //boolean userTaskParallel = ProcessDefinitionUtils.isUserTaskParallel(taskData.getProcessInstanceId(), backToNodeKey);
         if (ProcessDefinitionUtils.isUserTaskParallel(taskData)) {
-            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId(), bpmVariableMultiplayerService);
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(taskData.getProcessInstanceId());
             try {
                 List<String> unMovedTasks = taskFlowControlService.moveTo(taskData.getTaskDefinitionKey(), backToNodeKey);
                 List<String> strings = unMovedTasks.stream().distinct().collect(Collectors.toList());
@@ -320,6 +333,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
     @Override
     public void setSupportBusinessObjects() {
+        addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_DRAW_BACK_AGREE);
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK);
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);

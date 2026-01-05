@@ -29,4 +29,5 @@ public interface BpmVerifyInfoBizService extends BizService<BpmVerifyInfoMapper,
     List<BpmVerifyInfoVo> verifyInfoList(String processNumber);
 
     List<BpmVerifyInfoVo> verifyInfoList(String processNumber, String procInstId);
+    BpmVerifyInfo getLastProcessNodeByAssignee(String processNumber,String assignee);
 }

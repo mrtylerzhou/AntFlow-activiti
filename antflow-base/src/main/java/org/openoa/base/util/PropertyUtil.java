@@ -8,4 +8,8 @@ public class PropertyUtil {
         Environment env = SpringBeanUtils.getBean(Environment.class);
         return env.getProperty(key);
     }
+    public static boolean isFullSaSSMode(){
+        String property = getProperty("antflow.sass.full-sass-mode");
+        return "true".equalsIgnoreCase(property);
+    }
 }

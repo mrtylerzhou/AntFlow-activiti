@@ -233,7 +233,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
     /**
      * embedded node
      */
-    private List<OutSideBpmAccessEmbedNodeVo> embedNodes;
+    private Map<String,BpmEmbedNodeVo> embedNodes;
     /**
      * level nodes
      */

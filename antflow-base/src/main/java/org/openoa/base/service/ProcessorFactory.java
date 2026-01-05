@@ -1,12 +1,17 @@
 package org.openoa.base.service;
 
 import org.openoa.base.adp.OrderedBean;
+import org.openoa.base.util.AfTypeUtils;
 import org.openoa.base.util.SpringBeanUtils;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.TypeUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class ProcessorFactory {
@@ -45,16 +50,22 @@ public class ProcessorFactory {
             return orderedBeans;
         }
         for (TProcessor bean : orderedBeans) {
-            Type[] genericInterfaces = bean.getClass().getGenericInterfaces();
-            for (Type genericInterface : genericInterfaces) {
-                if (genericInterface instanceof ParameterizedType) {
-                    ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
-                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                    for (Type actualTypeArgument : actualTypeArguments) {
-                       if(((Class<TEntity>) actualTypeArgument).isAssignableFrom(cls)){
-                            processorsOfType.add(bean);
-                       }
+            Set<ResolvableType> allTypes = AfTypeUtils.getAllTypes(ResolvableType.forClass(bean.getClass()));
+            for (ResolvableType rType : allTypes) {
+                if (rType.getType() instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) rType.getType();
+                    if(processorCls.isAssignableFrom(rType.resolve())){
+                        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                        for (Type actualTypeArgument : actualTypeArguments) {
+                            if(actualTypeArgument instanceof Class){
+                                if((cls.isAssignableFrom((Class<TEntity>) actualTypeArgument))){
+                                    processorsOfType.add(bean);
+                                }
+                            }
+
+                        }
                     }
+
                 }
             }
         }

@@ -8,6 +8,7 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.ParallelPair;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -92,6 +93,7 @@ public class ActivitiAdditionalInfoServiceImpl {
         return getNextElement(elementId,activitiList);
     }
 
+
     /**
      * get assignees from activity engine
      *
@@ -137,4 +139,90 @@ public class ActivitiAdditionalInfoServiceImpl {
 
         return verifyUserName;
     }
+
+    boolean isParallelFork(ActivityImpl act) {
+        return "parallelGateway".equals(act.getProperty("type"))
+                && act.getIncomingTransitions().size() == 1
+                && act.getOutgoingTransitions().size() > 1;
+    }
+    boolean isParallelJoin(ActivityImpl act) {
+        return "parallelGateway".equals(act.getProperty("type"))
+                && act.getIncomingTransitions().size() > 1
+                && act.getOutgoingTransitions().size() == 1;
+    }
+
+    /**
+     * 判断当前节点是否处于并行网关之中
+     * @param node
+     * @param def
+     * @return
+     */
+    public ParallelPair findNearestParallelGateway(ActivityImpl node, ProcessDefinitionEntity def) {
+
+        List<ActivityImpl> activities = def.getActivities();
+
+        // 找出流程中所有 parallelGateway 节点
+        List<ActivityImpl> forks = new ArrayList<>();
+        List<ActivityImpl> joins = new ArrayList<>();
+
+        for (ActivityImpl act : activities) {
+            if ("parallelGateway".equals(act.getProperty("type"))) {
+                int in = act.getIncomingTransitions().size();
+                int out = act.getOutgoingTransitions().size();
+
+                if (in == 1 && out > 1) {
+                    // fork
+                    forks.add(act);
+                } else if (in > 1 && out == 1) {
+                    // join
+                    joins.add(act);
+                }
+            }
+        }
+
+
+        for (ActivityImpl fork : forks) {
+            for (ActivityImpl join : joins) {
+
+
+                if (!canReach(fork, node)) {
+                    continue;
+                }
+
+
+                if (!canReach(node, join)) {
+                    continue;
+                }
+
+
+                return new ParallelPair(fork, join);
+            }
+        }
+
+        return null; // 不在并行网关内部
+    }
+    public boolean canReach(ActivityImpl source, ActivityImpl target) {
+        Set<ActivityImpl> visited = new HashSet<>();
+        return dfs(source, target, visited);
+    }
+
+    private boolean dfs(ActivityImpl current, ActivityImpl target, Set<ActivityImpl> visited) {
+        if (current == target) {
+            return true;
+        }
+
+        visited.add(current);
+
+        for (PvmTransition t : current.getOutgoingTransitions()) {
+            ActivityImpl next = (ActivityImpl) t.getDestination();
+            if (!visited.contains(next)) {
+                if (dfs(next, target, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 }

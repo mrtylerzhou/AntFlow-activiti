@@ -63,7 +63,7 @@ public class ViewBusinessProcessImpl  implements ProcessOperationAdaptor {
         // set operating buttons
 
         businessDataVo.getProcessRecordInfo().setPcButtons(configFlowButtonContans.getButtons(bpmBusinessProcess.getBusinessNumber(),
-                businessDataVo.getProcessRecordInfo().getNodeId(), isJurisdiction, flag));
+                businessDataVo.getProcessRecordInfo().getNodeId(),businessDataVo.getProcessRecordInfo().getViewNodeIds(), isJurisdiction, flag));
 
 
         //check whether current node is a signup node and set the property
