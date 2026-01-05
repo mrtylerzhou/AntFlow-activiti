@@ -289,4 +289,6 @@ public class TaskMgmtVO implements Serializable {
      * version process keys
      */
     private List<String> versionProcessKeys;
+
+    private Integer includeAllFlag;
 }

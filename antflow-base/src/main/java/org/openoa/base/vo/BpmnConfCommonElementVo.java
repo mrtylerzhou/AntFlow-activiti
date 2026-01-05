@@ -134,4 +134,8 @@ public class BpmnConfCommonElementVo {
      */
     private BpmnApproveRemindVo approveRemindVo;
     private List<BpmnNodeLabelVO> labelList;
+    /**
+     * @see org.openoa.base.constant.enums.SignTypeEnum
+     */
+    private Integer signType;
 }

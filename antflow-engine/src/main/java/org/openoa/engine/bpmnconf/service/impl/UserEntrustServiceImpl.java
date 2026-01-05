@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.PageUtils;
@@ -80,6 +81,14 @@ public class UserEntrustServiceImpl extends ServiceImpl<UserEntrustMapper, UserE
                 userEntrust.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
                 userEntrust.setPowerId(idsVo.getPowerId());
                 userEntrust.setTenantId(MultiTenantUtil.getCurrentTenantId());
+                List<UserEntrust> userEntrusts = baseMapper.selectList(AFWrappers.<UserEntrust>lambdaTenantQuery()
+                        .eq(UserEntrust::getSender, userEntrust.getSender())
+                        .eq(UserEntrust::getReceiverId, userEntrust.getReceiverId())
+                        .eq(UserEntrust::getPowerId, userEntrust.getPowerId())
+                );
+                if(!CollectionUtils.isEmpty(userEntrusts)){
+                    throw new AFBizException(BusinessErrorEnum.DATA_ALREADY_EXISTED,"委托记录已存在,请确认!");
+                }
                 getBaseMapper().insert(userEntrust);
             }
         }

@@ -9,7 +9,7 @@ import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
 import org.openoa.base.entity.*;
-import org.openoa.base.util.FilterUtil;
+import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.ProcessActionButtonVo;
@@ -26,7 +26,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmnNodeButtonConfBizServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public class ConfigFlowButtonContans {
      * @return initiate=start page，audit=approvement page，toView=view page
      * @date 20190620
      */
-    public Map<String, List<ProcessActionButtonVo>> getButtons(String processNum, String elementId,
+    public Map<String, List<ProcessActionButtonVo>> getButtons(String processNum, String elementId, List<String> viewNodeIds,
                                                                Boolean isJurisdiction, Boolean isInitiate) {
         Map<String, List<ProcessActionButtonVo>> buttonMap = new HashMap<String, List<ProcessActionButtonVo>>();
 
@@ -84,23 +84,31 @@ public class ConfigFlowButtonContans {
         if (bpmBusinessProcess == null || bpmBusinessProcess.getProcessState() == null
                 || bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLING_STATE.getCode()) {//审批中
 
-            if (processNum != null && elementId != null) {
+            if (processNum != null && StringUtils.hasText(elementId)) {
                 List<BpmVariableButton> bpmVariableButtons = bpmVariableButtonService
-                        .getButtonsByProcessNumber(processNum, elementId);
+                        .getButtonsByProcessNumber(processNum, Lists.newArrayList(elementId));
                 initiateButtons = getButtons(bpmVariableButtons,ButtonPageTypeEnum.INITIATE);
                 auditButtons = getButtons(bpmVariableButtons,ButtonPageTypeEnum.AUDIT);
             }
 
             if (processNum != null) {
+                if(!CollectionUtils.isEmpty(viewNodeIds)){
+                    List<BpmVariableButton> bpmVariableButtons = bpmVariableButtonService
+                            .getButtonsByProcessNumber(processNum, viewNodeIds);
+                    toViewButtons=getButtons(bpmVariableButtons,ButtonPageTypeEnum.TO_VIEW);
+                }
                 List<BpmVariableViewPageButton> bpmVariableViewPageButtons = bpmVariableViewPageButtonService
                         .getButtonsByProcessNumber(processNum);
 
-                toViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
+                List<ProcessActionButtonVo> globalViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
+                if(!CollectionUtils.isEmpty(globalViewButtons)){
+                    toViewButtons.addAll(globalViewButtons);
+                }
                 //节点单独配置覆盖全局的,由于查看页并没有当前节点概念,因此取的是当前审批人所在的所有节点的按钮权限
                 List<ProcessActionButtonVo> nodeConfButtons = getNodeConfButtons(bpmBusinessProcess,isInitiate);
 
                 if(!CollectionUtils.isEmpty(nodeConfButtons)){
-                    toViewButtons=nodeConfButtons;
+                    toViewButtons.addAll(nodeConfButtons);
                 }
             }
             if (isJurisdiction) {
@@ -180,11 +188,11 @@ public class ConfigFlowButtonContans {
         }
 
 
-        buttonMap.put(ButtonPageTypeEnum.INITIATE.getName(), buttonsSort(repeatFilter(initiateButtons)));
+        buttonMap.put(ButtonPageTypeEnum.INITIATE.getName(), buttonsSort(NodeUtil.repeatButtonFilter(initiateButtons)));
 
-        buttonMap.put(ButtonPageTypeEnum.AUDIT.getName(), buttonsSort(repeatFilter(auditButtons)));
+        buttonMap.put(ButtonPageTypeEnum.AUDIT.getName(), buttonsSort(NodeUtil.repeatButtonFilter(auditButtons)));
 
-        buttonMap.put(ButtonPageTypeEnum.TO_VIEW.getName(), buttonsSort(repeatFilter(toViewButtons)));
+        buttonMap.put(ButtonPageTypeEnum.TO_VIEW.getName(), buttonsSort(NodeUtil.repeatButtonFilter(toViewButtons)));
         return buttonMap;
     }
 
@@ -258,20 +266,7 @@ public class ConfigFlowButtonContans {
         });
         return buttons;
     }
-    /** deduplicate buttons by type
-     * @param initiateButtons
-     * @return
-     */
-    public List<ProcessActionButtonVo> repeatFilter(List<ProcessActionButtonVo> initiateButtons) {
-        if(ObjectUtils.isEmpty(initiateButtons)){
-            return Lists.newArrayList();
-        }
-        List<ProcessActionButtonVo> lists = initiateButtons
-                .stream()
-                .filter(FilterUtil.distinctByKeys(ProcessActionButtonVo::getButtonType))
-                .collect(Collectors.toList());
-        return lists;
-    }
+
 
     private List<ProcessActionButtonVo> getNodeConfButtons(BpmBusinessProcess bpmBusinessProcess,Boolean isInitiate){
         List<BpmnNodeButtonConf> bpmnNodeButtonConfs=null;

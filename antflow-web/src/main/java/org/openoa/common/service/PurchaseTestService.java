@@ -7,9 +7,11 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
 import org.openoa.entity.BizPurchase;
 import org.openoa.mapper.BizPurchaseMapper;
 import org.openoa.vo.BizPurchaseVo;
+import org.openoa.vo.BizRefundVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +24,7 @@ import java.util.Date;
  */
 @ActivitiServiceAnno(svcName = "PURCHASE_WMA",desc = "采购申请流程")
 //formAdaptor
-public class PurchaseTestService implements FormOperationAdaptor<BizPurchaseVo>, ActivitiService {
+public class PurchaseTestService extends AbstractFormOperationAdaptor<BizPurchaseVo> {
 
     @Autowired
     private BizPurchaseMapper bizPurchaseMapper;

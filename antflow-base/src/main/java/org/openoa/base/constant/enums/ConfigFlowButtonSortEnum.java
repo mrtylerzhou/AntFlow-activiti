@@ -31,6 +31,10 @@ public enum ConfigFlowButtonSortEnum implements AfEnumBase {
     CHOOSE_ASSIGNEE(22,"自选审批人",22),
     BACK_TO_ANY_NODE(23,"退回任意节点",23),
     PROCESS_DRAW_BACK(29,"撤回",29),
+    SAVE_DRAFT(30,"保存草稿",30),
+    RECOVER_TO_HIS(31,"恢复已结束流程",31),
+    DRAW_BACK_AGREE(32,"撤销同意",32),
+    PROCESS_MOVE_AHEAD(33,"流程推进",33),
             ;
     @Getter
     private final Integer code;

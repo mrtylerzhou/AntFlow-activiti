@@ -48,10 +48,14 @@
                btn.update_user AS updateUser,
                btn.update_time AS
                                   updateTime
-        FROM `t_bpm_variable_button` btn
-                 LEFT JOIN `t_bpm_variable` bpm ON btn.`variable_id` = bpm.`id`
-        WHERE bpm.`process_num` = #{processNum}
-          AND btn.element_id = #{elementId}
+        FROM t_bpm_variable_button btn
+                 LEFT JOIN t_bpm_variable bpm ON btn.variable_id = bpm.id
+        WHERE bpm.process_num = #{processNum}
+         AND btn.element_id IN
+        <foreach collection="elementIds" item="elementId" open="(" separator=" OR " close=")">
+            #{elementId}
+        </foreach>
+
     </select>
 
 </mapper>

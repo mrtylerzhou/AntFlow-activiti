@@ -18,6 +18,7 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.MultiTenantUtil;
+import org.openoa.base.util.PropertyUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -59,7 +60,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private BpmVariableApproveRemindService bpmVariableApproveRemindService;
 
     @Autowired
-    private AfUserService employeeService;
+    private AfUserService userService;
     @Autowired
     private AfRoleService roleService;
 
@@ -620,7 +621,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             return;
         }
 
-        List<DetailedUser> detailedUserDetailByIds = employeeService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
+        List<DetailedUser> detailedUserDetailByIds = userService.getEmployeeDetailByIds(sendToUsers.stream().distinct().collect(Collectors.toList()));
         if(ObjectUtils.isEmpty(detailedUserDetailByIds)){
             return;
         }
@@ -666,7 +667,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             if (Objects.isNull(messageSendTypeEnum)) {
                 continue;
             }
-            UserMsgUtils.sendMessageBatchNoUserMessage(detailedUsers
+            UserMsgUtils.sendGeneralPurposeMessages(detailedUsers
                     .stream()
                     .map(o -> getUserMsgBatchVo(o, informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent(),
                             vo.getTaskId(), emailUrl, appUrl,messageSendTypeEnum))
@@ -696,7 +697,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         if (ObjectUtils.isEmpty(propertys)) {
                             continue;
                         }
-                        List<String> emplNames = employeeService.queryUserByIds(propertys)
+                        List<String> emplNames = userService.queryUserByIds(propertys)
                                 .stream()
                                 .map(BaseIdTranStruVo::getName).collect(Collectors.toList());
                         if (!ObjectUtils.isEmpty(emplNames)) {
@@ -704,7 +705,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         }
                     } else {
                         if(!property.toString().equals("0")){
-                            BaseIdTranStruVo employee = employeeService.getById(property.toString());
+                            BaseIdTranStruVo employee = userService.getById(property.toString());
                             if (employee!=null) {
                                 wildcardCharacterMap.put(wildcardCharacterEnum.getCode(), employee.getName());
                             }
@@ -734,7 +735,12 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
 
         //specified roles
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
-            List<BaseIdTranStruVo> users = roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            List<BaseIdTranStruVo> users = null;
+            if(Boolean.TRUE.equals(vo.getIsOutside())&& !PropertyUtil.isFullSaSSMode()){
+                users=roleService.querySassUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            }else{
+                users= roleService.queryUserByRoleIds(bpmnTemplateVo.getRoleIdList());
+            }
             if (!CollectionUtils.isEmpty(users)) {
                 sendUsers.addAll(users.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
             }

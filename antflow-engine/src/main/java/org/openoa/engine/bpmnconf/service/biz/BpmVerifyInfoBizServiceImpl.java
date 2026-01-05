@@ -12,11 +12,13 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.*;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
+import org.openoa.base.util.AFWrappers;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmVerifyAttachmentVo;
@@ -158,7 +160,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
         for (BpmVerifyInfoVo bpmVerifyInfoVo : bpmVerifyInfoVos) {
             if (bpmVerifyInfoVo.getVerifyStatus() == 3 || bpmVerifyInfoVo.getVerifyStatus() == 6) {
                 bpmVerifyInfoVo.setTaskName(actHiTaskinst.getName());
-
+                bpmVerifyInfoVo.setVerifyUserName(bpmVerifyInfoVo.getVerifyUserName()+StringConstants.AF_VERIFYSTATUS_REJECT);
                 bpmVerifyInfoVo.setVerifyStatusName("审批拒绝");
                 noApproval = true; //有审批拒绝，则流程结束
             }
@@ -220,6 +222,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             taskVo.setSort(sort);
             taskVo.setVerifyStatus(99);
             taskVo.setVerifyStatusName("处理中");
+            taskVo.setVerifyUserName(taskVo.getVerifyUserName()+StringConstants.AF_VERIFYSTATUS_IN_PROCESS);
             bpmVerifyInfoVos.add(taskVo);
 
             List<BpmFlowrunEntrust> flowrunEntrustList = bpmFlowrunEntrustService.list(
@@ -547,6 +550,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             //If can not get the approvers info,then get it from activity engine
             verifyUserName = activitiAdditionalInfoService.getVerifyUserNameFromHis(nextElements.get(0).getId(), variableId);
         }
+        verifyUserName+=StringConstants.AF_VERIFYSTATUS_TO_BE_PROCESS;
         StringBuilder nameSb=new StringBuilder();
         StringBuilder elementIdSb=new StringBuilder();
         for (int i = 0; i < nextElements.size(); i++) {
@@ -563,7 +567,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         BpmVerifyInfoVo bpmVerifyInfoVo = BpmVerifyInfoVo.builder().elementId(elementIdSb.toString()).taskName(nameSb.toString()).verifyDesc(StringUtils.EMPTY).verifyStatus(0).verifyUserIds(empIds).verifyUserName(verifyUserName).sort(sort).build();
         //add to verify infos
-        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
+        if (!ObjectUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserName())&&!CollectionUtils.isEmpty(bpmVerifyInfoVo.getVerifyUserIds()) && !bpmVerifyInfoVo.getTaskName().equals("EndEvent")) {
             boolean noneMatch = bpmVerifyInfoVos.stream()
                     .filter(a -> !StringUtils.isEmpty(a.getElementId()))
                     .noneMatch(vo -> vo.getElementId().equals(bpmVerifyInfoVo.getElementId()));
@@ -627,7 +631,7 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             if (!CollectionUtils.isEmpty(strs)) {
                 taskName = String.join("||", strs);
             }
-            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).collect(Collectors.joining(","));
+            String elementId = tasks.stream().map(BpmVerifyInfoVo::getElementId).distinct().collect(Collectors.joining(","));
             taskInfors.add(BpmVerifyInfoVo.builder()
                     .verifyUserIds(verifyUserIds)
                     .verifyUserName(verifyUserName)
@@ -744,6 +748,17 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                         .processCode(processNumber)
                         .build()
         )).orElse(Arrays.asList()),procInstId);
+    }
+
+    @Override
+    public BpmVerifyInfo getLastProcessNodeByAssignee(String processNumber, String assignee) {
+        List<BpmVerifyInfo> bpmVerifyInfos = getMapper().selectList(AFWrappers.<BpmVerifyInfo>lambdaTenantQuery()
+                .eq(BpmVerifyInfo::getProcessCode, processNumber)
+                .eq(BpmVerifyInfo::getVerifyUserId, assignee));
+        if(CollectionUtils.isEmpty(bpmVerifyInfos)){
+            return null;
+        }
+        return bpmVerifyInfos.get(0);
     }
 
 }

@@ -7,6 +7,8 @@ import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.ThirdPartyAccountApplyVo;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
 import org.openoa.entity.BizLeaveTime;
 import org.openoa.vo.BizLeaveTimeVo;
 import org.openoa.mapper.BizLeaveTimeMapper;
@@ -22,7 +24,7 @@ import java.util.Date;
  */
 @ActivitiServiceAnno(svcName = "LEAVE_WMA",desc = "请假申请")
 //formAdaptor
-public class AskForLeaveTestService implements FormOperationAdaptor<BizLeaveTimeVo>, ActivitiService {
+public class AskForLeaveTestService extends AbstractFormOperationAdaptor<BizLeaveTimeVo> {
 
     @Autowired
     private BizLeaveTimeMapper bizLeaveTimeMapper;

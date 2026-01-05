@@ -26,7 +26,11 @@ public enum ButtonTypeEnum implements AfEnumBase{
     BUTTON_TYPE_ZB(21,"转办"),
     BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
     BUTTON_TYPE_BACK_TO_ANY_NODE(23,"退回任意节点"),
-    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回")
+    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回"),
+    BUTTON_TYPE_SAVE_DRAFT(30,"保存草稿"),
+    BUTTON_TYPE_RECOVER_TO_HIS(31,"恢复已结束流程"),
+    BUTTON_TYPE_DRAW_BACK_AGREE(32,"撤销同意"),
+    BUTTON_TYPE_PROCESS_MOVE_AHEAD(33,"流程推进"),
     ;
 
     @Getter
