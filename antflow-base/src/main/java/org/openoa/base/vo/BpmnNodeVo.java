@@ -1,5 +1,6 @@
 package org.openoa.base.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -119,6 +120,7 @@ public class BpmnNodeVo  implements Serializable {
 
     //===============>>ext fields<<===================
 
+    private Integer extraFlags;
     /**
      * node to
      */

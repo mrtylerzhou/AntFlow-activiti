@@ -251,7 +251,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(LowFlowApprovalService.class.getSimpleName());
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        if (extraFlags != null && BpmnConfFlagsEnum.hasFlag(extraFlags, BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES)) {
+        if (extraFlags != null && BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.flagsContainsCurrent(extraFlags)) {
             List<BpmnNodeFormRelatedUserConf> bpmnNodeFormRelatedUserConfs = bpmnNodeFormRelatedUserConfService.getMapper().queryByConfId(confId);
             if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
                 throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);

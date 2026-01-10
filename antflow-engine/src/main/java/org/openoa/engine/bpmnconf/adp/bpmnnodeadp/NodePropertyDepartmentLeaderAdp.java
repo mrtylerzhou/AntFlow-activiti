@@ -6,10 +6,10 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NodePropertyDepartmentLeaderAdp implements BpmnNodeAdaptor{
+public class NodePropertyDepartmentLeaderAdp extends AbstractAdditionSignNodeAdaptor{
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-
+        super.formatToBpmnNodeVo(bpmnNodeVo);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class NodePropertyDepartmentLeaderAdp implements BpmnNodeAdaptor{
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
     }
 
     @Override

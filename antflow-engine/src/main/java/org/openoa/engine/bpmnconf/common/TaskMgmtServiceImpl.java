@@ -187,7 +187,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                 String formCode = diyProcessInfoDTO.getKey();
                 Integer flags = formCode2Flags.get(formCode);
                 if(flags!=null){
-                    boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
+                    boolean hasStartUserChooseModules = BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.flagsContainsCurrent(flags);
                     diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
                 }
                 List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());

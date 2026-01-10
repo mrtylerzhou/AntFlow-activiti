@@ -155,7 +155,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
 
                     Integer flags = formCode2Flags.get(lfDto.getKey());
                     if(flags!=null){
-                        boolean hasStartUserChooseModules = BpmnConfFlagsEnum.hasFlag(flags, BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES);
+                        boolean hasStartUserChooseModules = BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.flagsContainsCurrent(flags);
                         lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
                     }
                     String formCode = lfDto.getKey();

@@ -18,6 +18,7 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.AfUserService;
@@ -207,13 +208,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())
                     .orElse(1));
-
+            editNodeExtraFlags(bpmnNodeVo);
             BpmnNode bpmnNode = new BpmnNode();
             BeanUtils.copyProperties(bpmnNodeVo, bpmnNode);
             bpmnNode.setConfId(confId);
             bpmnNode.setCreateTime(new Date());
             bpmnNode.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             bpmnNode.setTenantId(MultiTenantUtil.getCurrentTenantId());
+
             bpmnNodeService.getBaseMapper().insert(bpmnNode);
 
             Long bpmnNodeId = bpmnNode.getId();
@@ -1149,7 +1151,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         //4、format the nodes by pipelines
         bpmnRemoveConfFormatFactory.removeBpmnConf(bpmnConfVo,bpmnStartConditions);
-        if(BpmnConfFlagsEnum.hasFlag(bpmnConfVo.getExtraFlags(),BpmnConfFlagsEnum.HAS_COPY)){
+        if(BpmnConfFlagsEnum.HAS_COPY.flagsContainsCurrent(bpmnConfVo.getExtraFlags())){
             for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
                 //copy nodes have already removed,and its forwarded list assigned to its next node
                 if (!NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(node.getNodeType())&&!CollectionUtils.isEmpty(node.getEmpToForwardList())) {
@@ -1256,7 +1258,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             for (BpmnNode bpmnNode : bpmnNodes) {
                 bpmnNode.setIsOutSideProcess(bpmnConf.getIsOutSideProcess());
                 bpmnNode.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
-                bpmnNode.setExtraFlags(bpmnConf.getExtraFlags());
+                bpmnNode.setConfExtraFlags(bpmnConf.getExtraFlags());
             }
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
@@ -1410,8 +1412,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap =new HashMap<>();
 
         Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
-        Integer extraFlags = bpmnNodeList.get(0).getExtraFlags();
-        boolean hasNodeLabels = BpmnConfFlagsEnum.hasFlag(extraFlags, BpmnConfFlagsEnum.HAS_NODE_LABELS);
+        Integer extraFlags = bpmnNodeList.get(0).getConfExtraFlags();
+        boolean hasNodeLabels = BpmnConfFlagsEnum.HAS_NODE_LABELS.flagsContainsCurrent(extraFlags);
         if(hasNodeLabels){
             bpmnNodeLabelsVoMap=getBpmnNodeLabelsVoMap(idList);
         }
@@ -1798,4 +1800,51 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         .collect(Collectors.toList()))
                 .build());
     }
+
+    private void editNodeExtraFlags(BpmnNodeVo bpmnNodeVo){
+        BpmnNodePropertysVo property = bpmnNodeVo.getProperty();
+        if(property!=null){
+            int flags=0;
+            List<ExtraSignInfoVo> additionalSignInfoList = property.getAdditionalSignInfoList();
+            if(!CollectionUtils.isEmpty(additionalSignInfoList)){
+                List<BpmnNodeFlagsEnum> additionalFlags=new ArrayList<>();
+                for (ExtraSignInfoVo extraSignInfoVo : additionalSignInfoList) {
+                    Integer nodeProperty = extraSignInfoVo.getNodeProperty();
+                    Integer propertyType = extraSignInfoVo.getPropertyType();
+                    NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getByCode(nodeProperty);
+                    if(nodePropertyEnum==null){
+                        throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节点类型未定义!");
+                    }
+                    switch (nodePropertyEnum){
+                        case NODE_PROPERTY_ROLE:
+                            if(propertyType==1){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_ADDITIONAL_ASSIGNEE_ROLE);
+                            }else if(propertyType==2){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_EXCLUDE_ASSIGNEE_ROLE);
+                            }else{
+                                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节propertyType点类型未定义!");
+                            }
+                            break;
+                        case NODE_PROPERTY_PERSONNEL:
+                            if(propertyType==1){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_ADDITIONAL_ASSIGNEE);
+                            }else if(propertyType==2){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_EXCLUDE_ASSIGNEE);
+                            }else{
+                                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节propertyType点类型未定义!");
+                            }
+                            break;
+                        default:
+                            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"暂不支持的额外操作类型!");
+                    }
+                }
+                for (BpmnNodeFlagsEnum additionalFlag : additionalFlags) {
+                    flags=flags|additionalFlag.getCode();
+                }
+                bpmnNodeVo.setExtraFlags(flags);
+            }
+        }
+    }
 }
+
+

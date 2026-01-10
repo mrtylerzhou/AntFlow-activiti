@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
+import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeRoleConf;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
+public class NodePropertyRoleAdp extends AbstractAdditionSignNodeAdaptor {
 
     @Autowired
     private BpmnNodeRoleConfService bpmnNodeRoleConfService;
@@ -40,6 +41,7 @@ public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
@@ -49,12 +51,12 @@ public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
         List<BaseIdTranStruVo> roles = list.stream().map(conf -> BaseIdTranStruVo.builder().id(conf.getRoleId()).name(conf.getRoleName()).build())
                 .collect(Collectors.toList());
 
-        bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                .builder()
-                .roleIds(roles.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()))
-                .roleList(roles)
-                .signType(list.get(0).getSignType())
-                .build());
+        AfNodeUtils.addOrEditProperty(bpmnNodeVo,a->{
+            a.setRoleIds(roles.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
+            a.setRoleList(roles);
+            a.setSignType(list.get(0).getSignType());
+        });
+
 
         if (bpmnNodeVo.getIsOutSideProcess() != null && bpmnNodeVo.getIsOutSideProcess().equals(1)) {
             List<BpmnNodeRoleOutsideEmpConf> bpmnNodeRoleOutsideEmpConfs = bpmnNodeRoleOutsideEmpConfService.list(new QueryWrapper<BpmnNodeRoleOutsideEmpConf>()
@@ -116,7 +118,7 @@ public class NodePropertyRoleAdp implements BpmnNodeAdaptor {
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
         BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
                 .orElse(new BpmnNodePropertysVo());
 

@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
@@ -128,11 +130,11 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
 
-
         BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
                 .orElse(new BpmnNodePropertysVo());
-
-
+        if(!CollectionUtils.isEmpty(bpmnNodePropertysVo.getAdditionalSignInfoList())){
+         throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"层层审批不允许全局增加/减少审批人!");
+        }
         BpmnNodeLoopConf bpmnNodeLoopConf = new BpmnNodeLoopConf();
         bpmnNodeLoopConf.setBpmnNodeId(bpmnNodeVo.getId());
         bpmnNodeLoopConf.setLoopEndType(bpmnNodePropertysVo.getLoopEndType());
