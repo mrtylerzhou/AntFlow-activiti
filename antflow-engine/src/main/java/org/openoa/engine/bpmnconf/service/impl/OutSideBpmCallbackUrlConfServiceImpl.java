@@ -74,15 +74,16 @@ public class OutSideBpmCallbackUrlConfServiceImpl extends ServiceImpl<OutSideBpm
     /**
      * query call back conf by business party id
      *
-     * @param bpmnConfId
+     * @param formCode
      * @param businessPartyId
      * @return
      */
     @Override
-    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(Long bpmnConfId, Long businessPartyId) {
+    public OutSideBpmCallbackUrlConf getOutSideBpmCallbackUrlConf(String formCode, Long businessPartyId) {
 
         OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = this.getBaseMapper()
                 .selectList(AFWrappers.<OutSideBpmCallbackUrlConf>lambdaTenantQuery()
+                        .eq(OutSideBpmCallbackUrlConf::getFormCode, formCode)
                         .eq(OutSideBpmCallbackUrlConf::getBusinessPartyId,businessPartyId)
                         .eq(OutSideBpmCallbackUrlConf::getStatus,1))
                 .stream()

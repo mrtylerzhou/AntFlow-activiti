@@ -68,8 +68,11 @@ const timerCheckVersion = setInterval(() => {
 }, 1000 * 6)
 
 function checkVersion() {
-  const versionSetting = settingsStore.version
-  if (!versionSetting) return
+  let versionSetting = settingsStore.version
+  if (!versionSetting) {
+    versionSetting = packageConfig.version;
+    localStorage.setItem('version-setting', packageConfig.version);
+  }
   if (packageConfig.version !== versionSetting) {
     clearInterval(timerCheckVersion);
     reloadNotifier(packageConfig.version);

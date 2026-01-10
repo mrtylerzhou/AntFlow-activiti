@@ -1211,7 +1211,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (bpmnConfVo.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1) {
             //query and set business party's call url
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService
-                    .getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
+                    .getOutSideBpmCallbackUrlConf(bpmnConf.getFormCode(), bpmnConf.getBusinessPartyId());
             if (outSideBpmCallbackUrlConf!=null) {
                 bpmnConfVo.setBpmConfCallbackUrl(outSideBpmCallbackUrlConf.getBpmConfCallbackUrl());//process config call back url
                 bpmnConfVo.setBpmFlowCallbackUrl(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl());//process flow call back url

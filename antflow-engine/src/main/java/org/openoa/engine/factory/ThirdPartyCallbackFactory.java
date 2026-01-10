@@ -174,7 +174,7 @@ public class ThirdPartyCallbackFactory {
             }
             //查询外部流程url配置获取"用户标识"及"api-key"
             OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService = SpringBeanUtils.getBean(OutSideBpmCallbackUrlConfServiceImpl.class);
-            OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConfVo.getId(), bpmnConfVo.getBusinessPartyId());
+            OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService.getOutSideBpmCallbackUrlConf(bpmnConfVo.getFormCode(), bpmnConfVo.getBusinessPartyId());
 
             String url="";
             heads.put("central-service", getCurrentSysDomain());//域名
