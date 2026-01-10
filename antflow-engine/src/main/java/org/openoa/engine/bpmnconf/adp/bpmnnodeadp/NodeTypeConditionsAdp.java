@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
+import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
@@ -153,7 +154,11 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
                         if(String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
                             object=conditionParamJsom;
                         }else{
-                            object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                            if(JudgeOperatorEnum.binaryOperator().contains(operator)){
+                                object=conditionParamJsom;
+                            }else{
+                                object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
+                            }
                         }
 
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){

@@ -61,6 +61,8 @@ public class StringConstants {
     public static final String AF_VERIFYSTATUS_REJECT="⛔";
     public static final String AF_DEFAULT_NODE_NAME ="审核人";
 
+    public static final String HIDDEN_FIELD_PERMISSION="H";
+    public static final String READ_ONLY_FIELD_PERMISSION="R";
 
     public static class ActVarKeys {
         public static String PROCINSTID="procInstId";

@@ -154,7 +154,7 @@ public class BpmnConfNodePropertyConverter {
                             zdy2Value=JSON.parseObject(zdy2,fieldCls);
                         }
                         if(JudgeOperatorEnum.binaryOperator().contains(optType)){
-                            zdy1=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
+                            actualValue=zdy1+","+zdy2;//antflow目前只有一个自定义值,介于之间的提前定义好JudgeOperatorEnum,值用字符串拼接,使用时再分割
                         }
                         if(ConditionTypeEnum.isLowCodeFlow(enumByCode)){
                             isLowCodeFlow=true;

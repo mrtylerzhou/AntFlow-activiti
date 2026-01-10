@@ -25,6 +25,7 @@ import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
@@ -55,6 +56,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private BpmnConfLfFormdataService lfFormdataService;
     @Autowired
     private BpmnNodeFormRelatedUserConfService bpmnNodeFormRelatedUserConfService;
+    @Autowired
+    private BpmnNodeLfFormdataFieldControlMapper bmnNodeLfFormdataFieldControlMapper;
 
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
@@ -324,7 +327,19 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 		if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
+        List<LFFieldControlVO> currentFieldControls = bmnNodeLfFormdataFieldControlMapper
+                .getFieldControlByProcessNumberAndElementId(vo.getProcessNumber(), vo.getTaskDefKey());
         for (LFMainField field : lfMainFields){
+            if(!CollectionUtils.isEmpty(currentFieldControls)){
+                LFFieldControlVO lfFieldControlVO = currentFieldControls.stream().filter(control -> control.getFieldId().equals(field.getFieldId())).findFirst().orElse(null);
+                if(lfFieldControlVO!=null
+                        &&(StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
+                        ||StringConstants.READ_ONLY_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
+                          )
+                ){
+                          continue;
+                }
+            }
             if (lfFields.containsKey(field.getFieldId()) && lfFields.get(field.getFieldId()) != null) {
                 String f_value = lfFields.get(field.getFieldId()).toString();
                 if (!Objects.equals(f_value, "******")){

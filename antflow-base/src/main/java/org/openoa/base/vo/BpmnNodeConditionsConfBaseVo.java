@@ -75,7 +75,7 @@ public class BpmnNodeConditionsConfBaseVo {
     /**
      * 请假表单 业务流程 判断需要字段
      */
-    private Double leaveHour;
+    private String leaveHour;
 
     /**
      * number operator
@@ -121,4 +121,5 @@ public class BpmnNodeConditionsConfBaseVo {
 
     Map<Integer, Map<String,Object>> groupedLfConditionsMap;
     private String expression;
+    private String inRangeValue;
 }

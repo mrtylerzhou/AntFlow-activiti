@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -30,6 +31,7 @@ import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -267,6 +269,19 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if (nodeIsSignUp) {
             //set the add approver button
             addApproverButton(vo);
+        }
+        if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo udlfApplyVo = (UDLFApplyVo) vo;
+            List<LFFieldControlVO> lfFieldControlVOs = udlfApplyVo.getProcessRecordInfo().getLfFieldControlVOs();
+            Map<String, Object> lfFields = udlfApplyVo.getLfFields();
+            if(!CollectionUtils.isEmpty(lfFields)){
+                for (String key : lfFields.keySet()) {
+                    LFFieldControlVO lfFieldControlVO = lfFieldControlVOs.stream().filter(a -> key.equals(a.getFieldId())).findFirst().orElse(null);
+                    if(lfFieldControlVO!=null&& StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())){
+                        lfFields.put(key,null);
+                    }
+                }
+            }
         }
         return vo;
     }
