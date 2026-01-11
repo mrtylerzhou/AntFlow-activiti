@@ -22,5 +22,7 @@ public interface BpmFlowrunEntrustService extends IAFService<BpmFlowrunEntrustMa
 
     boolean editFlowrunEntrustState(String processInstanceId);
 
+    List<BpmFlowrunEntrust> findEntrustByProcInstId(String procInstId);
+
     List<BpmFlowrunEntrust> findFlowrunEntrustByProcessInstanceId(BpmFlowrunEntrustVo vo);
 }

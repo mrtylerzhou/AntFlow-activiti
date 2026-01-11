@@ -140,6 +140,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmVariableService bpmVariableService;
     @Autowired
     private AfUserService userService;
+    @Autowired
+    private BpmFlowrunEntrustService flowrunEntrustService;
+
 
     @Override
     @Transactional
@@ -855,6 +858,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         previewNode.setBpmnNodeList(setNodeFromV2(bpmnConfVo.getNodes()));
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
+
+        reTreatNodeAssignee(previewNode.getBpmnNodeList(),vo.getProcessNumber());
 
         String currentNodeIdStr= bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber());
         previewNode.setCurrentNodeId(currentNodeIdStr);
@@ -1845,6 +1850,116 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
         }
     }
+
+    private void reTreatNodeAssignee(List<BpmnNodeVo> nodeVos,String processNumber)
+    {
+        if (StringUtils.isEmpty(processNumber))
+        {
+            return;
+        }
+
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        if (bpmBusinessProcess == null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"流程不存在!");
+        }
+        String procInstId = bpmBusinessProcess.getProcInstId();
+        List<BpmFlowrunEntrust> bpmFlowrunEntrusts = flowrunEntrustService.findEntrustByProcInstId(procInstId);
+         if(CollectionUtils.isEmpty(bpmFlowrunEntrusts)){
+             return;
+         }
+        Map<String, List<BpmFlowrunEntrust>> nodeId2entrustDict =
+                bpmFlowrunEntrusts.stream()
+                        .filter(a -> a.getNodeId() != null && !a.getNodeId().isEmpty())
+                        .sorted(Comparator.comparing(BpmFlowrunEntrust::getId))
+                        .collect(Collectors.groupingBy(BpmFlowrunEntrust::getNodeId));
+        for (BpmnNodeVo bpmnNodeVo : nodeVos)
+        {
+            int nodeType = bpmnNodeVo.getNodeType();
+            if (nodeType == NodeTypeEnum.NODE_TYPE_START.getCode() || nodeType == NodeTypeEnum.NODE_TYPE_GATEWAY.getCode() ||
+                    nodeType ==NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY .getCode()||
+                    nodeType == NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode())
+            {
+                continue;
+            }
+
+            BpmnNodePropertysVo bpmnNodePropertysVo = bpmnNodeVo.getProperty();
+            if (bpmnNodePropertysVo == null)
+            {
+                continue;
+            }
+
+            List<BpmFlowrunEntrust> flowrunEntrusts = nodeId2entrustDict.get(String.valueOf(bpmnNodeVo.getId()));
+            if (CollectionUtils.isEmpty(flowrunEntrusts))
+            {
+                continue;
+            }
+            List<BaseIdTranStruVo> emplList = bpmnNodePropertysVo.getEmplList();
+            if (CollectionUtils.isEmpty(emplList))
+            {
+                if (NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty()))
+                {
+                    emplList = bpmnNodeVo.getParams().getAssigneeList()
+                            .stream().map(a -> new BaseIdTranStruVo(a.getAssignee(), a.getAssigneeName())).collect(Collectors.toList());
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            Map<Integer, List<BpmFlowrunEntrust>> groupBy =
+                    flowrunEntrusts.stream()
+                            .collect(Collectors.groupingBy(BpmFlowrunEntrust::getActionType));
+            for (Integer key : groupBy.keySet()) {
+                Integer actionType=key;
+                if(actionType==null){
+                    continue;
+                }
+                List<BpmFlowrunEntrust> entrustse = groupBy.get(key);
+                for (BpmFlowrunEntrust bpmFlowrunEntrust : entrustse)
+                {
+
+                    if (actionType == 0 || actionType == 1)//change assignee
+                    {
+                        BaseIdTranStruVo matchEmp = emplList.stream().filter(a-> a.getId().equals(bpmFlowrunEntrust.getOriginal())).findFirst().orElse(null);
+                        if (matchEmp == null)
+                        {
+                            continue;
+                        }
+                        matchEmp.setId( bpmFlowrunEntrust.getActual());
+                        matchEmp.setName(bpmFlowrunEntrust.getActualName()+"*");
+                    }else if (actionType == 2)//add asignee
+                    {
+                        BaseIdTranStruVo addEmp =
+                                new BaseIdTranStruVo(bpmFlowrunEntrust.getActual(), bpmFlowrunEntrust.getActualName()+"+");
+                        emplList.add(addEmp);
+                    }else if (actionType == 3)//remove assignee
+                    {
+                        emplList
+                                .stream()
+                                .filter(a -> a.getId().equals(bpmFlowrunEntrust.getActual()))
+                                .findFirst().ifPresent(baseIdTranStruVo -> baseIdTranStruVo.setName(baseIdTranStruVo.getName()+"-"));
+
+                    }
+                }
+            }
+
+            if (CollectionUtils.isEmpty(emplList))
+            {
+                emplList.add(new BaseIdTranStruVo("0","*"));
+            }
+
+            List<String> emplIds = emplList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+            bpmnNodePropertysVo.setEmplIds(emplIds);
+            bpmnNodePropertysVo.setEmplList(emplList);
+            if (bpmnNodeVo.getParams() != null)
+            {
+                List<BpmnNodeParamsAssigneeVo> collect = emplList.stream().map(a -> new BpmnNodeParamsAssigneeVo(a.getId(), a.getName(), "审核人", 0)).collect(Collectors.toList());
+                bpmnNodeVo.getParams().setAssigneeList(collect);
+            }
+        }
+
+    }
+
 }
 
 

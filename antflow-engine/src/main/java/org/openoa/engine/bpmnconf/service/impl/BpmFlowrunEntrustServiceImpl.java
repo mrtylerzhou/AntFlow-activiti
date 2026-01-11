@@ -123,6 +123,14 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         return true;
     }
 
+    @Override
+    public List<BpmFlowrunEntrust> findEntrustByProcInstId(String procInstId){
+        List<BpmFlowrunEntrust> bpmFlowrunEntrusts = getBaseMapper().selectList(
+                AFWrappers.<BpmFlowrunEntrust>lambdaTenantQuery()
+                        .eq(BpmFlowrunEntrust::getRuninfoid, procInstId)
+        );
+        return bpmFlowrunEntrusts;
+    }
     /**
      * query entrust and circulate data by process instance id
      *
