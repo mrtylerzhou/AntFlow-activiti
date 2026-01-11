@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.interf.biz;
 
+import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -14,4 +15,8 @@ public interface BpmVariableBizService extends BizService<BpmVariableMapper, Bpm
 
     List<BaseIdTranStruVo> getApproversByElementId(String processNumber, String elementId);
     void deleteByProcessNumber(String processNumber);
+
+    NodeElementDto queryNodeIdByElementIdDetail(String processNumber, String elementId);
+
+    NodeElementDto queryElementIdByNodeIdDetail(String processNumber, String nodeId);
 }

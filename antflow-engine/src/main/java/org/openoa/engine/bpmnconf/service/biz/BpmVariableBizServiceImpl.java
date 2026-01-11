@@ -7,8 +7,12 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.NodeElementDto;
+import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmVariableSignUpPersonnel;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -21,6 +25,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableBizService;
 import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -152,5 +157,40 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
         LambdaQueryWrapper<BpmVariableMultiplayer> multiplayerQry = AFWrappers.<BpmVariableMultiplayer>lambdaTenantQuery()
                 .eq(BpmVariableMultiplayer::getVariableId, variableId);
         bpmVariableMultiplayerService.getBaseMapper().delete(multiplayerQry);
+    }
+
+    @Override
+    public NodeElementDto queryNodeIdByElementIdDetail(String processNumber, String elementId){
+        List<NodeXelementXvarXverifyInfo> nodeXelementXvarXverifyInfos = this.getMapper().queryNodeIdByElementIdDetail(processNumber, elementId);
+        if (CollectionUtils.isEmpty(nodeXelementXvarXverifyInfos)) {
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"未能根据elementId查询到节点信息,请联系管理员");
+        }
+        NodeElementDto nodeElementDto = new NodeElementDto();
+        nodeElementDto.setNodeId(nodeXelementXvarXverifyInfos.get(0).getNodeId());
+        nodeElementDto.setElementId(nodeXelementXvarXverifyInfos.get(0).getElementId());
+        nodeElementDto.setIsSingle(nodeXelementXvarXverifyInfos.get(0).getIsSingle() != 0);
+        List<BaseIdTranStruVo> assigneeInfos = nodeXelementXvarXverifyInfos
+                .stream()
+                .map(a -> BaseIdTranStruVo.builder().id(a.getAssignee()).name(a.getAssigneeName()).build())
+                .collect(Collectors.toList());
+        nodeElementDto.setAssigneeInfoList(assigneeInfos);
+        return nodeElementDto;
+    }
+    @Override
+    public NodeElementDto queryElementIdByNodeIdDetail(String processNumber, String nodeId){
+        List<NodeXelementXvarXverifyInfo> nodeXelementXvarXverifyInfos = this.getMapper().queryElementIdByNodeIdDetail(processNumber, nodeId);
+        if (CollectionUtils.isEmpty(nodeXelementXvarXverifyInfos)) {
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"未能根据elementId查询到节点信息,请联系管理员");
+        }
+        NodeElementDto nodeElementDto = new NodeElementDto();
+        nodeElementDto.setNodeId(nodeXelementXvarXverifyInfos.get(0).getNodeId());
+        nodeElementDto.setElementId(nodeXelementXvarXverifyInfos.get(0).getElementId());
+        nodeElementDto.setIsSingle(nodeXelementXvarXverifyInfos.get(0).getIsSingle() != 0);
+        List<BaseIdTranStruVo> assigneeInfos = nodeXelementXvarXverifyInfos
+                .stream()
+                .map(a -> BaseIdTranStruVo.builder().id(a.getAssignee()).name(a.getAssigneeName()).build())
+                .collect(Collectors.toList());
+        nodeElementDto.setAssigneeInfoList(assigneeInfos);
+        return nodeElementDto;
     }
 }

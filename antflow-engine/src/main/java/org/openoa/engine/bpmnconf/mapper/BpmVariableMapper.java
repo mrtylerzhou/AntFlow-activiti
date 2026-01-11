@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 
@@ -24,4 +25,7 @@ public interface BpmVariableMapper extends BaseMapper<BpmVariable> {
     int updateMultiPlayer(@Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
     int updateSingleById(@Param("id") String id, @Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
     int updateMultiPlayerById(@Param("id") String id, @Param("processNum") String processNum, @Param("elementId") String elementId,@Param("assignee")String assignee,@Param("newAssignee") String newAssignee,@Param("newAssigneeName") String newAssigneeName);
+
+    List<NodeXelementXvarXverifyInfo> queryNodeIdByElementIdDetail(@Param("processNum") String processNum, @Param("elementId") String elementId);
+    List<NodeXelementXvarXverifyInfo> queryElementIdByNodeIdDetail(@Param("processNum") String processNum, @Param("nodeId") String nodeId);
 }

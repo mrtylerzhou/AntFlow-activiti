@@ -34,7 +34,7 @@ public class RemoveAssigneeProcessImpl implements ProcessOperationAdaptor {
         if(StringUtils.isEmpty(taskDefKey)){
             throw new AFBizException("请指定审任务节点");
         }
-        multiInstanceSignOffService.removeAssignee(processNumber,taskDefKey,userInfos.get(0).getId(),userInfos.get(0).getName());
+        multiInstanceSignOffService.removeAssignee(processNumber,taskDefKey,userInfos.get(0).getId(),userInfos.get(0).getName(),vo.getNodeId());
     }
 
     @Override

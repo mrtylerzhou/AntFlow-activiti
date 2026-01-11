@@ -8,6 +8,7 @@ import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
+import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.*;
 import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
@@ -281,9 +282,10 @@ public class ConfigFlowButtonContans {
                     .distinct()
                     .collect(Collectors.toList());
             if(!CollectionUtils.isEmpty(hisTaskDefKeys)){
-                List<String> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
+                List<NodeXelementXvarXverifyInfo> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
                 if (!nodeIdsByElementIds.isEmpty()) {
-                    bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIdsByElementIds, ButtonPageTypeEnum.TO_VIEW);
+                    List<String> nodeIds = nodeIdsByElementIds.stream().map(NodeXelementXvarXverifyInfo::getNodeId).collect(Collectors.toList());
+                    bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIds, ButtonPageTypeEnum.TO_VIEW);
                 }
                 //只能显示在发起人页的按钮不应显示在其它页面
                 if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){

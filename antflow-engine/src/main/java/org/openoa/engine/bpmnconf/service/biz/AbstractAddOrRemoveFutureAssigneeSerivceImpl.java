@@ -4,6 +4,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
@@ -12,6 +13,7 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
 
     @Autowired
-    protected BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
+    protected BpmVariableBizService bpmVariableBizService;
     @Autowired
     protected RuntimeService runtimeService;
     @Autowired
@@ -57,15 +59,17 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
     /**
      * 这里只需要把要添加/移动的用户的用户信息传进来就可以了,不用维护旧的
      * @param bpmBusinessProcess
-     * @param taskdefKey
+     * @param nodeElementDto
      * @param userInfos
      * @param action 1添加,2移除
      */
-    protected void modifyFutureAssigneesByProcessInstance(BpmBusinessProcess bpmBusinessProcess, String taskdefKey, List<BaseIdTranStruVo> userInfos,int action) {
+    protected void modifyFutureAssigneesByProcessInstance(BpmBusinessProcess bpmBusinessProcess, NodeElementDto nodeElementDto, List<BaseIdTranStruVo> userInfos, int action) {
 
         String procInstId = bpmBusinessProcess.getProcInstId();
         String processNumber = bpmBusinessProcess.getBusinessNumber();
-        String varName = bpmVariableMultiplayerMapper.getVarNameByElementId(processNumber, taskdefKey);
+        String varName = nodeElementDto.getVarName();
+        String taskdefKey=nodeElementDto.getElementId();
+        String nodeId=nodeElementDto.getNodeId();
         Object currentValue = runtimeService.getVariable(procInstId, varName);
         if (!(currentValue instanceof List)) {
             throw new AFBizException("Variable " + varName + " is not a list.");
@@ -107,7 +111,9 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
                 continue;
             }
             String adminName=action==1?"管理员加签":"管理员减签";
-            bpmFlowrunEntrustService.addFlowrunEntrust(userId, userName, "0", adminName, taskdefKey, 1, procInstId, bpmBusinessProcess.getProcessinessKey());
+            int entrustType = action == 1 ? 2 : 3;
+            bpmFlowrunEntrustService.addFlowrunEntrust(userId, userName, "0", adminName, taskdefKey, 1, procInstId, bpmBusinessProcess.getProcessinessKey()
+            ,nodeId,entrustType);
         }
        /* // 如多实例已启动，还需调整 nrOfInstances（局部变量）
         Execution miExecution = runtimeService.createExecutionQuery()

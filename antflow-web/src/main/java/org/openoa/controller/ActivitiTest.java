@@ -316,7 +316,7 @@ public class ActivitiTest {
         List<BaseInfoTranStructVo> assigneeAndVariableByElementId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByElementId(procInstId, taskdefKey);
         List<BaseInfoTranStructVo> assigneeAndVariableByNodeId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(procInstId, nodeIdByElementId);
         List<ActivityImpl> activitiList = activitiAdditionalInfoService.getActivitiList(procInstId);
-        multiInstanceSignOffService.removeAssignee(procInstId, taskdefKey, userId, "");
+        multiInstanceSignOffService.removeAssignee(procInstId, taskdefKey, userId, "","");
         return Result.success();
     }
 

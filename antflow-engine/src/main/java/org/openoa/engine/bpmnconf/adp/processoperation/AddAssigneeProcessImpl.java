@@ -118,8 +118,8 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         }
         managementService.executeCommand(command);
         BaseIdTranStruVo userinfo = userInfos.get(0);
-        flowrunEntrustService.addFlowrunEntrust(userinfo.getId(),userinfo.getName(),"0","管理员加签",task.getId(),0,
-                task.getProcessInstanceId(),bpmBusinessProcess.getProcessinessKey());
+        flowrunEntrustService.addFlowrunEntrust(userinfo.getId(),userinfo.getName(),"0","管理员加签",task.getTaskDefinitionKey(),0,
+                task.getProcessInstanceId(),bpmBusinessProcess.getProcessinessKey(),vo.getNodeId(),2);
         bpmVariableService.addNodeAssignees(processNumber,task.getTaskDefinitionKey(),userInfos);
     }
 

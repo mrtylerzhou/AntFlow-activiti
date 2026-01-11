@@ -82,6 +82,7 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
             throw  new AFBizException("当前审批人未发生变更!勿需操作!");
         }
         String varName = assignees.get(0).getVarName();
+        String elementId = assignees.get(0).getElementId();
         //String variableId=assignees.get(0).getVariableId();//单人的是single表id,多人的是multiplayer personnel表id
         List<String> assigneeIds = userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         taskMgmtService.changeFutureAssignees(bpmBusinessProcess.getProcInstId(), varName, assigneeIds);
@@ -90,7 +91,7 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
             BaseInfoTranStructVo oldAssignee = old2newAssignees.getKey();
             BaseIdTranStruVo newAssignee = old2newAssignees.getValue();
             flowrunEntrustService.addFlowrunEntrust(newAssignee.getId(),newAssignee.getName(),oldAssignee.getId(),oldAssignee.getName(),
-                    nodeId,0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey());
+                    elementId,0,bpmBusinessProcess.getProcInstId(),vo.getProcessKey(),nodeId,1);
 
             bpmVariableService.updateAssigneeById(oldAssignee.getVariableId(), bpmBusinessProcess.getBusinessNumber(), oldAssignee.getElementId(),
                     oldAssignee.getId(),BaseIdTranStruVo.builder().id(newAssignee.getId()).name(newAssignee.getName()+"*").build());

@@ -11,6 +11,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
+import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
@@ -21,6 +22,7 @@ import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
@@ -53,6 +55,8 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
     @Autowired
     private BpmFlowrunEntrustService bpmFlowrunEntrustService;
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -74,14 +78,20 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
             throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
 
+        List<String> taskDefKeys=new ArrayList<>();
         for (Task task : taskList) {
+            taskDefKeys.add(task.getTaskDefinitionKey());
             if (ProcessNodeEnum.compare(taskDefKey,task.getTaskDefinitionKey())<0) {
                 throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"流程推进只能向前!");
             }
         }
-        completeTaskRecursively(taskList,procInstId,taskDefKey,processNumber,vo.getApprovalComment(),bpmBusinessProcess.getProcessinessKey());
+        List<NodeXelementXvarXverifyInfo> nodeXElements = bpmVariableMultiplayerMapper.getNodeIdsByElementIds(processNumber, taskDefKeys);
+        Map<String, String> nodeId2ElementIdMap = nodeXElements.stream().collect(Collectors.toMap(NodeXelementXvarXverifyInfo::getElementId, NodeXelementXvarXverifyInfo::getNodeId, (v1, v2) -> v1));
+
+        completeTaskRecursively(taskList,procInstId,taskDefKey,processNumber,vo.getApprovalComment(),bpmBusinessProcess.getProcessinessKey(),nodeId2ElementIdMap);
     }
-    private void completeTaskRecursively( List<Task> taskList,String processInstanceId,String forwardToNodeElementId,String processNumber,String verifyComment,String processKey){
+    private void completeTaskRecursively( List<Task> taskList,String processInstanceId,String forwardToNodeElementId,
+                                          String processNumber,String verifyComment,String processKey,Map<String, String> nodeId2ElementIdMap){
         if(CollectionUtils.isEmpty(taskList)){
             return;
         }
@@ -108,12 +118,14 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
                     .verifyDesc("管理员跳过,原因:"+ StrUtils.nullOrBlankToWhiteSpace(verifyComment))
                     .processCode(processNumber)
                     .build();
+
+            String nodeId = nodeId2ElementIdMap.get(task.getTaskDefinitionKey());
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
             bpmFlowrunEntrustService.addFlowrunEntrust(actual,actualName,task.getAssignee(),task.getAssigneeName(),task.getTaskDefinitionKey(),0,
-                    processInstanceId,processKey);
+                    processInstanceId,processKey,nodeId,1);
         }
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-        completeTaskRecursively(tasks,processInstanceId,forwardToNodeElementId,processNumber,verifyComment,processKey);
+        completeTaskRecursively(tasks,processInstanceId,forwardToNodeElementId,processNumber,verifyComment,processKey,nodeId2ElementIdMap);
     }
 
     @Override

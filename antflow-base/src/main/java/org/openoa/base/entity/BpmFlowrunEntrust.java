@@ -70,4 +70,10 @@ public class BpmFlowrunEntrust implements TenantField, Serializable {
     public Integer isDel;
     @TableField("tenant_id")
     private String tenantId;
+
+    @TableField("node_id")
+    private String nodeId;
+    //0 global user configed entrust,1.change assignee entrust,2 add assignee 3 remove assignee
+    @TableField("action_type")
+    private Integer actionType;
 }
