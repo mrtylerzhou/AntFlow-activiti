@@ -1,14 +1,12 @@
 package org.openoa.common.service;
 
 import org.openoa.base.constant.enums.ButtonTypeEnum;
-import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractLowFlowSpyFormOperationAdaptor;
 import org.openoa.entity.ThirdPartyAccountApply;
 import org.openoa.mapper.ThirdPartyAccountApplyMapper;
-import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.vo.ThirdPartyAccountApplyVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @ActivitiServiceAnno(svcName = "DSFZH_WMA",desc = "第三方账号申请")
 //formAdaptor
-public class TestFormService extends AbstractFormOperationAdaptor<ThirdPartyAccountApplyVo> {
+public class TestFormService extends AbstractLowFlowSpyFormOperationAdaptor<ThirdPartyAccountApplyVo> {
     @Autowired
     private ThirdPartyAccountApplyMapper thirdPartyAccountApplyMapper;
     @Override
@@ -43,6 +41,16 @@ public class TestFormService extends AbstractFormOperationAdaptor<ThirdPartyAcco
                 .startUserId(userId)
                 .accountType(vo.getAccountType())
                 .build();
+    }
+
+    @Override
+    public Boolean automaticCondition(ThirdPartyAccountApplyVo businessDataVo) {
+        return null;
+    }
+
+    @Override
+    public void automaticAction(ThirdPartyAccountApplyVo businessDataVo, Boolean conditionResult) {
+
     }
 
     @Override
@@ -83,6 +91,11 @@ public class TestFormService extends AbstractFormOperationAdaptor<ThirdPartyAcco
 
     @Override
     public void cancellationData(ThirdPartyAccountApplyVo vo) {
+
+    }
+
+    @Override
+    public void onProcessRecover(BusinessDataVo businessData) {
 
     }
 

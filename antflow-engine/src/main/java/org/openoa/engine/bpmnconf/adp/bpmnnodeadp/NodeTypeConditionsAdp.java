@@ -135,6 +135,7 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
                         List<?> objects = JSON.parseArray(conditionParamJsom, conditionTypeEnum.getFieldCls());
 
                         if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
+                            isLowCodeFlow=true;
                             String columnDbname = name2confVueMap.get(paramKey).getColumnDbname();
                             if(wrappedValue==null){
                                 wrappedValue=new LinkedHashMap<>();

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper">
+
+
+    <sql id="base_query">
+        select tbncpc.condition_param_name
+        from t_bpmn_conf tbc
+        inner join t_bpmn_node tbn on tbc.id = tbn.conf_id and tbn.node_type = 3
+        inner join t_bpmn_node_conditions_conf tbncc on tbncc.bpmn_node_id = tbn.id
+        inner join t_bpmn_node_conditions_param_conf tbncpc on tbncpc.bpmn_node_conditions_id = tbncc.id
+    </sql>
+    <select id="queryConditionParamNameByProcessNumber" resultType="java.lang.String">
+        <include refid="base_query"/>
+        inner join bpm_business_process bbp on bbp.VERSION = tbc.bpmn_code
+        where bbp.BUSINESS_NUMBER = #{processNumber}
+    </select>
+    <select id="queryConditionParamByFormCode" resultType="java.lang.String">
+        <include refid="base_query"/>
+        where tbc.form_code=#{formCode} and tbc.effective_status=1
+    </select>
+</mapper>

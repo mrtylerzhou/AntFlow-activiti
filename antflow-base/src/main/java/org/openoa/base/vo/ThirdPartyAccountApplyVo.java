@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 public class ThirdPartyAccountApplyVo extends BusinessDataVo {
-    private Integer AccountType;
-    private String AccountOwnerName;
+    private Integer accountType;
+    private String accountOwnerName;
     private String remark;
 }

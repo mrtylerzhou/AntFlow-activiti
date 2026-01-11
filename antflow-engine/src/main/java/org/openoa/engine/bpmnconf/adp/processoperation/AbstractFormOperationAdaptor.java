@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 
 /**
@@ -17,7 +18,6 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
     public void initData(T vo) {
 
     }
-
 
 
     @Override
