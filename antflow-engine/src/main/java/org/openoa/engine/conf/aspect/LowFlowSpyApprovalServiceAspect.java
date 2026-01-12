@@ -35,7 +35,7 @@ public class LowFlowSpyApprovalServiceAspect {
         BpmnStartConditionsVo result =(BpmnStartConditionsVo) pjp.proceed();
         try{
             List<String> fieldNames = bpmnNodeConditionsConfService.queryConditionParamNameByProcessNumber(businessDataVo);
-            Map<String,Object> conditions=formConditions(pjp.getArgs()[0],fieldNames);
+            Map<String,Object> conditions=formConditions(businessDataVo,fieldNames);
             result.setLfConditions(conditions);
         }catch (Throwable t){
             log.error("查询条件参数处理失败",t);
@@ -50,7 +50,7 @@ public class LowFlowSpyApprovalServiceAspect {
         BpmnStartConditionsVo result =(BpmnStartConditionsVo) pjp.proceed();
         try{
             List<String> fieldNames = bpmnNodeConditionsConfService.queryConditionParamNameByProcessNumber(businessDataVo);
-            Map<String,Object> conditions=formConditions(pjp.getArgs()[0],fieldNames);
+            Map<String,Object> conditions=formConditions(businessDataVo,fieldNames);
             result.setLfConditions(conditions);
         }catch (Throwable t){
             log.error("查询条件参数处理失败",t);
@@ -65,7 +65,7 @@ public class LowFlowSpyApprovalServiceAspect {
         }
         return (BusinessDataVo) args[0];
     }
-    private Map<String,Object> formConditions(Object businessDataVo, List<String> fieldNames) throws Throwable {
+    private Map<String,Object> formConditions(BusinessDataVo businessDataVo, List<String> fieldNames) throws Throwable {
         if(CollectionUtils.isEmpty(fieldNames)){
             return null;
         }
@@ -74,12 +74,13 @@ public class LowFlowSpyApprovalServiceAspect {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         for (String fieldName : fieldNames) {
             Field field = clazz.getDeclaredField(fieldName);
-            Class<?> fieldType = field.getType();
-            MethodHandle getter =
-                    lookup.findGetter(clazz, fieldName, fieldType);
+            field.setAccessible(true);
+            MethodHandle getter =lookup.unreflectGetter(field);
 
-            Object fieldValue = getter.invokeExact(businessDataVo);
-            conditions.put(fieldName,fieldValue);
+            Object fieldValue = getter.invoke(businessDataVo);
+            if(fieldValue!=null){
+                conditions.put(fieldName,fieldValue);
+            }
         }
         return conditions;
     }
