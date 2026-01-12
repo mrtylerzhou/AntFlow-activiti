@@ -35,7 +35,7 @@ public class LowFlowSpyApprovalServiceAspect {
         BpmnStartConditionsVo result =(BpmnStartConditionsVo) pjp.proceed();
         try{
             List<String> fieldNames = bpmnNodeConditionsConfService.queryConditionParamNameByProcessNumber(businessDataVo);
-            Map<String,Object> conditions=formConditions(businessDataVo,fieldNames);
+            Map<String,Object> conditions= formLFLikeConditions(businessDataVo,fieldNames);
             result.setLfConditions(conditions);
         }catch (Throwable t){
             log.error("查询条件参数处理失败",t);
@@ -50,7 +50,7 @@ public class LowFlowSpyApprovalServiceAspect {
         BpmnStartConditionsVo result =(BpmnStartConditionsVo) pjp.proceed();
         try{
             List<String> fieldNames = bpmnNodeConditionsConfService.queryConditionParamNameByProcessNumber(businessDataVo);
-            Map<String,Object> conditions=formConditions(businessDataVo,fieldNames);
+            Map<String,Object> conditions= formLFLikeConditions(businessDataVo,fieldNames);
             result.setLfConditions(conditions);
         }catch (Throwable t){
             log.error("查询条件参数处理失败",t);
@@ -65,7 +65,7 @@ public class LowFlowSpyApprovalServiceAspect {
         }
         return (BusinessDataVo) args[0];
     }
-    private Map<String,Object> formConditions(BusinessDataVo businessDataVo, List<String> fieldNames) throws Throwable {
+    private Map<String,Object> formLFLikeConditions(BusinessDataVo businessDataVo, List<String> fieldNames) throws Throwable {
         if(CollectionUtils.isEmpty(fieldNames)){
             return null;
         }
