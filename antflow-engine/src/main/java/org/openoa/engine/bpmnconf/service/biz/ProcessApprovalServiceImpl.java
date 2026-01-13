@@ -276,6 +276,9 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             Map<String, Object> lfFields = udlfApplyVo.getLfFields();
             if(!CollectionUtils.isEmpty(lfFields)){
                 for (String key : lfFields.keySet()) {
+                    if(CollectionUtils.isEmpty(lfFieldControlVOs)){
+                        continue;
+                    }
                     LFFieldControlVO lfFieldControlVO = lfFieldControlVOs.stream().filter(a -> key.equals(a.getFieldId())).findFirst().orElse(null);
                     if(lfFieldControlVO!=null&& StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())){
                         lfFields.put(key,null);
