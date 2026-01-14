@@ -173,6 +173,8 @@ public class ConfigFlowButtonContans {
                     if (!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_ABANDONED.getCode())
                     ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())
                             ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_STOP.getCode())
+                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode())
+                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
                     ) {
                         toViewButtonsComplete.add(processActionButtonVo);
                     }
