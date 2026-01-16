@@ -270,7 +270,13 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             //set the add approver button
             addApproverButton(vo);
         }
-        if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
+        if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
+            return vo;
+        }
+        else if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
+            if (!(vo instanceof UDLFApplyVo)) {
+                return vo;
+            }
             UDLFApplyVo udlfApplyVo = (UDLFApplyVo) vo;
             List<LFFieldControlVO> lfFieldControlVOs = udlfApplyVo.getProcessRecordInfo().getLfFieldControlVOs();
             Map<String, Object> lfFields = udlfApplyVo.getLfFields();
