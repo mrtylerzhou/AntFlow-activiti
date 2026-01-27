@@ -7,6 +7,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
+import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -185,7 +186,8 @@ public class ProcessNodeJump {
         taskService.complete(taskId, variables);
         if(!currActivity.getId().equals(activityId)) {
             ActivityBehavior activityBehavior = currActivity.getActivityBehavior();
-            if (activityBehavior instanceof SequentialMultiInstanceBehavior){
+            // SequentialMultiInstanceBehavior是代表顺序多实例会签，ParallelMultiInstanceBehavior是代表多实例会签（无顺序）
+            if (activityBehavior instanceof SequentialMultiInstanceBehavior || activityBehavior instanceof ParallelMultiInstanceBehavior){
                 if(null!= procInstId && !procInstId.isEmpty()) {
                     boolean isDo = true;
                     while (isDo) {
