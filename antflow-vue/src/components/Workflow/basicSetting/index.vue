@@ -105,6 +105,9 @@ const duplicateOptions = [{
 }, {
     "label": "后去重",
     "value": 3
+}, {
+    "label": "相邻节点去重",
+    "value": 4
 }];
 
 const viewPageButtons = [{

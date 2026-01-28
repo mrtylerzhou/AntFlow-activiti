@@ -13,6 +13,7 @@
 package org.openoa.engine.conf.engineconfig;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -20,6 +21,7 @@ import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEng
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.openoa.base.listener.StartEngineEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,11 +54,12 @@ public class DataSourceProcessEngineAutoConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public SpringProcessEngineConfiguration springProcessEngineConfiguration(
+                List<StartEngineEventListener> startEngineEventListeners,
                 DataSource dataSource,
                 PlatformTransactionManager transactionManager,
                 SpringAsyncExecutor springAsyncExecutor) throws IOException {
 
-            return this.baseSpringProcessEngineConfiguration(dataSource, transactionManager, springAsyncExecutor);
+            return this.baseSpringProcessEngineConfiguration(startEngineEventListeners,dataSource, transactionManager, springAsyncExecutor);
         }
         @Bean
         @ConditionalOnMissingBean

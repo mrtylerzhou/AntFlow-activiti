@@ -12,22 +12,23 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-public abstract class AbstractCommonBpmnNodeAdaptor<TEntity> implements BpmnNodeAdaptor {
+public abstract class AbstractCommonBpmnNodeAdaptor<TEntity> extends AbstractAdditionSignNodeAdaptor {
 
     @Autowired
     private IService<TEntity> service;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         TEntity entity = queryEntity(bpmnNodeVo);
         setNodeProperty(bpmnNodeVo,entity);
-
     }
 
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
         checkParam(bpmnNodeVo);
+        super.editBpmnNode(bpmnNodeVo);
         List<TEntity> tEntities = buildEntity(bpmnNodeVo);
         if(!CollectionUtils.isEmpty(tEntities)){
             service.saveBatch(tEntities);

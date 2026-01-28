@@ -97,6 +97,8 @@ public class BpmnNode implements TenantField, Serializable {
     private Integer isSignUp;
     @TableField("no_header_action")
     private Integer noHeaderAction;
+    @TableField("extra_flags")
+    private Integer extraFlags;
     /**
      * remark
      */
@@ -145,7 +147,7 @@ public class BpmnNode implements TenantField, Serializable {
     @TableField(exist = false)
     private Integer isLowCodeFlow;
     @TableField(exist = false)
-    private Integer extraFlags;
+    private Integer confExtraFlags;
     @TableField(exist = false)
     private List<BpmnNodeLabelVO> labelList;
 }

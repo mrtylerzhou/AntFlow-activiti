@@ -27,6 +27,7 @@ import org.activiti.spring.autodeployment.AutoDeploymentStrategy;
 import org.activiti.spring.autodeployment.DefaultAutoDeploymentStrategy;
 import org.activiti.spring.autodeployment.ResourceParentFolderAutoDeploymentStrategy;
 import org.activiti.spring.autodeployment.SingleResourceAutoDeploymentStrategy;
+import org.openoa.base.listener.StartEngineEventListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -37,6 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Tom Baeyens
@@ -53,7 +55,7 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
     protected ApplicationContext applicationContext;
     protected Integer transactionSynchronizationAdapterOrder = null;
     private Collection<AutoDeploymentStrategy> deploymentStrategies = new ArrayList<AutoDeploymentStrategy>();
-
+    List<StartEngineEventListener> startEngineEventListeners;
     public SpringProcessEngineConfiguration() {
         this.transactionsExternallyManaged = true;
         deploymentStrategies.add(new DefaultAutoDeploymentStrategy());
@@ -63,10 +65,22 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
 
     @Override
     public ProcessEngine buildProcessEngine() {
-        ProcessEngine processEngine = super.buildProcessEngine();
-        ProcessEngines.setInitialized(true);
-        autoDeployResources(processEngine);
-        return processEngine;
+        try {
+            for (StartEngineEventListener listener : startEngineEventListeners)
+            {
+                listener.beforeStartEngine(this);
+            }
+            ProcessEngine processEngine = super.buildProcessEngine();
+            ProcessEngines.setInitialized(true);
+            autoDeployResources(processEngine);
+            for (StartEngineEventListener listener : startEngineEventListeners)
+            {
+                listener.afterStartEngine(this, processEngine);
+            }
+            return processEngine;
+        }catch (Exception e){
+            throw  new RuntimeException(e);
+        }
     }
 
     public void setTransactionSynchronizationAdapterOrder(Integer transactionSynchronizationAdapterOrder) {
@@ -157,6 +171,9 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
         this.deploymentMode = deploymentMode;
     }
 
+    public void setStartEngineEventListeners(List<StartEngineEventListener> startEngineEventListeners){
+        this.startEngineEventListeners=startEngineEventListeners;
+    }
     /**
      * Gets the {@link AutoDeploymentStrategy} for the provided mode. This method
      * may be overridden to implement custom deployment strategies if required,

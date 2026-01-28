@@ -58,7 +58,7 @@ public class MultiInstanceSignOffService {
      * @param userToRemove      需移除的用户ID
      */
 
-    public void removeAssignee(String processNumber, String taskDefKey, String userToRemove,String userToRemoveName) {
+    public void removeAssignee(String processNumber, String taskDefKey, String userToRemove,String userToRemoveName,String nodeId) {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(bpmBusinessProcess == null){
             throw new RuntimeException("未找根据流程编号找到流程实例"+processNumber);
@@ -110,7 +110,7 @@ public class MultiInstanceSignOffService {
         taskMgmtMapper.deleteExecutionById(myExecution.getId());
         taskMgmtMapper.deletTask(currentAssigneeTask.getId());
         flowrunEntrustService.addFlowrunEntrust("0","管理员减签",userToRemove,userToRemoveName,
-                currentAssigneeTask.getId(),0,processInstanceId,bpmBusinessProcess.getProcessinessKey());
+                currentAssigneeTask.getTaskDefinitionKey(),0,processInstanceId,bpmBusinessProcess.getProcessinessKey(),nodeId,3);
         Integer nrOfCompleted = (Integer) runtimeService.getVariable(myExecution.getParentId(), "nrOfCompletedInstances");
         Integer nrOfInstances = (Integer) runtimeService.getVariable(myExecution.getParentId(), "nrOfInstances");
         // 处理已完成的数量

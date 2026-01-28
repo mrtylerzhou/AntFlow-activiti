@@ -1,9 +1,11 @@
 package org.openoa.engine.bpmnconf.adp.orderedsignadp;
 
 import com.google.common.collect.Lists;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
-import org.openoa.base.vo.OutSideBpmAccessEmbedNodeVo;
+import org.openoa.base.vo.BpmEmbedNodeVo;
 import org.openoa.common.adaptor.bpmnelementadp.AbstractOrderedSignNodeAdp;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author TylerZhou
@@ -20,27 +23,23 @@ import java.util.List;
 @Service
 public class OutSideOrderedSignNodeAdp extends AbstractOrderedSignNodeAdp {
     @Override
-    public List<String> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
+    public List<BaseIdTranStruVo> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         String nodeMark = nodeVo.getProperty().getNodeMark();
         //outside embed node
-        List<OutSideBpmAccessEmbedNodeVo> embedNodes = bpmnStartConditions.getEmbedNodes();
+        Map<String,BpmEmbedNodeVo> embedNodes = bpmnStartConditions.getEmbedNodes();
         if(ObjectUtils.isEmpty(nodeMark)|| CollectionUtils.isEmpty(embedNodes)){
-            return Lists.newArrayList("0");
+            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
         }
-        OutSideBpmAccessEmbedNodeVo embedNodeVo = embedNodes
-                .stream()
-                .filter(o -> o.getNodeMark().equals(nodeMark))
-                .findFirst()
-                .orElse(null);
+        BpmEmbedNodeVo embedNodeVo = embedNodes.get(nodeMark);
         if(embedNodeVo==null){
-            return Lists.newArrayList("0");
+            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
         }
-        List<String> assigneeIdList = embedNodeVo.getAssigneeIdList();
-        if(CollectionUtils.isEmpty(assigneeIdList)){
-            return Lists.newArrayList("0");
+        List<BaseIdTranStruVo> assigneeList = embedNodeVo.getAssigneeList();
+        if(CollectionUtils.isEmpty(assigneeList)){
+            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
         }
 
-        return Lists.newArrayList(assigneeIdList);
+        return assigneeList;
     }
 
     @Override

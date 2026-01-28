@@ -36,12 +36,12 @@
             resultType="org.openoa.common.entity.BpmVariableMultiplayer">
         SELECT a.*,c.undertake_status AS undertakeStatus
         FROM t_bpm_variable_multiplayer a
-                 LEFT JOIN t_bpm_variable b ON a.`variable_id` = b.`id`
-                 LEFT JOIN `t_bpm_variable_multiplayer_personnel` c ON a.id =
+                 LEFT JOIN t_bpm_variable b ON a.variable_id = b.id
+                 LEFT JOIN t_bpm_variable_multiplayer_personnel c ON a.id =
                                                                        c.variable_multiplayer_id
-        WHERE a.`element_id` =
+        WHERE a.element_id =
               #{elementId}
-          AND b.`process_num` = #{processNum}
+          AND b.process_num = #{processNum}
 
     </select>
 
@@ -121,14 +121,14 @@
             <property name="wherefield" value="node_id"/>
         </include>
     </select>
-    <select id="getNodeIdsByElementIds" resultType="java.lang.String">
-        select tbvs.node_id  from t_bpm_variable tbv inner join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
+    <select id="getNodeIdsByElementIds" resultType="org.openoa.base.dto.NodeXelementXvarXverifyInfo">
+        select tbvs.node_id as nodeId,tbvs.element_id as elementId  from t_bpm_variable tbv inner join t_bpm_variable_single tbvs  on tbvs.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvs.element_id in
         <foreach collection="elementIds" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
         union all
-        select tbvm.node_id from t_bpm_variable tbv
+        select tbvm.node_id as nodeId,tbvm.element_id as elementId from t_bpm_variable tbv
         left join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvm.element_id in
         <foreach collection="elementIds" item="item" open="(" separator="," close=")">

@@ -53,15 +53,15 @@ public class ProcessRecordInfoVo {
     /**
      * buttons pc buttons or app buttons
      */
-    public List<ProcessActionButtonVo> options;
+    private List<ProcessActionButtonVo> options;
     /**
      * app below buttons
      */
-    public List<ProcessActionButtonVo> appBelowOptions;
+    private List<ProcessActionButtonVo> appBelowOptions;
     /**
      * type
      */
-    public Integer type;
+    private Integer type;
     /***
      * create time
      */
@@ -69,7 +69,7 @@ public class ProcessRecordInfoVo {
     /**
      * task state
      */
-    public String taskState;
+    private String taskState;
     /**
      * pc buttons
      */
@@ -82,27 +82,28 @@ public class ProcessRecordInfoVo {
     /**
      * pc buttons on start page
      */
-    public List<ProcessActionButtonVo> initiatePcButtons;
+    private List<ProcessActionButtonVo> initiatePcButtons;
     /**
      * app buttons on start page
      */
-    public Map<String, List<ProcessActionButtonVo>> initiateAppButtons;
+    private Map<String, List<ProcessActionButtonVo>> initiateAppButtons;
     /**
      * node id
      */
-    public String nodeId;
+    private String nodeId;
 
+    private List<String> viewNodeIds;
     /**
      * has custom node
      */
-    public Boolean isCustomNode;
+    private Boolean isCustomNode;
 
     /**
      * process code
      */
-    public String processCode;
+    private String processCode;
 
-    public String processKey;
+    private String processKey;
 
     /**
      * start page init data

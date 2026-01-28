@@ -25,10 +25,12 @@ import org.openoa.base.vo.*;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
+import org.openoa.engine.bpmnconf.service.flowcontrol.ActivityPermissionManagerEx;
 import org.openoa.engine.bpmnconf.service.flowcontrol.MultiInstanceSignOffService;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
+import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.factory.TagParser;
 import org.openoa.common.adaptor.bpmnelementadp.BpmnElementAdaptor;
 import org.openoa.engine.bpmnconf.service.biz.TraditionalActivitiServiceImpl;
@@ -102,6 +104,10 @@ public class ActivitiTest {
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
     @Autowired
     private RuntimeService runtimeService;
+    @Autowired
+    ActivityPermissionManagerEx activityPermissionManager;
+    @Autowired
+    private TaskService taskService;
 
     @RequestMapping("/getModel")
     public Result getModel(String processNumber) throws Exception {
@@ -310,7 +316,7 @@ public class ActivitiTest {
         List<BaseInfoTranStructVo> assigneeAndVariableByElementId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByElementId(procInstId, taskdefKey);
         List<BaseInfoTranStructVo> assigneeAndVariableByNodeId = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(procInstId, nodeIdByElementId);
         List<ActivityImpl> activitiList = activitiAdditionalInfoService.getActivitiList(procInstId);
-        multiInstanceSignOffService.removeAssignee(procInstId, taskdefKey, userId, "");
+        multiInstanceSignOffService.removeAssignee(procInstId, taskdefKey, userId, "","");
         return Result.success();
     }
 
@@ -354,5 +360,38 @@ public class ActivitiTest {
             }
         }
 
+    }
+    @RequestMapping("/coworker")
+    public Result addCoWorker(String processNumber,String taskDefKey) throws Exception{
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        String procinstId=bpmBusinessProcess.getProcInstId();
+        List<Task> tasks = taskService.createTaskQuery().processInstanceId(procinstId)
+                .list();
+        String processDefinitionId = tasks.get(0).getProcessDefinitionId();
+        activityPermissionManager.save(processDefinitionId,taskDefKey,null,new String[]{"coworker"},new String[]{"1"});
+        List<Task> tasks1 = taskService.createTaskQuery()
+                .processInstanceId(procinstId)
+                .taskCandidateUser("1").list();
+        return Result.success();
+    }
+    @RequestMapping("/moveBackward")
+    public Result moveBackWard(String processNumber,Integer type) throws Exception{
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        String procinstId=bpmBusinessProcess.getProcInstId();
+        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procinstId);
+        if(Objects.equals(1,type)){
+            taskFlowControlService.moveOneStepBack(processNumber);
+        }else{
+            taskFlowControlService.moveOneStepForward(processNumber);
+        }
+        return Result.success();
+    }
+    @RequestMapping("/splitTask")
+    public Result splitTask(String processNumber,String taskDefKey) throws Exception {
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        String procinstId=bpmBusinessProcess.getProcInstId();
+        TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procinstId);
+        ActivityImpl split = taskFlowControlService.split(taskDefKey, "10", "11","12");
+        return Result.success();
     }
 }

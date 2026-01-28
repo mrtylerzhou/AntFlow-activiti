@@ -33,7 +33,7 @@ export class NodeUtils {
       nodeTo: [],
       setType: 5, //审批人类型 5、指定人员
       signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
-      isSignUp: 0, //是否加批 0:否，1:是
+      isSignUp: 1, //是否加批 0:否，1:是
       directorLevel: 1,
       noHeaderAction: 0,
       childNode: child,
@@ -211,8 +211,7 @@ export class NodeUtils {
           nodeName: "发起人",
           nodeDisplayName: "发起人",
           annotation: null,
-          isDeduplication: 0,
-          isSignUp: 0,
+          isDeduplication: 0, 
           orderedNodeType: null,
           remark: "",
           isDel: 0,
@@ -317,7 +316,7 @@ export class NodeUtils {
       nodeApproveList: [],
       setType: 5, //审批人类型 5、指定人员
       signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
-      isSignUp: 0, //是否加批 0:否，1:是
+      isSignUp: 1, //是否加批 0:否，1:是
       noHeaderAction: 0,
       lfFieldControlVOs: [],
       templateVos: [], //消息通知设置

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeHrbpConf;
@@ -24,29 +25,25 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class NodePropertyHrbpAdp implements BpmnNodeAdaptor {
+public class NodePropertyHrbpAdp extends AbstractAdditionSignNodeAdaptor {
 
     @Autowired
     private BpmnNodeHrbpConfService bpmnNodeHrbpConfService;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         BpmnNodeHrbpConf bpmnNodeHrbpConf = bpmnNodeHrbpConfService.getOne(new QueryWrapper<BpmnNodeHrbpConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (bpmnNodeHrbpConf!=null) {
-            bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                    .builder()
-                    .hrbpConfType(bpmnNodeHrbpConf.getHrbpConfType())
-                    .build());
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->p.setHrbpConfType(bpmnNodeHrbpConf.getHrbpConfType()));
         }
 
     }
 
     @Override
     public PersonnelRuleVO formaFieldAttributeInfoVO() {
-
 
         try {
             Class<BpmnNodeHrbpConf> entityCls=BpmnNodeHrbpConf.class;
@@ -75,7 +72,7 @@ public class NodePropertyHrbpAdp implements BpmnNodeAdaptor {
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
         BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
                 .orElse(new BpmnNodePropertysVo());
 

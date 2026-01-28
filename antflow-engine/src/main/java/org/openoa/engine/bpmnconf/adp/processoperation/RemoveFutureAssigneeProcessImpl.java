@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
@@ -20,11 +21,11 @@ public class RemoveFutureAssigneeProcessImpl extends AbstractAddOrRemoveFutureAs
        if(null==bpmBusinessProcess){
            throw new AFBizException("未能根据流程编号找到流程信息:"+processNumber);
        }
-        String elementId = bpmVariableMultiplayerMapper.getElementIdByNodeId(processNumber, nodeId);
-        if(StringUtils.isEmpty(elementId)){
+        NodeElementDto nodeElementDto = bpmVariableBizService.queryElementIdByNodeIdDetail(processNumber, nodeId);
+        if(nodeElementDto==null){
             throw new AFBizException("未能根据节点id获取元素Id"+nodeId);
         }
-        super.modifyFutureAssigneesByProcessInstance(bpmBusinessProcess,elementId,vo.getUserInfos(),2);
+        super.modifyFutureAssigneesByProcessInstance(bpmBusinessProcess,nodeElementDto,vo.getUserInfos(),2);
 
     }
 

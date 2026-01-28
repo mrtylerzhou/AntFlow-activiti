@@ -181,8 +181,18 @@
                         b.process_digest   as processDigest,
                         t.ASSIGNEE_        as taskOwner,
                         t.TASK_DEF_KEY_       taskName
-                 FROM ACT_RU_TASK t
-                          LEFT JOIN ACT_HI_PROCINST h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
+                 FROM
+                    <choose>
+                        <when test="taskMgmtVO.includeAllFlag!=null and taskMgmtVO.includeAllFlag==1">
+                            ACT_HI_PROCINST h
+                            LEFT JOIN ACT_RU_TASK t
+                        </when>
+                        <otherwise>
+                            ACT_RU_TASK t
+                            LEFT JOIN ACT_HI_PROCINST h
+                        </otherwise>
+                    </choose>
+                       ON h.PROC_INST_ID_ = t.PROC_INST_ID_
                           LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
                  where b.is_del = 0
              ) s

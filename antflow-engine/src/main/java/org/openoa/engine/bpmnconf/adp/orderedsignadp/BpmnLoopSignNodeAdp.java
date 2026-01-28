@@ -2,10 +2,7 @@ package org.openoa.engine.bpmnconf.adp.orderedsignadp;
 
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
-import org.openoa.base.vo.BaseIdTranStruVo;
-import org.openoa.base.vo.BpmnNodePropertysVo;
-import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.*;
 import org.openoa.common.adaptor.bpmnelementadp.AbstractOrderedSignNodeAdp;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,7 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
     @Autowired
     private AfUserService userService;
     @Override
-    public List<String> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
+    public List<BaseIdTranStruVo> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         BpmnNodePropertysVo propertysVo = nodeVo.getProperty();
         if(propertysVo==null){
             throw new AFBizException("loop sign failure,node has no property!");
@@ -70,14 +67,15 @@ public class BpmnLoopSignNodeAdp extends AbstractOrderedSignNodeAdp {
         if(CollectionUtils.isEmpty(baseIdTranStruVos)){
             throw new AFBizException("未能根据发起人找到审批人信息");
         }
-        List<String> approverIds = baseIdTranStruVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
-        List<String> finalApproverIds = new ArrayList<>();
-        for (String approverId : approverIds) {
-            if(!loopEndPersonList.contains(approverId)){
-                finalApproverIds.add(approverId);
+
+        List<BaseIdTranStruVo> finalApprovers = new ArrayList<>();
+        for (BaseIdTranStruVo approver : baseIdTranStruVos) {
+            if(!loopEndPersonList.contains(approver.getId())){
+                finalApprovers.add(approver);
             }
         }
-        return  finalApproverIds;
+
+        return  finalApprovers;
     }
 
     @Override

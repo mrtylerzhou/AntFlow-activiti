@@ -17,7 +17,7 @@ import java.util.List;
  * @Version 0.5
  */
 @Service("afRoleServiceImpl")
-public class AfRoleServiceImpl implements AfRoleService{
+public class AfRoleServiceImpl extends AbstractSaSSSupportRoleService{
     @Autowired
     private RoleMapper rolesMapper;
     @Override

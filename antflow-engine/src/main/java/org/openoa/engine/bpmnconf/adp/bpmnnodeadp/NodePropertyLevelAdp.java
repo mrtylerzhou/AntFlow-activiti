@@ -26,14 +26,14 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class NodePropertyLevelAdp implements BpmnNodeAdaptor {
+public class NodePropertyLevelAdp extends AbstractAdditionSignNodeAdaptor {
 
     @Autowired
     private BpmnNodeAssignLevelConfService bpmnNodeAssignLevelConfService;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         BpmnNodeAssignLevelConf bpmnNodeAssignLevelConf = bpmnNodeAssignLevelConfService.getOne(new QueryWrapper<BpmnNodeAssignLevelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
@@ -70,7 +70,7 @@ public class NodePropertyLevelAdp implements BpmnNodeAdaptor {
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
         BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
                 .orElse(new BpmnNodePropertysVo());
 

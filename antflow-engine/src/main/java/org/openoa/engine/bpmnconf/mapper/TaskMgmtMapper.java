@@ -2,8 +2,14 @@ package org.openoa.engine.bpmnconf.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
+import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.openoa.base.entity.AFExecutionEntity;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.springframework.stereotype.Repository;
@@ -302,4 +308,10 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
     void deleteTaskByProcinstIdAndTaskDefKeys(@Param("procInstId")String procInstId,@Param("taskDefKeys") List<String> taskdefkeys);
     void deleteTaskByTaskIds(@Param("taskIds") List<String> taskIds);
     void deleteExecutionById(@Param("executionId")String executionId);
+    int insertExecution(AFExecutionEntity executionInstEntity);
+    int insertTask(TaskEntity taskEntity);
+    int bulkInsertIdentityLink(@Param("list") List<IdentityLinkEntity> identityLinkEntities);
+    int bulkInsertVariableInstance(@Param("list") List<VariableInstanceEntity> variables);
+    int updateHistoricTaskInstance(HistoricTaskInstanceEntity historicTaskInstanceEntity);
+    int deleteHisActInst(HistoricActivityInstance historicActivityInstance);
 }

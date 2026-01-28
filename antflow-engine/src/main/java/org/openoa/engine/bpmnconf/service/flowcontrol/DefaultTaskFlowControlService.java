@@ -10,7 +10,13 @@ import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.ActHiTaskinst;
+import org.openoa.base.entity.SimpleRuntimeActivityDefinitionEntity;
+import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
+import org.openoa.base.interf.BpmBusinessProcessService;
+import org.openoa.base.service.RuntimeActivityDefinitionEntityIntepreter;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -18,6 +24,7 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.adp.processoperation.AddAssigneeProcessImpl;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
+import org.openoa.engine.bpmnconf.service.cmd.CreateAndTakeTransitionCmd;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.openoa.engine.bpmnconf.service.cmd.StartActivityCmd;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
@@ -28,7 +35,6 @@ import java.util.stream.Collectors;
 
 public class DefaultTaskFlowControlService implements TaskFlowControlService
 {
-
 
 	ProcessDefinitionEntity _processDefinition;
 
@@ -90,8 +96,54 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		return otherParallTaskDefKeys;
 	}
 
+	@Override
+	public void  moveOneStepForward(String processNumber) throws Exception{
+		List<Task> currentTasks = getCurrentTasks();
+		TaskEntity currentTaskEntity =(TaskEntity) currentTasks.get(0);
+		ActivityImpl activity = (ActivityImpl) ProcessDefinitionUtils
+				.getActivity(_processEngine, currentTaskEntity.getProcessDefinitionId(),
+						currentTaskEntity.getTaskDefinitionKey()).getOutgoingTransitions().get(0).getDestination();
+		moveBackwardOrForward(processNumber,activity.getId(),currentTasks);
+	}
+	@Override
+	public void  moveOneStepBack(String processNumber) throws Exception {
+		List<Task> currentTasks = getCurrentTasks();
+		TaskEntity currentTaskEntity =(TaskEntity) currentTasks.get(0);
+		ActivityImpl activity = (ActivityImpl) ProcessDefinitionUtils
+				.getActivity(_processEngine, currentTaskEntity.getProcessDefinitionId(),
+						currentTaskEntity.getTaskDefinitionKey()).getIncomingTransitions().get(0).getSource();
+		moveBackwardOrForward(processNumber,activity.getId(),currentTasks);
+	}
+	private void moveBackwardOrForward(String processNumber,String moveToActivityId,List<Task> currentTasks)throws Exception{
 
+		List<BaseIdTranStruVo> assigneeListByElementId = _bpmVariableMultiplayerService.getBaseMapper().getAssigneeByElementId(processNumber, moveToActivityId);
+		boolean isEnd = moveToActivityId.endsWith("_EndEvent");
+		if(CollectionUtils.isEmpty(assigneeListByElementId)&&!isEnd){
+			throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"流程状态错误");
+		}
+		if(isEnd){
+			for (Task currentTask : currentTasks) {
+				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTask));
+			}
+			BpmBusinessProcessService businessProcessService = SpringBeanUtils.getBean(BpmBusinessProcessService.class);
+			businessProcessService.updateBpmBusinessProcess(currentTasks.get(0).getProcessInstanceId(), ProcessStateEnum.HANDLED_STATE);
+			return;
+		}
+		if( currentTasks.size()>assigneeListByElementId.size()){
+			List<Task> tasks = currentTasks.subList(assigneeListByElementId.size(), currentTasks.size());
+			for (Task task : tasks) {
+				((TaskEntity)task).setTaskDefinitionKey(UUID.randomUUID().toString());
+			}
+		}
 
+		moveTo(currentTasks,currentTasks.get(0).getTaskDefinitionKey(),moveToActivityId);
+		List<Task> currentNewTasks = getCurrentTasks();
+		String executionId = currentNewTasks.get(0).getExecutionId();
+		RuntimeService runtimeService = _processEngine.getRuntimeService();
+		runtimeService.setVariable(executionId,"nrOfInstances",currentNewTasks.size());
+		runtimeService.setVariable(executionId,"nrOfActiveInstances",currentNewTasks.size());
+		runtimeService.setVariable(executionId,"nrOfCompletedInstances",0);
+	}
 	private List<String> moveTov1(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
 	{
 
@@ -116,7 +168,8 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 
 	return taskDefKeys;
 	}
-	private List<String> moveTov2(List<Task> currentTaskEntitys,String currentTaskDefKey, ActivityImpl activity)
+	@Override
+	public List<String> moveTov2(List<Task> currentTaskEntitys, String currentTaskDefKey, ActivityImpl activity)
 	{
 
 		Map<String, Object> variables = _processEngine.getTaskService()
@@ -214,4 +267,41 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		return moveTov2(currentTaskEntitys,currentTaskDefKey, activity);
 	}
 
+	@Override
+	public ActivityImpl split(String targetTaskDefinitionKey, String... assignee) throws Exception
+	{
+		return split(targetTaskDefinitionKey, true, assignee);
+	}
+	@Override
+	public ActivityImpl split(String targetTaskDefinitionKey, boolean isSequential, String... assignees)
+			throws Exception
+	{
+		SimpleRuntimeActivityDefinitionEntity info = new SimpleRuntimeActivityDefinitionEntity();
+		info.setProcessDefinitionId(_processDefinition.getId());
+		info.setProcessInstanceId(_processInstanceId);
+
+		RuntimeActivityDefinitionEntityIntepreter radei = new RuntimeActivityDefinitionEntityIntepreter(info);
+
+		radei.setPrototypeActivityId(targetTaskDefinitionKey);
+		radei.setAssignees((List<String>) CollectionUtils.arrayToList(assignees));
+		radei.setSequential(isSequential);
+
+		ActivityImpl clone = new MultiInstanceActivityCreator().createActivities(_processEngine, _processDefinition,
+				info)[0];
+
+		List<Task> currentTaskEntitys = getCurrentTasks();
+		for (Task currentTaskEntity : currentTaskEntitys) {
+			executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
+		}
+		executeCommand(new CreateAndTakeTransitionCmd(currentTaskEntitys.get(0).getExecutionId(), clone));
+
+		recordActivitiesCreation(info);
+		return clone;
+	}
+
+	private void recordActivitiesCreation(SimpleRuntimeActivityDefinitionEntity info) throws Exception
+	{
+		info.serializeProperties();
+		SpringBeanUtils.getBean(RuntimeActivityDefinitionManager.class).save(info);
+	}
 }

@@ -11,7 +11,8 @@ import org.openoa.engine.bpmnconf.mapper.BpmFlowrunEntrustMapper;
 import java.util.List;
 
 public interface BpmFlowrunEntrustService extends IAFService<BpmFlowrunEntrustMapper,BpmFlowrunEntrust> {
-    void addFlowrunEntrust(String actual, String actualName, String original, String originalName, String runtaskid, Integer type, String ProcessInstanceId, String processKey);
+    void addFlowrunEntrust(String actual, String actualName, String original, String originalName, String runtaskid,
+                           Integer type, String ProcessInstanceId, String processKey,String nodeId,Integer actionType);
 
     boolean addFlowrunEntrust(BpmFlowrunEntrust flowrunEntrust);
 
@@ -20,6 +21,8 @@ public interface BpmFlowrunEntrustService extends IAFService<BpmFlowrunEntrustMa
     Boolean updateBpmFlowrunEntrust(String processInstanceId, Integer loginUserId);
 
     boolean editFlowrunEntrustState(String processInstanceId);
+
+    List<BpmFlowrunEntrust> findEntrustByProcInstId(String procInstId);
 
     List<BpmFlowrunEntrust> findFlowrunEntrustByProcessInstanceId(BpmFlowrunEntrustVo vo);
 }

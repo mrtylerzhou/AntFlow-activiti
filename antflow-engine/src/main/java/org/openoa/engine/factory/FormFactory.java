@@ -6,16 +6,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.ActivitiService;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.util.AfTypeUtils;
+import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.OutSideBpmAccessBusiness;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -23,7 +28,9 @@ import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Classname FormFactory
@@ -83,15 +90,59 @@ public class FormFactory implements ApplicationContextAware {
             throw new AFBizException("can not get the processing bean by form code:{}!"+formCode);
         }
         return JSON.parseObject(params, (Type) getFormTClass(formCode));
-
     }
+    public BusinessDataVo dataFormConversion(BusinessDataVo vo) {
+        String formCode=vo.getFormCode();
+        if(vo.getIsOutSideAccessProc()){
+            LambdaQueryWrapper<OutSideBpmAccessBusiness> qryWrapper = Wrappers
+                    .<OutSideBpmAccessBusiness>lambdaQuery()
+                    .eq(OutSideBpmAccessBusiness::getProcessNumber, vo.getProcessNumber());
+            List<OutSideBpmAccessBusiness> bpmAccessBusinesses = outSideBpmAccessBusinessService.list(qryWrapper);
+            if(!CollectionUtils.isEmpty(bpmAccessBusinesses)){
+                vo.setFormData(bpmAccessBusinesses.get(0).getFormDataPc());
+            }
 
+        }
+        if(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1){
+            formCode=StringConstants.LOWFLOW_FORM_CODE;
+        }
+        Object bean = applicationContext.getBean(formCode);
+        if (ObjectUtils.isEmpty(bean)) {
+            throw new AFBizException("can not get the processing bean by form code:{}!"+formCode);
+        }
+        Class<? extends BusinessDataVo> actualClass= (Class<? extends BusinessDataVo>) getFormTClass(formCode);
+        try {
+            BusinessDataVo businessDataVo = actualClass.newInstance();
+            BeanUtils.copyProperties(vo,businessDataVo);
+            return businessDataVo;
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private Class<?> getFormTClass(String key) {
         FormOperationAdaptor bean = getFormAdaptor(BusinessDataVo.builder().formCode(key).build());
         if (!ObjectUtils.isEmpty(bean)) {
+            ParameterizedType p=null;
+            Set<ResolvableType> allTypes = AfTypeUtils.getAllTypes(ResolvableType.forClass(ClassUtils.getUserClass(bean)));
+            for (ResolvableType rType : allTypes) {
+                if (rType.getType() instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) rType.getType();
+                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                    if(FormOperationAdaptor.class.isAssignableFrom(rType.resolve())){
+                        for (Type actualTypeArgument : actualTypeArguments) {
+                            if(actualTypeArgument instanceof Class){
+                                if (BusinessDataVo.class.isAssignableFrom((Class<?>) actualTypeArgument)) {
+                                    p=(ParameterizedType)rType.getType();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-            Type[] interfacesTypes = ClassUtils.getUserClass(bean).getGenericInterfaces();
-            ParameterizedType p = (ParameterizedType) interfacesTypes[0];
             Class<?> cls = (Class) p.getActualTypeArguments()[0];
             if (!ObjectUtils.isEmpty(cls)) {
                 return cls;

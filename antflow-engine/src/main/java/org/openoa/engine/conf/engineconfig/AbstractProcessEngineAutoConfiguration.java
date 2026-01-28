@@ -15,6 +15,7 @@ package org.openoa.engine.conf.engineconfig;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.spring.*;
+import org.openoa.base.listener.StartEngineEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +58,8 @@ public abstract class AbstractProcessEngineAutoConfiguration
   public SpringRejectedJobsHandler springRejectedJobsHandler() {
     return new SpringCallerRunsRejectedJobsHandler();
   }
-  protected SpringProcessEngineConfiguration baseSpringProcessEngineConfiguration(DataSource dataSource, PlatformTransactionManager platformTransactionManager,
+  protected SpringProcessEngineConfiguration baseSpringProcessEngineConfiguration(List<StartEngineEventListener> startEngineEventListeners,
+                                                                                  DataSource dataSource, PlatformTransactionManager platformTransactionManager,
                                                                                   SpringAsyncExecutor springAsyncExecutor) throws IOException {
 
     List<Resource> procDefResources = this.discoverProcessDefinitionResources(
@@ -65,7 +67,7 @@ public abstract class AbstractProcessEngineAutoConfiguration
         this.activitiProperties.getProcessDefinitionLocationSuffixes(),
         this.activitiProperties.isCheckProcessDefinitions());
 
-    SpringProcessEngineConfiguration conf = super.processEngineConfigurationBean(
+    SpringProcessEngineConfiguration conf = super.processEngineConfigurationBean(startEngineEventListeners,
         procDefResources.toArray(new Resource[procDefResources.size()]), dataSource, 
         platformTransactionManager, springAsyncExecutor);
 

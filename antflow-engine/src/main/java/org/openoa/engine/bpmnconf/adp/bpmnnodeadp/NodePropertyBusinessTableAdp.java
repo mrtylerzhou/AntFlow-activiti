@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeBusinessTableConf;
@@ -19,24 +20,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class NodePropertyBusinessTableAdp implements BpmnNodeAdaptor {
+public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdaptor {
 
     @Autowired
     private BpmnNodeBusinessTableConfServiceImpl bpmnNodeBusinessTableConfService;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = bpmnNodeBusinessTableConfService.getOne(new QueryWrapper<BpmnNodeBusinessTableConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
         if (bpmnNodeBusinessTableConf!=null) {
-            bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                    .builder()
-                    .configurationTableType(bpmnNodeBusinessTableConf.getConfigurationTableType())
-                    .tableFieldType(bpmnNodeBusinessTableConf.getTableFieldType())
-                    .signType(bpmnNodeBusinessTableConf.getSignType())
-                    .build());
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->{
+                p.setConfigurationTableType(bpmnNodeBusinessTableConf.getConfigurationTableType());
+                p.setTableFieldType(bpmnNodeBusinessTableConf.getTableFieldType());
+                p.setSignType(bpmnNodeBusinessTableConf.getSignType());
+            });
+
         }
 
 
@@ -82,7 +83,7 @@ public class NodePropertyBusinessTableAdp implements BpmnNodeAdaptor {
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
         BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
                 .orElse(new BpmnNodePropertysVo());
 

@@ -33,7 +33,8 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
      * @param type      0 entrust 1:circulate
      */
     @Override
-    public void addFlowrunEntrust(String actual, String actualName, String original, String originalName, String runtaskid, Integer type, String ProcessInstanceId, String processKey) {
+    public void addFlowrunEntrust(String actual, String actualName, String original, String originalName, String runtaskid,
+                                  Integer type, String ProcessInstanceId, String processKey,String nodeId,Integer actionType) {
         BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
         entrust.setType(type);
         entrust.setRuntaskid(runtaskid);
@@ -45,6 +46,8 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         entrust.setProcDefId(processKey);
         entrust.setRuninfoid(ProcessInstanceId);
         entrust.setTenantId(MultiTenantUtil.getCurrentTenantId());
+        entrust.setNodeId(nodeId);
+        entrust.setActionType(actionType);
         getBaseMapper().insert(entrust);
     }
 
@@ -120,6 +123,14 @@ public class BpmFlowrunEntrustServiceImpl extends ServiceImpl<BpmFlowrunEntrustM
         return true;
     }
 
+    @Override
+    public List<BpmFlowrunEntrust> findEntrustByProcInstId(String procInstId){
+        List<BpmFlowrunEntrust> bpmFlowrunEntrusts = getBaseMapper().selectList(
+                AFWrappers.<BpmFlowrunEntrust>lambdaTenantQuery()
+                        .eq(BpmFlowrunEntrust::getRuninfoid, procInstId)
+        );
+        return bpmFlowrunEntrusts;
+    }
     /**
      * query entrust and circulate data by process instance id
      *

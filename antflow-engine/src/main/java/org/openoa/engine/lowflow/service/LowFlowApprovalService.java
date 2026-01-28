@@ -25,10 +25,11 @@ import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
+import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
-import org.openoa.engine.lowflow.vo.UDLFApplyVo;
+import org.openoa.base.vo.UDLFApplyVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private BpmnConfLfFormdataService lfFormdataService;
     @Autowired
     private BpmnNodeFormRelatedUserConfService bpmnNodeFormRelatedUserConfService;
+    @Autowired
+    private BpmnNodeLfFormdataFieldControlMapper bmnNodeLfFormdataFieldControlMapper;
 
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
@@ -89,6 +92,16 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             startConditionsVo.setLfConditions(vo.getLfFields());
         }
         return startConditionsVo;
+    }
+
+    @Override
+    public Boolean automaticCondition(UDLFApplyVo businessDataVo) {
+        return null;
+    }
+
+    @Override
+    public void automaticAction(UDLFApplyVo businessDataVo,Boolean conditionResult) {
+
     }
 
     @Override
@@ -238,7 +251,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(LowFlowApprovalService.class.getSimpleName());
         Integer extraFlags = bpmnConfVo.getExtraFlags();
-        if (extraFlags != null && BpmnConfFlagsEnum.hasFlag(extraFlags, BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES)) {
+        if (extraFlags != null && BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.flagsContainsCurrent(extraFlags)) {
             List<BpmnNodeFormRelatedUserConf> bpmnNodeFormRelatedUserConfs = bpmnNodeFormRelatedUserConfService.getMapper().queryByConfId(confId);
             if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
                 throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
@@ -314,7 +327,19 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 		if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
+        List<LFFieldControlVO> currentFieldControls = bmnNodeLfFormdataFieldControlMapper
+                .getFieldControlByProcessNumberAndElementId(vo.getProcessNumber(), vo.getTaskDefKey());
         for (LFMainField field : lfMainFields){
+            if(!CollectionUtils.isEmpty(currentFieldControls)){
+                LFFieldControlVO lfFieldControlVO = currentFieldControls.stream().filter(control -> control.getFieldId().equals(field.getFieldId())).findFirst().orElse(null);
+                if(lfFieldControlVO!=null
+                        &&(StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
+                        ||StringConstants.READ_ONLY_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
+                          )
+                ){
+                          continue;
+                }
+            }
             if (lfFields.containsKey(field.getFieldId()) && lfFields.get(field.getFieldId()) != null) {
                 String f_value = lfFields.get(field.getFieldId()).toString();
                 if (!Objects.equals(f_value, "******")){
@@ -333,6 +358,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
     @Override
     public void cancellationData(UDLFApplyVo vo) {
+
+    }
+
+    @Override
+    public void onProcessRecover(BusinessDataVo businessData) {
 
     }
 

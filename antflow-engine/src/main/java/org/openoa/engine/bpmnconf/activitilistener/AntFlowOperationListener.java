@@ -197,4 +197,10 @@ public class AntFlowOperationListener implements WorkflowButtonOperationHandler 
     public void onFinishData(BusinessDataVo vo) {
         //注意流程完成通知消息并不在这里,实际上已经有了,请勿要在这里写
     }
+
+    @Override
+    public void onProcessRecover(BusinessDataVo businessData) {
+        //流程完结以后(正常完成,被发起人拒绝,终止以后重新恢复
+    }
+
 }

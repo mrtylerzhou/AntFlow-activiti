@@ -120,11 +120,11 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
      * @return
      */
     @Override
-    public boolean updateBpmBusinessProcess(String procInstId) {
+    public boolean updateBpmBusinessProcess(String procInstId,ProcessStateEnum stateEnum) {
 
         getBaseMapper().selectList(AFWrappers.<BpmBusinessProcess>lambdaTenantQuery()
                 .eq(BpmBusinessProcess::getProcInstId,procInstId)).forEach(o -> {
-            o.setProcessState(ProcessStateEnum.END_STATE.getCode());
+            o.setProcessState(stateEnum.getCode());
             getBaseMapper().updateById(o);
         });
         return true;
@@ -173,6 +173,13 @@ public class BpmBusinessProcessServiceImpl extends ServiceImpl<BpmBusinessProces
     public void updateProcessIsDel(String processNumber) {
         BpmBusinessProcess bpmBusinessProcess = this.getBaseMapper().selectOne(Wrappers.<BpmBusinessProcess>lambdaQuery().eq(BpmBusinessProcess::getBusinessNumber, processNumber));
         bpmBusinessProcess.setIsDel(1);
+        this.updateById(bpmBusinessProcess);
+    }
+
+    @Override
+    public void updateProcessStatus(String processNumber, ProcessStateEnum processStateEnum) {
+        BpmBusinessProcess bpmBusinessProcess = this.getBaseMapper().selectOne(Wrappers.<BpmBusinessProcess>lambdaQuery().eq(BpmBusinessProcess::getBusinessNumber, processNumber));
+        bpmBusinessProcess.setProcessState(processStateEnum.getCode());
         this.updateById(bpmBusinessProcess);
     }
 }

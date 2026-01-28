@@ -5,18 +5,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.OutSideBpmBusinessParty;
-import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmBusinessPartyServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmCallbackUrlConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +44,7 @@ public class BpmnSendMessageAspect {
     private BpmVariableMessageBizService bpmVariableMessageBizService;
 
     @Autowired
-    private BpmnConfBizServiceImpl bpmnConfCommonService;
+    private BpmnConfBizService bpmnConfCommonService;
     @Autowired
     private OutSideBpmBusinessPartyServiceImpl outSideBpmBusinessPartyService;
     @Autowired
@@ -138,10 +140,10 @@ public class BpmnSendMessageAspect {
 
             //get process operation enum by operation type
             ProcessOperationEnum processOperationEunm = ProcessOperationEnum.getEnumByCode(businessDataVo.getOperationType());
-
+            ThreadLocalContainer.set(StringConstants.AF_RUNTIME_BUISINESS_INFO,businessDataVo);
             //do execute aspect method
             doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty, processOperationEunm, joinPoint);
-
+            ThreadLocalContainer.remove(StringConstants.AF_RUNTIME_BUISINESS_INFO);
         }
 
         //send message

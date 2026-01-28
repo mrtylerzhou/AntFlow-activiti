@@ -42,7 +42,7 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
         }
         if(!CollectionUtils.isEmpty(nodeLabels)){
             Integer extraFlags = confVo.getExtraFlags();
-            Integer binariedOr = BpmnConfFlagsEnum.binaryOr(extraFlags, BpmnConfFlagsEnum.HAS_NODE_LABELS.getCode());
+            Integer binariedOr = BpmnConfFlagsEnum.HAS_NODE_LABELS.binaryOr(extraFlags);
             confVo.setExtraFlags(binariedOr);
             nodeLabelsService.saveBatch(nodeLabels);
         }

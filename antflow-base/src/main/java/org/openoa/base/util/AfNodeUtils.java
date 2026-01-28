@@ -1,11 +1,14 @@
 package org.openoa.base.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.constant.StringConstants;
+import org.openoa.base.vo.*;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AfNodeUtils {
     public static BpmnNodeVo getNextNodeOfTypeRecursively(String nodeId, List<Integer> types, Map<String, BpmnNodeVo> mapNodes, boolean includeDeduplicated) {
@@ -56,5 +59,11 @@ public class AfNodeUtils {
         } else {
             return node;
         }
+    }
+    public static void addOrEditProperty( BpmnNodeVo bpmnNodeVo,Consumer<BpmnNodePropertysVo> consumer) {
+       if(bpmnNodeVo.getProperty()==null){
+           bpmnNodeVo.setProperty(new BpmnNodePropertysVo());
+       }
+        consumer.accept(bpmnNodeVo.getProperty());
     }
 }

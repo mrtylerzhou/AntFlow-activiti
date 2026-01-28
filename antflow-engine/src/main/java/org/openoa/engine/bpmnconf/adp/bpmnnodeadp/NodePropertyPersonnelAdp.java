@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodePersonnelConf;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
+public class NodePropertyPersonnelAdp extends AbstractAdditionSignNodeAdaptor{
     @Autowired
     private BpmnNodePersonnelConfService bpmnNodePersonnelConfService;
 
@@ -43,6 +44,7 @@ public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+        super.formatToBpmnNodeVo(bpmnNodeVo);
         BpmnNodePersonnelConf bpmnNodePersonnelConf = bpmnNodePersonnelConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnNodePersonnelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
@@ -65,14 +67,11 @@ public class NodePropertyPersonnelAdp implements BpmnNodeAdaptor{
                 emplNames.add(emplName);
             }
         }
-        bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                   .builder()
-                   .signType(bpmnNodePersonnelConf.getSignType())
-                   .emplIds(emplIds)
-                   .emplList(getEmplList(emplIds,emplNames))
-                   .build());
-
-
+        AfNodeUtils.addOrEditProperty(bpmnNodeVo,a->{
+            a.setSignType(bpmnNodePersonnelConf.getSignType());
+            a.setEmplIds(emplIds);
+            a.setEmplList(getEmplList(emplIds,emplNames));
+        });
     }
 
     /**

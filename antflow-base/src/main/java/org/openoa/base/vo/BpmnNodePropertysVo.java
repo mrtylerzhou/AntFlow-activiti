@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname BpmnNodePropertysVo
@@ -107,11 +108,14 @@ public class BpmnNodePropertysVo implements Serializable{
      */
     private List<Serializable> noparticipatingStaffIds;
 
-    /**
-     * loop sign not participating staff list
-     */
+
     private List<BaseIdTranStruVo> noparticipatingStaffs;
 
+    /**
+     * @see org.openoa.base.constant.enums.NodePropertyEnum
+     *  "4"为指定角色,"5"为指定人员
+     */
+    private List<ExtraSignInfoVo> additionalSignInfoList;
     /**
      * function id
      */

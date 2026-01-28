@@ -19,7 +19,7 @@ const {
 } = defaultSettings;
 
 const storageSetting = JSON.parse(localStorage.getItem("layout-setting")) || "";
-const versionSetting = localStorage.getItem("version-setting") || "v1.0.0";
+const versionSetting = localStorage.getItem("version-setting") || "";
 const useSettingsStore = defineStore("settings", {
   state: () => ({
     title: "",

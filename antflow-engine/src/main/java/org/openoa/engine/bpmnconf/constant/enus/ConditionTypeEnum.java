@@ -20,6 +20,10 @@ import java.util.List;
 public enum ConditionTypeEnum {
     CONDITION_THIRD_ACCOUNT_TYPE(1, "三方账户", "accountType", 1, Integer.class,
             BpmnNodeConditionsAccountTypeAdp.class, BpmnStartConditionsVo.class, "accountType", ThirdAccountJudge.class),
+    //!important 如果自定义条件是数值类型,并且需要使用介于两个数之间对比,则必须在BpmnNodeConditionsConfBaseVo中的字段为字符串类型
+    //一般地需要设置两个字段,第一个字段即为枚举里的fieldName字段,这个字段要设置在BusinessdataVo或者其继承类中,第二个设置在BpmnNodeConditionsConfBaseVo中,一个是表单中的字段,一个是设计流程时存储在数据库里的字段
+    //执行条件比较时,会取出存储在数据库中的字段和表单中的对比,就这么简单,至于怎么比,需要用户自己实现,即枚举里最后一个字段,ConditionJudge
+    //如果用于介于两个数之间条件,需要BpmnNodeConditionsConfBaseVo定义的字段为字符串,并不需要BusinessDataVo或其继承类中的,即表单中的字段也是字符串类型
     CONDITION_BIZ_LEAVE_TIME(2, "请假时长", "leaveHour", 2, Double.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class, "leaveHour", AskLeaveJudge.class),
     CONDITION_PURCHASE_FEE(3, "采购费用", "planProcurementTotalMoney", 2, Double.class,

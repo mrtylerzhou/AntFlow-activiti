@@ -4,12 +4,14 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
@@ -29,6 +31,8 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
     private BpmFlowrunEntrustServiceImpl bpmFlowrunEntrustService;
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -50,10 +54,18 @@ public class TransferAssigneeProcessImpl implements ProcessOperationAdaptor {
         if(originAssigneeIndex<0){
             throw new AFBizException("流程状态已变更,无当前办理人信息,转办失败!");
         }
+        String processNumber = bpmBusinessProcess.getBusinessNumber();
+        List<String> taskDefKeys = list.stream().map(TaskInfo::getTaskDefinitionKey).collect(Collectors.toList());
+        List<NodeXelementXvarXverifyInfo> nodeXElements = bpmVariableMultiplayerMapper.getNodeIdsByElementIds(processNumber, taskDefKeys);
         for (Task task : list) {
             String assignee = task.getAssignee();
             if (assignee.equals(originalUserId)) {
-                bpmFlowrunEntrustService.addFlowrunEntrust(transferToUserId, transferToUserName, originalUserId, originalUserName, task.getId(), 0, bpmBusinessProcess.getProcInstId(), vo.getProcessKey());
+                String nodeId = nodeXElements
+                        .stream()
+                        .filter(nodeXElement -> nodeXElement.getElementId()
+                                .equals(task.getTaskDefinitionKey())).findFirst().map(NodeXelementXvarXverifyInfo::getNodeId).orElse("");
+                bpmFlowrunEntrustService.addFlowrunEntrust(transferToUserId, transferToUserName, originalUserId, originalUserName,
+                        task.getTaskDefinitionKey(), 0, bpmBusinessProcess.getProcInstId(), vo.getProcessKey(),nodeId,1);
                 TaskMgmtVO taskMgmtVO = TaskMgmtVO.builder().applyUser(transferToUserId).applyUserName(transferToUserName).taskId(task.getId()).build();
                 taskMgmtMapper.updateaActinst(taskMgmtVO);
                 taskMgmtMapper.updateaTaskinst(taskMgmtVO);

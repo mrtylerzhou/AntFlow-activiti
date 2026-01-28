@@ -143,7 +143,7 @@ public class BpmnExecutionListener implements ExecutionListener {
                 .processState(ProcessStateEnum.HANDLED_STATE.getCode())
                 .build());
 
-        if (BpmnConfFlagsEnum.hasFlag(bpmnConf.getExtraFlags(), BpmnConfFlagsEnum.HAS_LAST_NODE_COPY)) {
+        if (BpmnConfFlagsEnum.HAS_LAST_NODE_COPY.flagsContainsCurrent(bpmnConf.getExtraFlags())) {
             LambdaQueryWrapper<BpmProcessForward> qryWrapper = Wrappers.<BpmProcessForward>lambdaQuery()
                     .eq(BpmProcessForward::getProcessNumber, processNumber)
                     .eq(BpmProcessForward::getNodeId, StringConstants.LASTNODE_COPY);

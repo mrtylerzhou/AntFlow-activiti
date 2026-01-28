@@ -6,6 +6,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmVariableButtonMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ import java.util.List;
 public class BpmVariableButtonServiceImpl extends ServiceImpl<BpmVariableButtonMapper, BpmVariableButton>  implements BpmVariableButtonService {
 
 
-    public List<BpmVariableButton> getButtonsByProcessNumber(String processNum, String elementId) {
+    public List<BpmVariableButton> getButtonsByProcessNumber(String processNum, Collection<String> elementIds) {
 
-        return this.getBaseMapper().getButtonsByProcessNumber(processNum, elementId);
+        return this.getBaseMapper().getButtonsByProcessNumber(processNum, elementIds);
     }
 }

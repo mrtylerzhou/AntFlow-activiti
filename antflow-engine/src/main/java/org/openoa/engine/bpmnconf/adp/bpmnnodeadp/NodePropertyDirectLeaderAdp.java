@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
  * @Version 0.5
  */
 @Service
-public class NodePropertyDirectLeaderAdp implements BpmnNodeAdaptor {
+public class NodePropertyDirectLeaderAdp extends AbstractAdditionSignNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
-
+        super.formatToBpmnNodeVo(bpmnNodeVo);
     }
 
     @Override
     public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
+        super.editBpmnNode(bpmnNodeVo);
     }
 
     @Override

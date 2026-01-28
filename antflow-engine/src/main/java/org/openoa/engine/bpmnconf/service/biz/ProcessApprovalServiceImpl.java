@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -23,12 +24,14 @@ import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -46,7 +49,7 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
  */
 @Service
 @Slf4j
-public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMapper, TaskMgmtVO> {
+public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMapper, TaskMgmtVO> implements ProcessApprovalService {
     @Autowired
     private ButtonPreOperationService buttonPreOperationService;
     @Autowired
@@ -79,6 +82,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @param formCode
      * @return
      */
+    @Override
     public BusinessDataVo buttonsOperation(String params, String formCode) {
         BusinessDataVo vo = buttonPreOperationService.buttonsPreOperation(params, formCode);
         return vo;
@@ -93,6 +97,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
      * @return
      * @throws AFBizException
      */
+    @Override
     public ResultAndPage<TaskMgmtVO> findPcProcessList(PageDto pageDto, TaskMgmtVO vo) throws AFBizException {
 
         LinkedHashMap<String, SortTypeEnum> orderFieldMap = Maps.newLinkedHashMap();
@@ -214,8 +219,13 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             }
         }
     }
+    @Override
     public BusinessDataVo getBusinessInfo(String params, String formCode) {
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
+        return getBusinessInfo(vo);
+    }
+    @Override
+    public BusinessDataVo getBusinessInfo(BusinessDataVo vo){
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
         if(ObjectUtils.isEmpty(bpmBusinessProcess)){
             throw  new AFBizException(String.format("processNumber%s,its data not in existence!",vo.getProcessNumber()));
@@ -248,7 +258,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         // set operating buttons
 
         vo.getProcessRecordInfo().setPcButtons(configFlowButtonContans.getButtons(bpmBusinessProcess.getBusinessNumber(),
-                vo.getProcessRecordInfo().getNodeId(), isJurisdiction, flag));
+                vo.getProcessRecordInfo().getNodeId(),vo.getProcessRecordInfo().getViewNodeIds(), isJurisdiction, flag));
 
 
         //check whether current node is a signup node and set the property
@@ -260,11 +270,34 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             //set the add approver button
             addApproverButton(vo);
         }
+        if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
+            return vo;
+        }
+        else if(!vo.getIsOutSideAccessProc()||Objects.equals(vo.getIsLowCodeFlow(),1)){
+            if (!(vo instanceof UDLFApplyVo)) {
+                return vo;
+            }
+            UDLFApplyVo udlfApplyVo = (UDLFApplyVo) vo;
+            List<LFFieldControlVO> lfFieldControlVOs = udlfApplyVo.getProcessRecordInfo().getLfFieldControlVOs();
+            Map<String, Object> lfFields = udlfApplyVo.getLfFields();
+            if(!CollectionUtils.isEmpty(lfFields)){
+                for (String key : lfFields.keySet()) {
+                    if(CollectionUtils.isEmpty(lfFieldControlVOs)){
+                        continue;
+                    }
+                    LFFieldControlVO lfFieldControlVO = lfFieldControlVOs.stream().filter(a -> key.equals(a.getFieldId())).findFirst().orElse(null);
+                    if(lfFieldControlVO!=null&& StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())){
+                        lfFields.put(key,null);
+                    }
+                }
+            }
+        }
         return vo;
     }
     /**
      * some statics about my tobe done list,my new process,etc regarding today
      */
+    @Override
     public TaskMgmtVO processStatistics() {
 
         // set value

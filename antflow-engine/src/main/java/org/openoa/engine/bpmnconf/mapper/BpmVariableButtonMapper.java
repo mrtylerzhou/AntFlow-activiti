@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.BpmVariableButton;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,9 +20,9 @@ public interface BpmVariableButtonMapper extends BaseMapper<BpmVariableButton> {
      * query node button by process number and element id
      *
      * @param processNum
-     * @param elementId
+     * @param elementIds
      * @return
      */
     List<BpmVariableButton> getButtonsByProcessNumber(@Param("processNum") String processNum,
-                                                      @Param("elementId") String elementId);
+                                                      @Param("elementIds") Collection<String> elementIds);
 }

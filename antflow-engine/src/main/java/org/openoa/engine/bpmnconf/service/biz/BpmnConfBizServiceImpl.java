@@ -18,6 +18,7 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.AfUserService;
@@ -139,6 +140,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmVariableService bpmVariableService;
     @Autowired
     private AfUserService userService;
+    @Autowired
+    private BpmFlowrunEntrustService flowrunEntrustService;
+
 
     @Override
     @Transactional
@@ -190,13 +194,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if(NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(bpmnNodeVo.getNodeType())){
                 hasCopy=BpmnConfFlagsEnum.HAS_COPY.getCode();;
             }
-            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())&&Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())){
-                BpmnNodeLabelVO copyNodeV2 = NodeLabelConstants.copyNodeV2;
-                if(CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
-                    bpmnNodeVo.setLabelList(Lists.newArrayList(copyNodeV2));
-                }else{
-                    bpmnNodeVo.getLabelList().add(copyNodeV2);
+            if(NodeTypeEnum.NODE_TYPE_APPROVER.getCode().equals(bpmnNodeVo.getNodeType())){
+                BpmnNodeLabelVO nodeLabelVO=null;
+                if (Boolean.TRUE.equals(bpmnNodeVo.getIsCarbonCopyNode())) {
+                   nodeLabelVO = NodeLabelConstants.copyNodeV2;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutomaticNode())){
+                    nodeLabelVO=NodeLabelConstants.automaticNode;
                 }
+               if(nodeLabelVO!=null){
+                   bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
+               }
             }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);
             bpmnNodeVo.setIsLowCodeFlow(isLowCodeFlow);
@@ -204,13 +211,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             //if the node has no property,the node property default is "1-no property"
             bpmnNodeVo.setNodeProperty(Optional.ofNullable(bpmnNodeVo.getNodeProperty())
                     .orElse(1));
-
+            editNodeExtraFlags(bpmnNodeVo);
             BpmnNode bpmnNode = new BpmnNode();
             BeanUtils.copyProperties(bpmnNodeVo, bpmnNode);
             bpmnNode.setConfId(confId);
             bpmnNode.setCreateTime(new Date());
             bpmnNode.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
             bpmnNode.setTenantId(MultiTenantUtil.getCurrentTenantId());
+
             bpmnNodeService.getBaseMapper().insert(bpmnNode);
 
             Long bpmnNodeId = bpmnNode.getId();
@@ -851,6 +859,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         previewNode.setDeduplicationType(bpmnConfVo.getDeduplicationType());
         previewNode.setDeduplicationTypeName(DeduplicationTypeEnum.getDescByCode(bpmnConfVo.getDeduplicationType()));
 
+        reTreatNodeAssignee(previewNode.getBpmnNodeList(),vo.getProcessNumber());
+
         String currentNodeIdStr= bpmVerifyInfoBizService.findCurrentNodeIds(vo.getProcessNumber());
         previewNode.setCurrentNodeId(currentNodeIdStr);
 
@@ -1133,7 +1143,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             } else if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_BACKWARD.getCode())) {
                 //deduplication backword
                 bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo, bpmnStartConditions);
+            }else if (bpmnConfVo.getDeduplicationType().equals(DEDUPLICATION_TYPE_SKIP_NEXT.getCode())){
+                bpmnStartConditions.setDeduplicationType(DEDUPLICATION_TYPE_SKIP_NEXT.getCode());
+                bpmnDeduplicationFormat.backwardDeduplication(bpmnConfVo,bpmnStartConditions);
             }
+            bpmnStartConditions.setDuplicationProcessStrategy(DuplicationProcessStrategyEnum.SKIP.getCode());
         }
 
         //self chosen module deduplication
@@ -1142,7 +1156,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         //4、format the nodes by pipelines
         bpmnRemoveConfFormatFactory.removeBpmnConf(bpmnConfVo,bpmnStartConditions);
-        if(BpmnConfFlagsEnum.hasFlag(bpmnConfVo.getExtraFlags(),BpmnConfFlagsEnum.HAS_COPY)){
+        if(BpmnConfFlagsEnum.HAS_COPY.flagsContainsCurrent(bpmnConfVo.getExtraFlags())){
             for (BpmnNodeVo node : bpmnConfVo.getNodes()) {
                 //copy nodes have already removed,and its forwarded list assigned to its next node
                 if (!NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(node.getNodeType())&&!CollectionUtils.isEmpty(node.getEmpToForwardList())) {
@@ -1204,7 +1218,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (bpmnConfVo.getIsOutSideProcess()!=null&&bpmnConf.getIsOutSideProcess()==1) {
             //query and set business party's call url
             OutSideBpmCallbackUrlConf outSideBpmCallbackUrlConf = outSideBpmCallbackUrlConfService
-                    .getOutSideBpmCallbackUrlConf(bpmnConf.getId(), bpmnConf.getBusinessPartyId());
+                    .getOutSideBpmCallbackUrlConf(bpmnConf.getFormCode(), bpmnConf.getBusinessPartyId());
             if (outSideBpmCallbackUrlConf!=null) {
                 bpmnConfVo.setBpmConfCallbackUrl(outSideBpmCallbackUrlConf.getBpmConfCallbackUrl());//process config call back url
                 bpmnConfVo.setBpmFlowCallbackUrl(outSideBpmCallbackUrlConf.getBpmFlowCallbackUrl());//process flow call back url
@@ -1249,7 +1263,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             for (BpmnNode bpmnNode : bpmnNodes) {
                 bpmnNode.setIsOutSideProcess(bpmnConf.getIsOutSideProcess());
                 bpmnNode.setIsLowCodeFlow(bpmnConf.getIsLowCodeFlow());
-                bpmnNode.setExtraFlags(bpmnConf.getExtraFlags());
+                bpmnNode.setConfExtraFlags(bpmnConf.getExtraFlags());
             }
         }
         bpmnConfVo.setNodes(getBpmnNodeVoList(bpmnNodes, conditionsUrl));
@@ -1381,7 +1395,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param bpmnNodeList bpmnNodeList
      * @return List
      */
-    private List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList, String conditionsUrl) {
+    public List<BpmnNodeVo> getBpmnNodeVoList(List<BpmnNode> bpmnNodeList, String conditionsUrl) {
 
 
         List<Long> idList = bpmnNodeList.stream().map(BpmnNode::getId).collect(Collectors.toList());
@@ -1403,8 +1417,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap =new HashMap<>();
 
         Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
-        Integer extraFlags = bpmnNodeList.get(0).getExtraFlags();
-        boolean hasNodeLabels = BpmnConfFlagsEnum.hasFlag(extraFlags, BpmnConfFlagsEnum.HAS_NODE_LABELS);
+        Integer extraFlags = bpmnNodeList.get(0).getConfExtraFlags();
+        boolean hasNodeLabels = BpmnConfFlagsEnum.HAS_NODE_LABELS.flagsContainsCurrent(extraFlags);
         if(hasNodeLabels){
             bpmnNodeLabelsVoMap=getBpmnNodeLabelsVoMap(idList);
         }
@@ -1638,8 +1652,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             List<BpmnNodeLabelVO> labelVOList = nodeLabels.stream().map(a -> new BpmnNodeLabelVO(a.getLabelValue(), a.getLabelName())).collect(Collectors.toList());
             if (NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.copyNodeV2.getLabelValue())) {
                 bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsCarbonCopyNode(true);
             }
             bpmnNodeVo.setLabelList(labelVOList);
+
         }
 
         return bpmnNodeVo;
@@ -1665,14 +1681,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (!ObjectUtils.isEmpty(bpmnNodeButtonConfs)) {
 
             BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
-
-
             buttons.setStartPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.INITIATE));
-
-
             buttons.setApprovalPage(getButtons(bpmnNodeButtonConfs, ButtonPageTypeEnum.AUDIT));
-
-
+            buttons.setViewPage(getButtons(bpmnNodeButtonConfs,ButtonPageTypeEnum.TO_VIEW));
             bpmnNodeVo.setButtons(buttons);
 
         }
@@ -1794,4 +1805,161 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         .collect(Collectors.toList()))
                 .build());
     }
+
+    private void editNodeExtraFlags(BpmnNodeVo bpmnNodeVo){
+        BpmnNodePropertysVo property = bpmnNodeVo.getProperty();
+        if(property!=null){
+            int flags=0;
+            List<ExtraSignInfoVo> additionalSignInfoList = property.getAdditionalSignInfoList();
+            if(!CollectionUtils.isEmpty(additionalSignInfoList)){
+                List<BpmnNodeFlagsEnum> additionalFlags=new ArrayList<>();
+                for (ExtraSignInfoVo extraSignInfoVo : additionalSignInfoList) {
+                    Integer nodeProperty = extraSignInfoVo.getNodeProperty();
+                    Integer propertyType = extraSignInfoVo.getPropertyType();
+                    NodePropertyEnum nodePropertyEnum = NodePropertyEnum.getByCode(nodeProperty);
+                    if(nodePropertyEnum==null){
+                        throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节点类型未定义!");
+                    }
+                    switch (nodePropertyEnum){
+                        case NODE_PROPERTY_ROLE:
+                            if(propertyType==1){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_ADDITIONAL_ASSIGNEE_ROLE);
+                            }else if(propertyType==2){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_EXCLUDE_ASSIGNEE_ROLE);
+                            }else{
+                                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节propertyType点类型未定义!");
+                            }
+                            break;
+                        case NODE_PROPERTY_PERSONNEL:
+                            if(propertyType==1){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_ADDITIONAL_ASSIGNEE);
+                            }else if(propertyType==2){
+                                additionalFlags.add(BpmnNodeFlagsEnum.HAS_EXCLUDE_ASSIGNEE);
+                            }else{
+                                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"额外审批人节propertyType点类型未定义!");
+                            }
+                            break;
+                        default:
+                            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"暂不支持的额外操作类型!");
+                    }
+                }
+                for (BpmnNodeFlagsEnum additionalFlag : additionalFlags) {
+                    flags=flags|additionalFlag.getCode();
+                }
+                bpmnNodeVo.setExtraFlags(flags);
+            }
+        }
+    }
+
+    private void reTreatNodeAssignee(List<BpmnNodeVo> nodeVos,String processNumber)
+    {
+        if (StringUtils.isEmpty(processNumber))
+        {
+            return;
+        }
+
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        if (bpmBusinessProcess == null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"流程不存在!");
+        }
+        String procInstId = bpmBusinessProcess.getProcInstId();
+        List<BpmFlowrunEntrust> bpmFlowrunEntrusts = flowrunEntrustService.findEntrustByProcInstId(procInstId);
+         if(CollectionUtils.isEmpty(bpmFlowrunEntrusts)){
+             return;
+         }
+        Map<String, List<BpmFlowrunEntrust>> nodeId2entrustDict =
+                bpmFlowrunEntrusts.stream()
+                        .filter(a -> a.getNodeId() != null && !a.getNodeId().isEmpty())
+                        .sorted(Comparator.comparing(BpmFlowrunEntrust::getId))
+                        .collect(Collectors.groupingBy(BpmFlowrunEntrust::getNodeId));
+        for (BpmnNodeVo bpmnNodeVo : nodeVos)
+        {
+            int nodeType = bpmnNodeVo.getNodeType();
+            if (nodeType == NodeTypeEnum.NODE_TYPE_START.getCode() || nodeType == NodeTypeEnum.NODE_TYPE_GATEWAY.getCode() ||
+                    nodeType ==NodeTypeEnum.NODE_TYPE_PARALLEL_GATEWAY .getCode()||
+                    nodeType == NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode())
+            {
+                continue;
+            }
+
+            BpmnNodePropertysVo bpmnNodePropertysVo = bpmnNodeVo.getProperty();
+            if (bpmnNodePropertysVo == null)
+            {
+                continue;
+            }
+
+            List<BpmFlowrunEntrust> flowrunEntrusts = nodeId2entrustDict.get(String.valueOf(bpmnNodeVo.getId()));
+            if (CollectionUtils.isEmpty(flowrunEntrusts))
+            {
+                continue;
+            }
+            List<BaseIdTranStruVo> emplList = bpmnNodePropertysVo.getEmplList();
+            if (CollectionUtils.isEmpty(emplList))
+            {
+                if (NodePropertyEnum.NODE_PROPERTY_CUSTOMIZE.getCode().equals(bpmnNodeVo.getNodeProperty()))
+                {
+                    emplList = bpmnNodeVo.getParams().getAssigneeList()
+                            .stream().map(a -> new BaseIdTranStruVo(a.getAssignee(), a.getAssigneeName())).collect(Collectors.toList());
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            Map<Integer, List<BpmFlowrunEntrust>> groupBy =
+                    flowrunEntrusts.stream()
+                            .collect(Collectors.groupingBy(BpmFlowrunEntrust::getActionType));
+            for (Integer key : groupBy.keySet()) {
+                Integer actionType=key;
+                if(actionType==null){
+                    continue;
+                }
+                List<BpmFlowrunEntrust> entrustse = groupBy.get(key);
+                for (BpmFlowrunEntrust bpmFlowrunEntrust : entrustse)
+                {
+
+                    if (actionType == 0 || actionType == 1)//change assignee
+                    {
+                        BaseIdTranStruVo matchEmp = emplList.stream().filter(a-> a.getId().equals(bpmFlowrunEntrust.getOriginal())).findFirst().orElse(null);
+                        if (matchEmp == null)
+                        {
+                            continue;
+                        }
+                        matchEmp.setId( bpmFlowrunEntrust.getActual());
+                        matchEmp.setName(bpmFlowrunEntrust.getActualName()+"*");
+                    }else if (actionType == 2)//add asignee
+                    {
+                        BaseIdTranStruVo addEmp =
+                                new BaseIdTranStruVo(bpmFlowrunEntrust.getActual(), bpmFlowrunEntrust.getActualName()+"+");
+                        emplList.add(addEmp);
+                    }else if (actionType == 3)//remove assignee
+                    {
+                        emplList
+                                .stream()
+                                .filter(a -> a.getId().equals(bpmFlowrunEntrust.getActual()))
+                                .findFirst().ifPresent(baseIdTranStruVo -> baseIdTranStruVo.setName(baseIdTranStruVo.getName()+"-"));
+
+                    }
+                }
+            }
+
+            if (CollectionUtils.isEmpty(emplList))
+            {
+                emplList.add(new BaseIdTranStruVo("0","*"));
+            }
+
+            List<String> emplIds = emplList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+            bpmnNodePropertysVo.setEmplIds(emplIds);
+            bpmnNodePropertysVo.setEmplList(emplList);
+            if (bpmnNodeVo.getParams() != null)
+            {
+                List<BpmnNodeParamsAssigneeVo> collect = emplList.stream().map(a -> new BpmnNodeParamsAssigneeVo(a.getId(), a.getName(), "审核人", 0)).collect(Collectors.toList());
+                bpmnNodeVo.getParams().setAssigneeList(collect);
+            }
+        }
+
+    }
+
 }
+
+
