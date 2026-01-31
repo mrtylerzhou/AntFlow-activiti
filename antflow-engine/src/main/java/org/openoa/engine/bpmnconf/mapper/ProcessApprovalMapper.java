@@ -44,6 +44,7 @@ public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
      */
     List<TaskMgmtVO> viewPcToDoList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
 
+    List<TaskMgmtVO> backToModifyList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
     /**
      * get all process
      *

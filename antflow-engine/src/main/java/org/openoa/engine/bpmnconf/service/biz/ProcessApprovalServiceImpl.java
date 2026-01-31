@@ -146,9 +146,9 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             case 6:
                 page.setRecords(this.getBaseMapper().allProcessList(page, vo));
                 break;
-            // delegated tasks
+            // processes that back to me
             case 7:
-                //todo tobe implemented
+                page.setRecords(this.getBaseMapper().backToModifyList(page, vo));
                 break;
             //for administrator to view all the processes
             case 8:
