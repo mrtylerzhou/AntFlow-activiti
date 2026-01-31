@@ -49,6 +49,18 @@
           }
         },
         {
+          "name": "resubmit",
+          "path": "resubmit",
+          "hidden": false,
+          "component": "workflow/flowTask/resubmit/index",
+          "meta": {
+            "title": "撤销/退回",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
           "name": "PenddingTask",
           "path": "pendding",
           "hidden": false,
