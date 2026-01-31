@@ -12,6 +12,7 @@ import lombok.Getter;
  * @Version 1.0
  */
 public enum ConfigFlowButtonSortEnum implements AfEnumBase {
+    BUTTON_TYPE_PREVIEW(0, "预览",0),
     SUBMIT(1, "提交", 1),
     AGAIN_SUBMIT(2, "重新提交", 2), // 2重新提交
     AGREED(3, "同意", 10),

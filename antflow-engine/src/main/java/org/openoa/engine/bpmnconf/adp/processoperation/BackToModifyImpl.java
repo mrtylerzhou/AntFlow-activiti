@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
@@ -82,6 +83,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -119,12 +122,12 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             if(!SecurityUtils.getLogInEmpIdSafe().equals(createUser)){
                 throw new AFBizException(BusinessErrorEnum.RIGHT_VIOLATE.getCodeStr(),"只有发起人可以操作撤回");
             }
-            if(taskList.size()>1){
-                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"流程已审批,不允许操作!");
-            }
-            String taskDefinitionKey = taskList.get(0).getTaskDefinitionKey();
-            String twoTaskKeyDesc = ProcessNodeEnum.TWO_TASK_KEY.getDesc();
-            if (ProcessNodeEnum.compare(taskDefinitionKey,twoTaskKeyDesc)>0) {
+            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).list();
+            List<HistoricTaskInstance> completedTasks = historicTaskInstanceList
+                    .stream()
+                    .filter(a -> a.getEndTime() != null&&!ProcessNodeEnum.START_TASK_KEY.getDesc().equals(a.getTaskDefinitionKey()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(completedTasks)){
                 throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
             }
             vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());

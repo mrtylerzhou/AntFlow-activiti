@@ -263,8 +263,9 @@ public class ConfigFlowButtonContans {
         buttons.sort((o1, o2) -> {
             ConfigFlowButtonSortEnum sort1 = ConfigFlowButtonSortEnum.getEnumByCode(o1.getButtonType());
             ConfigFlowButtonSortEnum sort2 = ConfigFlowButtonSortEnum.getEnumByCode(o2.getButtonType());
-            assert sort1 != null;
-            assert sort2 != null;
+            if(sort1==null||sort2==null){
+                return 0;
+            }
             return sort1.getSort() - sort2.getSort();
         });
         return buttons;
