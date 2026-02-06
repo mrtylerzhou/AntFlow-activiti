@@ -75,7 +75,7 @@ export class approvalButtonConf {
   static resubmit = 2; //重新提交
   static agree = 3; //同意
   static noAgree = 4; //拒绝
-  static repulse = 6; //退回上节点修改
+  static repulsePrev = 6; //退回上节点修改
   static invalid = 7; //作废
   static print = 8; //打印
   static undertake = 10; //承办
