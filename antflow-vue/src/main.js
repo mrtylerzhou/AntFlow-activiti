@@ -31,7 +31,7 @@ import elementIcons from "@/components/SvgIcon/svgicon";
 import "./permission"; // permission control
 
 //import { useDict } from "@/utils/dict";
-import { getConfigKey } from "@/api/system/config";
+//import { getConfigKey } from "@/api/system/config";
 import {
   parseTime,
   resetForm,
@@ -73,7 +73,7 @@ app.config.globalProperties.parseTime = parseTime;
 app.config.globalProperties.resetForm = resetForm;
 app.config.globalProperties.handleTree = handleTree;
 app.config.globalProperties.addDateRange = addDateRange;
-app.config.globalProperties.getConfigKey = getConfigKey;
+//app.config.globalProperties.getConfigKey = getConfigKey;
 app.config.globalProperties.selectDictLabel = selectDictLabel;
 app.config.globalProperties.selectDictLabels = selectDictLabels;
 app.config.globalProperties.isEmpty = isEmpty;
