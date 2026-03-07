@@ -7,6 +7,7 @@ import org.apache.ibatis.javassist.bytecode.AnnotationsAttribute;
 import org.apache.ibatis.javassist.bytecode.ClassFile;
 import org.apache.ibatis.javassist.bytecode.ConstPool;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class SimpleProxyFactory {
             targetClass.addMethod(newMethod);
         }
 
-        Class<?> target = targetClass.toClass();
+        Class<?> target = targetClass.toClass(MethodHandles.lookup());
         Object newInstance = target.getDeclaredConstructor().newInstance();
         targetClass.detach();
         loadedInstances.put(objName,newInstance);
