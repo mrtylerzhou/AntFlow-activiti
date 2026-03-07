@@ -88,6 +88,20 @@ export function getPenddinglistPage(pageDto, taskMgmtVO) {
 }
 
 /**
+ * 获取用户撤销/退回数据列表
+ * @param {*} pageDto
+ * @param {*} taskMgmtVO
+ * @returns
+ */
+export function getResubmitlistPage(pageDto, taskMgmtVO) {
+  let data = {
+    pageDto: pageDto,
+    taskMgmtVO: taskMgmtVO,
+  };
+  return http.post(`${baseUrl}/bpmnConf/process/listPage/7`, data, { headers });
+}
+
+/**
  * 获取用户已审批数据列表
  * @param {*} pageDto
  * @param {*} taskMgmtVO
@@ -139,7 +153,7 @@ export function processOperation(data) {
   return http.post(
     `${baseUrl}/bpmnConf/process/buttonsOperation?formCode=${data.formCode}`,
     data,
-    { headers }
+    { headers },
   );
 }
 
@@ -151,7 +165,7 @@ export function processOperation(data) {
 export function getBpmVerifyInfoVos(param) {
   return http.get(
     `${baseUrl}/bpmnConf/getBpmVerifyInfoVos?processNumber=${param.processNumber}`,
-    { headers }
+    { headers },
   );
 }
 
@@ -203,7 +217,7 @@ export function getViewBusinessProcess(data) {
   return http.post(
     `${baseUrl}/bpmnConf/process/viewBusinessProcess?formCode=${data.formCode}`,
     data,
-    { headers }
+    { headers },
   );
 }
 
@@ -265,6 +279,6 @@ export function setEntrust(data) {
 export function getStartUserChooseModules(formCode) {
   return http.get(
     `${baseUrl}/bpmnBusiness/getStartUserChooseModules?formCode=${formCode}`,
-    { headers }
+    { headers },
   );
 }
