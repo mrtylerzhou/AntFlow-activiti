@@ -195,6 +195,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
 
     private Boolean isOutSideChecked = false;
     private Integer isLowCodeFlow=0;
+    private Boolean isFreeRide=false;
     /**
      * flow call back url
      */

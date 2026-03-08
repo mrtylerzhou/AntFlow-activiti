@@ -25,4 +25,6 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
     List<BpmnConfVo> selectThirdBpmnConfList(@Param("bpmnConfVo") BpmnConfVo vo);
 
     List<BpmnConfVo> selectOutSideFormCodeList(Page page,@Param("bpmnConfVo") BpmnConfVo vo);
+
+    BpmnConf getConfByProcessNumber(@Param("processNumber") String processNumber);
 }

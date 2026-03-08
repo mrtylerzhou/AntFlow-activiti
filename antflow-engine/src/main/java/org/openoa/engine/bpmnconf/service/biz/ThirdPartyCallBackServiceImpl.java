@@ -19,7 +19,7 @@ public class ThirdPartyCallBackServiceImpl {
     @MethodReplay
    public void doCallback(CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,
                String processNum, String businessId,String verifyUserName){
-       log.info("准备执行外部工作流回调：{} , processNumber:{} , callBackUrl:{} , 操作人：{}",PROC_END_CALL_BACK.getDesc() ,processNum, verifyUserName);
+       log.info("准备执行外部工作流回调：{} , processNumber:{} , callBackUrl:{} , 操作人：{}",callbackTypeEnum.getDesc() ,processNum, verifyUserName);
        //回调通知业务方
        ThirdPartyCallbackFactory.build().doCallback( callbackTypeEnum, bpmnConfVo,
                processNum, businessId);

@@ -129,4 +129,10 @@
         and a.is_out_side_process = 1
         ORDER BY a.create_time DESC
     </select>
+    <select id="getConfByProcessNumber" resultType="org.openoa.base.entity.BpmnConf">
+        select tbc.*
+        from t_bpmn_conf tbc
+        inner join bpm_business_process bbp on tbc.bpmn_code = bbp.VERSION
+        where bbp.BUSINESS_NUMBER = #{processNumber}
+    </select>
 </mapper>

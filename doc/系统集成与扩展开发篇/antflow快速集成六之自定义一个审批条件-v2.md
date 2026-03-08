@@ -55,6 +55,7 @@
 
 diy 流程继承自AbstractLowFlowSpyFormOperationAdaptor 抽象类。就ok了。
 
+> 需要注意的是实现类必须有ActivitiServiceAnno，不能是普通的@Service注解，这里需要注意
 
 ### 3.和v1版本差异
 

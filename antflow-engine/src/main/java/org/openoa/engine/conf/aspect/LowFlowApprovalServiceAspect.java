@@ -105,11 +105,17 @@ public class LowFlowApprovalServiceAspect implements ApplicationContextAware {
                 if ("queryData".equals(methodName)) {
                     // 查询前处理
                     lfFormOperationAdaptor.queryData(arg);
+                    if(Boolean.TRUE.equals(arg.getIsFreeRide())){
+                        return null;
+                    }
                 }
 
                 if ("submitData".equals(methodName)) {
                     // 提交前处理
                    lfFormOperationAdaptor.submitData(arg);
+                   if(Boolean.TRUE.equals(arg.getIsFreeRide())){
+                       return null;
+                   }
                 }
 
                 if ("consentData".equals(methodName)) {
