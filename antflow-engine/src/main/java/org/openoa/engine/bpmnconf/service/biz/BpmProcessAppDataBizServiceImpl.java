@@ -37,33 +37,33 @@ public class BpmProcessAppDataBizServiceImpl implements BpmProcessAppDataBizServ
 
     @Override
     public SysVersionVo findMaxAppData() {
-        List<SysVersion> sysVersions = sysVersionService.list(new QueryWrapper<SysVersion>().eq("is_del", 0).orderByAsc("id"));
+        List<SysVersion> sysVersions = sysVersionService.list(new QueryWrapper<SysVersion>().eq("is_del", 0).orderByDesc("create_time"));
         SysVersionVo vo = new SysVersionVo();
-        if (!CollectionUtils.isEmpty(sysVersions)) {
-            SysVersion sysVersion = sysVersions.get(0);
-            List<BpmProcessAppData> processAppData = this.getService().getProcessAppData(sysVersion.getId(), 0, AppApplicationType.TWO_TYPE.getCode());
-            List<BaseIdTranStruVo> voList = new ArrayList<>();
-            voList.addAll(
-                    processAppData.stream().map(o ->
-                            BaseIdTranStruVo.builder()
-                                    .id(o.getApplicationId().toString())
-                                    .name(o.getProcessName())
-                                    .build()
-                    ).collect(Collectors.toList()));
-            List<BpmProcessAppData> appDataList = this.getService().getProcessAppData(sysVersion.getId(), 0, AppApplicationType.ONE_TYPE.getCode());
-            List<BaseIdTranStruVo> list = new ArrayList<>();
-            list.addAll(
-                    appDataList.stream().map(o ->
-                            BaseIdTranStruVo.builder()
-                                    .id(o.getApplicationId().toString())
-                                    .name(o.getProcessName())
-                                    .build()
-                    ).collect(Collectors.toList()));
-            vo.setApplication(list);
-            vo.setData(voList);
-            vo.setDownloadCode(sysVersion.getDownloadCode());
+        if (CollectionUtils.isEmpty(sysVersions)) {
             return vo;
         }
+        SysVersion sysVersion = sysVersions.get(0);
+        List<BpmProcessAppData> processAppData = this.getService().getProcessAppData(sysVersion.getId(), 0, AppApplicationType.APP_DATA.getCode());
+        List<BaseIdTranStruVo> voList = new ArrayList<>();
+        voList.addAll(
+                processAppData.stream().map(o ->
+                        BaseIdTranStruVo.builder()
+                                .id(o.getApplicationId())
+                                .name(o.getProcessName())
+                                .build()
+                ).collect(Collectors.toList()));
+        List<BpmProcessAppData> appDataList = this.getService().getProcessAppData(sysVersion.getId(), 0, AppApplicationType.APP.getCode());
+        List<BaseIdTranStruVo> list = new ArrayList<>();
+        list.addAll(
+                appDataList.stream().map(o ->
+                        BaseIdTranStruVo.builder()
+                                .id(o.getApplicationId().toString())
+                                .name(o.getProcessName())
+                                .build()
+                ).collect(Collectors.toList()));
+        vo.setApplication(list);
+        vo.setData(voList);
+        vo.setDownloadCode(sysVersion.getDownloadCode());
         return vo;
     }
 
@@ -111,7 +111,7 @@ public class BpmProcessAppDataBizServiceImpl implements BpmProcessAppDataBizServ
                                         .processKey(getProcessKey(o))
                                         .versionId(versionId)
                                         .type(type)
-                                        .applicationId(o)
+                                        .applicationId(o.toString())
                                         .build();
                             }else{
                                 return null;
@@ -155,7 +155,7 @@ public class BpmProcessAppDataBizServiceImpl implements BpmProcessAppDataBizServ
                         BpmProcessAppData.builder()
                                 .versionId(versionId)
                                 .type(type)
-                                .applicationId(o)
+                                .applicationId(o.toString())
                                 .processName(Optional.ofNullable(quickEntryService.getById(o)).orElse(new QuickEntry()).getTitle())
                                 .build()
                 ).collect(Collectors.toList()));

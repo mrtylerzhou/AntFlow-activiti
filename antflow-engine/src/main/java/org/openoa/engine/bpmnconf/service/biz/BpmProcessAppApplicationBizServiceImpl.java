@@ -68,7 +68,7 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
         SysVersion sysVersion = sysVersionService.getInfoByVersion(version);
         if (sysVersion!=null) {
             //根据版本id获取本次版本上线的应用数据
-            List<BpmProcessAppData> appDataList = processAppDataService.getProcessAppData(sysVersion.getId(), 0, AppApplicationType.TWO_TYPE.getCode());
+            List<BpmProcessAppData> appDataList = processAppDataService.getProcessAppData(sysVersion.getId(), 0, AppApplicationType.APP_DATA.getCode());
             return appDataList.stream().map(o -> o.getProcessKey()).collect(Collectors.toList());
         }
         return Arrays.asList();

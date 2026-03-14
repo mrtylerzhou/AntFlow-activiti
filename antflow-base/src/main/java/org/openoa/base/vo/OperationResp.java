@@ -44,8 +44,6 @@ public enum OperationResp implements Serializable {
     SOCKET_OFFLINE("40000", "Socket强制设备下线代码"),
     LOGIN_CHANCE_CODE("50000", "登录超限错误代码"),
     APP_AUTHORIZED_LOGIN_CODE("60000", "APP授权登录成功代码"),
-    TOO_MANY_PURCHASE_TYPE("61000", "采购类型超过8个"),
-    PURCHASE_SOURCE_ERROR("61001", "采购单中采购方信息错误"),
     FORBIDDEN_ERROR("403", "资源没有访问权限"),
 
     PROUREMENT_AUDIT_PUT_STORAGE("70000", "没有配置仓库");;

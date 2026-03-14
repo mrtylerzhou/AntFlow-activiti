@@ -65,7 +65,7 @@ public class QuickEntryBizServiceImpl implements QuickEntryBizService {
         if (infoByVersion==null) {
             return null;
         }
-        List<BpmProcessAppData> processAppData = bpmProcessAppDataService.getProcessAppData(infoByVersion.getId(), 0, AppApplicationType.THREE_TYPE.getCode());
+        List<BpmProcessAppData> processAppData = bpmProcessAppDataService.getProcessAppData(infoByVersion.getId(), 0, AppApplicationType.APP_QUICK_ENTRY.getCode());
         if (processAppData==null) {
             return null;
         }

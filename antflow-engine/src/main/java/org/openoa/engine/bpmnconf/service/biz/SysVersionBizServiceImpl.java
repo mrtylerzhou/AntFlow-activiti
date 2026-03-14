@@ -44,15 +44,15 @@ public class SysVersionBizServiceImpl implements SysVersionBizService {
         page.setRecords(dtoList
                 .stream()
                 .map(o -> {
-                    List<BaseIdTranStruVo> appList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.ONE_TYPE.getCode());
+                    List<BaseIdTranStruVo> appList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP.getCode());
                     if (!CollectionUtils.isEmpty(appList)) {
                         o.setApplication(appList);
                     }
-                    List<BaseIdTranStruVo> dataList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.TWO_TYPE.getCode());
+                    List<BaseIdTranStruVo> dataList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP_DATA.getCode());
                     if (!CollectionUtils.isEmpty(dataList)) {
                         o.setData(dataList);
                     }
-                    List<BaseIdTranStruVo> quickEntryList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.THREE_TYPE.getCode());
+                    List<BaseIdTranStruVo> quickEntryList = processAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP_QUICK_ENTRY.getCode());
                     if (!CollectionUtils.isEmpty(quickEntryList)) {
                         o.setQuickEntryList(quickEntryList);
                     }
@@ -82,9 +82,9 @@ public class SysVersionBizServiceImpl implements SysVersionBizService {
             }
             if (this.getService().updateById(sysVersion)) {
                 if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.ONE_TYPE.getCode());
-                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.TWO_TYPE.getCode());
-                    processAppDataBizService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.THREE_TYPE.getCode());
+                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.APP.getCode());
+                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.APP_DATA.getCode());
+                    processAppDataBizService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.APP_QUICK_ENTRY.getCode());
                 }
                 return true;
             }
@@ -98,8 +98,8 @@ public class SysVersionBizServiceImpl implements SysVersionBizService {
             sysVersion.setIndex(index);
             if (this.getService().save(sysVersion)) {
                 if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
-                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), 1);
-                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), 2);
+                    processAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.APP.getCode());
+                    processAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.APP_DATA.getCode());
                 }
                 return true;
             }

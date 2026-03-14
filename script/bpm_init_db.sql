@@ -1197,7 +1197,7 @@ CREATE TABLE IF NOT EXISTS `bpm_process_app_data` (
     `source` VARCHAR(500) COMMENT 'Pic source route',
     `is_all` tinyint COMMENT 'Is for all (0 or 1)',
     `version_id` BIGINT COMMENT 'Version ID',
-    `application_id` BIGINT COMMENT 'Application ID',
+    `application_id` VARCHAR(64) COMMENT 'Application ID',
     `type` INT COMMENT 'Type (1 for version app, 2 for app data)',
     `is_del` int NOT NULL DEFAULT '0' COMMENT '0 for normal 1 for delete',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',

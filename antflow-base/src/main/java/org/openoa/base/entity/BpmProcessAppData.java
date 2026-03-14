@@ -64,7 +64,7 @@ public class BpmProcessAppData implements TenantField, Serializable {
      * application id
      */
     @TableField("application_id")
-    private Long applicationId;
+    private String applicationId;
     /**
      * 1 for version app,2 for app data
      */
