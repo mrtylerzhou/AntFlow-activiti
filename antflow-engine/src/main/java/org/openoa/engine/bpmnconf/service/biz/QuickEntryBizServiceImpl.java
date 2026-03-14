@@ -70,7 +70,7 @@ public class QuickEntryBizServiceImpl implements QuickEntryBizService {
             return null;
         }
 
-        List<Long> collect = processAppData.stream().map(BpmProcessAppData::getApplicationId).collect(Collectors.toList());
+        List<Long> collect = processAppData.stream().map(a->Long.valueOf(a.getApplicationId())).collect(Collectors.toList());
         List<QuickEntry> quickEntries = this.listQuickEntry(collect);
         if (!CollectionUtils.isEmpty(quickEntries)) {
             appApplicationList.addAll(

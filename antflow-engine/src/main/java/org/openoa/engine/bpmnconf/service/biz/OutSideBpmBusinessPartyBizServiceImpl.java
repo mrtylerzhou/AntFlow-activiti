@@ -282,7 +282,7 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                 .eq(BpmProcessAppData::getProcessKey, vo.getProcessKey()), false);
         if (appData == null) {
             appData = BpmProcessAppData.builder()
-                    .applicationId(app.getId().longValue())
+                    .applicationId(app.getId().toString())
                     .processKey(vo.getProcessKey())
                     .processName(vo.getProcessName())
                     .state(1)
