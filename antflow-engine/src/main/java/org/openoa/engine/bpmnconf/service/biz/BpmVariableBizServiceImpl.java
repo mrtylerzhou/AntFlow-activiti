@@ -186,6 +186,7 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
         nodeElementDto.setNodeId(nodeXelementXvarXverifyInfos.get(0).getNodeId());
         nodeElementDto.setElementId(nodeXelementXvarXverifyInfos.get(0).getElementId());
         nodeElementDto.setIsSingle(nodeXelementXvarXverifyInfos.get(0).getIsSingle() != 0);
+        nodeElementDto.setVarName(nodeXelementXvarXverifyInfos.get(0).getVarName());
         List<BaseIdTranStruVo> assigneeInfos = nodeXelementXvarXverifyInfos
                 .stream()
                 .map(a -> BaseIdTranStruVo.builder().id(a.getAssignee()).name(a.getAssigneeName()).build())

@@ -6,12 +6,22 @@ import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BaseInfoTranStructVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.service.biz.AbstractAddOrRemoveFutureAssigneeSerivceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class RemoveFutureAssigneeProcessImpl extends AbstractAddOrRemoveFutureAssigneeSerivceImpl implements ProcessOperationAdaptor {
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
+
     @Override
     public void doProcessButton(BusinessDataVo vo) {
        super.checkParam(vo);
@@ -25,6 +35,11 @@ public class RemoveFutureAssigneeProcessImpl extends AbstractAddOrRemoveFutureAs
         if(nodeElementDto==null){
             throw new AFBizException("未能根据节点id获取元素Id"+nodeId);
         }
+        if(ProcessOperationEnum.BUTTON_TYPE_REMOVE_FUTURE_NODE.getCode().equals(vo.getOperationType())){
+            List<BaseInfoTranStructVo> baseInfoTranStructVos = bpmVariableMultiplayerMapper.getAssigneeAndVariableByNodeId(processNumber, nodeId);
+            List<BaseIdTranStruVo> nodeAssignees = baseInfoTranStructVos.stream().map(a -> BaseIdTranStruVo.builder().id(a.getId()).name(a.getName()).build()).collect(Collectors.toList());
+            vo.setUserInfos(nodeAssignees);
+        }
         super.modifyFutureAssigneesByProcessInstance(bpmBusinessProcess,nodeElementDto,vo.getUserInfos(),2);
 
     }
@@ -32,5 +47,6 @@ public class RemoveFutureAssigneeProcessImpl extends AbstractAddOrRemoveFutureAs
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_REMOVE_FUTURE_ASSIGNEE);
+        addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_REMOVE_FUTURE_NODE);
     }
 }

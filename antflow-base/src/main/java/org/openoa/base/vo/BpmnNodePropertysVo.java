@@ -78,6 +78,7 @@ public class BpmnNodePropertysVo implements Serializable{
      */
     private List<BaseIdTranStruVo> emplList;
 
+    private List<BaseIdTranStruVo> contextEmplList;
     /**
      * sign type 1 for all sign 2 for or sign
      */

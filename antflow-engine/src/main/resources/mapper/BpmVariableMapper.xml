@@ -92,8 +92,8 @@
         tbvm.collection_name as varName,
         tbvmp.assignee       as assignee,
         tbvmp.assignee_name  as assigneeName
-        from t_bpm_variable tbv2
-        inner join t_bpm_variable_multiplayer tbvm on tbv2.id = tbvm.variable_id
+        from t_bpm_variable tbv
+        inner join t_bpm_variable_multiplayer tbvm on tbv.id = tbvm.variable_id
         left join t_bpm_variable_multiplayer_personnel tbvmp on tbvm.id = tbvmp.variable_multiplayer_id
     </sql>
     <select id="queryNodeIdByElementIdDetail" resultType="org.openoa.base.dto.NodeXelementXvarXverifyInfo">

@@ -24,7 +24,7 @@ public class DirectLeaderPersonnelProvider extends AbstractDifferentStandardAssi
     private AfUserService userService;
 
     @Override
-    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
-        return userService.queryEmployeeDirectLeaderByIds(users);
+    protected List<BaseIdTranStruVo> queryUsers(List<String> userIds) {
+        return userService.queryEmployeeDirectLeaderByIds(userIds);
     }
 }

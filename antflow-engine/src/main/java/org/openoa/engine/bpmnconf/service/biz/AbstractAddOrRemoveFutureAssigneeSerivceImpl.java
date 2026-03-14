@@ -4,6 +4,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
@@ -49,7 +50,7 @@ public class AbstractAddOrRemoveFutureAssigneeSerivceImpl {
         if(StringUtils.isEmpty(processNumber)){
             throw new AFBizException("流程编号不能为空");
         }
-        if (CollectionUtils.isEmpty(userInfos)){
+        if (CollectionUtils.isEmpty(userInfos)&&vo.getOperationType()!=ProcessOperationEnum.BUTTON_TYPE_REMOVE_FUTURE_NODE.getCode()){
             throw new AFBizException("要变更的人员信息不能为空");
         }
         if(StringUtils.isEmpty(nodeId)){
