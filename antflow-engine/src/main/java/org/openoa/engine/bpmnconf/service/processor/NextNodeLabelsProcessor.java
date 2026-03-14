@@ -126,7 +126,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 .verifyUserName(assigneeName)
                 .taskDefKey(delegateTask.getTaskDefinitionKey())
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                .verifyDesc("(抄送给"+assigneeName+")")
+                .verifyDesc("(抄送给"+assigneeName+")"+"自动通过")
                 .processCode(processNumber)
                 .build();
         bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);

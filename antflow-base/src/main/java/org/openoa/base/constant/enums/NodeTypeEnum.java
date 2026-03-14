@@ -15,6 +15,7 @@ public enum NodeTypeEnum implements AfEnumBase{
     NODE_TYPE_OUT_SIDE_CONDITIONS(5, "接入方条件节点", 1),
     NODE_TYPE_COPY(6,"抄送节点",1),
     NODE_TYPE_PARALLEL_GATEWAY(7,"并行网关",0),
+    NODE_TYPE_COPY_V2(8,"抄送节点v2",0),
     ;
 
     @Getter

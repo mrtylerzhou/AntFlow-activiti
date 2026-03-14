@@ -2,21 +2,21 @@ package org.openoa.base.util;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.index.qual.HasSubsequence;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ElementTypeEnum;
+import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.constant.enums.SignTypeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.entity.BpmnNodeLabel;
 import org.openoa.base.service.BpmNodeLabelsService;
-import org.openoa.base.vo.BpmnConfCommonElementVo;
-import org.openoa.base.vo.BpmnNodeLabelVO;
-import org.openoa.base.vo.NodeLabelConstants;
-import org.openoa.base.vo.ProcessActionButtonVo;
+import org.openoa.base.vo.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.SignTypeEnum.SIGN_TYPE_SIGN;
@@ -112,5 +112,27 @@ public class NodeUtil {
                 .filter(FilterUtil.distinctByKeys(ProcessActionButtonVo::getButtonType))
                 .collect(Collectors.toList());
         return lists;
+    }
+
+    public static void nodeTypeSpecialProcess(BpmnNodeVo bpmnNodeVo){
+        Integer nodeType = bpmnNodeVo.getNodeType();
+        if(nodeType==null){
+            return;
+        }
+        if(NodeTypeEnum.NODE_TYPE_COPY_V2.getCode().equals(nodeType)){
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsCarbonCopyNode(true);
+        }
+    }
+    public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
+        List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
+        if(CollectionUtils.isEmpty(labelList)){
+            return;
+        }
+        for (BpmnNodeLabelVO nodeLabelVO : labelList) {
+            if(NodeLabelConstants.copyNodeV2.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_COPY_V2.getCode());
+            }
+        }
     }
 }
