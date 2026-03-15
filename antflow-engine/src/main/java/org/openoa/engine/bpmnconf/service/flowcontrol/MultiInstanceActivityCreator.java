@@ -22,6 +22,7 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.openoa.base.entity.RuntimeActivityDefinitionEntity;
 import org.openoa.base.service.RuntimeActivityDefinitionEntityIntepreter;
+import org.openoa.base.util.ExpressionUtils;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
@@ -122,7 +123,13 @@ public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport 
 			if (prototypeActivityActivityBehavior instanceof SequentialMultiInstanceBehavior) {
 				TaskDefinition prototypeTaskDef = prototypeInner.getTaskDefinition();
 				TaskDefinition newTaskDef = cloneTaskDefinition(prototypeTaskDef);
-
+				ProcessEngineConfigurationImpl processEngineConfig = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
+				newTaskDef.setAssigneeExpression(ExpressionUtils.stringToExpression(processEngineConfig, "${" + newVarName + "}"));
+				Expression nameExpression = newTaskDef.getNameExpression();
+				String expressionText = nameExpression.getExpressionText();
+				String newExp =expressionText+"-"+ "${" + "(loopCounter + 1)}";
+				newTaskDef.setNameExpression(ExpressionUtils.stringToExpression(processEngineConfig, newExp));
+				innerBehavior = new UserTaskActivityBehavior(prototypeActivity.getId(), newTaskDef);
 			}else{
 				innerBehavior =
 						(TaskActivityBehavior)
