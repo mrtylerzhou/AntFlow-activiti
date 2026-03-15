@@ -30,6 +30,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_PROCESS_MOVE_AHEAD(33,"流程推进"),
     BUTTON_TYPE_REMOVE_CURRENT_NODE(34,"删除当前节点"),
     BUTTON_TYPE_REMOVE_FUTURE_NODE(35,"删除未来节点"),
+    BUTTON_TYPE_SPLIT_CURRENT_NODE(36,"分裂当前任务")
     ;
 
     @Getter

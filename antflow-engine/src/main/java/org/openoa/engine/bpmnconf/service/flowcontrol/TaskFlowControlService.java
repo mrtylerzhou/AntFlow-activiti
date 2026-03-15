@@ -26,4 +26,6 @@ public interface TaskFlowControlService
 
 	ActivityImpl split(String targetTaskDefinitionKey, boolean isSequential, String... assignees)
 			throws Exception;
+
+	ActivityImpl[] insertTasksAfter(String targetTaskDefinitionKey, String... assignees) throws Exception;
 }

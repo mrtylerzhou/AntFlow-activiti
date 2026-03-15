@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.service.flowcontrol;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.RuntimeServiceImpl;
+import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -187,23 +188,27 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				if(taskEntity==null){
 					taskEntity=(TaskEntity) currentTaskEntity;
 				}
-				BaseIdTranStruVo assignee;
-				if (i < assigneeListByElementId.size()) {
-					assignee = assigneeListByElementId.get(i);
-				} else {
-					assignee = assigneeListByElementId.get(assigneeListByElementId.size() - 1);
+				BaseIdTranStruVo assignee=new BaseIdTranStruVo();
+				String newVarName="";
+				String variableVal="";
+				if(!CollectionUtils.isEmpty(assigneeListByElementId)){
+					if (i < assigneeListByElementId.size()) {
+						assignee = assigneeListByElementId.get(i);
+					} else {
+						assignee = assigneeListByElementId.get(assigneeListByElementId.size() - 1);
+					}
+
+					variableVal= "startUser".equals(variableName)?variables.get("startUser").toString():
+							assignee.getId();
+					int index = variableName.indexOf("List");
+					if(index!=-1){
+						newVarName="startUser".equals(variableName)?variableName:
+								variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
+					}else{
+						newVarName=variableName+"s";
+					}
 				}
 
-				String variableVal = "startUser".equals(variableName)?variables.get("startUser").toString():
-						assignee.getId();
-				int index = variableName.indexOf("List");
-				String newVarName="";
-				if(index!=-1){
-					newVarName="startUser".equals(variableName)?variableName:
-							variableName.substring(0,index)+variableName.substring(index).replace("List", "")+"s";
-				}else{
-					newVarName=variableName+"s";
-				}
 				executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 				executeCommand(new StartActivityCmd(currentTaskEntity.getExecutionId(), activity,newVarName,variableVal));
 			}else{
@@ -286,7 +291,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		radei.setAssignees((List<String>) CollectionUtils.arrayToList(assignees));
 		radei.setSequential(isSequential);
 
-		ActivityImpl clone = new MultiInstanceActivityCreator().createActivities(_processEngine, _processDefinition,
+		ActivityImpl clone = new MultiInstanceActivityCreator(radei).createActivities(_processEngine, _processDefinition,
 				info)[0];
 
 		List<Task> currentTaskEntitys = getCurrentTasks();
@@ -298,7 +303,39 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		recordActivitiesCreation(info);
 		return clone;
 	}
+	@Override
+	public ActivityImpl[] insertTasksAfter(String targetTaskDefinitionKey, String... assignees) throws Exception
+	{
+        List<String> assigneeList = new ArrayList<String>(Arrays.asList(assignees));
+		String[] newAssignees = assigneeList.toArray(new String[0]);
 
+		ActivityImpl prototypeActivity = ProcessDefinitionUtils.getActivity(_processEngine, _processDefinition.getId(),
+				targetTaskDefinitionKey);
+
+		return cloneAndMakeChain(targetTaskDefinitionKey, prototypeActivity.getOutgoingTransitions().get(0)
+				.getDestination().getId(), newAssignees);
+	}
+	private ActivityImpl[] cloneAndMakeChain(String prototypeActivityId, String nextActivityId, String... assignees)
+			throws Exception
+	{
+		SimpleRuntimeActivityDefinitionEntity info = new SimpleRuntimeActivityDefinitionEntity();
+		info.setProcessDefinitionId(_processDefinition.getId());
+		info.setProcessInstanceId(_processInstanceId);
+
+		RuntimeActivityDefinitionEntityIntepreter radei = new RuntimeActivityDefinitionEntityIntepreter(info);
+		radei.setPrototypeActivityId(prototypeActivityId);
+		radei.setAssignees((List<String>)CollectionUtils.arrayToList(assignees));
+		radei.setNextActivityId(nextActivityId);
+
+		ActivityImpl[] activities = new ChainedActivitiesCreator().createActivities(_processEngine, _processDefinition,
+				info);
+
+
+		moveTo(prototypeActivityId,activities[0].getId());
+		recordActivitiesCreation(info);
+
+		return activities;
+	}
 	private void recordActivitiesCreation(SimpleRuntimeActivityDefinitionEntity info) throws Exception
 	{
 		info.serializeProperties();
