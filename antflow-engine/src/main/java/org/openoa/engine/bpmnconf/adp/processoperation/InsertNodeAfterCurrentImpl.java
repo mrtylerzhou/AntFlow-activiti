@@ -38,6 +38,7 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
     @Override
     public void doProcessButton(BusinessDataVo vo) {
         String processNumber = vo.getProcessNumber();
+        String taskDefKey=vo.getTaskDefKey();
         //要添加的人会裂变成节点
         List<BaseIdTranStruVo> userInfos = vo.getUserInfos();
         if(StringUtils.isEmpty(processNumber)){
@@ -46,6 +47,10 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
         if (CollectionUtils.isEmpty(userInfos)){
             throw new AFBizException("要添加的节点人员不能为空");
         }
+        if(StringUtils.isEmpty(taskDefKey)){
+            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL.getCodeStr(),"taskDefKey不能为空");
+        }
+
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(null==bpmBusinessProcess){
             throw new AFBizException("未能根据流程编号找到流程信息:"+processNumber);
@@ -58,17 +63,23 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
         }
        List<String> taskDefKeys=new ArrayList<>();
         List<String> assignees=new ArrayList<>();
+        boolean anyMatchUserTaskDefKey=false;
         for (Task task : tasks) {
-            taskDefKeys.add(task.getTaskDefinitionKey());
-            assignees.add(task.getAssignee());
+            String taskDefinitionKey = task.getTaskDefinitionKey();
+            if(taskDefinitionKey.equals(taskDefKey)){
+                anyMatchUserTaskDefKey=true;
+                assignees.add(task.getAssignee());
+            }
+            taskDefKeys.add(taskDefinitionKey);
         }
-        if(taskDefKeys.stream().distinct().count()>1){
-            throw new AFBizException("流程实例中存在并行审批任务中,无法插入节点");
+        if(!anyMatchUserTaskDefKey){
+            log.error("未能根据taskDefKey找到当前任务信息:{}未找到任务信息",taskDefKey);
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"未能根据taskDefKey找到当前任务信息:"+taskDefKey);
         }
         TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
        try {
             assignees.addAll(userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
-           taskFlowControlService.split(taskDefKeys.get(0),  assignees.toArray(new String[0]));
+            taskFlowControlService.split(taskDefKey,  assignees.toArray(new String[0]));
        }catch (Exception e){
            log.error("插入节点失败:{}",e.getMessage());
            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"插入节点失败:"+e.getMessage());

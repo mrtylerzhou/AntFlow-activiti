@@ -295,6 +295,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				info)[0];
 
 		List<Task> currentTaskEntitys = getCurrentTasks();
+		currentTaskEntitys=currentTaskEntitys.stream().filter(a->a.getTaskDefinitionKey().equals(targetTaskDefinitionKey)).collect(Collectors.toList());
 		for (Task currentTaskEntity : currentTaskEntitys) {
 			executeCommand(new DeleteRunningTaskCmd((TaskEntity) currentTaskEntity));
 		}
