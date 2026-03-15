@@ -391,7 +391,7 @@ public class ActivitiTest {
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         String procinstId=bpmBusinessProcess.getProcInstId();
         TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procinstId);
-         taskFlowControlService.split(taskDefKey, "10", "11","12");
+         taskFlowControlService.insertTasksAfter(taskDefKey, "10", "11","12");
         return Result.success();
     }
 }

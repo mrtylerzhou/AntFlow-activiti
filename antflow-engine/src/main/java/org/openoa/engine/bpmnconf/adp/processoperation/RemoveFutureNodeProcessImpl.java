@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class RemoveFutureAssigneeProcessImpl extends AbstractAddOrRemoveFutureAssigneeSerivceImpl implements ProcessOperationAdaptor {
+public class RemoveFutureNodeProcessImpl extends AbstractAddOrRemoveFutureAssigneeSerivceImpl implements ProcessOperationAdaptor {
     @Autowired
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
