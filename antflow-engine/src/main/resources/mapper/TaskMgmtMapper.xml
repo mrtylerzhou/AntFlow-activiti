@@ -625,6 +625,11 @@
         CATEGORY_ = #{category, jdbcType=VARCHAR}
         where ID_ = #{id}
     </update>
+    <update id="updateResourceBytes">
+        update ACT_GE_BYTEARRAY
+        set BYTES_ = #{resourceBytes}
+        where DEPLOYMENT_ID_ = (select arp.DEPLOYMENT_ID_ from ACT_RE_PROCDEF arp where arp.ID_ =#{procDefId}) and NAME_ like '%.bpmn%'
+    </update>
     <delete id="deleteHisActInst">
         delete from ACT_HI_ACTINST where
         PROC_INST_ID_ = #{processInstanceId} and

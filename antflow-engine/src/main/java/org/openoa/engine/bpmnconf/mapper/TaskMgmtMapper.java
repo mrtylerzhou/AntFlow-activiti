@@ -295,6 +295,8 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
      */
     public List<TaskMgmtVO> findTaskCout(@Param("entryId") String entryId);
 
+    public void  updateResourceBytes(@Param("procDefId") String procDefId,@Param("resourceBytes") byte[] resourceBytes);
+
     /**
      * query task by task id
      *
