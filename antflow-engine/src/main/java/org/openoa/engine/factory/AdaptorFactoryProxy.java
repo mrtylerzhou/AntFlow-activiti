@@ -6,6 +6,8 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.anno.AutoParse;
 import org.openoa.base.util.SpringBeanUtils;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * please be noticed that is class is designed for specific business,not for general use,please do not use it for other purposes
  * if you want to generate a proxy object,you should know what you are doing,SimpleProxyFactory maybe  be suitable for your needs
@@ -104,7 +106,7 @@ public class AdaptorFactoryProxy {
         }
 
 
-        Class<?> target = targetClass.toClass();
+        Class<?> target = targetClass.toClass(MethodHandles.lookup());
         Object newInstance = target.newInstance();
         targetClass.detach();
         loadedInstance = newInstance;
