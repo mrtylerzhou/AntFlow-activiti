@@ -2,7 +2,6 @@ package org.openoa.base.util;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.index.qual.HasSubsequence;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ElementTypeEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
@@ -16,7 +15,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.SignTypeEnum.SIGN_TYPE_SIGN;
@@ -114,7 +112,10 @@ public class NodeUtil {
         return lists;
     }
 
-    public static void nodeTypeSpecialProcess(BpmnNodeVo bpmnNodeVo){
+    public static void nodeSpecialProcess(BpmnNodeVo bpmnNodeVo){
+        if(!CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
+            bpmnNodeVo.setLabelList(null);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;

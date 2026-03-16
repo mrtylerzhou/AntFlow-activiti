@@ -183,7 +183,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         int hasLastNodeCopy=0;
 
         for (BpmnNodeVo bpmnNodeVo : confNodes) {
-            NodeUtil.nodeTypeSpecialProcess(bpmnNodeVo);
+            NodeUtil.nodeSpecialProcess(bpmnNodeVo);
             if (bpmnNodeVo.getNodeType().intValue() == NODE_TYPE_APPROVER.getCode()
                     && ObjectUtils.isEmpty(bpmnNodeVo.getNodeProperty())) {
                 throw new AFBizException("apporver node has no property,can not be saved！");
