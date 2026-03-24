@@ -588,6 +588,12 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             PvmActivity nextNextElement = activitiAdditionalInfoService.getNextElement(nextElement.getId(), activitiList);
             if (!ObjectUtils.isEmpty(nextNextElement)) {
                 boolean isNextParallelGateway = ((ActivityImpl) nextNextElement).getActivityBehavior() instanceof ParallelGatewayActivityBehavior;
+                if(isNextParallelGateway){
+                    int sz = activitiAdditionalInfoService.getNextElementList(nextNextElement.getId(), activitiList).size();
+                    if(sz>1){
+                         includeParallelGateway=true;
+                     }
+                }
                 if (!includeParallelGateway && isNextParallelGateway) {
                     continue;
                 }
