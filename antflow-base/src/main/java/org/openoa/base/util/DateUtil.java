@@ -1,7 +1,6 @@
 package org.openoa.base.util;
 
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -92,7 +91,13 @@ public abstract class DateUtil {
      * @return
      */
     public static Date getDayStart(Date oDate) {
-        return new DateTime(oDate).withTime(0, 0, 0, 0).toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(oDate);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
     /**
@@ -115,7 +120,13 @@ public abstract class DateUtil {
      * @return
      */
     public static Date getDayEnd(Date oDate) {
-        return new DateTime(oDate).withTime(23, 59, 59, 999).toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(oDate);
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
+        return c.getTime();
     }
 
     /**
@@ -231,9 +242,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addSecond(Date date, Integer second) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withSecondOfMinute(second);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.SECOND, second);
+        return c.getTime();
     }
 
     /**
@@ -243,9 +255,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addMinutes(Date date, Integer minutes) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withMinuteOfHour(minutes);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MINUTE, minutes);
+        return c.getTime();
     }
 
     /**
@@ -255,9 +268,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addHours(Date date, Integer hour) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withHourOfDay(hour);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.HOUR_OF_DAY, hour);
+        return c.getTime();
     }
 
     /**
@@ -267,9 +281,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addDay(Date date, Integer day) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withDayOfYear(day);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DAY_OF_MONTH, day);
+        return c.getTime();
     }
 
     /**
@@ -279,9 +294,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addMonth(Date date, Integer month) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withMonthOfYear(month);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, month);
+        return c.getTime();
     }
 
     /**
@@ -291,9 +307,10 @@ public abstract class DateUtil {
      * @return
      */
     public static Date addYear(Date date, Integer year) {
-        DateTime jDateTime = new DateTime(date);
-        jDateTime.withYear(year);
-        return jDateTime.toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.YEAR, year);
+        return c.getTime();
     }
 
     /**

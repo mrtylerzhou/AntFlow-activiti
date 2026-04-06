@@ -12,12 +12,13 @@
  */
 package org.activiti.engine.impl.calendar;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.runtime.ClockReader;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 
 public class DueDateBusinessCalendar extends BusinessCalendarImpl {
@@ -31,15 +32,17 @@ public class DueDateBusinessCalendar extends BusinessCalendarImpl {
   @Override
   public Date resolveDuedate(String duedate, int maxIterations) {
     try {
-      // check if due period was specified
-      if(duedate.startsWith("P")){
-        return new DateTime(clockReader.getCurrentTime()).plus(Period.parse(duedate)).toDate();
+      // check if due period was specified (ISO 8601 duration, e.g. "P1DT2H")
+      if (duedate.startsWith("P")) {
+        Duration duration = Duration.parse(duedate);
+        return Date.from(clockReader.getCurrentTime().toInstant().plus(duration));
       }
 
-      return DateTime.parse(duedate).toDate();
+      return Date.from(ZonedDateTime.parse(duedate, DateTimeFormatter.ISO_DATE_TIME).toInstant());
 
     } catch (Exception e) {
       throw new ActivitiException("couldn't resolve duedate: " + e.getMessage(), e);
     }
   }
 }
+

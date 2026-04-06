@@ -29,8 +29,7 @@
         <fastjson2.version>2.0.53</fastjson2.version>
         <drools.version>6.5.0.Final</drools.version>
         <joda-time.version>2.9.9</joda-time.version>
-<geronimo-jta.version>1.1.1</geronimo-jta.version>
-        <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
+<java-uuid-generator.version>3.1.4</java-uuid-generator.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>31.0.1-jre</guava.version>
 
@@ -151,12 +150,7 @@
         <artifactId>knowledge-api</artifactId>
         <version>${drools.version}</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-jta_1.1_spec</artifactId>
-        <version>${geronimo-jta.version}</version>
-    </dependency>
-    <dependency>
+<dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
     </dependency>

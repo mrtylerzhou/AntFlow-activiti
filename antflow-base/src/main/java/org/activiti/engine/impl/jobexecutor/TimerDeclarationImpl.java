@@ -25,7 +25,6 @@ import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.el.NoExecutionVariableScope;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TimerEntity;
-import org.joda.time.DateTime;
 
 /**
  * @author Tom Baeyens
@@ -143,9 +142,6 @@ public class TimerDeclarationImpl implements Serializable {
         endDateString = (String) endDateValue;
       } else if (endDateValue instanceof Date) {
         endDate = (Date) endDateValue;
-      } else if (endDateValue instanceof DateTime) {
-        // Joda DateTime support
-        duedate = ((DateTime) endDateValue).toDate();
       } else {
         throw new ActivitiException("Timer '" + executionEntity.getActivityId() + "' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'");
       }
@@ -160,9 +156,6 @@ public class TimerDeclarationImpl implements Serializable {
       dueDateString = (String) dueDateValue;
     } else if (dueDateValue instanceof Date) {
       duedate = (Date)dueDateValue;
-    } else if (dueDateValue instanceof DateTime) {
-      // Joda DateTime support
-      duedate = ((DateTime) dueDateValue).toDate();
     } else if (dueDateValue != null) {
       //dueDateValue==null is OK - but unexpected class type must throw an error.
       throw new ActivitiException("Timer '"+executionEntity.getActivityId()+"' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'");

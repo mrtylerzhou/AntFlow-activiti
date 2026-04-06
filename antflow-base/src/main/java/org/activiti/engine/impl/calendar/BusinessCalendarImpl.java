@@ -1,10 +1,11 @@
 package org.activiti.engine.impl.calendar;
 
 import org.activiti.engine.runtime.ClockReader;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * This class implements business calendar based on internal clock
@@ -31,7 +32,11 @@ public abstract class BusinessCalendarImpl implements BusinessCalendar {
 
   @Override
   public Date resolveEndDate(String endDateString) {
-      return ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.forTimeZone(clockReader.getCurrentTimeZone())).parseDateTime(endDateString).toCalendar(null).getTime();
+    ZonedDateTime zdt = ZonedDateTime.parse(endDateString, DateTimeFormatter.ISO_DATE_TIME
+        .withZone(clockReader.getCurrentTimeZone().toZoneId()));
+    GregorianCalendar cal = GregorianCalendar.from(zdt);
+    return cal.getTime();
   }
 
 }
+

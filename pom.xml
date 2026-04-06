@@ -119,12 +119,7 @@
             <artifactId>knowledge-api</artifactId>
             <version>${drools.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
+<dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.15.0</version>
