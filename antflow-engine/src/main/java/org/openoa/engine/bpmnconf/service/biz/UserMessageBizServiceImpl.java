@@ -34,14 +34,8 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
     @Autowired
     private AfUserService employeeService;
 
-    @Value("${message.email.password:none}")
-    private String password;
 
-    @Value("${message.email.account:none}")
-    private String account;
 
-    @Value("${message.email.host:none}")
-    private String host;
 
     @Value("${system.domain:none}")
     private String systemDomain;

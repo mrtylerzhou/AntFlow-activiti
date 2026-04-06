@@ -28,13 +28,8 @@
         <pinyin4j.version>2.5.0</pinyin4j.version>
         <fastjson2.version>2.0.53</fastjson2.version>
         <drools.version>6.5.0.Final</drools.version>
-        <jodd-core.version>5.3.0</jodd-core.version>
         <joda-time.version>2.9.9</joda-time.version>
-        <jodd-servlet.version>4.1.2</jodd-servlet.version>
-        <jodd-mail.version>5.1.6</jodd-mail.version>
-        <jodd-bean.version>4.1.2</jodd-bean.version>
 <javax.enterprise.concurrent.version>1.0</javax.enterprise.concurrent.version>
-        <transmittable-thread-local.version>2.12.6</transmittable-thread-local.version>
         <geronimo-jta.version>1.1.1</geronimo-jta.version>
         <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
         <commons-io.version>2.6</commons-io.version>
@@ -124,29 +119,13 @@
         <artifactId>spring-aspects</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-core</artifactId>
-        <version>${jodd-core.version}</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
     <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda-time.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-servlet</artifactId>
-        <version>${jodd-servlet.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-mail</artifactId>
-        <version>${jodd-mail.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-bean</artifactId>
-        <version>${jodd-bean.version}</version>
     </dependency>
     <dependency>
         <groupId>com.baomidou</groupId>
@@ -157,11 +136,6 @@
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>${mysql.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>transmittable-thread-local</artifactId>
-        <version>${transmittable-thread-local.version}</version>
     </dependency>
     <dependency>
         <groupId>javax.enterprise.concurrent</groupId>
