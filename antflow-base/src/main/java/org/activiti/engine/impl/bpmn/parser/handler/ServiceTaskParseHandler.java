@@ -43,7 +43,7 @@ public class ServiceTaskParseHandler extends AbstractExternalInvocationBpmnParse
     activity.setFailedJobRetryTimeCycleValue(serviceTask.getFailedJobRetryTimeCycleValue());
     activity.setExclusive(!serviceTask.isNotExclusive());
 
-    // Email, Mule and Shell service tasks
+    // Mule and Shell service tasks
     if (StringUtils.isNotEmpty(serviceTask.getType())) {
       createActivityBehaviorForServiceTaskType(activity, bpmnParse, serviceTask);
       // activiti:class
@@ -65,9 +65,7 @@ public class ServiceTaskParseHandler extends AbstractExternalInvocationBpmnParse
   }
 
   protected void createActivityBehaviorForServiceTaskType(ActivityImpl activity, BpmnParse bpmnParse, ServiceTask serviceTask) {
-    if (serviceTask.getType().equalsIgnoreCase("mail")) {
-      createMailActivityBehavior(activity, bpmnParse, serviceTask);
-    } else if (serviceTask.getType().equalsIgnoreCase("mule")) {
+    if (serviceTask.getType().equalsIgnoreCase("mule")) {
       createMuleActivityBehavior(activity, bpmnParse, serviceTask);
     } else if (serviceTask.getType().equalsIgnoreCase("camel")) {
       createCamelActivityBehavior(activity, bpmnParse, serviceTask);
@@ -78,11 +76,7 @@ public class ServiceTaskParseHandler extends AbstractExternalInvocationBpmnParse
     }
   }
 
-  protected void createMailActivityBehavior(ActivityImpl activity, BpmnParse bpmnParse, ServiceTask serviceTask) {
-    activity.setActivityBehavior(bpmnParse.getActivityBehaviorFactory().createMailActivityBehavior(serviceTask));
-  }
-
-  protected void createMuleActivityBehavior(ActivityImpl activity, BpmnParse bpmnParse, ServiceTask serviceTask) {
+protected void createMuleActivityBehavior(ActivityImpl activity, BpmnParse bpmnParse, ServiceTask serviceTask) {
     activity.setActivityBehavior(bpmnParse.getActivityBehaviorFactory().createMuleActivityBehavior(serviceTask, bpmnParse.getBpmnModel()));
   }
 

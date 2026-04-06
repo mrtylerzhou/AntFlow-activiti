@@ -55,12 +55,11 @@ import org.activiti.engine.impl.bpmn.behavior.ErrorEndEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.EventBasedGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.EventSubProcessStartEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.InclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateCatchEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowCompensationEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowNoneEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowSignalEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.InclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ManualTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
@@ -172,20 +171,7 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
   public WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask) {
     return new WebServiceActivityBehavior();
   }
-  
-  public MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask) {
-    return createMailActivityBehavior(serviceTask.getId(), serviceTask.getFieldExtensions());
-  }
-  
-  public MailActivityBehavior createMailActivityBehavior(SendTask sendTask) {
-    return createMailActivityBehavior(sendTask.getId(), sendTask.getFieldExtensions());  
-  }
-  
-  protected MailActivityBehavior createMailActivityBehavior(String taskId, List<FieldExtension> fields) {
-    List<FieldDeclaration> fieldDeclarations = createFieldDeclarations(fields);
-    return (MailActivityBehavior) ClassDelegate.defaultInstantiateDelegate(MailActivityBehavior.class, fieldDeclarations);
-  }
-  
+
   // We do not want a hard dependency on Mule, hence we return ActivityBehavior and instantiate 
   // the delegate instance using a string instead of the Class itself.
   public ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel) {

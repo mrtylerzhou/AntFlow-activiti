@@ -39,7 +39,6 @@ import org.activiti.engine.impl.bpmn.behavior.IntermediateCatchEventActivityBeha
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowCompensationEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowNoneEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowSignalEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ManualTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
@@ -168,15 +167,7 @@ public class ActivityBehaviorFactoryDelegate
 			eventSubscriptionDeclaration);
 	}
 
-	public MailActivityBehavior createMailActivityBehavior(SendTask sendTask)
-	{
-		return _source.createMailActivityBehavior(sendTask);
-	}
 
-	public MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask)
-	{
-		return _source.createMailActivityBehavior(serviceTask);
-	}
 
 	public ManualTaskActivityBehavior createManualTaskActivityBehavior(ManualTask manualTask)
 	{

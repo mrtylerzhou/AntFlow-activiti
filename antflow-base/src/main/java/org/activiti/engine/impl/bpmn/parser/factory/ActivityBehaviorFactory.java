@@ -45,12 +45,11 @@ import org.activiti.engine.impl.bpmn.behavior.ErrorEndEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.EventBasedGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.EventSubProcessStartEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.InclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateCatchEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowCompensationEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowNoneEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowSignalEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.MailActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.InclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ManualTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
@@ -126,10 +125,6 @@ public interface ActivityBehaviorFactory {
   public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask);
 
   public abstract WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(ServiceTask serviceTask);
-
-  public abstract MailActivityBehavior createMailActivityBehavior(SendTask sendTask);
 
   // We do not want a hard dependency on the Mule module, hence we return ActivityBehavior and instantiate 
   // the delegate instance using a string instead of the Class itself.
