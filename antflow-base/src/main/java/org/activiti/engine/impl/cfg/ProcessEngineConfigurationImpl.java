@@ -80,7 +80,6 @@ import org.activiti.engine.impl.bpmn.parser.factory.DefaultActivityBehaviorFacto
 import org.activiti.engine.impl.bpmn.parser.factory.DefaultListenerFactory;
 import org.activiti.engine.impl.bpmn.parser.factory.ListenerFactory;
 import org.activiti.engine.impl.bpmn.parser.handler.BoundaryEventParseHandler;
-import org.activiti.engine.impl.bpmn.parser.handler.BusinessRuleParseHandler;
 import org.activiti.engine.impl.bpmn.parser.handler.CallActivityParseHandler;
 import org.activiti.engine.impl.bpmn.parser.handler.CancelEventDefinitionParseHandler;
 import org.activiti.engine.impl.bpmn.parser.handler.CompensateEventDefinitionParseHandler;
@@ -209,11 +208,7 @@ import org.activiti.engine.impl.variable.CustomObjectType;
 import org.activiti.engine.impl.variable.DateType;
 import org.activiti.engine.impl.variable.DefaultVariableTypes;
 import org.activiti.engine.impl.variable.DoubleType;
-import org.activiti.engine.impl.variable.EntityManagerSession;
-import org.activiti.engine.impl.variable.EntityManagerSessionFactory;
 import org.activiti.engine.impl.variable.IntegerType;
-import org.activiti.engine.impl.variable.JPAEntityListVariableType;
-import org.activiti.engine.impl.variable.JPAEntityVariableType;
 import org.activiti.engine.impl.variable.JsonType;
 import org.activiti.engine.impl.variable.LongJsonType;
 import org.activiti.engine.impl.variable.LongStringType;
@@ -319,9 +314,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected DeploymentCache<BpmnModel> bpmnModelCache;
   protected int processDefinitionInfoCacheLimit = -1; // By default, no limit
   protected ProcessDefinitionInfoCache processDefinitionInfoCache;
-  
-  protected int knowledgeBaseCacheLimit = -1;
-  protected DeploymentCache<Object> knowledgeBaseCache;
 
   // JOB EXECUTOR /////////////////////////////////////////////////////////////
   
@@ -1171,19 +1163,9 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
         }
       }
       
-      // Knowledge base cache (used for Drools business task)
-      if (knowledgeBaseCache == null) {
-        if (knowledgeBaseCacheLimit <= 0) {
-          knowledgeBaseCache = new DefaultDeploymentCache<Object>();
-        } else {
-          knowledgeBaseCache = new DefaultDeploymentCache<Object>(knowledgeBaseCacheLimit);
-        }
-      }
-      
       deploymentManager.setProcessDefinitionCache(processDefinitionCache);
       deploymentManager.setBpmnModelCache(bpmnModelCache);
       deploymentManager.setProcessDefinitionInfoCache(processDefinitionInfoCache);
-      deploymentManager.setKnowledgeBaseCache(knowledgeBaseCache);
     }
   }
 
@@ -1252,7 +1234,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     // Alpabetic list of default parse handler classes
     List<BpmnParseHandler> bpmnParserHandlers = new ArrayList<BpmnParseHandler>();
     bpmnParserHandlers.add(new BoundaryEventParseHandler());
-    bpmnParserHandlers.add(new BusinessRuleParseHandler());
     bpmnParserHandlers.add(new CallActivityParseHandler());
     bpmnParserHandlers.add(new CancelEventDefinitionParseHandler());
     bpmnParserHandlers.add(new CompensateEventDefinitionParseHandler());
@@ -2492,24 +2473,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   public ProcessEngineConfigurationImpl setProcessDefinitionCache(DeploymentCache<ProcessDefinitionEntity> processDefinitionCache) {
     this.processDefinitionCache = processDefinitionCache;
-    return this;
-  }
-
-  public int getKnowledgeBaseCacheLimit() {
-    return knowledgeBaseCacheLimit;
-  }
-
-  public ProcessEngineConfigurationImpl setKnowledgeBaseCacheLimit(int knowledgeBaseCacheLimit) {
-    this.knowledgeBaseCacheLimit = knowledgeBaseCacheLimit;
-    return this;
-  }
-  
-  public DeploymentCache<Object> getKnowledgeBaseCache() {
-    return knowledgeBaseCache;
-  }
-  
-  public ProcessEngineConfigurationImpl setKnowledgeBaseCache(DeploymentCache<Object> knowledgeBaseCache) {
-    this.knowledgeBaseCache = knowledgeBaseCache;
     return this;
   }
 

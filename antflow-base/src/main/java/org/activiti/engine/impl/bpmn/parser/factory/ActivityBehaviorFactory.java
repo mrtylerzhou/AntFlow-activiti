@@ -14,7 +14,6 @@ package org.activiti.engine.impl.bpmn.parser.factory;
 
 import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.BpmnModel;
-import org.activiti.bpmn.model.BusinessRuleTask;
 import org.activiti.bpmn.model.CallActivity;
 import org.activiti.bpmn.model.CancelEventDefinition;
 import org.activiti.bpmn.model.EndEvent;
@@ -137,8 +136,6 @@ public interface ActivityBehaviorFactory {
   public abstract ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel);
 
   public abstract ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask);
-
-  public abstract ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask);
 
   public abstract ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask);
 

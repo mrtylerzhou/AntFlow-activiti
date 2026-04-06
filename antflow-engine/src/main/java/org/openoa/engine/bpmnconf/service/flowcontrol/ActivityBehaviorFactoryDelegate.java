@@ -26,7 +26,6 @@ import org.activiti.bpmn.model.Transaction;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.BoundaryEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.BusinessRuleTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CallActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CancelBoundaryEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CancelEndEventActivityBehavior;
@@ -79,10 +78,7 @@ public class ActivityBehaviorFactoryDelegate
 		return _source.createBoundaryEventActivityBehavior(boundaryEvent, interrupting, activity);
 	}
 
-	public BusinessRuleTaskActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask)
-	{
-		return (BusinessRuleTaskActivityBehavior)_source.createBusinessRuleTaskActivityBehavior(businessRuleTask);
-	}
+
 
 	public CallActivityBehavior createCallActivityBehavior(CallActivity callActivity)
 	{

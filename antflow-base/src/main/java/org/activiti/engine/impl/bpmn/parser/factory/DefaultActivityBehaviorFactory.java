@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.BpmnModel;
-import org.activiti.bpmn.model.BusinessRuleTask;
 import org.activiti.bpmn.model.CallActivity;
 import org.activiti.bpmn.model.CancelEventDefinition;
 import org.activiti.bpmn.model.EndEvent;
@@ -43,11 +42,9 @@ import org.activiti.bpmn.model.ThrowEvent;
 import org.activiti.bpmn.model.Transaction;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.ActivitiException;
-import org.activiti.engine.delegate.BusinessRuleTaskDelegate;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.BoundaryEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.BusinessRuleTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CallActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CancelBoundaryEventActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.CancelEndEventActivityBehavior;
@@ -243,39 +240,6 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
   public ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask) {
     List<FieldDeclaration> fieldDeclarations = createFieldDeclarations(serviceTask.getFieldExtensions());
     return (ShellActivityBehavior) ClassDelegate.defaultInstantiateDelegate(ShellActivityBehavior.class, fieldDeclarations);
-  }
-  
-  public ActivityBehavior createBusinessRuleTaskActivityBehavior(BusinessRuleTask businessRuleTask) {
-    BusinessRuleTaskDelegate ruleActivity = null;
-    if (StringUtils.isNotEmpty(businessRuleTask.getClassName())){
-      try {
-        Class<?> clazz = Class.forName(businessRuleTask.getClassName());
-        ruleActivity = (BusinessRuleTaskDelegate) clazz.newInstance();
-      } catch (Exception e) {
-        throw new ActivitiException("Could not instantiate businessRuleTask (id:" + businessRuleTask.getId()  + ") class: " + 
-            businessRuleTask.getClassName(), e);
-      }
-    } else {
-      ruleActivity = new BusinessRuleTaskActivityBehavior();
-    }
-	
-    for (String ruleVariableInputObject : businessRuleTask.getInputVariables()) {
-      ruleActivity.addRuleVariableInputIdExpression(expressionManager.createExpression(ruleVariableInputObject.trim()));
-    }
-
-    for (String rule : businessRuleTask.getRuleNames()) {
-      ruleActivity.addRuleIdExpression(expressionManager.createExpression(rule.trim()));
-    }
-
-    ruleActivity.setExclude(businessRuleTask.isExclude());
-
-    if (businessRuleTask.getResultVariableName() != null && businessRuleTask.getResultVariableName().length() > 0) {
-      ruleActivity.setResultVariable(businessRuleTask.getResultVariableName());
-    } else {
-      ruleActivity.setResultVariable("org.activiti.engine.rules.OUTPUT");
-    }
-    
-    return ruleActivity;
   }
   
   // Script task

@@ -104,24 +104,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-            <version>6.5.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-compiler</artifactId>
-            <version>6.5.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>knowledge-api</artifactId>
-            <version>6.5.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
             <version>3.5.1</version>
