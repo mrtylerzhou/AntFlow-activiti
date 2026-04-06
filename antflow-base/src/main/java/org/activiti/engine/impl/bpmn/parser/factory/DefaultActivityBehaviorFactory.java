@@ -15,75 +15,35 @@ package org.activiti.engine.impl.bpmn.parser.factory;
 import java.util.List;
 
 import org.activiti.bpmn.model.BoundaryEvent;
-import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.CallActivity;
 import org.activiti.bpmn.model.CancelEventDefinition;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.ErrorEventDefinition;
 import org.activiti.bpmn.model.EventGateway;
 import org.activiti.bpmn.model.ExclusiveGateway;
-import org.activiti.bpmn.model.FieldExtension;
 import org.activiti.bpmn.model.IOParameter;
 import org.activiti.bpmn.model.InclusiveGateway;
 import org.activiti.bpmn.model.IntermediateCatchEvent;
 import org.activiti.bpmn.model.ManualTask;
-import org.activiti.bpmn.model.MapExceptionEntry;
 import org.activiti.bpmn.model.ParallelGateway;
-import org.activiti.bpmn.model.ReceiveTask;
-import org.activiti.bpmn.model.ScriptTask;
-import org.activiti.bpmn.model.SendTask;
-import org.activiti.bpmn.model.ServiceTask;
 import org.activiti.bpmn.model.Signal;
 import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.Task;
-import org.activiti.bpmn.model.TaskWithFieldExtensions;
 import org.activiti.bpmn.model.ThrowEvent;
 import org.activiti.bpmn.model.Transaction;
 import org.activiti.bpmn.model.UserTask;
-import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.Expression;
-import org.activiti.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.BoundaryEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.CallActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.CancelBoundaryEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.CancelEndEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ErrorEndEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.EventBasedGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.EventSubProcessStartEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.IntermediateCatchEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowCompensationEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowNoneEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.IntermediateThrowSignalEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.InclusiveGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ManualTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ParallelGatewayActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ReceiveTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ScriptTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ServiceTaskDelegateExpressionActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ServiceTaskExpressionActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.ShellActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.SubProcessActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.TaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.TerminateEndEventActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.TransactionActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.behavior.WebServiceActivityBehavior;
+import org.activiti.engine.impl.bpmn.behavior.*;
 import org.activiti.engine.impl.bpmn.data.SimpleDataInputAssociation;
+import org.activiti.engine.impl.bpmn.data.SimpleDataOutputAssociation;
 import org.activiti.engine.impl.bpmn.helper.ClassDelegate;
 import org.activiti.engine.impl.bpmn.parser.CompensateEventDefinition;
 import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.bpmn.parser.FieldDeclaration;
-import org.activiti.engine.impl.bpmn.webservice.MessageImplicitDataOutputAssociation;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.activiti.engine.impl.scripting.ScriptingEngines;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.commons.lang3.StringUtils;
 
@@ -117,139 +77,8 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
     return new ManualTaskActivityBehavior();
   }
   
-  public ReceiveTaskActivityBehavior createReceiveTaskActivityBehavior(ReceiveTask receiveTask) {
-    return new ReceiveTaskActivityBehavior();
-  }
-  
   public UserTaskActivityBehavior createUserTaskActivityBehavior(UserTask userTask, TaskDefinition taskDefinition) {
     return new UserTaskActivityBehavior(userTask.getId(), taskDefinition);
-  }
-
-  // Service task
-  
-  public ClassDelegate createClassDelegateServiceTask(ServiceTask serviceTask) {
-    Expression skipExpression;
-    if (StringUtils.isNotEmpty(serviceTask.getSkipExpression())) {
-      skipExpression = expressionManager.createExpression(serviceTask.getSkipExpression());
-    } else {
-      skipExpression = null;
-    }
-    return new ClassDelegate(serviceTask.getId(), serviceTask.getImplementation(), 
-        createFieldDeclarations(serviceTask.getFieldExtensions()), skipExpression, serviceTask.getMapExceptions());
-  }
-  
-  public ServiceTaskDelegateExpressionActivityBehavior createServiceTaskDelegateExpressionActivityBehavior(ServiceTask serviceTask) {
-    Expression delegateExpression = expressionManager.createExpression(serviceTask.getImplementation());
-    Expression skipExpression;
-    if (StringUtils.isNotEmpty(serviceTask.getSkipExpression())) {
-      skipExpression = expressionManager.createExpression(serviceTask.getSkipExpression());
-    } else {
-      skipExpression = null;
-    }
-    return new ServiceTaskDelegateExpressionActivityBehavior(serviceTask.getId(), delegateExpression, 
-        skipExpression, createFieldDeclarations(serviceTask.getFieldExtensions()));
-  }
-  
-  public ServiceTaskExpressionActivityBehavior createServiceTaskExpressionActivityBehavior(ServiceTask serviceTask) {
-    Expression expression = expressionManager.createExpression(serviceTask.getImplementation());
-    Expression skipExpression;
-    if (StringUtils.isNotEmpty(serviceTask.getSkipExpression())) {
-      skipExpression = expressionManager.createExpression(serviceTask.getSkipExpression());
-    } else {
-      skipExpression = null;
-    }
-    return new ServiceTaskExpressionActivityBehavior(serviceTask.getId(), expression, skipExpression, serviceTask.getResultVariableName());
-  }
-  
-  public WebServiceActivityBehavior createWebServiceActivityBehavior(ServiceTask serviceTask) {
-    return new WebServiceActivityBehavior();
-  }
-  
-  public WebServiceActivityBehavior createWebServiceActivityBehavior(SendTask sendTask) {
-    return new WebServiceActivityBehavior();
-  }
-
-  // We do not want a hard dependency on Mule, hence we return ActivityBehavior and instantiate 
-  // the delegate instance using a string instead of the Class itself.
-  public ActivityBehavior createMuleActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel) {
-    return createMuleActivityBehavior(serviceTask, serviceTask.getFieldExtensions(), bpmnModel);
-  }
-  
-  public ActivityBehavior createMuleActivityBehavior(SendTask sendTask, BpmnModel bpmnModel) {
-    return createMuleActivityBehavior(sendTask, sendTask.getFieldExtensions(), bpmnModel);
-  }
-  
-  protected ActivityBehavior createMuleActivityBehavior(TaskWithFieldExtensions task, List<FieldExtension> fieldExtensions, BpmnModel bpmnModel) {
-    try {
-      
-      Class< ? > theClass = Class.forName("org.activiti.mule.MuleSendActivitiBehavior");
-      List<FieldDeclaration> fieldDeclarations = createFieldDeclarations(fieldExtensions);
-      return (ActivityBehavior) ClassDelegate.defaultInstantiateDelegate(theClass, fieldDeclarations);
-      
-    } catch (ClassNotFoundException e) {
-    	throw new ActivitiException("Could not find org.activiti.mule.MuleSendActivitiBehavior: ", e);
-    }
-  }
-  
-  // We do not want a hard dependency on Camel, hence we return ActivityBehavior and instantiate 
-  // the delegate instance using a string instead of the Class itself.
-  public ActivityBehavior createCamelActivityBehavior(ServiceTask serviceTask, BpmnModel bpmnModel) {
-    return createCamelActivityBehavior(serviceTask, serviceTask.getFieldExtensions(), bpmnModel);
-  }
- 
-  public ActivityBehavior createCamelActivityBehavior(SendTask sendTask, BpmnModel bpmnModel) {
-    return createCamelActivityBehavior(sendTask, sendTask.getFieldExtensions(), bpmnModel);
-  }
- 
-  protected ActivityBehavior createCamelActivityBehavior(TaskWithFieldExtensions task, List<FieldExtension> fieldExtensions, BpmnModel bpmnModel) {
-    try {
-      Class< ? > theClass = null;
-      FieldExtension behaviorExtension = null;
-      for (FieldExtension fieldExtension : fieldExtensions) {
-        if ("camelBehaviorClass".equals(fieldExtension.getFieldName()) && StringUtils.isNotEmpty(fieldExtension.getStringValue())) {
-          theClass = Class.forName(fieldExtension.getStringValue());
-          behaviorExtension = fieldExtension;
-          break;
-        }
-      }
-      
-      if (behaviorExtension != null) {
-        fieldExtensions.remove(behaviorExtension);
-      }
-      
-      if (theClass == null) {
-        // Default Camel behavior class
-        theClass = Class.forName("org.activiti.camel.impl.CamelBehaviorDefaultImpl");
-      }
-      
-      List<FieldDeclaration> fieldDeclarations = createFieldDeclarations(fieldExtensions);
-      addExceptionMapAsFieldDeclaraion(fieldDeclarations, task.getMapExceptions());
-      return (ActivityBehavior) ClassDelegate.defaultInstantiateDelegate(theClass, fieldDeclarations);
-     
-    } catch (ClassNotFoundException e) {
-    	throw new ActivitiException("Could not find org.activiti.camel.CamelBehavior: ", e);
-    }
-  }
-  
-  private void addExceptionMapAsFieldDeclaraion(List<FieldDeclaration> fieldDeclarations, List<MapExceptionEntry> mapExceptions) {
-    FieldDeclaration exceptionMapsFieldDeclaration = new FieldDeclaration(EXCEPTION_MAP_FIELD, mapExceptions.getClass().toString(), mapExceptions);
-    fieldDeclarations.add(exceptionMapsFieldDeclaration);
-    
-  }
-
-  public ShellActivityBehavior createShellActivityBehavior(ServiceTask serviceTask) {
-    List<FieldDeclaration> fieldDeclarations = createFieldDeclarations(serviceTask.getFieldExtensions());
-    return (ShellActivityBehavior) ClassDelegate.defaultInstantiateDelegate(ShellActivityBehavior.class, fieldDeclarations);
-  }
-  
-  // Script task
-
-  public ScriptTaskActivityBehavior createScriptTaskActivityBehavior(ScriptTask scriptTask) {
-    String language = scriptTask.getScriptFormat();
-    if (language == null) {
-      language = ScriptingEngines.DEFAULT_SCRIPTING_LANGUAGE;
-    }
-    return new ScriptTaskActivityBehavior(scriptTask.getId(), scriptTask.getScript(), language, scriptTask.getResultVariable(), scriptTask.isAutoStoreVariables());
   }
 
   // Gateways
@@ -285,23 +114,23 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
   public SubProcessActivityBehavior createSubprocActivityBehavior(SubProcess subProcess) {
     return new SubProcessActivityBehavior();
   }
-  
+
   // Call activity
-  
+
   public CallActivityBehavior createCallActivityBehavior(CallActivity callActivity) {
     String expressionRegex = "\\$+\\{+.+\\}";
-    
+
     CallActivityBehavior callActivityBehaviour = null;
     if (StringUtils.isNotEmpty(callActivity.getCalledElement()) && callActivity.getCalledElement().matches(expressionRegex)) {
       callActivityBehaviour = new CallActivityBehavior(expressionManager.createExpression(callActivity.getCalledElement()), callActivity.getMapExceptions());
     } else {
       callActivityBehaviour = new CallActivityBehavior(callActivity.getCalledElement(), callActivity.getMapExceptions());
     }
-    
+
     if (StringUtils.isNotEmpty(callActivity.getBusinessKey())) {
       callActivityBehaviour.setBusinessKey(callActivity.getBusinessKey());
     }
-    
+
     callActivityBehaviour.setInheritBusinessKey(callActivity.isInheritBusinessKey());
     callActivityBehaviour.setInheritVariables(callActivity.isInheritVariables());
 
@@ -313,19 +142,19 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
         callActivityBehaviour.addDataInputAssociation(new SimpleDataInputAssociation(ioParameter.getSource(), ioParameter.getTarget()));
       }
     }
-    
+
     for (IOParameter ioParameter : callActivity.getOutParameters()) {
       if (StringUtils.isNotEmpty(ioParameter.getSourceExpression())) {
         Expression expression = expressionManager.createExpression(ioParameter.getSourceExpression().trim());
-        callActivityBehaviour.addDataOutputAssociation(new MessageImplicitDataOutputAssociation(ioParameter.getTarget(), expression));
+        callActivityBehaviour.addDataOutputAssociation(new SimpleDataOutputAssociation(ioParameter.getTarget(), expression));
       } else {
-        callActivityBehaviour.addDataOutputAssociation(new MessageImplicitDataOutputAssociation(ioParameter.getTarget(), ioParameter.getSource()));
+        callActivityBehaviour.addDataOutputAssociation(new SimpleDataOutputAssociation(ioParameter.getTarget(), ioParameter.getSource()));
       }
     }
-    
+
     return callActivityBehaviour;
   }
-  
+
   // Transaction
   
   public TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction) {
