@@ -33,8 +33,7 @@
         <jodd-servlet.version>4.1.2</jodd-servlet.version>
         <jodd-mail.version>5.1.6</jodd-mail.version>
         <jodd-bean.version>4.1.2</jodd-bean.version>
-        <jgraphx.version>4.2.2</jgraphx.version>
-        <javax.enterprise.concurrent.version>1.0</javax.enterprise.concurrent.version>
+<javax.enterprise.concurrent.version>1.0</javax.enterprise.concurrent.version>
         <transmittable-thread-local.version>2.12.6</transmittable-thread-local.version>
         <geronimo-jta.version>1.1.1</geronimo-jta.version>
         <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
@@ -148,11 +147,6 @@
         <groupId>org.jodd</groupId>
         <artifactId>jodd-bean</artifactId>
         <version>${jodd-bean.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.github.vlsi.mxgraph</groupId>
-        <artifactId>jgraphx</artifactId>
-        <version>${jgraphx.version}</version>
     </dependency>
     <dependency>
         <groupId>com.baomidou</groupId>

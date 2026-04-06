@@ -105,11 +105,6 @@
             <version>5.1.6</version>
         </dependency>
         <dependency>
-            <groupId>com.github.vlsi.mxgraph</groupId>
-            <artifactId>jgraphx</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
             <version>3.5.1</version>
