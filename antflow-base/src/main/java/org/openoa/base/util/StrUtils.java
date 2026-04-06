@@ -3,11 +3,6 @@ package org.openoa.base.util;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.google.common.base.Strings;
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.springframework.beans.BeanWrapper;
@@ -35,14 +30,11 @@ public class StrUtils {
         if (Strings.isNullOrEmpty(s)) {
             return null;
         }
-        String finalStr = getFirstPinYin(s,HanyuPinyinCaseType.UPPERCASE);
-
-        return finalStr;
+        return PinyinUtils.getFirstLettersUpperCase(s);
     }
-    public static String getFirstLettersSmall(String s){
-        String finalStr = getFirstPinYin(s,HanyuPinyinCaseType.LOWERCASE);
 
-        return finalStr;
+    public static String getFirstLettersSmall(String s) {
+        return PinyinUtils.getFirstLettersLowerCase(s);
     }
 
     /**
@@ -96,28 +88,6 @@ public class StrUtils {
             return " ";
         }
         return value;
-    }
-
-    private static String getFirstPinYin(String hanyu,HanyuPinyinCaseType caseType) {
-        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
-        format.setCaseType(caseType);
-        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-
-        StringBuilder firstPinyin = new StringBuilder();
-        char[] hanyuArr = hanyu.trim().toCharArray();
-        try {
-            for (int i = 0, len = hanyuArr.length; i < len; i++) {
-                if(Character.toString(hanyuArr[i]).matches("[\\u4E00-\\u9FA5]+")){
-                    String[] pys = PinyinHelper.toHanyuPinyinStringArray(hanyuArr[i],format);
-                    firstPinyin.append(pys[0].charAt(0));
-                }else {
-                    firstPinyin.append(hanyuArr[i]);
-                }
-            }
-        } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
-            badHanyuPinyinOutputFormatCombination.printStackTrace();
-        }
-        return firstPinyin.toString();
     }
 
 }
