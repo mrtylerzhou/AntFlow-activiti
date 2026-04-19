@@ -42,7 +42,7 @@ public class LFMainField implements TenantField, Serializable {
     private Double fieldValueNumber;
     @TableField("field_value_dt")
     private Date fieldValueDt;
-    @TableField(" field_value_text")
+    @TableField("field_value_text")
     private String fieldValueText;
     private Integer sort=0;
 
