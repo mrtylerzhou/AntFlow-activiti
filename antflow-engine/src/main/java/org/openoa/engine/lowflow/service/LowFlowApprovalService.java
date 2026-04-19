@@ -121,7 +121,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             allFieldConfMap.put(confId,Id2SelfMap);
         }
         lfFormdataFieldMap=allFieldConfMap.get(confId);
-        List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
+        List<LFMainField> lfMainFields = mainFieldService.listByMainIdAndFormCode(mainId, formCode);
         if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
@@ -304,7 +304,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long mainId = lfMain.getId();
         String formCode = vo.getFormCode();
         Long confId = vo.getBpmnConfVo().getId();
-        List<LFMainField> lfMainFields = mainFieldService.list(Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId));
+        List<LFMainField> lfMainFields = mainFieldService.listByMainIdAndFormCode(mainId, formCode);
 	    // 如果vo.getLfFields()里面有lfMainFields没有的元素，那么就将没有的元素save到LFMainField表中
 	    Map<String, Object> submitLfFields = vo.getLfFields();
 	    if (ObjectUtils.isNotEmpty(submitLfFields)) {

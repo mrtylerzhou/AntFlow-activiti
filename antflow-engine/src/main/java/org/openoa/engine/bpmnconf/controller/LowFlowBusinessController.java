@@ -91,9 +91,7 @@ public class LowFlowBusinessController {
         }
 
         // 5. 查询字段值数据
-        List<LFMainField> lfMainFields = lfMainFieldService.list(
-                Wrappers.<LFMainField>lambdaQuery().eq(LFMainField::getMainId, mainId)
-        );
+        List<LFMainField> lfMainFields = lfMainFieldService.listByMainIdAndFormCode(mainId, formCode);
 
         if (CollectionUtils.isEmpty(lfMainFields)) {
             throw new AFBizException(Strings.lenientFormat("低代码流程 formCode:%s, confId:%s 没有表单数据", formCode, confId));
