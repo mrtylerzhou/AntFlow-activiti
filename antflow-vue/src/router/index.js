@@ -84,12 +84,6 @@ export const constantRoutes = [
       },
     ],
   },
-  {
-    path: "/system",
-    name: "system",
-    hidden: false,
-    component: () => import("@/views/system/user/index.vue"),
-  },
 ];
 
 // 动态路由，基于用户权限动态去加载
