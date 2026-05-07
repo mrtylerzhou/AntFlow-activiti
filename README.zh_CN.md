@@ -1,11 +1,6 @@
 <p align="center" style="margin-bottom: 0 !important">
 	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
-</p>
-
-
-<h1 align="left">🛑  原服务器到期,临时预览地址</h1>
-
-<h1 align="left">🛑  http://150.158.106.115/admin/</h1>
+</p> 
 
 <p align="center">
  <img src="https://img.shields.io/badge/SpringBoot-2.7.17-blue" alt="Downloads">
