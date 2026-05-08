@@ -97,7 +97,7 @@ const loadDIYFormCondition = () => {
  * 2、用于条件节点 对接 流程引擎中 条件判断
  * 3、与后端约定的值
  */
-const condition_columnTypeMap = new Map([
+const widgetToColumnTypeCode = new Map([
   ["input", "10000"], //"int/fload/double/string" input
   ["input-number", "10001"], //"Double"
   ["select", "10000"], //"string" select
@@ -115,7 +115,7 @@ const condition_columnTypeMap = new Map([
  * 2、对应后端数据解析 与后端约定的值
  * Mapping: 1-string 2-int 3-date 4-time 5-text/长字符串 6-boolean 7-二进制/byte
  */
-const condition_filedTypeMap = new Map([
+const widgetToFieldTypeCode = new Map([
   ["input", "1"], //"String"
   ["input-number", "4"], //"time"
   ["select", "2"], //"int" select
@@ -130,7 +130,7 @@ const condition_filedTypeMap = new Map([
 /**
  * 判断控件的值的类型
  */
-const condition_filedValueTypeMap = new Map([
+const widgetToValueType = new Map([
   ["input", "String"], //"Double"
   ["input-number", "String"], //"Double"
   ["select", "Int"], //"Int" select
@@ -150,7 +150,7 @@ const loadLFFormCondition = () => {
       resolve(conditionArr);
     }
     conditionArr = lowCodeFormFields.value.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
-      if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
+      if (item.fieldTypeName && widgetToFieldTypeCode.has(item.fieldTypeName)) {
         let optionGroup = [];
         if (item.optionItems) {
           optionGroup = item.optionItems.map(c => {
@@ -163,11 +163,11 @@ const loadLFFormCondition = () => {
         }
         return {
           formId: index + 1,
-          columnId: condition_columnTypeMap.get(item.fieldTypeName),
-          showType: condition_filedTypeMap.get(item.fieldTypeName),
+          columnId: widgetToColumnTypeCode.get(item.fieldTypeName),
+          showType: widgetToFieldTypeCode.get(item.fieldTypeName),
           showName: item.label,
           columnName: item.name,
-          columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
+          columnType: widgetToValueType.get(item.fieldTypeName),
           fieldTypeName: item.fieldTypeName,
           multiple: item.multiple,
           multipleLimit: item.multipleLimit,
