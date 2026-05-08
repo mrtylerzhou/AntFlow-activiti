@@ -26,7 +26,7 @@ export default defineConfig(({ mode, command }) => {
       extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     },
     optimizeDeps: {
-      include: ["@/./lib/vForm/designer.umd.js"], //此处路径必须跟main.js中import路径完全一致！
+      include: ["@/./lib/vform/designer.umd.js"], //此处路径必须跟main.js中import路径完全一致！
     },
     // 打包配置
     build: {
