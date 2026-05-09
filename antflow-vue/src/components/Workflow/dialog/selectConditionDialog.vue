@@ -165,12 +165,12 @@ const loadLFFormCondition = () => {
           formId: index + 1,
           columnId: widgetToColumnTypeCode.get(item.type),
           showType: widgetToFieldTypeCode.get(item.type),
-          showName: item.label,
-          columnName: item.name,
+          showName: item.options.label,
+          columnName: item.options.name,
           columnType: widgetToValueType.get(item.type),
           fieldTypeName: item.type,
-          multiple: item.multiple,
-          multipleLimit: item.multipleLimit,
+          multiple: item.options.multiple,
+          multipleLimit: item.options.multipleLimit,
           fixedDownBoxValue: JSON.stringify(optionGroup)
         }
       }
