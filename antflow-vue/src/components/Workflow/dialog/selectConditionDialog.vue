@@ -149,11 +149,11 @@ const loadLFFormCondition = () => {
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
       resolve(conditionArr);
     }
-    conditionArr = lowCodeFormFields.value.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
-      if (item.fieldTypeName && widgetToFieldTypeCode.has(item.fieldTypeName)) {
+    conditionArr = lowCodeFormFields.value.formFields.filter(item => { return item.type; }).map((item, index) => {
+      if (widgetToFieldTypeCode.has(item.type)) {
         let optionGroup = [];
-        if (item.optionItems) {
-          optionGroup = item.optionItems.map(c => {
+        if (item.options.optionItems) {
+          optionGroup = item.options.optionItems.map(c => {
             let convertValue = parseInt(c.value);
             if (!isNaN(convertValue)) {
               return { key: convertValue, value: c.label }
@@ -163,12 +163,12 @@ const loadLFFormCondition = () => {
         }
         return {
           formId: index + 1,
-          columnId: widgetToColumnTypeCode.get(item.fieldTypeName),
-          showType: widgetToFieldTypeCode.get(item.fieldTypeName),
+          columnId: widgetToColumnTypeCode.get(item.type),
+          showType: widgetToFieldTypeCode.get(item.type),
           showName: item.label,
           columnName: item.name,
-          columnType: widgetToValueType.get(item.fieldTypeName),
-          fieldTypeName: item.fieldTypeName,
+          columnType: widgetToValueType.get(item.type),
+          fieldTypeName: item.type,
           multiple: item.multiple,
           multipleLimit: item.multipleLimit,
           fixedDownBoxValue: JSON.stringify(optionGroup)

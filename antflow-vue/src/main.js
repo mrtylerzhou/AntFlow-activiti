@@ -8,7 +8,7 @@ import "element-plus/theme-chalk/dark/css-vars.css";
 import locale from "element-plus/es/locale/lang/zh-cn";
 
 import VForm3 from "@/./lib/vform/designer.umd.js";
-import "./lib/vForm/designer.style.css";
+import "./lib/vform/designer.style.css";
 
 import "@/assets/styles/index.scss"; // global css
 
