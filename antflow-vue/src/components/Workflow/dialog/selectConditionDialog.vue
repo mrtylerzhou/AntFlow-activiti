@@ -99,7 +99,7 @@ const loadDIYFormCondition = () => {
  */
 const widgetToColumnTypeCode = new Map([
   ["input", "10000"], //"int/fload/double/string" input
-  ["input-number", "10001"], //"Double"
+  ["number", "10001"], //"Double"
   ["select", "10000"], //"string" select
   ["checkbox", "10004"], //"string" checkbox
   ["radio", "10001"],
@@ -117,7 +117,7 @@ const widgetToColumnTypeCode = new Map([
  */
 const widgetToFieldTypeCode = new Map([
   ["input", "1"], //"String"
-  ["input-number", "4"], //"time"
+  ["number", "4"], //"time"
   ["select", "2"], //"int" select
   ["checkbox", "1"], //"String" checkbox
   //['radio', '2'], //  int radio
@@ -132,7 +132,7 @@ const widgetToFieldTypeCode = new Map([
  */
 const widgetToValueType = new Map([
   ["input", "String"], //"Double"
-  ["input-number", "String"], //"Double"
+  ["number", "String"], //"Double"
   ["select", "Int"], //"Int" select
   ["checkbox", "String"], //checkbox 对应 VForm 是Array
   ["radio", "Int"],
@@ -165,12 +165,12 @@ const loadLFFormCondition = () => {
           formId: index + 1,
           columnId: widgetToColumnTypeCode.get(item.type),
           showType: widgetToFieldTypeCode.get(item.type),
-          showName: item.label,
-          columnName: item.name,
+          showName: item.options.label,
+          columnName: item.options.name,
           columnType: widgetToValueType.get(item.type),
           fieldTypeName: item.type,
-          multiple: item.multiple,
-          multipleLimit: item.multipleLimit,
+          multiple: item.options.multiple,
+          multipleLimit: item.options.multipleLimit,
           fixedDownBoxValue: JSON.stringify(optionGroup)
         }
       }
