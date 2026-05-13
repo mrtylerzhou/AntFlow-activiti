@@ -128,7 +128,7 @@ const widgetToFieldTypeCode = new Map([
   ["date", "1"],
 ]);
 /**
- * 判断控件的值的类型
+ * 判断控件的值的类型 Number, String, Array, Date,DateTime
  */
 const widgetToValueType = new Map([
   ["input", "String"], //"Double"
