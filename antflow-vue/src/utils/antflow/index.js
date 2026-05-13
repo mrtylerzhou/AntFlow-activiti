@@ -1,6 +1,6 @@
 import { parseTime } from "@/utils/ruoyi";
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
-function All() {}
+function All() { }
 All.prototype = {
   arrToStr(arr) {
     if (arr) {
@@ -226,7 +226,7 @@ All.prototype = {
             "{h}:{i}:{s}"
           )} ${relationTip} `;
         }
-      } else if (fieldTypeName == "input-number") {
+      } else if (fieldTypeName == "number") {
         if (optType < 6 && zdy1) {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
           str += `${showName} ${optTypeStr} ${zdy1} ${relationTip} `;
