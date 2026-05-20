@@ -1,5 +1,5 @@
 <p align="center" style="margin-bottom: 0 !important">
-	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
+	<img alt="logo" src="https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/logo.png"  width = 20%;>
 </p> 
 
 <p align="center">
@@ -69,21 +69,21 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 
 ## Antflow架构图
 
-![系统架构图](./doc/images/AntFlow架构.png)
+![系统架构图](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/AntFlow架构.png)
 
 ## 项目截图
 
-![1.png](./doc/images/1.png)
+![1.png](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/1.png)
 
-![](./doc/images/2.png)
+![](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/2.png)
 
-![](./doc/images/3.png)
+![](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/3.png)
 
-![](./doc/images/4.png)
+![](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/4.png)
 
-![](./doc/images/5.png)
+![](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/5.png)
 
-![](./doc/images/6.png)
+![](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/6.png)
 
 ## 快速开始
 
