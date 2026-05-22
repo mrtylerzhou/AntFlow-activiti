@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
+import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.entity.OutSideBpmnNodeConditionsConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
@@ -32,6 +34,19 @@ public class NodeTypeOutSideConditionsAdp extends NodeTypeConditionsAdp {
         if(ObjectUtils.isEmpty(bpmnNodeVo.getConditionsUrl())){
             return ;
         }
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getConditionsConf() != null
+                && !StringUtils.isEmpty(nodeConfig.getConditionsConf().getOutSideConditionId())) {
+            String outSideConditionsUrl = StringUtils.join(bpmnNodeVo.getConditionsUrl(),
+                    nodeConfig.getConditionsConf().getOutSideConditionId());
+            bpmnNodeVo.getProperty().getConditionsConf().setOutSideConditionsUrl(outSideConditionsUrl);
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode());
+            return;
+        }
+
+        // Fallback to DB
         //get conditions conf by node id
         OutSideBpmnNodeConditionsConf outSideBpmnNodeConditionsConf = outSideBpmnNodeConditionsConfService.getOne(new QueryWrapper<OutSideBpmnNodeConditionsConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));

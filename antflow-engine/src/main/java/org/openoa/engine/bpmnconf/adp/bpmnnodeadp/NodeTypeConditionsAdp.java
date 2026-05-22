@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.constant.enums.JudgeOperatorEnum;
+import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
@@ -56,7 +59,15 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getConditionsConf() != null
+                && !CollectionUtils.isEmpty(nodeConfig.getConditionsConf().getConditionGroups())) {
+            formatFromJson(bpmnNodeVo, nodeConfig.getConditionsConf());
+            return;
+        }
 
+        // Fallback to DB
         BpmnNodeConditionsConf bpmnNodeConditionsConf = bpmnNodeConditionsConfService.getOne(new QueryWrapper<BpmnNodeConditionsConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
@@ -226,6 +237,75 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
         bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
 
+    }
+
+    /**
+     * Read conditions from node_config_json (JSON-first path).
+     * The extJson stored in each ConditionGroup already contains the complete Vue3 model,
+     * so we can reconstruct all runtime fields (groupedConditionParamTypes, numberOperatorList, etc.)
+     * directly from the Vue3 model without querying t_bpmn_node_conditions_param_conf.
+     */
+    private void formatFromJson(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfJson conditionsConf) {
+        List<BpmnNodeConditionsConfJson.ConditionGroup> groups = conditionsConf.getConditionGroups();
+        BpmnNodeConditionsConfJson.ConditionGroup firstGroup = groups.get(0);
+
+        BpmnNodeConditionsConfBaseVo baseVo = new BpmnNodeConditionsConfBaseVo();
+        baseVo.setIsDefault(firstGroup.getIsDefault());
+        baseVo.setSort(firstGroup.getSort());
+        baseVo.setGroupRelation(firstGroup.getGroupRelation());
+        baseVo.setExtJson(firstGroup.getExtJson());
+
+        if (Objects.equals(firstGroup.getIsDefault(), 1)) {
+            setProperty(bpmnNodeVo, baseVo);
+            bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
+            bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
+            return;
+        }
+
+        // Parse Vue3 model from extJson — this is the single source of truth
+        String extJson = firstGroup.getExtJson();
+        if (StringUtils.isEmpty(extJson)) {
+            setProperty(bpmnNodeVo, baseVo);
+            return;
+        }
+
+        List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(extJson,
+                new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
+
+        // Reconstruct runtime fields from Vue3 model (replaces t_bpmn_node_conditions_param_conf queries)
+        List<Integer> conditionParamTypes = new ArrayList<>();
+        Map<Integer, List<Integer>> groupedConditionParamTypes = new HashMap<>();
+        Map<Integer, Integer> groupedCondRelations = new HashMap<>();
+        Map<Integer, List<Integer>> groupedNumberOperatorListMap = new HashMap<>();
+
+        for (List<BpmnNodeConditionsConfVueVo> groupConds : extFieldsGroup) {
+            for (BpmnNodeConditionsConfVueVo cond : groupConds) {
+                Integer condGroup = cond.getCondGroup();
+                Integer columnId = Integer.parseInt(cond.getColumnId());
+                conditionParamTypes.add(columnId);
+
+                groupedConditionParamTypes.computeIfAbsent(condGroup, k -> new ArrayList<>()).add(columnId);
+                groupedCondRelations.put(condGroup, ConditionRelationShipEnum.getCodeByValue(cond.getCondRelation()));
+
+                // optType in Vue3 model = operator in BpmnNodeConditionsParamConf (historical field)
+                if (cond.getOptType() != null) {
+                    baseVo.getNumberOperatorList().add(cond.getOptType());
+                    groupedNumberOperatorListMap.computeIfAbsent(condGroup, k -> new ArrayList<>()).add(cond.getOptType());
+                }
+            }
+        }
+        baseVo.setConditionParamTypes(conditionParamTypes);
+        baseVo.setGroupedConditionParamTypes(groupedConditionParamTypes);
+        baseVo.setGroupedCondRelations(groupedCondRelations);
+        baseVo.setGroupedNumberOperatorListMap(groupedNumberOperatorListMap);
+
+        setProperty(bpmnNodeVo, baseVo);
+
+        // Set conditionList (Vue3 model) and metadata on property
+        bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
+        bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
+        bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(firstGroup.getGroupRelation()));
+        bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
     }
 
     @Override

@@ -21,8 +21,8 @@
 | 17 | `t_bpmn_node_form_related_user_conf` | 表单关联用户审批 | `t_bpmn_node.node_config_json` -> `approverConf.formRelatedUserConfList[]` |
 | 18 | `t_bpmn_node_out_side_access_conf` | 外部接入审批 | `t_bpmn_node.node_config_json` -> `approverConf.outSideAccessConf` |
 | 19 | `t_bpmn_node_business_table_conf` | 关联业务表审批 | `t_bpmn_node.node_config_json` -> `approverConf.businessTableConf` |
-| 20 | `t_bpmn_node_conditions_conf` | 条件节点配置 | `t_bpmn_node.node_config_json` -> `conditionsConf` |
-| 21 | `t_bpmn_node_conditions_param_conf` | 条件参数配置 | `t_bpmn_node.node_config_json` -> `conditionsConf.conditionGroups[].params[]` |
+| 20 | `t_bpmn_node_conditions_conf` | 条件节点配置 | `t_bpmn_node.node_config_json` -> `conditionsConf.conditionGroups[].{isDefault,groupRelation,sort,extJson}` |
+| 21 | `t_bpmn_node_conditions_param_conf` | 条件参数配置（冗余） | `t_bpmn_node.node_config_json` -> `conditionsConf.conditionGroups[].extJson`（Vue3 模型已包含 `optType`/`zdy1` 等全部数据，`operator` 字段为历史遗留，可从 `optType` 推导） |
 | 22 | `t_out_side_bpmn_node_conditions_conf` | 外部条件配置 | `t_bpmn_node.node_config_json` -> `conditionsConf.outSideConditionId` |
 | 23 | `t_bpmn_template`（node_id 非空） | 节点级通知模板 | `t_bpmn_node.node_config_json` -> `templateConf.templates[]` |
 | 24 | `t_bpmn_approve_remind` | 审批催办配置 | `t_bpmn_node.node_config_json` -> `templateConf.approveRemind` |
@@ -40,6 +40,8 @@
 
 ## 注意事项
 
-- #20-#22 条件表的读路径当前仍走 DB fallback，删除前需确认 `node_config_json` 已完整回填且条件读路径已切换到 JSON
+- #20-#22 条件表的读路径已切换为 JSON-first（`NodeTypeConditionsAdp.formatFromJson`），`extJson` 中的 Vue3 模型已包含全部运行时所需字段（`conditionParamTypes`、`groupedNumberOperatorListMap` 等），无需再查 `t_bpmn_node_conditions_param_conf`
+- #21 `t_bpmn_node_conditions_param_conf` 的 `operator` 字段为历史遗留设计（数字类型会多写入一条），实际可从 Vue3 模型的 `optType` 推导，删除后不影响功能
+- 写路径（`editBpmnNode`）仍会写入 DB 表（`OutSideBpmConditionsTemplateBizServiceImpl` 运行时依赖），待该依赖也切换到 JSON 后可完全停止写入
 - 删除前需先执行数据迁移脚本，将现有子表数据回填到 JSON 字段
 - 建议在测试环境验证无误后再在生产环境执行
