@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
@@ -30,6 +32,20 @@ public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getOutSideAccessConf() != null) {
+            BpmnNodeApproverConfJson.OutSideAccessConf osac = nodeConfig.getApproverConf().getOutSideAccessConf();
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .signType(osac.getSignType())
+                    .nodeMark(osac.getNodeMark())
+                    .build());
+            bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.OUT_SIDE_NODE.getCode());
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodeOutSideAccessConf nodeOutSideAccessConf = bpmnNodeOutSideAccessConfService.getOne(new QueryWrapper<BpmnNodeOutSideAccessConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

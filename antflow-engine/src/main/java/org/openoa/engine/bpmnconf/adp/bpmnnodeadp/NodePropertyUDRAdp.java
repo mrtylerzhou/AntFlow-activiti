@@ -13,6 +13,8 @@ import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.interf.DicDataService;
@@ -31,6 +33,28 @@ public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeUD
 
     @Autowired
     private DicDataService dicDataService;
+
+    @Override
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && !CollectionUtils.isEmpty(nodeConfig.getApproverConf().getUdrConfList())) {
+            BpmnNodeApproverConfJson.UDRConf udr = nodeConfig.getApproverConf().getUdrConfList().get(0);
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .signType(udr.getSignType())
+                    .udrAssigneeProperty(BaseIdTranStruVo.builder().id(udr.getUdrProperty()).name(udr.getUdrPropertyName()).build())
+                    .udrValueJson(udr.getValueJson())
+                    .ext1(udr.getExt1())
+                    .ext2(udr.getExt2())
+                    .ext3(udr.getExt3())
+                    .ext4(udr.getExt4())
+                    .build());
+            return;
+        }
+        // Fallback to DB
+        super.formatToBpmnNodeVo(bpmnNodeVo);
+    }
 
     @Override
     protected void setNodeProperty(BpmnNodeVo bpmnNodeVo, BpmnNodeUDRConf bpmnNodeUDRConf) {

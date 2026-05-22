@@ -9,6 +9,7 @@ import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeHrbpConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeHrbpConfService;
@@ -33,6 +34,16 @@ public class NodePropertyHrbpAdp extends AbstractAdditionSignNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getHrbpConf() != null) {
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> p.setHrbpConfType(nodeConfig.getApproverConf().getHrbpConf().getHrbpConfType()));
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodeHrbpConf bpmnNodeHrbpConf = bpmnNodeHrbpConfService.getOne(new QueryWrapper<BpmnNodeHrbpConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

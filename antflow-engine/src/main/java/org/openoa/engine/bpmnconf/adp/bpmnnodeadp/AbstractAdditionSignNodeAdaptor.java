@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.entity.BpmnNodeAdditionalSignConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.service.AfRoleService;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -34,6 +36,16 @@ public abstract class AbstractAdditionSignNodeAdaptor implements BpmnNodeAdaptor
         if (extraFlags == null) {
             return;
         }
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getButtonSignConf() != null
+                && !CollectionUtils.isEmpty(nodeConfig.getButtonSignConf().getAdditionalSignConfList())) {
+            formatAdditionalSignFromJson(bpmnNodeVo, nodeConfig.getButtonSignConf().getAdditionalSignConfList());
+            return;
+        }
+
+        // Fallback to DB
         List<BpmnNodeAdditionalSignConf> bpmnNodeAdditionalSignConfs = additionalSignConfService.getMapper().selectList(Wrappers.<BpmnNodeAdditionalSignConf>lambdaQuery()
                 .eq(BpmnNodeAdditionalSignConf::getBpmnNodeId, bpmnNodeVo.getId()));
         if (CollectionUtils.isEmpty(bpmnNodeAdditionalSignConfs)) {
@@ -59,6 +71,24 @@ public abstract class AbstractAdditionSignNodeAdaptor implements BpmnNodeAdaptor
             additionalSignInfoList.add(extraSignInfoVo);
         }
         bpmnNodePropertysVo.setAdditionalSignInfoList(additionalSignInfoList);//这个是给前端用于反显设计数据的,其中指定人员直接从这里获取
+        AfNodeUtils.addOrEditProperty(bpmnNodeVo, a -> a.setAdditionalSignInfoList(additionalSignInfoList));
+    }
+
+    private void formatAdditionalSignFromJson(BpmnNodeVo bpmnNodeVo, List<BpmnNodeButtonSignConfJson.AdditionalSignConf> addSignConfs) {
+        List<ExtraSignInfoVo> additionalSignInfoList = new ArrayList<>();
+        for (BpmnNodeButtonSignConfJson.AdditionalSignConf conf : addSignConfs) {
+            List<BaseIdTranStruVo> baseIdTranStruVos = JSON.parseArray(conf.getSignInfos(), BaseIdTranStruVo.class);
+            ExtraSignInfoVo extraSignInfoVo = new ExtraSignInfoVo();
+            extraSignInfoVo.setNodeProperty(conf.getSignProperty());
+            extraSignInfoVo.setPropertyType(conf.getSignPropertyType());
+            extraSignInfoVo.setSignInfos(baseIdTranStruVos);
+            if (conf.getSignPropertyType() != null && conf.getSignPropertyType().equals(NodePropertyEnum.NODE_PROPERTY_ROLE.getCode())) {
+                List<String> roleIds = baseIdTranStruVos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+                List<BaseIdTranStruVo> roleInfos = roleService.queryUserByRoleIds(roleIds);
+                extraSignInfoVo.setOtherSignInfos(roleInfos);
+            }
+            additionalSignInfoList.add(extraSignInfoVo);
+        }
         AfNodeUtils.addOrEditProperty(bpmnNodeVo, a -> a.setAdditionalSignInfoList(additionalSignInfoList));
     }
 

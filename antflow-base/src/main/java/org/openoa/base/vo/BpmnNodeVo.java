@@ -10,6 +10,9 @@ import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,6 +177,10 @@ public class BpmnNodeVo  implements Serializable {
      */
     private List<BpmnNodeVo> fromNodes;
     private List<BpmnNodeLabelVO> labelList;
+    /**
+     * Transient node config JSON - populated during edit flow
+     */
+    private BpmnNodeConfigJson nodeConfigJsonObj;
     private String elementId;
     /**
      * 当前未找到审批人处理方式,如果为null时不进行默认处理
@@ -200,6 +207,26 @@ public class BpmnNodeVo  implements Serializable {
             this.labelList=new ArrayList<>();
             this.labelList.add(labelVO);
         }
+    }
+
+    /**
+     * Get or create the node config JSON object
+     */
+    public BpmnNodeConfigJson getOrCreateNodeConfigJson() {
+        if (this.nodeConfigJsonObj == null) {
+            this.nodeConfigJsonObj = new BpmnNodeConfigJson();
+        }
+        return this.nodeConfigJsonObj;
+    }
+
+    /**
+     * Serialize nodeConfigJsonObj to JSON string for DB storage
+     */
+    public String serializeNodeConfigJson() {
+        if (this.nodeConfigJsonObj == null) {
+            return null;
+        }
+        return JsonConfUtil.toNodeConfigJson(this.nodeConfigJsonObj);
     }
     @Override
     public String toString(){

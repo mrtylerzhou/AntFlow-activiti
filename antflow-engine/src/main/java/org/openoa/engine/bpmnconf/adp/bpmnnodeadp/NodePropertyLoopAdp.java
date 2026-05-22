@@ -14,6 +14,8 @@ import org.openoa.base.util.AntCollectionUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeLoopConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeLoopConfService;
@@ -42,6 +44,37 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getLoopConf() != null) {
+            BpmnNodeApproverConfJson.LoopConf lc = nodeConfig.getApproverConf().getLoopConf();
+            List<Serializable> list = !ObjectUtils.isEmpty(lc.getLoopEndPerson())
+                    ? Arrays.asList(lc.getLoopEndPerson().split(",")).stream().map(Long::new).collect(Collectors.toList())
+                    : new ArrayList<>();
+            List<Serializable> noList = !ObjectUtils.isEmpty(lc.getNoparticipatingStaffIds())
+                    ? Arrays.asList(lc.getNoparticipatingStaffIds().split(",")).stream().map(Long::new).collect(Collectors.toList())
+                    : new ArrayList<>();
+
+            List<BaseIdTranStruVo> loopEndPersonList = bpmnEmployeeInfoProviderService.provideEmployeeInfo(AntCollectionUtil.serializeToStringCollection(list))
+                    .entrySet().stream().map(a -> BaseIdTranStruVo.builder().id(a.getKey()).name(a.getValue()).build()).collect(Collectors.toList());
+            List<BaseIdTranStruVo> noparticipatingStaffs = bpmnEmployeeInfoProviderService.provideEmployeeInfo(AntCollectionUtil.serializeToStringCollection(noList))
+                    .entrySet().stream().map(a -> BaseIdTranStruVo.builder().id(a.getKey()).name(a.getValue()).build()).collect(Collectors.toList());
+
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .loopEndType(lc.getLoopEndType())
+                    .loopNumberPlies(lc.getLoopNumberPlies())
+                    .loopEndGrade(lc.getLoopEndGrade())
+                    .loopEndPersonList(list)
+                    .loopEndPersonObjList(loopEndPersonList)
+                    .noparticipatingStaffIds(noList)
+                    .noparticipatingStaffs(noparticipatingStaffs)
+                    .build());
+            bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodeLoopConf bpmnNodeLoopConf = bpmnNodeLoopConfService.getOne(new QueryWrapper<BpmnNodeLoopConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

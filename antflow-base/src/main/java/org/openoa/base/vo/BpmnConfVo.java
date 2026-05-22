@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
+
 import java.util.Date;
 import java.util.List;
 
@@ -181,4 +184,19 @@ public class BpmnConfVo {
      * 如果节点有多个通知类型,只会选出一个,用于给前端此字段不为空则说明当前节点有通知
      */
     private String noticeFormCode;
+
+    /**
+     * Transient conf config JSON - populated during read flow
+     */
+    private BpmnConfConfigJson confConfigJsonObj;
+
+    /**
+     * Parse confConfigJson string into confConfigJsonObj
+     */
+    public BpmnConfConfigJson getOrParseConfConfigJson(String confConfigJson) {
+        if (this.confConfigJsonObj == null && confConfigJson != null) {
+            this.confConfigJsonObj = JsonConfUtil.parseConfConfig(confConfigJson);
+        }
+        return this.confConfigJsonObj;
+    }
 }

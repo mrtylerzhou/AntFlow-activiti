@@ -140,7 +140,11 @@ public class BpmnNode implements TenantField, Serializable {
     @TableField("is_parallel")
     private Boolean isParallel;
 
-
+    /**
+     * Consolidated node configuration JSON
+     */
+    @TableField("node_config_json")
+    private String nodeConfigJson;
 
     @TableField(exist = false)
     private Integer isOutSideProcess;

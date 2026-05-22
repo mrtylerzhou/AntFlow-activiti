@@ -10,6 +10,8 @@ import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeRoleConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.BpmnNodeRoleOutsideEmpConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeRoleOutsideEmpConfServiceImpl;
@@ -42,6 +44,33 @@ public class NodePropertyRoleAdp extends AbstractAdditionSignNodeAdaptor {
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && !CollectionUtils.isEmpty(nodeConfig.getApproverConf().getRoleConfList())) {
+            List<BpmnNodeApproverConfJson.RoleConf> roleConfs = nodeConfig.getApproverConf().getRoleConfList();
+            List<BaseIdTranStruVo> roles = roleConfs.stream()
+                    .map(rc -> BaseIdTranStruVo.builder().id(rc.getRoleId()).name(rc.getRoleName()).build())
+                    .collect(Collectors.toList());
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, a -> {
+                a.setRoleIds(roles.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
+                a.setRoleList(roles);
+                a.setSignType(roleConfs.get(0).getSignType());
+            });
+            // outside employees for role
+            if (bpmnNodeVo.getIsOutSideProcess() != null && bpmnNodeVo.getIsOutSideProcess().equals(1)) {
+                BpmnNodeApproverConfJson.RoleConf firstRole = roleConfs.get(0);
+                if (!CollectionUtils.isEmpty(firstRole.getOutsideEmployees())) {
+                    bpmnNodeVo.getProperty().setEmplIds(firstRole.getOutsideEmployees().stream().map(BpmnNodeApproverConfJson.EmployeeInfo::getEmplId).collect(Collectors.toList()));
+                    bpmnNodeVo.getProperty().setEmplList(firstRole.getOutsideEmployees().stream()
+                            .map(e -> BaseIdTranStruVo.builder().id(e.getEmplId()).name(e.getEmplName()).build()).collect(Collectors.toList()));
+                }
+            }
+            return;
+        }
+
+        // Fallback to DB
         List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

@@ -7,6 +7,8 @@ import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodeBusinessTableConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.BusinessConfTableFieldEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
@@ -28,6 +30,21 @@ public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdapto
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getBusinessTableConf() != null) {
+            BpmnNodeApproverConfJson.BusinessTableConf btc = nodeConfig.getApproverConf().getBusinessTableConf();
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> {
+                p.setConfigurationTableType(btc.getConfigurationTableType());
+                p.setTableFieldType(btc.getTableFieldType());
+                p.setSignType(btc.getSignType());
+            });
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = bpmnNodeBusinessTableConfService.getOne(new QueryWrapper<BpmnNodeBusinessTableConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

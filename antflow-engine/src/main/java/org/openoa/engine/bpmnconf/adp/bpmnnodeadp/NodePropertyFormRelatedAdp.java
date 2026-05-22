@@ -11,6 +11,8 @@ import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,24 @@ import java.util.Objects;
 @Service
 public class NodePropertyFormRelatedAdp extends AbstractCommonBpmnNodeAdaptor<BpmnNodeFormRelatedUserConf>{
 
+    @Override
+    public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && !org.springframework.util.CollectionUtils.isEmpty(nodeConfig.getApproverConf().getFormRelatedUserConfList())) {
+            BpmnNodeApproverConfJson.FormRelatedUserConf fr = nodeConfig.getApproverConf().getFormRelatedUserConfList().get(0);
+            List<BaseIdTranStruVo> formNameAndValues = JSON.parseArray(fr.getValueJson(), BaseIdTranStruVo.class);
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .signType(fr.getSignType())
+                    .formAssigneeProperty(fr.getValueType())
+                    .formInfos(formNameAndValues)
+                    .build());
+            return;
+        }
+        // Fallback to DB
+        super.formatToBpmnNodeVo(bpmnNodeVo);
+    }
 
     @Override
     protected void setNodeProperty(BpmnNodeVo nodeVo,BpmnNodeFormRelatedUserConf bpmnNodeFormRelatedUserConf) {

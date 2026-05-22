@@ -8,6 +8,7 @@ import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.FieldAttributeInfoVO;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.base.entity.BpmnNodeAssignLevelConf;
@@ -34,6 +35,19 @@ public class NodePropertyLevelAdp extends AbstractAdditionSignNodeAdaptor {
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getAssignLevelConf() != null) {
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .assignLevelType(nodeConfig.getApproverConf().getAssignLevelConf().getAssignLevelType())
+                    .assignLevelGrade(nodeConfig.getApproverConf().getAssignLevelConf().getAssignLevelGrade())
+                    .build());
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodeAssignLevelConf bpmnNodeAssignLevelConf = bpmnNodeAssignLevelConfService.getOne(new QueryWrapper<BpmnNodeAssignLevelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

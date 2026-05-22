@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
 import org.openoa.base.entity.BpmnNodeCustomizeConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
@@ -23,6 +24,16 @@ public class NodePropertyCustomizeAdp extends AbstractAdditionSignNodeAdaptor{
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getCustomizeConf() != null) {
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> p.setSignType(nodeConfig.getApproverConf().getCustomizeConf().getSignType()));
+            return;
+        }
+
+        // Fallback to DB
         List<BpmnNodeCustomizeConf> list = bpmnNodeCustomizeConfService.list(new QueryWrapper<BpmnNodeCustomizeConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 

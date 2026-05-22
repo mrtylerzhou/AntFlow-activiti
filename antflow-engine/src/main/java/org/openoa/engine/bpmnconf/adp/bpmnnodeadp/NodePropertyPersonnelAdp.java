@@ -11,6 +11,8 @@ import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnNodePersonnelConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.BpmnNodePersonnelEmplConf;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
@@ -45,6 +47,33 @@ public class NodePropertyPersonnelAdp extends AbstractAdditionSignNodeAdaptor{
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
+
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getPersonnelConf() != null) {
+            BpmnNodeApproverConfJson.PersonnelConf pc = nodeConfig.getApproverConf().getPersonnelConf();
+            List<String> emplIds = new ArrayList<>();
+            List<String> emplNames = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(pc.getEmployees())) {
+                for (BpmnNodeApproverConfJson.EmployeeInfo e : pc.getEmployees()) {
+                    emplIds.add(e.getEmplId());
+                    if (!StringUtils.isEmpty(e.getEmplName())) {
+                        emplNames.add(e.getEmplName());
+                    }
+                }
+            }
+            List<String> finalEmplIds = emplIds;
+            List<String> finalEmplNames = emplNames;
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, a -> {
+                a.setSignType(pc.getSignType());
+                a.setEmplIds(finalEmplIds);
+                a.setEmplList(getEmplList(finalEmplIds, finalEmplNames));
+            });
+            return;
+        }
+
+        // Fallback to DB
         BpmnNodePersonnelConf bpmnNodePersonnelConf = bpmnNodePersonnelConfService.getBaseMapper().selectOne(new QueryWrapper<BpmnNodePersonnelConf>()
                 .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
