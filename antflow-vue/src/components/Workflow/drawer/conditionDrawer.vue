@@ -132,7 +132,7 @@
                                                     </el-select>
                                                 </p>
                                             </div>
-                                            <div v-else-if="item.fieldTypeName == 'input-number'">
+                                            <div v-else-if="item.fieldTypeName == 'number'">
                                                 <p>
                                                     <el-select
                                                         :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"

@@ -87,7 +87,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 BpmnConfLfFormdataField formdataField=new BpmnConfLfFormdataField();
                 formdataField.setBpmnConfId(confId);
                 formdataField.setFormDataId(formDataId);
-                formdataField.setFieldType(lfOption.getFieldType());
+                formdataField.setFieldType(getFieldTypeByTypeString(lfWidget.getType()));
                 formdataField.setFieldId(lfOption.getName());
                 formdataField.setFieldName(lfOption.getLabel());
                 result.add(formdataField);
@@ -136,7 +136,22 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
             }
         }
     }
-
+    private int  getFieldTypeByTypeString(String typeString) {
+        switch (typeString) {
+            case "number":
+                return 2;
+            case "date":
+                return 4;
+            case "switch":
+                return 6;
+            case "select":
+            case "input":
+            case "checkbox":
+            case "time":
+            default:
+                return 1;
+        }
+    }
     @Override
     public int order() {
         return 0;
