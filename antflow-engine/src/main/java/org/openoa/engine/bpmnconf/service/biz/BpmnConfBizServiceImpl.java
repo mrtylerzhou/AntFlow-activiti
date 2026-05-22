@@ -318,8 +318,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
     @Autowired
-    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
-    @Autowired
     private OutSideBpmnNodeConditionsConfService outSideBpmnNodeConditionsConfService;
 
     /**
@@ -373,37 +371,21 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     }
 
     /**
-     * Build conditions JSON from DB records (after adaptor writes)
+     * Build conditions JSON from DB records (after adaptor writes).
+     * The extJson in t_bpmn_node_conditions_conf already contains the complete Vue3 model,
+     * so t_bpmn_node_conditions_param_conf is no longer needed.
      */
     private void buildConditionsJsonFromDb(BpmnNodeVo bpmnNodeVo) {
         BpmnNodeConditionsConf condConf = bpmnNodeConditionsConfService.getOne(
                 new QueryWrapper<BpmnNodeConditionsConf>().eq("bpmn_node_id", bpmnNodeVo.getId()));
         if (condConf == null) return;
 
-        List<BpmnNodeConditionsConfJson.ConditionParam> params = new ArrayList<>();
-        if (!Objects.equals(condConf.getIsDefault(), 1)) {
-            List<BpmnNodeConditionsParamConf> paramConfs = bpmnNodeConditionsParamConfService.list(
-                    new QueryWrapper<BpmnNodeConditionsParamConf>()
-                            .eq("bpmn_node_conditions_id", condConf.getId())
-                            .orderByAsc("cond_group"));
-            for (BpmnNodeConditionsParamConf p : paramConfs) {
-                params.add(BpmnNodeConditionsConfJson.ConditionParam.builder()
-                        .conditionParamType(p.getConditionParamType())
-                        .conditionParamName(p.getConditionParamName())
-                        .conditionParamJsom(p.getConditionParamJsom())
-                        .operator(p.getOperator())
-                        .condRelation(p.getCondRelation())
-                        .condGroup(p.getCondGroup())
-                        .build());
-            }
-        }
-
         BpmnNodeConditionsConfJson.ConditionGroup group = BpmnNodeConditionsConfJson.ConditionGroup.builder()
                 .isDefault(condConf.getIsDefault())
                 .groupRelation(condConf.getGroupRelation())
                 .sort(condConf.getSort())
                 .extJson(condConf.getExtJson())
-                .params(params)
+                .params(Collections.emptyList())
                 .build();
 
         String outSideId = null;

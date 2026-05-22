@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.ArrayListMultimap;
@@ -12,6 +13,7 @@ import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.vo.BpmnNodeConditionsConfVueVo;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.ResultAndPage;
@@ -53,9 +55,6 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
 
     @Autowired
     private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
-
-    @Autowired
-    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
 
     @Autowired
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
@@ -266,6 +265,9 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
 
     /**
      * check whether template is used
+     * Reads template marks from extJson (Vue3 model) instead of t_bpmn_node_conditions_param_conf.
+     * In the Vue3 model, CONDITION_TEMPLATEMARK (columnId=9999) entries store selected template IDs
+     * in zdy1 (comma-separated keys against fixedDownBoxValue).
      *
      * @param id
      * @return
@@ -293,24 +295,33 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                                 .collect(Collectors.toList())));
 
                 if (!CollectionUtils.isEmpty(bpmnNodeConditionsConfs)) {
-
-                    ConditionTypeEnum conditionTemplatemark = ConditionTypeEnum.CONDITION_TEMPLATEMARK;
-
-                    List<BpmnNodeConditionsParamConf> bpmnNodeConditionsParamConfs = bpmnNodeConditionsParamConfService.list(new QueryWrapper<BpmnNodeConditionsParamConf>()
-                            .in("bpmn_node_conditions_id", bpmnNodeConditionsConfs
-                                    .stream()
-                                    .map(BpmnNodeConditionsConf::getId)
-                                    .collect(Collectors.toList()))
-                            .eq("condition_param_type", conditionTemplatemark.getCode()));
-
-                    if (!CollectionUtils.isEmpty(bpmnNodeConditionsParamConfs)) {
-                        List<Integer> usedTempList = Lists.newArrayList();
-                        for (BpmnNodeConditionsParamConf bpmnNodeConditionsParamConf : bpmnNodeConditionsParamConfs) {
-                            List<Integer> confTempList = (List<Integer>) JSON.parseArray(bpmnNodeConditionsParamConf.getConditionParamJsom(), conditionTemplatemark.getFieldCls());
-                            usedTempList.addAll(confTempList);
+                    String templateMarkColumnId = String.valueOf(ConditionTypeEnum.CONDITION_TEMPLATEMARK.getCode());
+                    for (BpmnNodeConditionsConf condConf : bpmnNodeConditionsConfs) {
+                        if (StringUtils.isEmpty(condConf.getExtJson())) {
+                            continue;
                         }
-                        if (usedTempList.contains(id)) {
-                            return true;
+                        List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(
+                                condConf.getExtJson(), new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
+                        if (CollectionUtils.isEmpty(extFieldsGroup)) {
+                            continue;
+                        }
+                        for (List<BpmnNodeConditionsConfVueVo> group : extFieldsGroup) {
+                            for (BpmnNodeConditionsConfVueVo cond : group) {
+                                if (templateMarkColumnId.equals(cond.getColumnId())
+                                        && !StringUtils.isEmpty(cond.getZdy1())) {
+                                    String zdy1 = cond.getZdy1();
+                                    // zdy1 may be "[1,2]" or "1,2"
+                                    if (zdy1.startsWith("[") && zdy1.endsWith("]")) {
+                                        zdy1 = zdy1.substring(1, zdy1.length() - 1);
+                                    }
+                                    String[] keys = zdy1.split(",");
+                                    for (String key : keys) {
+                                        if (String.valueOf(id).equals(key.trim())) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

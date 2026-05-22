@@ -252,3 +252,72 @@ AntFlow 通过适配器将业务逻辑与 Activiti 引擎彻底解耦：
 3. **自定义通知渠道** → 实现 `processnotice/` 中的通知适配器
 4. **三方系统接入** → 使用 `/outside/api/*` Open API 或实现回调接口
 5. **低代码接入** → 使用 `antflow-spring-boot-starter` 自动装配快速集成
+
+---
+
+## BPMN 配置表精简重构（JSON-first 读取策略）
+
+### 背景
+原有 26 张 `t_bpmn_*` 配置子表，每次读取流程配置需要大量 JOIN 查询。重构方案：将子表数据合并为 JSON 字段存储在两张主表上，读取时优先从 JSON 取值，DB 作为 fallback。
+
+### 存储结构
+- **`t_bpmn_conf.conf_config_json`** — 流程级配置（视图按钮、通知模板等）
+- **`t_bpmn_node.node_config_json`** — 节点级配置（审批人、条件、按钮、模板等）
+
+JSON 结构定义在 `antflow-base/.../entity/jsonconf/` 包下：
+- `BpmnConfConfigJson` — 流程级 JSON 顶层结构
+- `BpmnNodeConfigJson` — 节点级 JSON 顶层结构，包含：
+  - `approverConf`（`BpmnNodeApproverConfJson`）— 12 种审批人配置
+  - `conditionsConf`（`BpmnNodeConditionsConfJson`）— 条件配置
+  - `buttonSignConf`（`BpmnNodeButtonSignConfJson`）— 按钮/签收/标签/加签
+  - `templateConf`（`BpmnNodeTemplateConfJson`）— 通知模板/催办
+  - `lowCodeConf`（`BpmnNodeLowCodeConfJson`）— 低代码字段权限
+
+### 读写策略
+
+**写路径**（`/bpmnConf/edit` → `BpmnConfController#edit`）：
+- Adaptor 的 `editBpmnNode()` 仍写入 DB 子表（保持兼容）
+- `BpmnConfBizServiceImpl.buildNodeConfigJson()` 在所有 Adaptor 写完后，从 DB 读取数据构建 JSON 并写入 `node_config_json`
+- 使用 `BpmnNodeConfigHolder` 静态方法构建各配置段
+- 使用 `BpmnConfConfigHolder` 构建流程级配置
+
+**读路径**（`/bpmnConf/process/buttonsOperation` → `BpmnConfBizServiceImpl.detail()`）：
+- `getBpmnNodeVoList()` 检查所有节点是否都有 `node_config_json`，若是则走 JSON 路径
+- `getBpmnNodeVoFromJson()` 解析 JSON，直接填充按钮/模板/催办/签收/字段权限等
+- 调用 Adaptor 的 `formatToBpmnNodeVo()`，Adaptor 内部优先从 `nodeConfigJsonObj` 读取，DB 作为 fallback
+- 流程级读取同理：`getBpmnConfVo()` 优先从 `conf_config_json` 读取
+
+### 已完成 JSON-first 读取的 Adaptor（共 14 个）
+
+| Adaptor | 配置类型 | JSON 路径 |
+|---------|---------|-----------|
+| `NodePropertyPersonnelAdp` | 指定人员审批 | `approverConf.personnelConf` |
+| `NodePropertyRoleAdp` | 指定角色审批 | `approverConf.roleConfList[]` |
+| `NodePropertyLoopAdp` | 层层审批 | `approverConf.loopConf` |
+| `NodePropertyLevelAdp` | 指定层级审批 | `approverConf.assignLevelConf` |
+| `NodePropertyHrbpAdp` | HRBP 审批 | `approverConf.hrbpConf` |
+| `NodePropertyCustomizeAdp` | 自选审批人 | `approverConf.customizeConf` |
+| `NodePropertyUDRAdp` | 自定义规则审批 | `approverConf.udrConfList[]` |
+| `NodePropertyFormRelatedAdp` | 表单关联用户审批 | `approverConf.formRelatedUserConfList[]` |
+| `NodePropertyOutSideAccessAdp` | 外部接入审批 | `approverConf.outSideAccessConf` |
+| `NodePropertyBusinessTableAdp` | 关联业务表审批 | `approverConf.businessTableConf` |
+| `AbstractAdditionSignNodeAdp` | 额外加签 | `buttonSignConf.additionalSignConfList[]` |
+| `NodeTypeConditionsAdp` | 条件节点 | `conditionsConf.conditionGroups[].extJson` |
+| `NodeTypeOutSideConditionsAdp` | 外部条件节点 | `conditionsConf.outSideConditionId` |
+
+### 条件表特殊处理
+`t_bpmn_node_conditions_conf.extJson` 存储了完整的 Vue3 模型（`List<List<BpmnNodeConditionsConfVueVo>>`），包含 `optType`（比较符）、`zdy1`（值）、`condGroup`（分组）等全部运行时所需字段。因此 `t_bpmn_node_conditions_param_conf` 完全冗余：
+- **读路径**：`NodeTypeConditionsAdp.formatFromJson()` 直接从 Vue3 模型重建运行时字段
+- **写路径**：`editBpmnNode()` 不再写入 param conf 表（`operator` 字段为历史遗留，可从 `optType` 推导）
+- **运行时检查**：`OutSideBpmConditionsTemplateBizServiceImpl.templateIsUsed()` 从 `extJson` 中 `columnId=9999` 的条目读取模板标识
+- `t_bpmn_node_conditions_param_conf` 可安全删除
+
+### 关键工具类
+- `JsonConfUtil` — JSON 序列化/反序列化工具
+- `BpmnNodeConfigHolder` — 写路径：从 BpmnNodeVo 构建 JSON
+- `BpmnConfConfigHolder` — 写路径：从 BpmnConfVo 构建 JSON
+- `BpmnConfNodePropertyConverter` — Vue3 模型与 BaseVo 互转（`fromVue3Model`/`toVue3Model`）
+
+### 待完成
+- 数据迁移脚本：将现有子表数据回填到 JSON 字段
+- 详细表清单见 `doc/tables_to_drop.md`
