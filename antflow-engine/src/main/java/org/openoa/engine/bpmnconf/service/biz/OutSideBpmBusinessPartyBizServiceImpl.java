@@ -9,6 +9,9 @@ import org.openoa.base.constant.enums.BusinessPartyTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
@@ -341,37 +344,93 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
 
         for (BpmnConfVo bpmnConfVo : bpmConf) {
 
-            //step 1 get  node by role type
             List<BpmnNode> bpmnNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery().eq(BpmnNode::getConfId, bpmnConfVo.getId())
                     .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_ROLE.getCode()));
             for (BpmnNode bpmnNode : bpmnNodes) {
 
-                //step 2 get role list
-                List<BpmnNodeRoleConf> nodeRoleList = bpmnNodeRoleConfServiceImpl.list(Wrappers.<BpmnNodeRoleConf>lambdaQuery()
-                        .eq(BpmnNodeRoleConf::getBpmnNodeId, bpmnNode.getId()).eq(BpmnNodeRoleConf::getIsDel, 0));
-                for (BpmnNodeRoleConf bpmnNodeRoleConf : nodeRoleList) {
+                List<BpmnNodeApproverConfJson.RoleConf> roleConfList = getRoleConfListFromNode(bpmnNode);
+                for (BpmnNodeApproverConfJson.RoleConf roleConf : roleConfList) {
 
-                    //step 3 update role user list
-                    String roleId = bpmnNodeRoleConf.getRoleId();
+                    String roleId = roleConf.getRoleId();
                     if (roleId.equals(userList.getRoleId())) {
                         bpmnNodeRoleOutsideEmpConfService.update(Wrappers.<BpmnNodeRoleOutsideEmpConf>lambdaUpdate().set(BpmnNodeRoleOutsideEmpConf::getIsDel, 1)
                                 .set(BpmnNodeRoleOutsideEmpConf::getUpdateTime, new Date())
                                 .set(BpmnNodeRoleOutsideEmpConf::getUpdateUser, SecurityUtils.getLogInEmpIdSafe())
                                 .eq(BpmnNodeRoleOutsideEmpConf::getNodeId, bpmnNode.getId()));
 
-                        // step 4 add  role user list
                         List<BpmnNodeRoleOutsideEmpConf> newPersonnelList = new ArrayList<>();
                         for (BaseIdTranStruVo user : users) {
                             BpmnNodeRoleOutsideEmpConf outsideEmpConf = getRoleOutsideEmpConf(bpmnNode, user);
                             newPersonnelList.add(outsideEmpConf);
                         }
                         bpmnNodeRoleOutsideEmpConfService.saveBatch(newPersonnelList);
+
+                        List<BpmnNodeApproverConfJson.EmployeeInfo> newOutsideEmployees = users.stream()
+                                .map(u -> BpmnNodeApproverConfJson.EmployeeInfo.builder()
+                                        .emplId(u.getId())
+                                        .emplName(u.getName())
+                                        .build())
+                                .collect(Collectors.toList());
+                        roleConf.setOutsideEmployees(newOutsideEmployees);
+                        updateRoleConfToNodeJson(bpmnNode, roleConfList);
                     }
 
                 }
 
             }
         }
+    }
+
+    private List<BpmnNodeApproverConfJson.RoleConf> getRoleConfListFromNode(BpmnNode node) {
+        String nodeConfigJson = node.getNodeConfigJson();
+        if (!StringUtils.isEmpty(nodeConfigJson)) {
+            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+            if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                    && !CollectionUtils.isEmpty(nodeConfig.getApproverConf().getRoleConfList())) {
+                return nodeConfig.getApproverConf().getRoleConfList();
+            }
+        }
+        List<BpmnNodeRoleConf> dbRoleList = bpmnNodeRoleConfServiceImpl.list(Wrappers.<BpmnNodeRoleConf>lambdaQuery()
+                .eq(BpmnNodeRoleConf::getBpmnNodeId, node.getId()).eq(BpmnNodeRoleConf::getIsDel, 0));
+        if (CollectionUtils.isEmpty(dbRoleList)) {
+            return Collections.emptyList();
+        }
+        List<BpmnNodeApproverConfJson.RoleConf> result = new ArrayList<>();
+        for (BpmnNodeRoleConf dbRole : dbRoleList) {
+            List<BpmnNodeRoleOutsideEmpConf> outsideEmpConfs = bpmnNodeRoleOutsideEmpConfService.list(
+                    Wrappers.<BpmnNodeRoleOutsideEmpConf>lambdaQuery()
+                            .eq(BpmnNodeRoleOutsideEmpConf::getNodeId, node.getId())
+                            .eq(BpmnNodeRoleOutsideEmpConf::getIsDel, 0));
+            List<BpmnNodeApproverConfJson.EmployeeInfo> employees = outsideEmpConfs.stream()
+                    .map(e -> BpmnNodeApproverConfJson.EmployeeInfo.builder()
+                            .emplId(e.getEmplId())
+                            .emplName(e.getEmplName())
+                            .build())
+                    .collect(Collectors.toList());
+            result.add(BpmnNodeApproverConfJson.RoleConf.builder()
+                    .roleId(dbRole.getRoleId())
+                    .roleName(dbRole.getRoleName())
+                    .signType(dbRole.getSignType())
+                    .outsideEmployees(employees)
+                    .build());
+        }
+        return result;
+    }
+
+    private void updateRoleConfToNodeJson(BpmnNode node, List<BpmnNodeApproverConfJson.RoleConf> roleConfList) {
+        String nodeConfigJson = node.getNodeConfigJson();
+        BpmnNodeConfigJson nodeConfig = StringUtils.isEmpty(nodeConfigJson)
+                ? BpmnNodeConfigJson.builder().build()
+                : JsonConfUtil.parseNodeConfig(nodeConfigJson);
+        if (nodeConfig == null) {
+            nodeConfig = BpmnNodeConfigJson.builder().build();
+        }
+        if (nodeConfig.getApproverConf() == null) {
+            nodeConfig.setApproverConf(BpmnNodeApproverConfJson.builder().build());
+        }
+        nodeConfig.getApproverConf().setRoleConfList(roleConfList);
+        node.setNodeConfigJson(JsonConfUtil.toNodeConfigJson(nodeConfig));
+        bpmnNodeService.updateById(node);
     }
 
     private  BpmnNodeRoleOutsideEmpConf getRoleOutsideEmpConf(BpmnNode bpmnNode, BaseIdTranStruVo user) {

@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BpmnNodeConditionsConfVueVo;
 import org.openoa.base.service.AfUserService;
@@ -288,29 +291,26 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                     .in("node_type", Lists.newArrayList(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode(), NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode())));
 
             if (!CollectionUtils.isEmpty(bpmnNodes)) {
-                List<BpmnNodeConditionsConf> bpmnNodeConditionsConfs = bpmnNodeConditionsConfService.list(new QueryWrapper<BpmnNodeConditionsConf>()
-                        .in("bpmn_node_id", bpmnNodes
-                                .stream()
-                                .map(BpmnNode::getId)
-                                .collect(Collectors.toList())));
-
-                if (!CollectionUtils.isEmpty(bpmnNodeConditionsConfs)) {
-                    String templateMarkColumnId = String.valueOf(ConditionTypeEnum.CONDITION_TEMPLATEMARK.getCode());
-                    for (BpmnNodeConditionsConf condConf : bpmnNodeConditionsConfs) {
-                        if (StringUtils.isEmpty(condConf.getExtJson())) {
+                String templateMarkColumnId = String.valueOf(ConditionTypeEnum.CONDITION_TEMPLATEMARK.getCode());
+                for (BpmnNode node : bpmnNodes) {
+                    List<BpmnNodeConditionsConfJson.ConditionGroup> groups = getConditionGroupsFromNode(node);
+                    if (CollectionUtils.isEmpty(groups)) {
+                        continue;
+                    }
+                    for (BpmnNodeConditionsConfJson.ConditionGroup group : groups) {
+                        if (Objects.equals(group.getIsDefault(), 1) || StringUtils.isEmpty(group.getExtJson())) {
                             continue;
                         }
                         List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(
-                                condConf.getExtJson(), new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
+                                group.getExtJson(), new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
                         if (CollectionUtils.isEmpty(extFieldsGroup)) {
                             continue;
                         }
-                        for (List<BpmnNodeConditionsConfVueVo> group : extFieldsGroup) {
-                            for (BpmnNodeConditionsConfVueVo cond : group) {
+                        for (List<BpmnNodeConditionsConfVueVo> groupList : extFieldsGroup) {
+                            for (BpmnNodeConditionsConfVueVo cond : groupList) {
                                 if (templateMarkColumnId.equals(cond.getColumnId())
                                         && !StringUtils.isEmpty(cond.getZdy1())) {
                                     String zdy1 = cond.getZdy1();
-                                    // zdy1 may be "[1,2]" or "1,2"
                                     if (zdy1.startsWith("[") && zdy1.endsWith("]")) {
                                         zdy1 = zdy1.substring(1, zdy1.length() - 1);
                                     }
@@ -329,6 +329,31 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
         }
 
         return false;
+    }
+
+    private List<BpmnNodeConditionsConfJson.ConditionGroup> getConditionGroupsFromNode(BpmnNode node) {
+        String nodeConfigJson = node.getNodeConfigJson();
+        if (!StringUtils.isEmpty(nodeConfigJson)) {
+            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+            if (nodeConfig != null && nodeConfig.getConditionsConf() != null
+                    && !CollectionUtils.isEmpty(nodeConfig.getConditionsConf().getConditionGroups())) {
+                return nodeConfig.getConditionsConf().getConditionGroups();
+            }
+        }
+        List<BpmnNodeConditionsConf> confList = bpmnNodeConditionsConfService.list(new QueryWrapper<BpmnNodeConditionsConf>()
+                .eq("bpmn_node_id", node.getId()));
+        if (!CollectionUtils.isEmpty(confList)) {
+            List<BpmnNodeConditionsConfJson.ConditionGroup> groups = new ArrayList<>();
+            for (BpmnNodeConditionsConf conf : confList) {
+                BpmnNodeConditionsConfJson.ConditionGroup group = BpmnNodeConditionsConfJson.ConditionGroup.builder()
+                        .isDefault(conf.getIsDefault())
+                        .extJson(conf.getExtJson())
+                        .build();
+                groups.add(group);
+            }
+            return groups;
+        }
+        return Collections.emptyList();
     }
 
 }

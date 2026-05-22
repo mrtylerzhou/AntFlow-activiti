@@ -2,23 +2,28 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.EventTypeEnum;
-import org.openoa.base.entity.BpmnApproveRemind;
-import org.openoa.base.entity.BpmnTemplate;
-import org.openoa.base.entity.DefaultTemplate;
-import org.openoa.base.entity.InformationTemplate;
+import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeTemplateConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.DefaultTemplateVo;
 import org.openoa.base.vo.InformationTemplateVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
 import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -33,6 +38,10 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
     private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
     private BpmnTemplateService bpmnTemplateService;
+    @Autowired
+    private BpmnConfService bpmnConfService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
     /**
      * modify
@@ -60,7 +69,11 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
             //modify
             if (informationTemplate.getStatus().equals(1)) {
 
-                //to check whether the template is in use,if so then throw exception
+                boolean usedInJson = isTemplateUsedInJson(informationTemplate.getId());
+                if (usedInJson) {
+                    throw new AFBizException("该模板正在使用中，不可禁用！");
+                }
+
                 List<BpmnTemplate> templates = bpmnTemplateService.getBaseMapper().selectList(
                         new QueryWrapper<BpmnTemplate>()
                                 .eq("is_del", 0)
@@ -161,6 +174,49 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
         if (!ObjectUtils.isEmpty(list)) {
             defaultTemplateService.insertOrUpdateAllColumnBatch(list);
         }
+    }
+
+    private boolean isTemplateUsedInJson(Long templateId) {
+        List<BpmnConf> confs = bpmnConfService.list(new QueryWrapper<BpmnConf>()
+                .eq("is_del", 0)
+                .eq("effective_status", 1)
+                .isNotNull("conf_config_json"));
+        for (BpmnConf conf : confs) {
+            BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(conf.getConfConfigJson());
+            if (confConfig == null) {
+                continue;
+            }
+            if (!CollectionUtils.isEmpty(confConfig.getConfTemplates())) {
+                for (BpmnConfConfigJson.ConfTemplateConf tc : confConfig.getConfTemplates()) {
+                    if (templateId.equals(tc.getTemplateId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        List<BpmnNode> nodes = bpmnNodeService.list(new QueryWrapper<BpmnNode>()
+                .eq("is_del", 0)
+                .isNotNull("node_config_json"));
+        for (BpmnNode node : nodes) {
+            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+            if (nodeConfig == null || nodeConfig.getTemplateConf() == null) {
+                continue;
+            }
+            BpmnNodeTemplateConfJson templateConf = nodeConfig.getTemplateConf();
+            if (!CollectionUtils.isEmpty(templateConf.getTemplates())) {
+                for (BpmnNodeTemplateConfJson.TemplateConf tc : templateConf.getTemplates()) {
+                    if (templateId.equals(tc.getTemplateId())) {
+                        return true;
+                    }
+                }
+            }
+            if (templateConf.getApproveRemind() != null
+                    && templateId.equals(templateConf.getApproveRemind().getTemplateId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

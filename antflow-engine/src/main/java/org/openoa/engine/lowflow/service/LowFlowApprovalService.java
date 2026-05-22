@@ -12,6 +12,7 @@ import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
+import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.entity.BpmnNodeFormRelatedUserConf;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
@@ -25,6 +26,11 @@ import org.openoa.base.util.SnowFlake;
 import org.openoa.base.vo.*;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
+import org.openoa.base.entity.BpmnNode;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeLowCodeConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
@@ -58,6 +64,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private BpmnNodeFormRelatedUserConfService bpmnNodeFormRelatedUserConfService;
     @Autowired
     private BpmnNodeLfFormdataFieldControlMapper bmnNodeLfFormdataFieldControlMapper;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
     @Override
     public BpmnStartConditionsVo previewSetCondition(UDLFApplyVo vo) {
@@ -252,35 +260,67 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         vo.setEntityName(LowFlowApprovalService.class.getSimpleName());
         Integer extraFlags = bpmnConfVo.getExtraFlags();
         if (extraFlags != null && BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.flagsContainsCurrent(extraFlags)) {
-            List<BpmnNodeFormRelatedUserConf> bpmnNodeFormRelatedUserConfs = bpmnNodeFormRelatedUserConfService.getMapper().queryByConfId(confId);
-            if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
-                throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
-            }
+            List<BpmnNode> formRelatedNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery()
+                    .eq(BpmnNode::getConfId, confId)
+                    .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_FORM_RELATED.getCode()));
             Map<String, List<String>> node2formRelatedAssignees = new HashMap<>();
-            for (BpmnNodeFormRelatedUserConf bpmnNodeFormRelatedUserConf : bpmnNodeFormRelatedUserConfs) {
-                Long bpmnNodeId = bpmnNodeFormRelatedUserConf.getBpmnNodeId();
-                String valueJson = bpmnNodeFormRelatedUserConf.getValueJson();
-                if (StringUtils.isEmpty(valueJson)) {
-                    throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
-                }
-                List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
-                List<String> formValues = new ArrayList<>();
-                for (BaseIdTranStruVo formInfo : formInfos) {
-                    String formName=formInfo.getId();
-                    //用于存储人员相关的表单一般是下拉框,值可能是单个,也可能是数组
-                    Object formVal = lfFields.get(formName);
-                    if (formVal instanceof Iterable) {
-                        Iterable iterablef = (Iterable) formVal;
-                        Iterator iteratorf = iterablef.iterator();
-                        while (iteratorf.hasNext()) {
-                            Object bValue = iteratorf.next();
-                            formValues.add(bValue.toString());
+            if (!CollectionUtils.isEmpty(formRelatedNodes)) {
+                for (BpmnNode node : formRelatedNodes) {
+                    List<BpmnNodeApproverConfJson.FormRelatedUserConf> formRelatedConfs = getFormRelatedConfsFromNode(node);
+                    for (BpmnNodeApproverConfJson.FormRelatedUserConf formRelatedConf : formRelatedConfs) {
+                        String valueJson = formRelatedConf.getValueJson();
+                        if (StringUtils.isEmpty(valueJson)) {
+                            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
                         }
-                    }else{
-                        formValues.add(formVal.toString());
+                        List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
+                        List<String> formValues = new ArrayList<>();
+                        for (BaseIdTranStruVo formInfo : formInfos) {
+                            String formName = formInfo.getId();
+                            Object formVal = lfFields.get(formName);
+                            if (formVal instanceof Iterable) {
+                                Iterable iterablef = (Iterable) formVal;
+                                Iterator iteratorf = iterablef.iterator();
+                                while (iteratorf.hasNext()) {
+                                    Object bValue = iteratorf.next();
+                                    formValues.add(bValue.toString());
+                                }
+                            } else {
+                                formValues.add(formVal.toString());
+                            }
+                        }
+                        node2formRelatedAssignees.put(node.getId().toString(), formValues);
                     }
                 }
-                node2formRelatedAssignees.put(bpmnNodeId.toString(),formValues);
+            }
+            if (node2formRelatedAssignees.isEmpty()) {
+                List<BpmnNodeFormRelatedUserConf> bpmnNodeFormRelatedUserConfs = bpmnNodeFormRelatedUserConfService.getMapper().queryByConfId(confId);
+                if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
+                    throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
+                }
+                for (BpmnNodeFormRelatedUserConf bpmnNodeFormRelatedUserConf : bpmnNodeFormRelatedUserConfs) {
+                    Long bpmnNodeId = bpmnNodeFormRelatedUserConf.getBpmnNodeId();
+                    String valueJson = bpmnNodeFormRelatedUserConf.getValueJson();
+                    if (StringUtils.isEmpty(valueJson)) {
+                        throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
+                    }
+                    List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
+                    List<String> formValues = new ArrayList<>();
+                    for (BaseIdTranStruVo formInfo : formInfos) {
+                        String formName = formInfo.getId();
+                        Object formVal = lfFields.get(formName);
+                        if (formVal instanceof Iterable) {
+                            Iterable iterablef = (Iterable) formVal;
+                            Iterator iteratorf = iterablef.iterator();
+                            while (iteratorf.hasNext()) {
+                                Object bValue = iteratorf.next();
+                                formValues.add(bValue.toString());
+                            }
+                        } else {
+                            formValues.add(formVal.toString());
+                        }
+                    }
+                    node2formRelatedAssignees.put(bpmnNodeId.toString(), formValues);
+                }
             }
             vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
         }
@@ -327,8 +367,11 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 		if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
-        List<LFFieldControlVO> currentFieldControls = bmnNodeLfFormdataFieldControlMapper
-                .getFieldControlByProcessNumberAndElementId(vo.getProcessNumber(), vo.getTaskDefKey());
+        List<LFFieldControlVO> currentFieldControls = getFieldControlsFromJson(confId, vo.getTaskDefKey());
+        if (CollectionUtils.isEmpty(currentFieldControls)) {
+            currentFieldControls = bmnNodeLfFormdataFieldControlMapper
+                    .getFieldControlByProcessNumberAndElementId(vo.getProcessNumber(), vo.getTaskDefKey());
+        }
         for (LFMainField field : lfMainFields){
             if(!CollectionUtils.isEmpty(currentFieldControls)){
                 LFFieldControlVO lfFieldControlVO = currentFieldControls.stream().filter(control -> control.getFieldId().equals(field.getFieldId())).findFirst().orElse(null);
@@ -419,6 +462,53 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             throw new AFBizException("conditionFields size can not greater than 1");
         }
         return conditionFieldMap;
+    }
+
+    private List<LFFieldControlVO> getFieldControlsFromJson(Long confId, String elementId) {
+        if (confId == null || StringUtils.isEmpty(elementId)) {
+            return Collections.emptyList();
+        }
+        BpmnNode node = bpmnNodeService.getOne(Wrappers.<BpmnNode>lambdaQuery()
+                .eq(BpmnNode::getConfId, confId)
+                .eq(BpmnNode::getNodeId, elementId)
+                .eq(BpmnNode::getIsDel, 0)
+                .last("LIMIT 1"));
+        if (node == null) {
+            return Collections.emptyList();
+        }
+        String nodeConfigJson = node.getNodeConfigJson();
+        if (StringUtils.isEmpty(nodeConfigJson)) {
+            return Collections.emptyList();
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+        if (nodeConfig == null || nodeConfig.getLowCodeConf() == null
+                || CollectionUtils.isEmpty(nodeConfig.getLowCodeConf().getFieldControls())) {
+            return Collections.emptyList();
+        }
+        List<LFFieldControlVO> result = new ArrayList<>();
+        for (BpmnNodeLowCodeConfJson.FieldControl fc : nodeConfig.getLowCodeConf().getFieldControls()) {
+            LFFieldControlVO vo = new LFFieldControlVO();
+            vo.setNodeId(node.getId());
+            vo.setFormdataId(fc.getFormdataId());
+            vo.setFieldId(fc.getFieldId());
+            vo.setFieldName(fc.getFieldName());
+            vo.setPerm(fc.getPerm());
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private List<BpmnNodeApproverConfJson.FormRelatedUserConf> getFormRelatedConfsFromNode(BpmnNode node) {
+        String nodeConfigJson = node.getNodeConfigJson();
+        if (StringUtils.isEmpty(nodeConfigJson)) {
+            return Collections.emptyList();
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+        if (nodeConfig == null || nodeConfig.getApproverConf() == null
+                || CollectionUtils.isEmpty(nodeConfig.getApproverConf().getFormRelatedUserConfList())) {
+            return Collections.emptyList();
+        }
+        return nodeConfig.getApproverConf().getFormRelatedUserConfList();
     }
 
 }
