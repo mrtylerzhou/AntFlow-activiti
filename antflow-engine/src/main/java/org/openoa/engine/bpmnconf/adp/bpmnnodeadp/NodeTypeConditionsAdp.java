@@ -20,7 +20,6 @@ import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.entity.BpmnNodeConditionsConf;
 import org.openoa.base.entity.BpmnNodeConditionsParamConf;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
@@ -52,8 +51,6 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
     @Autowired
     private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
 
-    @Autowired
-    private BpmnNodeConditionsConfMapper confMapper;
     @Autowired
     private BpmnConfLfFormdataFieldServiceImpl lfFormdataFieldService;
 
@@ -342,7 +339,7 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         bpmnNodeConditionsConf.setCreateTime(new Date());
         bpmnNodeConditionsConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
         bpmnNodeConditionsConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        confMapper.insert(bpmnNodeConditionsConf);
+        bpmnNodeConditionsConfService.save(bpmnNodeConditionsConf);
 
         // if it is default condition return
         if (Objects.equals(bpmnNodeConditionsConfBaseVo.getIsDefault(), 1)) {
