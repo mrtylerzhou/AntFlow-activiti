@@ -1,13 +1,18 @@
 package org.openoa.engine.bpmnconf.service.processor;
 
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmnNodeLabel;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.service.AntFlowOrderPostProcessor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmNodeLabelsServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +25,8 @@ import java.util.stream.Collectors;
 public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnConfVo> {
     @Autowired
     private BpmNodeLabelsServiceImpl nodeLabelsService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
     @Override
     public void postProcess(BpmnConfVo confVo) {
@@ -38,6 +45,8 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
                     return nodeLabel;
                 }).collect(Collectors.toList());
                 nodeLabels.addAll(labels);
+
+                updateLabelsToNodeJson(nodeVo.getId(), labelList);
             }
         }
         if(!CollectionUtils.isEmpty(nodeLabels)){
@@ -46,6 +55,31 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
             confVo.setExtraFlags(binariedOr);
             nodeLabelsService.saveBatch(nodeLabels);
         }
+    }
+
+    private void updateLabelsToNodeJson(Long nodeId, List<BpmnNodeLabelVO> labelList) {
+        BpmnNode node = bpmnNodeService.getById(nodeId);
+        if (node == null) {
+            return;
+        }
+        BpmnNodeConfigJson nodeConfig = node.getNodeConfigJson() == null
+                ? BpmnNodeConfigJson.builder().build()
+                : JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+        if (nodeConfig == null) {
+            nodeConfig = BpmnNodeConfigJson.builder().build();
+        }
+        if (nodeConfig.getButtonSignConf() == null) {
+            nodeConfig.setButtonSignConf(BpmnNodeButtonSignConfJson.builder().build());
+        }
+        List<BpmnNodeButtonSignConfJson.NodeLabel> jsonLabels = labelList.stream()
+                .map(l -> BpmnNodeButtonSignConfJson.NodeLabel.builder()
+                        .labelValue(l.getLabelValue())
+                        .labelName(l.getLabelName())
+                        .build())
+                .collect(Collectors.toList());
+        nodeConfig.getButtonSignConf().setLabels(jsonLabels);
+        node.setNodeConfigJson(JsonConfUtil.toNodeConfigJson(nodeConfig));
+        bpmnNodeService.updateById(node);
     }
 
 

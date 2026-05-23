@@ -7,12 +7,17 @@ import org.openoa.base.constant.enums.ElementTypeEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.constant.enums.SignTypeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmnNodeLabel;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.service.BpmNodeLabelsService;
 import org.openoa.base.vo.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,6 +49,12 @@ public class NodeUtil {
         return CollectionUtils.containsAny(providedLabelValues, Lists.newArrayList(labelValues));
     }
     public static boolean isCurrentNodeNoneOperational(String nodeId){
+        List<BpmnNodeLabelVO> labelVOs = getLabelsFromNodeJson(nodeId);
+        if (!CollectionUtils.isEmpty(labelVOs)) {
+            List<String> collect = labelVOs.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
+            List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
+            return CollectionUtils.containsAny(collect, noneOperationalLables);
+        }
         BpmNodeLabelsService bpmNodeLabelsService = SpringBeanUtils.getBean(BpmNodeLabelsService.class);
         List<BpmnNodeLabel> nodeLabels = bpmNodeLabelsService.list(AFWrappers.<BpmnNodeLabel>lambdaTenantQuery().eq(BpmnNodeLabel::getNodeId,nodeId));
         if(CollectionUtils.isEmpty(nodeLabels)){
@@ -52,6 +63,32 @@ public class NodeUtil {
         List<String> collect = nodeLabels.stream().map(BpmnNodeLabel::getLabelValue).collect(Collectors.toList());
         List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
         return CollectionUtils.containsAny(collect,noneOperationalLables);
+    }
+
+    private static List<BpmnNodeLabelVO> getLabelsFromNodeJson(String nodeId) {
+        try {
+            Object bpmnNodeService = SpringBeanUtils.getBean(Class.forName("org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService"));
+            java.lang.reflect.Method getById = bpmnNodeService.getClass().getMethod("getById", Serializable.class);
+            Object node = getById.invoke(bpmnNodeService, Long.valueOf(nodeId));
+            if (node == null) {
+                return null;
+            }
+            java.lang.reflect.Method getNodeConfigJson = node.getClass().getMethod("getNodeConfigJson");
+            String nodeConfigJson = (String) getNodeConfigJson.invoke(node);
+            if (StringUtils.isEmpty(nodeConfigJson)) {
+                return null;
+            }
+            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+            if (nodeConfig == null || nodeConfig.getButtonSignConf() == null
+                    || CollectionUtils.isEmpty(nodeConfig.getButtonSignConf().getLabels())) {
+                return null;
+            }
+            return nodeConfig.getButtonSignConf().getLabels().stream()
+                    .map(l -> new BpmnNodeLabelVO(l.getLabelValue(), l.getLabelName()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
     }
     public static void elementWithSpecialMarks( BpmnConfCommonElementVo elementVo){
         String elementName=elementVo.getElementName();

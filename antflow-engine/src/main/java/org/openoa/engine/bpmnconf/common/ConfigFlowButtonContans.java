@@ -10,6 +10,9 @@ import org.openoa.base.constant.enums.ConfigFlowButtonSortEnum;
 import org.openoa.base.constant.enums.ProcessButtonEnum;
 import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
@@ -24,6 +27,8 @@ import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnNodeButtonConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -60,6 +65,10 @@ public class ConfigFlowButtonContans {
     private ActHiTaskinstServiceImpl actHiTaskinstService;
     @Autowired
     private BpmnNodeButtonConfBizService bpmnNodeButtonConfBizService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
+    @Autowired
+    private BpmnConfService bpmnConfService;
 
     /**get pc buttons
      * @param elementId  elementId
@@ -273,6 +282,11 @@ public class ConfigFlowButtonContans {
 
 
     private List<ProcessActionButtonVo> getNodeConfButtons(BpmBusinessProcess bpmBusinessProcess,Boolean isInitiate){
+        List<ProcessActionButtonVo> jsonButtons = getNodeConfButtonsFromJson(bpmBusinessProcess, isInitiate);
+        if (!CollectionUtils.isEmpty(jsonButtons)) {
+            return jsonButtons;
+        }
+
         List<BpmnNodeButtonConf> bpmnNodeButtonConfs=null;
         if(isInitiate){
             bpmnNodeButtonConfs= bpmnNodeButtonConfBizService.getMapper().queryConfByBpmnConde(bpmBusinessProcess.getVersion());
@@ -290,7 +304,6 @@ public class ConfigFlowButtonContans {
                     List<String> nodeIds = nodeIdsByElementIds.stream().map(NodeXelementXvarXverifyInfo::getNodeId).collect(Collectors.toList());
                     bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIds, ButtonPageTypeEnum.TO_VIEW);
                 }
-                //只能显示在发起人页的按钮不应显示在其它页面
                 if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
                     bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
                 }
@@ -306,5 +319,74 @@ public class ConfigFlowButtonContans {
             return processActionButtonVos;
         }
        return new ArrayList<>();
+    }
+
+    private List<ProcessActionButtonVo> getNodeConfButtonsFromJson(BpmBusinessProcess bpmBusinessProcess, Boolean isInitiate) {
+        List<ProcessActionButtonVo> result = new ArrayList<>();
+        if (isInitiate) {
+            BpmnConf conf = bpmnConfService.getOne(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<BpmnConf>()
+                    .eq("bpmn_code", bpmBusinessProcess.getVersion())
+                    .eq("effective_status", 1)
+                    .last("LIMIT 1"));
+            if (conf == null) {
+                return result;
+            }
+            List<BpmnNode> nodes = bpmnNodeService.list(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<BpmnNode>()
+                    .eq("conf_id", conf.getId())
+                    .eq("is_del", 0)
+                    .isNotNull("node_config_json"));
+            for (BpmnNode node : nodes) {
+                BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+                if (nodeConfig == null || nodeConfig.getButtonSignConf() == null
+                        || CollectionUtils.isEmpty(nodeConfig.getButtonSignConf().getButtonConfList())) {
+                    continue;
+                }
+                for (BpmnNodeButtonSignConfJson.ButtonConf bc : nodeConfig.getButtonSignConf().getButtonConfList()) {
+                    if (ButtonPageTypeEnum.INITIATE.getCode().equals(bc.getButtonPageType())) {
+                        result.add(ProcessActionButtonVo.builder()
+                                .buttonType(bc.getButtonType())
+                                .name(bc.getButtonName())
+                                .show(ProcessButtonEnum.VIEW_TYPE.getCode())
+                                .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build());
+                    }
+                }
+            }
+        } else {
+            List<String> hisTaskDefKeys = actHiTaskinstService
+                    .queryRecordsByProcInstId(bpmBusinessProcess.getProcInstId())
+                    .stream().filter(a -> a.getEndTime() != null && SecurityUtils.getLogInEmpIdSafe().equals(a.getAssignee()))
+                    .map(ActHiTaskinst::getTaskDefKey)
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(hisTaskDefKeys)) {
+                return result;
+            }
+            List<NodeXelementXvarXverifyInfo> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper()
+                    .getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
+            if (CollectionUtils.isEmpty(nodeIdsByElementIds)) {
+                return result;
+            }
+            for (NodeXelementXvarXverifyInfo info : nodeIdsByElementIds) {
+                BpmnNode node = bpmnNodeService.getById(Long.valueOf(info.getNodeId()));
+                if (node == null || StringUtils.isEmpty(node.getNodeConfigJson())) {
+                    continue;
+                }
+                BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+                if (nodeConfig == null || nodeConfig.getButtonSignConf() == null
+                        || CollectionUtils.isEmpty(nodeConfig.getButtonSignConf().getButtonConfList())) {
+                    continue;
+                }
+                for (BpmnNodeButtonSignConfJson.ButtonConf bc : nodeConfig.getButtonSignConf().getButtonConfList()) {
+                    if (ButtonPageTypeEnum.TO_VIEW.getCode().equals(bc.getButtonPageType())) {
+                        result.add(ProcessActionButtonVo.builder()
+                                .buttonType(bc.getButtonType())
+                                .name(bc.getButtonName())
+                                .show(ProcessButtonEnum.VIEW_TYPE.getCode())
+                                .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build());
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
