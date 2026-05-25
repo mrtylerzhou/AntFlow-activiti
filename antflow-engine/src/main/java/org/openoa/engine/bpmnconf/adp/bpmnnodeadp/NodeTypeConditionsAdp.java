@@ -238,30 +238,31 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
 
     /**
      * Read conditions from node_config_json (JSON-first path).
-     * The extJson stored in each ConditionGroup already contains the complete Vue3 model,
-     * so we can reconstruct all runtime fields (groupedConditionParamTypes, numberOperatorList, etc.)
-     * directly from the Vue3 model without querying t_bpmn_node_conditions_param_conf.
+     * Uses BpmnConfNodePropertyConverter.fromVue3Model to reconstruct all runtime value fields
+     * (accountType, leaveHour, etc.) from the Vue3 model stored in extJson,
+     * then supplements with metadata fields that fromVue3Model does not cover
+     * (numberOperatorList, groupedCondRelations, setConditionsResps, etc.).
      */
     private void formatFromJson(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfJson conditionsConf) {
         List<BpmnNodeConditionsConfJson.ConditionGroup> groups = conditionsConf.getConditionGroups();
         BpmnNodeConditionsConfJson.ConditionGroup firstGroup = groups.get(0);
 
-        BpmnNodeConditionsConfBaseVo baseVo = new BpmnNodeConditionsConfBaseVo();
-        baseVo.setIsDefault(firstGroup.getIsDefault());
-        baseVo.setSort(firstGroup.getSort());
-        baseVo.setGroupRelation(firstGroup.getGroupRelation());
-        baseVo.setExtJson(firstGroup.getExtJson());
-
         if (Objects.equals(firstGroup.getIsDefault(), 1)) {
+            BpmnNodeConditionsConfBaseVo baseVo = new BpmnNodeConditionsConfBaseVo();
+            baseVo.setIsDefault(firstGroup.getIsDefault());
+            baseVo.setSort(firstGroup.getSort());
             setProperty(bpmnNodeVo, baseVo);
             bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
             bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
             return;
         }
 
-        // Parse Vue3 model from extJson — this is the single source of truth
         String extJson = firstGroup.getExtJson();
         if (StringUtils.isEmpty(extJson)) {
+            BpmnNodeConditionsConfBaseVo baseVo = new BpmnNodeConditionsConfBaseVo();
+            baseVo.setIsDefault(firstGroup.getIsDefault());
+            baseVo.setSort(firstGroup.getSort());
+            baseVo.setGroupRelation(firstGroup.getGroupRelation());
             setProperty(bpmnNodeVo, baseVo);
             return;
         }
@@ -269,38 +270,51 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(extJson,
                 new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
 
-        // Reconstruct runtime fields from Vue3 model (replaces t_bpmn_node_conditions_param_conf queries)
-        List<Integer> conditionParamTypes = new ArrayList<>();
-        Map<Integer, List<Integer>> groupedConditionParamTypes = new HashMap<>();
+        // Use fromVue3Model to reconstruct ALL runtime value fields (accountType, leaveHour, etc.)
+        // plus conditionParamTypes, groupedConditionParamTypes, groupedLfConditionsMap, etc.
+        BpmnNodePropertysVo propertysVo = BpmnNodePropertysVo.builder()
+                .isDefault(firstGroup.getIsDefault())
+                .sort(firstGroup.getSort())
+                .groupRelation(ConditionRelationShipEnum.getValueByCode(firstGroup.getGroupRelation()))
+                .conditionList(extFieldsGroup)
+                .build();
+
+        BpmnNodeConditionsConfBaseVo baseVo = BpmnConfNodePropertyConverter.fromVue3Model(propertysVo);
+
+        // fromVue3Model does not populate these metadata fields — set them here
         Map<Integer, Integer> groupedCondRelations = new HashMap<>();
         Map<Integer, List<Integer>> groupedNumberOperatorListMap = new HashMap<>();
+        Set<Integer> processedTypes = new HashSet<>();
 
         for (List<BpmnNodeConditionsConfVueVo> groupConds : extFieldsGroup) {
             for (BpmnNodeConditionsConfVueVo cond : groupConds) {
                 Integer condGroup = cond.getCondGroup();
                 Integer columnId = Integer.parseInt(cond.getColumnId());
-                conditionParamTypes.add(columnId);
 
-                groupedConditionParamTypes.computeIfAbsent(condGroup, k -> new ArrayList<>()).add(columnId);
                 groupedCondRelations.put(condGroup, ConditionRelationShipEnum.getCodeByValue(cond.getCondRelation()));
 
-                // optType in Vue3 model = operator in BpmnNodeConditionsParamConf (historical field)
                 if (cond.getOptType() != null) {
                     baseVo.getNumberOperatorList().add(cond.getOptType());
                     groupedNumberOperatorListMap.computeIfAbsent(condGroup, k -> new ArrayList<>()).add(cond.getOptType());
                 }
+
+                // Call setConditionsResps for each distinct condition type
+                // to populate display list fields (e.g. accountTypeList, purchaseTypeList)
+                if (!processedTypes.contains(columnId)) {
+                    ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(columnId);
+                    if (conditionTypeEnum != null) {
+                        BpmnNodeConditionsAdaptor bean = SpringBeanUtils.getBean(conditionTypeEnum.getCls());
+                        bean.setConditionsResps(baseVo);
+                        processedTypes.add(columnId);
+                    }
+                }
             }
         }
-        baseVo.setConditionParamTypes(conditionParamTypes);
-        baseVo.setGroupedConditionParamTypes(groupedConditionParamTypes);
         baseVo.setGroupedCondRelations(groupedCondRelations);
         baseVo.setGroupedNumberOperatorListMap(groupedNumberOperatorListMap);
 
         setProperty(bpmnNodeVo, baseVo);
 
-        // Set conditionList (Vue3 model) and metadata on property
-        bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
-        bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
         bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(firstGroup.getGroupRelation()));
         bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
     }
