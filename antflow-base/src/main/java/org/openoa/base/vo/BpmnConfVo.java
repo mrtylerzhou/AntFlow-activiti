@@ -1,5 +1,6 @@
 package org.openoa.base.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -188,11 +189,13 @@ public class BpmnConfVo {
     /**
      * Transient conf config JSON - populated during read flow
      */
+    @JsonIgnore
     private BpmnConfConfigJson confConfigJsonObj;
 
     /**
      * Parse confConfigJson string into confConfigJsonObj
      */
+    @JsonIgnore
     public BpmnConfConfigJson getOrParseConfConfigJson(String confConfigJson) {
         if (this.confConfigJsonObj == null && confConfigJson != null) {
             this.confConfigJsonObj = JsonConfUtil.parseConfConfig(confConfigJson);

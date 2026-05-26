@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.util.CollectionUtils;
@@ -180,6 +181,7 @@ public class BpmnNodeVo  implements Serializable {
     /**
      * Transient node config JSON - populated during edit flow
      */
+    @JsonIgnore
     private BpmnNodeConfigJson nodeConfigJsonObj;
     private String elementId;
     /**
@@ -212,6 +214,7 @@ public class BpmnNodeVo  implements Serializable {
     /**
      * Get or create the node config JSON object
      */
+    @JsonIgnore
     public BpmnNodeConfigJson getOrCreateNodeConfigJson() {
         if (this.nodeConfigJsonObj == null) {
             this.nodeConfigJsonObj = new BpmnNodeConfigJson();

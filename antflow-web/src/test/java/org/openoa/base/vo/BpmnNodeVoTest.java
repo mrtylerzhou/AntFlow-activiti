@@ -1,5 +1,6 @@
 package org.openoa.base.vo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -144,6 +145,32 @@ class BpmnNodeVoTest extends BaseTest {
             String json = vo.serializeNodeConfigJson();
             assertNotNull(json);
             assertTrue(json.length() > 0);
+        }
+    }
+
+    @Nested
+    @DisplayName("Jackson serialization")
+    class JacksonSerializationTest {
+        private final ObjectMapper mapper = new ObjectMapper();
+
+        @Test
+        @DisplayName("should not include orCreateNodeConfigJson in JSON output")
+        void shouldNotIncludeOrCreateNodeConfigJson() throws Exception {
+            BpmnNodeVo vo = new BpmnNodeVo();
+            vo.getOrCreateNodeConfigJson();
+            String json = mapper.writeValueAsString(vo);
+            assertFalse(json.contains("orCreateNodeConfigJson"),
+                    "JSON should not contain 'orCreateNodeConfigJson' field, but got: " + json);
+        }
+
+        @Test
+        @DisplayName("should include nodeConfigJsonObj in JSON output")
+        void shouldIncludeNodeConfigJsonObj() throws Exception {
+            BpmnNodeVo vo = new BpmnNodeVo();
+            vo.getOrCreateNodeConfigJson();
+            String json = mapper.writeValueAsString(vo);
+            assertTrue(json.contains("nodeConfigJsonObj"),
+                    "JSON should contain 'nodeConfigJsonObj' field, but got: " + json);
         }
     }
 }
