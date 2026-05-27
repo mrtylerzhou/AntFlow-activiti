@@ -71,57 +71,9 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
                     .noparticipatingStaffs(noparticipatingStaffs)
                     .build());
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
-            return;
         }
 
-        // Fallback to DB
-        BpmnNodeLoopConf bpmnNodeLoopConf = bpmnNodeLoopConfService.getOne(new QueryWrapper<BpmnNodeLoopConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (bpmnNodeLoopConf!=null) {
-            List<Serializable> list =!ObjectUtils.isEmpty(bpmnNodeLoopConf.getLoopEndPerson())
-                    ? Arrays.asList(bpmnNodeLoopConf.getLoopEndPerson().split(","))
-                    .stream()
-                    .map(Long::new)
-                    .collect(Collectors.toList())
-                    : new ArrayList<>();
-            List<Serializable> noList = !ObjectUtils.isEmpty(bpmnNodeLoopConf.getNoparticipatingStaffIds())
-                    ? Arrays.asList(bpmnNodeLoopConf.getNoparticipatingStaffIds().split(","))
-                    .stream()
-                    .map(Long::new)
-                    .collect(Collectors.toList())
-                    : new ArrayList<>();
-
-            List<BaseIdTranStruVo> loopEndPersonList = bpmnEmployeeInfoProviderService.provideEmployeeInfo(AntCollectionUtil.serializeToStringCollection(list))
-                    .entrySet()
-                    .stream()
-                    .map(a -> BaseIdTranStruVo
-                            .builder()
-                            .id(a.getKey())
-                            .name(a.getValue()).build())
-                    .collect(Collectors.toList());
-
-            List<BaseIdTranStruVo> noparticipatingStaffs = bpmnEmployeeInfoProviderService.provideEmployeeInfo(AntCollectionUtil.serializeToStringCollection(noList))
-                    .entrySet()
-                    .stream()
-                    .map(a -> BaseIdTranStruVo
-                            .builder()
-                            .id(a.getKey())
-                            .name(a.getValue()).build())
-                    .collect(Collectors.toList());
-            bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                    .builder()
-                    .loopEndType(bpmnNodeLoopConf.getLoopEndType())
-                    .loopNumberPlies(bpmnNodeLoopConf.getLoopNumberPlies())
-                    .loopEndGrade(bpmnNodeLoopConf.getLoopEndGrade())
-                    .loopEndPersonList(list)
-                    .loopEndPersonObjList(loopEndPersonList)
-                    .noparticipatingStaffIds(noList)
-                    .noparticipatingStaffs(noparticipatingStaffs)
-                    .build());
-            bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
-        }
-
+        throw new AFBizException("migration error,please contact the author");
     }
 
     @Override
@@ -160,32 +112,7 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
         return rule;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
 
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-        if(!CollectionUtils.isEmpty(bpmnNodePropertysVo.getAdditionalSignInfoList())){
-         throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"层层审批不允许全局增加/减少审批人!");
-        }
-        BpmnNodeLoopConf bpmnNodeLoopConf = new BpmnNodeLoopConf();
-        bpmnNodeLoopConf.setBpmnNodeId(bpmnNodeVo.getId());
-        bpmnNodeLoopConf.setLoopEndType(bpmnNodePropertysVo.getLoopEndType());
-        bpmnNodeLoopConf.setLoopNumberPlies(bpmnNodePropertysVo.getLoopNumberPlies());
-        bpmnNodeLoopConf.setLoopEndGrade(bpmnNodePropertysVo.getLoopEndGrade());
-        if (!CollectionUtils.isEmpty(bpmnNodePropertysVo.getLoopEndPersonList())) {
-            bpmnNodeLoopConf.setLoopEndPerson(StringUtils.join(bpmnNodePropertysVo.getLoopEndPersonList(), ","));
-        }
-        if (!CollectionUtils.isEmpty(bpmnNodePropertysVo.getNoparticipatingStaffIds())) {
-            bpmnNodeLoopConf.setNoparticipatingStaffIds(StringUtils.join(bpmnNodePropertysVo.getNoparticipatingStaffIds(), ","));
-        }
-        bpmnNodeLoopConf.setCreateTime(new Date());
-        bpmnNodeLoopConf.setCreateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeLoopConf.setUpdateTime(new Date());
-        bpmnNodeLoopConf.setUpdateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeLoopConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeLoopConfService.save(bpmnNodeLoopConf);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

@@ -3,6 +3,7 @@
 <mapper namespace="org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper">
 
 
+    <!-- migration complete,can be removed now -->
     <sql id="base_query">
         select tbncpc.condition_param_name
         from t_bpmn_conf tbc

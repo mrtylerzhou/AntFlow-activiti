@@ -2,15 +2,11 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
-import org.openoa.base.constant.enums.JudgeOperatorEnum;
 import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.util.SecurityUtils;
@@ -19,21 +15,17 @@ import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNod
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
 import org.openoa.base.entity.BpmnNodeConditionsConf;
-import org.openoa.base.entity.BpmnNodeConditionsParamConf;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsConfService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsParamConfService;
 import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,9 +41,6 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
     private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
 
     @Autowired
-    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
-
-    @Autowired
     private BpmnConfLfFormdataFieldServiceImpl lfFormdataFieldService;
 
     @Override
@@ -61,179 +50,8 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         if (nodeConfig != null && nodeConfig.getConditionsConf() != null
                 && !CollectionUtils.isEmpty(nodeConfig.getConditionsConf().getConditionGroups())) {
             formatFromJson(bpmnNodeVo, nodeConfig.getConditionsConf());
-            return;
         }
-
-        // Fallback to DB
-        BpmnNodeConditionsConf bpmnNodeConditionsConf = bpmnNodeConditionsConfService.getOne(new QueryWrapper<BpmnNodeConditionsConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (ObjectUtils.isEmpty(bpmnNodeConditionsConf)) {
-            return ;
-        }
-        //get conditions conf
-
-        String extJson = bpmnNodeConditionsConf.getExtJson();
-        //List<BpmnNodeConditionsConfVueVo> extFields = JSON.parseArray(extJson, BpmnNodeConditionsConfVueVo.class);
-        List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(extJson, new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {
-        });
-
-        Map<String,BpmnNodeConditionsConfVueVo> name2confVueMap=extFieldsGroup.stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toMap(
-                        a->a.getColumnDbname()+"_"+a.getCondGroup(),
-                        b -> b,
-                        (k1, k2) -> k1
-                ));
-        BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo = new BpmnNodeConditionsConfBaseVo();
-        bpmnNodeConditionsConfBaseVo.setIsDefault(bpmnNodeConditionsConf.getIsDefault());
-        bpmnNodeConditionsConfBaseVo.setSort(bpmnNodeConditionsConf.getSort());
-        bpmnNodeConditionsConfBaseVo.setExtJson(extJson);
-        bpmnNodeConditionsConfBaseVo.setGroupRelation(bpmnNodeConditionsConf.getGroupRelation());
-
-        // if the condition node is default condition then assign the condition node configuration and return
-        if (Objects.equals(bpmnNodeConditionsConf.getIsDefault(), 1)) {
-            setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
-            bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
-            bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
-            return ;
-        }
-
-
-        List<BpmnNodeConditionsParamConf> nodeConditionsParamConfs = bpmnNodeConditionsParamConfService.list(new LambdaQueryWrapper<BpmnNodeConditionsParamConf>()
-                .eq(BpmnNodeConditionsParamConf::getBpmnNodeConditionsId, bpmnNodeConditionsConf.getId())
-                .orderByAsc(BpmnNodeConditionsParamConf::getCondGroup));
-
-        if (!ObjectUtils.isEmpty(nodeConditionsParamConfs)) {
-
-            //set condition param types
-            bpmnNodeConditionsConfBaseVo.setConditionParamTypes(nodeConditionsParamConfs
-                    .stream()
-                    .map(BpmnNodeConditionsParamConf::getConditionParamType)
-                    .collect(Collectors.toList()));
-            bpmnNodeConditionsConfBaseVo.setGroupedConditionParamTypes(nodeConditionsParamConfs
-                    .stream().peek(a->{
-                        Integer condGroup = a.getCondGroup();
-                        Integer condRelation = a.getCondRelation();
-                       /* if(condGroup==null||condRelation==null){
-                            throw new JiMuBizException("logic error,please contact the Administrator");
-                        }*/
-                        Map<Integer, Integer> groupedCondRelations = bpmnNodeConditionsConfBaseVo.getGroupedCondRelations();
-                        groupedCondRelations.put(condGroup,condRelation);
-                    })
-                    .collect(Collectors.groupingBy(BpmnNodeConditionsParamConf::getCondGroup,
-                                    Collectors.mapping(BpmnNodeConditionsParamConf::getConditionParamType, Collectors.toList()))));
-
-
-            Map<Integer, Map<String,Object>> groupedWrappedValue=new HashMap<>();
-            boolean isLowCodeFlow=false;
-            for (BpmnNodeConditionsParamConf nodeConditionsParamConf : nodeConditionsParamConfs) {
-                Map<String,Object> wrappedValue=null;
-                ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum
-                        .getEnumByCode(nodeConditionsParamConf.getConditionParamType());
-                if(conditionTypeEnum==null){
-                    throw  new AFBizException("can not get ConditionTypeEnum by code:"+nodeConditionsParamConf.getConditionParamType());
-                }
-                Integer condGroup = nodeConditionsParamConf.getCondGroup();
-                String conditionParamJsom = nodeConditionsParamConf.getConditionParamJsom();
-                Integer operator = nodeConditionsParamConf.getOperator();
-                String paramKey = nodeConditionsParamConf.getConditionParamName() + "_" + nodeConditionsParamConf.getCondGroup();
-                if (!ObjectUtils.isEmpty(conditionParamJsom)) {
-                    if (conditionTypeEnum.getFieldType().equals(1)) {//列表
-                        List<?> objects = JSON.parseArray(conditionParamJsom, conditionTypeEnum.getFieldCls());
-
-                        if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
-                            isLowCodeFlow=true;
-                            String columnDbname = name2confVueMap.get(paramKey).getColumnDbname();
-                            if(wrappedValue==null){
-                                wrappedValue=new LinkedHashMap<>();
-                            }
-                            wrappedValue.put(columnDbname,objects);
-                            if(groupedWrappedValue.containsKey(condGroup)){
-                                groupedWrappedValue.get(condGroup).put(columnDbname,objects);
-                            }else{
-                                groupedWrappedValue.put(condGroup,wrappedValue);
-                            }
-                        }
-                        Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
-                        ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo, wrappedValue!=null?wrappedValue:objects);
-
-                    } else if (conditionTypeEnum.getFieldType().equals(2)) {//对象
-                        Object object=null;
-                        if(String.class.isAssignableFrom(conditionTypeEnum.getFieldCls())){
-                            object=conditionParamJsom;
-                        }else{
-                            if(JudgeOperatorEnum.binaryOperator().contains(operator)){
-                                object=conditionParamJsom;
-                            }else{
-                                object = JSON.parseObject(conditionParamJsom, conditionTypeEnum.getFieldCls());
-                            }
-                        }
-
-                        if(ConditionTypeEnum.isLowCodeFlow(conditionTypeEnum)){
-                            isLowCodeFlow=true;
-                            String columnDbname = name2confVueMap.get(paramKey).getColumnDbname();
-                            if(wrappedValue==null){
-                                wrappedValue=new LinkedHashMap<>();
-                            }
-                            wrappedValue.put(columnDbname,object);
-                            if(groupedWrappedValue.containsKey(condGroup)){
-                                groupedWrappedValue.get(condGroup).put(columnDbname,object);
-                            }else{
-                                groupedWrappedValue.put(condGroup,wrappedValue);
-                            }
-                        }else{
-                            Field field = FieldUtils.getField(BpmnNodeConditionsConfBaseVo.class, conditionTypeEnum.getFieldName(),true);
-                            ReflectionUtils.setField(field, bpmnNodeConditionsConfBaseVo,  wrappedValue!=null?wrappedValue:object);
-                        }
-                    }
-                }
-
-                //set response
-                BpmnNodeConditionsAdaptor bean = SpringBeanUtils.getBean(conditionTypeEnum.getCls());
-                bean.setConditionsResps(bpmnNodeConditionsConfBaseVo);
-                bpmnNodeConditionsConfBaseVo.getNumberOperatorList().add(operator);
-                Map<Integer, List<Integer>> groupedNumberOperatorListMap = bpmnNodeConditionsConfBaseVo.getGroupedNumberOperatorListMap();
-                if(groupedNumberOperatorListMap.containsKey(nodeConditionsParamConf.getCondGroup())){
-                    groupedNumberOperatorListMap.get(nodeConditionsParamConf.getCondGroup()).add(operator);
-                }else{
-                    List<Integer> numberOperatorList = Lists.newArrayList();
-                    numberOperatorList.add(operator);
-                    groupedNumberOperatorListMap.put(nodeConditionsParamConf.getCondGroup(),numberOperatorList);
-                }
-            }
-            if(isLowCodeFlow){
-                bpmnNodeConditionsConfBaseVo.setGroupedLfConditionsMap(groupedWrappedValue);
-            }
-
-        }
-
-        //set property
-        setProperty(bpmnNodeVo, bpmnNodeConditionsConfBaseVo);
-        List<BpmnNodeConditionsConfVueVo> bpmnNodeConditionsConfVueVos = BpmnConfNodePropertyConverter.toVue3Model(bpmnNodeConditionsConfBaseVo);
-        Map<String, BpmnNodeConditionsConfVueVo> voMap = bpmnNodeConditionsConfVueVos.stream().collect(Collectors.toMap(BpmnNodeConditionsConfVueVo::getColumnDbname, v -> v, (k1, k2) -> k1));
-
-        List<BpmnNodeConditionsConfVueVo> extFields = extFieldsGroup.stream().flatMap(Collection::stream).collect(Collectors.toList());
-        for (BpmnNodeConditionsConfVueVo extField : extFields) {
-            String columnDbname = extField.getColumnDbname();
-            boolean lowCodeFlow = ConditionTypeEnum.isLowCodeFlow(ConditionTypeEnum.getEnumByCode(Integer.parseInt(extField.getColumnId())));
-            if(lowCodeFlow){
-                columnDbname=StringConstants.LOWFLOW_CONDITION_CONTAINER_FIELD_NAME;
-            }
-            if(!CollectionUtils.isEmpty(voMap)){
-                BpmnNodeConditionsConfVueVo vueVo = voMap.get(columnDbname);
-                if(vueVo==null){
-                    throw new AFBizException("logic error!");
-                }
-                //String fixedDownBoxValue = vueVo.getFixedDownBoxValue();
-            }
-            extField.setFixedDownBoxValue(extField.getFixedDownBoxValue());
-        }
-        bpmnNodeVo.getProperty().setIsDefault(bpmnNodeConditionsConf.getIsDefault());
-        bpmnNodeVo.getProperty().setSort(bpmnNodeConditionsConf.getSort());
-        bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(bpmnNodeConditionsConf.getGroupRelation()));
-        bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
-
+        throw new AFBizException("migration error,please contact the author");
     }
 
     /**
@@ -337,45 +155,6 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
                 .build());
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
-        BpmnNodeConditionsConfBaseVo bpmnNodeConditionsConfBaseVo =Optional.ofNullable(bpmnNodeVo.getProperty())
-                .map(BpmnConfNodePropertyConverter::fromVue3Model)
-                .orElse(new BpmnNodeConditionsConfBaseVo());
-
-        BpmnNodeConditionsConf bpmnNodeConditionsConf = new BpmnNodeConditionsConf();
-        bpmnNodeConditionsConf.setBpmnNodeId(bpmnNodeVo.getId());
-        bpmnNodeConditionsConf.setIsDefault(bpmnNodeConditionsConfBaseVo.getIsDefault());
-        bpmnNodeConditionsConf.setSort(bpmnNodeConditionsConfBaseVo.getSort());
-        bpmnNodeConditionsConf.setGroupRelation(bpmnNodeConditionsConfBaseVo.getGroupRelation());
-        bpmnNodeConditionsConf.setExtJson(bpmnNodeConditionsConfBaseVo.getExtJson());
-        bpmnNodeConditionsConf.setCreateTime(new Date());
-        bpmnNodeConditionsConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
-        bpmnNodeConditionsConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeConditionsConfService.save(bpmnNodeConditionsConf);
-
-        // if it is default condition return
-        if (Objects.equals(bpmnNodeConditionsConfBaseVo.getIsDefault(), 1)) {
-            return;
-        }
-
-        // Update low-code formdata field tracking (still needed)
-        String extJson = bpmnNodeConditionsConfBaseVo.getExtJson();
-        if (!StringUtils.isEmpty(extJson)) {
-            List<List<BpmnNodeConditionsConfVueVo>> extFieldsArray = JSON.parseObject(extJson,
-                    new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
-            if (!CollectionUtils.isEmpty(extFieldsArray)) {
-                Long confId = bpmnNodeVo.getConfId();
-                for (List<BpmnNodeConditionsConfVueVo> extFields : extFieldsArray) {
-                    for (BpmnNodeConditionsConfVueVo extField : extFields) {
-                        lfFormdataFieldService.getBaseMapper().updateByConfIdAndFieldName(confId, extField.getColumnDbname());
-                    }
-                }
-            }
-        }
-        // t_bpmn_node_conditions_param_conf is no longer written — all data is in extJson (Vue3 model)
-    }
 
 
     @Override

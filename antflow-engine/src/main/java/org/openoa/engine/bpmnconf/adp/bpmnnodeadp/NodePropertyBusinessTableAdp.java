@@ -3,6 +3,7 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -41,23 +42,8 @@ public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdapto
                 p.setTableFieldType(btc.getTableFieldType());
                 p.setSignType(btc.getSignType());
             });
-            return;
         }
-
-        // Fallback to DB
-        BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = bpmnNodeBusinessTableConfService.getOne(new QueryWrapper<BpmnNodeBusinessTableConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (bpmnNodeBusinessTableConf!=null) {
-            AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->{
-                p.setConfigurationTableType(bpmnNodeBusinessTableConf.getConfigurationTableType());
-                p.setTableFieldType(bpmnNodeBusinessTableConf.getTableFieldType());
-                p.setSignType(bpmnNodeBusinessTableConf.getSignType());
-            });
-
-        }
-
-
+    throw new AFBizException("migration error,please contact the author");
     }
 
     @Override
@@ -98,24 +84,6 @@ public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdapto
         return vo;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-
-        BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = new BpmnNodeBusinessTableConf();
-        bpmnNodeBusinessTableConf.setBpmnNodeId(bpmnNodeVo.getId());
-        bpmnNodeBusinessTableConf.setConfigurationTableType(bpmnNodePropertysVo.getConfigurationTableType());
-        bpmnNodeBusinessTableConf.setTableFieldType(bpmnNodePropertysVo.getTableFieldType());
-        bpmnNodeBusinessTableConf.setSignType(bpmnNodePropertysVo.getSignType());
-        bpmnNodeBusinessTableConf.setCreateTime(new Date());
-        bpmnNodeBusinessTableConf.setCreateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeBusinessTableConf.setUpdateTime(new Date());
-        bpmnNodeBusinessTableConf.setUpdateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeBusinessTableConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeBusinessTableConfService.save(bpmnNodeBusinessTableConf);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

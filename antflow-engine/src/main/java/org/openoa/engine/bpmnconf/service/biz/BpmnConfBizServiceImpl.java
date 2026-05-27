@@ -280,8 +280,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             //get node adaptor
             BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
 
-            //then edit the node
-            bpmnNodeAdaptor.editBpmnNode(bpmnNodeVo);
+
 
             // Build adaptor-specific JSON config based on node property
             buildAdaptorJsonConfig(bpmnNodeVo);

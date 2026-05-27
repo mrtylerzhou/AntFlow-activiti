@@ -24,14 +24,6 @@ public class NodePropertyStartUserAdp implements BpmnNodeAdaptor {
 
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-        if(!CollectionUtils.isEmpty(bpmnNodePropertysVo.getAdditionalSignInfoList())){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"发起人自己审批不允许全局增加/减少审批人!");
-        }
-    }
 
     @Override
     public PersonnelRuleVO formaFieldAttributeInfoVO() {

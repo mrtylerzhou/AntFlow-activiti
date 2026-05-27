@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -32,16 +33,7 @@ public class NodePropertyCustomizeAdp extends AbstractAdditionSignNodeAdaptor{
             AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> p.setSignType(nodeConfig.getApproverConf().getCustomizeConf().getSignType()));
             return;
         }
-
-        // Fallback to DB
-        List<BpmnNodeCustomizeConf> list = bpmnNodeCustomizeConfService.list(new QueryWrapper<BpmnNodeCustomizeConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (CollectionUtils.isEmpty(list)) {
-            return ;
-        }
-        BpmnNodeCustomizeConf customizeConf = list.get(0);
-        AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->p.setSignType(customizeConf.getSignType()));
+        throw new AFBizException("migration error,please contact the author");
     }
 
     @Override
@@ -49,18 +41,6 @@ public class NodePropertyCustomizeAdp extends AbstractAdditionSignNodeAdaptor{
         return null;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-
-        BpmnNodeCustomizeConf customizeConf=new BpmnNodeCustomizeConf();
-        customizeConf.setBpmnNodeId(bpmnNodeVo.getId());
-        customizeConf.setSignType(bpmnNodePropertysVo.getSignType());
-        customizeConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeCustomizeConfService.save(customizeConf);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

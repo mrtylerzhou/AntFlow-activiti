@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
@@ -43,13 +44,7 @@ public class NodePropertyHrbpAdp extends AbstractAdditionSignNodeAdaptor {
             return;
         }
 
-        // Fallback to DB
-        BpmnNodeHrbpConf bpmnNodeHrbpConf = bpmnNodeHrbpConfService.getOne(new QueryWrapper<BpmnNodeHrbpConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (bpmnNodeHrbpConf!=null) {
-            AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->p.setHrbpConfType(bpmnNodeHrbpConf.getHrbpConfType()));
-        }
+       throw new AFBizException("migration error,please contact the author");
 
     }
 
@@ -81,23 +76,6 @@ public class NodePropertyHrbpAdp extends AbstractAdditionSignNodeAdaptor {
         return null;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-
-
-        BpmnNodeHrbpConf bpmnNodeHrbpConf = new BpmnNodeHrbpConf();
-        bpmnNodeHrbpConf.setBpmnNodeId(bpmnNodeVo.getId());
-        bpmnNodeHrbpConf.setHrbpConfType(bpmnNodePropertysVo.getHrbpConfType());
-        bpmnNodeHrbpConf.setCreateTime(new Date());
-        bpmnNodeHrbpConf.setCreateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeHrbpConf.setUpdateTime(new Date());
-        bpmnNodeHrbpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeHrbpConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeHrbpConfService.save(bpmnNodeHrbpConf);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

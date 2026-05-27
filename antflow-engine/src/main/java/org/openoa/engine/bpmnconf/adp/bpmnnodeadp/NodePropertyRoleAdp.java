@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnRoleInfoProvider;
 import org.openoa.base.util.AfNodeUtils;
 import org.openoa.base.util.SecurityUtils;
@@ -69,67 +70,10 @@ public class NodePropertyRoleAdp extends AbstractAdditionSignNodeAdaptor {
             }
             return;
         }
-
-        // Fallback to DB
-        List<BpmnNodeRoleConf> list = bpmnNodeRoleConfService.list(new QueryWrapper<BpmnNodeRoleConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (CollectionUtils.isEmpty(list)) {
-            return ;
-        }
-        List<BaseIdTranStruVo> roles = list.stream().map(conf -> BaseIdTranStruVo.builder().id(conf.getRoleId()).name(conf.getRoleName()).build())
-                .collect(Collectors.toList());
-
-        AfNodeUtils.addOrEditProperty(bpmnNodeVo,a->{
-            a.setRoleIds(roles.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
-            a.setRoleList(roles);
-            a.setSignType(list.get(0).getSignType());
-        });
-
-
-        if (bpmnNodeVo.getIsOutSideProcess() != null && bpmnNodeVo.getIsOutSideProcess().equals(1)) {
-            List<BpmnNodeRoleOutsideEmpConf> bpmnNodeRoleOutsideEmpConfs = bpmnNodeRoleOutsideEmpConfService.list(new QueryWrapper<BpmnNodeRoleOutsideEmpConf>()
-                    .eq("node_id", bpmnNodeVo.getId()));
-            if (!CollectionUtils.isEmpty(bpmnNodeRoleOutsideEmpConfs)) {
-                bpmnNodeVo.getProperty().setEmplIds(bpmnNodeRoleOutsideEmpConfs.stream().map(BpmnNodeRoleOutsideEmpConf::getEmplId).collect(Collectors.toList()));
-                List<BaseIdTranStruVo> emplList = bpmnNodeRoleOutsideEmpConfs
-                        .stream()
-                        .map(a -> BaseIdTranStruVo.builder().id(a.getEmplId()).name(a.getEmplName()).build()).collect(Collectors.toList());
-                bpmnNodeVo.getProperty().setEmplList(emplList);
-            }
-        }
+        throw  new AFBizException("migration error,please contact the author");
 
     }
 
-    /**
-     * 获得指定角色列表
-     *
-     * @param roleIds
-     * @return
-     */
-    private List<BaseIdTranStruVo> getRoleList(List<String> roleIds) {
-        if (CollectionUtils.isEmpty(roleIds)) {
-            log.info("roIds is empty");
-            return Collections.EMPTY_LIST;
-        }
-
-
-        Map<String, String> roleInfos = roleInfoProvider.provideRoleInfo(roleIds);
-        if (CollectionUtils.isEmpty(roleInfos)) {
-            log.warn("role info is empty,please check you config");
-            return Collections.EMPTY_LIST;
-        }
-        return roleInfos
-                .entrySet()
-                .stream()
-                .map(e -> BaseIdTranStruVo
-                        .builder()
-                        .id(e.getKey())
-                        .name(e.getValue())
-                        .build()).
-                collect(Collectors.toList());
-
-    }
 
     @Override
     public PersonnelRuleVO formaFieldAttributeInfoVO() {
@@ -145,56 +89,7 @@ public class NodePropertyRoleAdp extends AbstractAdditionSignNodeAdaptor {
         return personnelRuleVO;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
 
-        if (!CollectionUtils.isEmpty(bpmnNodePropertysVo.getRoleList())) {
-            List<BaseIdTranStruVo> roleList = bpmnNodePropertysVo.getRoleList();
-            if (!CollectionUtils.isEmpty(roleList)) {
-                bpmnNodeRoleConfService.saveBatch(roleList
-                        .stream()
-                        .map(o ->
-                                BpmnNodeRoleConf
-                                        .builder()
-                                        .bpmnNodeId(bpmnNodeVo.getId())
-                                        .roleId(o.getId())
-                                        .roleName(o.getName())
-                                        .signType(bpmnNodePropertysVo.getSignType())
-                                        .createTime(new Date())
-                                        .createUser(SecurityUtils.getLogInEmpName())
-                                        .updateTime(new Date())
-                                        .updateUser(SecurityUtils.getLogInEmpName())
-                                        .tenantId(MultiTenantUtil.getCurrentTenantId())
-                                        .build())
-                        .collect(Collectors.toList()));
-            }
-
-
-            //if it is an outside process,then
-            if (bpmnNodeVo.getIsOutSideProcess() != null && bpmnNodeVo.getIsOutSideProcess().equals(1)) {
-                //if it is an outside process,then emplList should be assigned values
-                List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
-                if (!CollectionUtils.isEmpty(emplList)) {
-                    List<BpmnNodeRoleOutsideEmpConf> bpmnNodeRoleOutsideEmpConfs = new ArrayList<>();
-                    for (BaseIdTranStruVo baseIdTranStruVo : emplList) {
-                        BpmnNodeRoleOutsideEmpConf bpmnNodeRoleOutsideEmpConf = new BpmnNodeRoleOutsideEmpConf();
-                        bpmnNodeRoleOutsideEmpConf.setNodeId(bpmnNodeVo.getId());
-                        bpmnNodeRoleOutsideEmpConf.setEmplId(baseIdTranStruVo.getId());
-                        bpmnNodeRoleOutsideEmpConf.setEmplName(baseIdTranStruVo.getName());
-                        bpmnNodeRoleOutsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpName());
-                        bpmnNodeRoleOutsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpName());
-                        bpmnNodeRoleOutsideEmpConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-                        bpmnNodeRoleOutsideEmpConfs.add(bpmnNodeRoleOutsideEmpConf);
-                    }
-                    bpmnNodeRoleOutsideEmpConfService.saveBatch(bpmnNodeRoleOutsideEmpConfs);
-                }
-            }
-        }
-
-    }
 
     @Override
     public void setSupportBusinessObjects() {

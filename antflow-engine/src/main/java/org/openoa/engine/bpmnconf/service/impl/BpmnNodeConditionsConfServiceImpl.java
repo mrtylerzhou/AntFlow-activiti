@@ -13,6 +13,7 @@ import org.openoa.base.entity.BpmnNodeConditionsConf;
 import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.vo.BpmnNodeConditionsConfVueVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -76,7 +77,7 @@ public class BpmnNodeConditionsConfServiceImpl extends ServiceImpl<BpmnNodeCondi
         }
 
         if (fieldNames.isEmpty()) {
-            return extractConditionParamNamesFromDb(conditionNodes);
+           throw new AFBizException("migration error,please contact the author");
         }
 
         return new ArrayList<>(fieldNames);
@@ -125,36 +126,4 @@ public class BpmnNodeConditionsConfServiceImpl extends ServiceImpl<BpmnNodeCondi
         return result;
     }
 
-    private List<String> extractConditionParamNamesFromDb(List<BpmnNode> conditionNodes) {
-        List<String> result = new ArrayList<>();
-        List<Long> nodeIds = conditionNodes.stream().map(BpmnNode::getId).collect(Collectors.toList());
-        List<BpmnNodeConditionsConf> condConfs = this.list(new QueryWrapper<BpmnNodeConditionsConf>()
-                .in("bpmn_node_id", nodeIds));
-        if (CollectionUtils.isEmpty(condConfs)) {
-            return result;
-        }
-        for (BpmnNodeConditionsConf condConf : condConfs) {
-            if (Objects.equals(condConf.getIsDefault(), 1)) {
-                continue;
-            }
-            String extJson = condConf.getExtJson();
-            if (StringUtils.isEmpty(extJson)) {
-                continue;
-            }
-            List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(extJson,
-                    new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
-            if (CollectionUtils.isEmpty(extFieldsGroup)) {
-                continue;
-            }
-            for (List<BpmnNodeConditionsConfVueVo> groupConds : extFieldsGroup) {
-                for (BpmnNodeConditionsConfVueVo cond : groupConds) {
-                    String columnDbname = cond.getColumnDbname();
-                    if (!StringUtils.isEmpty(columnDbname)) {
-                        result.add(columnDbname);
-                    }
-                }
-            }
-        }
-        return result;
-    }
 }

@@ -19,10 +19,7 @@ public class NodePropertyDirectLeaderAdp extends AbstractAdditionSignNodeAdaptor
         super.formatToBpmnNodeVo(bpmnNodeVo);
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-    }
+
 
     @Override
     public PersonnelRuleVO formaFieldAttributeInfoVO() {
