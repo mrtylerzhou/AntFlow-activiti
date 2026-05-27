@@ -5,7 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openoa.BaseTest;
+import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Arrays;
 
@@ -164,13 +166,34 @@ class BpmnNodeVoTest extends BaseTest {
         }
 
         @Test
-        @DisplayName("should include nodeConfigJsonObj in JSON output")
-        void shouldIncludeNodeConfigJsonObj() throws Exception {
+        @DisplayName("should not include nodeConfigJsonObj in JSON output")
+        void shouldNotIncludeNodeConfigJsonObj() throws Exception {
             BpmnNodeVo vo = new BpmnNodeVo();
             vo.getOrCreateNodeConfigJson();
             String json = mapper.writeValueAsString(vo);
-            assertTrue(json.contains("nodeConfigJsonObj"),
-                    "JSON should contain 'nodeConfigJsonObj' field, but got: " + json);
+            assertFalse(json.contains("nodeConfigJsonObj"),
+                    "JSON should not contain 'nodeConfigJsonObj' field, but got: " + json);
+        }
+
+        @Test
+        @DisplayName("BeanUtils.copyProperties should parse nodeConfigJson into nodeConfigJsonObj")
+        void beanUtilsShouldParseNodeConfigJson() {
+            BpmnNode node = new BpmnNode();
+            node.setNodeConfigJson("{\"approverConf\":null,\"conditionsConf\":null,\"buttonSignConf\":null,\"templateConf\":null,\"lowCodeConf\":null}");
+            BpmnNodeVo vo = new BpmnNodeVo();
+            BeanUtils.copyProperties(node, vo);
+            assertNotNull(vo.getNodeConfigJsonObj(),
+                    "nodeConfigJsonObj should be populated from nodeConfigJson via BeanUtils.copyProperties");
+        }
+
+        @Test
+        @DisplayName("BeanUtils.copyProperties should handle null nodeConfigJson gracefully")
+        void beanUtilsShouldHandleNullNodeConfigJson() {
+            BpmnNode node = new BpmnNode();
+            node.setNodeConfigJson(null);
+            BpmnNodeVo vo = new BpmnNodeVo();
+            BeanUtils.copyProperties(node, vo);
+            assertNull(vo.getNodeConfigJsonObj());
         }
     }
 }

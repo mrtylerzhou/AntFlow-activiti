@@ -202,4 +202,11 @@ public class BpmnConfVo {
         }
         return this.confConfigJsonObj;
     }
+
+    @JsonIgnore
+    public void setConfConfigJson(String confConfigJson) {
+        if (confConfigJson != null && !confConfigJson.isEmpty()) {
+            this.confConfigJsonObj = JsonConfUtil.parseConfConfig(confConfigJson);
+        }
+    }
 }

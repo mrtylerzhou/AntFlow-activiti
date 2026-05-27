@@ -225,6 +225,12 @@ public class BpmnNodeVo  implements Serializable {
     /**
      * Serialize nodeConfigJsonObj to JSON string for DB storage
      */
+    public void setNodeConfigJson(String nodeConfigJson) {
+        if (nodeConfigJson != null && !nodeConfigJson.isEmpty()) {
+            this.nodeConfigJsonObj = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+        }
+    }
+
     public String serializeNodeConfigJson() {
         if (this.nodeConfigJsonObj == null) {
             return null;

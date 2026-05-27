@@ -4,7 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openoa.BaseTest;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.springframework.beans.BeanUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,6 +69,31 @@ class BpmnConfVoTest extends BaseTest {
             assertEquals("CODE001", vo.getBpmnCode());
             assertEquals("Test Flow", vo.getBpmnName());
             assertEquals("FORM001", vo.getFormCode());
+        }
+    }
+
+    @Nested
+    @DisplayName("BeanUtils.copyProperties")
+    class BeanUtilsCopyTest {
+        @Test
+        @DisplayName("should parse confConfigJson into confConfigJsonObj via setter")
+        void shouldParseConfConfigJson() {
+            BpmnConf conf = new BpmnConf();
+            conf.setConfConfigJson("{\"viewPageButtons\":[],\"noticeTemplateConfig\":{}}");
+            BpmnConfVo vo = new BpmnConfVo();
+            BeanUtils.copyProperties(conf, vo);
+            assertNotNull(vo.getConfConfigJsonObj(),
+                    "confConfigJsonObj should be populated from confConfigJson via BeanUtils.copyProperties");
+        }
+
+        @Test
+        @DisplayName("should handle null confConfigJson gracefully")
+        void shouldHandleNullConfConfigJson() {
+            BpmnConf conf = new BpmnConf();
+            conf.setConfConfigJson(null);
+            BpmnConfVo vo = new BpmnConfVo();
+            BeanUtils.copyProperties(conf, vo);
+            assertNull(vo.getConfConfigJsonObj());
         }
     }
 }
