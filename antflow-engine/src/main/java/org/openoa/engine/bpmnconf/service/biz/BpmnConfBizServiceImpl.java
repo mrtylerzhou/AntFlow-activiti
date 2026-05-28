@@ -47,6 +47,7 @@ import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.util.AFWrappers;
+import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -372,8 +373,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private void buildConditionsJsonFromVo(BpmnNodeVo bpmnNodeVo) {
         BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
         if (prop == null) return;
-        BpmnNodeConditionsConfBaseVo condVo = prop.getConditionsConf();
-        if (condVo == null) return;
+        BpmnNodeConditionsConfBaseVo condVo =Optional.of(bpmnNodeVo.getProperty())
+                .map(BpmnConfNodePropertyConverter::fromVue3Model)
+                .orElse(null);
+
 
         BpmnNodeConditionsConfJson.ConditionGroup group = BpmnNodeConditionsConfJson.ConditionGroup.builder()
                 .isDefault(condVo.getIsDefault())
