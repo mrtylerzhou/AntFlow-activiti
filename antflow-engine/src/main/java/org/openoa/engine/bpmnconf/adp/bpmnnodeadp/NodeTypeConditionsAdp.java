@@ -2,32 +2,25 @@ package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ConditionRelationShipEnum;
 import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.adp.conditionfilter.nodetypeconditions.BpmnNodeConditionsAdaptor;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConditionTypeEnum;
-import org.openoa.base.entity.BpmnNodeConditionsConf;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsConfService;
 import org.openoa.engine.utils.BpmnConfNodePropertyConverter;
-import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author AntFlow

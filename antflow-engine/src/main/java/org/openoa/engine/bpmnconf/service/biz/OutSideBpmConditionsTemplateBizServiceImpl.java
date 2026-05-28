@@ -8,6 +8,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
@@ -332,28 +333,7 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
     }
 
     private List<BpmnNodeConditionsConfJson.ConditionGroup> getConditionGroupsFromNode(BpmnNode node) {
-        String nodeConfigJson = node.getNodeConfigJson();
-        if (!StringUtils.isEmpty(nodeConfigJson)) {
-            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
-            if (nodeConfig != null && nodeConfig.getConditionsConf() != null
-                    && !CollectionUtils.isEmpty(nodeConfig.getConditionsConf().getConditionGroups())) {
-                return nodeConfig.getConditionsConf().getConditionGroups();
-            }
-        }
-        List<BpmnNodeConditionsConf> confList = bpmnNodeConditionsConfService.list(new QueryWrapper<BpmnNodeConditionsConf>()
-                .eq("bpmn_node_id", node.getId()));
-        if (!CollectionUtils.isEmpty(confList)) {
-            List<BpmnNodeConditionsConfJson.ConditionGroup> groups = new ArrayList<>();
-            for (BpmnNodeConditionsConf conf : confList) {
-                BpmnNodeConditionsConfJson.ConditionGroup group = BpmnNodeConditionsConfJson.ConditionGroup.builder()
-                        .isDefault(conf.getIsDefault())
-                        .extJson(conf.getExtJson())
-                        .build();
-                groups.add(group);
-            }
-            return groups;
-        }
-        return Collections.emptyList();
+        throw new NotImplementedException("to be implemented");
     }
 
 }

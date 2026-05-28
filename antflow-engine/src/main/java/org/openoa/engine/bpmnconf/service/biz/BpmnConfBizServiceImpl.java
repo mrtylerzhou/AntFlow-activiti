@@ -93,8 +93,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmnNodeService bpmnNodeService;
     @Autowired
-    private BpmnViewPageButtonService bpmnViewPageButtonService;
-    @Autowired
     private BpmnNodeToService bpmnNodeToService;
     @Autowired
     private BpmnTemplateService bpmnTemplateService;
@@ -108,8 +106,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
-    @Autowired
-    private BpmnViewPageButtonBizServiceImpl bpmnViewPageButtonBizService;
     @Autowired
     private BpmProcessNameBizService bpmProcessNameService;
     @Autowired
@@ -176,7 +172,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             throw new AFBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
         }
         bpmnConfVo.setId(confId);
-        bpmnViewPageButtonBizService.editBpmnViewPageButton(bpmnConfVo, confId);
+
 
         bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
 
@@ -1421,7 +1417,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (confConfig != null && !CollectionUtils.isEmpty(confConfig.getViewPageButtons())) {
             setViewPageButtonFromJson(bpmnConfVo, confConfig);
         } else {
-            setViewPageButton(bpmnConfVo);
+            throw  new AFBizException("migration error,please contact the author");
         }
 
         //set out node notice template — prefer JSON, fallback to DB
@@ -1478,45 +1474,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 .getName());
     }
 
-    /**
-     * set view page buttons
-     *
-     * @param bpmnConfVo
-     */
-    private void setViewPageButton(BpmnConfVo bpmnConfVo) {
-        List<BpmnViewPageButton> bpmnViewPageButtons = bpmnViewPageButtonService.getBaseMapper().selectList(
-                Wrappers.<BpmnViewPageButton>lambdaQuery()
-                        .eq(BpmnViewPageButton::getConfId,bpmnConfVo.getId()));
 
-        BpmnViewPageButtonBaseVo bpmnViewPageButtonBaseVo = new BpmnViewPageButtonBaseVo();
 
-        //start user's view page
-        bpmnViewPageButtonBaseVo.setViewPageStart(getViewPageButtonsByType(bpmnViewPageButtons, ViewPageTypeEnum.VIEW_PAGE_TYPE_START));
-
-        //approver's view page
-        bpmnViewPageButtonBaseVo.setViewPageOther(getViewPageButtonsByType(bpmnViewPageButtons, ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER));
-
-        //set view page buttons
-        bpmnConfVo.setViewPageButtons(bpmnViewPageButtonBaseVo);
-
-    }
-
-    /**
-     * query view page button list by type
-     *
-     * @param bpmnViewPageButtons
-     * @param viewPageTypeEnum
-     * @return
-     */
-    private List<Integer> getViewPageButtonsByType(List<BpmnViewPageButton> bpmnViewPageButtons, ViewPageTypeEnum viewPageTypeEnum) {
-        return bpmnViewPageButtons
-                .stream()
-                .filter(o -> o.getViewType().intValue() == viewPageTypeEnum.getCode().intValue())
-                .collect(Collectors.toList())
-                .stream()
-                .map(BpmnViewPageButton::getButtonType)
-                .collect(Collectors.toList());
-    }
 
     /**
      * set view page buttons from JSON config
