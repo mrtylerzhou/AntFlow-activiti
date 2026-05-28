@@ -6,6 +6,6 @@ import org.openoa.base.vo.BusinessDataVo;
 
 import java.util.List;
 
-public interface BpmnNodeConditionsConfService extends IService<BpmnNodeConditionsConf> {
+public interface BpmnNodeConditionsConfService {
     List<String> queryConditionParamNameByProcessNumber(BusinessDataVo businessDataVo);
 }

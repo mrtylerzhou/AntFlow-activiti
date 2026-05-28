@@ -1,21 +1,15 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.base.entity.BpmnNodeBusinessTableConf;
 import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.BusinessConfTableFieldEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeBusinessTableConfServiceImpl;
-import org.openoa.base.util.MultiTenantUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,8 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdaptor {
 
-    @Autowired
-    private BpmnNodeBusinessTableConfServiceImpl bpmnNodeBusinessTableConfService;
+
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {

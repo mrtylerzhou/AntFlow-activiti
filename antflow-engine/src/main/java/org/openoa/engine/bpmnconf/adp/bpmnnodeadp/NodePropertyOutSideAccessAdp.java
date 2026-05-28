@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BpmnNodePropertysVo;
@@ -8,15 +7,9 @@ import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
-import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
-import org.openoa.base.util.MultiTenantUtil;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeOutSideAccessConfService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 /**
  * @author AntFlow
@@ -27,8 +20,6 @@ import java.util.Optional;
 public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
 
 
-    @Autowired
-    private BpmnNodeOutSideAccessConfService bpmnNodeOutSideAccessConfService;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {

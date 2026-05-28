@@ -43,7 +43,7 @@ import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.ApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.biz.*;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
-import org.openoa.engine.bpmnconf.service.interf.repository.OutSideBpmnNodeConditionsConfService;
+import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.engine.factory.IAdaptorFactory;
 import org.openoa.base.util.AFWrappers;
@@ -314,11 +314,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
     }
 
-    @Autowired
-    private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
-    @Autowired
-    private OutSideBpmnNodeConditionsConfService outSideBpmnNodeConditionsConfService;
-
     /**
      * Build adaptor-specific JSON config based on node property/type
      */
@@ -361,42 +356,36 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if (NodeTypeEnum.NODE_TYPE_COPY.getCode().equals(nodeType)) {
                 BpmnNodeConfigHolder.setPersonnelConf(bpmnNodeVo);
             }
-            // Conditions: read back from DB after adaptor wrote
+            // Conditions: build JSON directly from VO
             if (NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode().equals(nodeType)
                     || (NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode().equals(nodeType))) {
-                buildConditionsJsonFromDb(bpmnNodeVo);
+                buildConditionsJsonFromVo(bpmnNodeVo);
             }
         }
     }
 
     /**
-     * Build conditions JSON from DB records (after adaptor writes).
-     * The extJson in t_bpmn_node_conditions_conf already contains the complete Vue3 model,
-     * so t_bpmn_node_conditions_param_conf is no longer needed.
+     * Build conditions JSON directly from the VO (no DB read needed).
+     * All condition data (extJson, isDefault, groupRelation, sort) is already
+     * carried in BpmnNodeConditionsConfBaseVo from the frontend.
      */
-    private void buildConditionsJsonFromDb(BpmnNodeVo bpmnNodeVo) {
-        BpmnNodeConditionsConf condConf = bpmnNodeConditionsConfService.getOne(
-                new QueryWrapper<BpmnNodeConditionsConf>().eq("bpmn_node_id", bpmnNodeVo.getId()));
-        if (condConf == null) return;
+    private void buildConditionsJsonFromVo(BpmnNodeVo bpmnNodeVo) {
+        BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
+        if (prop == null) return;
+        BpmnNodeConditionsConfBaseVo condVo = prop.getConditionsConf();
+        if (condVo == null) return;
 
         BpmnNodeConditionsConfJson.ConditionGroup group = BpmnNodeConditionsConfJson.ConditionGroup.builder()
-                .isDefault(condConf.getIsDefault())
-                .groupRelation(condConf.getGroupRelation())
-                .sort(condConf.getSort())
-                .extJson(condConf.getExtJson())
+                .isDefault(condVo.getIsDefault())
+                .groupRelation(condVo.getGroupRelation())
+                .sort(condVo.getSort())
+                .extJson(condVo.getExtJson())
                 .params(Collections.emptyList())
                 .build();
 
         String outSideId = null;
         if (NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode().equals(bpmnNodeVo.getNodeType())) {
-            // Read outside conditions conf
-            org.openoa.base.entity.OutSideBpmnNodeConditionsConf outSideConf =
-                    outSideBpmnNodeConditionsConfService.getOne(
-                            new QueryWrapper<org.openoa.base.entity.OutSideBpmnNodeConditionsConf>()
-                                    .eq("bpmn_node_id", bpmnNodeVo.getId()));
-            if (outSideConf != null) {
-                outSideId = outSideConf.getOutSideId();
-            }
+            outSideId = condVo.getOutSideConditionsId();
         }
 
         BpmnNodeConfigHolder.setConditionsConf(bpmnNodeVo,

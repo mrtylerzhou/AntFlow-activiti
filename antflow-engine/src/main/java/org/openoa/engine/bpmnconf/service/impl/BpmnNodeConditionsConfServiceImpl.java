@@ -3,13 +3,11 @@ package org.openoa.engine.bpmnconf.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.BpmnNode;
-import org.openoa.base.entity.BpmnNodeConditionsConf;
 import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
@@ -17,7 +15,6 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.vo.BpmnNodeConditionsConfVueVo;
 import org.openoa.base.vo.BusinessDataVo;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeConditionsConfMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeConditionsConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
@@ -26,11 +23,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class BpmnNodeConditionsConfServiceImpl extends ServiceImpl<BpmnNodeConditionsConfMapper, BpmnNodeConditionsConf> implements BpmnNodeConditionsConfService {
+public class BpmnNodeConditionsConfServiceImpl  implements BpmnNodeConditionsConfService {
 
     @Autowired
     private BpmnConfService bpmnConfService;

@@ -13,7 +13,6 @@ import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
-import org.openoa.base.entity.BpmnNodeFormRelatedUserConf;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.ActivitiService;
@@ -60,8 +59,6 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private LFMainService mainService;
     @Autowired
     private BpmnConfLfFormdataService lfFormdataService;
-    @Autowired
-    private BpmnNodeFormRelatedUserConfService bpmnNodeFormRelatedUserConfService;
     @Autowired
     private BpmnNodeLfFormdataFieldControlMapper bmnNodeLfFormdataFieldControlMapper;
     @Autowired
@@ -293,34 +290,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 }
             }
             if (node2formRelatedAssignees.isEmpty()) {
-                List<BpmnNodeFormRelatedUserConf> bpmnNodeFormRelatedUserConfs = bpmnNodeFormRelatedUserConfService.getMapper().queryByConfId(confId);
-                if (CollectionUtils.isEmpty(bpmnNodeFormRelatedUserConfs)) {
-                    throw new AFBizException(BusinessErrorEnum.CAN_NOT_GET_VALUE_FROM_DB);
-                }
-                for (BpmnNodeFormRelatedUserConf bpmnNodeFormRelatedUserConf : bpmnNodeFormRelatedUserConfs) {
-                    Long bpmnNodeId = bpmnNodeFormRelatedUserConf.getBpmnNodeId();
-                    String valueJson = bpmnNodeFormRelatedUserConf.getValueJson();
-                    if (StringUtils.isEmpty(valueJson)) {
-                        throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
-                    }
-                    List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
-                    List<String> formValues = new ArrayList<>();
-                    for (BaseIdTranStruVo formInfo : formInfos) {
-                        String formName = formInfo.getId();
-                        Object formVal = lfFields.get(formName);
-                        if (formVal instanceof Iterable) {
-                            Iterable iterablef = (Iterable) formVal;
-                            Iterator iteratorf = iterablef.iterator();
-                            while (iteratorf.hasNext()) {
-                                Object bValue = iteratorf.next();
-                                formValues.add(bValue.toString());
-                            }
-                        } else {
-                            formValues.add(formVal.toString());
-                        }
-                    }
-                    node2formRelatedAssignees.put(bpmnNodeId.toString(), formValues);
-                }
+               throw new AFBizException("migration error,please contact the author");
             }
             vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
         }
