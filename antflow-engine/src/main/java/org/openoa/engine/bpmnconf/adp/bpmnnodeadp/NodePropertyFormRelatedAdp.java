@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class NodePropertyFormRelatedAdp extends AbstractCommonBpmnNodeAdaptor {
+public class NodePropertyFormRelatedAdp implements BpmnNodeAdaptor {
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {

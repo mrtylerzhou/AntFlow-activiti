@@ -435,45 +435,4 @@ class EntityRound20ATest extends BaseTest {
         }
     }
 
-    @Nested
-    @DisplayName("BpmnNodeLoopConf")
-    class BpmnNodeLoopConfTest {
-
-        @Test
-        @DisplayName("no-arg constructor defaults")
-        void noArgDefaults() {
-            BpmnNodeLoopConf entity = new BpmnNodeLoopConf();
-            assertNull(entity.getId());
-            assertNull(entity.getBpmnNodeId());
-            assertNull(entity.getLoopEndType());
-            assertNull(entity.getLoopNumberPlies());
-            assertNull(entity.getLoopEndPerson());
-            assertNull(entity.getNoparticipatingStaffIds());
-            assertNull(entity.getLoopEndGrade());
-            assertNull(entity.getRemark());
-            assertNull(entity.getIsDel());
-        }
-
-        @Test
-        @DisplayName("builder pattern")
-        void builder() {
-            BpmnNodeLoopConf entity = BpmnNodeLoopConf.builder()
-                    .id(1L)
-                    .bpmnNodeId(10L)
-                    .loopEndType(1)
-                    .loopNumberPlies(3)
-                    .loopEndPerson("u001")
-                    .noparticipatingStaffIds("u002,u003")
-                    .loopEndGrade(5)
-                    .isDel(0)
-                    .build();
-            assertEquals(1L, entity.getId());
-            assertEquals(10L, entity.getBpmnNodeId());
-            assertEquals(1, entity.getLoopEndType());
-            assertEquals(3, entity.getLoopNumberPlies());
-            assertEquals("u001", entity.getLoopEndPerson());
-            assertEquals("u002,u003", entity.getNoparticipatingStaffIds());
-            assertEquals(5, entity.getLoopEndGrade());
-        }
-    }
 }

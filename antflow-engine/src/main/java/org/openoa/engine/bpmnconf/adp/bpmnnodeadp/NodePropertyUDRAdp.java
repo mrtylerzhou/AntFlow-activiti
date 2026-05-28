@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 @Service
-public class NodePropertyUDRAdp extends AbstractCommonBpmnNodeAdaptor {
+public class NodePropertyUDRAdp implements BpmnNodeAdaptor {
 
     @Autowired
     private DicDataService dicDataService;

@@ -63,11 +63,6 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
     @Autowired
     private BpmnNodeService bpmnNodeService;
 
-    @Autowired
-    private BpmnNodeRoleConfService bpmnNodeRoleConfServiceImpl;
-
-    @Autowired
-    private BpmnNodeRoleOutsideEmpConfService bpmnNodeRoleOutsideEmpConfService;
 
     /**
      * querying business's info by page
@@ -330,56 +325,6 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
         return bpmnConfVos;
     }
 
-    @Override
-    public void syncRolePersonnel(String businessPartyMark, NodeRolePersonVo userList) {
-        List<BpmnConfVo> bpmConf = getBpmConf(businessPartyMark);
-        if (StringUtils.isBlank(userList.getRoleId())) {
-            throw new AFBizException("500", "角色id不能为空");
-        }
-
-        List<BaseIdTranStruVo> users = userList.getUserList();
-        if (CollectionUtils.isEmpty(users)) {
-            throw new AFBizException("500", "角色人员列表不能为空");
-        }
-
-        for (BpmnConfVo bpmnConfVo : bpmConf) {
-
-            List<BpmnNode> bpmnNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery().eq(BpmnNode::getConfId, bpmnConfVo.getId())
-                    .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_ROLE.getCode()));
-            for (BpmnNode bpmnNode : bpmnNodes) {
-
-                List<BpmnNodeApproverConfJson.RoleConf> roleConfList = getRoleConfListFromNode(bpmnNode);
-                for (BpmnNodeApproverConfJson.RoleConf roleConf : roleConfList) {
-
-                    String roleId = roleConf.getRoleId();
-                    if (roleId.equals(userList.getRoleId())) {
-                        bpmnNodeRoleOutsideEmpConfService.update(Wrappers.<BpmnNodeRoleOutsideEmpConf>lambdaUpdate().set(BpmnNodeRoleOutsideEmpConf::getIsDel, 1)
-                                .set(BpmnNodeRoleOutsideEmpConf::getUpdateTime, new Date())
-                                .set(BpmnNodeRoleOutsideEmpConf::getUpdateUser, SecurityUtils.getLogInEmpIdSafe())
-                                .eq(BpmnNodeRoleOutsideEmpConf::getNodeId, bpmnNode.getId()));
-
-                        List<BpmnNodeRoleOutsideEmpConf> newPersonnelList = new ArrayList<>();
-                        for (BaseIdTranStruVo user : users) {
-                            BpmnNodeRoleOutsideEmpConf outsideEmpConf = getRoleOutsideEmpConf(bpmnNode, user);
-                            newPersonnelList.add(outsideEmpConf);
-                        }
-                        bpmnNodeRoleOutsideEmpConfService.saveBatch(newPersonnelList);
-
-                        List<BpmnNodeApproverConfJson.EmployeeInfo> newOutsideEmployees = users.stream()
-                                .map(u -> BpmnNodeApproverConfJson.EmployeeInfo.builder()
-                                        .emplId(u.getId())
-                                        .emplName(u.getName())
-                                        .build())
-                                .collect(Collectors.toList());
-                        roleConf.setOutsideEmployees(newOutsideEmployees);
-                        updateRoleConfToNodeJson(bpmnNode, roleConfList);
-                    }
-
-                }
-
-            }
-        }
-    }
 
     private List<BpmnNodeApproverConfJson.RoleConf> getRoleConfListFromNode(BpmnNode node) {
         String nodeConfigJson = node.getNodeConfigJson();
@@ -390,31 +335,8 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
                 return nodeConfig.getApproverConf().getRoleConfList();
             }
         }
-        List<BpmnNodeRoleConf> dbRoleList = bpmnNodeRoleConfServiceImpl.list(Wrappers.<BpmnNodeRoleConf>lambdaQuery()
-                .eq(BpmnNodeRoleConf::getBpmnNodeId, node.getId()).eq(BpmnNodeRoleConf::getIsDel, 0));
-        if (CollectionUtils.isEmpty(dbRoleList)) {
-            return Collections.emptyList();
-        }
-        List<BpmnNodeApproverConfJson.RoleConf> result = new ArrayList<>();
-        for (BpmnNodeRoleConf dbRole : dbRoleList) {
-            List<BpmnNodeRoleOutsideEmpConf> outsideEmpConfs = bpmnNodeRoleOutsideEmpConfService.list(
-                    Wrappers.<BpmnNodeRoleOutsideEmpConf>lambdaQuery()
-                            .eq(BpmnNodeRoleOutsideEmpConf::getNodeId, node.getId())
-                            .eq(BpmnNodeRoleOutsideEmpConf::getIsDel, 0));
-            List<BpmnNodeApproverConfJson.EmployeeInfo> employees = outsideEmpConfs.stream()
-                    .map(e -> BpmnNodeApproverConfJson.EmployeeInfo.builder()
-                            .emplId(e.getEmplId())
-                            .emplName(e.getEmplName())
-                            .build())
-                    .collect(Collectors.toList());
-            result.add(BpmnNodeApproverConfJson.RoleConf.builder()
-                    .roleId(dbRole.getRoleId())
-                    .roleName(dbRole.getRoleName())
-                    .signType(dbRole.getSignType())
-                    .outsideEmployees(employees)
-                    .build());
-        }
-        return result;
+
+      throw new AFBizException("migration error,please contact the author");
     }
 
     private void updateRoleConfToNodeJson(BpmnNode node, List<BpmnNodeApproverConfJson.RoleConf> roleConfList) {
@@ -433,18 +355,6 @@ public class OutSideBpmBusinessPartyBizServiceImpl implements OutSideBpmBusiness
         bpmnNodeService.updateById(node);
     }
 
-    private  BpmnNodeRoleOutsideEmpConf getRoleOutsideEmpConf(BpmnNode bpmnNode, BaseIdTranStruVo user) {
-        BpmnNodeRoleOutsideEmpConf outsideEmpConf = new BpmnNodeRoleOutsideEmpConf();
-        outsideEmpConf.setNodeId(bpmnNode.getId());
-        outsideEmpConf.setEmplId(user.getId());
-        outsideEmpConf.setEmplName(user.getName());
-        outsideEmpConf.setCreateUser(SecurityUtils.getLogInEmpIdSafe());
-        outsideEmpConf.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
-        outsideEmpConf.setCreateTime(new Date());
-        outsideEmpConf.setUpdateTime(new Date());
-        outsideEmpConf.setIsDel(0);
-        return outsideEmpConf;
-    }
     /**
      * rebuild vo for representing more detailed information
      *

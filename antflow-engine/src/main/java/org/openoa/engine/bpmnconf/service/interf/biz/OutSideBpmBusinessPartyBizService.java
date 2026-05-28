@@ -31,5 +31,5 @@ public interface OutSideBpmBusinessPartyBizService extends BizService<OutSideBpm
 
     List<BpmnConfVo> getBpmConf(String businessPartyMark);
 
-    void syncRolePersonnel(String businessPartyMark, NodeRolePersonVo userList);
+
 }

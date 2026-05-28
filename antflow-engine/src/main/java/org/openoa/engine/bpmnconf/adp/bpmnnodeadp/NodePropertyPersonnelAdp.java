@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,25 +7,17 @@ import org.openoa.base.constant.enums.FieldValueTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.base.entity.BpmnNodePersonnelConf;
 import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
-import org.openoa.base.entity.BpmnNodePersonnelEmplConf;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodePersonnelEmplConfServiceImpl;
 
-import org.openoa.base.util.MultiTenantUtil;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodePersonnelConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author AntFlow
