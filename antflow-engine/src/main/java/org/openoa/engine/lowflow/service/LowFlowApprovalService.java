@@ -30,7 +30,6 @@ import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeLowCodeConfJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
-import org.openoa.engine.bpmnconf.mapper.BpmnNodeLfFormdataFieldControlMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
@@ -59,8 +58,6 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     private LFMainService mainService;
     @Autowired
     private BpmnConfLfFormdataService lfFormdataService;
-    @Autowired
-    private BpmnNodeLfFormdataFieldControlMapper bmnNodeLfFormdataFieldControlMapper;
     @Autowired
     private BpmnNodeService bpmnNodeService;
 
@@ -339,8 +336,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }
         List<LFFieldControlVO> currentFieldControls = getFieldControlsFromJson(confId, vo.getTaskDefKey());
         if (CollectionUtils.isEmpty(currentFieldControls)) {
-            currentFieldControls = bmnNodeLfFormdataFieldControlMapper
-                    .getFieldControlByProcessNumberAndElementId(vo.getProcessNumber(), vo.getTaskDefKey());
+           throw new AFBizException("migration error,please contact the author");
         }
         for (LFMainField field : lfMainFields){
             if(!CollectionUtils.isEmpty(currentFieldControls)){

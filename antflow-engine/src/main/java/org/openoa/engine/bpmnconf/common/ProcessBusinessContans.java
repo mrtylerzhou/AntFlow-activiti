@@ -61,8 +61,6 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private BpmnNodeLfFormdataFieldControlServiceImpl bpmnNodeLfFormdataFieldControlService;
-    @Autowired
     private BpmVariableServiceImpl bpmnVariableService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
@@ -201,9 +199,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
             if (StringUtils.isNotBlank(nodeId)) {
                 List<LFFieldControlVO> currentFieldControls = getFieldControlsFromNodeJson(Long.valueOf(nodeId));
                 if (CollectionUtils.isEmpty(currentFieldControls)) {
-                    currentFieldControls = bpmnNodeLfFormdataFieldControlService
-                            .getBaseMapper()
-                            .getFieldControlByNodeId(Long.valueOf(nodeId));
+                  throw new AFBizException("migration error,please contact the author");
                 }
                 processInfoVo.setLfFieldControlVOs(currentFieldControls);
             }

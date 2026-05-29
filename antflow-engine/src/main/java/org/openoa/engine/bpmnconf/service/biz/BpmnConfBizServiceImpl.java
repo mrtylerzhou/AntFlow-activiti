@@ -114,8 +114,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private IAdaptorFactory adaptorFactory;
     @Autowired
-    private BpmnNodeLfFormdataFieldControlService nodeLfFormdataFieldControlService;
-    @Autowired
     @Lazy
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
     @Autowired
@@ -233,6 +231,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             // Build node-level JSON config from VO data
             BpmnNodeConfigHolder.setButtonSignConf(bpmnNodeVo);
             BpmnNodeConfigHolder.setTemplateConf(bpmnNodeVo);
+            // Populate formdataId on LF field control VOs (comes from conf level, not frontend)
+            Long lfFormDataId = bpmnConfVo.getLfFormDataId();
+            if (lfFormDataId != null && !CollectionUtils.isEmpty(bpmnNodeVo.getLfFieldControlVOs())) {
+                for (LFFieldControlVO fc : bpmnNodeVo.getLfFieldControlVOs()) {
+                    fc.setFormdataId(lfFormDataId);
+                }
+            }
+            BpmnNodeConfigHolder.setLowCodeConf(bpmnNodeVo);
 
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
@@ -1689,18 +1695,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     }
 
     private Map<Long,List<BpmnNodeLfFormdataFieldControl>> getBpmnNodeFieldControlConfMap(List<Long> idList){
-        return nodeLfFormdataFieldControlService.list(
-                        AFWrappers.<BpmnNodeLfFormdataFieldControl>lambdaTenantQuery()
-                                .in(BpmnNodeLfFormdataFieldControl::getNodeId,idList)
-                ).stream()
-                .collect(Collectors.toMap(
-                        BpmnNodeLfFormdataFieldControl::getNodeId,
-                        Lists::newArrayList,
-                        (a,b)->{
-                            a.addAll(b);
-                            return a;
-                        }
-                ));
+        throw new AFBizException("migration error,please contact the author");
     }
 
 
