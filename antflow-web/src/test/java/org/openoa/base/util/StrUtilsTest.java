@@ -101,7 +101,7 @@ class StrUtilsTest extends BaseTest {
         @Test
         @DisplayName("should return lowercase first letters for Chinese string")
         void shouldReturnLowercaseForChinese() {
-            String result = StrUtils.getFirstLettersSmall("审批流程");
+            String result = StrUtils.getFirstLettersSmall("我心中的项目");
             assertNotNull(result);
             assertEquals(result.toLowerCase(), result);
         }
