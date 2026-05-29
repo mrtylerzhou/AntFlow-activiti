@@ -5,6 +5,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.openoa.base.entity.OutSideBpmnNodeConditionsConf;
 
 @Mapper
-public interface OutSideBpmnNodeConditionsConfMapper extends BaseMapper<OutSideBpmnNodeConditionsConf> {
+public interface OutSideBpmnNodeConditionsConfMapper {
 
 }

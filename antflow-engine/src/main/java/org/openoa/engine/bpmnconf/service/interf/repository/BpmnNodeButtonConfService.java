@@ -7,7 +7,6 @@ import org.openoa.base.vo.BpmnNodeVo;
 
 import java.util.List;
 
-public interface BpmnNodeButtonConfService extends IService<BpmnNodeButtonConf> {
-    void editButtons(BpmnNodeVo bpmnNodeVo, Long bpmnNodeId);
-    List<BpmnNodeButtonConf> queryByNodeIds(List<String> nodeIds, ButtonPageTypeEnum type);
+public interface BpmnNodeButtonConfService  {
+
 }

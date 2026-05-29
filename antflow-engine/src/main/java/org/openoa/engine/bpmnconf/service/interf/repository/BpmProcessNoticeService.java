@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface BpmProcessNoticeService extends IService<BpmProcessNotice> {
-    void saveProcessNotice(BpmProcessDeptVo vo);
 
     List<BpmProcessNotice> processNoticeList(String processKey);
 

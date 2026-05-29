@@ -56,7 +56,6 @@ public class BpmProcessDeptBizServiceImpl implements BpmProcessDeptBizService {
 
     @Override
     public void editProcessConf(BpmProcessDeptVo vo) throws AFBizException {
-        //todo save process's other info
-        processNoticeService.saveProcessNotice(vo);
+
     }
 }

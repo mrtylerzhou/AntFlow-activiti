@@ -13,6 +13,7 @@ import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
@@ -26,7 +27,6 @@ import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceI
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmnNodeButtonConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +63,6 @@ public class ConfigFlowButtonContans {
     private TaskService taskService;
     @Autowired
     private ActHiTaskinstServiceImpl actHiTaskinstService;
-    @Autowired
-    private BpmnNodeButtonConfBizService bpmnNodeButtonConfBizService;
     @Autowired
     private BpmnNodeService bpmnNodeService;
     @Autowired
@@ -286,39 +284,7 @@ public class ConfigFlowButtonContans {
         if (!CollectionUtils.isEmpty(jsonButtons)) {
             return jsonButtons;
         }
-
-        List<BpmnNodeButtonConf> bpmnNodeButtonConfs=null;
-        if(isInitiate){
-            bpmnNodeButtonConfs= bpmnNodeButtonConfBizService.getMapper().queryConfByBpmnConde(bpmBusinessProcess.getVersion());
-
-        }else{
-            List<String> hisTaskDefKeys = actHiTaskinstService
-                    .queryRecordsByProcInstId(bpmBusinessProcess.getProcInstId())
-                    .stream().filter(a -> a.getEndTime() != null&& SecurityUtils.getLogInEmpIdSafe().equals(a.getAssignee()))
-                    .map(ActHiTaskinst::getTaskDefKey)
-                    .distinct()
-                    .collect(Collectors.toList());
-            if(!CollectionUtils.isEmpty(hisTaskDefKeys)){
-                List<NodeXelementXvarXverifyInfo> nodeIdsByElementIds = bpmVariableMultiplayerService.getBaseMapper().getNodeIdsByElementIds(bpmBusinessProcess.getBusinessNumber(), hisTaskDefKeys);
-                if (!nodeIdsByElementIds.isEmpty()) {
-                    List<String> nodeIds = nodeIdsByElementIds.stream().map(NodeXelementXvarXverifyInfo::getNodeId).collect(Collectors.toList());
-                    bpmnNodeButtonConfs = bpmnNodeButtonConfBizService.getService().queryByNodeIds(nodeIds, ButtonPageTypeEnum.TO_VIEW);
-                }
-                if(Boolean.TRUE.equals(isInitiate)&&!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
-                    bpmnNodeButtonConfs=bpmnNodeButtonConfs.stream().filter(a->!Objects.equals(a.getStartPageOnly(),1)).collect(Collectors.toList());
-                }
-            }
-
-        }
-
-        if(!CollectionUtils.isEmpty(bpmnNodeButtonConfs)){
-            List<ProcessActionButtonVo> processActionButtonVos = bpmnNodeButtonConfs.stream().map(item -> ProcessActionButtonVo.builder().buttonType(item.getButtonType())
-                            .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
-                            .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build())
-                    .collect(Collectors.toList());
-            return processActionButtonVos;
-        }
-       return new ArrayList<>();
+        throw new AFBizException("migration error,please contact the author");
     }
 
     private List<ProcessActionButtonVo> getNodeConfButtonsFromJson(BpmBusinessProcess bpmBusinessProcess, Boolean isInitiate) {

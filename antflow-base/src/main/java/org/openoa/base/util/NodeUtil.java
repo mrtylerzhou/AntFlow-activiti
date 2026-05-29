@@ -55,14 +55,7 @@ public class NodeUtil {
             List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
             return CollectionUtils.containsAny(collect, noneOperationalLables);
         }
-        BpmNodeLabelsService bpmNodeLabelsService = SpringBeanUtils.getBean(BpmNodeLabelsService.class);
-        List<BpmnNodeLabel> nodeLabels = bpmNodeLabelsService.list(AFWrappers.<BpmnNodeLabel>lambdaTenantQuery().eq(BpmnNodeLabel::getNodeId,nodeId));
-        if(CollectionUtils.isEmpty(nodeLabels)){
-            return true;
-        }
-        List<String> collect = nodeLabels.stream().map(BpmnNodeLabel::getLabelValue).collect(Collectors.toList());
-        List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
-        return CollectionUtils.containsAny(collect,noneOperationalLables);
+       return true;
     }
 
     private static List<BpmnNodeLabelVO> getLabelsFromNodeJson(String nodeId) {

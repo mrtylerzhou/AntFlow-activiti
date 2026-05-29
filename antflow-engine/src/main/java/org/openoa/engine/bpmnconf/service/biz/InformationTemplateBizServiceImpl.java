@@ -2,7 +2,6 @@ package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
@@ -17,7 +16,6 @@ import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizServi
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnTemplateService;
 import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +34,6 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
     private DefaultTemplateService defaultTemplateService;
     @Autowired
     private BpmnApproveRemindService bpmnApproveRemindService;
-    @Autowired
-    private BpmnTemplateService bpmnTemplateService;
     @Autowired
     private BpmnConfService bpmnConfService;
     @Autowired
@@ -74,23 +70,6 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
                     throw new AFBizException("该模板正在使用中，不可禁用！");
                 }
 
-                List<BpmnTemplate> templates = bpmnTemplateService.getBaseMapper().selectList(
-                        new QueryWrapper<BpmnTemplate>()
-                                .eq("is_del", 0)
-                                .eq("template_id", informationTemplate.getId()));
-                List<BpmnApproveRemind> approveReminds = bpmnApproveRemindService.getBaseMapper().selectList(
-                        new QueryWrapper<BpmnApproveRemind>()
-                                .eq("is_del", 0)
-                                .eq("template_id", informationTemplate.getId()));
-                List<DefaultTemplate> defaultTemplates = defaultTemplateService.getBaseMapper().selectList(
-                        new QueryWrapper<DefaultTemplate>()
-                                .eq("is_del", 0)
-                                .eq("template_id", informationTemplate.getId()));
-                if (!ObjectUtils.isEmpty(templates)
-                        || !ObjectUtils.isEmpty(approveReminds)
-                        || !ObjectUtils.isEmpty(defaultTemplates)) {
-                    throw new AFBizException("该模板正在使用中，不可禁用！");
-                }
             }
             informationTemplate.setUpdateUser(SecurityUtils.getLogInEmpIdSafe());
         } else {

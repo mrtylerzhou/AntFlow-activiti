@@ -95,17 +95,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmnNodeToService bpmnNodeToService;
     @Autowired
-    private BpmnTemplateService bpmnTemplateService;
-    @Autowired
     private InformationTemplateService informationTemplateService;
-    @Autowired
-    private BpmnNodeButtonConfService bpmnNodeButtonConfService;
-    @Autowired
-    private BpmnNodeSignUpConfService bpmnNodeSignUpConfService;
+
     @Autowired
     private BpmnApproveRemindService bpmnApproveRemindService;
-    @Autowired
-    private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
     @Autowired
     private BpmProcessNameBizService bpmProcessNameService;
     @Autowired
@@ -122,8 +115,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private IAdaptorFactory adaptorFactory;
     @Autowired
     private BpmnNodeLfFormdataFieldControlService nodeLfFormdataFieldControlService;
-    @Autowired
-    private BpmNodeLabelsService nodeLabelsService;
     @Autowired
     @Lazy
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
@@ -164,17 +155,13 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         bpmnConf.setConfConfigJson(JsonConfUtil.toConfConfigJson(confConfigJson));
 
         this.getMapper().insert(bpmnConf);
-        //effectiveBpmnConf(bpmnConf.getId().intValue());
-        //notice template
-        bpmnConfNoticeTemplateBizService.insert(bpmnCode);
+
         Long confId = bpmnConf.getId();
         if(confId==null){
             throw new AFBizException(Strings.lenientFormat("conf id for formcode:%s can not be null",formCode));
         }
         bpmnConfVo.setId(confId);
 
-
-        bpmnTemplateService.editBpmnTemplate(bpmnConfVo, confId);
 
         Integer isOutSideProcess = bpmnConfVo.getIsOutSideProcess();
         Integer isLowCodeFlow = bpmnConfVo.getIsLowCodeFlow();
@@ -237,11 +224,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             //edit node to
             bpmnNodeToService.editNodeTo(bpmnNodeVo, bpmnNodeId);
 
-            //edit node's button conf
-            bpmnNodeButtonConfService.editButtons(bpmnNodeVo, bpmnNodeId);
-
-            //edit node sign up
-            bpmnNodeSignUpConfService.editSignUpConf(bpmnNodeVo, bpmnNodeId);
 
 
             bpmnNodeVo.setId(bpmnNodeId);
@@ -267,8 +249,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 continue;
             }
 
-            //edit in node notice template
-            bpmnTemplateService.editBpmnTemplate(bpmnNodeVo);
 
 
             //edit in node approver remind conf
@@ -802,23 +782,27 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
 
     /**
-     * set out of node notice template
-     *
-     * @param bpmnConfVo bpmnConfVo
+     * Set conf-level notice templates from JSON (no DB table read).
+     * Reads conf_config_json -> confTemplates[] for the given formCode.
      */
     @Override
     public void setBpmnTemplateVos(BpmnConfVo bpmnConfVo) {
-        bpmnConfVo.setTemplateVos(
-                bpmnTemplateService.getBaseMapper().selectList(
-                                AFWrappers.<BpmnTemplate>lambdaTenantQuery()
-                                        .eq(BpmnTemplate::getFormCode,bpmnConfVo.getFormCode())
-                                        .isNull(BpmnTemplate::getNodeId))
-                        .stream()
-                        .map(o -> {
-                            BpmnTemplateVo vo = new BpmnTemplateVo();
-                            buildBpmnTemplateVo(o,vo);
-                            return vo;
-                        }).collect(Collectors.toList()));
+        BpmnConf conf = this.getMapper().selectOne(
+                AFWrappers.<BpmnConf>lambdaTenantQuery()
+                        .eq(BpmnConf::getFormCode, bpmnConfVo.getFormCode())
+                        .eq(BpmnConf::getEffectiveStatus, 1)
+                        .isNotNull(BpmnConf::getConfConfigJson)
+                        .last("LIMIT 1"));
+        if (conf == null || conf.getConfConfigJson() == null) {
+            bpmnConfVo.setTemplateVos(Collections.emptyList());
+            return;
+        }
+        BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(conf.getConfConfigJson());
+        if (confConfig == null || CollectionUtils.isEmpty(confConfig.getConfTemplates())) {
+            bpmnConfVo.setTemplateVos(Collections.emptyList());
+            return;
+        }
+        setBpmnTemplateVosFromJson(bpmnConfVo, confConfig);
     }
     /**
      * effective bpmn conf
@@ -1420,11 +1404,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             throw  new AFBizException("migration error,please contact the author");
         }
 
-        //set out node notice template — prefer JSON, fallback to DB
+        //set conf-level notice templates — JSON only
         if (confConfig != null && !CollectionUtils.isEmpty(confConfig.getConfTemplates())) {
             setBpmnTemplateVosFromJson(bpmnConfVo, confConfig);
         } else {
-            setBpmnTemplateVos(bpmnConfVo);
+            bpmnConfVo.setTemplateVos(Collections.emptyList());
         }
         return bpmnConfVo;
     }
@@ -1647,24 +1631,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @return map
      */
     private Map<Long, List<BpmnTemplateVo>> getBpmnTemplateVoMap(List<Long> ids) {
-        if (ObjectUtils.isEmpty(ids)) {
-            return new HashMap<>();
-        }
-        return bpmnTemplateService.getBaseMapper().selectList(
-                        AFWrappers.<BpmnTemplate>lambdaTenantQuery()
-                                .in(BpmnTemplate::getNodeId, ids))
-                .stream()
-                .collect(Collectors.toMap(
-                        BpmnTemplate::getNodeId,
-                        o -> {
-                            BpmnTemplateVo vo = new BpmnTemplateVo();
-                            buildBpmnTemplateVo(o,vo);
-                            return new ArrayList<>(Collections.singletonList(vo));
-                        },
-                        (a, b) -> {
-                            a.addAll(b);
-                            return a;
-                        }));
+       throw new AFBizException("migration error,please contact the author");
     }
 
     private Map<Long, BpmnApproveRemindVo> getBpmnApproveRemindVoMap(List<Long> ids) {
@@ -1699,8 +1666,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         (a, b) -> a));
     }
     private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
-        List<BpmnNodeLabel> nodeLabels = nodeLabelsService.list(AFWrappers.<BpmnNodeLabel>lambdaTenantQuery().in(BpmnNodeLabel::getNodeId,ids));
-        return nodeLabels.stream().collect(Collectors.groupingBy(BpmnNodeLabel::getNodeId));
+       throw new AFBizException("migration error,please contact the author");
     }
     /**
      * get node signup conf map
@@ -1709,10 +1675,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @return
      */
     private Map<Long, BpmnNodeSignUpConf> getBpmnNodeSignUpConfMap(List<Long> idList) {
-        return bpmnNodeSignUpConfService.getBaseMapper().selectList(AFWrappers.<BpmnNodeSignUpConf>lambdaTenantQuery()
-                        .in(BpmnNodeSignUpConf::getBpmnNodeId, idList))
-                .stream()
-                .collect(Collectors.toMap(BpmnNodeSignUpConf::getBpmnNodeId, o -> o));
+        throw new AFBizException("migration error,please contact the author");
     }
 
     /**
@@ -1722,17 +1685,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @return
      */
     private Map<Long, List<BpmnNodeButtonConf>> getBpmnNodeButtonConfMap(List<Long> idList) {
-        return bpmnNodeButtonConfService.getBaseMapper().selectList(
-                        AFWrappers.<BpmnNodeButtonConf>lambdaTenantQuery()
-                                .in(BpmnNodeButtonConf::getBpmnNodeId, idList))
-                .stream()
-                .collect(Collectors.toMap(
-                        BpmnNodeButtonConf::getBpmnNodeId,
-                        v -> Lists.newArrayList(Collections.singletonList(v)),
-                        (a, b) -> {
-                            a.addAll(b);
-                            return a;
-                        }));
+       throw new AFBizException("migration error,please contact the author");
     }
 
     private Map<Long,List<BpmnNodeLfFormdataFieldControl>> getBpmnNodeFieldControlConfMap(List<Long> idList){

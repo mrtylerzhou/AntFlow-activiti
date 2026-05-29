@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.processor;
 
-import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmnNodeLabel;
 import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
@@ -11,7 +10,6 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodeVo;
-import org.openoa.engine.bpmnconf.service.impl.BpmNodeLabelsServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnConfVo> {
-    @Autowired
-    private BpmNodeLabelsServiceImpl nodeLabelsService;
     @Autowired
     private BpmnNodeService bpmnNodeService;
 
@@ -49,12 +45,7 @@ public class NodeLabelsPostProcessor implements AntFlowOrderPostProcessor<BpmnCo
                 updateLabelsToNodeJson(nodeVo.getId(), labelList);
             }
         }
-        if(!CollectionUtils.isEmpty(nodeLabels)){
-            Integer extraFlags = confVo.getExtraFlags();
-            Integer binariedOr = BpmnConfFlagsEnum.HAS_NODE_LABELS.binaryOr(extraFlags);
-            confVo.setExtraFlags(binariedOr);
-            nodeLabelsService.saveBatch(nodeLabels);
-        }
+
     }
 
     private void updateLabelsToNodeJson(Long nodeId, List<BpmnNodeLabelVO> labelList) {
