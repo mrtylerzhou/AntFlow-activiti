@@ -43,8 +43,9 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
         if (nodeConfig != null && nodeConfig.getConditionsConf() != null
                 && !CollectionUtils.isEmpty(nodeConfig.getConditionsConf().getConditionGroups())) {
             formatFromJson(bpmnNodeVo, nodeConfig.getConditionsConf());
+        }else{
+            throw new AFBizException("migration error,please contact the author");
         }
-        throw new AFBizException("migration error,please contact the author");
     }
 
     /**
