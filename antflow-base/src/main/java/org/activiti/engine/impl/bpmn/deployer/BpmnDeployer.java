@@ -49,14 +49,12 @@ import org.activiti.engine.impl.persistence.deploy.Deployer;
 import org.activiti.engine.impl.persistence.deploy.DeploymentManager;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionInfoCacheObject;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
 import org.activiti.engine.impl.util.IoUtil;
-import org.activiti.engine.task.IdentityLinkType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -443,23 +441,9 @@ public class BpmnDeployer implements Deployer {
   enum ExprType {
 	  USER, GROUP
   }
-  
+
   private void addAuthorizationsFromIterator(Set<Expression> exprSet, ProcessDefinitionEntity processDefinition, ExprType exprType) {
-    if (exprSet != null) {
-      Iterator<Expression> iterator = exprSet.iterator();
-      while (iterator.hasNext()) {
-        Expression expr = (Expression) iterator.next();
-        IdentityLinkEntity identityLink = new IdentityLinkEntity();
-        identityLink.setProcessDef(processDefinition);
-        if (exprType.equals(ExprType.USER)) {
-           identityLink.setUserId(expr.toString());
-        } else if (exprType.equals(ExprType.GROUP)) {
-          identityLink.setGroupId(expr.toString());
-        }
-        identityLink.setType(IdentityLinkType.CANDIDATE);
-        identityLink.insert();
-      }
-    }
+    // IdentityLink functionality removed
   }
 
   protected void addAuthorizations(ProcessDefinitionEntity processDefinition) {

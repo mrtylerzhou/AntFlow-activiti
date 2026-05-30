@@ -62,7 +62,6 @@ public class TableDataManager extends AbstractManager {
     // runtime
     persistentObjectToTableNameMap.put(TaskEntity.class, "ACT_RU_TASK");
     persistentObjectToTableNameMap.put(ExecutionEntity.class, "ACT_RU_EXECUTION");
-    persistentObjectToTableNameMap.put(IdentityLinkEntity.class, "ACT_RU_IDENTITYLINK");
     persistentObjectToTableNameMap.put(VariableInstanceEntity.class, "ACT_RU_VARIABLE");
     
     // repository
@@ -77,7 +76,6 @@ public class TableDataManager extends AbstractManager {
     persistentObjectToTableNameMap.put(HistoricProcessInstanceEntity.class, "ACT_HI_PROCINST");
     persistentObjectToTableNameMap.put(HistoricVariableInstanceEntity.class, "ACT_HI_VARINST");
     persistentObjectToTableNameMap.put(HistoricTaskInstanceEntity.class, "ACT_HI_TASKINST");
-    persistentObjectToTableNameMap.put(HistoricIdentityLinkEntity.class, "ACT_HI_IDENTITYLINK");
     
     // a couple of stuff goes to the same table
     persistentObjectToTableNameMap.put(HistoricDetailAssignmentEntity.class, "ACT_HI_DETAIL");

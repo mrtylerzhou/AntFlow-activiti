@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.DeploymentQuery;
 import org.activiti.engine.repository.DiagramLayout;
@@ -25,7 +26,6 @@ import org.activiti.engine.repository.NativeDeploymentQuery;
 import org.activiti.engine.repository.NativeProcessDefinitionQuery;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
-import org.activiti.engine.task.IdentityLink;
 import org.activiti.validation.ValidationError;
 
 /** Service providing access to the repository of process definitions and deployments.
@@ -320,45 +320,6 @@ public interface RepositoryService {
   DiagramLayout getProcessDiagramLayout(String processDefinitionId);
   
   /**
-   * Authorizes a candidate user for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or user doesn't exist.
-   */
-  void addCandidateStarterUser(String processDefinitionId, String userId);
-  
-  /**
-   * Authorizes a candidate group for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param groupId id of the group involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or group doesn't exist.
-   */
-  void addCandidateStarterGroup(String processDefinitionId, String groupId);
-  
-  /**
-   * Removes the authorization of a candidate user for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or user doesn't exist.
-   */
-  void deleteCandidateStarterUser(String processDefinitionId, String userId);
-  
-  /**
-   * Removes the authorization of a candidate group for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param groupId id of the group involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or group doesn't exist.
-   */
-  void deleteCandidateStarterGroup(String processDefinitionId, String groupId);
-
-  /**
-   * Retrieves the {@link IdentityLink}s associated with the given process definition.
-   * Such an {@link IdentityLink} informs how a certain identity (eg. group or user)
-   * is authorized for a certain process definition
-   */
-  List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId);
-  
-  /**
    * Validates the given process definition against the rules for executing a process definition
    * on the Activiti engine.
    * 
@@ -371,5 +332,20 @@ public interface RepositoryService {
    * 
    */
   List<ValidationError> validateProcess(BpmnModel bpmnModel);
+
+  /** Adds a candidate starter user to the process definition. */
+  void addCandidateStarterUser(String processDefinitionId, String userId);
+
+  /** Adds a candidate starter group to the process definition. */
+  void addCandidateStarterGroup(String processDefinitionId, String groupId);
+
+  /** Removes a candidate starter user from the process definition. */
+  void deleteCandidateStarterUser(String processDefinitionId, String userId);
+
+  /** Removes a candidate starter group from the process definition. */
+  void deleteCandidateStarterGroup(String processDefinitionId, String groupId);
+
+  /** Retrieves the identity links associated with a process definition. */
+  List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId);
 
 }

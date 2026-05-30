@@ -14,12 +14,10 @@ package org.activiti.engine.delegate;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 
 /**
  * @author Joram Barrez
@@ -124,56 +122,26 @@ public interface DelegateTask extends VariableScope {
 	
   /** Change the category of the task. This is an optional field and allows to 'tag' tasks as belonging to a certain category. */
   void setCategory(String category);
-  
-  /**
-   * Involves a user with a task. The type of identity link is defined by the given identityLinkType.
-   * @param userId id of the user involve, cannot be null.
-   * @param identityLinkType type of identityLink, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
+
+  /** Adds an identity link to this task. */
   void addUserIdentityLink(String userId, String identityLinkType);
-  
-  /**
-   * Involves a group with group task. The type of identityLink is defined by the given identityLink.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
+
+  /** Adds an identity link to this task. */
   void addGroupIdentityLink(String groupId, String identityLinkType);
-  
-  /**
-   * Convenience shorthand for {@link #deleteUserIdentityLink(String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param userId id of the user to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
+
+  /** Removes a candidate user from the task. */
   void deleteCandidateUser(String userId);
-  
-  /**
-   * Convenience shorthand for {@link #deleteGroupIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param groupId id of the group to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
+
+  /** Removes a candidate group from the task. */
   void deleteCandidateGroup(String groupId);
-  
-  /**
-   * Removes the association between a user and a task for the given identityLinkType.
-   * @param userId id of the user involve, cannot be null.
-   * @param identityLinkType type of identityLink, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
+
+  /** Removes the identity link from this task. */
   void deleteUserIdentityLink(String userId, String identityLinkType);
-  
-  /**
-   * Removes the association between a group and a task for the given identityLinkType.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
+
+  /** Removes the identity link from this task. */
   void deleteGroupIdentityLink(String groupId, String identityLinkType);
 
-  /**
-   * Retrieves the candidate users and groups associated with the task.
-   * @return set of {@link IdentityLink}s of type {@link IdentityLinkType#CANDIDATE}.
-   */
-  Set<IdentityLink> getCandidates();
+  /** Retrieves the identity links associated with the task. */
+  List<IdentityLink> getCandidates();
+
 }

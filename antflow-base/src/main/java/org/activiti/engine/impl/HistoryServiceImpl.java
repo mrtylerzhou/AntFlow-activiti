@@ -32,7 +32,6 @@ import org.activiti.engine.history.ProcessInstanceHistoryLogQuery;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.DeleteHistoricProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DeleteHistoricTaskInstanceCmd;
-import org.activiti.engine.impl.cmd.GetHistoricIdentityLinksForTaskCmd;
 
 /**
  * @author Tom Baeyens
@@ -100,18 +99,18 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
   }
   
   @Override
-  public List<HistoricIdentityLink> getHistoricIdentityLinksForProcessInstance(String processInstanceId) {
-    return commandExecutor.execute(new GetHistoricIdentityLinksForTaskCmd(null, processInstanceId));
-  }
-  
-  @Override
-  public List<HistoricIdentityLink> getHistoricIdentityLinksForTask(String taskId) {
-    return commandExecutor.execute(new GetHistoricIdentityLinksForTaskCmd(taskId, null));
-  }
-  
-  @Override
   public ProcessInstanceHistoryLogQuery createProcessInstanceHistoryLogQuery(String processInstanceId) {
   	return new ProcessInstanceHistoryLogQueryImpl(commandExecutor, processInstanceId);
   }
-  
+
+  public List<HistoricIdentityLink> getHistoricIdentityLinksForTask(String taskId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
+  }
+
+  public List<HistoricIdentityLink> getHistoricIdentityLinksForProcessInstance(String processInstanceId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
+  }
+
 }

@@ -141,7 +141,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // (we cache associated entities here to minimize db queries)
   protected List<TaskEntity> tasks;
-  protected List<IdentityLinkEntity> identityLinks;
   protected int cachedEntityState;
   
   // cascade deletion ////////////////////////////////////////////////////////
@@ -927,12 +926,9 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     // delete all the tasks
     removeTasks(null);
 
-    // remove event scopes:            
+    // remove event scopes:
     removeEventScopes();
-    
-    // remove identity links
-    removeIdentityLinks();
-    
+
     if(Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
     	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
     			ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_DELETED, this));
@@ -1243,51 +1239,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   public void removeTask(TaskEntity task) {
     getTasksInternal().remove(task);
   }
-    
-  // identity links ///////////////////////////////////////////////////////////
 
-  public List<IdentityLinkEntity> getIdentityLinks() {
-    if (identityLinks == null) {
-      identityLinks = Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .findIdentityLinksByProcessInstanceId(id);
-    }
-    
-    return identityLinks;
-  }
-
-  public IdentityLinkEntity addIdentityLink(String userId, String groupId, String type) {
-    IdentityLinkEntity identityLinkEntity = new IdentityLinkEntity();
-    getIdentityLinks().add(identityLinkEntity);
-    identityLinkEntity.setProcessInstance(this);
-    identityLinkEntity.setUserId(userId);
-    identityLinkEntity.setGroupId(groupId);
-    identityLinkEntity.setType(type);
-    identityLinkEntity.insert();
-    return identityLinkEntity;
-  }
-  
-  /** 
-   * Adds an IdentityLink for this user with the specified type, 
-   * but only if the user is not associated with this instance yet.
-   **/
-  public IdentityLinkEntity involveUser(String userId, String type) {
-    for (IdentityLinkEntity identityLink : getIdentityLinks()) {
-      if (identityLink.isUser() && identityLink.getUserId().equals(userId)) {
-        return identityLink;
-      }
-    }
-    return addIdentityLink(userId, null, type);
-  }
-  
-  public void removeIdentityLinks() {
-    Context
-      .getCommandContext()
-      .getIdentityLinkEntityManager()
-      .deleteIdentityLinksByProcInstance(id);
-  }
-  
   // getters and setters //////////////////////////////////////////////////////
   
   
@@ -1535,20 +1487,34 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
     return null;
   }
-  
-  public void deleteIdentityLink(String userId, String groupId, String type) {
-    List<IdentityLinkEntity> identityLinks = Context.getCommandContext().getIdentityLinkEntityManager()
-            .findIdentityLinkByProcessInstanceUserGroupAndType(id, userId, groupId, type);
-
-    for (IdentityLinkEntity identityLink : identityLinks) {
-      Context.getCommandContext().getIdentityLinkEntityManager().deleteIdentityLink(identityLink, true);
-    }
-
-    getIdentityLinks().removeAll(identityLinks);
-
-  }
 
   public void setExecuteListeners(boolean executeListeners) {
     this.executeListeners = executeListeners;
+  }
+
+  // Identity link methods (no-op after removal of IdentityLinkEntity)
+
+  public void addIdentityLink(String userId, String groupId, String type) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteIdentityLink(String userId, String groupId, String type) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
   }
 }

@@ -72,11 +72,7 @@ public class HistoricProcessInstanceEntityManager extends AbstractManager {
       commandContext
         .getHistoricTaskInstanceEntityManager()
         .deleteHistoricTaskInstancesByProcessInstanceId(historicProcessInstanceId);
-      
-      commandContext
-      	.getHistoricIdentityLinkEntityManager()
-        .deleteHistoricIdentityLinksByProcInstance(historicProcessInstanceId);
-      
+
       commandContext
         .getCommentEntityManager()
         .deleteCommentsByProcessInstanceId(historicProcessInstanceId);

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.activiti.engine.delegate.VariableScope;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventDispatcher;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
@@ -31,8 +32,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.task.Event;
-import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 
 /**
  * 
@@ -253,92 +252,6 @@ public interface RuntimeService {
    *          new businessKey value
    */
   void updateBusinessKey(String processInstanceId, String businessKey);
-
-  // Identity Links
-  // ///////////////////////////////////////////////////////////////
-
-  /**
-   * Involves a user with a process instance. The type of identity link is
-   * defined by the given identityLinkType.
-   * 
-   * @param processInstanceId
-   *          id of the process instance, cannot be null.
-   * @param userId
-   *          id of the user involve, cannot be null.
-   * @param identityLinkType
-   *          type of identityLink, cannot be null (@see
-   *          {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException
-   *           when the process instance doesn't exist.
-   */
-  void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType);
-  
-  /**
-   * Involves a group with a process instance. The type of identityLink is defined by the
-   * given identityLink.
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the  process instance or group doesn't exist.
-   */
-  void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType);
-  
-  /**
-   * Convenience shorthand for {@link #addUserIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param userId id of the user to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void addParticipantUser(String processInstanceId, String userId);
-  
-  /**
-   * Convenience shorthand for {@link #addGroupIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param groupId id of the group to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void addParticipantGroup(String processInstanceId, String groupId);
-  
-  /**
-   * Convenience shorthand for {@link #deleteUserIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param userId id of the user to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void deleteParticipantUser(String processInstanceId, String userId);
-  
-  /**
-   * Convenience shorthand for {@link #deleteGroupIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param groupId id of the group to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void deleteParticipantGroup(String processInstanceId, String groupId);
-  
-  /**
-   * Removes the association between a user and a process instance for the given identityLinkType.
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @param identityLinkType type of identityLink, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType);
-  
-  /**
-   * Removes the association between a group and a process instance for the given identityLinkType.
-   * @param processInstanceId id of the process instance, cannot be null.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType);
-
-  /**
-   * Retrieves the {@link IdentityLink}s associated with the given process
-   * instance. Such an {@link IdentityLink} informs how a certain user is
-   * involved with a process instance.
-   */
-  List<IdentityLink> getIdentityLinksForProcessInstance(String instanceId);
 
   // Variables
   // ////////////////////////////////////////////////////////////////////
@@ -882,5 +795,32 @@ public interface RuntimeService {
   
   /**Create a ProcessInstanceBuilder*/
   ProcessInstanceBuilder createProcessInstanceBuilder();
-    
+
+  /** Adds a user identity link to the process instance. */
+  void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType);
+
+  /** Adds a group identity link to the process instance. */
+  void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType);
+
+  /** Adds a participant user to the process instance. */
+  void addParticipantUser(String processInstanceId, String userId);
+
+  /** Adds a participant group to the process instance. */
+  void addParticipantGroup(String processInstanceId, String groupId);
+
+  /** Removes a participant user from the process instance. */
+  void deleteParticipantUser(String processInstanceId, String userId);
+
+  /** Removes a participant group from the process instance. */
+  void deleteParticipantGroup(String processInstanceId, String groupId);
+
+  /** Removes a user identity link from the process instance. */
+  void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType);
+
+  /** Removes a group identity link from the process instance. */
+  void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType);
+
+  /** Retrieves the identity links associated with the given process instance. */
+  List<IdentityLink> getIdentityLinksForProcessInstance(String processInstanceId);
+
 }

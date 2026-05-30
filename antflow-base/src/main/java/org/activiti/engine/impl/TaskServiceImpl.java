@@ -25,19 +25,16 @@ import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.AddCommentCmd;
-import org.activiti.engine.impl.cmd.AddIdentityLinkCmd;
 import org.activiti.engine.impl.cmd.ClaimTaskCmd;
 import org.activiti.engine.impl.cmd.CompleteTaskCmd;
 import org.activiti.engine.impl.cmd.CreateAttachmentCmd;
 import org.activiti.engine.impl.cmd.DelegateTaskCmd;
 import org.activiti.engine.impl.cmd.DeleteAttachmentCmd;
 import org.activiti.engine.impl.cmd.DeleteCommentCmd;
-import org.activiti.engine.impl.cmd.DeleteIdentityLinkCmd;
 import org.activiti.engine.impl.cmd.DeleteTaskCmd;
 import org.activiti.engine.impl.cmd.GetAttachmentCmd;
 import org.activiti.engine.impl.cmd.GetAttachmentContentCmd;
 import org.activiti.engine.impl.cmd.GetCommentCmd;
-import org.activiti.engine.impl.cmd.GetIdentityLinksForTaskCmd;
 import org.activiti.engine.impl.cmd.GetProcessInstanceAttachmentsCmd;
 import org.activiti.engine.impl.cmd.GetProcessInstanceCommentsCmd;
 import org.activiti.engine.impl.cmd.GetSubTasksCmd;
@@ -64,7 +61,6 @@ import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
@@ -122,50 +118,6 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
     commandExecutor.execute(new DeleteTaskCmd(taskIds, deleteReason, false));
   }
 
-  public void setAssignee(String taskId, String userId) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, userId, null, IdentityLinkType.ASSIGNEE));
-  }
-  
-  public void setOwner(String taskId, String userId) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, userId, null, IdentityLinkType.OWNER));
-  }
-  
-  public void addCandidateUser(String taskId, String userId) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, userId, null, IdentityLinkType.CANDIDATE));
-  }
-  
-  public void addCandidateGroup(String taskId, String groupId) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, null, groupId, IdentityLinkType.CANDIDATE));
-  }
-  
-  public void addUserIdentityLink(String taskId, String userId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, userId, null, identityLinkType));
-  }
-
-  public void addGroupIdentityLink(String taskId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkCmd(taskId, null, groupId, identityLinkType));
-  }
-  
-  public void deleteCandidateGroup(String taskId, String groupId) {
-    commandExecutor.execute(new DeleteIdentityLinkCmd(taskId, null, groupId, IdentityLinkType.CANDIDATE));
-  }
-
-  public void deleteCandidateUser(String taskId, String userId) {
-    commandExecutor.execute(new DeleteIdentityLinkCmd(taskId, userId, null, IdentityLinkType.CANDIDATE));
-  }
-
-  public void deleteGroupIdentityLink(String taskId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkCmd(taskId, null, groupId, identityLinkType));
-  }
-
-  public void deleteUserIdentityLink(String taskId, String userId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkCmd(taskId, userId, null, identityLinkType));
-  }
-  
-  public List<IdentityLink> getIdentityLinksForTask(String taskId) {
-    return commandExecutor.execute(new GetIdentityLinksForTaskCmd(taskId));
-  }
-  
   public void claim(String taskId, String userId) {
     commandExecutor.execute(new ClaimTaskCmd(taskId, userId));
   }
@@ -391,6 +343,51 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 
   public List<Task> getSubTasks(String parentTaskId) {
     return commandExecutor.execute(new GetSubTasksCmd(parentTaskId));
+  }
+
+  public void setAssignee(String taskId, String userId) {
+    commandExecutor.execute(new org.activiti.engine.impl.cmd.SetTaskAssigneeCmd(taskId, userId));
+  }
+
+  public void setOwner(String taskId, String userId) {
+    commandExecutor.execute(new org.activiti.engine.impl.cmd.SetTaskOwnerCmd(taskId, userId));
+  }
+
+  public void addCandidateUser(String taskId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addCandidateGroup(String taskId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addUserIdentityLink(String taskId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addGroupIdentityLink(String taskId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteCandidateUser(String taskId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteCandidateGroup(String taskId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteUserIdentityLink(String taskId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteGroupIdentityLink(String taskId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public List<IdentityLink> getIdentityLinksForTask(String taskId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
   }
 
 }

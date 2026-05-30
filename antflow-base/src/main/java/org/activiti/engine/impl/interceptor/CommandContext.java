@@ -36,12 +36,10 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailEntityManager;
-import org.activiti.engine.impl.persistence.entity.HistoricIdentityLinkEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntityManager;
 import org.activiti.engine.impl.persistence.entity.MembershipIdentityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
@@ -289,10 +287,6 @@ public class CommandContext {
     return getSession(TaskEntityManager.class);
   }
 
-  public IdentityLinkEntityManager getIdentityLinkEntityManager() {
-    return getSession(IdentityLinkEntityManager.class);
-  }
-
   public VariableInstanceEntityManager getVariableInstanceEntityManager() {
     return getSession(VariableInstanceEntityManager.class);
   }
@@ -316,11 +310,7 @@ public class CommandContext {
   public HistoricTaskInstanceEntityManager getHistoricTaskInstanceEntityManager() {
     return getSession(HistoricTaskInstanceEntityManager.class);
   }
-  
-  public HistoricIdentityLinkEntityManager getHistoricIdentityLinkEntityManager() {
-    return getSession(HistoricIdentityLinkEntityManager.class);
-  }
-  
+
   public EventLogEntryEntityManager getEventLogEntryEntityManager() {
   	return getSession(EventLogEntryEntityManager.class);
   }

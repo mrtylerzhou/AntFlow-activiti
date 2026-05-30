@@ -128,20 +128,6 @@ CREATE TABLE `ACT_HI_DETAIL`
     KEY `ACT_IDX_HI_DETAIL_TASK_ID` (`TASK_ID_`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `ACT_HI_IDENTITYLINK`
-(
-    `ID_`           varchar(64)   NOT NULL,
-    `GROUP_ID_`     varchar(255)  DEFAULT NULL,
-    `TYPE_`         varchar(255)  DEFAULT NULL,
-    `USER_ID_`      varchar(255)  DEFAULT NULL,
-    `TASK_ID_`      varchar(64)   DEFAULT NULL,
-    `PROC_INST_ID_` varchar(64)   DEFAULT NULL,
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_IDX_HI_IDENT_LNK_USER` (`USER_ID_`),
-    KEY `ACT_IDX_HI_IDENT_LNK_TASK` (`TASK_ID_`),
-    KEY `ACT_IDX_HI_IDENT_LNK_PROCINST` (`PROC_INST_ID_`)
-) ENGINE = InnoDB;
-
 
 CREATE TABLE `ACT_HI_PROCINST`
 (
@@ -346,27 +332,6 @@ CREATE TABLE `ACT_RU_TASK`
     KEY `ACT_FK_TASK_PROCINST` (`PROC_INST_ID_`),
     KEY `ACT_FK_TASK_PROCDEF` (`PROC_DEF_ID_`)
 ) ENGINE = InnoDB;
-
-
-
-CREATE TABLE `ACT_RU_IDENTITYLINK`
-(
-    `ID_`           varchar(64)   NOT NULL,
-    `REV_`          int           DEFAULT NULL,
-    `GROUP_ID_`     varchar(255)  DEFAULT NULL,
-    `TYPE_`         varchar(255)  DEFAULT NULL,
-    `USER_ID_`      varchar(255)  DEFAULT NULL,
-    `TASK_ID_`      varchar(64)   DEFAULT NULL,
-    `PROC_INST_ID_` varchar(64)   DEFAULT NULL,
-    `PROC_DEF_ID_`  varchar(64)   DEFAULT NULL,
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_IDX_IDENT_LNK_USER` (`USER_ID_`),
-    KEY `ACT_IDX_IDENT_LNK_GROUP` (`GROUP_ID_`),
-    KEY `ACT_IDX_ATHRZ_PROCEDEF` (`PROC_DEF_ID_`),
-    KEY `ACT_FK_TSKASS_TASK` (`TASK_ID_`),
-    KEY `ACT_FK_IDL_PROCINST` (`PROC_INST_ID_`)
-) ENGINE = InnoDB;
-
 
 
 CREATE TABLE `ACT_RU_VARIABLE`

@@ -7,11 +7,9 @@ import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.interceptor.Session;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
-import org.activiti.engine.task.IdentityLink;
 
 public interface HistoryManager extends Session {
 
@@ -200,38 +198,8 @@ public interface HistoryManager extends Session {
 	public abstract void recordVariableRemoved(VariableInstanceEntity variable);
 
 	/**
-	 * Creates a new comment to indicate a new {@link IdentityLink} has been created or deleted, 
-	 * if history is enabled. 
-	 */
-	public abstract void createIdentityLinkComment(String taskId,
-			String userId, String groupId, String type, boolean create);
-
-	/**
-	 * Creates a new comment to indicate a new {@link IdentityLink} has been created or deleted, 
-	 * if history is enabled. 
-	 */
-	public abstract void createIdentityLinkComment(String taskId,
-			String userId, String groupId, String type, boolean create,
-			boolean forceNullUserId);
-
-	/**
-	 * Creates a new comment to indicate a new {@link IdentityLink} has been created or deleted, 
-	 * if history is enabled. 
-	 */
-	public abstract void createProcessInstanceIdentityLinkComment(String processInstanceId,
-      String userId, String groupId, String type, boolean create);
-
-	/**
-	 * Creates a new comment to indicate a new {@link IdentityLink} has been created or deleted, 
-	 * if history is enabled. 
-	 */
-	public abstract void createProcessInstanceIdentityLinkComment(String processInstanceId,
-      String userId, String groupId, String type, boolean create,
-      boolean forceNullUserId);
-
-	/**
-	 * Creates a new comment to indicate a new attachment has been created or deleted, 
-	 * if history is enabled. 
+	 * Creates a new comment to indicate a new attachment has been created or deleted,
+	 * if history is enabled.
 	 */
 	public abstract void createAttachmentComment(String taskId,
 			String processInstanceId, String attachmentName, boolean create);
@@ -243,16 +211,27 @@ public interface HistoryManager extends Session {
 			ExecutionEntity processInstance, Map<String, String> properties,
 			String taskId);
 
-	// Identity link related history
-	/**
-	 * Record the creation of a new {@link IdentityLink}, if audit history is enabled.
-	 */
-	public abstract void recordIdentityLinkCreated(
-			IdentityLinkEntity identityLink);
-
-	public abstract void deleteHistoricIdentityLink(String id);
-
 	public abstract void updateProcessBusinessKeyInHistory(
 			ExecutionEntity processInstance);
+
+	/**
+	 * Creates a comment for an identity link change on a task.
+	 */
+	public abstract void createIdentityLinkComment(String taskId, String userId, String type, boolean isUser);
+
+	/**
+	 * Creates a comment for an identity link change on a process instance.
+	 */
+	public abstract void createProcessInstanceIdentityLinkComment(String processInstanceId, String userId, String groupId, String type, boolean isCreate);
+
+	/**
+	 * Record that an identity link has been created.
+	 */
+	public abstract void recordIdentityLinkCreated(org.activiti.engine.impl.persistence.entity.TaskEntity task);
+
+	/**
+	 * Delete a historic identity link.
+	 */
+	public abstract void deleteHistoricIdentityLink(String id);
 
 }

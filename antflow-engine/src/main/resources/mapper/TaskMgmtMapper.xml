@@ -571,21 +571,6 @@
         #{formKey, jdbcType=VARCHAR}
         )
     </insert>
-    <insert id="bulkInsertIdentityLink">
-        insert into ACT_RU_IDENTITYLINK (ID_, REV_, TYPE_, USER_ID_, GROUP_ID_, TASK_ID_, PROC_INST_ID_, PROC_DEF_ID_)
-        values
-        <foreach collection="list" item="identityLink" index="index" separator=",">
-            (#{identityLink.id, jdbcType=VARCHAR},
-            1,
-            #{identityLink.type, jdbcType=VARCHAR},
-            #{identityLink.userId, jdbcType=VARCHAR},
-            #{identityLink.groupId, jdbcType=VARCHAR},
-            #{identityLink.taskId, jdbcType=VARCHAR},
-            #{identityLink.processInstanceId, jdbcType=VARCHAR},
-            #{identityLink.processDefId, jdbcType=VARCHAR})
-        </foreach>
-
-    </insert>
     <insert id="bulkInsertVariableInstance">
         INSERT INTO ACT_RU_VARIABLE (ID_, REV_,
         TYPE_, NAME_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, BYTEARRAY_ID_,

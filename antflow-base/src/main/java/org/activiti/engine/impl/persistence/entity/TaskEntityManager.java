@@ -76,10 +76,6 @@ public class TaskEntityManager extends AbstractManager {
       for (Task subTask: subTasks) {
         deleteTask((TaskEntity) subTask, deleteReason, cascade);
       }
-      
-      commandContext
-        .getIdentityLinkEntityManager()
-        .deleteIdentityLinksByTaskId(taskId);
 
       commandContext
         .getVariableInstanceEntityManager()

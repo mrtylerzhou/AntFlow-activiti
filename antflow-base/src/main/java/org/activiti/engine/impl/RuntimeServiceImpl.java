@@ -27,8 +27,6 @@ import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.form.FormData;
 import org.activiti.engine.impl.cmd.ActivateProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.AddEventListenerCommand;
-import org.activiti.engine.impl.cmd.AddIdentityLinkForProcessInstanceCmd;
-import org.activiti.engine.impl.cmd.DeleteIdentityLinkForProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DeleteProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DispatchEventCommand;
 import org.activiti.engine.impl.cmd.FindActiveActivityIdsCmd;
@@ -37,7 +35,6 @@ import org.activiti.engine.impl.cmd.GetExecutionVariableInstanceCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariableInstancesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionsVariablesCmd;
-import org.activiti.engine.impl.cmd.GetIdentityLinksForProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.GetProcessInstanceEventsCmd;
 import org.activiti.engine.impl.cmd.GetStartFormCmd;
 import org.activiti.engine.impl.cmd.HasExecutionVariableCmd;
@@ -59,7 +56,6 @@ import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 
 /**
  * @author Tom Baeyens
@@ -285,42 +281,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
     commandExecutor.execute(new SignalCmd(executionId, null, null, processVariables));
   }
 
-  public void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, identityLinkType));
-  }
-
-  public void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, identityLinkType));
-  }
-
-  public void addParticipantUser(String processInstanceId, String userId) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void addParticipantGroup(String processInstanceId, String groupId) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteParticipantUser(String processInstanceId, String userId) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteParticipantGroup(String processInstanceId, String groupId) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, identityLinkType));
-  }
-
-  public void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, identityLinkType));
-  }
-
-  public List<IdentityLink> getIdentityLinksForProcessInstance(String processInstanceId) {
-    return commandExecutor.execute(new GetIdentityLinksForProcessInstanceCmd(processInstanceId));
-  }
-
   public ProcessInstanceQuery createProcessInstanceQuery() {
     return new ProcessInstanceQueryImpl(commandExecutor);
   }
@@ -378,5 +338,42 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   
   public ProcessInstance startProcessInstance(ProcessInstanceBuilderImpl processInstanceBuilder){
     return commandExecutor.execute(new StartProcessInstanceCmd<ProcessInstance>(processInstanceBuilder));
+  }
+
+  public void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantUser(String processInstanceId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantGroup(String processInstanceId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantUser(String processInstanceId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantGroup(String processInstanceId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public List<IdentityLink> getIdentityLinksForProcessInstance(String processInstanceId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
   }
 }

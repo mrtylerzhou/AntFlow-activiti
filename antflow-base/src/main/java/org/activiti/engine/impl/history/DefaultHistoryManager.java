@@ -37,11 +37,9 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricFormPropertyEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -771,79 +769,7 @@ public void recordTaskClaim(String taskId) {
 	}
   
   // Comment related history
-  
-  /* (non-Javadoc)
-   * @see org.activiti.engine.impl.history.HistoryManagerInterface#createIdentityLinkComment(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
-   */
-  @Override
-  public void createIdentityLinkComment(String taskId, String userId, String groupId, String type, boolean create) {
-    createIdentityLinkComment(taskId, userId, groupId, type, create, false);
-  }
-  
-  /* (non-Javadoc)
-   * @see org.activiti.engine.impl.history.HistoryManagerInterface#createIdentityLinkComment(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, boolean)
-   */
-  @Override
-  public void createIdentityLinkComment(String taskId, String userId, String groupId, String type, boolean create, boolean forceNullUserId) {
-    if(isHistoryEnabled()) {
-      String authenticatedUserId = Authentication.getAuthenticatedUserId();
-      CommentEntity comment = new CommentEntity();
-      comment.setUserId(authenticatedUserId);
-      comment.setType(CommentEntity.TYPE_EVENT);
-      comment.setTime(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
-      comment.setTaskId(taskId);
-      if (userId!=null || forceNullUserId) {
-        if(create) {
-          comment.setAction(Event.ACTION_ADD_USER_LINK);
-        } else {
-          comment.setAction(Event.ACTION_DELETE_USER_LINK);
-        }
-        comment.setMessage(new String[]{userId, type});
-      } else {
-        if(create) {
-          comment.setAction(Event.ACTION_ADD_GROUP_LINK);
-        } else {
-          comment.setAction(Event.ACTION_DELETE_GROUP_LINK);
-        }
-        comment.setMessage(new String[]{groupId, type});
-      }
-      getSession(CommentEntityManager.class).insert(comment);
-    }
-  }
-  
-  @Override
-  public void createProcessInstanceIdentityLinkComment(String processInstanceId, String userId, String groupId, String type, boolean create) {
-    createProcessInstanceIdentityLinkComment(processInstanceId, userId, groupId, type, create, false);
-  }
 
-  @Override
-  public void createProcessInstanceIdentityLinkComment(String processInstanceId, String userId, String groupId, String type, boolean create, boolean forceNullUserId) {
-    if(isHistoryEnabled()) {
-      String authenticatedUserId = Authentication.getAuthenticatedUserId();
-      CommentEntity comment = new CommentEntity();
-      comment.setUserId(authenticatedUserId);
-      comment.setType(CommentEntity.TYPE_EVENT);
-      comment.setTime(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
-      comment.setProcessInstanceId(processInstanceId);
-      if (userId!=null || forceNullUserId) {
-        if(create) {
-          comment.setAction(Event.ACTION_ADD_USER_LINK);
-        } else {
-          comment.setAction(Event.ACTION_DELETE_USER_LINK);
-        }
-        comment.setMessage(new String[]{userId, type});
-      } else {
-        if(create) {
-          comment.setAction(Event.ACTION_ADD_GROUP_LINK);
-        } else {
-          comment.setAction(Event.ACTION_DELETE_GROUP_LINK);
-        }
-        comment.setMessage(new String[]{groupId, type});
-      }
-      getSession(CommentEntityManager.class).insert(comment);
-    }
-  }
-  
   /* (non-Javadoc)
    * @see org.activiti.engine.impl.history.HistoryManagerInterface#createAttachmentComment(java.lang.String, java.lang.String, java.lang.String, boolean)
    */
@@ -881,30 +807,6 @@ public void recordTaskClaim(String taskId) {
     }
   }
   
-  // Identity link related history
-  /* (non-Javadoc)
-   * @see org.activiti.engine.impl.history.HistoryManagerInterface#recordIdentityLinkCreated(org.activiti.engine.impl.persistence.entity.IdentityLinkEntity)
-   */
-  @Override
-  public void recordIdentityLinkCreated(IdentityLinkEntity identityLink) {
-    // It makes no sense storing historic counterpart for an identity-link that is related
-    // to a process-definition only as this is never kept in history
-    if (isHistoryLevelAtLeast(HistoryLevel.AUDIT) && (identityLink.getProcessInstanceId() != null || identityLink.getTaskId() != null)) {
-      HistoricIdentityLinkEntity historicIdentityLinkEntity = new HistoricIdentityLinkEntity(identityLink);
-      getDbSqlSession().insert(historicIdentityLinkEntity);
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.activiti.engine.impl.history.HistoryManagerInterface#deleteHistoricIdentityLink(java.lang.String)
-   */
-  @Override
-  public void deleteHistoricIdentityLink(String id) {
-    if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      getHistoricIdentityLinkEntityManager().deleteHistoricIdentityLink(id);
-    }
-  }
-  
   /* (non-Javadoc)
    * @see org.activiti.engine.impl.history.HistoryManagerInterface#updateProcessBusinessKeyInHistory(org.activiti.engine.impl.persistence.entity.ExecutionEntity)
    */
@@ -924,5 +826,25 @@ public void recordTaskClaim(String taskId) {
 			}
 		}
 	}
-  
+
+	@Override
+	public void createIdentityLinkComment(String taskId, String userId, String type, boolean isUser) {
+		// no-op: IdentityLinkEntity has been removed
+	}
+
+	@Override
+	public void createProcessInstanceIdentityLinkComment(String processInstanceId, String userId, String groupId, String type, boolean isCreate) {
+		// no-op: IdentityLinkEntity has been removed
+	}
+
+	@Override
+	public void recordIdentityLinkCreated(TaskEntity task) {
+		// no-op: IdentityLinkEntity has been removed
+	}
+
+	@Override
+	public void deleteHistoricIdentityLink(String id) {
+		// no-op: IdentityLinkEntity has been removed
+	}
+
 }

@@ -17,13 +17,11 @@ import org.activiti.engine.impl.persistence.entity.HistoricDetailEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailTransitionInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricFormPropertyEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricScopeInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityInfoEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.MembershipEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.PropertyEntity;
@@ -88,17 +86,8 @@ public class EntityDependencyOrder {
 		 * FK from ByteArray
 		 */
 		DELETE_ORDER.add(DeploymentEntity.class);
-		
+
 		/*
-		 * FK to process definition
-		 * FK to Execution
-		 * FK to Task
-		 */
-		DELETE_ORDER.add(IdentityLinkEntity.class);
-		
-		/*
-		 * FK from IdentityLink
-		 * 
 		 * FK to Execution
 		 * FK to process definition
 		 */
@@ -106,7 +95,6 @@ public class EntityDependencyOrder {
 		
 		/*
 		 * FK from VariableInstance
-		 * FK from IdentityLink
 		 * FK from Task
 		 *
 		 * FK to ProcessDefinition
@@ -115,7 +103,6 @@ public class EntityDependencyOrder {
 		
 		/*
 		 * FK from Task
-		 * FK from IdentityLink
 		 * FK from execution
 		 */
 		DELETE_ORDER.add(ProcessDefinitionEntity.class);
@@ -136,11 +123,10 @@ public class EntityDependencyOrder {
 	   */
 		DELETE_ORDER.add(GroupEntity.class);
 	  
-	  
+
+
 	  // History entities have no FK's
-	  
-		DELETE_ORDER.add(HistoricIdentityLinkEntity.class);
-	  
+
 		DELETE_ORDER.add(IdentityInfoEntity.class);
 	  
 		DELETE_ORDER.add(HistoricActivityInstanceEntity.class);

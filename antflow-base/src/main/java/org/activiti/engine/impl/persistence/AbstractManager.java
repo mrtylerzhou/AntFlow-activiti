@@ -26,12 +26,10 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailEntityManager;
-import org.activiti.engine.impl.persistence.entity.HistoricIdentityLinkEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntityManager;
 import org.activiti.engine.impl.persistence.entity.MembershipIdentityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
@@ -91,11 +89,6 @@ public abstract class AbstractManager implements Session {
     return getSession(TaskEntityManager.class);
   }
 
-  protected IdentityLinkEntityManager getIdentityLinkManager() {
-    return getSession(IdentityLinkEntityManager.class);
-  }
-  
-
   protected VariableInstanceEntityManager getVariableInstanceManager() {
     return getSession(VariableInstanceEntityManager.class);
   }
@@ -119,11 +112,7 @@ public abstract class AbstractManager implements Session {
   protected HistoricTaskInstanceEntityManager getHistoricTaskInstanceManager() {
     return getSession(HistoricTaskInstanceEntityManager.class);
   }
-  
-  protected HistoricIdentityLinkEntityManager getHistoricIdentityLinkEntityManager() {
-    return getSession(HistoricIdentityLinkEntityManager.class);
-  }
-  
+
   protected UserIdentityManager getUserIdentityManager() {
     return getSession(UserIdentityManager.class);
   }
