@@ -12,13 +12,9 @@
  */
 package org.activiti.engine.impl.bpmn.behavior;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.activiti.bpmn.model.Signal;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.context.Context;
-import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 
@@ -34,8 +30,6 @@ import org.activiti.engine.impl.pvm.delegate.SignallableActivityBehavior;
 public abstract class FlowNodeActivityBehavior implements SignallableActivityBehavior {
 
   public final String FIRED_EVENT_SIGNAL_FORMAT = "firedEventSignal_%s_%s";
-  
-  private final static Pattern scopeRegexPattern = Pattern.compile("\"scope\"\\s*:\\s*\"([^\"]+)\",?");
   
   protected BpmnActivityBehavior bpmnActivityBehavior = new BpmnActivityBehavior();
 
@@ -74,39 +68,6 @@ public abstract class FlowNodeActivityBehavior implements SignallableActivityBeh
     Context.getCommandContext().addAttribute(signalScope, true);
   }
   
-  /**
-   * Check if event has already been fired in the current transaction scope
-   */
-  protected boolean isSignalEventAlreadyFired(ActivityExecution execution, EventSubscriptionEntity subscription) {
-
-    if (!isSignalEventType(subscription)) {
-      return false;
-    }
-
-    final String subscriptionScope = getEventSubscriptionScope(execution, subscription);
-    
-    return Context.getCommandContext()
-        .getAttribute(subscriptionScope) != null;
-  }
-
-  protected boolean isSignalEventType(EventSubscriptionEntity subscription) {
-    return "signal".equals(subscription.getEventType());
-  }
-
-  protected String getEventSubscriptionScope(ActivityExecution execution, EventSubscriptionEntity subscription) {
-    String subscriptionScope = null;
-    
-    if (subscription.getConfiguration() != null) {
-      Matcher matcher = scopeRegexPattern.matcher(subscription.getConfiguration());
-
-      if (matcher.find()) {
-        subscriptionScope = matcher.group(1);
-      }
-    }
-
-    return getSignalExecutionScope(execution, subscription.getEventName(), subscriptionScope);
-  }
-
   protected String getSignalScope(ActivityExecution execution, Signal signal) {
     return getSignalExecutionScope(execution, signal.getName(), signal.getScope());
 

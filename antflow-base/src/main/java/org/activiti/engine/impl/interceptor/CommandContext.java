@@ -32,7 +32,6 @@ import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
 import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
-import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
@@ -356,10 +355,6 @@ public class CommandContext {
   
   public PropertyEntityManager getPropertyEntityManager() {
     return getSession(PropertyEntityManager.class);
-  }
-  
-  public EventSubscriptionEntityManager getEventSubscriptionEntityManager() {
-    return getSession(EventSubscriptionEntityManager.class);
   }
   
   public Map<Class< ? >, SessionFactory> getSessionFactories() {

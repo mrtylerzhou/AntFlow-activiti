@@ -318,25 +318,6 @@ CREATE TABLE `ACT_RU_EXECUTION`
 ) ENGINE = InnoDB;
 
 
-CREATE TABLE `ACT_RU_EVENT_SUBSCR`
-(
-    `ID_`            varchar(64)   NOT NULL,
-    `REV_`           int           DEFAULT NULL,
-    `EVENT_TYPE_`    varchar(255)  NOT NULL,
-    `EVENT_NAME_`    varchar(255)  DEFAULT NULL,
-    `EXECUTION_ID_`  varchar(64)   DEFAULT NULL,
-    `PROC_INST_ID_`  varchar(64)   DEFAULT NULL,
-    `ACTIVITY_ID_`   varchar(64)   DEFAULT NULL,
-    `CONFIGURATION_` varchar(255)  DEFAULT NULL,
-    `CREATED_`       timestamp(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `PROC_DEF_ID_`   varchar(64)   DEFAULT NULL,
-    `TENANT_ID_`     varchar(255)  DEFAULT '',
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_IDX_EVENT_SUBSCR_CONFIG_` (`CONFIGURATION_`),
-    KEY `ACT_FK_EVENT_EXEC` (`EXECUTION_ID_`)
-) ENGINE = InnoDB;
-
-
 CREATE TABLE `ACT_RU_TASK`
 (
     `ID_`               varchar(64)       NOT NULL,

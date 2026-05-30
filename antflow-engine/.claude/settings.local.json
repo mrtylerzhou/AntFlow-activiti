@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(find D:/projects/jimuoffice/*)",
-      "Bash(./mvnw clean:*)"
+      "Bash(./mvnw clean:*)",
+      "Bash(mvn clean:*)"
     ]
   }
 }

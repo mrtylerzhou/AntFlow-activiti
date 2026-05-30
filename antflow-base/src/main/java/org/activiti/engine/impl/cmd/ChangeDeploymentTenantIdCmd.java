@@ -50,16 +50,13 @@ public class ChangeDeploymentTenantIdCmd implements Command<Void>, Serializable 
     if (deployment == null) {
     	throw new ActivitiObjectNotFoundException("Could not find deployment with id " + deploymentId, Deployment.class);
     }
-    String oldTenantId = deployment.getTenantId();
     deployment.setTenantId(newTenantId);
-    
-    
-    // Doing process instances, executions and tasks with direct SQL updates (otherwise would not be performant) 
+
+
+    // Doing process instances, executions and tasks with direct SQL updates (otherwise would not be performant)
     commandContext.getProcessDefinitionEntityManager().updateProcessDefinitionTenantIdForDeployment(deploymentId, newTenantId);
     commandContext.getExecutionEntityManager().updateExecutionTenantIdForDeployment(deploymentId, newTenantId);
     commandContext.getTaskEntityManager().updateTaskTenantIdForDeployment(deploymentId, newTenantId);
-    // Job entity manager removed - job tenant update no longer needed
-    commandContext.getEventSubscriptionEntityManager().updateEventSubscriptionTenantId(oldTenantId, newTenantId);
     
     // Doing process definitions in memory, cause we need to clear the process definition cache
     List<ProcessDefinition> processDefinitions = commandContext.getDbSqlSession()

@@ -65,9 +65,6 @@ public class IntermediateCatchEventParseHandler extends AbstractFlowNodeBpmnPars
       nestedActivity.setAsync(event.isAsynchronous());
       nestedActivity.setExclusive(!event.isNotExclusive());
       
-      // Catch event behavior is the same for all types
-      nestedActivity.setActivityBehavior(bpmnParse.getActivityBehaviorFactory().createIntermediateCatchEventActivityBehavior(event));
-      
       if (eventDefinition instanceof TimerEventDefinition
               || eventDefinition instanceof SignalEventDefinition
               || eventDefinition instanceof MessageEventDefinition) {

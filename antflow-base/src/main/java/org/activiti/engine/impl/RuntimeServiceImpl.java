@@ -41,15 +41,12 @@ import org.activiti.engine.impl.cmd.GetIdentityLinksForProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.GetProcessInstanceEventsCmd;
 import org.activiti.engine.impl.cmd.GetStartFormCmd;
 import org.activiti.engine.impl.cmd.HasExecutionVariableCmd;
-import org.activiti.engine.impl.cmd.MessageEventReceivedCmd;
 import org.activiti.engine.impl.cmd.RemoveEventListenerCommand;
 import org.activiti.engine.impl.cmd.RemoveExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.SetExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.SetProcessInstanceBusinessKeyCmd;
 import org.activiti.engine.impl.cmd.SetProcessInstanceNameCmd;
 import org.activiti.engine.impl.cmd.SignalCmd;
-import org.activiti.engine.impl.cmd.SignalEventReceivedCmd;
-import org.activiti.engine.impl.cmd.StartProcessInstanceByMessageCmd;
 import org.activiti.engine.impl.cmd.StartProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.SuspendProcessInstanceCmd;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
@@ -344,89 +341,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
     commandExecutor.execute(new ActivateProcessInstanceCmd(processInstanceId));
   }
   
-  public ProcessInstance startProcessInstanceByMessage(String messageName) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, null, null));
-  }
-
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, null, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, String businessKey) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, null, null));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String businessKey, String tenantId) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, null, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, Map<String, Object> processVariables) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, processVariables, null));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, Map<String, Object> processVariables, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, processVariables, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, String businessKey, Map<String, Object> processVariables) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, processVariables, null));
-  }
-  
-  @Override
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String businessKey, 
-  		Map<String, Object> processVariables, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, processVariables, tenantId));
-  }
-
-  public void signalEventReceived(String signalName) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, null, null));
-  }
-  
-  public void signalEventReceivedWithTenantId(String signalName, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, null, tenantId));
-  }
-  
-  public void signalEventReceivedAsync(String signalName) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, true, null));
-  }
-  
-  public void signalEventReceivedAsyncWithTenantId(String signalName, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, true, tenantId));
-  }
-  
-  public void signalEventReceived(String signalName, Map<String, Object> processVariables) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, processVariables, null));
-  }
-  
-  public void signalEventReceivedWithTenantId(String signalName,
-      Map<String, Object> processVariables, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, processVariables, tenantId));
-  }
-
-  public void signalEventReceived(String signalName, String executionId) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, null, null));
-  }
-
-  public void signalEventReceived(String signalName, String executionId, Map<String, Object> processVariables) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, processVariables, null));
-  }
-
-  public void signalEventReceivedAsync(String signalName, String executionId) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, true, null));
-  }
-  
-  public void messageEventReceived(String messageName, String executionId) {
-    commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, null));
-  }
-
-  public void messageEventReceived(String messageName, String executionId, Map<String, Object> processVariables) {
-    commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, processVariables));
-  }
-  
-  public void messageEventReceivedAsync(String messageName, String executionId) {
-	  commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, true));
-  }
-
 	@Override
   public void addEventListener(ActivitiEventListener listenerToAdd) {
 		commandExecutor.execute(new AddEventListenerCommand(listenerToAdd));

@@ -13,13 +13,8 @@
 
 package org.activiti.engine.impl.bpmn.behavior;
 
-import org.activiti.engine.impl.bpmn.helper.ScopeUtil;
-import org.activiti.engine.impl.bpmn.parser.BpmnParse;
-import org.activiti.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.pvm.PvmScope;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
-import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 
 
@@ -40,30 +35,11 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
    * and delegate to the behavior if this is the case.
    */
   protected void leave(ActivityExecution execution) {
-    if(hasCompensationHandler(execution)) {
-      createCompensateEventSubscription(execution);
-    }
     if (!hasLoopCharacteristics()) {
       super.leave(execution);
     } else if (hasMultiInstanceCharacteristics()){
       multiInstanceActivityBehavior.leave(execution);
     }
-  }
-  
-  protected boolean hasCompensationHandler(ActivityExecution execution) {
-    return execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_COMPENSATION_HANDLER_ID) != null;
-  }
-
-  protected void createCompensateEventSubscription(ActivityExecution execution) {
-    String compensationHandlerId = (String) execution.getActivity().getProperty(BpmnParse.PROPERTYNAME_COMPENSATION_HANDLER_ID);
-    
-    ExecutionEntity executionEntity = (ExecutionEntity) execution;    
-    ActivityImpl compensationHandlder = executionEntity.getProcessDefinition().findActivity(compensationHandlerId);
-    PvmScope scopeActivitiy = compensationHandlder.getParent(); 
-    ExecutionEntity scopeExecution = ScopeUtil.findScopeExecutionForScope(executionEntity, scopeActivitiy);      
-
-    CompensateEventSubscriptionEntity compensateEventSubscriptionEntity = CompensateEventSubscriptionEntity.createAndInsert(scopeExecution);
-    compensateEventSubscriptionEntity.setActivity(compensationHandlder);        
   }
 
   protected boolean hasLoopCharacteristics() {

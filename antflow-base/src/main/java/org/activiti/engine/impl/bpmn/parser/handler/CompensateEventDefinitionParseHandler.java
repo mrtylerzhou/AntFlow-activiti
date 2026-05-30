@@ -15,7 +15,6 @@ package org.activiti.engine.impl.bpmn.parser.handler;
 import org.activiti.bpmn.model.BaseElement;
 import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.CompensateEventDefinition;
-import org.activiti.bpmn.model.ThrowEvent;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ScopeImpl;
@@ -50,11 +49,7 @@ public class CompensateEventDefinitionParseHandler extends AbstractBpmnParseHand
     compensateEventDefinition.setWaitForCompletion(eventDefinition.isWaitForCompletion());
     
     ActivityImpl activity = bpmnParse.getCurrentActivity();
-    if (bpmnParse.getCurrentFlowElement() instanceof ThrowEvent) {
-      
-      activity.setActivityBehavior(bpmnParse.getActivityBehaviorFactory().createIntermediateThrowCompensationEventActivityBehavior((ThrowEvent) bpmnParse.getCurrentFlowElement(), compensateEventDefinition));
-      
-    } else if (bpmnParse.getCurrentFlowElement() instanceof BoundaryEvent) {
+    if (bpmnParse.getCurrentFlowElement() instanceof BoundaryEvent) {
      
       BoundaryEvent boundaryEvent = (BoundaryEvent) bpmnParse.getCurrentFlowElement();
       boolean interrupting = boundaryEvent.isCancelActivity();

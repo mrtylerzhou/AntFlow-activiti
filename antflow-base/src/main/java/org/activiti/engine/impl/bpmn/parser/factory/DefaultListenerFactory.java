@@ -27,8 +27,6 @@ import org.activiti.engine.impl.bpmn.helper.ClassDelegate;
 import org.activiti.engine.impl.bpmn.helper.DelegateActivitiEventListener;
 import org.activiti.engine.impl.bpmn.helper.DelegateExpressionActivitiEventListener;
 import org.activiti.engine.impl.bpmn.helper.ErrorThrowingEventListener;
-import org.activiti.engine.impl.bpmn.helper.MessageThrowingEventListener;
-import org.activiti.engine.impl.bpmn.helper.SignalThrowingEventListener;
 import org.activiti.engine.impl.bpmn.listener.DelegateExpressionExecutionListener;
 import org.activiti.engine.impl.bpmn.listener.DelegateExpressionTaskListener;
 import org.activiti.engine.impl.bpmn.listener.ExpressionExecutionListener;
@@ -103,18 +101,7 @@ public class DefaultListenerFactory extends AbstractBehaviorFactory implements L
 	@Override
 	public ActivitiEventListener createEventThrowingEventListener(EventListener eventListener) {
 		BaseDelegateEventListener result = null;
-		if (ImplementationType.IMPLEMENTATION_TYPE_THROW_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
-			result = new SignalThrowingEventListener();
-			((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
-			((SignalThrowingEventListener) result).setProcessInstanceScope(true);
-		} else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_GLOBAL_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
-			result = new SignalThrowingEventListener();
-			((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
-			((SignalThrowingEventListener) result).setProcessInstanceScope(false);
-		} else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_MESSAGE_EVENT.equals(eventListener.getImplementationType())) {
-			result = new MessageThrowingEventListener();
-			((MessageThrowingEventListener) result).setMessageName(eventListener.getImplementation());
-		} else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_ERROR_EVENT.equals(eventListener.getImplementationType())) {
+		if (ImplementationType.IMPLEMENTATION_TYPE_THROW_ERROR_EVENT.equals(eventListener.getImplementationType())) {
 			result = new ErrorThrowingEventListener();
 			((ErrorThrowingEventListener) result).setErrorCode(eventListener.getImplementation());
 		}

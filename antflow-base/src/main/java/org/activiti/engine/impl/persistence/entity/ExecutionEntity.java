@@ -27,8 +27,6 @@ import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.delegate.event.impl.ActivitiEventBuilder;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.parser.BpmnParse;
-import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
@@ -75,7 +73,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   private static Logger log = LoggerFactory.getLogger(ExecutionEntity.class);
   
   // Persistent refrenced entities state //////////////////////////////////////
-  protected static final int EVENT_SUBSCRIPTIONS_STATE_BIT = 1;
   protected static final int TASKS_STATE_BIT = 2;
   
   // current position /////////////////////////////////////////////////////////
@@ -142,8 +139,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // associated entities /////////////////////////////////////////////////////
   
-  // (we cache associated entities here to minimize db queries) 
-  protected List<EventSubscriptionEntity> eventSubscriptions;  
+  // (we cache associated entities here to minimize db queries)
   protected List<TaskEntity> tasks;
   protected List<IdentityLinkEntity> identityLinks;
   protected int cachedEntityState;
@@ -334,33 +330,16 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // scopes ///////////////////////////////////////////////////////////////////
 
-  @SuppressWarnings("unchecked")
   public void initialize() {
     log.debug("initializing {}", this);
 
-    ScopeImpl scope = getScopeObject();
     ensureParentInitialized();
 
     // initialize the lists of referenced objects (prevents db queries)
     variableInstances = new HashMap<String, VariableInstanceEntity>();
-    eventSubscriptions = new ArrayList<EventSubscriptionEntity>();
-    
+
     // Cached entity-state initialized to null, all bits are zero, indicating NO entities present
     cachedEntityState = 0;
-
-    // create event subscriptions for the current scope
-    List<EventSubscriptionDeclaration> eventSubscriptionDeclarations = (List<EventSubscriptionDeclaration>) scope.getProperty(BpmnParse.PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION);
-    if(eventSubscriptionDeclarations != null) {
-      for (EventSubscriptionDeclaration eventSubscriptionDeclaration : eventSubscriptionDeclarations) {        
-        if(!eventSubscriptionDeclaration.isStartEvent()) {
-          EventSubscriptionEntity eventSubscriptionEntity = eventSubscriptionDeclaration.prepareEventSubscriptionEntity(this); 
-          if (getTenantId() != null) {
-          	eventSubscriptionEntity.setTenantId(getTenantId());
-          }
-          eventSubscriptionEntity.insert();
-        }        
-      }
-    }
   }
   
   public void start() {
@@ -948,9 +927,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     // delete all the tasks
     removeTasks(null);
 
-    // remove all event subscriptions for this scope, if the scope has event subscriptions:
-    removeEventSubscriptions();
-    
     // remove event scopes:            
     removeEventScopes();
     
@@ -1000,12 +976,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
         childExecution.destroy();
         childExecution.remove();
       }
-    }
-  }
-
-  private void removeEventSubscriptions() {
-    for (EventSubscriptionEntity eventSubscription : getEventSubscriptions()) {
-      eventSubscription.delete();
     }
   }
 
@@ -1068,22 +1038,16 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       this.replacedBy.addTask(task);
     }
     
-    // All tasks have been moved to 'replacedBy', safe to clear the list 
+    // All tasks have been moved to 'replacedBy', safe to clear the list
     this.tasks.clear();
-    
+
     tasks = dbSqlSession.findInCache(TaskEntity.class);
     for (TaskEntity task: tasks) {
       if (id.equals(task.getExecutionId())) {
         task.setExecutionId(replacedBy.getId());
       }
     }
-    
-    // update the related event subscriptions
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptions();
-    for (EventSubscriptionEntity subscriptionEntity: eventSubscriptions) {
-      subscriptionEntity.setExecution((ExecutionEntity) replacedBy);
-    }
-    
+
     // update the related process variables
     List<VariableInstanceEntity> variables = (List) commandContext
       .getVariableInstanceEntityManager()
@@ -1253,62 +1217,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return id;
   }
   
-  // event subscription support //////////////////////////////////////////////
-  
-  public List<EventSubscriptionEntity> getEventSubscriptionsInternal() {
-    ensureEventSubscriptionsInitialized();   
-    return eventSubscriptions;
-  }
-  
-  public List<EventSubscriptionEntity> getEventSubscriptions() {
-    return new ArrayList<EventSubscriptionEntity>(getEventSubscriptionsInternal());
-  }
-  
-  public List<CompensateEventSubscriptionEntity> getCompensateEventSubscriptions() {
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptionsInternal();
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>(eventSubscriptions.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      if(eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity) {
-        result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-      }
-    }
-    return result;
-  }
-  
-  public List<CompensateEventSubscriptionEntity> getCompensateEventSubscriptions(String activityId) {
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptionsInternal();
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>(eventSubscriptions.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      if(eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity) {
-        if(activityId.equals(eventSubscriptionEntity.getActivityId())) {
-          result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-        }
-      }
-    }
-    return result;
-  }
-
-  protected void ensureEventSubscriptionsInitialized() {
-    if (eventSubscriptions == null || eventSubscriptions.isEmpty()) {
-      eventSubscriptions = Context.getCommandContext()
-        .getEventSubscriptionEntityManager()
-        .findEventSubscriptionsByExecution(id);
-    }
-  }
-  
-  public void addEventSubscription(EventSubscriptionEntity eventSubscriptionEntity) {
-    getEventSubscriptionsInternal().add(eventSubscriptionEntity);
-    
-  }
-
-  public void removeEventSubscription(EventSubscriptionEntity eventSubscriptionEntity) {
-    getEventSubscriptionsInternal().remove(eventSubscriptionEntity);
-  }
-  
-
-
-  
-  // referenced task entities ///////////////////////////////////////////////////
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void ensureTasksInitialized() {
@@ -1385,26 +1293,21 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   public void setCachedEntityState(int cachedEntityState) {
     this.cachedEntityState = cachedEntityState;
-    
+
     // Check for flags that are down. These lists can be safely initialized as empty, preventing
     // additional queries that end up in an empty list anyway
     if(tasks == null && !BitMaskUtil.isBitOn(cachedEntityState, TASKS_STATE_BIT)) {
       tasks = new ArrayList<TaskEntity>();
     }
-    if(eventSubscriptions == null && !BitMaskUtil.isBitOn(cachedEntityState, EVENT_SUBSCRIPTIONS_STATE_BIT)) {
-      eventSubscriptions = new ArrayList<EventSubscriptionEntity>();
-    }
   }
     
   public int getCachedEntityState() {
     cachedEntityState = 0;
-    
+
     // Only mark a flag as false when the list is not-null and empty. If null, we can't be sure there are no entries in it since
     // the list hasn't been initialized/queried yet.
     cachedEntityState = BitMaskUtil.setBit(cachedEntityState, TASKS_STATE_BIT, (tasks == null || !tasks.isEmpty()));
-    cachedEntityState = BitMaskUtil.setBit(cachedEntityState, EVENT_SUBSCRIPTIONS_STATE_BIT, (eventSubscriptions == null || !eventSubscriptions
-            .isEmpty()));
-    
+
     return cachedEntityState;
   }
   

@@ -16,17 +16,13 @@ import java.util.List;
 
 import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.CallActivity;
-import org.activiti.bpmn.model.CancelEventDefinition;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.ErrorEventDefinition;
-import org.activiti.bpmn.model.EventGateway;
 import org.activiti.bpmn.model.ExclusiveGateway;
 import org.activiti.bpmn.model.IOParameter;
 import org.activiti.bpmn.model.InclusiveGateway;
-import org.activiti.bpmn.model.IntermediateCatchEvent;
 import org.activiti.bpmn.model.ManualTask;
 import org.activiti.bpmn.model.ParallelGateway;
-import org.activiti.bpmn.model.Signal;
 import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.Task;
@@ -38,8 +34,6 @@ import org.activiti.engine.impl.bpmn.behavior.*;
 import org.activiti.engine.impl.bpmn.data.SimpleDataInputAssociation;
 import org.activiti.engine.impl.bpmn.data.SimpleDataOutputAssociation;
 import org.activiti.engine.impl.bpmn.helper.ClassDelegate;
-import org.activiti.engine.impl.bpmn.parser.CompensateEventDefinition;
-import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.bpmn.parser.FieldDeclaration;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
@@ -93,10 +87,6 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
 
   public InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway) {
     return new InclusiveGatewayActivityBehavior();
-  }
-
-  public EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway) {
-    return new EventBasedGatewayActivityBehavior();
   }
 
   // Multi Instance
@@ -163,24 +153,10 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
 
   // Intermediate Events
   
-  public IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent) {
-    return new IntermediateCatchEventActivityBehavior();
-  }
-
   public IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent) {
     return new IntermediateThrowNoneEventActivityBehavior();
   }
 
-  public IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent,
-          Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration) {
-    return new IntermediateThrowSignalEventActivityBehavior(throwEvent, signal, eventSubscriptionDeclaration);
-  }
-
-  public IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent,
-          CompensateEventDefinition compensateEventDefinition) {
-    return new IntermediateThrowCompensationEventActivityBehavior(compensateEventDefinition);
-  }
-  
   // End events
   
   public NoneEndEventActivityBehavior createNoneEndEventActivityBehavior(EndEvent endEvent) {
@@ -205,8 +181,4 @@ public class DefaultActivityBehaviorFactory extends AbstractBehaviorFactory impl
     return new BoundaryEventActivityBehavior(interrupting, activity.getId());
   }
 
-  public CancelBoundaryEventActivityBehavior createCancelBoundaryEventActivityBehavior(CancelEventDefinition cancelEventDefinition) {
-    return new CancelBoundaryEventActivityBehavior();
-  }
-  
 }

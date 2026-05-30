@@ -88,10 +88,6 @@ import org.activiti.engine.impl.db.DbSqlSessionFactory;
 import org.activiti.engine.impl.db.IbatisVariableTypeHandler;
 import org.activiti.engine.impl.delegate.DefaultDelegateInterceptor;
 import org.activiti.engine.impl.el.ExpressionManager;
-import org.activiti.engine.impl.event.CompensationEventHandler;
-import org.activiti.engine.impl.event.EventHandler;
-import org.activiti.engine.impl.event.MessageEventHandler;
-import org.activiti.engine.impl.event.SignalEventHandler;
 import org.activiti.engine.impl.event.logger.EventLogger;
 import org.activiti.engine.impl.form.BooleanFormType;
 import org.activiti.engine.impl.form.DateFormType;
@@ -130,7 +126,6 @@ import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
 import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
-import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricDetailEntityManager;
@@ -330,9 +325,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   protected DelegateInterceptor delegateInterceptor;
 
-  protected Map<String, EventHandler> eventHandlers;
-  protected List<EventHandler> customEventHandlers;
-
   /**
    * Set this to true if you want to have extra checks on the BPMN xml that is parsed.
    * See http://www.jorambarrez.be/blog/2013/02/19/uploading-a-funny-xml-can-bring-down-your-server/
@@ -430,7 +422,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initSessionFactories();
     //initJpa();
     initDelegateInterceptor();
-    initEventHandlers();
     initEventDispatcher();
     initProcessValidator();
     initDatabaseEventLogging();
@@ -810,7 +801,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       addSessionFactory(new GenericManagerFactory(TableDataManager.class));
       addSessionFactory(new GenericManagerFactory(TaskEntityManager.class));
       addSessionFactory(new GenericManagerFactory(VariableInstanceEntityManager.class));
-      addSessionFactory(new GenericManagerFactory(EventSubscriptionEntityManager.class));
       addSessionFactory(new GenericManagerFactory(EventLogEntryEntityManager.class));
       
       addSessionFactory(new DefaultHistoryManagerSessionFactory());
@@ -1029,11 +1019,9 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     bpmnParserHandlers.add(new IntermediateCatchEventParseHandler());
     bpmnParserHandlers.add(new IntermediateThrowEventParseHandler());
     bpmnParserHandlers.add(new ManualTaskParseHandler());
-    bpmnParserHandlers.add(new MessageEventDefinitionParseHandler());
     bpmnParserHandlers.add(new ParallelGatewayParseHandler());
     bpmnParserHandlers.add(new ProcessParseHandler());
     bpmnParserHandlers.add(new SequenceFlowParseHandler());
-    bpmnParserHandlers.add(new SignalEventDefinitionParseHandler());
     bpmnParserHandlers.add(new StartEventParseHandler());
     bpmnParserHandlers.add(new SubProcessParseHandler());
     bpmnParserHandlers.add(new EventSubProcessParseHandler());
@@ -1259,27 +1247,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected void initDelegateInterceptor() {
     if(delegateInterceptor == null) {
       delegateInterceptor = new DefaultDelegateInterceptor();
-    }
-  }
-  
-  protected void initEventHandlers() {
-    if(eventHandlers == null) {
-      eventHandlers = new HashMap<String, EventHandler>();
-      
-      SignalEventHandler signalEventHander = new SignalEventHandler();
-      eventHandlers.put(signalEventHander.getEventHandlerType(), signalEventHander);
-      
-      CompensationEventHandler compensationEventHandler = new CompensationEventHandler();
-      eventHandlers.put(compensationEventHandler.getEventHandlerType(), compensationEventHandler);
-      
-      MessageEventHandler messageEventHandler = new MessageEventHandler();
-      eventHandlers.put(messageEventHandler.getEventHandlerType(), messageEventHandler);
-      
-    }
-    if(customEventHandlers != null) {
-      for (EventHandler eventHandler : customEventHandlers) {
-        eventHandlers.put(eventHandler.getEventHandlerType(), eventHandler);        
-      }
     }
   }
   
@@ -1900,28 +1867,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     return delegateInterceptor;
   }
     
-  public EventHandler getEventHandler(String eventType) {
-    return eventHandlers.get(eventType);
-  }
-  
-  public ProcessEngineConfigurationImpl setEventHandlers(Map<String, EventHandler> eventHandlers) {
-    this.eventHandlers = eventHandlers;
-    return this;
-  }
-    
-  public Map<String, EventHandler> getEventHandlers() {
-    return eventHandlers;
-  }
-    
-  public List<EventHandler> getCustomEventHandlers() {
-    return customEventHandlers;
-  }
-    
-  public ProcessEngineConfigurationImpl setCustomEventHandlers(List<EventHandler> customEventHandlers) {
-    this.customEventHandlers = customEventHandlers;
-    return this;
-  }
-  
   public DataSource getIdGeneratorDataSource() {
     return idGeneratorDataSource;
   }

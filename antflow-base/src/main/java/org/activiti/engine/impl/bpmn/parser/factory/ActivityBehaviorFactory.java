@@ -15,16 +15,12 @@ package org.activiti.engine.impl.bpmn.parser.factory;
 import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.CallActivity;
-import org.activiti.bpmn.model.CancelEventDefinition;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.ErrorEventDefinition;
-import org.activiti.bpmn.model.EventGateway;
 import org.activiti.bpmn.model.ExclusiveGateway;
 import org.activiti.bpmn.model.InclusiveGateway;
-import org.activiti.bpmn.model.IntermediateCatchEvent;
 import org.activiti.bpmn.model.ManualTask;
 import org.activiti.bpmn.model.ParallelGateway;
-import org.activiti.bpmn.model.Signal;
 import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.Task;
@@ -35,8 +31,6 @@ import org.activiti.engine.impl.bpmn.behavior.*;
 import org.activiti.engine.impl.bpmn.helper.ClassDelegate;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.bpmn.parser.BpmnParser;
-import org.activiti.engine.impl.bpmn.parser.CompensateEventDefinition;
-import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -85,8 +79,6 @@ public interface ActivityBehaviorFactory {
 
   public abstract InclusiveGatewayActivityBehavior createInclusiveGatewayActivityBehavior(InclusiveGateway inclusiveGateway);
 
-  public abstract EventBasedGatewayActivityBehavior createEventBasedGatewayActivityBehavior(EventGateway eventGateway);
-
   public abstract SequentialMultiInstanceBehavior createSequentialMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
 
   public abstract ParallelMultiInstanceBehavior createParallelMultiInstanceBehavior(ActivityImpl activity, AbstractBpmnActivityBehavior innerActivityBehavior);
@@ -97,13 +89,7 @@ public interface ActivityBehaviorFactory {
 
   public abstract TransactionActivityBehavior createTransactionActivityBehavior(Transaction transaction);
 
-  public abstract IntermediateCatchEventActivityBehavior createIntermediateCatchEventActivityBehavior(IntermediateCatchEvent intermediateCatchEvent);
-
   public abstract IntermediateThrowNoneEventActivityBehavior createIntermediateThrowNoneEventActivityBehavior(ThrowEvent throwEvent);
-
-  public abstract IntermediateThrowSignalEventActivityBehavior createIntermediateThrowSignalEventActivityBehavior(ThrowEvent throwEvent, Signal signal, EventSubscriptionDeclaration eventSubscriptionDeclaration);
-
-  public abstract IntermediateThrowCompensationEventActivityBehavior createIntermediateThrowCompensationEventActivityBehavior(ThrowEvent throwEvent, CompensateEventDefinition compensateEventDefinition);
 
   public abstract NoneEndEventActivityBehavior createNoneEndEventActivityBehavior(EndEvent endEvent);
 
@@ -114,7 +100,5 @@ public interface ActivityBehaviorFactory {
   public abstract TerminateEndEventActivityBehavior createTerminateEndEventActivityBehavior(EndEvent endEvent);
 
   public abstract BoundaryEventActivityBehavior createBoundaryEventActivityBehavior(BoundaryEvent boundaryEvent, boolean interrupting, ActivityImpl activity);
-
-  public abstract CancelBoundaryEventActivityBehavior createCancelBoundaryEventActivityBehavior(CancelEventDefinition cancelEventDefinition);
 
 }
