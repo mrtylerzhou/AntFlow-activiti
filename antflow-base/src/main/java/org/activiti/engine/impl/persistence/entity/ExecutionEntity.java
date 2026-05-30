@@ -14,10 +14,8 @@
 package org.activiti.engine.impl.persistence.entity;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +35,6 @@ import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.history.HistoryManager;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.jobexecutor.AsyncContinuationJobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerDeclarationImpl;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.PvmExecution;
@@ -59,7 +55,6 @@ import org.activiti.engine.impl.pvm.runtime.OutgoingExecution;
 import org.activiti.engine.impl.pvm.runtime.StartingExecution;
 import org.activiti.engine.impl.util.BitMaskUtil;
 import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +77,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   // Persistent refrenced entities state //////////////////////////////////////
   protected static final int EVENT_SUBSCRIPTIONS_STATE_BIT = 1;
   protected static final int TASKS_STATE_BIT = 2;
-  protected static final int JOBS_STATE_BIT = 3;
   
   // current position /////////////////////////////////////////////////////////
   
@@ -150,7 +144,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // (we cache associated entities here to minimize db queries) 
   protected List<EventSubscriptionEntity> eventSubscriptions;  
-  protected List<JobEntity> jobs;
   protected List<TaskEntity> tasks;
   protected List<IdentityLinkEntity> identityLinks;
   protected int cachedEntityState;
@@ -354,20 +347,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     
     // Cached entity-state initialized to null, all bits are zero, indicating NO entities present
     cachedEntityState = 0;
-    
-    List<TimerDeclarationImpl> timerDeclarations = (List<TimerDeclarationImpl>) scope.getProperty(BpmnParse.PROPERTYNAME_TIMER_DECLARATION);
-    if (timerDeclarations!=null) {
-      for (TimerDeclarationImpl timerDeclaration : timerDeclarations) {
-        TimerEntity timer = timerDeclaration.prepareTimerEntity(this);
-        if (timer!=null) {
-          Context
-            .getCommandContext()
-            .getJobEntityManager()
-            .schedule(timer);
-        }
-      }
-    }
-    
+
     // create event subscriptions for the current scope
     List<EventSubscriptionDeclaration> eventSubscriptionDeclarations = (List<EventSubscriptionDeclaration>) scope.getProperty(BpmnParse.PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION);
     if(eventSubscriptionDeclarations != null) {
@@ -653,28 +633,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
 
   protected void scheduleAtomicOperationAsync(AtomicOperation executionOperation) {
-    MessageEntity message = new MessageEntity();
-    message.setExecution(this);
-    message.setExclusive(getActivity().isExclusive());
-    message.setJobHandlerType(AsyncContinuationJobHandler.TYPE);
-    // At the moment, only AtomicOperationTransitionCreateScope can be performed asynchronously,
-    // so there is no need to pass it to the handler
-    
-    GregorianCalendar expireCal = new GregorianCalendar();
-    ProcessEngineConfiguration processEngineConfig = Context.getCommandContext().getProcessEngineConfiguration();
-    expireCal.setTime(processEngineConfig.getClock().getCurrentTime());
-    expireCal.add(Calendar.SECOND, processEngineConfig.getLockTimeAsyncJobWaitTime());
-    message.setLockExpirationTime(expireCal.getTime());
-    
-    // Inherit tenant id (if applicable)
-    if (getTenantId() != null) {
-    	message.setTenantId(getTenantId());
-    }
-
-    Context
-      .getCommandContext()
-      .getJobEntityManager()
-      .send(message);
+    // Job infrastructure removed - fall back to synchronous execution
+    performOperationSync(executionOperation);
   }
 
   public boolean isActive(String activityId) {
@@ -987,10 +947,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     
     // delete all the tasks
     removeTasks(null);
-    
-    // remove all jobs
-    removeJobs();
-    
+
     // remove all event subscriptions for this scope, if the scope has event subscriptions:
     removeEventSubscriptions();
     
@@ -1033,8 +990,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
     
     removeTasks(reason);
-    removeJobs();
-  } 
+  }
     
   private void removeEventScopes() {
     List<InterpretableExecution> childExecutions = new ArrayList<InterpretableExecution>(getExecutions());
@@ -1050,12 +1006,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   private void removeEventSubscriptions() {
     for (EventSubscriptionEntity eventSubscription : getEventSubscriptions()) {
       eventSubscription.delete();
-    }
-  }
-
-  private void removeJobs() {
-    for (Job job: getJobs()) {
-      ((JobEntity) job).delete();
     }
   }
 
@@ -1128,12 +1078,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       }
     }
     
-    // update the related jobs
-    List<JobEntity> jobs = getJobs();
-    for (JobEntity job: jobs) {
-      job.setExecution((ExecutionEntity) replacedBy);
-    }
-    
     // update the related event subscriptions
     List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptions();
     for (EventSubscriptionEntity subscriptionEntity: eventSubscriptions) {
@@ -1180,7 +1124,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return getParent();
   }
 
-  /** used to calculate the sourceActivityExecution for method {@link #updateActivityInstanceIdInHistoricVariableUpdate(HistoricDetailVariableInstanceUpdateEntity, ExecutionEntity)} */
   protected ExecutionEntity getSourceActivityExecution() {
     return (activityId!=null ? this : null);
   }
@@ -1362,33 +1305,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     getEventSubscriptionsInternal().remove(eventSubscriptionEntity);
   }
   
-  // referenced job entities //////////////////////////////////////////////////
-  
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  protected void ensureJobsInitialized() {
-    if(jobs == null) {    
-      jobs = (List)Context.getCommandContext()
-        .getJobEntityManager()
-        .findJobsByExecutionId(id);
-    }    
-  }
-  
-  protected List<JobEntity> getJobsInternal() {
-    ensureJobsInitialized();
-    return jobs;
-  }
-  
-  public List<JobEntity> getJobs() {
-    return new ArrayList<JobEntity>(getJobsInternal());
-  }
-  
-  public void addJob(JobEntity jobEntity) {
-    getJobsInternal().add(jobEntity);
-  }
-  
-  public void removeJob(JobEntity job) {
-    getJobsInternal().remove(job);
-  }
+
+
   
   // referenced task entities ///////////////////////////////////////////////////
   
@@ -1470,9 +1388,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     
     // Check for flags that are down. These lists can be safely initialized as empty, preventing
     // additional queries that end up in an empty list anyway
-    if(jobs == null && !BitMaskUtil.isBitOn(cachedEntityState, JOBS_STATE_BIT)) {
-      jobs = new ArrayList<JobEntity>();
-    }
     if(tasks == null && !BitMaskUtil.isBitOn(cachedEntityState, TASKS_STATE_BIT)) {
       tasks = new ArrayList<TaskEntity>();
     }
@@ -1489,7 +1404,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     cachedEntityState = BitMaskUtil.setBit(cachedEntityState, TASKS_STATE_BIT, (tasks == null || !tasks.isEmpty()));
     cachedEntityState = BitMaskUtil.setBit(cachedEntityState, EVENT_SUBSCRIPTIONS_STATE_BIT, (eventSubscriptions == null || !eventSubscriptions
             .isEmpty()));
-    cachedEntityState = BitMaskUtil.setBit(cachedEntityState, JOBS_STATE_BIT, (jobs == null || !jobs.isEmpty()));
     
     return cachedEntityState;
   }

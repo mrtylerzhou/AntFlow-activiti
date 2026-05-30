@@ -29,7 +29,6 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.spring.ProcessEngineFactoryBean;
-import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.openoa.base.listener.StartEngineEventListener;
 import org.slf4j.Logger;
@@ -62,8 +61,7 @@ public abstract class AbstractProcessEngineConfiguration {
           List<StartEngineEventListener> startEngineEventListeners,
           Resource[] processDefinitions,
           DataSource dataSource,
-          PlatformTransactionManager transactionManager,
-          SpringAsyncExecutor springAsyncExecutor)
+          PlatformTransactionManager transactionManager)
         throws IOException {
 
     SpringProcessEngineConfiguration engine = new SpringProcessEngineConfiguration();
@@ -73,11 +71,6 @@ public abstract class AbstractProcessEngineConfiguration {
     }
     engine.setDataSource(dataSource);
     engine.setTransactionManager(transactionManager);
-
-    if (null != springAsyncExecutor) {
-      engine.setAsyncExecutorEnabled(true);
-      engine.setAsyncExecutor(springAsyncExecutor);
-    }
 
     return engine;
   }

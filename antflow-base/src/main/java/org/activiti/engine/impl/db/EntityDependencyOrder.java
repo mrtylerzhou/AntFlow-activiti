@@ -26,9 +26,7 @@ import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityInfoEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
-import org.activiti.engine.impl.persistence.entity.JobEntity;
 import org.activiti.engine.impl.persistence.entity.MembershipEntity;
-import org.activiti.engine.impl.persistence.entity.MessageEntity;
 import org.activiti.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
 import org.activiti.engine.impl.persistence.entity.ModelEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -36,7 +34,6 @@ import org.activiti.engine.impl.persistence.entity.PropertyEntity;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
 import org.activiti.engine.impl.persistence.entity.SignalEventSubscriptionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.persistence.entity.TimerEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 
@@ -78,17 +75,6 @@ public class EntityDependencyOrder {
 		 */
 		DELETE_ORDER.add(ModelEntity.class); 
 		
-		/* Subclass of JobEntity */
-		DELETE_ORDER.add(MessageEntity.class);
-		
-		/* Subclass of TimerEntity */
-		DELETE_ORDER.add(TimerEntity.class);
-		
-		/*
-		 * FK to ByteArray
-		 */
-		DELETE_ORDER.add(JobEntity.class);
-		
 		/*
 		 * FK to ByteArray
 		 * FK to Exeution
@@ -97,18 +83,16 @@ public class EntityDependencyOrder {
 		
 		/*
 		 * FK from ModelEntity
-		 * FK from JobEntity
 		 * FK from VariableInstanceEntity
-		 * 
+		 *
 		 * FK to DeploymentEntity
 		 */
 		DELETE_ORDER.add(ByteArrayEntity.class);
-		
+
 		/*
 		 * FK from ModelEntity
-		 * FK from JobEntity
 		 * FK from VariableInstanceEntity
-		 * 
+		 *
 		 * FK to DeploymentEntity
 		 */
 		DELETE_ORDER.add(ResourceEntity.class);

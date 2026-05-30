@@ -214,7 +214,7 @@ public class ExecutionEntityManager extends AbstractManager {
   public void updateProcessInstanceLockTime(String processInstanceId) {
     CommandContext commandContext = Context.getCommandContext();
     Date expirationTime = commandContext.getProcessEngineConfiguration().getClock().getCurrentTime();
-    int lockMillis = commandContext.getProcessEngineConfiguration().getAsyncExecutor().getAsyncJobLockTimeInMillis();
+    int lockMillis = 5 * 60 * 1000; // default async job lock time: 5 minutes
     GregorianCalendar lockCal = new GregorianCalendar();
     lockCal.setTime(expirationTime);
     lockCal.add(Calendar.MILLISECOND, lockMillis);

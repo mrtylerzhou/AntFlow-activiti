@@ -14,7 +14,7 @@ package org.openoa.engine.conf.engineconfig;
 
 import org.activiti.engine.*;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
-import org.activiti.spring.*;
+import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.openoa.base.listener.StartEngineEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,17 +50,8 @@ public abstract class AbstractProcessEngineAutoConfiguration
   private ProcessEngineConfigurationConfigurer processEngineConfigurationConfigurer;
 
 
-  @Bean
-  public SpringAsyncExecutor springAsyncExecutor(TaskExecutor taskExecutor) {
-    return new SpringAsyncExecutor(taskExecutor, springRejectedJobsHandler());
-  }
-  @Bean
-  public SpringRejectedJobsHandler springRejectedJobsHandler() {
-    return new SpringCallerRunsRejectedJobsHandler();
-  }
   protected SpringProcessEngineConfiguration baseSpringProcessEngineConfiguration(List<StartEngineEventListener> startEngineEventListeners,
-                                                                                  DataSource dataSource, PlatformTransactionManager platformTransactionManager,
-                                                                                  SpringAsyncExecutor springAsyncExecutor) throws IOException {
+                                                                                  DataSource dataSource, PlatformTransactionManager platformTransactionManager) throws IOException {
 
     List<Resource> procDefResources = this.discoverProcessDefinitionResources(
         this.resourceLoader, this.activitiProperties.getProcessDefinitionLocationPrefix(),
@@ -68,8 +59,8 @@ public abstract class AbstractProcessEngineAutoConfiguration
         this.activitiProperties.isCheckProcessDefinitions());
 
     SpringProcessEngineConfiguration conf = super.processEngineConfigurationBean(startEngineEventListeners,
-        procDefResources.toArray(new Resource[procDefResources.size()]), dataSource, 
-        platformTransactionManager, springAsyncExecutor);
+        procDefResources.toArray(new Resource[procDefResources.size()]), dataSource,
+        platformTransactionManager);
 
     conf.setDeploymentName(defaultText(activitiProperties.getDeploymentName(), conf.getDeploymentName()));
     conf.setDatabaseSchema(defaultText(activitiProperties.getDatabaseSchema(), conf.getDatabaseSchema()));
@@ -77,10 +68,6 @@ public abstract class AbstractProcessEngineAutoConfiguration
     conf.setDbIdentityUsed(activitiProperties.isDbIdentityUsed());
     conf.setDbHistoryUsed(activitiProperties.isDbHistoryUsed());
 
-    conf.setJobExecutorActivate(activitiProperties.isJobExecutorActivate());
-    conf.setAsyncExecutorEnabled(activitiProperties.isAsyncExecutorEnabled());
-    conf.setAsyncExecutorActivate(false);
-    
     conf.setMailServerHost(activitiProperties.getMailServerHost());
     conf.setMailServerPort(activitiProperties.getMailServerPort());
     conf.setMailServerUsername(activitiProperties.getMailServerUserName());

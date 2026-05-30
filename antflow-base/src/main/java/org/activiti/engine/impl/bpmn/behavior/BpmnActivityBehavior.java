@@ -20,14 +20,11 @@ import java.util.List;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.Expression;
-import org.activiti.engine.delegate.event.ActivitiEventType;
-import org.activiti.engine.delegate.event.impl.ActivitiEventBuilder;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.helper.SkipExpressionUtil;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.JobEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -59,10 +56,6 @@ public class BpmnActivityBehavior implements Serializable {
    * parallel paths of executions are created.
    */
   public void performDefaultOutgoingBehavior(ActivityExecution activityExecution) {
-    ActivityImpl activity = (ActivityImpl) activityExecution.getActivity();
-    if (!(activity.getActivityBehavior() instanceof IntermediateCatchEventActivityBehavior)) {
-      dispatchJobCanceledEvents(activityExecution);
-    }
     performOutgoingBehavior(activityExecution, true, false, null);
   }
 
@@ -78,22 +71,6 @@ public class BpmnActivityBehavior implements Serializable {
    */
   public void performIgnoreConditionsOutgoingBehavior(ActivityExecution activityExecution) {
     performOutgoingBehavior(activityExecution, false, false, null);
-  }
-
-  /**
-   * dispatch job canceled event for job associated with given execution entity
-   * @param activityExecution
-   */
-  protected void dispatchJobCanceledEvents(ActivityExecution activityExecution) {
-    if (activityExecution instanceof ExecutionEntity) {
-      List<JobEntity> jobs = ((ExecutionEntity) activityExecution).getJobs();
-      for (JobEntity job: jobs) {
-        if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-          Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
-            ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED, job));
-        }
-      }
-    }
   }
 
   /**

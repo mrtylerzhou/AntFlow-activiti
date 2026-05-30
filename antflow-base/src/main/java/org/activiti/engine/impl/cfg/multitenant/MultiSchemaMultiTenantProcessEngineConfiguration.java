@@ -13,22 +13,16 @@
 package org.activiti.engine.impl.cfg.multitenant;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.impl.asyncexecutor.AsyncExecutor;
-import org.activiti.engine.impl.asyncexecutor.multitenant.ExecutorPerTenantAsyncExecutor;
-import org.activiti.engine.impl.asyncexecutor.multitenant.SharedExecutorServiceAsyncExecutor;
-import org.activiti.engine.impl.asyncexecutor.multitenant.TenantAwareAsyncExecutor;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.impl.db.DbIdGenerator;
 import org.activiti.engine.impl.interceptor.CommandInterceptor;
-import org.activiti.engine.impl.jobexecutor.JobExecutor;
 import org.activiti.engine.impl.persistence.StrongUuidGenerator;
 import org.activiti.engine.impl.persistence.deploy.MultiSchemaMultiTenantProcessDefinitionCache;
 import org.activiti.engine.repository.DeploymentBuilder;
@@ -37,28 +31,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link ProcessEngineConfiguration} that builds a multi tenant {@link ProcessEngine} where 
+ * A {@link ProcessEngineConfiguration} that builds a multi tenant {@link ProcessEngine} where
  * each tenant has its own database schema.
- * 
- * If multitenancy is needed and no data isolation is needed: the default {@link ProcessEngineConfigurationImpl} 
- * of Activiti is multitenant enabled out of the box by setting a tenant identifier on a {@link DeploymentBuilder}. 
- * 
+ *
+ * If multitenancy is needed and no data isolation is needed: the default {@link ProcessEngineConfigurationImpl}
+ * of Activiti is multitenant enabled out of the box by setting a tenant identifier on a {@link DeploymentBuilder}.
+ *
  * This configuration has following characteristics:
- * 
- * - It needs a {@link TenantInfoHolder} to determine which tenant is currently 'active'. Ie for which 
+ *
+ * - It needs a {@link TenantInfoHolder} to determine which tenant is currently 'active'. Ie for which
  *   tenant a certain API call is executed.
- *   
+ *
  * - The {@link StrongUuidGenerator} is used by default. The 'regular' {@link DbIdGenerator} cannot be used with this config.
- * 
+ *
  * - Adding tenants (also after boot!) is done using the {@link #registerTenant(String, DataSource)} operations.
- * 
- * - Currently, this config does not work with the 'old' {@link JobExecutor}, but only with the newer {@link AsyncExecutor}.
- *   There are two different implementations: 
- *     - The {@link ExecutorPerTenantAsyncExecutor}: creates one full {@link AsyncExecutor} for each tenant.
- *     - The {@link SharedExecutorServiceAsyncExecutor}: created acquisition threads for each tenant, but the 
- *       job execution is done using a process engine shared {@link ExecutorService}.
- *   The {@link AsyncExecutor} needs to be injected using the {@link #setAsyncExecutor(AsyncExecutor)} method on this class.    
- * 
+ *
  * @author Joram Barrez
  */
 public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEngineConfigurationImpl {
@@ -94,64 +81,34 @@ public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEng
     
     if (booted) {
       createTenantSchema(tenantId);
-      
-      if (isAsyncExecutorEnabled()) {
-        createTenantAsyncJobExecutor(tenantId);
-      }
-    }
-  }
-  
-  @Override
-  protected void initAsyncExecutor() {
-    
-    if (asyncExecutor == null) {
-      asyncExecutor = new ExecutorPerTenantAsyncExecutor(tenantInfoHolder);
-    }
-    
-    super.initAsyncExecutor();
-    
-    if (asyncExecutor instanceof TenantAwareAsyncExecutor) {
-      for (String tenantId : tenantInfoHolder.getAllTenants()) {
-        ((TenantAwareAsyncExecutor) asyncExecutor).addTenantAsyncExecutor(tenantId, false); // false -> will be started later with all the other executors
-      }
     }
   }
   
   @Override
   public ProcessEngine buildProcessEngine() {
-    
+
     if (databaseType == null) {
       throw new ActivitiException("Setting the databaseType is mandatory when using MultiSchemaMultiTenantProcessEngineConfiguration");
     }
-    
+
     // Disable schema creation/validation by setting it to null.
     // We'll do it manually, see buildProcessEngine() method (hence why it's copied first)
     String originalDatabaseSchemaUpdate = this.databaseSchemaUpdate;
-    this.databaseSchemaUpdate = null; 
-    
+    this.databaseSchemaUpdate = null;
+
     // Using a cache / tenant to avoid process definition id conflicts
     this.processDefinitionCache = new MultiSchemaMultiTenantProcessDefinitionCache(tenantInfoHolder, this.processDefinitionCacheLimit);
-    
-    // Also, we shouldn't start the async executor until *after* the schema's have been created
-    boolean originalIsAutoActivateAsyncExecutor = this.asyncExecutorActivate;
-    this.asyncExecutorActivate = false;
-    
+
     ProcessEngine processEngine = super.buildProcessEngine();
-    
+
     // Reset to original values
     this.databaseSchemaUpdate = originalDatabaseSchemaUpdate;
-    this.asyncExecutorActivate = originalIsAutoActivateAsyncExecutor;
-    
+
     // Create tenant schema
     for (String tenantId : tenantInfoHolder.getAllTenants()) {
       createTenantSchema(tenantId);
     }
-    
-    // Start async executor
-    if (asyncExecutor != null && originalIsAutoActivateAsyncExecutor) {
-      asyncExecutor.start();
-    }
-    
+
     booted = true;
     return processEngine;
   }
@@ -161,10 +118,6 @@ public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEng
     tenantInfoHolder.setCurrentTenantId(tenantId);
     getCommandExecutor().execute(getSchemaCommandConfig(), new ExecuteSchemaOperationCommand(databaseSchemaUpdate));
     tenantInfoHolder.clearCurrentTenantId();
-  }
-  
-  protected void createTenantAsyncJobExecutor(String tenantId) {
-    ((TenantAwareAsyncExecutor) asyncExecutor).addTenantAsyncExecutor(tenantId, isAsyncExecutorActivate() && booted);
   }
   
   @Override

@@ -17,21 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.delegate.event.ActivitiEventType;
-import org.activiti.engine.delegate.event.impl.ActivitiEventBuilder;
 import org.activiti.engine.impl.DeploymentQueryImpl;
 import org.activiti.engine.impl.Page;
 import org.activiti.engine.impl.ProcessDefinitionQueryImpl;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
 import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.context.Context;
-import org.activiti.engine.impl.jobexecutor.TimerDeclarationImpl;
-import org.activiti.engine.impl.jobexecutor.TimerStartEventJobHandler;
 import org.activiti.engine.impl.persistence.AbstractManager;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.Job;
 
 
 /**
@@ -98,24 +93,8 @@ public class DeploymentEntityManager extends AbstractManager {
     getProcessDefinitionManager().deleteProcessDefinitionsByDeploymentId(deploymentId);
     
     for (ProcessDefinition processDefinition : processDefinitions) {
-      
-      // remove timer start events for current process definition:
-    	
-    	List<Job> timerStartJobs = Context.getCommandContext().getJobEntityManager()
-    			.findJobsByTypeAndProcessDefinitionId(TimerStartEventJobHandler.TYPE, processDefinition.getId());
-    	if (timerStartJobs != null && timerStartJobs.size() > 0) {
-    		for (Job timerStartJob : timerStartJobs) {
-					if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-						Context.getProcessEngineConfiguration()
-						       .getEventDispatcher()
-						       .dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED, timerStartJob, null, null, processDefinition.getId()));
-					}
 
-					((JobEntity) timerStartJob).delete();
-    		}
-    	}
-    	
-    	// If previous process definition version has a timer/message/signal start event, it must be added
+    	// If previous process definition version has a message/signal start event, it must be added
     	ProcessDefinitionEntity latestProcessDefinition = findLatestProcessDefinition(processDefinition);
 
       // Only if the currently deleted process definition is the latest version, we fall back to the previous start event type
@@ -129,22 +108,6 @@ public class DeploymentEntityManager extends AbstractManager {
     			ProcessDefinitionEntity resolvedProcessDefinition = Context.getProcessEngineConfiguration()
     					.getDeploymentManager().resolveProcessDefinition((ProcessDefinitionEntity) previousProcessDefinition);
     			
-    			// Timer start
-    			List<TimerDeclarationImpl> timerDeclarations = 
-    					(List<TimerDeclarationImpl>) resolvedProcessDefinition.getProperty(BpmnParse.PROPERTYNAME_START_TIMER);
-    	    if (timerDeclarations != null) {
-    	      for (TimerDeclarationImpl timerDeclaration : timerDeclarations) {
-    	        TimerEntity timer = timerDeclaration.prepareTimerEntity(null);
-    	        timer.setProcessDefinitionId(previousProcessDefinition.getId());
-    	        
-    	        if (previousProcessDefinition.getTenantId() != null) {
-    	        	timer.setTenantId(previousProcessDefinition.getTenantId());
-    	        }
-    	        
-    	        Context.getCommandContext().getJobEntityManager().schedule(timer);
-    	      }
-    	    }
-    	    
     	    // Signal / Message start
     	    List<EventSubscriptionDeclaration> signalEventDefinitions = 
     	    		(List<EventSubscriptionDeclaration>) resolvedProcessDefinition.getProperty(BpmnParse.PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION);

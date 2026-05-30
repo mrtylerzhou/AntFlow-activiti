@@ -28,8 +28,7 @@ public class ActivitiProperties {
 
   private boolean checkProcessDefinitions = true;
   private boolean jobExecutorActivate = false;
-  private boolean asyncExecutorEnabled = true;
-  private boolean asyncExecutorActivate = true;
+  private boolean asyncExecutorEnabled = false;
   private boolean restApiEnabled;
   private String deploymentName;
   private String mailServerHost = "localhost";
@@ -66,14 +65,6 @@ public class ActivitiProperties {
 
   public void setAsyncExecutorEnabled(boolean asyncExecutorEnabled) {
     this.asyncExecutorEnabled = asyncExecutorEnabled;
-  }
-
-  public boolean isAsyncExecutorActivate() {
-    return asyncExecutorActivate;
-  }
-
-  public void setAsyncExecutorActivate(boolean asyncExecutorActivate) {
-    this.asyncExecutorActivate = asyncExecutorActivate;
   }
 
   public boolean isRestApiEnabled() {

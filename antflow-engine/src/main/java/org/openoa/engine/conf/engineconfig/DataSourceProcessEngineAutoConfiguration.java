@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 
 import org.activiti.engine.impl.cfg.multitenant.MultiSchemaMultiTenantProcessEngineConfiguration;
 import org.activiti.spring.ProcessEngineFactoryBean;
-import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.openoa.base.listener.StartEngineEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +55,9 @@ public class DataSourceProcessEngineAutoConfiguration {
         public SpringProcessEngineConfiguration springProcessEngineConfiguration(
                 List<StartEngineEventListener> startEngineEventListeners,
                 DataSource dataSource,
-                PlatformTransactionManager transactionManager,
-                SpringAsyncExecutor springAsyncExecutor) throws IOException {
+                PlatformTransactionManager transactionManager) throws IOException {
 
-            return this.baseSpringProcessEngineConfiguration(startEngineEventListeners,dataSource, transactionManager, springAsyncExecutor);
+            return this.baseSpringProcessEngineConfiguration(startEngineEventListeners, dataSource, transactionManager);
         }
         @Bean
         @ConditionalOnMissingBean

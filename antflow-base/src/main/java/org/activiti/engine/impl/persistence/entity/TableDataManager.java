@@ -42,7 +42,6 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.ibatis.session.RowBounds;
@@ -66,10 +65,6 @@ public class TableDataManager extends AbstractManager {
     persistentObjectToTableNameMap.put(ExecutionEntity.class, "ACT_RU_EXECUTION");
     persistentObjectToTableNameMap.put(IdentityLinkEntity.class, "ACT_RU_IDENTITYLINK");
     persistentObjectToTableNameMap.put(VariableInstanceEntity.class, "ACT_RU_VARIABLE");
-    
-    persistentObjectToTableNameMap.put(JobEntity.class, "ACT_RU_JOB");
-    persistentObjectToTableNameMap.put(MessageEntity.class, "ACT_RU_JOB");
-    persistentObjectToTableNameMap.put(TimerEntity.class, "ACT_RU_JOB");
     
     persistentObjectToTableNameMap.put(EventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");
     persistentObjectToTableNameMap.put(CompensateEventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");    
@@ -116,7 +111,6 @@ public class TableDataManager extends AbstractManager {
     apiTypeToTableNameMap.put(ProcessInstance.class, "ACT_RU_EXECUTION");
     apiTypeToTableNameMap.put(ProcessDefinition.class, "ACT_RE_PROCDEF");
     apiTypeToTableNameMap.put(Deployment.class, "ACT_RE_DEPLOYMENT");    
-    apiTypeToTableNameMap.put(Job.class, "ACT_RU_JOB");
     apiTypeToTableNameMap.put(Model.class, "ACT_RE_MODEL");
     
     // history

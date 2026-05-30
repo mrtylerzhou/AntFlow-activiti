@@ -31,8 +31,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -68,8 +66,6 @@ import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.RuntimeServiceImpl;
 import org.activiti.engine.impl.ServiceImpl;
 import org.activiti.engine.impl.TaskServiceImpl;
-import org.activiti.engine.impl.asyncexecutor.DefaultAsyncJobExecutor;
-import org.activiti.engine.impl.asyncexecutor.ExecuteAsyncRunnableFactory;
 import org.activiti.engine.impl.bpmn.data.ItemInstance;
 import org.activiti.engine.impl.bpmn.deployer.BpmnDeployer;
 import org.activiti.engine.impl.bpmn.parser.BpmnParseHandlers;
@@ -119,19 +115,6 @@ import org.activiti.engine.impl.interceptor.CommandInvoker;
 import org.activiti.engine.impl.interceptor.DelegateInterceptor;
 import org.activiti.engine.impl.interceptor.LogInterceptor;
 import org.activiti.engine.impl.interceptor.SessionFactory;
-import org.activiti.engine.impl.jobexecutor.AsyncContinuationJobHandler;
-import org.activiti.engine.impl.jobexecutor.CallerRunsRejectedJobsHandler;
-import org.activiti.engine.impl.jobexecutor.DefaultFailedJobCommandFactory;
-import org.activiti.engine.impl.jobexecutor.DefaultJobExecutor;
-import org.activiti.engine.impl.jobexecutor.FailedJobCommandFactory;
-import org.activiti.engine.impl.jobexecutor.JobHandler;
-import org.activiti.engine.impl.jobexecutor.ProcessEventJobHandler;
-import org.activiti.engine.impl.jobexecutor.RejectedJobsHandler;
-import org.activiti.engine.impl.jobexecutor.TimerActivateProcessDefinitionHandler;
-import org.activiti.engine.impl.jobexecutor.TimerCatchIntermediateEventJobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerExecuteNestedActivityJobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerStartEventJobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerSuspendProcessDefinitionHandler;
 import org.activiti.engine.impl.persistence.DefaultHistoryManagerSessionFactory;
 import org.activiti.engine.impl.persistence.GenericManagerFactory;
 import org.activiti.engine.impl.persistence.GroupEntityManagerFactory;
@@ -157,7 +140,6 @@ import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityMan
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntityManager;
-import org.activiti.engine.impl.persistence.entity.JobEntityManager;
 import org.activiti.engine.impl.persistence.entity.ModelEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
@@ -288,158 +270,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected int processDefinitionInfoCacheLimit = -1; // By default, no limit
   protected ProcessDefinitionInfoCache processDefinitionInfoCache;
 
-  // JOB EXECUTOR /////////////////////////////////////////////////////////////
-  
-  protected List<JobHandler> customJobHandlers;
-  protected Map<String, JobHandler> jobHandlers;
-  
-  // ASYNC EXECUTOR ///////////////////////////////////////////////////////////
-  
-  /**
-   * The minimal number of threads that are kept alive in the threadpool for job execution. Default value = 2.
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorCorePoolSize = 2;
-  
-  /**
-   * The maximum number of threads that are kept alive in the threadpool for job execution. Default value = 10.
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorMaxPoolSize = 10;
-  
-  /** 
-   * The time (in milliseconds) a thread used for job execution must be kept alive before it is
-   * destroyed. Default setting is 5 seconds. Having a setting > 0 takes resources,
-   * but in the case of many job executions it avoids creating new threads all the time.
-   * If 0, threads will be destroyed after they've been used for job execution. 
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected long asyncExecutorThreadKeepAliveTime = 5000L;
-  
-	/** 
-	 * The size of the queue on which jobs to be executed are placed, before they are actually executed. Default value = 100.
-	 * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-	 */
-  protected int asyncExecutorThreadPoolQueueSize = 100;
-  
-  /** 
-   * The queue onto which jobs will be placed before they are actually executed.
-   * Threads form the async executor threadpool will take work from this queue.
-   * 
-   * By default null. If null, an {@link ArrayBlockingQueue} will be created of size {@link #asyncExecutorThreadPoolQueueSize}.
-   * 
-   * When the queue is full, the job will be executed by the calling thread (ThreadPoolExecutor.CallerRunsPolicy())
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected BlockingQueue<Runnable> asyncExecutorThreadPoolQueue;
-  
-  /** 
-   * The time (in seconds) that is waited to gracefully shut down the threadpool used for job execution
-   * when the a shutdown on the executor (or process engine) is requested. Default value = 60.
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected long asyncExecutorSecondsToWaitOnShutdown = 60L;
-  
-  /**
-   * The number of timer jobs that are acquired during one query (before a job is executed, an acquirement thread 
-   * fetches jobs from the database and puts them on the queue). 
-   * 
-   * Default value = 1, as this lowers the potential on optimistic locking exceptions. 
-   * Change this value if you know what you are doing.
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorMaxTimerJobsPerAcquisition = 1;
-  
-  /**
-   * The number of async jobs that are acquired during one query (before a job is executed, an acquirement thread 
-   * fetches jobs from the database and puts them on the queue). 
-   * 
-   * Default value = 1, as this lowers the potential on optimistic locking exceptions. 
-   * Change this value if you know what you are doing.
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorMaxAsyncJobsDuePerAcquisition = 1;
-  
-  /**
-   * The time (in milliseconds) the timer acquisition thread will wait to execute the next acquirement query.
-   * This happens when no new timer jobs were found or when less timer jobs have been fetched 
-   * than set in {@link #asyncExecutorMaxTimerJobsPerAcquisition}. Default value = 10 seconds. 
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorDefaultTimerJobAcquireWaitTime = 10 * 1000;
-  
-  /**
-   * The time (in milliseconds) the async job acquisition thread will wait to execute the next acquirement query.
-   * This happens when no new async jobs were found or when less async jobs have been fetched 
-   * than set in {@link #asyncExecutorMaxAsyncJobsDuePerAcquisition}. Default value = 10 seconds. 
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorDefaultAsyncJobAcquireWaitTime = 10 * 1000;
-  
-  /**
-   * The time (in milliseconds) the async job (both timer and async continuations) acquisition thread will 
-   * wait when the queueu is full to execute the next query. By default set to 0 (for backwards compatibility)
-   */
-  protected int asyncExecutorDefaultQueueSizeFullWaitTime = 0;
-  
-  /**
-   * When a job is acquired, it is locked so other async executors can't lock and execute it.
-   * While doing this, the 'name' of the lock owner is written into a column of the job.
-   * 
-   * By default, a random UUID will be generated when the executor is created.
-   * 
-   * It is important that each async executor instance in a cluster of Activiti engines
-   * has a different name!
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected String asyncExecutorLockOwner;
-  
-  /**
-   * The amount of time (in milliseconds) a timer job is locked when acquired by the async executor.
-   * During this period of time, no other async executor will try to acquire and lock this job.
-   * 
-   * Default value = 5 minutes;
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorTimerLockTimeInMillis = 5 * 60 * 1000;
-  
-  /**
-   * The amount of time (in milliseconds) an async job is locked when acquired by the async executor.
-   * During this period of time, no other async executor will try to acquire and lock this job.
-   * 
-   * Default value = 5 minutes;
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorAsyncJobLockTimeInMillis = 5 * 60 * 1000;
-  
-  /**
-   * The amount of time (in milliseconds) that is waited before trying locking again,
-   * when an exclusive job is tried to be locked, but fails and the locking.
-   * 
-   * Default value = 500. If 0, this would stress database traffic a lot in case when a retry is needed,
-   * as exclusive jobs would be constantly tried to be locked.
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected int asyncExecutorLockRetryWaitTimeInMillis = 500;
-  
-  /**
-   * Allows to define a custom factory for creating the {@link Runnable} that is executed by the async executor.
-   * 
-   * (This property is only applicable when using the {@link DefaultAsyncJobExecutor}).
-   */
-  protected ExecuteAsyncRunnableFactory asyncExecutorExecuteAsyncRunnableFactory;
-
   // MYBATIS SQL SESSION FACTORY //////////////////////////////////////////////
   
   protected SqlSessionFactory sqlSessionFactory;
@@ -501,13 +331,9 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   protected DelegateInterceptor delegateInterceptor;
 
-  protected RejectedJobsHandler customRejectedJobsHandler;
-  
   protected Map<String, EventHandler> eventHandlers;
   protected List<EventHandler> customEventHandlers;
 
-  protected FailedJobCommandFactory failedJobCommandFactory;
-  
   /**
    * Set this to true if you want to have extra checks on the BPMN xml that is parsed.
    * See http://www.jorambarrez.be/blog/2013/02/19/uploading-a-funny-xml-can-bring-down-your-server/
@@ -600,28 +426,16 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initServices();
     initIdGenerator();
     initDeployers();
-    initJobHandlers();
-    initJobExecutor();
-    initAsyncExecutor();
     initTransactionFactory();
     initSqlSessionFactory();
     initSessionFactories();
     //initJpa();
     initDelegateInterceptor();
     initEventHandlers();
-    initFailedJobCommandFactory();
     initEventDispatcher();
     initProcessValidator();
     initDatabaseEventLogging();
     configuratorsAfterInit();
-  }
-
-  // failedJobCommandFactory ////////////////////////////////////////////////////////
-  
-  protected void initFailedJobCommandFactory() {
-    if (failedJobCommandFactory == null) {
-      failedJobCommandFactory = new DefaultFailedJobCommandFactory();
-    }
   }
 
   // command executors ////////////////////////////////////////////////////////
@@ -990,7 +804,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       addSessionFactory(new GenericManagerFactory(HistoricIdentityLinkEntityManager.class));
       addSessionFactory(new GenericManagerFactory(IdentityInfoEntityManager.class));
       addSessionFactory(new GenericManagerFactory(IdentityLinkEntityManager.class));
-      addSessionFactory(new GenericManagerFactory(JobEntityManager.class));
       addSessionFactory(new GenericManagerFactory(ProcessDefinitionEntityManager.class));
       addSessionFactory(new GenericManagerFactory(ProcessDefinitionInfoEntityManager.class));
       addSessionFactory(new GenericManagerFactory(PropertyEntityManager.class));
@@ -1288,106 +1101,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected void initProcessDiagramGenerator() {
     if (processDiagramGenerator == null) {
       processDiagramGenerator = new DefaultProcessDiagramGenerator();
-    }
-  }
-  
-  protected void initJobHandlers() {
-    jobHandlers = new HashMap<String, JobHandler>();
-    TimerExecuteNestedActivityJobHandler timerExecuteNestedActivityJobHandler = new TimerExecuteNestedActivityJobHandler();
-    jobHandlers.put(timerExecuteNestedActivityJobHandler.getType(), timerExecuteNestedActivityJobHandler);
-
-    TimerCatchIntermediateEventJobHandler timerCatchIntermediateEvent = new TimerCatchIntermediateEventJobHandler();
-    jobHandlers.put(timerCatchIntermediateEvent.getType(), timerCatchIntermediateEvent);
-
-    TimerStartEventJobHandler timerStartEvent = new TimerStartEventJobHandler();
-    jobHandlers.put(timerStartEvent.getType(), timerStartEvent);
-    
-    AsyncContinuationJobHandler asyncContinuationJobHandler = new AsyncContinuationJobHandler();
-    jobHandlers.put(asyncContinuationJobHandler.getType(), asyncContinuationJobHandler);
-    
-    ProcessEventJobHandler processEventJobHandler = new ProcessEventJobHandler();
-    jobHandlers.put(processEventJobHandler.getType(), processEventJobHandler);
-    
-    TimerSuspendProcessDefinitionHandler suspendProcessDefinitionHandler = new TimerSuspendProcessDefinitionHandler();
-    jobHandlers.put(suspendProcessDefinitionHandler.getType(), suspendProcessDefinitionHandler);
-    
-    TimerActivateProcessDefinitionHandler activateProcessDefinitionHandler = new TimerActivateProcessDefinitionHandler();
-    jobHandlers.put(activateProcessDefinitionHandler.getType(), activateProcessDefinitionHandler);
-    
-    // if we have custom job handlers, register them
-    if (getCustomJobHandlers()!=null) {
-      for (JobHandler customJobHandler : getCustomJobHandlers()) {
-        jobHandlers.put(customJobHandler.getType(), customJobHandler);      
-      }
-    }
-  }
-
-  // job executor /////////////////////////////////////////////////////////////
-  
-  protected void initJobExecutor() {
-    if (isAsyncExecutorEnabled() == false) {
-      if (jobExecutor == null) {
-        jobExecutor = new DefaultJobExecutor();
-      }
-  
-      jobExecutor.setClockReader(this.clock);
-  
-      jobExecutor.setCommandExecutor(commandExecutor);
-      jobExecutor.setAutoActivate(jobExecutorActivate);
-      
-      if (jobExecutor.getRejectedJobsHandler() == null) {
-        if(customRejectedJobsHandler != null) {
-          jobExecutor.setRejectedJobsHandler(customRejectedJobsHandler);
-        } else {
-          jobExecutor.setRejectedJobsHandler(new CallerRunsRejectedJobsHandler());
-        }
-      }
-    }
-  }
-  
-  // async executor /////////////////////////////////////////////////////////////
-  
-  protected void initAsyncExecutor() {
-    if (isAsyncExecutorEnabled()) {
-      if (asyncExecutor == null) {
-        DefaultAsyncJobExecutor defaultAsyncExecutor = new DefaultAsyncJobExecutor();
-        
-        // Thread pool config
-        defaultAsyncExecutor.setCorePoolSize(asyncExecutorCorePoolSize);
-        defaultAsyncExecutor.setMaxPoolSize(asyncExecutorMaxPoolSize);
-        defaultAsyncExecutor.setKeepAliveTime(asyncExecutorThreadKeepAliveTime);
-        
-        // Threadpool queue
-        if (asyncExecutorThreadPoolQueue != null) {
-        	defaultAsyncExecutor.setThreadPoolQueue(asyncExecutorThreadPoolQueue);
-        }
-        defaultAsyncExecutor.setQueueSize(asyncExecutorThreadPoolQueueSize);
-        
-        // Acquisition wait time
-        defaultAsyncExecutor.setDefaultTimerJobAcquireWaitTimeInMillis(asyncExecutorDefaultTimerJobAcquireWaitTime);
-        defaultAsyncExecutor.setDefaultAsyncJobAcquireWaitTimeInMillis(asyncExecutorDefaultAsyncJobAcquireWaitTime);
-        
-        // Queue full wait time
-        defaultAsyncExecutor.setDefaultQueueSizeFullWaitTimeInMillis(asyncExecutorDefaultQueueSizeFullWaitTime);
-        
-        // Job locking
-        defaultAsyncExecutor.setTimerLockTimeInMillis(asyncExecutorTimerLockTimeInMillis);
-        defaultAsyncExecutor.setAsyncJobLockTimeInMillis(asyncExecutorAsyncJobLockTimeInMillis);
-        if (asyncExecutorLockOwner != null) {
-        	defaultAsyncExecutor.setLockOwner(asyncExecutorLockOwner);
-        }
-        
-        // Retry
-        defaultAsyncExecutor.setRetryWaitTimeInMillis(asyncExecutorLockRetryWaitTimeInMillis);
-        
-        // Shutdown
-        defaultAsyncExecutor.setSecondsToWaitOnShutdown(asyncExecutorSecondsToWaitOnShutdown);
-        
-        asyncExecutor = defaultAsyncExecutor;
-      }
-  
-      asyncExecutor.setCommandExecutor(commandExecutor);
-      asyncExecutor.setAutoActivate(asyncExecutorActivate);
     }
   }
   
@@ -2018,159 +1731,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     return this;
   }
   
-  public Map<String, JobHandler> getJobHandlers() {
-    return jobHandlers;
-  }
-  
-  public ProcessEngineConfigurationImpl setJobHandlers(Map<String, JobHandler> jobHandlers) {
-    this.jobHandlers = jobHandlers;
-    return this;
-  }
-  
-  public int getAsyncExecutorCorePoolSize() {
-		return asyncExecutorCorePoolSize;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorCorePoolSize(int asyncExecutorCorePoolSize) {
-		this.asyncExecutorCorePoolSize = asyncExecutorCorePoolSize;
-		return this;
-	}
-
-	public int getAsyncExecutorMaxPoolSize() {
-		return asyncExecutorMaxPoolSize;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorMaxPoolSize(int asyncExecutorMaxPoolSize) {
-		this.asyncExecutorMaxPoolSize = asyncExecutorMaxPoolSize;
-		return this;
-	}
-
-	public long getAsyncExecutorThreadKeepAliveTime() {
-		return asyncExecutorThreadKeepAliveTime;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorThreadKeepAliveTime(long asyncExecutorThreadKeepAliveTime) {
-		this.asyncExecutorThreadKeepAliveTime = asyncExecutorThreadKeepAliveTime;
-		return this;
-	}
-
-	public int getAsyncExecutorThreadPoolQueueSize() {
-		return asyncExecutorThreadPoolQueueSize;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorThreadPoolQueueSize(int asyncExecutorThreadPoolQueueSize) {
-		this.asyncExecutorThreadPoolQueueSize = asyncExecutorThreadPoolQueueSize;
-		return this;
-	}
-
-	public BlockingQueue<Runnable> getAsyncExecutorThreadPoolQueue() {
-		return asyncExecutorThreadPoolQueue;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorThreadPoolQueue(BlockingQueue<Runnable> asyncExecutorThreadPoolQueue) {
-		this.asyncExecutorThreadPoolQueue = asyncExecutorThreadPoolQueue;
-		return this;
-	}
-
-	public long getAsyncExecutorSecondsToWaitOnShutdown() {
-		return asyncExecutorSecondsToWaitOnShutdown;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorSecondsToWaitOnShutdown(long asyncExecutorSecondsToWaitOnShutdown) {
-		this.asyncExecutorSecondsToWaitOnShutdown = asyncExecutorSecondsToWaitOnShutdown;
-		return this;
-	}
-
-	public int getAsyncExecutorMaxTimerJobsPerAcquisition() {
-		return asyncExecutorMaxTimerJobsPerAcquisition;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorMaxTimerJobsPerAcquisition(int asyncExecutorMaxTimerJobsPerAcquisition) {
-		this.asyncExecutorMaxTimerJobsPerAcquisition = asyncExecutorMaxTimerJobsPerAcquisition;
-		return this;
-	}
-
-	public int getAsyncExecutorMaxAsyncJobsDuePerAcquisition() {
-		return asyncExecutorMaxAsyncJobsDuePerAcquisition;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorMaxAsyncJobsDuePerAcquisition(int asyncExecutorMaxAsyncJobsDuePerAcquisition) {
-		this.asyncExecutorMaxAsyncJobsDuePerAcquisition = asyncExecutorMaxAsyncJobsDuePerAcquisition;
-		return this;
-	}
-
-	public int getAsyncExecutorTimerJobAcquireWaitTime() {
-		return asyncExecutorDefaultTimerJobAcquireWaitTime;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorDefaultTimerJobAcquireWaitTime(int asyncExecutorDefaultTimerJobAcquireWaitTime) {
-		this.asyncExecutorDefaultTimerJobAcquireWaitTime = asyncExecutorDefaultTimerJobAcquireWaitTime;
-		return this;
-	}
-
-	public int getAsyncExecutorDefaultAsyncJobAcquireWaitTime() {
-		return asyncExecutorDefaultAsyncJobAcquireWaitTime;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorDefaultAsyncJobAcquireWaitTime(int asyncExecutorDefaultAsyncJobAcquireWaitTime) {
-		this.asyncExecutorDefaultAsyncJobAcquireWaitTime = asyncExecutorDefaultAsyncJobAcquireWaitTime;
-		return this;
-	}
-	
-	public int getAsyncExecutorDefaultQueueSizeFullWaitTime() {
-    return asyncExecutorDefaultQueueSizeFullWaitTime;
-  }
-
-  public ProcessEngineConfigurationImpl setAsyncExecutorDefaultQueueSizeFullWaitTime(int asyncExecutorDefaultQueueSizeFullWaitTime) {
-    this.asyncExecutorDefaultQueueSizeFullWaitTime = asyncExecutorDefaultQueueSizeFullWaitTime;
-    return this;
-  }
-
-  public String getAsyncExecutorLockOwner() {
-		return asyncExecutorLockOwner;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorLockOwner(String asyncExecutorLockOwner) {
-		this.asyncExecutorLockOwner = asyncExecutorLockOwner;
-		return this;
-	}
-
-	public int getAsyncExecutorTimerLockTimeInMillis() {
-		return asyncExecutorTimerLockTimeInMillis;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorTimerLockTimeInMillis(int asyncExecutorTimerLockTimeInMillis) {
-		this.asyncExecutorTimerLockTimeInMillis = asyncExecutorTimerLockTimeInMillis;
-		return this;
-	}
-
-	public int getAsyncExecutorAsyncJobLockTimeInMillis() {
-		return asyncExecutorAsyncJobLockTimeInMillis;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorAsyncJobLockTimeInMillis(int asyncExecutorAsyncJobLockTimeInMillis) {
-		this.asyncExecutorAsyncJobLockTimeInMillis = asyncExecutorAsyncJobLockTimeInMillis;
-		return this;
-	}
-
-	public int getAsyncExecutorLockRetryWaitTimeInMillis() {
-		return asyncExecutorLockRetryWaitTimeInMillis;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorLockRetryWaitTimeInMillis(int asyncExecutorLockRetryWaitTimeInMillis) {
-		this.asyncExecutorLockRetryWaitTimeInMillis = asyncExecutorLockRetryWaitTimeInMillis;
-		return this;
-	}
-	
-	public ExecuteAsyncRunnableFactory getAsyncExecutorExecuteAsyncRunnableFactory() {
-		return asyncExecutorExecuteAsyncRunnableFactory;
-	}
-
-	public ProcessEngineConfigurationImpl setAsyncExecutorExecuteAsyncRunnableFactory(ExecuteAsyncRunnableFactory asyncExecutorExecuteAsyncRunnableFactory) {
-		this.asyncExecutorExecuteAsyncRunnableFactory = asyncExecutorExecuteAsyncRunnableFactory;
-		return this;
-	}
-
 	public SqlSessionFactory getSqlSessionFactory() {
     return sqlSessionFactory;
   }
@@ -2204,15 +1764,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   public ProcessEngineConfigurationImpl setCustomSessionFactories(List<SessionFactory> customSessionFactories) {
     this.customSessionFactories = customSessionFactories;
-    return this;
-  }
-  
-  public List<JobHandler> getCustomJobHandlers() {
-    return customJobHandlers;
-  }
-  
-  public ProcessEngineConfigurationImpl setCustomJobHandlers(List<JobHandler> customJobHandlers) {
-    this.customJobHandlers = customJobHandlers;
     return this;
   }
   
@@ -2351,15 +1902,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     return delegateInterceptor;
   }
     
-  public RejectedJobsHandler getCustomRejectedJobsHandler() {
-    return customRejectedJobsHandler;
-  }
-    
-  public ProcessEngineConfigurationImpl setCustomRejectedJobsHandler(RejectedJobsHandler customRejectedJobsHandler) {
-    this.customRejectedJobsHandler = customRejectedJobsHandler;
-    return this;
-  }
-
   public EventHandler getEventHandler(String eventType) {
     return eventHandlers.get(eventType);
   }
@@ -2382,15 +1924,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     return this;
   }
   
-  public FailedJobCommandFactory getFailedJobCommandFactory() {
-    return failedJobCommandFactory;
-  }
-  
-  public ProcessEngineConfigurationImpl setFailedJobCommandFactory(FailedJobCommandFactory failedJobCommandFactory) {
-    this.failedJobCommandFactory = failedJobCommandFactory;
-    return this;
-  }
-
   public DataSource getIdGeneratorDataSource() {
     return idGeneratorDataSource;
   }

@@ -45,7 +45,6 @@ import org.activiti.engine.impl.HistoricDetailQueryImpl;
 import org.activiti.engine.impl.HistoricProcessInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricTaskInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricVariableInstanceQueryImpl;
-import org.activiti.engine.impl.JobQueryImpl;
 import org.activiti.engine.impl.ModelQueryImpl;
 import org.activiti.engine.impl.Page;
 import org.activiti.engine.impl.ProcessDefinitionQueryImpl;
@@ -1459,9 +1458,6 @@ public class DbSqlSession implements Session {
   }
   public TaskQueryImpl createTaskQuery() {
     return new TaskQueryImpl();
-  }
-  public JobQueryImpl createJobQuery() {
-    return new JobQueryImpl();
   }
   public HistoricProcessInstanceQueryImpl createHistoricProcessInstanceQuery() {
     return new HistoricProcessInstanceQueryImpl();

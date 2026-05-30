@@ -42,7 +42,6 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParser;
 import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.cfg.IdGenerator;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.activiti.engine.impl.cmd.CancelJobsCmd;
 import org.activiti.engine.impl.cmd.DeploymentSettings;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
@@ -50,8 +49,6 @@ import org.activiti.engine.impl.el.ExpressionManager;
 import org.activiti.engine.impl.event.MessageEventHandler;
 import org.activiti.engine.impl.event.SignalEventHandler;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.jobexecutor.TimerDeclarationImpl;
-import org.activiti.engine.impl.jobexecutor.TimerStartEventJobHandler;
 import org.activiti.engine.impl.persistence.deploy.Deployer;
 import org.activiti.engine.impl.persistence.deploy.DeploymentManager;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionInfoCacheObject;
@@ -65,9 +62,7 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
 import org.activiti.engine.impl.persistence.entity.SignalEventSubscriptionEntity;
-import org.activiti.engine.impl.persistence.entity.TimerEntity;
 import org.activiti.engine.impl.util.IoUtil;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.task.IdentityLinkType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -182,7 +177,6 @@ public class BpmnDeployer implements Deployer {
     ProcessDefinitionEntityManager processDefinitionManager = commandContext.getProcessDefinitionEntityManager();
     DbSqlSession dbSqlSession = commandContext.getSession(DbSqlSession.class);
     for (ProcessDefinitionEntity processDefinition : processDefinitions) {
-      List<TimerEntity> timers = new ArrayList<TimerEntity>();
       if (deployment.isNew()) {
         int processDefinitionVersion;
 
@@ -220,9 +214,6 @@ public class BpmnDeployer implements Deployer {
         			ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, processDefinition));
         }
 
-        removeObsoleteTimers(processDefinition);
-        addTimerDeclarations(processDefinition, timers);
-        
         removeExistingMessageEventSubscriptions(processDefinition, latestProcessDefinition);
         addMessageEventSubscriptions(processDefinition);
         
@@ -236,8 +227,6 @@ public class BpmnDeployer implements Deployer {
         	commandContext.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
         			ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_INITIALIZED, processDefinition));
         }
-
-        scheduleTimers(timers);
 
       } else {
         String deploymentId = deployment.getId();
@@ -309,53 +298,6 @@ public class BpmnDeployer implements Deployer {
     deploymentManager.getProcessDefinitionInfoCache().add(processDefinition.getId(), definitionCacheObject);
   }
 
-  protected void scheduleTimers(List<TimerEntity> timers) {
-    for (TimerEntity timer : timers) {
-      Context
-        .getCommandContext()
-        .getJobEntityManager()
-        .schedule(timer);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  protected void addTimerDeclarations(ProcessDefinitionEntity processDefinition, List<TimerEntity> timers) {
-    List<TimerDeclarationImpl> timerDeclarations = (List<TimerDeclarationImpl>) processDefinition.getProperty(BpmnParse.PROPERTYNAME_START_TIMER);
-    if (timerDeclarations!=null) {
-      for (TimerDeclarationImpl timerDeclaration : timerDeclarations) {
-        TimerEntity timer = timerDeclaration.prepareTimerEntity(null);
-        if (timer!=null) {
-          timer.setProcessDefinitionId(processDefinition.getId());
-	        
-          // Inherit timer (if appliccable)
-          if (processDefinition.getTenantId() != null) {
-            timer.setTenantId(processDefinition.getTenantId());
-          }
-          timers.add(timer);
-        }
-      }
-    }
-  }
-
-  protected void removeObsoleteTimers(ProcessDefinitionEntity processDefinition) {
-  	
-  	List<Job> jobsToDelete = null;
-  	
-  	if (processDefinition.getTenantId() != null && !ProcessEngineConfiguration.NO_TENANT_ID.equals(processDefinition.getTenantId())) {
-  		jobsToDelete = Context.getCommandContext().getJobEntityManager().findJobsByTypeAndProcessDefinitionKeyAndTenantId(
-  				TimerStartEventJobHandler.TYPE, processDefinition.getKey(), processDefinition.getTenantId());
-    } else {
-    	jobsToDelete = Context.getCommandContext().getJobEntityManager()
-    			.findJobsByTypeAndProcessDefinitionKeyNoTenantId(TimerStartEventJobHandler.TYPE, processDefinition.getKey());
-    }
-
-  	if (jobsToDelete != null) {
-	    for (Job job :jobsToDelete) {
-	        new CancelJobsCmd(job.getId()).execute(Context.getCommandContext());
-	    }
-  	}
-  }
-  
   protected void removeExistingMessageEventSubscriptions(ProcessDefinitionEntity processDefinition, ProcessDefinitionEntity latestProcessDefinition) {
     if(latestProcessDefinition != null) {
       CommandContext commandContext = Context.getCommandContext();

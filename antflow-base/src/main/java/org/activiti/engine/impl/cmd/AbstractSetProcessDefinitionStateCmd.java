@@ -25,13 +25,10 @@ import org.activiti.engine.impl.ProcessDefinitionQueryImpl;
 import org.activiti.engine.impl.ProcessInstanceQueryImpl;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.jobexecutor.JobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerChangeProcessDefinitionSuspensionStateJobHandler;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.SuspensionState;
 import org.activiti.engine.impl.persistence.entity.SuspensionState.SuspensionStateUtil;
-import org.activiti.engine.impl.persistence.entity.TimerEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 
@@ -66,14 +63,9 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
   }
   
   public Void execute(CommandContext commandContext) {
-    
+
     List<ProcessDefinitionEntity> processDefinitions = findProcessDefinition(commandContext);
-    
-    if (executionDate != null) { // Process definition state change is delayed
-      createTimerForDelayedExecution(commandContext, processDefinitions);
-    } else { // Process definition state is changed now
-      changeProcessDefinitionState(commandContext, processDefinitions);
-    }
+    changeProcessDefinitionState(commandContext, processDefinitions);
 
     return null;
   }
@@ -123,24 +115,6 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
       
     }
     return processDefinitionEntities;
-  }
-  
-  protected void createTimerForDelayedExecution(CommandContext commandContext, List<ProcessDefinitionEntity> processDefinitions) {
-    for (ProcessDefinitionEntity processDefinition : processDefinitions) {
-      TimerEntity timer = new TimerEntity();
-      timer.setProcessDefinitionId(processDefinition.getId());
-      
-      // Inherit tenant identifier (if applicable)
-      if (processDefinition.getTenantId() != null) {
-      	timer.setTenantId(processDefinition.getTenantId());
-      }
-      
-      timer.setDuedate(executionDate);
-      timer.setJobHandlerType(getDelayedExecutionJobHandlerType());
-      timer.setJobHandlerConfiguration(TimerChangeProcessDefinitionSuspensionStateJobHandler
-              .createJobHandlerConfiguration(includeProcessInstances));
-      commandContext.getJobEntityManager().schedule(timer);
-    }
   }
   
   protected void changeProcessDefinitionState(CommandContext commandContext, List<ProcessDefinitionEntity> processDefinitions) {
@@ -198,12 +172,6 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
    * Subclasses should return the wanted {@link SuspensionState} here.
    */
   protected abstract SuspensionState getProcessDefinitionSuspensionState();
-  
-  /**
-   * Subclasses should return the type of the {@link JobHandler} here. it will be used when
-   * the user provides an execution date on which the actual state change will happen.
-   */
-  protected abstract String getDelayedExecutionJobHandlerType();
   
   /**
    * Subclasses should return a {@link Command} implementation that matches the process definition

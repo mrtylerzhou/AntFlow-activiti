@@ -36,7 +36,6 @@ import org.activiti.engine.impl.bpmn.listener.ExpressionTaskListener;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Comment;
@@ -58,7 +57,7 @@ public class DefaultListenerFactory extends AbstractBehaviorFactory implements L
 		ENTITY_MAPPING.put("comment", Comment.class);
 		ENTITY_MAPPING.put("execution", Execution.class);
 		ENTITY_MAPPING.put("identity-link", IdentityLink.class);
-		ENTITY_MAPPING.put("job", Job.class);
+		//ENTITY_MAPPING.put("job", Job.class);
 		ENTITY_MAPPING.put("process-definition", ProcessDefinition.class);
 		ENTITY_MAPPING.put("process-instance", ProcessInstance.class);
 		ENTITY_MAPPING.put("task", Task.class);

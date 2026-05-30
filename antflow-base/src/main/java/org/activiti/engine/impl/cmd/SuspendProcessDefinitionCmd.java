@@ -14,7 +14,6 @@ package org.activiti.engine.impl.cmd;
 
 import java.util.Date;
 
-import org.activiti.engine.impl.jobexecutor.TimerSuspendProcessDefinitionHandler;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.SuspensionState;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -39,10 +38,6 @@ public class SuspendProcessDefinitionCmd extends AbstractSetProcessDefinitionSta
     return SuspensionState.SUSPENDED;
   }
 
-  protected String getDelayedExecutionJobHandlerType() {
-    return TimerSuspendProcessDefinitionHandler.TYPE;
-  }
-  
   protected AbstractSetProcessInstanceStateCmd getProcessInstanceChangeStateCmd(ProcessInstance processInstance) {
     return new SuspendProcessInstanceCmd(processInstance.getId());
   }

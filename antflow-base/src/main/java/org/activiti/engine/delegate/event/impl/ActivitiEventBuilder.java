@@ -35,7 +35,6 @@ import org.activiti.engine.impl.context.ExecutionContext;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.variable.VariableType;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.task.Task;
 
 /**
@@ -284,11 +283,7 @@ public class ActivitiEventBuilder {
 		if(!extractedFromContext){
 			if(event instanceof ActivitiEntityEvent) {
 				Object persistendObject = ((ActivitiEntityEvent) event).getEntity();
-				if(persistendObject instanceof Job) {
-					event.setExecutionId(((Job) persistendObject).getExecutionId());
-					event.setProcessInstanceId(((Job) persistendObject).getProcessInstanceId());
-					event.setProcessDefinitionId(((Job) persistendObject).getProcessDefinitionId());
-				} else if(persistendObject instanceof DelegateExecution) {
+				if(persistendObject instanceof DelegateExecution) {
 					event.setExecutionId(((DelegateExecution) persistendObject).getId());
 					event.setProcessInstanceId(((DelegateExecution) persistendObject).getProcessInstanceId());
 					event.setProcessDefinitionId(((DelegateExecution) persistendObject).getProcessDefinitionId());

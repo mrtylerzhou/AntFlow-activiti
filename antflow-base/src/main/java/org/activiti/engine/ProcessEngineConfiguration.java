@@ -20,12 +20,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.activiti.engine.cfg.MailServerInfo;
-import org.activiti.engine.impl.asyncexecutor.AsyncExecutor;
 import org.activiti.engine.impl.cfg.BeansConfigurationHelper;
 import org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.activiti.engine.impl.history.HistoryLevel;
-import org.activiti.engine.impl.jobexecutor.JobExecutor;
 import org.activiti.engine.runtime.Clock;
 import org.activiti.image.ProcessDiagramGenerator;
 
@@ -103,9 +101,6 @@ public abstract class ProcessEngineConfiguration implements EngineServices {
   protected String processEngineName = ProcessEngines.NAME_DEFAULT;
   protected int idBlockSize = 2500;
   protected String history = HistoryLevel.AUDIT.getKey();
-  protected boolean jobExecutorActivate;
-  protected boolean asyncExecutorEnabled;
-  protected boolean asyncExecutorActivate;
 
   protected String mailServerHost = "localhost";
   protected String mailServerUsername; // by default no name and password are provided, which 
@@ -145,19 +140,6 @@ public abstract class ProcessEngineConfiguration implements EngineServices {
   protected boolean jpaCloseEntityManager;
 
   protected Clock clock;
-  protected JobExecutor jobExecutor;
-  protected AsyncExecutor asyncExecutor;
-  
-  /** 
-   * Define the default lock time for an async job in seconds.
-   * The lock time is used when creating an async job and when it expires the async executor
-   * assumes that the job has failed. It will be retried again.  
-   */
-  protected int lockTimeAsyncJobWaitTime = 60;
-  /** define the default wait time for a failed job in seconds */
-  protected int defaultFailedJobWaitTime = 10;
-  /** define the default wait time for a failed async job in seconds */
-  protected int asyncFailedJobWaitTime = 10;
 
   /** process diagram generator. Default value is DefaulProcessDiagramGenerator */
   protected ProcessDiagramGenerator processDiagramGenerator;
@@ -558,33 +540,6 @@ public abstract class ProcessEngineConfiguration implements EngineServices {
     return this;
   }
 
-  public boolean isJobExecutorActivate() {
-    return jobExecutorActivate;
-  }
-  
-  public ProcessEngineConfiguration setJobExecutorActivate(boolean jobExecutorActivate) {
-    this.jobExecutorActivate = jobExecutorActivate;
-    return this;
-  }
-  
-  public boolean isAsyncExecutorEnabled() {
-    return asyncExecutorEnabled;
-  }
-
-  public ProcessEngineConfiguration setAsyncExecutorEnabled(boolean asyncExecutorEnabled) {
-    this.asyncExecutorEnabled = asyncExecutorEnabled;
-    return this;
-  }
-
-  public boolean isAsyncExecutorActivate() {
-    return asyncExecutorActivate;
-  }
-  
-  public ProcessEngineConfiguration setAsyncExecutorActivate(boolean asyncExecutorActivate) {
-    this.asyncExecutorActivate = asyncExecutorActivate;
-    return this;
-  }
-  
   public ClassLoader getClassLoader() {
     return classLoader;
   }
@@ -771,51 +726,6 @@ public abstract class ProcessEngineConfiguration implements EngineServices {
 
   public ProcessEngineConfiguration setProcessDiagramGenerator(ProcessDiagramGenerator processDiagramGenerator) {
     this.processDiagramGenerator = processDiagramGenerator;
-    return this;
-  }
-
-  public JobExecutor getJobExecutor() {
-    return jobExecutor;
-  }
-  
-  public ProcessEngineConfiguration setJobExecutor(JobExecutor jobExecutor) {
-    this.jobExecutor = jobExecutor;
-    return this;
-  }
-  
-  public AsyncExecutor getAsyncExecutor() {
-    return asyncExecutor;
-  }
-  
-  public ProcessEngineConfiguration setAsyncExecutor(AsyncExecutor asyncExecutor) {
-    this.asyncExecutor = asyncExecutor;
-    return this;
-  }
-
-  public int getLockTimeAsyncJobWaitTime() {
-    return lockTimeAsyncJobWaitTime;
-  }
-
-  public ProcessEngineConfiguration setLockTimeAsyncJobWaitTime(int lockTimeAsyncJobWaitTime) {
-    this.lockTimeAsyncJobWaitTime = lockTimeAsyncJobWaitTime;
-    return this;
-  }
-
-  public int getDefaultFailedJobWaitTime() {
-    return defaultFailedJobWaitTime;
-  }
-
-  public ProcessEngineConfiguration setDefaultFailedJobWaitTime(int defaultFailedJobWaitTime) {
-    this.defaultFailedJobWaitTime = defaultFailedJobWaitTime;
-    return this;
-  }
-
-  public int getAsyncFailedJobWaitTime() {
-    return asyncFailedJobWaitTime;
-  }
-
-  public ProcessEngineConfiguration setAsyncFailedJobWaitTime(int asyncFailedJobWaitTime) {
-    this.asyncFailedJobWaitTime = asyncFailedJobWaitTime;
     return this;
   }
 

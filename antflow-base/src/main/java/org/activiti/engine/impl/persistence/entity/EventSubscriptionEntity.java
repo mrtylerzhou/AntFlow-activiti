@@ -14,9 +14,7 @@
 package org.activiti.engine.impl.persistence.entity;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.activiti.engine.ActivitiException;
@@ -26,7 +24,6 @@ import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.event.EventHandler;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.jobexecutor.ProcessEventJobHandler;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 
@@ -87,26 +84,8 @@ public abstract class EventSubscriptionEntity implements PersistentObject, HasRe
   }
   
   protected void scheduleEventAsync(Serializable payload) {
-    
-    final CommandContext commandContext = Context.getCommandContext();
-
-    MessageEntity message = new MessageEntity();
-    message.setJobHandlerType(ProcessEventJobHandler.TYPE);
-    message.setJobHandlerConfiguration(id);
-    message.setTenantId(getTenantId());
-    
-    GregorianCalendar expireCal = new GregorianCalendar();
-    ProcessEngineConfiguration processEngineConfig = Context.getCommandContext().getProcessEngineConfiguration();
-    expireCal.setTime(processEngineConfig.getClock().getCurrentTime());
-    expireCal.add(Calendar.SECOND, processEngineConfig.getLockTimeAsyncJobWaitTime());
-    message.setLockExpirationTime(expireCal.getTime());
-
-    // TODO: support payload
-//    if(payload != null) {
-//      message.setEventPayload(payload);
-//    }
-    
-    commandContext.getJobEntityManager().send(message);
+    // Job infrastructure removed - fall back to synchronous event processing
+    processEventSync(payload);
   }
   
   // persistence behavior /////////////////////
