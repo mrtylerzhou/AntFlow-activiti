@@ -58,10 +58,6 @@ public class HistoricProcessInstanceEntityManager extends AbstractManager {
       HistoricProcessInstanceEntity historicProcessInstance = findHistoricProcessInstance(historicProcessInstanceId);
       
       commandContext
-        .getHistoricDetailEntityManager()
-        .deleteHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
-
-      commandContext
         .getHistoricVariableInstanceEntityManager()
         .deleteHistoricVariableInstanceByProcessInstanceId(historicProcessInstanceId);
       

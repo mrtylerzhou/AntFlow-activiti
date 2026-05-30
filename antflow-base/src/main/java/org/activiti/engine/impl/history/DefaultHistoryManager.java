@@ -35,8 +35,6 @@ import org.activiti.engine.impl.persistence.entity.CommentEntity;
 import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricFormPropertyEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
@@ -704,25 +702,6 @@ public void recordTaskClaim(String taskId) {
     }
   }
   
-  /* (non-Javadoc)
-  * @see org.activiti.engine.impl.history.HistoryManagerInterface#recordHistoricDetailVariableCreate(org.activiti.engine.impl.persistence.entity.VariableInstanceEntity, org.activiti.engine.impl.persistence.entity.ExecutionEntity, boolean)
-  */
-  @Override
-  public void recordHistoricDetailVariableCreate(VariableInstanceEntity variable, ExecutionEntity sourceActivityExecution, boolean useActivityId) {
-    if (isHistoryLevelAtLeast(HistoryLevel.FULL)) {
-      
-      HistoricDetailVariableInstanceUpdateEntity historicVariableUpdate = 
-          HistoricDetailVariableInstanceUpdateEntity.copyAndInsert(variable);
-      
-      if (useActivityId && sourceActivityExecution != null) {
-        HistoricActivityInstanceEntity historicActivityInstance = findActivityInstance(sourceActivityExecution); 
-        if (historicActivityInstance!=null) {
-          historicVariableUpdate.setActivityInstanceId(historicActivityInstance.getId());
-        }
-      }
-    }
-  }
-  
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -773,17 +752,6 @@ public void recordTaskClaim(String taskId) {
   /* (non-Javadoc)
    * @see org.activiti.engine.impl.history.HistoryManagerInterface#reportFormPropertiesSubmitted(org.activiti.engine.impl.persistence.entity.ExecutionEntity, java.util.Map, java.lang.String)
    */
-  @Override
-  public void reportFormPropertiesSubmitted(ExecutionEntity processInstance, Map<String, String> properties, String taskId) {
-    if (isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      for (String propertyId: properties.keySet()) {
-        String propertyValue = properties.get(propertyId);
-        HistoricFormPropertyEntity historicFormProperty = new HistoricFormPropertyEntity(processInstance, propertyId, propertyValue, taskId);
-        getDbSqlSession().insert(historicFormProperty);
-      }
-    }
-  }
-  
   /* (non-Javadoc)
    * @see org.activiti.engine.impl.history.HistoryManagerInterface#updateProcessBusinessKeyInHistory(org.activiti.engine.impl.persistence.entity.ExecutionEntity)
    */

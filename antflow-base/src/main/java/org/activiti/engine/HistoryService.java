@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
-import org.activiti.engine.history.HistoricDetail;
-import org.activiti.engine.history.HistoricDetailQuery;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
@@ -28,7 +26,6 @@ import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.history.HistoricVariableInstanceQuery;
 import org.activiti.engine.history.NativeHistoricActivityInstanceQuery;
-import org.activiti.engine.history.NativeHistoricDetailQuery;
 import org.activiti.engine.history.NativeHistoricProcessInstanceQuery;
 import org.activiti.engine.history.NativeHistoricTaskInstanceQuery;
 import org.activiti.engine.history.NativeHistoricVariableInstanceQuery;
@@ -56,14 +53,6 @@ public interface HistoryService {
   /** Creates a new programmatic query to search for {@link HistoricTaskInstance}s. */
   HistoricTaskInstanceQuery createHistoricTaskInstanceQuery();
 
-  /** Creates a new programmatic query to search for {@link HistoricDetail}s. */
-  HistoricDetailQuery createHistoricDetailQuery();
-
-  /**
-   * Returns a new {@link org.activiti.engine.query.NativeQuery} for process definitions.
-   */
-  NativeHistoricDetailQuery createNativeHistoricDetailQuery();
-  
   /** Creates a new programmatic query to search for {@link HistoricVariableInstance}s. */
   HistoricVariableInstanceQuery createHistoricVariableInstanceQuery();
 

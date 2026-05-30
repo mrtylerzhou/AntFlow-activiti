@@ -124,10 +124,6 @@ public class HistoricTaskInstanceEntityManager extends AbstractManager {
         }
         
         commandContext
-          .getHistoricDetailEntityManager()
-          .deleteHistoricDetailsByTaskId(taskId);
-
-        commandContext
           .getHistoricVariableInstanceEntityManager()
           .deleteHistoricVariableInstancesByTaskId(taskId);
 

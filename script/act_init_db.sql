@@ -87,31 +87,6 @@ CREATE TABLE `ACT_HI_COMMENT`
     PRIMARY KEY (`ID_`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `ACT_HI_DETAIL`
-(
-    `ID_`           varchar(64)    NOT NULL,
-    `TYPE_`         varchar(255)   NOT NULL,
-    `PROC_INST_ID_` varchar(64)    DEFAULT NULL,
-    `EXECUTION_ID_` varchar(64)    DEFAULT NULL,
-    `TASK_ID_`      varchar(64)    DEFAULT NULL,
-    `ACT_INST_ID_`  varchar(64)    DEFAULT NULL,
-    `NAME_`         varchar(255)   NOT NULL,
-    `VAR_TYPE_`     varchar(255)   DEFAULT NULL,
-    `REV_`          int            DEFAULT NULL,
-    `TIME_`         datetime(3)    NOT NULL,
-    `BYTEARRAY_ID_` varchar(64)    DEFAULT NULL,
-    `DOUBLE_`       double         DEFAULT NULL,
-    `LONG_`         bigint         DEFAULT NULL,
-    `TEXT_`         varchar(4000)  DEFAULT NULL,
-    `TEXT2_`        varchar(4000)  DEFAULT NULL,
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_IDX_HI_DETAIL_PROC_INST` (`PROC_INST_ID_`),
-    KEY `ACT_IDX_HI_DETAIL_ACT_INST` (`ACT_INST_ID_`),
-    KEY `ACT_IDX_HI_DETAIL_TIME` (`TIME_`),
-    KEY `ACT_IDX_HI_DETAIL_NAME` (`NAME_`),
-    KEY `ACT_IDX_HI_DETAIL_TASK_ID` (`TASK_ID_`)
-) ENGINE = InnoDB;
-
 
 CREATE TABLE `ACT_HI_PROCINST`
 (

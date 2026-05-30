@@ -800,9 +800,6 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
     Context.getCommandContext().getHistoryManager()
     	.recordVariableRemoved(variableInstance);
 
-    // Record historic detail
-    Context.getCommandContext().getHistoryManager()
-      .recordHistoricDetailVariableCreate(variableInstance, sourceActivityExecution,  isActivityIdUsedForDetails());
   }
 
   protected void updateVariableInstance(VariableInstanceEntity variableInstance, Object value, ExecutionEntity sourceActivityExecution) {
@@ -827,9 +824,6 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
     }
 
     Context.getCommandContext().getHistoryManager()
-      .recordHistoricDetailVariableCreate(variableInstance, sourceActivityExecution, isActivityIdUsedForDetails());
-    
-    Context.getCommandContext().getHistoryManager()
       .recordVariableUpdate(variableInstance);
   }
 
@@ -850,10 +844,6 @@ public abstract class VariableScopeImpl implements Serializable, VariableScope {
     // Record historic variable
     Context.getCommandContext().getHistoryManager()
       .recordVariableCreate(variableInstance);
-
-    // Record historic detail
-    Context.getCommandContext().getHistoryManager()
-      .recordHistoricDetailVariableCreate(variableInstance, sourceActivityExecution, isActivityIdUsedForDetails());
 
     return variableInstance;
   }

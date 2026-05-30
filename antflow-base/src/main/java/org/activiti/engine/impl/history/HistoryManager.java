@@ -181,13 +181,6 @@ public interface HistoryManager extends Session {
 	public abstract void recordVariableCreate(VariableInstanceEntity variable);
 
 	/**
-	 * Record a variable has been created, if FULL history is enabled.
-	 */
-	public abstract void recordHistoricDetailVariableCreate(
-			VariableInstanceEntity variable,
-			ExecutionEntity sourceActivityExecution, boolean useActivityId);
-
-	/**
 	 * Record a variable has been updated, if audit history is enabled.
 	 */
 	public abstract void recordVariableUpdate(VariableInstanceEntity variable);
@@ -196,13 +189,6 @@ public interface HistoryManager extends Session {
 	 * Record a variable has been deleted, if audit history is enabled.
 	 */
 	public abstract void recordVariableRemoved(VariableInstanceEntity variable);
-
-	/**
-	 * Report form properties submitted, if audit history is enabled.
-	 */
-	public abstract void reportFormPropertiesSubmitted(
-			ExecutionEntity processInstance, Map<String, String> properties,
-			String taskId);
 
 	public abstract void updateProcessBusinessKeyInHistory(
 			ExecutionEntity processInstance);

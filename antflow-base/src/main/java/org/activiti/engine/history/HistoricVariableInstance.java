@@ -50,9 +50,6 @@ public interface HistoricVariableInstance extends HistoricData {
   
   /**
    * Returns the time when the value of the variable was last updated.
-   * Note that a {@link HistoricVariableInstance} only contains the latest value
-   * of the variable. The actual different value and value changes are recorded in
-   * {@link HistoricVariableUpdate} instances, which are captured on {@link HistoryLevel} FULL.
    */
   Date getLastUpdatedTime();
   

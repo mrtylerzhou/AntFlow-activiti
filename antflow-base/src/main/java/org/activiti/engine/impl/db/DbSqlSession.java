@@ -41,7 +41,6 @@ import org.activiti.engine.impl.DeploymentQueryImpl;
 import org.activiti.engine.impl.ExecutionQueryImpl;
 import org.activiti.engine.impl.GroupQueryImpl;
 import org.activiti.engine.impl.HistoricActivityInstanceQueryImpl;
-import org.activiti.engine.impl.HistoricDetailQueryImpl;
 import org.activiti.engine.impl.HistoricProcessInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricTaskInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricVariableInstanceQueryImpl;
@@ -1463,9 +1462,6 @@ public class DbSqlSession implements Session {
   }
   public HistoricTaskInstanceQueryImpl createHistoricTaskInstanceQuery() {
     return new HistoricTaskInstanceQueryImpl();
-  }
-  public HistoricDetailQueryImpl createHistoricDetailQuery() {
-    return new HistoricDetailQueryImpl();
   }
   public HistoricVariableInstanceQueryImpl createHistoricVariableInstanceQuery() {
     return new HistoricVariableInstanceQueryImpl();

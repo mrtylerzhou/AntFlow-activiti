@@ -28,12 +28,6 @@ public interface ProcessInstanceHistoryLogQuery {
 	/** The {@link ProcessInstanceHistoryLog} will contain the {@link Comment} instances. */
 	ProcessInstanceHistoryLogQuery includeComments();
 	
-	/** The {@link ProcessInstanceHistoryLog} will contain the {@link HistoricVariableUpdate} instances. */
-	ProcessInstanceHistoryLogQuery includeVariableUpdates();
-	
-	/** The {@link ProcessInstanceHistoryLog} will contain the {@link HistoricFormProperty} instances. */
-	ProcessInstanceHistoryLogQuery includeFormProperties();
-	
 	/** Executes the query. */
 	ProcessInstanceHistoryLog singleResult();
 

@@ -35,7 +35,6 @@ import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
 import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
@@ -295,10 +294,6 @@ public class CommandContext {
     return getSession(HistoricProcessInstanceEntityManager.class);
   }
 
-  public HistoricDetailEntityManager getHistoricDetailEntityManager() {
-    return getSession(HistoricDetailEntityManager.class);
-  }
-  
   public HistoricVariableInstanceEntityManager getHistoricVariableInstanceEntityManager() {
     return getSession(HistoricVariableInstanceEntityManager.class);
   }

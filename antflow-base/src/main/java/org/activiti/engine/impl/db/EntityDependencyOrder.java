@@ -12,11 +12,6 @@ import org.activiti.engine.impl.persistence.entity.EventLogEntryEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailAssignmentEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailTransitionInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricFormPropertyEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricScopeInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
@@ -133,11 +128,6 @@ public class EntityDependencyOrder {
 	  
 		DELETE_ORDER.add(HistoricVariableInstanceEntity.class);
 	  
-		DELETE_ORDER.add(HistoricDetailAssignmentEntity.class);
-		DELETE_ORDER.add(HistoricDetailTransitionInstanceEntity.class);
-		DELETE_ORDER.add(HistoricDetailVariableInstanceUpdateEntity.class);
-		DELETE_ORDER.add(HistoricFormPropertyEntity.class);
-		DELETE_ORDER.add(HistoricDetailEntity.class);
 		
 		INSERT_ORDER = new ArrayList<Class<? extends PersistentObject>>(DELETE_ORDER);
 		Collections.reverse(INSERT_ORDER);
