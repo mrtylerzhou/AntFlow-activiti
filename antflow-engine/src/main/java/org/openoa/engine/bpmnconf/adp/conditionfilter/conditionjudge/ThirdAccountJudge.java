@@ -18,7 +18,7 @@ import org.springframework.util.ObjectUtils;
 public class ThirdAccountJudge implements ConditionJudge {
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
         if (ObjectUtils.isEmpty(conditionsConf.getAccountType())) {
             throw new AFBizException("the process has no third party account conf,please contact the administrator to add one");
         }

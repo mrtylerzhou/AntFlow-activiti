@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MoneyOperatorJudge implements ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
         return true;
     }
 }

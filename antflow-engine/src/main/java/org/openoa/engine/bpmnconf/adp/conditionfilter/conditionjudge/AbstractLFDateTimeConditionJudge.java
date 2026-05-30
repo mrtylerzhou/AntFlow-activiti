@@ -14,7 +14,7 @@ import java.util.Date;
 public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditionJudge{
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
         TriplePredict<Object,Object,Integer> predicate=(a, b,c)->{
             try {
                 String[] split = a.toString().split(",");
@@ -33,7 +33,7 @@ public abstract class AbstractLFDateTimeConditionJudge extends AbstractLFConditi
                 throw new RuntimeException(e);
             }
         };
-        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate, group);
+        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,predicate, group,index);
     }
     abstract protected FastDateFormat currentDateFormatter();
 }
