@@ -30,7 +30,6 @@
     <mapper resource="org/activiti/db/mapping/entity/IdentityInfo.xml" />
     <mapper resource="org/activiti/db/mapping/entity/IdentityLink.xml" />
     <mapper resource="org/activiti/db/mapping/entity/Membership.xml" />
-    <mapper resource="org/activiti/db/mapping/entity/Model.xml" />
     <mapper resource="org/activiti/db/mapping/entity/ProcessDefinition.xml" />
     <mapper resource="org/activiti/db/mapping/entity/ProcessDefinitionInfo.xml" />
     <mapper resource="org/activiti/db/mapping/entity/Property.xml" />

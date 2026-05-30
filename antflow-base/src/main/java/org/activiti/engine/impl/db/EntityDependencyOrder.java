@@ -28,7 +28,6 @@ import org.activiti.engine.impl.persistence.entity.IdentityInfoEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.persistence.entity.MembershipEntity;
 import org.activiti.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
-import org.activiti.engine.impl.persistence.entity.ModelEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.PropertyEntity;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
@@ -70,19 +69,12 @@ public class EntityDependencyOrder {
 		DELETE_ORDER.add(EventLogEntryEntity.class);
 		
 		/*
-		 * FK to Deployment
-		 * FK to ByteArray 
-		 */
-		DELETE_ORDER.add(ModelEntity.class); 
-		
-		/*
 		 * FK to ByteArray
 		 * FK to Exeution
 		 */
 		DELETE_ORDER.add(VariableInstanceEntity.class);
 		
 		/*
-		 * FK from ModelEntity
 		 * FK from VariableInstanceEntity
 		 *
 		 * FK to DeploymentEntity
@@ -90,7 +82,6 @@ public class EntityDependencyOrder {
 		DELETE_ORDER.add(ByteArrayEntity.class);
 
 		/*
-		 * FK from ModelEntity
 		 * FK from VariableInstanceEntity
 		 *
 		 * FK to DeploymentEntity

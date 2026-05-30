@@ -25,7 +25,6 @@ import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.persistence.AbstractManager;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 
 
@@ -49,20 +48,7 @@ public class DeploymentEntityManager extends AbstractManager {
             .createProcessDefinitionQuery()
             .deploymentId(deploymentId)
             .list();
-    
-    // Remove the deployment link from any model. 
-    // The model will still exists, as a model is a source for a deployment model and has a different lifecycle
-    List<Model> models = getDbSqlSession()
-        .createModelQueryImpl()
-        .deploymentId(deploymentId)
-        .list();
-    
-    for (Model model : models) {
-      ModelEntity modelEntity = (ModelEntity) model;
-      modelEntity.setDeploymentId(null);
-      getModelManager().updateModel(modelEntity);
-    }
-    
+
     if (cascade) {
 
       // delete process instances

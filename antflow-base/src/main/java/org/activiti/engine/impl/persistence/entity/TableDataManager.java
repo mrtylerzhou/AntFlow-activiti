@@ -39,7 +39,6 @@ import org.activiti.engine.impl.persistence.AbstractManager;
 import org.activiti.engine.management.TableMetaData;
 import org.activiti.engine.management.TablePage;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -74,8 +73,7 @@ public class TableDataManager extends AbstractManager {
     // repository
     persistentObjectToTableNameMap.put(DeploymentEntity.class, "ACT_RE_DEPLOYMENT");
     persistentObjectToTableNameMap.put(ProcessDefinitionEntity.class, "ACT_RE_PROCDEF");
-    persistentObjectToTableNameMap.put(ModelEntity.class, "ACT_RE_MODEL");
-    
+
     // history
     persistentObjectToTableNameMap.put(CommentEntity.class, "ACT_HI_COMMENT");
     
@@ -110,9 +108,8 @@ public class TableDataManager extends AbstractManager {
     apiTypeToTableNameMap.put(Execution.class, "ACT_RU_EXECUTION");
     apiTypeToTableNameMap.put(ProcessInstance.class, "ACT_RU_EXECUTION");
     apiTypeToTableNameMap.put(ProcessDefinition.class, "ACT_RE_PROCDEF");
-    apiTypeToTableNameMap.put(Deployment.class, "ACT_RE_DEPLOYMENT");    
-    apiTypeToTableNameMap.put(Model.class, "ACT_RE_MODEL");
-    
+    apiTypeToTableNameMap.put(Deployment.class, "ACT_RE_DEPLOYMENT");
+
     // history
     apiTypeToTableNameMap.put(HistoricProcessInstance.class, "ACT_HI_PROCINST");
     apiTypeToTableNameMap.put(HistoricActivityInstance.class, "ACT_HI_ACTINST");

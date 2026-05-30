@@ -290,29 +290,6 @@ CREATE TABLE `ACT_PROCDEF_INFO`
 ) ENGINE = InnoDB;
 
 
-
-CREATE TABLE `ACT_RE_MODEL`
-(
-    `ID_`                           varchar(64)       NOT NULL,
-    `REV_`                          int               DEFAULT NULL,
-    `NAME_`                         varchar(255)      DEFAULT NULL,
-    `KEY_`                          varchar(255)      DEFAULT NULL,
-    `CATEGORY_`                     varchar(255)      DEFAULT NULL,
-    `CREATE_TIME_`                  timestamp(3)      NULL DEFAULT NULL,
-    `LAST_UPDATE_TIME_`             timestamp(3)      NULL DEFAULT NULL,
-    `VERSION_`                      int               DEFAULT NULL,
-    `META_INFO_`                    varchar(4000)     DEFAULT NULL,
-    `DEPLOYMENT_ID_`                varchar(64)       DEFAULT NULL,
-    `EDITOR_SOURCE_VALUE_ID_`       varchar(64)       DEFAULT NULL,
-    `EDITOR_SOURCE_EXTRA_VALUE_ID_` varchar(64)       DEFAULT NULL,
-    `TENANT_ID_`                    varchar(255)      DEFAULT '',
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_FK_MODEL_SOURCE` (`EDITOR_SOURCE_VALUE_ID_`),
-    KEY `ACT_FK_MODEL_SOURCE_EXTRA` (`EDITOR_SOURCE_EXTRA_VALUE_ID_`),
-    KEY `ACT_FK_MODEL_DEPLOYMENT` (`DEPLOYMENT_ID_`)
-) ENGINE = InnoDB;
-
-
 CREATE TABLE `ACT_RU_EXECUTION`
 (
     `ID_`               varchar(64)       NOT NULL,
