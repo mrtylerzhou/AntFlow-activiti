@@ -411,31 +411,6 @@ CREATE TABLE `ACT_RU_IDENTITYLINK`
 
 
 
-CREATE TABLE `ACT_RU_JOB`
-(
-    `ID_`                  varchar(64)        NOT NULL,
-    `REV_`                 int                DEFAULT NULL,
-    `TYPE_`                varchar(255)       NOT NULL,
-    `LOCK_EXP_TIME_`       timestamp(3)       NULL DEFAULT NULL,
-    `LOCK_OWNER_`          varchar(255)       DEFAULT NULL,
-    `EXCLUSIVE_`           tinyint(1)         DEFAULT NULL,
-    `EXECUTION_ID_`        varchar(64)        DEFAULT NULL,
-    `PROCESS_INSTANCE_ID_` varchar(64)        DEFAULT NULL,
-    `PROC_DEF_ID_`         varchar(64)        DEFAULT NULL,
-    `RETRIES_`             int                DEFAULT NULL,
-    `EXCEPTION_STACK_ID_`  varchar(64)        DEFAULT NULL,
-    `EXCEPTION_MSG_`       varchar(4000)      DEFAULT NULL,
-    `DUEDATE_`             timestamp(3)       NULL DEFAULT NULL,
-    `REPEAT_`              varchar(255)       DEFAULT NULL,
-    `HANDLER_TYPE_`        varchar(255)       DEFAULT NULL,
-    `HANDLER_CFG_`         varchar(4000)      DEFAULT NULL,
-    `TENANT_ID_`           varchar(255)       DEFAULT '',
-    PRIMARY KEY (`ID_`),
-    KEY `ACT_FK_JOB_EXCEPTION` (`EXCEPTION_STACK_ID_`)
-) ENGINE = InnoDB;
-
-
-
 CREATE TABLE `ACT_RU_VARIABLE`
 (
     `ID_`           varchar(64)    NOT NULL,
