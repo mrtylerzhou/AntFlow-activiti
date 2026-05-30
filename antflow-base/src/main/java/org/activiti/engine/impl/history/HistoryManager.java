@@ -198,13 +198,6 @@ public interface HistoryManager extends Session {
 	public abstract void recordVariableRemoved(VariableInstanceEntity variable);
 
 	/**
-	 * Creates a new comment to indicate a new attachment has been created or deleted,
-	 * if history is enabled.
-	 */
-	public abstract void createAttachmentComment(String taskId,
-			String processInstanceId, String attachmentName, boolean create);
-
-	/**
 	 * Report form properties submitted, if audit history is enabled.
 	 */
 	public abstract void reportFormPropertiesSubmitted(

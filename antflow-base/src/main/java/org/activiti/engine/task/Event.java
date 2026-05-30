@@ -50,12 +50,6 @@ public interface Event extends Serializable {
   /** An user comment was added with the short version of the comment as message. */
   String ACTION_ADD_COMMENT = "AddComment";
 
-  /** An attachment was added with the attachment name as message. */
-  String ACTION_ADD_ATTACHMENT = "AddAttachment";
-
-  /** An attachment was deleted with the attachment name as message. */
-  String ACTION_DELETE_ATTACHMENT = "DeleteAttachment";
-
   /** Unique identifier for this event  */
   String getId();
   

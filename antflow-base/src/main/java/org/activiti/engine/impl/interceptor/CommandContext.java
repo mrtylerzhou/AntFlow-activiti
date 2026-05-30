@@ -27,7 +27,7 @@ import org.activiti.engine.impl.cfg.TransactionContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.history.HistoryManager;
-import org.activiti.engine.impl.persistence.entity.AttachmentEntityManager;
+
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
 import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
@@ -331,10 +331,6 @@ public class CommandContext {
     return getSession(MembershipIdentityManager.class);
   }
   
-  public AttachmentEntityManager getAttachmentEntityManager() {
-    return getSession(AttachmentEntityManager.class);
-  }
-
   public TableDataManager getTableDataManager() {
     return getSession(TableDataManager.class);
   }

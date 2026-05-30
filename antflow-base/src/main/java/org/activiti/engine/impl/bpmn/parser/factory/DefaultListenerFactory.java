@@ -35,7 +35,7 @@ import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Attachment;
+
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 
@@ -50,7 +50,6 @@ public class DefaultListenerFactory extends AbstractBehaviorFactory implements L
 	
 	public static final Map<String, Class<?>> ENTITY_MAPPING = new HashMap<String, Class<?>>();
 	static {
-		ENTITY_MAPPING.put("attachment", Attachment.class);
 		ENTITY_MAPPING.put("comment", Comment.class);
 		ENTITY_MAPPING.put("execution", Execution.class);
 		//ENTITY_MAPPING.put("job", Job.class);

@@ -73,22 +73,6 @@ CREATE TABLE `ACT_HI_ACTINST`
     KEY `ACT_IDX_HI_ACT_INST_EXEC` (`EXECUTION_ID_`, `ACT_ID_`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `ACT_HI_ATTACHMENT`
-(
-    `ID_`           varchar(64)    NOT NULL,
-    `REV_`          int            DEFAULT NULL,
-    `USER_ID_`      varchar(255)   DEFAULT NULL,
-    `NAME_`         varchar(255)   DEFAULT NULL,
-    `DESCRIPTION_`  varchar(4000)  DEFAULT NULL,
-    `TYPE_`         varchar(255)   DEFAULT NULL,
-    `TASK_ID_`      varchar(64)    DEFAULT NULL,
-    `PROC_INST_ID_` varchar(64)    DEFAULT NULL,
-    `URL_`          varchar(4000)  DEFAULT NULL,
-    `CONTENT_ID_`   varchar(64)    DEFAULT NULL,
-    `TIME_`         datetime(3)    DEFAULT NULL,
-    PRIMARY KEY (`ID_`)
-) ENGINE = InnoDB;
-
 CREATE TABLE `ACT_HI_COMMENT`
 (
     `ID_`           varchar(64)    NOT NULL,

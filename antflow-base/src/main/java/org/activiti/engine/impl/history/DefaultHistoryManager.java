@@ -771,29 +771,6 @@ public void recordTaskClaim(String taskId) {
   // Comment related history
 
   /* (non-Javadoc)
-   * @see org.activiti.engine.impl.history.HistoryManagerInterface#createAttachmentComment(java.lang.String, java.lang.String, java.lang.String, boolean)
-   */
-  @Override
-  public void createAttachmentComment(String taskId, String processInstanceId, String attachmentName, boolean create) {
-    if (isHistoryEnabled()) {
-      String userId = Authentication.getAuthenticatedUserId();
-      CommentEntity comment = new CommentEntity();
-      comment.setUserId(userId);
-      comment.setType(CommentEntity.TYPE_EVENT);
-      comment.setTime(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
-      comment.setTaskId(taskId);
-      comment.setProcessInstanceId(processInstanceId);
-      if(create) {
-        comment.setAction(Event.ACTION_ADD_ATTACHMENT);
-      } else {
-        comment.setAction(Event.ACTION_DELETE_ATTACHMENT);
-      }
-      comment.setMessage(attachmentName);
-      getSession(CommentEntityManager.class).insert(comment);
-    }
-  }
-
-  /* (non-Javadoc)
    * @see org.activiti.engine.impl.history.HistoryManagerInterface#reportFormPropertiesSubmitted(org.activiti.engine.impl.persistence.entity.ExecutionEntity, java.util.Map, java.lang.String)
    */
   @Override

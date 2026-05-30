@@ -12,7 +12,6 @@
  */
 package org.activiti.engine.impl;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,18 +26,17 @@ import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.AddCommentCmd;
 import org.activiti.engine.impl.cmd.ClaimTaskCmd;
 import org.activiti.engine.impl.cmd.CompleteTaskCmd;
-import org.activiti.engine.impl.cmd.CreateAttachmentCmd;
+
 import org.activiti.engine.impl.cmd.DelegateTaskCmd;
-import org.activiti.engine.impl.cmd.DeleteAttachmentCmd;
+
 import org.activiti.engine.impl.cmd.DeleteCommentCmd;
 import org.activiti.engine.impl.cmd.DeleteTaskCmd;
-import org.activiti.engine.impl.cmd.GetAttachmentCmd;
-import org.activiti.engine.impl.cmd.GetAttachmentContentCmd;
+
 import org.activiti.engine.impl.cmd.GetCommentCmd;
-import org.activiti.engine.impl.cmd.GetProcessInstanceAttachmentsCmd;
+
 import org.activiti.engine.impl.cmd.GetProcessInstanceCommentsCmd;
 import org.activiti.engine.impl.cmd.GetSubTasksCmd;
-import org.activiti.engine.impl.cmd.GetTaskAttachmentsCmd;
+
 import org.activiti.engine.impl.cmd.GetTaskCommentsByTypeCmd;
 import org.activiti.engine.impl.cmd.GetTaskCommentsCmd;
 import org.activiti.engine.impl.cmd.GetTaskEventCmd;
@@ -51,13 +49,13 @@ import org.activiti.engine.impl.cmd.HasTaskVariableCmd;
 import org.activiti.engine.impl.cmd.NewTaskCmd;
 import org.activiti.engine.impl.cmd.RemoveTaskVariablesCmd;
 import org.activiti.engine.impl.cmd.ResolveTaskCmd;
-import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
+
 import org.activiti.engine.impl.cmd.SaveTaskCmd;
 import org.activiti.engine.impl.cmd.SetTaskDueDateCmd;
 import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
-import org.activiti.engine.task.Attachment;
+
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
@@ -300,22 +298,6 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
     return commandExecutor.execute(new GetProcessInstanceCommentsCmd(processInstanceId, type));
   }
 
-  public Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, InputStream content) {
-    return commandExecutor.execute(new CreateAttachmentCmd(attachmentType, taskId, processInstanceId, attachmentName, attachmentDescription, content, null));
-  }
-
-  public Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, String url) {
-    return commandExecutor.execute(new CreateAttachmentCmd(attachmentType, taskId, processInstanceId, attachmentName, attachmentDescription, null, url));
-  }
-
-  public InputStream getAttachmentContent(String attachmentId) {
-    return commandExecutor.execute(new GetAttachmentContentCmd(attachmentId));
-  }
-
-  public void deleteAttachment(String attachmentId) {
-    commandExecutor.execute(new DeleteAttachmentCmd(attachmentId));
-  }
-  
   public void deleteComments(String taskId, String processInstanceId) {
     commandExecutor.execute(new DeleteCommentCmd(taskId, processInstanceId, null));
   }
@@ -323,22 +305,6 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   @Override
   public void deleteComment(String commentId) {
     commandExecutor.execute(new DeleteCommentCmd(null, null, commentId));
-  }
-
-  public Attachment getAttachment(String attachmentId) {
-    return commandExecutor.execute(new GetAttachmentCmd(attachmentId));
-  }
-
-  public List<Attachment> getTaskAttachments(String taskId) {
-    return commandExecutor.execute(new GetTaskAttachmentsCmd(taskId));
-  }
-
-  public List<Attachment> getProcessInstanceAttachments(String processInstanceId) {
-    return commandExecutor.execute(new GetProcessInstanceAttachmentsCmd(processInstanceId));
-  }
-
-  public void saveAttachment(Attachment attachment) {
-    commandExecutor.execute(new SaveAttachmentCmd(attachment));
   }
 
   public List<Task> getSubTasks(String parentTaskId) {

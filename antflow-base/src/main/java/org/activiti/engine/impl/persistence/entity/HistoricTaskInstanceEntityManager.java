@@ -134,10 +134,6 @@ public class HistoricTaskInstanceEntityManager extends AbstractManager {
         commandContext
           .getCommentEntityManager()
           .deleteCommentsByTaskId(taskId);
-        
-        commandContext
-          .getAttachmentEntityManager()
-          .deleteAttachmentsByTaskId(taskId);
 
         boolean deleted = getDbSqlSession().delete(historicTaskInstance);
         

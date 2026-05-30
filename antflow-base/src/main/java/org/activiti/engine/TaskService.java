@@ -12,7 +12,6 @@
  */
 package org.activiti.engine;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.Set;
 
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.query.NativeQuery;
-import org.activiti.engine.task.Attachment;
+
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
@@ -369,29 +368,6 @@ public interface TaskService {
   /** The comments related to the given process instance. */
   List<Comment> getProcessInstanceComments(String processInstanceId, String type);
 
-  /** Add a new attachment to a task and/or a process instance and use an input stream to provide the content */
-  Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, InputStream content);
-
-  /** Add a new attachment to a task and/or a process instance and use an url as the content */
-  Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, String url);
-  
-  /** Update the name and decription of an attachment */
-  void saveAttachment(Attachment attachment);
-  
-  /** Retrieve a particular attachment */
-  Attachment getAttachment(String attachmentId);
-  
-  /** Retrieve stream content of a particular attachment */
-  InputStream getAttachmentContent(String attachmentId);
-  
-  /** The list of attachments associated to a task */
-  List<Attachment> getTaskAttachments(String taskId);
-
-  /** The list of attachments associated to a process instance */
-  List<Attachment> getProcessInstanceAttachments(String processInstanceId);
-
-  /** Delete an attachment */
-  void deleteAttachment(String attachmentId);
 
   /** The list of subtasks for this parent task */
   List<Task> getSubTasks(String parentTaskId);

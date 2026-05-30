@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.activiti.engine.impl.persistence.entity.AttachmentEntity;
+
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntity;
 import org.activiti.engine.impl.persistence.entity.CommentEntity;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
@@ -52,9 +52,6 @@ public class EntityDependencyOrder {
 	
 		/* No FK */
 		DELETE_ORDER.add(PropertyEntity.class);
-		
-		/* No FK */
-		DELETE_ORDER.add(AttachmentEntity.class);
 		
 		/* No FK */
 		DELETE_ORDER.add(CommentEntity.class);
