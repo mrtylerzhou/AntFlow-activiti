@@ -385,10 +385,17 @@ public abstract class DateUtil {
 
     public static Date parseStandard(String dt){
         try {
-            Date parsedDt = SDF_DATETIME_PATTERN.parse(dt);
-            return parsedDt;
+            return SDF_DATETIME_PATTERN.parse(dt);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            try {
+                return SDF_DATETIME_PATTERN_NO_SECOND.parse(dt);
+            } catch (ParseException e2) {
+                try {
+                    return SDF_DATE_PATTERN.parse(dt);
+                } catch (ParseException e3) {
+                    throw new RuntimeException("unsupported date format: " + dt, e3);
+                }
+            }
         }
     }
     /**
