@@ -36,24 +36,15 @@ public class ExecuteSchemaOperationCommand implements Command<Void> {
   
   public Void execute(CommandContext commandContext) {
     if (ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_DROP_CREATE.equals(schemaOperation)) {
-      try {
-        commandContext.getDbSqlSession().dbSchemaDrop();
-      } catch (RuntimeException e) {
-        // ignore
-      }
+
     }
     if (org.activiti.engine.ProcessEngineConfiguration.DB_SCHEMA_UPDATE_CREATE_DROP.equals(schemaOperation)
-        || ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_DROP_CREATE.equals(schemaOperation) 
-        || ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_CREATE.equals(schemaOperation)) {
+        || ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_DROP_CREATE.equals(schemaOperation)
+        || ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_CREATE.equals(schemaOperation)
+        || ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE.equals(schemaOperation)) {
       commandContext.getDbSqlSession().dbSchemaCreate();
-
-    } else if (org.activiti.engine.ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE.equals(schemaOperation)) {
-      commandContext.getDbSqlSession().dbSchemaCheckVersion();
-
-    } else if (ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE.equals(schemaOperation)) {
-      commandContext.getDbSqlSession().dbSchemaUpdate();
     }
-    
+    // DB_SCHEMA_UPDATE_FALSE (none): no-op
     return null;
   }
 
