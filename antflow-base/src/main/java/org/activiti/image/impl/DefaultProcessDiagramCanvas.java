@@ -50,6 +50,7 @@ import javax.imageio.ImageIO;
 
 import org.activiti.bpmn.model.AssociationDirection;
 import org.activiti.bpmn.model.GraphicInfo;
+import org.activiti.engine.ActivitiException;
 import org.activiti.image.exception.ActivitiImageException;
 import org.activiti.image.util.ReflectUtil;
 import org.slf4j.Logger;
@@ -60,8 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * Some of the icons used are licensed under a Creative Commons Attribution 2.5
  * License, see http://www.famfamfam.com/lab/icons/silk/
- * 
- * @see org.activiti.engine.impl.bpmn.diagram.DefaultProcessDiagramGenerator
+ *
  * @author Joram Barrez
  */
 public class DefaultProcessDiagramCanvas {
