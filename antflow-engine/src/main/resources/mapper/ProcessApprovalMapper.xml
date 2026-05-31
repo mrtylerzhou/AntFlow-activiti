@@ -23,14 +23,14 @@
     </select>
     <select id="doneTodayProcess" resultType="java.lang.Integer">
         SELECT count(distinct h.PROC_INST_ID_)
-        from ACT_HI_TASKINST h
+        from AF_HI_TASKINST h
         where h.TASK_DEF_KEY_ <![CDATA[ <> ]]> 'task1418018332271'
           and h.ASSIGNEE_ = #{createUserId}
           and DATE_FORMAT(h.END_TIME_, '%Y-%m-%d') = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')
     </select>
     <select id="doneCreateProcess" resultType="java.lang.Integer">
         SELECT count(*)
-        from ACT_HI_PROCINST p
+        from AF_HI_PROCINST p
         where p.START_USER_ID_ = #{createUserId}
           and DATE_FORMAT(p.START_TIME_, '%Y-%m-%d') = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')
     </select>
@@ -49,7 +49,7 @@
                         b.PROCESSINESS_KEY AS processKey,
                         b.process_state    AS taskStype,
                         b.process_digest   as processDigest
-                 FROM ACT_HI_PROCINST h
+                 FROM AF_HI_PROCINST h
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
                  where h.START_USER_ID_ = #{taskMgmtVO.applyUser}
                    and b.is_del = 0
@@ -124,8 +124,8 @@
                         b.process_state    AS processState,
                         b.process_digest   as processDigest
                        <!-- ,ROW_NUMBER() over(partition BY b.business_id ORDER BY BUSINESS_NUMBER, t.END_TIME_ DESC) AS rn-->
-                 FROM ACT_HI_TASKINST t
-                          LEFT JOIN ACT_HI_PROCINST h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
+                 FROM AF_HI_TASKINST t
+                          LEFT JOIN AF_HI_PROCINST h ON h.PROC_INST_ID_ = t.PROC_INST_ID_
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
                  where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
                    and t.END_TIME_ IS NOT NULL
@@ -154,7 +154,7 @@
                         t.TASK_DEF_KEY_    AS  taskName,
                         b.process_state    AS processState,
                         b.process_digest   as processDigest
-                 FROM ACT_RU_TASK t
+                 FROM AF_RU_TASK t
                           LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = t.PROC_INST_ID_
                  where t.ASSIGNEE_ = #{taskMgmtVO.applyUser}
                    and b.is_del = 0
@@ -179,7 +179,7 @@
         t.TASK_DEF_KEY_    AS  taskName,
         b.process_state    AS processState,
         b.process_digest   as processDigest
-        FROM ACT_RU_TASK t
+        FROM AF_RU_TASK t
         INNER JOIN bpm_verify_info c ON c.run_info_id = t.PROC_INST_ID_
         INNER JOIN bpm_business_process b ON b.PROC_INST_ID_ = t.PROC_INST_ID_
         where t.TASK_DEF_KEY_ = 'task1418018332271' and c.verify_status=8
@@ -207,12 +207,12 @@
                  FROM
                     <choose>
                         <when test="taskMgmtVO.includeAllFlag!=null and taskMgmtVO.includeAllFlag==1">
-                            ACT_HI_PROCINST h
-                            LEFT JOIN ACT_RU_TASK t
+                            AF_HI_PROCINST h
+                            LEFT JOIN AF_RU_TASK t
                         </when>
                         <otherwise>
-                            ACT_RU_TASK t
-                            LEFT JOIN ACT_HI_PROCINST h
+                            AF_RU_TASK t
+                            LEFT JOIN AF_HI_PROCINST h
                         </otherwise>
                     </choose>
                        ON h.PROC_INST_ID_ = t.PROC_INST_ID_
@@ -239,7 +239,7 @@
         f.is_read AS isRead,
         b.process_digest as processDigest
         FROM
-        ACT_HI_PROCINST h
+        AF_HI_PROCINST h
         LEFT JOIN bpm_business_process b ON b.PROC_INST_ID_ = h.PROC_INST_ID_
         LEFT JOIN bpm_process_forward f ON h.PROC_INST_ID_=f.processInstance_Id
         where f.forward_user_id=#{taskMgmtVO.applyUser} and b.is_del=0 and f.is_del=0
@@ -268,7 +268,7 @@
         b.VERSION as appVersion,
         b.approval_user_id AS approvalUserId
         FROM
-        ACT_HI_PROCINST h
+        AF_HI_PROCINST h
         LEFT JOIN bpm_business_process b ON b.ENTRY_ID = h.BUSINESS_KEY_
         where b.is_del=0
         order by h.START_TIME_ desc

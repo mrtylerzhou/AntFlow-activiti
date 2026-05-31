@@ -21,7 +21,7 @@
   <!-- HISTORIC ACTIVITY INSTANCE INSERT -->
   
   <insert id="insertHistoricActivityInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity">
-      insert into ${prefix}ACT_HI_ACTINST (
+      insert into ${prefix}AF_HI_ACTINST (
         ID_,
         PROC_DEF_ID_,
         PROC_INST_ID_,
@@ -55,7 +55,7 @@
   </insert>
   
   <insert id="bulkInsertHistoricActivityInstance" parameterType="java.util.List">
-      insert into ${prefix}ACT_HI_ACTINST (
+      insert into ${prefix}AF_HI_ACTINST (
         ID_,
         PROC_DEF_ID_,
         PROC_INST_ID_,
@@ -92,7 +92,7 @@
   <insert id="bulkInsertHistoricActivityInstance_oracle" parameterType="java.util.List">
       INSERT ALL 
       <foreach collection="list" item="historicActivityInstance" index="index">
-        INTO ${prefix}ACT_HI_ACTINST (
+        INTO ${prefix}AF_HI_ACTINST (
           ID_,
           PROC_DEF_ID_,
           PROC_INST_ID_,
@@ -129,7 +129,7 @@
   <!-- HISTORIC ACTIVITY INSTANCE UPDATE -->
   
   <update id="updateHistoricActivityInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity">
-    update ${prefix}ACT_HI_ACTINST set
+    update ${prefix}AF_HI_ACTINST set
       EXECUTION_ID_ = #{executionId, jdbcType=VARCHAR},
       ASSIGNEE_ = #{assignee, jdbcType=VARCHAR},
       END_TIME_ = #{endTime, jdbcType=TIMESTAMP},
@@ -140,7 +140,7 @@
   <!-- HISTORIC ACTIVITY INSTANCE DELETE -->
   
   <delete id="deleteHistoricActivityInstancesByProcessInstanceId">
-    delete from ${prefix}ACT_HI_ACTINST where PROC_INST_ID_ = #{processInstanceId}
+    delete from ${prefix}AF_HI_ACTINST where PROC_INST_ID_ = #{processInstanceId}
   </delete>
   
   <!-- HISTORIC ACTIVITY INSTANCE RESULT MAP -->
@@ -165,7 +165,7 @@
   <!-- HISTORIC ACTIVITY INSTANCE SELECT -->
   
   <select id="selectHistoricActivityInstance" resultMap="historicActivityInstanceResultMap">
-    select * from ${prefix}ACT_HI_ACTINST where ACT_ID_ = #{activityId} and PROC_INST_ID_ = #{processInstanceId}
+    select * from ${prefix}AF_HI_ACTINST where ACT_ID_ = #{activityId} and PROC_INST_ID_ = #{processInstanceId}
   </select>
 
   <select id="selectHistoricActivityInstancesByQueryCriteria" parameterType="org.activiti.engine.impl.HistoricActivityInstanceQueryImpl" resultMap="historicActivityInstanceResultMap">
@@ -182,7 +182,7 @@
   </select>
   
   <sql id="selectHistoricActivityInstancesByQueryCriteriaSql">
-    from ${prefix}ACT_HI_ACTINST RES
+    from ${prefix}AF_HI_ACTINST RES
     <where>
       <if test="processInstanceId != null">
         RES.PROC_INST_ID_ = #{processInstanceId}

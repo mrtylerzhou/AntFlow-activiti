@@ -21,7 +21,7 @@
   <!-- HISTORIC TASK INSTANCE INSERT -->
   
   <insert id="insertHistoricTaskInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity">
-      insert into ${prefix}ACT_HI_TASKINST (
+      insert into ${prefix}AF_HI_TASKINST (
         ID_,
         PROC_DEF_ID_,
         PROC_INST_ID_,
@@ -67,7 +67,7 @@
   </insert>
 
   <insert id="bulkInsertHistoricTaskInstance" parameterType="java.util.List">
-      insert into ${prefix}ACT_HI_TASKINST (
+      insert into ${prefix}AF_HI_TASKINST (
         ID_,
         PROC_DEF_ID_,
         PROC_INST_ID_,
@@ -116,7 +116,7 @@
   <insert id="bulkInsertHistoricTaskInstance_oracle" parameterType="java.util.List">
       INSERT ALL 
         <foreach collection="list" item="historicTask" index="index">
-          INTO ${prefix}ACT_HI_TASKINST (
+          INTO ${prefix}AF_HI_TASKINST (
             ID_,
             PROC_DEF_ID_,
             PROC_INST_ID_,
@@ -165,7 +165,7 @@
   <!-- HISTORIC TASK INSTANCE UPDATE -->
   
   <update id="updateHistoricTaskInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity">
-    update ${prefix}ACT_HI_TASKINST set
+    update ${prefix}AF_HI_TASKINST set
       PROC_DEF_ID_ = #{processDefinitionId, jdbcType=VARCHAR},
       EXECUTION_ID_ = #{executionId, jdbcType=VARCHAR},
       NAME_ = #{name, jdbcType=VARCHAR},
@@ -189,11 +189,11 @@
   <!-- HISTORIC TASK INSTANCE DELETE -->
   
   <delete id="deleteHistoricTaskInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity">
-    delete from ${prefix}ACT_HI_TASKINST where ID_ = #{id}
+    delete from ${prefix}AF_HI_TASKINST where ID_ = #{id}
   </delete>
   
   <delete id="bulkDeleteHistoricTaskInstance" parameterType="java.util.Collection">
-    delete from ${prefix}ACT_HI_TASKINST where
+    delete from ${prefix}AF_HI_TASKINST where
     <foreach item="task" collection="list" index="index" separator=" or ">
         ID_ = #{task.id, jdbcType=VARCHAR}
     </foreach>
@@ -266,16 +266,16 @@
   <!-- HISTORIC TASK INSTANCE SELECT -->
   
   <select id="selectHistoricTaskInstance" resultMap="historicTaskInstanceResultMap">
-    select * from ${prefix}ACT_HI_TASKINST where ID_ = #{historicTaskInstanceId, jdbcType=VARCHAR}
+    select * from ${prefix}AF_HI_TASKINST where ID_ = #{historicTaskInstanceId, jdbcType=VARCHAR}
   </select>
   
   <select id="selectHistoricTasksByParentTaskId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="historicTaskInstanceResultMap">
-    select * from ${prefix}ACT_HI_TASKINST where PARENT_TASK_ID_ = #{parameter}
+    select * from ${prefix}AF_HI_TASKINST where PARENT_TASK_ID_ = #{parameter}
   </select>
   
   <select id="selectHistoricTaskInstanceIdsByProcessInstanceId" resultType="string" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" >
     select ID_ 
-    from ${prefix}ACT_HI_TASKINST 
+    from ${prefix}AF_HI_TASKINST 
     where PROC_INST_ID_ = #{parameter}
   </select>
 
@@ -293,7 +293,7 @@
   </select>
   
   <sql id="selectHistoricTaskInstancesByQueryCriteriaSql">
-    from ${prefix}ACT_HI_TASKINST RES
+    from ${prefix}AF_HI_TASKINST RES
     <include refid="commonSelectHistoricTaskInstancesByQueryCriteriaSql"/>
   </sql>
   
@@ -342,17 +342,17 @@
   </select>
   
   <sql id="selectHistoricTaskInstancesWithVariablesByQueryCriteriaSql">  
-    from ${prefix}ACT_HI_TASKINST RES
+    from ${prefix}AF_HI_TASKINST RES
     <choose>
       <when test="includeTaskLocalVariables &amp;&amp; includeProcessVariables">
-        left outer join ${prefix}ACT_HI_VARINST VAR ON RES.ID_ = VAR.TASK_ID_ or (RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null)
+        left outer join ${prefix}AF_HI_VARINST VAR ON RES.ID_ = VAR.TASK_ID_ or (RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null)
       </when>
       <otherwise>
         <if test="includeTaskLocalVariables">
-          left outer join ${prefix}ACT_HI_VARINST VAR ON RES.ID_ = VAR.TASK_ID_
+          left outer join ${prefix}AF_HI_VARINST VAR ON RES.ID_ = VAR.TASK_ID_
         </if>
         <if test="includeProcessVariables">
-          left outer join ${prefix}ACT_HI_VARINST VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
+          left outer join ${prefix}AF_HI_VARINST VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
         </if>
       </otherwise>
     </choose>
@@ -361,24 +361,24 @@
   
   <sql id="commonSelectHistoricTaskInstancesByQueryCriteriaSql">
     <if test="candidateUser != null || candidateGroups != null || involvedGroups != null">
-      inner join ${prefix}ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_
+      inner join ${prefix}AF_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_
     </if>
     <if test="processFinished || processUnfinished || processInstanceBusinessKey != null || processInstanceBusinessKeyLike != null || processInstanceBusinessKeyLikeIgnoreCase != null">
-      inner join ${prefix}ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+      inner join ${prefix}AF_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
     </if>
     <if test="processDefinitionKey != null || processDefinitionKeyLike != null || processDefinitionKeyLikeIgnoreCase != null || processDefinitionName != null || processDefinitionNameLike != null || (processCategoryInList != null &amp;&amp; processCategoryInList.size() &gt; 0) || (processCategoryNotInList != null &amp;&amp; processCategoryNotInList.size() &gt; 0) || (processDefinitionKeys != null &amp;&amp; processDefinitionKeys.size() &gt; 0)">
-      inner join ${prefix}ACT_RE_PROCDEF D on RES.PROC_DEF_ID_ = D.ID_
+      inner join ${prefix}AF_RE_PROCDEF D on RES.PROC_DEF_ID_ = D.ID_
     </if>
     <if test="deploymentId != null || (deploymentIds != null &amp;&amp; deploymentIds.size() &gt; 0)">
-      left outer join ${prefix}ACT_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
+      left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
     </if>
     <foreach collection="queryVariableValues" index="index" item="var">
       <choose>
         <when test="var.local">
-          inner join ${prefix}ACT_HI_VARINST A${index} on RES.ID_ = A${index}.TASK_ID_ 
+          inner join ${prefix}AF_HI_VARINST A${index} on RES.ID_ = A${index}.TASK_ID_ 
         </when>
         <otherwise>
-          inner join ${prefix}ACT_HI_VARINST A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_ 
+          inner join ${prefix}AF_HI_VARINST A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_ 
         </otherwise>
       </choose>       
     </foreach>
@@ -388,23 +388,23 @@
           <when test="orQueryObject.involvedGroups != null">left</when>
           <otherwise>inner</otherwise>
         </choose>
-         join ${prefix}ACT_HI_IDENTITYLINK HI_OR${orIndex} on HI_OR${orIndex}.TASK_ID_ = RES.ID_
+         join ${prefix}AF_HI_IDENTITYLINK HI_OR${orIndex} on HI_OR${orIndex}.TASK_ID_ = RES.ID_
       </if>
       <if test="orQueryObject.processFinished || orQueryObject.processUnfinished || orQueryObject.processInstanceBusinessKey != null || orQueryObject.processInstanceBusinessKeyLike != null || orQueryObject.processInstanceBusinessKeyLikeIgnoreCase != null">
-        inner join ${prefix}ACT_HI_PROCINST HPI_OR${orIndex} ON RES.PROC_INST_ID_ = HPI_OR${orIndex}.ID_
+        inner join ${prefix}AF_HI_PROCINST HPI_OR${orIndex} ON RES.PROC_INST_ID_ = HPI_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.processDefinitionKey != null || orQueryObject.processDefinitionKeyLike != null || orQueryObject.processDefinitionKeyLikeIgnoreCase != null || orQueryObject.processDefinitionName != null || orQueryObject.processDefinitionNameLike != null || (orQueryObject.processCategoryInList != null &amp;&amp; orQueryObject.processCategoryInList.size() &gt; 0) || (orQueryObject.processCategoryNotInList != null &amp;&amp; orQueryObject.processCategoryNotInList.size() &gt; 0) || (orQueryObject.processDefinitionKeys != null &amp;&amp; orQueryObject.processDefinitionKeys.size() &gt; 0)">
-        left outer join ${prefix}ACT_RE_PROCDEF D_OR${orIndex} on RES.PROC_DEF_ID_ = D_OR${orIndex}.ID_
+        left outer join ${prefix}AF_RE_PROCDEF D_OR${orIndex} on RES.PROC_DEF_ID_ = D_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.deploymentId != null || (orQueryObject.deploymentIds != null &amp;&amp; orQueryObject.deploymentIds.size() &gt; 0)">
-        left outer join ${prefix}ACT_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
+        left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.queryVariableValues.size() &gt; 0">
         <if test="orQueryObject.hasLocalQueryVariableValue()">
-          left outer join ${prefix}ACT_HI_VARINST A_L_OR${orIndex} on RES.ID_ = A_L_OR${orIndex}.TASK_ID_ 
+          left outer join ${prefix}AF_HI_VARINST A_L_OR${orIndex} on RES.ID_ = A_L_OR${orIndex}.TASK_ID_ 
         </if>
         <if test="orQueryObject.hasNonLocalQueryVariableValue()">
-          left outer join ${prefix}ACT_HI_VARINST A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_ 
+          left outer join ${prefix}AF_HI_VARINST A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_ 
         </if>
       </if>
     </foreach>
@@ -633,7 +633,7 @@
       <if test="involvedUser != null">
         and
         (
-          exists(select LINK.USER_ID_ from ${prefix}ACT_HI_IDENTITYLINK LINK where USER_ID_ = #{involvedUser} and LINK.TASK_ID_ = RES.ID_)
+          exists(select LINK.USER_ID_ from ${prefix}AF_HI_IDENTITYLINK LINK where USER_ID_ = #{involvedUser} and LINK.TASK_ID_ = RES.ID_)
           or RES.ASSIGNEE_ = #{involvedUser}
           or RES.OWNER_ = #{involvedUser}
         )
@@ -940,7 +940,7 @@
           <if test="orQueryObject.involvedUser != null">
             or
             (
-              exists(select LINK.USER_ID_ from ${prefix}ACT_HI_IDENTITYLINK LINK where USER_ID_ = #{orQueryObject.involvedUser} and LINK.TASK_ID_ = RES.ID_)
+              exists(select LINK.USER_ID_ from ${prefix}AF_HI_IDENTITYLINK LINK where USER_ID_ = #{orQueryObject.involvedUser} and LINK.TASK_ID_ = RES.ID_)
               or RES.ASSIGNEE_ = #{orQueryObject.involvedUser}
               or RES.OWNER_ = #{orQueryObject.involvedUser}
             )

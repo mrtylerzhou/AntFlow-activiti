@@ -7,12 +7,12 @@
   <!-- DEPLOYMENT INSERT -->
   
   <insert id="insertDeployment" parameterType="org.activiti.engine.impl.persistence.entity.DeploymentEntity">
-    insert into ${prefix}ACT_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_)
+    insert into ${prefix}AF_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_)
     values(#{id, jdbcType=VARCHAR}, #{name, jdbcType=VARCHAR}, #{category, jdbcType=VARCHAR}, #{tenantId, jdbcType=VARCHAR}, #{deploymentTime, jdbcType=TIMESTAMP})
   </insert>
 
   <insert id="bulkInsertDeployment" parameterType="java.util.List">
-    insert into ${prefix}ACT_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_)
+    insert into ${prefix}AF_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_)
     values
       <foreach collection="list" item="deployment" index="index" separator=",">
         (#{deployment.id, jdbcType=VARCHAR},
@@ -26,7 +26,7 @@
   <insert id="bulkInsertDeployment_oracle" parameterType="java.util.List">
     INSERT ALL 
       <foreach collection="list" item="deployment" index="index">
-        into ${prefix}ACT_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_) VALUES 
+        into ${prefix}AF_RE_DEPLOYMENT(ID_, NAME_, CATEGORY_, TENANT_ID_, DEPLOY_TIME_) VALUES 
           (#{deployment.id, jdbcType=VARCHAR},
            #{deployment.name, jdbcType=VARCHAR},
            #{deployment.category, jdbcType=VARCHAR},
@@ -39,7 +39,7 @@
   <!-- DEPLOYMENT UPDATE -->
   
   <update id="updateDeployment" parameterType="org.activiti.engine.impl.persistence.entity.DeploymentEntity">
-    update ${prefix}ACT_RE_DEPLOYMENT set
+    update ${prefix}AF_RE_DEPLOYMENT set
       CATEGORY_ = #{category, jdbcType=VARCHAR},
       TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
     where ID_ = #{id, jdbcType=VARCHAR}
@@ -48,7 +48,7 @@
   <!-- DEPLOYMENT DELETE -->
   
   <delete id="deleteDeployment" parameterType="string">
-    delete from ${prefix}ACT_RE_DEPLOYMENT where ID_ = #{id}
+    delete from ${prefix}AF_RE_DEPLOYMENT where ID_ = #{id}
   </delete>
 
   <!-- DEPLOYMENT RESULTMAP -->
@@ -77,9 +77,9 @@
   </select>
   
   <sql id="selectDeploymentsByQueryCriteriaSql">  
-    from ${prefix}ACT_RE_DEPLOYMENT RES
+    from ${prefix}AF_RE_DEPLOYMENT RES
     <if test="processDefinitionKey != null or processDefinitionKeyLike != null">
-    	inner join ${prefix}ACT_RE_PROCDEF PROCDEF on RES.ID_ = PROCDEF.DEPLOYMENT_ID_
+    	inner join ${prefix}AF_RE_PROCDEF PROCDEF on RES.ID_ = PROCDEF.DEPLOYMENT_ID_
     </if>
     <where>
       <if test="deploymentId != null">
@@ -116,11 +116,11 @@
   </sql>
     
   <select id="selectDeploymentsByName" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="deploymentResultMap">
-    select * from ${prefix}ACT_RE_DEPLOYMENT D where NAME_=#{parameter} order by D.DEPLOY_TIME_ desc
+    select * from ${prefix}AF_RE_DEPLOYMENT D where NAME_=#{parameter} order by D.DEPLOY_TIME_ desc
   </select>
   
   <select id="selectDeploymentById" parameterType="string" resultMap="deploymentResultMap">
-    select * from ${prefix}ACT_RE_DEPLOYMENT where ID_ = #{id}
+    select * from ${prefix}AF_RE_DEPLOYMENT where ID_ = #{id}
   </select>
 
   <!-- mysql specific -->

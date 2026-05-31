@@ -21,7 +21,7 @@
   <!-- HISTORIC PROCESS VARIABLE INSERT -->
   
   <insert id="insertHistoricVariableInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity">
-    insert into ${prefix}ACT_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_, VAR_TYPE_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_, CREATE_TIME_, LAST_UPDATED_TIME_)
+    insert into ${prefix}AF_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_, VAR_TYPE_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_, CREATE_TIME_, LAST_UPDATED_TIME_)
     values (
       #{id, jdbcType=VARCHAR},
       #{processInstanceId, jdbcType=VARCHAR},
@@ -41,7 +41,7 @@
   </insert>
 
   <insert id="bulkInsertHistoricVariableInstance" parameterType="java.util.List">
-    insert into ${prefix}ACT_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_, VAR_TYPE_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_, CREATE_TIME_, LAST_UPDATED_TIME_)
+    insert into ${prefix}AF_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_, VAR_TYPE_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_, CREATE_TIME_, LAST_UPDATED_TIME_)
     values 
       <foreach collection="list" item="historicVariable" index="index" separator=",">
         (#{historicVariable.id, jdbcType=VARCHAR},
@@ -64,7 +64,7 @@
   <insert id="bulkInsertHistoricVariableInstance_oracle" parameterType="java.util.List">
     INSERT ALL 
       <foreach collection="list" item="historicVariable" index="index">
-      INTO ${prefix}ACT_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_,
+      INTO ${prefix}AF_HI_VARINST (ID_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_, NAME_, REV_,
       VAR_TYPE_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_, CREATE_TIME_, LAST_UPDATED_TIME_) VALUES 
           (#{historicVariable.id, jdbcType=VARCHAR},
            #{historicVariable.processInstanceId, jdbcType=VARCHAR},
@@ -87,7 +87,7 @@
   <!-- HISTORIC PROCESS VARIABLE UPDATE -->
   
   <update id="updateHistoricVariableInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity">
-    update ${prefix}ACT_HI_VARINST set
+    update ${prefix}AF_HI_VARINST set
       EXECUTION_ID_ = #{executionId, jdbcType=VARCHAR},
       REV_ = #{revisionNext, jdbcType=INTEGER},
       BYTEARRAY_ID_ = #{byteArrayRef, typeHandler=ByteArrayRefTypeHandler},
@@ -104,11 +104,11 @@
   <!-- HISTORIC PROCESS VARIABLE DELETE -->
 
   <delete id="deleteHistoricVariableInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity">
-    delete from ${prefix}ACT_HI_VARINST where ID_ = #{id} and REV_ = #{revision}
+    delete from ${prefix}AF_HI_VARINST where ID_ = #{id} and REV_ = #{revision}
   </delete>
   
   <delete id="bulkDeleteHistoricVariableInstance" parameterType="java.util.Collection">
-    delete from ${prefix}ACT_HI_VARINST where 
+    delete from ${prefix}AF_HI_VARINST where 
     <foreach item="variable" collection="list" index="index" separator=" or ">
         ID_ = #{variable.id, jdbcType=VARCHAR}
     </foreach>
@@ -148,7 +148,7 @@
   </select>
   
   <sql id="selectHistoricVariableInstanceByQueryCriteriaSql">
-    from ${prefix}ACT_HI_VARINST RES
+    from ${prefix}AF_HI_VARINST RES
     <where>
       <if test="id != null">
         RES.ID_ = #{id}
@@ -249,7 +249,7 @@
   </sql>
   
   <select id="selectHistoricVariableInstanceByVariableInstanceId" resultMap="historicProcessVariableResultMap">
-    select * from ${prefix}ACT_HI_VARINST where ID_ = #{variableInstanceId}
+    select * from ${prefix}AF_HI_VARINST where ID_ = #{variableInstanceId}
   </select>
 
   <select id="selectHistoricVariableInstanceByNativeQuery" parameterType="java.util.Map" resultMap="historicProcessVariableResultMap">

@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@TableName("ACT_HI_TASKINST")
+@TableName("AF_HI_TASKINST")
 public class ActHiTaskinst {
 
 

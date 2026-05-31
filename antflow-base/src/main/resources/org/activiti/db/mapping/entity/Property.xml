@@ -7,7 +7,7 @@
   <!-- PROPERTY INSERT -->
   
   <insert id="insertProperty" parameterType="org.activiti.engine.impl.persistence.entity.PropertyEntity">
-      insert into ${prefix}ACT_GE_PROPERTY (
+      insert into ${prefix}AF_GE_PROPERTY (
         NAME_,
         VALUE_,
         REV_
@@ -19,7 +19,7 @@
   </insert>
 
   <insert id="bulkInsertProperty" parameterType="java.util.List">
-      INSERT INTO ${prefix}ACT_GE_PROPERTY (NAME_, VALUE_, REV_) VALUES 
+      INSERT INTO ${prefix}AF_GE_PROPERTY (NAME_, VALUE_, REV_) VALUES 
       <foreach collection="list" item="property" index="index" separator=","> 
         (#{property.name ,jdbcType=VARCHAR},
          #{property.value, jdbcType=VARCHAR},
@@ -30,7 +30,7 @@
   <insert id="bulkInsertProperty_oracle" parameterType="java.util.List">
     INSERT ALL 
     <foreach collection="list" item="property" index="index">
-      INTO ${prefix}ACT_GE_PROPERTY (NAME_, VALUE_, REV_) VALUES
+      INTO ${prefix}AF_GE_PROPERTY (NAME_, VALUE_, REV_) VALUES
       (#{property.name ,jdbcType=VARCHAR},
        #{property.value, jdbcType=VARCHAR},
        1)
@@ -41,7 +41,7 @@
   <!-- PROPERTY UPDATE -->
   
   <update id="updateProperty" parameterType="org.activiti.engine.impl.persistence.entity.PropertyEntity">
-    update ${prefix}ACT_GE_PROPERTY
+    update ${prefix}AF_GE_PROPERTY
     <set>
       REV_ = #{revisionNext, jdbcType=INTEGER},
       VALUE_ = #{value, jdbcType=VARCHAR}
@@ -53,7 +53,7 @@
   <!-- PROPERTY DELETE -->
   
   <delete id="deleteProperty" parameterType="org.activiti.engine.impl.persistence.entity.PropertyEntity">
-    delete from ${prefix}ACT_GE_PROPERTY where NAME_ = #{propertyName} and REV_ = #{revision}
+    delete from ${prefix}AF_GE_PROPERTY where NAME_ = #{propertyName} and REV_ = #{revision}
   </delete>
 
 
@@ -66,15 +66,15 @@
   </resultMap>
   
   <select id="selectDbSchemaVersion" resultType="string">
-    select VALUE_ from ${prefix}ACT_GE_PROPERTY where NAME_ = 'schema.version'
+    select VALUE_ from ${prefix}AF_GE_PROPERTY where NAME_ = 'schema.version'
   </select>
 
   <select id="selectProperty" parameterType="string" resultMap="propertyResultMap">
-    select * from ${prefix}ACT_GE_PROPERTY where NAME_ = #{name}
+    select * from ${prefix}AF_GE_PROPERTY where NAME_ = #{name}
   </select>
   
   <select id="selectProperties" resultMap="propertyResultMap">
-    select * from ${prefix}ACT_GE_PROPERTY 
+    select * from ${prefix}AF_GE_PROPERTY 
   </select>
   
 </mapper>

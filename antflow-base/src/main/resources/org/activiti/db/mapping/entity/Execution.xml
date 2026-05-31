@@ -7,7 +7,7 @@
   <!-- EXECUTION INSERT -->
 
   <insert id="insertExecution" parameterType="org.activiti.engine.impl.persistence.entity.ExecutionEntity">
-    insert into ${prefix}ACT_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_, IS_ACTIVE_, IS_CONCURRENT_, IS_SCOPE_,IS_EVENT_SCOPE_, PARENT_ID_, SUPER_EXEC_, SUSPENSION_STATE_, CACHED_ENT_STATE_, TENANT_ID_, NAME_)
+    insert into ${prefix}AF_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_, IS_ACTIVE_, IS_CONCURRENT_, IS_SCOPE_,IS_EVENT_SCOPE_, PARENT_ID_, SUPER_EXEC_, SUSPENSION_STATE_, CACHED_ENT_STATE_, TENANT_ID_, NAME_)
     values (
       #{id ,jdbcType=VARCHAR},
       1,
@@ -29,7 +29,7 @@
   </insert>
 
   <insert id="bulkInsertExecution" parameterType="java.util.List">
-    insert into ${prefix}ACT_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_, IS_ACTIVE_, IS_CONCURRENT_, IS_SCOPE_,IS_EVENT_SCOPE_, PARENT_ID_, SUPER_EXEC_, SUSPENSION_STATE_, CACHED_ENT_STATE_, TENANT_ID_, NAME_)
+    insert into ${prefix}AF_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_, IS_ACTIVE_, IS_CONCURRENT_, IS_SCOPE_,IS_EVENT_SCOPE_, PARENT_ID_, SUPER_EXEC_, SUSPENSION_STATE_, CACHED_ENT_STATE_, TENANT_ID_, NAME_)
     values 
       <foreach collection="list" item="execution" index="index" separator=",">
         (#{execution.id ,jdbcType=VARCHAR},
@@ -54,7 +54,7 @@
   <insert id="bulkInsertExecution_oracle" parameterType="java.util.List">
     INSERT ALL 
       <foreach collection="list" item="execution" index="index">
-        into ${prefix}ACT_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_,
+        into ${prefix}AF_RU_EXECUTION (ID_, REV_, PROC_INST_ID_, BUSINESS_KEY_, PROC_DEF_ID_, ACT_ID_,
         IS_ACTIVE_, IS_CONCURRENT_, IS_SCOPE_,IS_EVENT_SCOPE_, PARENT_ID_, SUPER_EXEC_, SUSPENSION_STATE_, CACHED_ENT_STATE_, TENANT_ID_, NAME_) VALUES 
             (#{execution.id ,jdbcType=VARCHAR},
              1,
@@ -79,7 +79,7 @@
   <!-- EXECUTION UPDATE -->
   
   <update id="updateExecution" parameterType="org.activiti.engine.impl.persistence.entity.ExecutionEntity">
-    update ${prefix}ACT_RU_EXECUTION set
+    update ${prefix}AF_RU_EXECUTION set
       REV_ = #{revisionNext, jdbcType=INTEGER},
       BUSINESS_KEY_ = #{businessKey, jdbcType=VARCHAR},
       PROC_DEF_ID_ = #{processDefinitionId, jdbcType=VARCHAR},
@@ -98,13 +98,13 @@
   </update>
   
   <update id="updateExecutionTenantIdForDeployment" parameterType="java.util.Map">
-    update ${prefix}ACT_RU_EXECUTION set
+    update ${prefix}AF_RU_EXECUTION set
       TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
     where
       ID_ in (
-        SELECT E.ID_ from ${prefix}ACT_RU_EXECUTION E
-        inner join ${prefix}ACT_RE_PROCDEF P on E.PROC_DEF_ID_  = P.ID_
-        inner join ${prefix}ACT_RE_DEPLOYMENT D on P.DEPLOYMENT_ID_ = D.ID_ 
+        SELECT E.ID_ from ${prefix}AF_RU_EXECUTION E
+        inner join ${prefix}AF_RE_PROCDEF P on E.PROC_DEF_ID_  = P.ID_
+        inner join ${prefix}AF_RE_DEPLOYMENT D on P.DEPLOYMENT_ID_ = D.ID_ 
         where D.ID_ = #{deploymentId, jdbcType=VARCHAR}
       ) 
   </update>
@@ -112,7 +112,7 @@
   <!-- See http://stackoverflow.com/questions/4429319/you-cant-specify-target-table-for-update-in-from-clause
        Tested this on MySQL 5.6: does NOT use a temporary table (so good, performance0 -->
   <update id="updateExecutionTenantIdForDeployment_mysql" parameterType="java.util.Map">
-    update ${prefix}ACT_RU_EXECUTION set
+    update ${prefix}AF_RU_EXECUTION set
       TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
     where
       ID_ in (
@@ -120,9 +120,9 @@
           SELECT tempExecution.tempId
           FROM (
                 SELECT E.ID_ as tempId
-                FROM  ${prefix}ACT_RU_EXECUTION E
-                inner join ${prefix}ACT_RE_PROCDEF P on E.PROC_DEF_ID_  = P.ID_
-                inner join ${prefix}ACT_RE_DEPLOYMENT D on P.DEPLOYMENT_ID_ = D.ID_ 
+                FROM  ${prefix}AF_RU_EXECUTION E
+                inner join ${prefix}AF_RE_PROCDEF P on E.PROC_DEF_ID_  = P.ID_
+                inner join ${prefix}AF_RE_DEPLOYMENT D on P.DEPLOYMENT_ID_ = D.ID_ 
                 where D.ID_ = #{deploymentId, jdbcType=VARCHAR}
                 
         ) AS tempExecution 
@@ -131,7 +131,7 @@
   </update>
   
   <update id="updateProcessInstanceLockTime" parameterType="java.util.Map">
-    update ${prefix}ACT_RU_EXECUTION 
+    update ${prefix}AF_RU_EXECUTION 
     set
       LOCK_TIME_ = #{lockTime, jdbcType=TIMESTAMP}
     where ID_ = #{id}
@@ -139,7 +139,7 @@
   </update>
   
   <update id="clearProcessInstanceLockTime" parameterType="java.util.Map">
-    update ${prefix}ACT_RU_EXECUTION 
+    update ${prefix}AF_RU_EXECUTION 
     set
       LOCK_TIME_ = null
     where ID_ = #{id}
@@ -148,7 +148,7 @@
   <!-- EXECUTION DELETE -->
   
   <delete id="deleteExecution" parameterType="org.activiti.engine.impl.persistence.entity.ExecutionEntity">
-    delete from ${prefix}ACT_RU_EXECUTION where ID_ = #{id} and REV_ = #{revision}
+    delete from ${prefix}AF_RU_EXECUTION where ID_ = #{id} and REV_ = #{revision}
   </delete>
   
   <!-- EXECUTION RESULTMAP -->
@@ -273,22 +273,22 @@
   <!-- EXECUTION SELECT -->
   
   <select id="selectExecution" parameterType="string" resultMap="executionResultMap">
-    select * from ${prefix}ACT_RU_EXECUTION where ID_ = #{id}
+    select * from ${prefix}AF_RU_EXECUTION where ID_ = #{id}
   </select>
   
   <select id="selectExecutionsByParentExecutionId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="executionResultMap">
-    select * from ${prefix}ACT_RU_EXECUTION
+    select * from ${prefix}AF_RU_EXECUTION
     where PARENT_ID_ = #{parameter}
   </select>
   
   <select id="selectExecutionsByProcessInstanceId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="executionResultMap">
-    select * from ${prefix}ACT_RU_EXECUTION
+    select * from ${prefix}AF_RU_EXECUTION
     where PROC_INST_ID_ = #{parameter}
   </select>
   
   <select id="selectProcessInstanceIdsByProcessDefinitionId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultType="string">
     select ID_
-    from ${prefix}ACT_RU_EXECUTION
+    from ${prefix}AF_RU_EXECUTION
     where PROC_DEF_ID_ = #{parameter} and PARENT_ID_ is null
   </select>
   
@@ -320,8 +320,8 @@
   </select>
   
   <sql id="selectExecutionsByQueryCriteriaSql">  
-    from ${prefix}ACT_RU_EXECUTION RES
-    inner join ${prefix}ACT_RE_PROCDEF P on RES.PROC_DEF_ID_ = P.ID_
+    from ${prefix}AF_RU_EXECUTION RES
+    inner join ${prefix}AF_RE_PROCDEF P on RES.PROC_DEF_ID_ = P.ID_
     <include refid="commonSelectExecutionsByQueryCriteriaSql"/>
   </sql>
   
@@ -371,52 +371,52 @@
   </select>
   
   <sql id="selectProcessInstanceWithVariablesByQueryCriteriaSql">  
-    from ${prefix}ACT_RU_EXECUTION RES
-    inner join ${prefix}ACT_RE_PROCDEF P on RES.PROC_DEF_ID_ = P.ID_
+    from ${prefix}AF_RU_EXECUTION RES
+    inner join ${prefix}AF_RE_PROCDEF P on RES.PROC_DEF_ID_ = P.ID_
     <if test="includeProcessVariables">
-      left outer join ${prefix}ACT_RU_VARIABLE VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
+      left outer join ${prefix}AF_RU_VARIABLE VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
     </if>
     <include refid="commonSelectExecutionsByQueryCriteriaSql"/>
   </sql>
   
   <sql id="commonSelectExecutionsByQueryCriteriaSql">
     <if test="involvedGroups != null">
-      inner join ${prefix}ACT_RU_IDENTITYLINK I on I.PROC_INST_ID_ = RES.ID_
+      inner join ${prefix}AF_RU_IDENTITYLINK I on I.PROC_INST_ID_ = RES.ID_
     </if>
     <foreach collection="queryVariableValues" index="index" item="queryVariableValue">
       <choose>
         <when test="queryVariableValue.local">
-          inner join ${prefix}ACT_RU_VARIABLE A${index} on RES.ID_ = A${index}.EXECUTION_ID_
+          inner join ${prefix}AF_RU_VARIABLE A${index} on RES.ID_ = A${index}.EXECUTION_ID_
         </when>
         <otherwise>
-          inner join ${prefix}ACT_RU_VARIABLE A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_
+          inner join ${prefix}AF_RU_VARIABLE A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_
         </otherwise>
       </choose> 
     </foreach>
     <foreach collection="orQueryObjects" index="orIndex" item="orQueryObject">
       <if test="orQueryObject.involvedGroups != null">
-        left join ${prefix}ACT_RU_IDENTITYLINK I_OR${orIndex} on I_OR${orIndex}.PROC_INST_ID_ = RES.ID_
+        left join ${prefix}AF_RU_IDENTITYLINK I_OR${orIndex} on I_OR${orIndex}.PROC_INST_ID_ = RES.ID_
       </if>
       <if test="orQueryObject.processDefinitionId != null || orQueryObject.processDefinitionKey != null || orQueryObject.processDefinitionVersion != null || orQueryObject.processDefinitionCategory != null || orQueryObject.processDefinitionName != null || (orQueryObject.processDefinitionIds != null &amp;&amp; !orQueryObject.processDefinitionIds.isEmpty()) || (orQueryObject.processDefinitionKeys != null &amp;&amp; !orQueryObject.processDefinitionKeys.isEmpty())">
-        inner join ${prefix}ACT_RE_PROCDEF P_OR${orIndex} on RES.PROC_DEF_ID_ = P_OR${orIndex}.ID_
+        inner join ${prefix}AF_RE_PROCDEF P_OR${orIndex} on RES.PROC_DEF_ID_ = P_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.queryVariableValues != null &amp;&amp; orQueryObject.queryVariableValues.size() &gt; 0">
-        left outer join ${prefix}ACT_RU_VARIABLE A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_
+        left outer join ${prefix}AF_RU_VARIABLE A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_
       </if>
       <if test="orQueryObject.deploymentId != null || (orQueryObject.deploymentIds != null &amp;&amp; orQueryObject.deploymentIds.size() &gt; 0)">
-        left outer join ${prefix}ACT_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
+        left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
       </if>
     </foreach>
     <if test="eventSubscriptions != null">
       <foreach collection="eventSubscriptions" index="index" item="eventSubscriptionValue">
-    	inner join ${prefix}ACT_RU_EVENT_SUBSCR EVT${index} on RES.ID_ = EVT${index}.EXECUTION_ID_
+    	inner join ${prefix}AF_RU_EVENT_SUBSCR EVT${index} on RES.ID_ = EVT${index}.EXECUTION_ID_
 	   </foreach>
     </if>
     <if test="businessKey != null and includeChildExecutionsWithBusinessKeyQuery">
-        inner join ${prefix}ACT_RU_EXECUTION INST on RES.PROC_INST_ID_ = INST.ID_
+        inner join ${prefix}AF_RU_EXECUTION INST on RES.PROC_INST_ID_ = INST.ID_
     </if>
     <if test="deploymentId != null || (deploymentIds != null &amp;&amp; deploymentIds.size() &gt; 0)">
-      left outer join ${prefix}ACT_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
+      left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
     </if>
     <where>
       <if test="onlyProcessInstances">
@@ -486,10 +486,10 @@
       <if test="superProcessInstanceId != null">
         <!-- A sub process instance is stored under a certain *execution*, potentially nested.
              A sub process instance is NOT stored under the process instanc, hence the following: -->
-        and RES.SUPER_EXEC_ IN (select ID_ from ${prefix}ACT_RU_EXECUTION where PROC_INST_ID_ = #{superProcessInstanceId})
+        and RES.SUPER_EXEC_ IN (select ID_ from ${prefix}AF_RU_EXECUTION where PROC_INST_ID_ = #{superProcessInstanceId})
       </if>
       <if test="subProcessInstanceId != null">
-        and RES.ID_ = (select PROC_INST_ID_ from ${prefix}ACT_RU_EXECUTION where ID_ = (select SUPER_EXEC_ from ${prefix}ACT_RU_EXECUTION where ID_ = #{subProcessInstanceId}))
+        and RES.ID_ = (select PROC_INST_ID_ from ${prefix}AF_RU_EXECUTION where ID_ = (select SUPER_EXEC_ from ${prefix}AF_RU_EXECUTION where ID_ = #{subProcessInstanceId}))
       </if>
       <if test="excludeSubprocesses">
         and RES.SUPER_EXEC_ is null
@@ -521,7 +521,7 @@
         and lower(RES.NAME_) like #{nameLikeIgnoreCase}${wildcardEscapeClause}
       </if>
       <if test="involvedUser != null">
-        and EXISTS(select ID_ from ${prefix}ACT_RU_IDENTITYLINK I where I.PROC_INST_ID_ = RES.ID_ and I.USER_ID_ = #{involvedUser})
+        and EXISTS(select ID_ from ${prefix}AF_RU_IDENTITYLINK I where I.PROC_INST_ID_ = RES.ID_ and I.USER_ID_ = #{involvedUser})
       </if>
       <if test="involvedGroups != null &amp;&amp; involvedGroups.size() &gt; 0">
         and
@@ -669,10 +669,10 @@
           <if test="orQueryObject.superProcessInstanceId != null">
             <!-- A sub process instance is stored under a certain *execution*, potentially nested.
                  A sub process instance is NOT stored under the process instanc, hence the following: -->
-            or RES.SUPER_EXEC_ IN (select ID_ from ${prefix}ACT_RU_EXECUTION where PROC_INST_ID_ = #{orQueryObject.superProcessInstanceId})
+            or RES.SUPER_EXEC_ IN (select ID_ from ${prefix}AF_RU_EXECUTION where PROC_INST_ID_ = #{orQueryObject.superProcessInstanceId})
           </if>
           <if test="orQueryObject.subProcessInstanceId != null">
-            or RES.ID_ = (select PROC_INST_ID_ from ${prefix}ACT_RU_EXECUTION where ID_ = (select SUPER_EXEC_ from ${prefix}ACT_RU_EXECUTION where ID_ = #{orQueryObject.subProcessInstanceId}))
+            or RES.ID_ = (select PROC_INST_ID_ from ${prefix}AF_RU_EXECUTION where ID_ = (select SUPER_EXEC_ from ${prefix}AF_RU_EXECUTION where ID_ = #{orQueryObject.subProcessInstanceId}))
           </if>
           <if test="orQueryObject.excludeSubprocesses">
             or RES.SUPER_EXEC_ is null
@@ -704,7 +704,7 @@
             or lower(RES.NAME_) like #{orQueryObject.nameLikeIgnoreCase}${wildcardEscapeClause}
           </if>
           <if test="orQueryObject.involvedUser != null">
-            or EXISTS(select ID_ from ${prefix}ACT_RU_IDENTITYLINK I where I.PROC_INST_ID_ = RES.ID_ and I.USER_ID_ = #{orQueryObject.involvedUser})
+            or EXISTS(select ID_ from ${prefix}AF_RU_IDENTITYLINK I where I.PROC_INST_ID_ = RES.ID_ and I.USER_ID_ = #{orQueryObject.involvedUser})
           </if>
           <if test="orQueryObject.involvedGroups != null &amp;&amp; orQueryObject.involvedGroups.size() &gt; 0">
             or (
@@ -804,7 +804,7 @@
   
   <select id="selectSubProcessInstanceBySuperExecutionId" parameterType="string" resultMap="executionResultMap">
     select *
-    from ${prefix}ACT_RU_EXECUTION
+    from ${prefix}AF_RU_EXECUTION
     where SUPER_EXEC_ = #{parameter}
   </select>
   
