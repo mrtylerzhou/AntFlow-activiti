@@ -49,17 +49,26 @@
 
     <select id="getEntrustListNew" parameterType="map" resultType="org.openoa.base.vo.Entrust">
         select t.id            as id,
-               s.`name`        as `name`,
+               s.`NAME_`       as `name`,
                t.receiver_id   as receiverId,
-               s.code          as powerId,
+               s.processKey    as powerId,
                t.begin_time    as beginTime,
                t.end_time      as endTime,
                t.receiver_name as receiverName
-        from t_process_entrust as s
+        from (select substring_index(f.ID_, ":", 1) as processKey,
+                     f.NAME_
+              from ACT_RE_PROCDEF f,
+                   (SELECT max(VERSION_) AS max_version, key_ AS key_
+                    FROM ACT_RE_PROCDEF
+                    WHERE key_ IN (SELECT key_ FROM ACT_RE_PROCDEF)
+                    GROUP BY key_) a
+              where VERSION_ = a.max_version
+                AND f.key_ = a.key_
+                AND f.KEY_ NOT IN ('process201804161617')
+             ) s
                  left join t_user_entrust t
-                           on s.code = substring_index(t.power_id, ":", 1) and t.sender = #{userId}
-        where s.is_del = 0
-        group by s.code
+                           on s.processKey = substring_index(t.power_id, ":", 1) and t.sender = #{userId}
+        group by s.processKey
     </select>
 
     <select id="getEntrustPageList" parameterType="map" resultType="org.openoa.base.vo.Entrust">
