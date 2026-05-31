@@ -21,7 +21,7 @@
   <!-- HISTORIC PROCESS INSTANCE INSERT -->
   
   <insert id="insertHistoricProcessInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity">
-      insert into ${prefix}AF_HI_PROCINST (
+      insert into AF_HI_PROCINST (
         ID_,
         PROC_INST_ID_,
         BUSINESS_KEY_,
@@ -55,7 +55,7 @@
   </insert>
   
   <insert id="bulkInsertHistoricProcessInstance" parameterType="java.util.List">
-      insert into ${prefix}AF_HI_PROCINST (
+      insert into AF_HI_PROCINST (
         ID_,
         PROC_INST_ID_,
         BUSINESS_KEY_,
@@ -92,7 +92,7 @@
   <insert id="bulkInsertHistoricProcessInstance_oracle" parameterType="java.util.List">
       INSERT ALL 
         <foreach collection="list" item="historicProcessInstance" index="index">
-          INTO ${prefix}AF_HI_PROCINST (
+          INTO AF_HI_PROCINST (
             ID_,
             PROC_INST_ID_,
             BUSINESS_KEY_,
@@ -129,7 +129,7 @@
   <!-- HISTORIC PROCESS INSTANCE UPDATE -->
   
   <update id="updateHistoricProcessInstance" parameterType="org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity">
-    update ${prefix}AF_HI_PROCINST set
+    update AF_HI_PROCINST set
       PROC_DEF_ID_ = #{processDefinitionId, jdbcType=VARCHAR},
       BUSINESS_KEY_ = #{businessKey, jdbcType=VARCHAR},
       START_TIME_ = #{startTime, jdbcType=TIMESTAMP},
@@ -144,11 +144,11 @@
   <!-- HISTORIC PROCESS INSTANCE DELETE -->
   
   <delete id="deleteHistoricProcessInstance">
-    delete from ${prefix}AF_HI_PROCINST where PROC_INST_ID_ = #{processInstanceId}
+    delete from AF_HI_PROCINST where PROC_INST_ID_ = #{processInstanceId}
   </delete>
   
   <delete id="bulkDeleteHistoricProcessInstance" parameterType="java.util.Collection">
-    delete from ${prefix}AF_HI_PROCINST where
+    delete from AF_HI_PROCINST where
      <foreach item="procInst" collection="list" index="index" separator=" or ">
         ID_ = #{procInst.id, jdbcType=VARCHAR}
     </foreach>
@@ -215,12 +215,12 @@
   <!-- HISTORIC PROCESS INSTANCE SELECT -->
   
   <select id="selectHistoricProcessInstance" resultMap="historicProcessInstanceResultMap">
-    select * from ${prefix}AF_HI_PROCINST where PROC_INST_ID_ = #{processInstanceId}
+    select * from AF_HI_PROCINST where PROC_INST_ID_ = #{processInstanceId}
   </select>
 
   <select id="selectHistoricProcessInstanceIdsByProcessDefinitionId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultType="string">
     select ID_
-    from ${prefix}AF_HI_PROCINST 
+    from AF_HI_PROCINST 
     where PROC_DEF_ID_ = #{parameter}
   </select>
   
@@ -239,8 +239,8 @@
   </select>
   
   <sql id="selectHistoricProcessInstancesByQueryCriteriaSql">  
-    from ${prefix}AF_HI_PROCINST RES
-    left outer join ${prefix}AF_RE_PROCDEF DEF on RES.PROC_DEF_ID_ = DEF.ID_
+    from AF_HI_PROCINST RES
+    left outer join AF_RE_PROCDEF DEF on RES.PROC_DEF_ID_ = DEF.ID_
     <include refid="commonSelectHistoricProcessInstancesByQueryCriteriaSql"/>
   </sql>
   
@@ -336,37 +336,37 @@
   </select>
   
   <sql id="selectHistoricProcessInstancesWithVariablesByQueryCriteriaSql">  
-    from ${prefix}AF_HI_PROCINST RES
-    left outer join ${prefix}AF_RE_PROCDEF DEF on RES.PROC_DEF_ID_ = DEF.ID_
+    from AF_HI_PROCINST RES
+    left outer join AF_RE_PROCDEF DEF on RES.PROC_DEF_ID_ = DEF.ID_
     <if test="includeProcessVariables">
-      left outer join ${prefix}AF_HI_VARINST VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
+      left outer join AF_HI_VARINST VAR ON RES.PROC_INST_ID_ = VAR.EXECUTION_ID_ and VAR.TASK_ID_ is null
     </if>
     <include refid="commonSelectHistoricProcessInstancesByQueryCriteriaSql"/>
   </sql>
   
   <sql id="commonSelectHistoricProcessInstancesByQueryCriteriaSql">
     <if test="involvedGroups != null">
-      inner join ${prefix}AF_HI_IDENTITYLINK I on I.PROC_INST_ID_ = RES.ID_
+      inner join AF_HI_IDENTITYLINK I on I.PROC_INST_ID_ = RES.ID_
     </if>
     <foreach collection="queryVariableValues" index="index" item="queryVariableValue">
-      inner join ${prefix}AF_HI_VARINST  A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_
+      inner join AF_HI_VARINST  A${index} on RES.PROC_INST_ID_ = A${index}.PROC_INST_ID_
     </foreach>
     <foreach collection="orQueryObjects" index="orIndex" item="orQueryObject">
       <if test="orQueryObject.involvedGroups != null">
-        left join ${prefix}AF_HI_IDENTITYLINK I_OR${orIndex} on I_OR${orIndex}.PROC_INST_ID_ = RES.ID_
+        left join AF_HI_IDENTITYLINK I_OR${orIndex} on I_OR${orIndex}.PROC_INST_ID_ = RES.ID_
       </if>
       <if test="orQueryObject.processKeyNotIn != null || orQueryObject.processDefinitionKey != null || orQueryObject.processDefinitionCategory != null || orQueryObject.processDefinitionName != null || orQueryObject.processDefinitionVersion != null || (orQueryObject.processDefinitionKeyIn != null &amp;&amp; orQueryObject.processDefinitionKeyIn.size() &gt; 0)">
-        inner join ${prefix}AF_RE_PROCDEF DEF_OR${orIndex} on RES.PROC_DEF_ID_ = DEF_OR${orIndex}.ID_
+        inner join AF_RE_PROCDEF DEF_OR${orIndex} on RES.PROC_DEF_ID_ = DEF_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.deploymentId != null || (orQueryObject.deploymentIds != null &amp;&amp; orQueryObject.deploymentIds.size() &gt; 0)">
-        left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
+        left outer join AF_RE_PROCDEF DEPLOY_P_OR${orIndex} ON RES.PROC_DEF_ID_ = DEPLOY_P_OR${orIndex}.ID_
       </if>
       <if test="orQueryObject.queryVariableValues != null &amp;&amp; orQueryObject.queryVariableValues.size() &gt; 0">
-        left outer join ${prefix}AF_HI_VARINST A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_
+        left outer join AF_HI_VARINST A_OR${orIndex} on RES.PROC_INST_ID_ = A_OR${orIndex}.PROC_INST_ID_
       </if>
     </foreach>
     <if test="deploymentId != null || (deploymentIds != null &amp;&amp; deploymentIds.size() &gt; 0)">
-      left outer join ${prefix}AF_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
+      left outer join AF_RE_PROCDEF DEPLOY_P ON RES.PROC_DEF_ID_ = DEPLOY_P.ID_
     </if>
     <where>
       <if test="processInstanceId != null">
@@ -444,7 +444,7 @@
       </if>
       <if test="involvedUser != null">
         and (
-          exists(select LINK.USER_ID_ from ${prefix}AF_HI_IDENTITYLINK LINK where USER_ID_ = #{involvedUser} and LINK.PROC_INST_ID_ = RES.ID_)
+          exists(select LINK.USER_ID_ from AF_HI_IDENTITYLINK LINK where USER_ID_ = #{involvedUser} and LINK.PROC_INST_ID_ = RES.ID_)
         )
       </if>
       <if test="involvedGroups != null &amp;&amp; involvedGroups.size() &gt; 0">
@@ -626,7 +626,7 @@
           </if>
           <if test="orQueryObject.involvedUser != null">
             or (
-              exists(select LINK.USER_ID_ from ${prefix}AF_HI_IDENTITYLINK LINK where USER_ID_ = #{orQueryObject.involvedUser} and LINK.PROC_INST_ID_ = RES.ID_)
+              exists(select LINK.USER_ID_ from AF_HI_IDENTITYLINK LINK where USER_ID_ = #{orQueryObject.involvedUser} and LINK.PROC_INST_ID_ = RES.ID_)
             )
           </if>
           <if test="orQueryObject.involvedGroups != null &amp;&amp; orQueryObject.involvedGroups.size() &gt; 0">

@@ -657,7 +657,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
         Environment environment = new Environment("default", transactionFactory, dataSource);
         Reader reader = new InputStreamReader(inputStream);
         Properties properties = new Properties();
-        properties.put("prefix", databaseTablePrefix);
         String wildcardEscapeClause = "";
         if ((databaseWildcardEscapeCharacter != null) && (databaseWildcardEscapeCharacter.length() != 0)) {
           wildcardEscapeClause = " escape '" + databaseWildcardEscapeCharacter + "'";

@@ -7,7 +7,7 @@
   <!-- ProcessDefinitionInfo INSERT -->
   
   <insert id="insertProcessDefinitionInfo" parameterType="org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity">
-    insert into ${prefix}AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_)
+    insert into AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_)
     values(#{id, jdbcType=VARCHAR}, 
            #{processDefinitionId, jdbcType=VARCHAR},
            1,
@@ -15,7 +15,7 @@
   </insert>
 
   <insert id="bulkInsertProcessDefinitionInfo" parameterType="java.util.List">
-    INSERT INTO ${prefix}AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_)
+    INSERT INTO AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_)
     VALUES 
       <foreach collection="list" item="processDefinitionInfo" index="index" separator=","> 
         (#{processDefinitionInfo.id, jdbcType=VARCHAR}, 
@@ -28,7 +28,7 @@
   <insert id="bulkInsertProcessDefinitionInfo_oracle" parameterType="java.util.List">
     INSERT ALL 
       <foreach collection="list" item="processDefinitionInfo" index="index"> 
-        INTO ${prefix}AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_) VALUES 
+        INTO AF_PROCDEF_INFO(ID_, PROC_DEF_ID_, REV_, INFO_JSON_ID_) VALUES 
           (#{processDefinitionInfo.id, jdbcType=VARCHAR}, 
            #{processDefinitionInfo.processDefinitionId, jdbcType=VARCHAR},
            1,
@@ -39,7 +39,7 @@
 
   <!-- ProcessDefinitionInfo UPDATE -->
   <update id="updateProcessDefinitionInfo" parameterType="org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity">
-    update ${prefix}AF_PROCDEF_INFO set
+    update AF_PROCDEF_INFO set
       REV_ = #{revisionNext, jdbcType=INTEGER},
       INFO_JSON_ID_ = #{infoJsonId, jdbcType=VARCHAR}
     where ID_ = #{id, jdbcType=VARCHAR} and REV_ = #{revision, jdbcType=INTEGER}
@@ -49,7 +49,7 @@
   <!-- ProcessDefinitionInfo DELETE -->
   
   <delete id="deleteProcessDefinitionInfo" parameterType="org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity">
-    delete from ${prefix}AF_PROCDEF_INFO where ID_ = #{id} and REV_ = #{revision}
+    delete from AF_PROCDEF_INFO where ID_ = #{id} and REV_ = #{revision}
   </delete>
 
   <!-- MODEL RESULTMAP -->
@@ -64,11 +64,11 @@
   <!-- ProcessDefinitionInfo SELECT -->
 
   <select id="selectProcessDefinitionInfo" parameterType="string" resultMap="processDefinitionInfoResultMap">
-    select * from ${prefix}AF_PROCDEF_INFO where ID_ = #{id}
+    select * from AF_PROCDEF_INFO where ID_ = #{id}
   </select>
   
   <select id="selectProcessDefinitionInfoByProcessDefinitionId" parameterType="string" resultMap="processDefinitionInfoResultMap">
-    select * from ${prefix}AF_PROCDEF_INFO where PROC_DEF_ID_ = #{processDefinitionId}
+    select * from AF_PROCDEF_INFO where PROC_DEF_ID_ = #{processDefinitionId}
   </select>
 
 </mapper>

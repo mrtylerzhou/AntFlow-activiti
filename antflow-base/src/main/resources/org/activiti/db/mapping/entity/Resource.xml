@@ -7,12 +7,12 @@
   <!-- RESOURCE INSERT -->
 
   <insert id="insertResource" parameterType="org.activiti.engine.impl.persistence.entity.ResourceEntity">
-    insert into ${prefix}AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_)
+    insert into AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_)
     values (#{id, jdbcType=VARCHAR}, 1, #{name, jdbcType=VARCHAR}, #{bytes, jdbcType=BLOB}, #{deploymentId, jdbcType=VARCHAR}, #{generated, jdbcType=BOOLEAN})  
   </insert>
 
   <insert id="bulkInsertResource" parameterType="java.util.List">
-    INSERT INTO ${prefix}AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_) VALUES 
+    INSERT INTO AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_) VALUES 
       <foreach collection="list" item="byteArr" index="index" separator=","> 
         (#{byteArr.id, jdbcType=VARCHAR},
          1,
@@ -26,7 +26,7 @@
   <insert id="bulkInsertResource_oracle" parameterType="java.util.List">
     INSERT ALL
       <foreach collection="list" item="resource" index="index"> 
-        INTO ${prefix}AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_) VALUES 
+        INTO AF_GE_BYTEARRAY(ID_, REV_, NAME_, BYTES_, DEPLOYMENT_ID_, GENERATED_) VALUES 
         (#{resource.id, jdbcType=VARCHAR},
          1,
          #{resource.name, jdbcType=VARCHAR},
@@ -42,7 +42,7 @@
   <!-- RESOURCE DELETE -->
 
   <delete id="deleteResourcesByDeploymentId" parameterType="string">
-    delete from ${prefix}AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{id}
+    delete from AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{id}
   </delete>
   
   <!-- RESOURCE RESULTMAP -->
@@ -57,17 +57,17 @@
   <!-- RESOURCE SELECT -->
 
   <select id="selectResourceNamesByDeploymentId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultType="string">
-    select NAME_ from ${prefix}AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
+    select NAME_ from AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
   </select>
   
   <select id="selectResourceByDeploymentIdAndResourceName" parameterType="map" resultMap="resourceResultMap">
-    select * from ${prefix}AF_GE_BYTEARRAY 
+    select * from AF_GE_BYTEARRAY 
     where DEPLOYMENT_ID_ = #{deploymentId}
           AND NAME_ = #{resourceName}
   </select>
 
   <select id="selectResourcesByDeploymentId" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="resourceResultMap">
-    select * from ${prefix}AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
+    select * from AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
   </select>  
 
   <!-- postgresql specific -->
@@ -80,14 +80,14 @@
     
   <!-- postgresql specific -->
   <select id="selectResourceByDeploymentIdAndResourceName_postgres" parameterType="map" resultMap="resourceResultMap_postgres">
-    select * from ${prefix}AF_GE_BYTEARRAY 
+    select * from AF_GE_BYTEARRAY 
     where DEPLOYMENT_ID_ = #{deploymentId}
           AND NAME_ = #{resourceName}
   </select>
   
   <!-- postgresql specific -->
   <select id="selectResourcesByDeploymentId_postgres" parameterType="org.activiti.engine.impl.db.ListQueryParameterObject" resultMap="resourceResultMap_postgres">
-    select * from ${prefix}AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
+    select * from AF_GE_BYTEARRAY where DEPLOYMENT_ID_ = #{parameter} order by NAME_ asc
   </select>  
   
 </mapper>

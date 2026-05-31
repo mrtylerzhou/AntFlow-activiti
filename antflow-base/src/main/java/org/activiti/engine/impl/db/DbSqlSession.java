@@ -138,6 +138,7 @@ public class DbSqlSession implements Session {
   }
 
   public void dbSchemaDrop() {
+
   }
 
   public interface DeleteOperation {
