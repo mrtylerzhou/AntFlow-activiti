@@ -45,7 +45,8 @@
         else '' end as verifyStatusName,
         w.verify_date as verifyDate,
         w.verify_desc as verifyDesc,
-        w.original_id originalId
+        w.original_id originalId,
+        w.attachments_json as attachmentsJson
         from bpm_verify_info w where 1=1
         <if test="processCode!=null and processCode!=''">
             and w.process_code=#{processCode}

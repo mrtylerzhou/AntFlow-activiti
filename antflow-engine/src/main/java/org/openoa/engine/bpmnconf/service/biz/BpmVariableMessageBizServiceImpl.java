@@ -30,7 +30,8 @@ import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
@@ -62,8 +63,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     @Autowired
     private AfRoleService roleService;
 
-    @Autowired
-    private BpmProcessNoticeService bpmProcessNoticeService;
 
     @Autowired
     private ProcessBusinessContans processBusinessContans;
@@ -621,13 +620,16 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      * @param detailedUsers
      */
     private void sendMessage(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo, List<DetailedUser> detailedUsers) {
-        //query all types of the messages
-        List<MessageSendTypeEnum> messageSendTypeEnums = bpmProcessNoticeService.processNoticeList(vo.getFormCode())
-                .stream()
-                .map(o -> {
-                    return MessageSendTypeEnum.getEnumByCode(o.getType());
-                })
-                .collect(Collectors.toList());
+        //query all types of the messages from conf_config_json
+        BpmnConf bpmnConf = bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+                .eq("form_code", vo.getFormCode()).eq("effective_status", 1));
+        BpmnConfConfigJson confConfig = bpmnConf != null ? JsonConfUtil.parseConfConfig(bpmnConf.getConfConfigJson()) : null;
+        List<Integer> noticeChannelTypes = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
+        List<MessageSendTypeEnum> messageSendTypeEnums = CollectionUtils.isEmpty(noticeChannelTypes)
+                ? new ArrayList<>()
+                : noticeChannelTypes.stream()
+                    .map(MessageSendTypeEnum::getEnumByCode)
+                    .collect(Collectors.toList());
 
         List<BaseNumIdStruVo> messageSendTypeList = bpmnTemplateVo.getMessageSendTypeList();
         if(!messageSendTypeEnums.isEmpty()&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知

@@ -205,27 +205,6 @@ CREATE TABLE if not exists `bpm_manual_notify`
 
 
 
-DROP TABLE IF EXISTS `bpm_process_dept`;
-CREATE TABLE if not exists `bpm_process_dept`
-(
-    `id`           bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `process_code` varchar(50)         DEFAULT NULL COMMENT 'process number',
-    `process_type` int             DEFAULT NULL COMMENT 'process type',
-    `process_name` varchar(50)         DEFAULT NULL COMMENT 'process name',
-    `dep_id`       bigint          DEFAULT NULL COMMENT 'dept id',
-    `remarks`      varchar(255)        DEFAULT NULL COMMENT 'remark',
-    `create_time`  timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `create_user`  bigint          DEFAULT NULL COMMENT 'as its name says',
-    `update_user`  bigint          DEFAULT NULL COMMENT 'as its name says',
-    `update_time`  timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `process_key`  varchar(50)         DEFAULT NULL COMMENT 'process key',
-    `is_del`       tinyint             DEFAULT '0',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `is_all`       tinyint             DEFAULT '0' COMMENT 'it to all',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='process and department join table,used to control access right';
-
 DROP TABLE IF EXISTS `bpm_process_forward`;
 CREATE TABLE if not exists `bpm_process_forward`
 (
@@ -249,21 +228,6 @@ CREATE TABLE if not exists `bpm_process_forward`
   AUTO_INCREMENT = 1
    COMMENT ='process forward table';
 
-
-DROP TABLE IF EXISTS `bpm_process_node_overtime`;
-CREATE TABLE if not exists `bpm_process_node_overtime`
-(
-    `id`          bigint NOT NULL AUTO_INCREMENT,
-    `notice_type` int      DEFAULT NULL COMMENT 'notice type 1:email,2:sms 3:app push message',
-    `node_name`   varchar(50) DEFAULT NULL COMMENT 'node name',
-    `node_key`    varchar(50)  DEFAULT NULL COMMENT 'node id',
-     `is_del`             int               DEFAULT '0',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `process_key` varchar(50)  DEFAULT NULL COMMENT 'process key',
-    `notice_time` int      DEFAULT NULL COMMENT 'update time',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='process approve overtime notice';
 
 DROP TABLE IF EXISTS `bpm_process_node_record`;
 CREATE TABLE if not exists `bpm_process_node_record`
@@ -297,20 +261,6 @@ CREATE TABLE if not exists `bpm_process_node_submit`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   COMMENT ='process node submit';
-
-DROP TABLE IF EXISTS `bpm_process_notice`;
-create table bpm_process_notice
-(
-    id          int auto_increment
-        primary key,
-    type        tinyint null comment 'auto send notice 1.email 2:sms 3:app push',
-    process_key varchar(50) null comment 'process key',
-    `is_del`             int               DEFAULT '0',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    constraint bpm_process_notice_unq
-        unique (process_key, type)
-)
-    comment 'process notice table';
 
 
 DROP TABLE IF EXISTS `bpm_taskconfig`;
@@ -464,31 +414,6 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer_personnel`
   AUTO_INCREMENT = 1
    COMMENT ='multiplayer assignees variable table';
 
-DROP TABLE IF EXISTS `t_bpm_variable_sequence_flow`;
-CREATE TABLE if not exists `t_bpm_variable_sequence_flow`
-(
-    `id`                       bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id`              bigint          NOT NULL COMMENT 'variable id',
-    `element_id`               varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-    `element_name`             varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
-    `element_from_id`          varchar(60)         NOT NULL DEFAULT '' COMMENT 'this node,s prev node',
-    `element_to_id`            varchar(60)         NOT NULL DEFAULT '' COMMENT 'this node,s next node',
-    `sequence_flow_type`       int             NOT NULL COMMENT 'sequence flow type',
-    `sequence_flow_conditions` varchar(100)        NOT NULL DEFAULT '' COMMENT 'sequence flow condition',
-    `remark`                   varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`                   tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user`              varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time`              timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user`              varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time`              timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `t_bpm_variable_sequence_flow_idx1` (`variable_id`),
-    KEY `t_bpm_variable_sequence_flow_idx2` (`element_id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='sequence flow table';
-
 DROP TABLE IF EXISTS `t_bpm_variable_sign_up`;
 CREATE TABLE if not exists `t_bpm_variable_sign_up`
 (
@@ -535,27 +460,6 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
 
 
 
-DROP TABLE IF EXISTS `t_bpm_variable_view_page_button`;
-CREATE TABLE if not exists `t_bpm_variable_view_page_button`
-(
-    `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id` bigint          NOT NULL COMMENT 'variable id',
-    `view_type`   int             NOT NULL COMMENT 'view type 1:start user,2:approvers',
-    `button_type` int             NOT NULL COMMENT 'button type',
-    `button_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'button name',
-    `remark`      varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`      tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `index_variable_id` (`variable_id`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='start up view page button params';
-
-
 DROP TABLE IF EXISTS `bpm_verify_info`;
 CREATE TABLE if not exists `bpm_verify_info`
 (
@@ -575,6 +479,7 @@ CREATE TABLE if not exists `bpm_verify_info`
     `process_code`     varchar(64)         DEFAULT NULL COMMENT 'process number',
     `is_del`      tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
+    `attachments_json`      text                                 COMMENT 'attachments json',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `BPM_IDX__INFOR` (`business_type`, `business_id`) USING BTREE,
     KEY `process_code_index` (`process_code`) USING BTREE,
@@ -582,27 +487,6 @@ CREATE TABLE if not exists `bpm_verify_info`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='verify info';
-
--- ----------------------------
--- bpm_verify_attachment 审批记录附件
--- ----------------------------
-drop table if exists bpm_verify_attachment;
-create table bpm_verify_attachment
-(
-  id            		 			bigint(20)     not null auto_increment    comment '主键ID',
-  verify_info_id     			    bigint(20)     not null                   comment 'bpm_verify_info表的id',
-  file_path     	   			    varchar(255)   not null                   comment '文件存储路径',
-  new_file_name      			    varchar(255)   not null                	  comment '新文件名',
-  original_file_name                varchar(255)   not null                	  comment '原文件名',
-  file_size                         int(20)        default null 			  comment '文件大小',
-  file_type							varchar(255)    default null               comment '文件类型',
-  file_url     						varchar(255)   default null               comment 'Sha256加密',
-  is_del      						tinyint(1)     default 0                  comment '是否删除 0-否 1-是',
-  create_time   					datetime                                  comment '创建时间',
-  remark        					varchar(500)    default null              comment '备注',
-  tenant_id        					varchar(255)    default null              comment '租户id',
-  primary key (id)
-) engine=innodb comment = '审批记录附件';
 
 DROP TABLE IF EXISTS `t_default_template`;
 CREATE TABLE if not exists `t_default_template`
@@ -750,43 +634,6 @@ CREATE TABLE if not exists `bpm_business_process`
 
 
 
-
-
-
-
-
-DROP TABLE IF EXISTS `bpm_process_operation`;
-CREATE TABLE IF NOT EXISTS `bpm_process_operation`
-(
-    `id`           bigint NOT NULL AUTO_INCREMENT,
-    `process_key`  varchar(50) DEFAULT NULL COMMENT 'process key',
-    `process_node` varchar(50) DEFAULT NULL COMMENT 'process node id',
-    `type`         int      DEFAULT NULL COMMENT '1:batch submit 2:entrust',
-     `is_del`                tinyint DEFAULT NULL COMMENT '0:no,1:yes',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE,
-     KEY `bpm_process_operation_idx1` (`process_key`),
-     KEY `bpm_process_operation_idx2` (`process_node`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='process operation table';
-
-DROP TABLE IF EXISTS `bpm_process_node_back`;
-CREATE TABLE if not exists `bpm_process_node_back`
-(
-    `id`          bigint NOT NULL AUTO_INCREMENT,
-    `node_key`    varchar(50)  DEFAULT NULL COMMENT 'node key',
-     node_id     bigint       null comment '节点id',
-    `back_type`   int      DEFAULT NULL COMMENT 'back type',
-    `process_key` varchar(100) DEFAULT NULL COMMENT 'process key',
-     `is_del`                tinyint DEFAULT NULL COMMENT '0:no,1:yes',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE,
-     KEY `bpm_process_node_back_idx1` (`node_key`),
-     KEY `bpm_process_node_back_idx2` (`node_id`),
-     KEY `bpm_process_node_back_idx3` (`process_key`)
-) ENGINE = InnoDB
-   COMMENT ='process node back table';
 
 
 DROP TABLE IF EXISTS `bpm_process_name`;
@@ -1124,21 +971,9 @@ CREATE TABLE IF NOT EXISTS  `t_quick_entry` (
      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
      `status` TINYINT NOT NULL DEFAULT 0,
      `variable_url_flag` TINYINT NOT NULL DEFAULT 0,
+     `type_config_json` VARCHAR(500) DEFAULT NULL COMMENT 'type config json',
      INDEX `idx_route` (`route`)
 ) ENGINE=InnoDB ;
-
-DROP TABLE IF EXISTS `t_quick_entry_type`;
-CREATE TABLE  IF NOT EXISTS `t_quick_entry_type` (
-      `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-      `quick_entry_id` BIGINT NOT NULL,
-      `type` INT NOT NULL COMMENT 'Type 1 for PC and 2 for app',
-      `is_del` TINYINT DEFAULT 0 COMMENT 'Delete flag',
-       `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-      `create_time` timestamp DEFAULT CURRENT_TIMESTAMP,
-      `type_name` VARCHAR(255) NOT NULL COMMENT 'Type name',
-      INDEX `idx_quick_entry_id` (`quick_entry_id`)
-
-) ENGINE=InnoDB  COMMENT='quick entry type config';
 
 DROP TABLE IF EXISTS `t_sys_version`;
 CREATE TABLE IF NOT EXISTS  `t_sys_version` (
@@ -1259,23 +1094,6 @@ create table t_lf_main_field
      KEY `t_lf_main_field_idx3` (`field_id`)
 )ENGINE=InnoDB  comment '低代码表单字段值表';
 
-DROP TABLE IF EXISTS t_dict_main;
-create table t_dict_main
-(
-    id          bigint auto_increment comment '字典主键'
-        primary key,
-    dict_name   varchar(100) default ''                null comment '字典名称',
-    dict_type   varchar(100) default ''                null comment '字典类型',
-    is_del      tinyint      default 0                 not null,
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    create_user varchar(255)                           null,
-    create_time timestamp    default CURRENT_TIMESTAMP not null,
-    update_user varchar(255)                           null,
-    update_time timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
-    remark      varchar(500)                           null comment '备注',
-    constraint dict_type
-        unique (dict_type)
-) comment '字典类型表,仅作展示之用,用户可以替换为自己的字段表,能查出需要的内容就行了';
 
 DROP TABLE IF EXISTS t_dict_data;
 create table t_dict_data

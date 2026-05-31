@@ -32,8 +32,7 @@
             s.is_del as isDel,
             s.status as status,
             s.create_time AS createTime ,
-            (SELECT GROUP_CONCAT(type) from t_quick_entry_type t where t.quick_entry_id =s.id) as typeIds,
-            (SELECT GROUP_CONCAT(type_name) from t_quick_entry_type t where t.quick_entry_id =s.id) as typeName,
+            s.type_config_json as typeConfigJson,
             variable_url_flag as variableUrlFlag
         FROM
             t_quick_entry s
@@ -48,9 +47,8 @@
 
     <select id="searchQuickEntry" resultType="org.openoa.engine.vo.QuickEntryVo">
         SELECT w.id,w.title as name from t_quick_entry w where
-        w.id in (
-        SELECT s.quick_entry_id from t_quick_entry_type s where type=2
-        )  and  w.is_del=0 and w.status=0
+        JSON_CONTAINS(w.type_config_json, '{"type":2}')
+        and  w.is_del=0 and w.status=0
         <if test="search!=null and search!=''">
             and title = #{search}
         </if>

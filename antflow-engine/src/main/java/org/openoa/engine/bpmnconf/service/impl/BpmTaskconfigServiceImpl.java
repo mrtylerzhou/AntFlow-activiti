@@ -117,18 +117,6 @@ public class BpmTaskconfigServiceImpl extends ServiceImpl<BpmTaskconfigMapper, B
         return getBaseMapper().deleteByTask(procDefId, taskKey);
     }
 
-    /**
-     * 查询当前节点不同意类型
-     *
-     * @param nodeKey    节点Key
-     * @param processKey 流程key
-     * @return
-     */
-    @Override
-    public Integer disagreeType(String nodeKey, String processKey) {
-        return getBaseMapper().disagreeType(nodeKey, processKey);
-    }
-
     @Override
     public String getProcessKey(String deploymentId) {
         return getBaseMapper().getProcessKey(deploymentId);

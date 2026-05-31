@@ -40,6 +40,12 @@ public class BpmnConfConfigJson implements Serializable {
      */
     private LowCodeFormConfig lowCodeFormConfig;
 
+    /**
+     * Notice channel types for this process (1=mail, 2=sms, 3=app, etc.)
+     * Migrated from bpm_process_notice table.
+     */
+    private List<Integer> noticeChannelTypes;
+
     @Data
     @Builder
     @AllArgsConstructor

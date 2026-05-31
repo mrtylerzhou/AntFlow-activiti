@@ -6,17 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.PageDto;
-import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.DictData;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.mapper.DicDataMapper;
-import org.openoa.engine.bpmnconf.mapper.DictMainMapper;
+
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -32,13 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class DictServiceImpl implements LowCodeFlowBizService {
     @Autowired
-    private DictMainMapper dictMainMapper;
-    @Autowired
     private DicDataMapper dicDataMapper;
     @Autowired
     private BpmnConfBizService bpmnConfBizService;
-    @Autowired
-    private BpmProcessNoticeService bpmProcessNoticeService;
     /**
      * 获取全部 LF FormCodes 在流程设计时选择使用
      * @return
@@ -141,7 +137,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         //20250326:修改增加formCodes为空判断
         if(!formCodes.isEmpty()){
             LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
-                    .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
+                    .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags, BpmnConf::getConfConfigJson)
                     .in(BpmnConf::getFormCode, formCodes)
                     .eq(BpmnConf::getEffectiveStatus, 1);
             List<BpmnConf> bpmnConfs = bpmnConfBizService.getService().list(queryWrapper);
@@ -150,7 +146,14 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                         .stream()
                         .filter(a->a.getExtraFlags()!=null)
                         .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
-                Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
+                Map<String, List<Integer>> formCode2NoticeTypes = new HashMap<>();
+                for (BpmnConf conf : bpmnConfs) {
+                    BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(conf.getConfConfigJson());
+                    List<Integer> types = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
+                    if (!CollectionUtils.isEmpty(types)) {
+                        formCode2NoticeTypes.put(conf.getFormCode(), types);
+                    }
+                }
                 for (BaseKeyValueStruVo lfDto : results) {
 
                     Integer flags = formCode2Flags.get(lfDto.getKey());
@@ -159,20 +162,15 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                         lfDto.setHasStarUserChooseModule(hasStartUserChooseModules);
                     }
                     String formCode = lfDto.getKey();
-                    List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(formCode);
-                    if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                    List<Integer> noticeChannelTypes = formCode2NoticeTypes.get(formCode);
+                    if(!CollectionUtils.isEmpty(noticeChannelTypes)){
                         List<BaseNumIdStruVo> processNotices=new ArrayList<>();
-
                         for (ProcessNoticeEnum value : ProcessNoticeEnum.values()) {
-                            Integer type = value.getCode();
-                            String descByCode = value.getDesc();
                             BaseNumIdStruVo struVo=new BaseNumIdStruVo();
-                            struVo.setId(type.longValue());
-                            struVo.setName(descByCode);
-                            for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
-                                if(Objects.equals(value.getCode(),bpmProcessNotice.getType())){
-                                    struVo.setActive(true);
-                                }
+                            struVo.setId(value.getCode().longValue());
+                            struVo.setName(value.getDesc());
+                            if(noticeChannelTypes.contains(value.getCode())){
+                                struVo.setActive(true);
                             }
                             processNotices.add(struVo);
                         }

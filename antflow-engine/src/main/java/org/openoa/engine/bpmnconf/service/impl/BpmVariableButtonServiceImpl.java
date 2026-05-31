@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmVariableButton;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableButtonMapper;
@@ -21,5 +22,11 @@ public class BpmVariableButtonServiceImpl extends ServiceImpl<BpmVariableButtonM
     public List<BpmVariableButton> getButtonsByProcessNumber(String processNum, Collection<String> elementIds) {
 
         return this.getBaseMapper().getButtonsByProcessNumber(processNum, elementIds);
+    }
+
+    public List<BpmVariableButton> getButtonsByProcessNumberAndPageType(String processNum, Integer buttonPageType) {
+        return this.list(new QueryWrapper<BpmVariableButton>()
+                .eq("button_page_type", buttonPageType)
+                .inSql("variable_id", "SELECT id FROM t_bpm_variable WHERE process_num = '" + processNum + "'"));
     }
 }

@@ -112,57 +112,6 @@ class EntityRound20ATest extends BaseTest {
     }
 
     @Nested
-    @DisplayName("BpmVerifyAttachment")
-    class BpmVerifyAttachmentTest {
-
-        @Test
-        @DisplayName("no-arg constructor defaults")
-        void noArgDefaults() {
-            BpmVerifyAttachment entity = new BpmVerifyAttachment();
-            assertNull(entity.getId());
-            assertNull(entity.getVerifyInfoId());
-            assertNull(entity.getFilePath());
-            assertNull(entity.getNewFileName());
-            assertNull(entity.getOriginalFileName());
-            assertNull(entity.getFileSize());
-            assertNull(entity.getFileType());
-            assertNull(entity.getFileUrl());
-            assertNull(entity.getCreateTime());
-            assertNull(entity.getRemark());
-            assertNull(entity.getIsDel());
-            assertNull(entity.getTenantId());
-        }
-
-        @Test
-        @DisplayName("builder pattern")
-        void builder() {
-            Date now = new Date();
-            BpmVerifyAttachment entity = BpmVerifyAttachment.builder()
-                    .id(1L)
-                    .verifyInfoId(100L)
-                    .filePath("/tmp/f.pdf")
-                    .newFileName("f_new.pdf")
-                    .originalFileName("f.pdf")
-                    .fileSize(2048)
-                    .fileType("pdf")
-                    .fileUrl("http://x/f.pdf")
-                    .createTime(now)
-                    .remark("test")
-                    .isDel(0)
-                    .tenantId("t1")
-                    .build();
-            assertEquals(1L, entity.getId());
-            assertEquals(100L, entity.getVerifyInfoId());
-            assertEquals("/tmp/f.pdf", entity.getFilePath());
-            assertEquals("f_new.pdf", entity.getNewFileName());
-            assertEquals("f.pdf", entity.getOriginalFileName());
-            assertEquals(2048, entity.getFileSize());
-            assertEquals("pdf", entity.getFileType());
-            assertEquals(0, entity.getIsDel());
-        }
-    }
-
-    @Nested
     @DisplayName("BpmVariableApproveRemind")
     class BpmVariableApproveRemindTest {
 
@@ -202,50 +151,6 @@ class EntityRound20ATest extends BaseTest {
         }
     }
 
-    @Nested
-    @DisplayName("BpmVariableSequenceFlow")
-    class BpmVariableSequenceFlowTest {
-
-        @Test
-        @DisplayName("no-arg constructor defaults")
-        void noArgDefaults() {
-            BpmVariableSequenceFlow entity = new BpmVariableSequenceFlow();
-            assertNull(entity.getId());
-            assertNull(entity.getVariableId());
-            assertNull(entity.getElementId());
-            assertNull(entity.getElementName());
-            assertNull(entity.getElementFromId());
-            assertNull(entity.getElementToId());
-            assertNull(entity.getSequenceFlowType());
-            assertNull(entity.getSequenceFlowConditions());
-            assertNull(entity.getRemark());
-            assertNull(entity.getIsDel());
-        }
-
-        @Test
-        @DisplayName("builder pattern")
-        void builder() {
-            BpmVariableSequenceFlow entity = BpmVariableSequenceFlow.builder()
-                    .id(1L)
-                    .variableId(10L)
-                    .elementId("flow1")
-                    .elementName("to approve")
-                    .elementFromId("sid-A")
-                    .elementToId("sid-B")
-                    .sequenceFlowType(2)
-                    .sequenceFlowConditions("amount>100")
-                    .isDel(0)
-                    .build();
-            assertEquals(1L, entity.getId());
-            assertEquals(10L, entity.getVariableId());
-            assertEquals("flow1", entity.getElementId());
-            assertEquals("to approve", entity.getElementName());
-            assertEquals("sid-A", entity.getElementFromId());
-            assertEquals("sid-B", entity.getElementToId());
-            assertEquals(2, entity.getSequenceFlowType());
-            assertEquals("amount>100", entity.getSequenceFlowConditions());
-        }
-    }
 
     @Nested
     @DisplayName("BpmVariableButton")

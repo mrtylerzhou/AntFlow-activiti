@@ -41,4 +41,9 @@ public class BpmnNodeConfigJson implements Serializable {
      * Low-code form field control configuration
      */
     private BpmnNodeLowCodeConfJson lowCodeConf;
+
+    /**
+     * Back type for disagree action (migrated from bpm_process_node_back)
+     */
+    private Integer backType;
 }

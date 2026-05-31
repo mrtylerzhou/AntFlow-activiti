@@ -22,9 +22,7 @@ import org.openoa.common.constant.enus.ElementPropertyEnum;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSequenceFlowService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableViewPageButtonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -43,13 +41,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
     private BpmVariableService bpmVariableService;
 
     @Autowired
-    private BpmVariableViewPageButtonService bpmVariableViewPageButtonService;
-
-    @Autowired
     private BpmVariableButtonService bpmVariableButtonService;
-
-    @Autowired
-    private BpmVariableSequenceFlowService bpmVariableSequenceFlowService;
 
     @Autowired
     private BpmVariableSignUpService bpmVariableSignUpService;
@@ -114,17 +106,6 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 //insert elementButton
                 insertElementButton(variableId, elementVo, elementVo.getElementId());
 
-            } else if (elementType.equals(ElementTypeEnum.ELEMENT_TYPE_SEQUENCE_FLOW.getCode())) {//SequenceFlow
-                bpmVariableSequenceFlowService.getBaseMapper().insert(BpmVariableSequenceFlow
-                        .builder()
-                        .variableId(variableId)
-                        .elementId(elementVo.getElementId())
-                        .elementName(elementVo.getElementName())
-                        .elementFromId(elementVo.getFlowFrom())
-                        .elementToId(elementVo.getFlowTo())
-                        .sequenceFlowType(1)//此版本默认无参连线
-                        .tenantId(MultiTenantUtil.getCurrentTenantId())
-                        .build());
             }
         }
 
@@ -246,38 +227,35 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
      * @param variableId
      */
     private void insertViewPageButton(BpmnConfCommonVo bpmnConfCommonVo, Long variableId) {
-
         //get start user's view page
         if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getViewPageButtons().getViewPageStart())) {
-            bpmVariableViewPageButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageStart()
+            bpmVariableButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageStart()
                     .stream()
-                    .map(o -> {
-                        return BpmVariableViewPageButton
-                                .builder()
-                                .variableId(variableId)
-                                .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_START.getCode())
-                                .buttonType(o.getButtonType())
-                                .buttonName(o.getButtonName())
-                                .tenantId(MultiTenantUtil.getCurrentTenantId())
-                                .build();
-                    })
+                    .map(o -> BpmVariableButton
+                            .builder()
+                            .variableId(variableId)
+                            .buttonPageType(3)
+                            .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_START.getCode())
+                            .buttonType(o.getButtonType())
+                            .buttonName(o.getButtonName())
+                            .tenantId(MultiTenantUtil.getCurrentTenantId())
+                            .build())
                     .collect(Collectors.toList()));
         }
 
         //get other user's view page
         if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getViewPageButtons().getViewPageOther())) {
-            bpmVariableViewPageButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageOther()
+            bpmVariableButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageOther()
                     .stream()
-                    .map(o -> {
-                        return BpmVariableViewPageButton
-                                .builder()
-                                .variableId(variableId)
-                                .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
-                                .buttonType(o.getButtonType())
-                                .buttonName(o.getButtonName())
-                                .tenantId(MultiTenantUtil.getCurrentTenantId())
-                                .build();
-                    })
+                    .map(o -> BpmVariableButton
+                            .builder()
+                            .variableId(variableId)
+                            .buttonPageType(3)
+                            .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
+                            .buttonType(o.getButtonType())
+                            .buttonName(o.getButtonName())
+                            .tenantId(MultiTenantUtil.getCurrentTenantId())
+                            .build())
                     .collect(Collectors.toList()));
         }
     }

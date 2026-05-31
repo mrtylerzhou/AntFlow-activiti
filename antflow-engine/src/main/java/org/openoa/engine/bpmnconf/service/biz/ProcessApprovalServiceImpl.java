@@ -11,6 +11,10 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.entity.BpmnNode;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -25,6 +29,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
@@ -71,6 +76,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
     /**
      * button operation
@@ -327,13 +334,31 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     }
     /**
      * check whether current node is operatable
+     * Reads operationTypes from node_config_json instead of bpm_process_operation table.
      *
      * @param vo
      * @return
      */
     private Boolean isOperatable(TaskMgmtVO vo) {
-        return this.getBaseMapper().isOperational(vo) <= 0;
-
+        BpmnConf conf = bpmnConfCommonService.getBpmnConfByFormCode(vo.getProcessKey());
+        if (conf == null || conf.getBpmnCode() == null) {
+            return true;
+        }
+        BpmnNode node = bpmnNodeService.getOne(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<BpmnNode>()
+                .eq("bpmn_code", conf.getBpmnCode())
+                .eq("node_key", vo.getTaskName()));
+        if (node == null) {
+            return true;
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+        if (nodeConfig == null || nodeConfig.getButtonSignConf() == null) {
+            return true;
+        }
+        List<Integer> operationTypes = nodeConfig.getButtonSignConf().getOperationTypes();
+        if (CollectionUtils.isEmpty(operationTypes)) {
+            return true;
+        }
+        return !operationTypes.contains(vo.getType());
     }
     //todo some process approval access right check
 }

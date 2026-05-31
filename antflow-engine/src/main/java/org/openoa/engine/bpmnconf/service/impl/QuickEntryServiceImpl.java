@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +13,14 @@ import org.openoa.engine.bpmnconf.mapper.QuickEntryMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.vo.QuickEntryVo;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -66,15 +69,19 @@ public class QuickEntryServiceImpl extends ServiceImpl<QuickEntryMapper, QuickEn
     public Page<QuickEntryVo> getPcProcessData(Page<QuickEntryVo> page) {
         return page.setRecords(page.getRecords().stream()
                 .map(o -> {
-                    if (!ObjectUtils.isEmpty(o.getTypeIds())) {
-                        List<Integer> list = new ArrayList<>();
-                        String[] split = o.getTypeIds().split("\\,");
-                        if (split.length > 0) {
-                            for (String typeId : split) {
-                                list.add(Integer.parseInt(typeId));
+                    if (!ObjectUtils.isEmpty(o.getTypeConfigJson())) {
+                        List<Map<String, Object>> typeList = JSON.parseObject(o.getTypeConfigJson(),
+                                new com.alibaba.fastjson2.TypeReference<List<Map<String, Object>>>() {});
+                        if (!CollectionUtils.isEmpty(typeList)) {
+                            List<Integer> list = new ArrayList<>();
+                            for (Map<String, Object> typeMap : typeList) {
+                                Object typeVal = typeMap.get("type");
+                                if (typeVal != null) {
+                                    list.add(typeVal instanceof Number ? ((Number) typeVal).intValue() : Integer.parseInt(typeVal.toString()));
+                                }
                             }
+                            o.setTypes(list);
                         }
-                        o.setTypes(list);
                     }
                     if (o.getIsDel().equals(0)) {
                         o.setStateName("启用");

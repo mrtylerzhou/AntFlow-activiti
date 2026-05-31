@@ -77,4 +77,9 @@ public class QuickEntryVo  implements Serializable {
      */
     private Integer variableUrlFlag;
 
+    /**
+     * type config json
+     */
+    private String typeConfigJson;
+
 }

@@ -187,6 +187,12 @@ public class BpmnConfVo {
     private String noticeFormCode;
 
     /**
+     * Notice channel types for this process (1=mail, 2=sms, 3=app, etc.)
+     * Sent from frontend during edit, stored in conf_config_json.
+     */
+    private List<Integer> noticeChannelTypes;
+
+    /**
      * Transient conf config JSON - populated during read flow
      */
     @JsonIgnore

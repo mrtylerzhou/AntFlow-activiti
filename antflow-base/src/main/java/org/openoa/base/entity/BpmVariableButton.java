@@ -42,10 +42,15 @@ public class BpmVariableButton implements TenantField, Serializable {
     @TableField("element_id")
     private String elementId;
     /**
-     * button page type 1 start page 2 approve page
+     * button page type 1 start page 2 approve page 3 view page
      */
     @TableField("button_page_type")
     private Integer buttonPageType;
+    /**
+     * view type 1 start user 2 other approvals (only for button_page_type=3)
+     */
+    @TableField("view_type")
+    private Integer viewType;
     /**
      * button type 1 submit 2 re-submit 3 agree 4 disagree 5 back-to-modify 6 back-to-previous-node-modify 7 cancel 8 print 9 forward
      */

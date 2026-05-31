@@ -103,15 +103,6 @@ public interface BpmTaskconfigMapper extends BaseMapper<BpmTaskconfig> {
 
     /**
 
-     * query current node disagree type
-     *
-     * @param nodeKey    node key
-     * @param processKey process key
-     * @return
-     */
-    public Integer disagreeType(@Param("nodeKey") String nodeKey, @Param("processKey") String processKey);
-
-    /**
      * get process key
      */
     public String getProcessKey(@Param("deploymentId") String deploymentId);

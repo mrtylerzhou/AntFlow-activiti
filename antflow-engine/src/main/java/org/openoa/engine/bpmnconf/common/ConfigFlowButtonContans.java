@@ -23,7 +23,6 @@ import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableViewPageButtonServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
@@ -53,8 +52,6 @@ public class ConfigFlowButtonContans {
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
     private BpmVariableButtonServiceImpl bpmVariableButtonService;
-    @Autowired
-    private BpmVariableViewPageButtonServiceImpl bpmVariableViewPageButtonService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
@@ -105,8 +102,8 @@ public class ConfigFlowButtonContans {
                             .getButtonsByProcessNumber(processNum, viewNodeIds);
                     toViewButtons=getButtons(bpmVariableButtons,ButtonPageTypeEnum.TO_VIEW);
                 }
-                List<BpmVariableViewPageButton> bpmVariableViewPageButtons = bpmVariableViewPageButtonService
-                        .getButtonsByProcessNumber(processNum);
+                List<BpmVariableButton> bpmVariableViewPageButtons = bpmVariableButtonService
+                        .getButtonsByProcessNumberAndPageType(processNum, 3);
 
                 List<ProcessActionButtonVo> globalViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
                 if(!CollectionUtils.isEmpty(globalViewButtons)){
@@ -165,8 +162,8 @@ public class ConfigFlowButtonContans {
 
             //query view page button
             if (processNum != null) {
-                List<BpmVariableViewPageButton> bpmVariableViewPageButtons = bpmVariableViewPageButtonService
-                        .getButtonsByProcessNumber(processNum);
+                List<BpmVariableButton> bpmVariableViewPageButtons = bpmVariableButtonService
+                        .getButtonsByProcessNumberAndPageType(processNum, 3);
 
                 toViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
 
@@ -206,17 +203,17 @@ public class ConfigFlowButtonContans {
         return buttonMap;
     }
 
-    private List<ProcessActionButtonVo> toViewButtons(List<BpmVariableViewPageButton> btnVarList, Boolean isInitiate) {
+    private List<ProcessActionButtonVo> toViewButtons(List<BpmVariableButton> btnVarList, Boolean isInitiate) {
         List<ProcessActionButtonVo> buttonlist = new ArrayList<ProcessActionButtonVo>();
-        for (BpmVariableViewPageButton item : btnVarList) {
+        for (BpmVariableButton item : btnVarList) {
             if (isInitiate) {
-                if (item.getViewType() == 1) {
+                if (item.getViewType() != null && item.getViewType() == 1) {
                     buttonlist.add(ProcessActionButtonVo.builder().buttonType(item.getButtonType())
                             .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
                             .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build());
                 }
             } else {
-                if (item.getViewType() == 2) {
+                if (item.getViewType() != null && item.getViewType() == 2) {
                     buttonlist.add(ProcessActionButtonVo.builder().buttonType(item.getButtonType())
                             .name(item.getButtonName()).show(ProcessButtonEnum.VIEW_TYPE.getCode())
                             .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build());

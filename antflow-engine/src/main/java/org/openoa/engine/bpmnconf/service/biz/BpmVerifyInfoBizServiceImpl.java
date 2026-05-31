@@ -37,7 +37,6 @@ import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyAttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -102,8 +101,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     @Autowired
     private BpmnNodeMapper bpmnNodeMapper;
 
-    @Autowired
-    private BpmVerifyAttachmentService bpmVerifyAttachmentService;
 
 
     @Override
@@ -192,9 +189,8 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                 bpmVerifyInfoVo.setVerifyStatusName(StringUtils.EMPTY);
             }
 
-            if (!StringUtils.isEmpty(bpmVerifyInfoVo.getId()) && bpmVerifyInfoVo.getId().matches("\\d+")) {
-                Long verifyInfoId = Long.parseLong(bpmVerifyInfoVo.getId());
-                List<BpmVerifyAttachmentVo> bpmVerifyAttachmentList = bpmVerifyAttachmentService.getBpmVerifyAttachment(verifyInfoId);
+            if (!StringUtils.isEmpty(bpmVerifyInfoVo.getAttachmentsJson())) {
+                List<BpmVerifyAttachmentVo> bpmVerifyAttachmentList = JSON.parseArray(bpmVerifyInfoVo.getAttachmentsJson(), BpmVerifyAttachmentVo.class);
                 bpmVerifyInfoVo.setVerifyAttachments(bpmVerifyAttachmentList);
             }
             bpmVerifyInfoVo.setSort(sort);

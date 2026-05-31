@@ -1,6 +1,5 @@
 package org.openoa.base.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Process configuration VO (formerly BpmProcessDeptVo)
+ *
  * @author AntFlow
  * @since 0.5
  */
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BpmProcessDeptVo extends BaseVo {
+public class ProcessConfVo extends BaseVo {
 
     /**
      * auto incr id
@@ -76,7 +77,6 @@ public class BpmProcessDeptVo extends BaseVo {
      */
     public List<BaseIdTranStruVo> controlDeptIdList;
     /**
-     * 监控权限员工集合
      * monitoring user  list
      */
     public List<BaseIdTranStruVo> controlUserIdList;
@@ -143,7 +143,7 @@ public class BpmProcessDeptVo extends BaseVo {
      */
     public List<String> nodeIds;
 
-    /***
+    /**
      * time out notice time
      */
     public Integer noticeTime;

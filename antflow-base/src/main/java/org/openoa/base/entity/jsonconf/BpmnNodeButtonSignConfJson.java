@@ -39,6 +39,12 @@ public class BpmnNodeButtonSignConfJson implements Serializable {
      */
     private List<AdditionalSignConf> additionalSignConfList;
 
+    /**
+     * Disabled operation types for this node (1=batch submit, 2=entrust)
+     * Migrated from bpm_process_operation table.
+     */
+    private List<Integer> operationTypes;
+
     @Data
     @Builder
     @AllArgsConstructor

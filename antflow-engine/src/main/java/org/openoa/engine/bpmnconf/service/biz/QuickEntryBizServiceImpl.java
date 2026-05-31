@@ -1,15 +1,14 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.base.entity.QuickEntry;
-import org.openoa.base.entity.QuickEntryType;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryTypeService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.BpmProcessAppApplicationVo;
 import org.openoa.engine.vo.ProcessTypeInforVo;
@@ -19,15 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class QuickEntryBizServiceImpl implements QuickEntryBizService {
-
-    @Autowired
-    private QuickEntryTypeService quickEntryTypeService;
 
     @Autowired
     private BpmProcessAppDataService bpmProcessAppDataService;
@@ -43,18 +38,23 @@ public class QuickEntryBizServiceImpl implements QuickEntryBizService {
         QuickEntry quickEntry = new QuickEntry();
         BeanUtils.copyProperties(vo, quickEntry, "serialVersionUID");
         String route = StringEscapeUtils.unescapeHtml3(vo.getRoute());
+        quickEntry.setRoute(route);
+        if (!CollectionUtils.isEmpty(vo.getTypes())) {
+            List<Map<String, Object>> typeList = new ArrayList<>();
+            for (Integer type : vo.getTypes()) {
+                Map<String, Object> typeMap = new LinkedHashMap<>();
+                typeMap.put("type", type);
+                typeMap.put("typeName", type == 1 ? "PC" : "APP");
+                typeList.add(typeMap);
+            }
+            quickEntry.setTypeConfigJson(JSON.toJSONString(typeList));
+        }
         if (vo.getId()!=null) {
-            quickEntry.setRoute(route);
             this.getService().updateById(quickEntry);
         } else {
-            quickEntry.setRoute(route);
             quickEntry.setCreateTime(new Date());
             this.getMapper().insert(quickEntry);
         }
-
-        Serializable id = Optional.ofNullable(Optional.ofNullable(quickEntry).orElseGet(QuickEntry::new).getId()).orElse((int) 0L);
-        vo.setId((Integer) id);
-        quickEntryTypeService.addQuickEntryType(vo);
         return true;
     }
 
@@ -101,17 +101,26 @@ public class QuickEntryBizServiceImpl implements QuickEntryBizService {
 
     @Override
     public List<QuickEntry> listQuickEntry(Boolean isApp) {
-        List<QuickEntryType> quickEntryTypes = quickEntryTypeService.quickEntryTypeList(isApp);
-        List<Long> collect = quickEntryTypes.stream().map(QuickEntryType::getQuickEntryId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(collect)) {
-            QueryWrapper<QuickEntry> wrapper = new QueryWrapper<QuickEntry>();
-            wrapper.eq("is_del", 0);
-            wrapper.in("id", collect);
-            wrapper.orderByAsc("sort");
-            wrapper.orderByAsc("create_time");
-            return getMapper().selectList(wrapper);
-        } else {
-            return Collections.emptyList();
-        }
+        int targetType = isApp ? 2 : 1;
+        QueryWrapper<QuickEntry> wrapper = new QueryWrapper<QuickEntry>();
+        wrapper.eq("is_del", 0);
+        wrapper.isNotNull("type_config_json");
+        wrapper.orderByAsc("sort");
+        wrapper.orderByAsc("create_time");
+        List<QuickEntry> allEntries = getMapper().selectList(wrapper);
+        return allEntries.stream()
+                .filter(e -> {
+                    if (e.getTypeConfigJson() == null) return false;
+                    List<Map<String, Object>> typeList = JSON.parseObject(e.getTypeConfigJson(),
+                            new com.alibaba.fastjson2.TypeReference<List<Map<String, Object>>>() {});
+                    if (CollectionUtils.isEmpty(typeList)) return false;
+                    for (Map<String, Object> typeMap : typeList) {
+                        Object typeVal = typeMap.get("type");
+                        int type = typeVal instanceof Number ? ((Number) typeVal).intValue() : Integer.parseInt(typeVal.toString());
+                        if (type == targetType) return true;
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 }

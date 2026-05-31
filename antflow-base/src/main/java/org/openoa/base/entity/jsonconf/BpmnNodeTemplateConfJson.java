@@ -28,6 +28,11 @@ public class BpmnNodeTemplateConfJson implements Serializable {
      */
     private ApproveRemindConf approveRemind;
 
+    /**
+     * Overtime notice configuration (migrated from bpm_process_node_overtime)
+     */
+    private OvertimeConf overtimeConf;
+
     @Data
     @Builder
     @AllArgsConstructor
@@ -50,5 +55,20 @@ public class BpmnNodeTemplateConfJson implements Serializable {
     public static class ApproveRemindConf implements Serializable {
         private Long templateId;
         private String days;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class OvertimeConf implements Serializable {
+        /**
+         * Overtime threshold in hours
+         */
+        private Integer noticeTime;
+        /**
+         * Notice channel types (1=mail, 2=sms, 3=app)
+         */
+        private List<Integer> noticeTypes;
     }
 }

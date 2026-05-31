@@ -107,12 +107,6 @@
         GROUP BY w.runinfoid
         LIMIT 1
     </select>
-    <select id="disagreeType" parameterType="java.lang.String" resultType="java.lang.Integer">
-        select w.back_type
-        from bpm_process_node_back w
-        where w.node_key = #{nodeKey}
-          and w.process_key = #{processKey}
-    </select>
     <select id="getProcessKey" resultType="java.lang.String">
         select s.KEY_
         from ACT_RE_PROCDEF s

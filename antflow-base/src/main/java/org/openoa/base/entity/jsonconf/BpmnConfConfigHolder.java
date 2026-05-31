@@ -37,6 +37,11 @@ public class BpmnConfConfigHolder {
             config.setLowCodeFormConfig(buildLowCodeFormConfig(confVo));
         }
 
+        // Notice channel types
+        if (!CollectionUtils.isEmpty(confVo.getNoticeChannelTypes())) {
+            config.setNoticeChannelTypes(confVo.getNoticeChannelTypes());
+        }
+
         return config;
     }
 
