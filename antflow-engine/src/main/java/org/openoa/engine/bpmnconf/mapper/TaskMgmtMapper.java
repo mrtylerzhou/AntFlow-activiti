@@ -9,6 +9,7 @@ import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.AFExecutionEntity;
+import org.openoa.base.vo.HisTaskVo;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
 import org.springframework.stereotype.Repository;
@@ -314,4 +315,12 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
     int bulkInsertVariableInstance(@Param("list") List<VariableInstanceEntity> variables);
     int updateHistoricTaskInstance(HistoricTaskInstanceEntity historicTaskInstanceEntity);
     int deleteHisActInst(HistoricActivityInstance historicActivityInstance);
+
+    /**
+     * Get historic task list by process instance id, ordered by start time.
+     *
+     * @param procInstId process instance id
+     * @return list of historic tasks
+     */
+    List<HisTaskVo> findHisTaskList(@Param("procInstId") String procInstId);
 }

@@ -10,9 +10,11 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.engine.bpmnconf.es.ProcessDataChangedEvent;
 import org.openoa.engine.bpmnconf.service.biz.ButtonOperationServiceImpl;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -31,6 +33,8 @@ public class DoButtonOperationAspect {
     private FormFactory formFactory;
     @Autowired
     private ButtonOperationServiceImpl buttonOperationService;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Around("execution(* org.openoa.engine.factory.ButtonPreOperationService.buttonsPreOperation(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -62,6 +66,11 @@ public class DoButtonOperationAspect {
             vo.setStartUserName(SecurityUtils.getLogInEmpName());
         }
        
-        return buttonOperationService.buttonsOperationTransactional(vo);
+        BusinessDataVo result = buttonOperationService.buttonsOperationTransactional(vo);
+        // Publish Spring event for ES indexing
+        eventPublisher.publishEvent(new ProcessDataChangedEvent(
+                this, vo.getProcessNumber(), vo.getFormCode(),
+                vo.getBusinessId(), vo.getTaskId(), vo.getOperationType()));
+        return result;
     }
 }

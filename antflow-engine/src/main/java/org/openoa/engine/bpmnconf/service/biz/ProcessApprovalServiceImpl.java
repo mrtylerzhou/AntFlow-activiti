@@ -33,10 +33,12 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
+import org.openoa.engine.bpmnconf.es.ProcessApprovalEsServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -80,6 +82,10 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     private TaskService taskService;
     @Autowired
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
+    @Autowired(required = false)
+    private ProcessApprovalEsServiceImpl processApprovalEsService;
+    @Value("${antflow.es.enabled:false}")
+    private boolean esEnabled;
 
     /**
      * button operation
@@ -128,25 +134,33 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
                     vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
-                page.setRecords(this.getBaseMapper().viewPcpNewlyBuildList(page, vo));
-
+                if (!esEnabled || vo.isEmptySearchCondition()) {
+                    page.setRecords(this.getBaseMapper().viewPcpNewlyBuildList(page, vo));
+                } else {
+                    page.setRecords(processApprovalEsService.viewNewlyCreatedList(pageDto, vo, page));
+                }
                 break;
             // already finished tasks
             case 4:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
                     vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
-                page.setRecords(this.getBaseMapper().viewPcAlreadyDoneList(page, vo));
-
+                if (!esEnabled || vo.isEmptySearchCondition()) {
+                    page.setRecords(this.getBaseMapper().viewPcAlreadyDoneList(page, vo));
+                } else {
+                    page.setRecords(processApprovalEsService.viewAlreadyDoneList(pageDto, vo, page));
+                }
                 break;
             // running tasks
             case 5:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
                     vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
-                page.setRecords(this.getBaseMapper().viewPcToDoList(page, vo));
-
-
+                if (!esEnabled || vo.isEmptySearchCondition()) {
+                    page.setRecords(this.getBaseMapper().viewPcToDoList(page, vo));
+                } else {
+                    page.setRecords(processApprovalEsService.viewToDoList(pageDto, vo, page));
+                }
                 break;
             // my draft
             case 6:

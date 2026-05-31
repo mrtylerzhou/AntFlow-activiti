@@ -23,8 +23,14 @@ public enum MsgProcessEventEnum implements AfEnumBase{
     BUTTON_BACK_TO_MODIFY(18, "退回修改"),
     PROCESS_JP(19, "加批"),
     PROCESS_FINISH(20, "流程完成"),
-    HISTORY_SYNC(100, "同步历史数据"),
-    PROCESS_DATA_SYNC(101,"流程历史数据同步");
+    BUTTON_TYPE_ZB(21,"转办"),
+    BUTTON_TYPE_CHOOSE_ASSIGNEE(22,"自选审批人"),
+    BUTTON_TYPE_BACK_TO_ANY_NODE(23,"退回任意节点"),
+    BUTTON_TYPE_PROCESS_DRAW_BACK(29,"流程撤回"),
+    BUTTON_TYPE_SAVE_DRAFT(30,"保存草稿"),
+    BUTTON_TYPE_RECOVER_TO_HIS(31,"恢复已结束流程"),
+    BUTTON_TYPE_DRAW_BACK_AGREE(32,"撤销同意"),
+    BUTTON_TYPE_PROCESS_MOVE_AHEAD(33,"流程推进"),;
 
     @Getter
     private final Integer code;

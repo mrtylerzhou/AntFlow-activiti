@@ -10,6 +10,7 @@ import org.activiti.engine.delegate.ExecutionListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.MsgProcessEventEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -20,6 +21,7 @@ import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.constant.enums.EventTypeEnum;
+import org.openoa.engine.bpmnconf.es.ProcessDataChangedEvent;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.ThirdPartyCallBackServiceImpl;
@@ -31,6 +33,7 @@ import org.openoa.engine.factory.FormFactory;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -69,6 +72,8 @@ public class BpmnExecutionListener implements ExecutionListener {
     private ThirdPartyCallBackServiceImpl thirdPartyCallBackService;
     @Resource
     private BpmProcessForwardServiceImpl bpmProcessForwardService;
+    @Resource
+    private ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -142,6 +147,11 @@ public class BpmnExecutionListener implements ExecutionListener {
                 .businessNumber(processNumber)
                 .processState(ProcessStateEnum.HANDLED_STATE.getCode())
                 .build());
+
+        // Publish Spring event for ES indexing
+        eventPublisher.publishEvent(new ProcessDataChangedEvent(
+                this, processNumber, formCode, businessId, null,
+                MsgProcessEventEnum.PROCESS_FINISH.getCode()));
 
         if (BpmnConfFlagsEnum.HAS_LAST_NODE_COPY.flagsContainsCurrent(bpmnConf.getExtraFlags())) {
             LambdaQueryWrapper<BpmProcessForward> qryWrapper = Wrappers.<BpmProcessForward>lambdaQuery()

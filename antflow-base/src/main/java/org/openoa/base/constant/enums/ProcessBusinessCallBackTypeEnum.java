@@ -4,7 +4,7 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 import org.openoa.base.interf.BusinessCallBackAdaptor;
 import org.openoa.base.service.BusinessCallBackFace;
-import org.openoa.base.service.ProcessEventSendMessageAdaptor;
+import org.openoa.base.service.ProcessEventIndexAdaptor;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -14,7 +14,7 @@ import java.util.Set;
  * @Author tylerzhou
  */
 public enum ProcessBusinessCallBackTypeEnum implements BusinessCallBackFace,AfEnumBase {
-    Send_MQ_Message(1, ProcessEventSendMessageAdaptor.class,"发送事件消息到mq队列")
+    Send_MQ_Message(1, ProcessEventIndexAdaptor.class,"流程事件数据索引到ES")
     ,;
     @Getter
     private  Integer code;

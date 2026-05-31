@@ -621,4 +621,20 @@
         EXECUTION_ID_= #{executionId} and
         ACT_TYPE_ = #{activityType}
     </delete>
+
+    <select id="findHisTaskList" resultType="org.openoa.base.vo.HisTaskVo">
+        SELECT ID_ as taskId,
+               NAME_ as taskName,
+               ASSIGNEE_ as assignee,
+               START_TIME_ as startTime,
+               END_TIME_ as endTime,
+               DURATION_ as durationInMillis,
+               TASK_DEF_KEY_ as taskDefinitionKey,
+               PROC_INST_ID_ as processInstanceId,
+               ASSIGNEE_ as userId,
+               END_TIME_ as processTime
+        FROM AF_HI_TASKINST
+        WHERE PROC_INST_ID_ = #{procInstId}
+        ORDER BY START_TIME_ ASC
+    </select>
 </mapper>

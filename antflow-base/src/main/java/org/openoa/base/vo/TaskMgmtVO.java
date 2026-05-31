@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.springframework.util.ObjectUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -291,4 +293,15 @@ public class TaskMgmtVO implements Serializable {
     private List<String> versionProcessKeys;
 
     private Integer includeAllFlag;
+
+    /**
+     * Check if all search conditions are empty (for ES/MySQL toggle).
+     */
+    public boolean isEmptySearchCondition() {
+        return ObjectUtils.isEmpty(search)
+                && ObjectUtils.isEmpty(processType)
+                && ObjectUtils.isEmpty(processNumber)
+                && ObjectUtils.isEmpty(applyUserId)
+                && org.apache.commons.lang3.StringUtils.isBlank(processDigest);
+    }
 }

@@ -324,3 +324,19 @@ JSON 结构定义在 `antflow-base/.../entity/jsonconf/` 包下：
 ### 待完成
 - 数据迁移脚本：将现有子表数据回填到 JSON 字段
 - 详细表清单见 `doc/tables_to_drop.md`
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as local markdown files under `.scratch/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Uses the five canonical roles: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
