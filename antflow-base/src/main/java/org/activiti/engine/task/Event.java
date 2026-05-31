@@ -47,9 +47,6 @@ public interface Event extends Serializable {
    * [1] identity link type (aka role) */
   String ACTION_DELETE_GROUP_LINK = "DeleteGroupLink";
 
-  /** An user comment was added with the short version of the comment as message. */
-  String ACTION_ADD_COMMENT = "AddComment";
-
   /** Unique identifier for this event  */
   String getId();
   

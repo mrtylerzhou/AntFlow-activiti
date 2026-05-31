@@ -143,7 +143,7 @@ public class BpmnNodeVo  implements Serializable {
     /**
      * buttons
      */
-    private BpmnNodeButtonConfBaseVo buttons;
+    private BpmnNodeButtonConfBaseVo buttons=new BpmnNodeButtonConfBaseVo();
 
     /**
      * node notice template

@@ -65,9 +65,6 @@ public class TableDataManager extends AbstractManager {
     persistentObjectToTableNameMap.put(DeploymentEntity.class, "ACT_RE_DEPLOYMENT");
     persistentObjectToTableNameMap.put(ProcessDefinitionEntity.class, "ACT_RE_PROCDEF");
 
-    // history
-    persistentObjectToTableNameMap.put(CommentEntity.class, "ACT_HI_COMMENT");
-    
     persistentObjectToTableNameMap.put(HistoricActivityInstanceEntity.class, "ACT_HI_ACTINST");
     persistentObjectToTableNameMap.put(HistoricProcessInstanceEntity.class, "ACT_HI_PROCINST");
     persistentObjectToTableNameMap.put(HistoricVariableInstanceEntity.class, "ACT_HI_VARINST");

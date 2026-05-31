@@ -21,8 +21,6 @@ import java.util.Set;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.query.NativeQuery;
 
-import org.activiti.engine.task.Comment;
-import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
@@ -326,48 +324,6 @@ public interface TaskService {
    * Non existing variable names are simply ignored.
    */
   void removeVariablesLocal(String taskId, Collection<String> variableNames);
-
-  /** Add a comment to a task and/or process instance. */
-  Comment addComment(String taskId, String processInstanceId, String message);
-  
-  /** Add a comment to a task and/or process instance with a custom type. */
-  Comment addComment(String taskId, String processInstanceId, String type, String message);
-  
-  /** 
-   * Returns an individual comment with the given id. Returns null if no comment exists with the given id.
-   */
-  Comment getComment(String commentId);
-  
-  /** Removes all comments from the provided task and/or process instance*/
-  void deleteComments(String taskId, String processInstanceId);
-  
-  /** 
-   * Removes an individual comment with the given id.
-   * @throws ActivitiObjectNotFoundException when no comment exists with the given id. 
-   */
-  void deleteComment(String commentId);
-
-  /** The comments related to the given task. */
-  List<Comment> getTaskComments(String taskId);
-  
-  /** The comments related to the given task of the given type. */
-  List<Comment> getTaskComments(String taskId, String type);
-  
-  /** All comments of a given type. */
-  List<Comment> getCommentsByType(String type);
-
-  /** The all events related to the given task. */
-  List<Event> getTaskEvents(String taskId);
-  
-  /** Returns an individual event with the given id. Returns null if no event exists with the given id. */
-  Event getEvent(String eventId);
-
-  /** The comments related to the given process instance. */
-  List<Comment> getProcessInstanceComments(String processInstanceId);
-
-  /** The comments related to the given process instance. */
-  List<Comment> getProcessInstanceComments(String processInstanceId, String type);
-
 
   /** The list of subtasks for this parent task */
   List<Task> getSubTasks(String parentTaskId);

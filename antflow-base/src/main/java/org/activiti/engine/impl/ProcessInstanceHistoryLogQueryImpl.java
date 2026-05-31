@@ -27,7 +27,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 	protected boolean includeTasks;
 	protected boolean includeActivities;
 	protected boolean includeVariables;
-	protected boolean includeComments;
 
 	public ProcessInstanceHistoryLogQueryImpl(CommandExecutor commandExecutor, String processInstanceId) {
     this.commandExecutor = commandExecutor;
@@ -40,12 +39,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 	  return this;
   }
 
-	@Override
-  public ProcessInstanceHistoryLogQuery includeComments() {
-		this.includeComments = true;
-	  return this;
-  }
-	
 	@Override
 	public ProcessInstanceHistoryLogQuery includeActivities() {
 		this.includeActivities = true;
@@ -113,12 +106,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 			}
 			
 			processInstanceHistoryLog.addHistoricData(variables);
-		}
-		
-		// Comment
-		if (includeComments) {
-			List<? extends HistoricData> comments = commandContext.getCommentEntityManager().findCommentsByProcessInstanceId(processInstanceId);
-			processInstanceHistoryLog.addHistoricData(comments);
 		}
 		
 		// All events collected. Sort them by date.

@@ -123,7 +123,6 @@ import org.activiti.engine.impl.persistence.deploy.DeploymentManager;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionInfoCache;
 
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
-import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
@@ -778,7 +777,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       dbSqlSessionFactory.setMaxNrOfStatementsInBulkInsert(maxNrOfStatementsInBulkInsert);
       addSessionFactory(dbSqlSessionFactory);
       
-      addSessionFactory(new GenericManagerFactory(CommentEntityManager.class));
       addSessionFactory(new GenericManagerFactory(DeploymentEntityManager.class));
       addSessionFactory(new GenericManagerFactory(ExecutionEntityManager.class));
       addSessionFactory(new GenericManagerFactory(HistoricActivityInstanceEntityManager.class));

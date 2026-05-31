@@ -31,8 +31,6 @@ import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.persistence.AbstractManager;
-import org.activiti.engine.impl.persistence.entity.CommentEntity;
-import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;

@@ -23,28 +23,18 @@ import java.util.Set;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.activiti.engine.impl.cmd.AddCommentCmd;
 import org.activiti.engine.impl.cmd.ClaimTaskCmd;
 import org.activiti.engine.impl.cmd.CompleteTaskCmd;
 
 import org.activiti.engine.impl.cmd.DelegateTaskCmd;
 
-import org.activiti.engine.impl.cmd.DeleteCommentCmd;
 import org.activiti.engine.impl.cmd.DeleteTaskCmd;
 
-import org.activiti.engine.impl.cmd.GetCommentCmd;
-
-import org.activiti.engine.impl.cmd.GetProcessInstanceCommentsCmd;
 import org.activiti.engine.impl.cmd.GetSubTasksCmd;
 
-import org.activiti.engine.impl.cmd.GetTaskCommentsByTypeCmd;
-import org.activiti.engine.impl.cmd.GetTaskCommentsCmd;
-import org.activiti.engine.impl.cmd.GetTaskEventCmd;
-import org.activiti.engine.impl.cmd.GetTaskEventsCmd;
 import org.activiti.engine.impl.cmd.GetTaskVariableCmd;
 import org.activiti.engine.impl.cmd.GetTaskVariablesCmd;
 import org.activiti.engine.impl.cmd.GetTasksLocalVariablesCmd;
-import org.activiti.engine.impl.cmd.GetTypeCommentsCmd;
 import org.activiti.engine.impl.cmd.HasTaskVariableCmd;
 import org.activiti.engine.impl.cmd.NewTaskCmd;
 import org.activiti.engine.impl.cmd.RemoveTaskVariablesCmd;
@@ -56,8 +46,6 @@ import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
 import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 
-import org.activiti.engine.task.Comment;
-import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
@@ -254,57 +242,6 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
 
   public void removeVariablesLocal(String taskId, Collection<String> variableNames) {
     commandExecutor.execute(new RemoveTaskVariablesCmd(taskId, variableNames, true));
-  }
-
-  public Comment addComment(String taskId, String processInstance, String message) {
-    return commandExecutor.execute(new AddCommentCmd(taskId, processInstance, message));
-  }
-  
-  public Comment addComment(String taskId, String processInstance, String type, String message) {
-    return commandExecutor.execute(new AddCommentCmd(taskId, processInstance, type, message));
-  }
-  
-  @Override
-  public Comment getComment(String commentId) {
-    return commandExecutor.execute(new GetCommentCmd(commentId));
-  }
-  
-  @Override
-  public Event getEvent(String eventId) {
-    return commandExecutor.execute(new GetTaskEventCmd(eventId));
-  }
-
-  public List<Comment> getTaskComments(String taskId) {
-    return commandExecutor.execute(new GetTaskCommentsCmd(taskId));
-  }
-  
-  public List<Comment> getTaskComments(String taskId, String type) {
-    return commandExecutor.execute(new GetTaskCommentsByTypeCmd(taskId, type));
-  }
-  
-  public List<Comment> getCommentsByType(String type) {
-    return commandExecutor.execute(new GetTypeCommentsCmd(type));
-  }
-
-  public List<Event> getTaskEvents(String taskId) {
-    return commandExecutor.execute(new GetTaskEventsCmd(taskId));
-  }
-
-  public List<Comment> getProcessInstanceComments(String processInstanceId) {
-    return commandExecutor.execute(new GetProcessInstanceCommentsCmd(processInstanceId));
-  }
-
-  public List<Comment> getProcessInstanceComments(String processInstanceId, String type) {
-    return commandExecutor.execute(new GetProcessInstanceCommentsCmd(processInstanceId, type));
-  }
-
-  public void deleteComments(String taskId, String processInstanceId) {
-    commandExecutor.execute(new DeleteCommentCmd(taskId, processInstanceId, null));
-  }
-  
-  @Override
-  public void deleteComment(String commentId) {
-    commandExecutor.execute(new DeleteCommentCmd(null, null, commentId));
   }
 
   public List<Task> getSubTasks(String parentTaskId) {

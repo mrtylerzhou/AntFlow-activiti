@@ -35,7 +35,6 @@ import org.activiti.engine.impl.cmd.GetExecutionVariableInstanceCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariableInstancesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionsVariablesCmd;
-import org.activiti.engine.impl.cmd.GetProcessInstanceEventsCmd;
 import org.activiti.engine.impl.cmd.GetStartFormCmd;
 import org.activiti.engine.impl.cmd.HasExecutionVariableCmd;
 import org.activiti.engine.impl.cmd.RemoveEventListenerCommand;
@@ -54,7 +53,6 @@ import org.activiti.engine.runtime.NativeProcessInstanceQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
-import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
 
 /**
@@ -324,11 +322,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   @Override
   public void setProcessInstanceName(String processInstanceId, String name) {
      commandExecutor.execute(new SetProcessInstanceNameCmd(processInstanceId, name));
-  }
-
-  @Override
-  public List<Event> getProcessInstanceEvents(String processInstanceId) {
-    return commandExecutor.execute(new GetProcessInstanceEventsCmd(processInstanceId));
   }
 
   @Override

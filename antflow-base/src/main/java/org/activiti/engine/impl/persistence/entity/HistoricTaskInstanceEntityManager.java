@@ -127,10 +127,6 @@ public class HistoricTaskInstanceEntityManager extends AbstractManager {
           .getHistoricVariableInstanceEntityManager()
           .deleteHistoricVariableInstancesByTaskId(taskId);
 
-        commandContext
-          .getCommentEntityManager()
-          .deleteCommentsByTaskId(taskId);
-
         boolean deleted = getDbSqlSession().delete(historicTaskInstance);
         
         if (deleted && commandContext.getEventDispatcher().isEnabled()) {

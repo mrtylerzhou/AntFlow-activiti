@@ -133,7 +133,7 @@ public class BpmnConfVo {
     /**
      * buttons on view page
      */
-    private BpmnViewPageButtonBaseVo viewPageButtons;
+    private BpmnViewPageButtonBaseVo viewPageButtons=new BpmnViewPageButtonBaseVo();
 
     /**
      * out of scope notice template

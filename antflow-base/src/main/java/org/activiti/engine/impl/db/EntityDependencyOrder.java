@@ -6,7 +6,6 @@ import java.util.List;
 
 
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntity;
-import org.activiti.engine.impl.persistence.entity.CommentEntity;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
@@ -47,9 +46,6 @@ public class EntityDependencyOrder {
 	
 		/* No FK */
 		DELETE_ORDER.add(PropertyEntity.class);
-		
-		/* No FK */
-		DELETE_ORDER.add(CommentEntity.class);
 		
 		/* No FK */
 		DELETE_ORDER.add(EventLogEntryEntity.class);

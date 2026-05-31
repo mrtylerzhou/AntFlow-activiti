@@ -73,20 +73,6 @@ CREATE TABLE `ACT_HI_ACTINST`
     KEY `ACT_IDX_HI_ACT_INST_EXEC` (`EXECUTION_ID_`, `ACT_ID_`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `ACT_HI_COMMENT`
-(
-    `ID_`           varchar(64)    NOT NULL,
-    `TYPE_`         varchar(255)   DEFAULT NULL,
-    `TIME_`         datetime(3)    NOT NULL,
-    `USER_ID_`      varchar(255)   DEFAULT NULL,
-    `TASK_ID_`      varchar(64)    DEFAULT NULL,
-    `PROC_INST_ID_` varchar(64)    DEFAULT NULL,
-    `ACTION_`       varchar(255)   DEFAULT NULL,
-    `MESSAGE_`      varchar(4000)  DEFAULT NULL,
-    `FULL_MSG_`     longblob,
-    PRIMARY KEY (`ID_`)
-) ENGINE = InnoDB;
-
 
 CREATE TABLE `ACT_HI_PROCINST`
 (

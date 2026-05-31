@@ -29,7 +29,6 @@ import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.history.HistoryManager;
 
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
-import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
@@ -330,9 +329,6 @@ public class CommandContext {
     return getSession(TableDataManager.class);
   }
 
-  public CommentEntityManager getCommentEntityManager() {
-    return getSession(CommentEntityManager.class);
-  }
   
   public PropertyEntityManager getPropertyEntityManager() {
     return getSession(PropertyEntityManager.class);

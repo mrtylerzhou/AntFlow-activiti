@@ -1406,8 +1406,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         BpmnConfConfigJson confConfig = bpmnConfVo.getOrParseConfConfigJson(bpmnConf.getConfConfigJson());
         if (confConfig != null && !CollectionUtils.isEmpty(confConfig.getViewPageButtons())) {
             setViewPageButtonFromJson(bpmnConfVo, confConfig);
-        } else {
-            throw  new AFBizException("migration error,please contact the author");
         }
 
         //set conf-level notice templates — JSON only
