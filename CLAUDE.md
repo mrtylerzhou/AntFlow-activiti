@@ -263,6 +263,7 @@ AntFlow 通过适配器将业务逻辑与 Activiti 引擎彻底解耦：
 ### 存储结构
 - **`t_bpmn_conf.conf_config_json`** — 流程级配置（视图按钮、通知模板等）
 - **`t_bpmn_node.node_config_json`** — 节点级配置（审批人、条件、按钮、模板等）
+- **`bpm_process_app_application.category_config_json`** — 应用分类配置（分类关联、排序、可见性等）
 
 JSON 结构定义在 `antflow-base/.../entity/jsonconf/` 包下：
 - `BpmnConfConfigJson` — 流程级 JSON 顶层结构
@@ -272,6 +273,8 @@ JSON 结构定义在 `antflow-base/.../entity/jsonconf/` 包下：
   - `buttonSignConf`（`BpmnNodeButtonSignConfJson`）— 按钮/签收/标签/加签
   - `templateConf`（`BpmnNodeTemplateConfJson`）— 通知模板/催办
   - `lowCodeConf`（`BpmnNodeLowCodeConfJson`）— 低代码字段权限
+- `AppCategoryConfigJson` — 应用分类配置，包含：
+  - `categories[]`（`CategoryItem`）— 分类关联列表（categoryId, sort, state, visbleState, historyId, commonUseState）
 
 ### 读写策略
 

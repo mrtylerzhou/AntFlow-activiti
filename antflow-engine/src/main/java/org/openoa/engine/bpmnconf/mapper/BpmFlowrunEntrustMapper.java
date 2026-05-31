@@ -23,11 +23,6 @@ public interface BpmFlowrunEntrustMapper extends BaseMapper<BpmFlowrunEntrust> {
 
     public BpmFlowrunEntrust getEntrustByTaskId (@Param("actual") String userId, @Param("procDefId") String procDefId,@Param("taskId")String taskId);
     /**
-     * delete run info
-     */
-    public Integer deleteBpmFlowruninfo(@Param("businessKey") String businessKey);
-
-    /**
      * get forward records
      *
      * @param procInstId

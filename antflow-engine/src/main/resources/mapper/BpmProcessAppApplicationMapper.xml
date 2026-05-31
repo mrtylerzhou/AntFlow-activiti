@@ -44,6 +44,7 @@
         s.pc_icon as pcIcon,
         s.apply_type as applyType,
         s.permissions_code as permissionsCode,
+        s.category_config_json as categoryConfigJson,
         (SELECT process_type_name from bpm_process_category where id = (SELECT category_id from
         bpm_process_application_type where application_id=s.id and is_del=0 order by create_time desc LIMIT 1 )) as
         processTypeName,
@@ -113,17 +114,18 @@
         a.process_key as processKey,
         a.permissions_code as permissionsCode,
         a.create_user_id as createUserId,
+        a.category_config_json as categoryConfigJson,
         t.id as id,
         t.state as state,
         t.visble_state as visbleState,
         t.sort as sort
         FROM
         bpm_process_app_application a
-        left join bpm_process_application_type t on t.application_id=a.id
+        left join bpm_process_application_type t on t.application_id=a.id and t.is_del=0
         WHERE
-        a.is_del = 0 and t.is_del=0
+        a.is_del = 0
         <if test="id!=null">
-            and t.category_id =#{id}
+            and (t.category_id =#{id} or JSON_CONTAINS(a.category_config_json, CAST(CONCAT('{"categoryId":', #{id}, '}') AS JSON), '$.categories'))
         </if>
         <if test="processKeyList != null and processKeyList.size() > 0">
             and
@@ -136,7 +138,7 @@
             </foreach>
         </if>
         <if test="visbleState!='' and visbleState!=null">
-            and t.visble_state =#{visbleState}
+            and (t.visble_state =#{visbleState} or JSON_CONTAINS(a.category_config_json, CAST(CONCAT('{"visbleState":', #{visbleState}, '}') AS JSON), '$.categories'))
         </if>
         <if test="isSon!=null">
             and a.is_son =#{isSon}
@@ -152,7 +154,7 @@
                 #{item}
             </foreach>
         </if>
-        order by t.sort asc
+        order by COALESCE(t.sort, 0) asc
     </select>
     <select id="findProcessAppApplication" resultType="org.openoa.base.entity.BpmProcessAppApplication">
         select id,
@@ -178,15 +180,17 @@
     <!--list process icon by type and category-->
     <select id="listProcessIcon" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">
         SELECT
-            t.id as id,
+            COALESCE(t.id, 0) as id,
             a.process_key as processKey,
-            a.process_name as title
+            a.process_name as title,
+            a.category_config_json as categoryConfigJson
         FROM
             bpm_process_app_application a
-                left join bpm_process_application_type t on t.application_id=a.id
+                left join bpm_process_application_type t on t.application_id=a.id and t.is_del=0 and t.category_id = #{id} and t.visble_state = 1
         WHERE
-            a.is_del = 0 and t.is_del=0 and a.apply_type = 1 and t.category_id = #{id} and t.visble_state = 1
-        order by t.sort asc
+            a.is_del = 0 and a.apply_type = 1
+            and (t.id is not null or JSON_CONTAINS(a.category_config_json, CAST(CONCAT('{"categoryId":', #{id}, ',"visbleState":1}') AS JSON), '$.categories'))
+        order by COALESCE(t.sort, 0) asc
     </select>
 
     <select id="selectAllByBusinessPart" resultType="org.openoa.engine.vo.BpmProcessAppApplicationVo">

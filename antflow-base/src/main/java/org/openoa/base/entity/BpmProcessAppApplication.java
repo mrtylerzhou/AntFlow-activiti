@@ -139,4 +139,11 @@ public class BpmProcessAppApplication implements TenantField, Serializable {
      * source
      */
     private String source;
+
+    /**
+     * Category configuration JSON
+     * Stores List<AppCategoryConfigJson.CategoryItem> as JSON
+     */
+    @TableField("category_config_json")
+    private String categoryConfigJson;
 }

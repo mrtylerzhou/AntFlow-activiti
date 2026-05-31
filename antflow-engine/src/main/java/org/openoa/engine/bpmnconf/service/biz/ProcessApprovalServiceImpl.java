@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
@@ -344,8 +345,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if (conf == null || conf.getBpmnCode() == null) {
             return true;
         }
-        BpmnNode node = bpmnNodeService.getOne(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<BpmnNode>()
-                .eq("bpmn_code", conf.getBpmnCode())
+        BpmnNode node = bpmnNodeService.getOne(new QueryWrapper<BpmnNode>()
+                .eq("conf_id", conf.getId())
                 .eq("node_key", vo.getTaskName()));
         if (node == null) {
             return true;

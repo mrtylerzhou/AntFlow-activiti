@@ -213,5 +213,10 @@ public class BpmProcessAppApplicationVo implements Serializable {
      */
     private String  roleRequestUri;
 
+    /**
+     * Category configuration JSON
+     */
+    private String categoryConfigJson;
+
 
 }

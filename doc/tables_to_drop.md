@@ -281,6 +281,69 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 
 ---
 
+## 六、本次会话删除的表（2 张）
+
+### Phase 1: 死表删除
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `bpm_flowruninfo` | 流程运行时信息（死表，零调用者） | 无（删除） | `BpmFlowruninfo.java`, `BpmFlowruninfoMapper.java`, `BpmFlowruninfoService.java`, `BpmFlowruninfoServiceImpl.java`, `BpmFlowruninfoBizService.java`, `BpmFlowruninfoBizServiceImpl.java` 共 6 个文件 |
+| `bpm_manual_notify` | 手动催办记录（死表，零调用者） | 无（删除） | `BpmManualNotify.java`, `BpmManualNotifyMapper.java` 共 2 个文件 |
+
+**代码变更：**
+- `BpmFlowrunEntrustMapper.java` — 移除 `deleteBpmFlowruninfo` 方法
+- `BpmFlowrunEntrustMapper.xml` — 移除 `deleteBpmFlowruninfo` SQL
+- `NotifyServiceImpl.java` — 移除 `notifyByHand` 方法和 `BpmManualNotifyMapper` 注入、`ALLOWED` 常量
+
+---
+
+## 七、本次会话 JSON 化的表（1 张，表未删除）
+
+### Phase 2: 应用分类关联表 JSON 化
+
+| 表名 | 说明 | 替代方案 | 状态 |
+|------|------|---------|------|
+| `bpm_process_application_type` | 应用与分类的多对多关联表 | `bpm_process_app_application.category_config_json` | **JSON-first 已实现，表暂保留** |
+
+**Schema 变更：**
+- `bpm_process_app_application` 新增 `category_config_json TEXT` 列
+
+**JSON 结构：**`AppCategoryConfigJson`（`antflow-base/.../entity/jsonconf/AppCategoryConfigJson.java`）
+```json
+{
+  "categories": [
+    {
+      "categoryId": 1,
+      "sort": 1,
+      "state": 0,
+      "visbleState": 1,
+      "historyId": null,
+      "commonUseState": null
+    }
+  ]
+}
+```
+
+**读路径变更（JSON-first）：**
+- `BpmProcessAppApplicationMapper.xml` — `listPage` 新增 `category_config_json` 字段选择
+- `BpmProcessAppApplicationMapper.xml` — `listIcon` 使用 `JSON_CONTAINS` 进行分类过滤（兼容旧数据）
+- `BpmProcessAppApplicationMapper.xml` — `listProcessIcon` 使用 `JSON_CONTAINS` 进行分类过滤
+
+**新增文件：**
+- `AppCategoryConfigJson.java` — JSON 结构定义类
+
+**修改文件：**
+- `BpmProcessAppApplication.java` — 新增 `categoryConfigJson` 字段
+- `BpmProcessAppApplicationVo.java` — 新增 `categoryConfigJson` 字段
+- `BpmProcessAppApplicationMapper.xml` — 更新查询支持 JSON
+- `bpm_init_db.sql` — 新增 `category_config_json` 列 DDL
+
+**待办：**
+- [ ] 执行数据迁移脚本，将 `bpm_process_application_type` 数据回填到 `bpm_process_app_application.category_config_json`
+- [ ] 迁移完成后删除 `bpm_process_application_type` 表和相关代码
+
+---
+
 ## 保留的表
 
 | 表名 | 说明 | 新增字段 |
@@ -295,6 +358,7 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 | `t_quick_entry` | 快捷入口 | `type_config_json` VARCHAR(500) |
 | `t_information_template` | 通知模板 | `is_default` TINYINT |
 | `t_op_log` | 操作/邮件日志 | `log_type` TINYINT, `receiver` VARCHAR(255) |
+| `bpm_process_app_application` | 应用主表 | `category_config_json` TEXT |
 
 ---
 
@@ -344,6 +408,18 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
   └── t_bpm_process_audit (Phase 3b, 写表，零读取者)
 
 合计: 62 张表
+
+第七批（死表清理）: 2 张表（已删除）
+  ├── bpm_flowruninfo (死表，零调用者)
+  └── bpm_manual_notify (死表，零调用者)
+
+合计: 64 张表
+
+第八批（应用分类关联表 JSON 化）: 1 张表（JSON-first 已实现，表暂保留）
+  └── bpm_process_application_type → bpm_process_app_application.category_config_json
+
+待删除: 1 张表（数据迁移后可删除）
+  └── bpm_process_application_type
 ```
 
 ---
