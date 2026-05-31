@@ -145,49 +145,6 @@ CREATE TABLE `ACT_HI_VARINST`
     KEY `ACT_IDX_HI_PROCVAR_TASK_ID` (`TASK_ID_`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `ACT_ID_GROUP`
-(
-    `ID_`   varchar(64)   NOT NULL,
-    `REV_`  int           DEFAULT NULL,
-    `NAME_` varchar(255)  DEFAULT NULL,
-    `TYPE_` varchar(255)  DEFAULT NULL,
-    PRIMARY KEY (`ID_`)
-) ENGINE = InnoDB;
-
-CREATE TABLE `ACT_ID_INFO`
-(
-    `ID_`        varchar(64)   NOT NULL,
-    `REV_`       int           DEFAULT NULL,
-    `USER_ID_`   varchar(64)   DEFAULT NULL,
-    `TYPE_`      varchar(64)   DEFAULT NULL,
-    `KEY_`       varchar(255)  DEFAULT NULL,
-    `VALUE_`     varchar(255)  DEFAULT NULL,
-    `PASSWORD_`  longblob,
-    `PARENT_ID_` varchar(255)  DEFAULT NULL,
-    PRIMARY KEY (`ID_`)
-) ENGINE = InnoDB;
-
-CREATE TABLE `ACT_ID_USER`
-(
-    `ID_`         varchar(64)  NOT NULL,
-    `REV_`        int           DEFAULT NULL,
-    `FIRST_`      varchar(255)  DEFAULT NULL,
-    `LAST_`       varchar(255)  DEFAULT NULL,
-    `EMAIL_`      varchar(255)  DEFAULT NULL,
-    `PWD_`        varchar(255)  DEFAULT NULL,
-    `PICTURE_ID_` varchar(64)   DEFAULT NULL,
-    PRIMARY KEY (`ID_`)
-) ENGINE = InnoDB;
-
-
-CREATE TABLE `ACT_ID_MEMBERSHIP`
-(
-    `USER_ID_`  varchar(64)  NOT NULL,
-    `GROUP_ID_` varchar(64)  NOT NULL,
-    PRIMARY KEY (`USER_ID_`, `GROUP_ID_`),
-    KEY `ACT_FK_MEMB_GROUP` (`GROUP_ID_`)
-) ENGINE = InnoDB;
-
 CREATE TABLE `ACT_RE_PROCDEF`
 (
     `ID_`                     varchar(64)    NOT NULL,

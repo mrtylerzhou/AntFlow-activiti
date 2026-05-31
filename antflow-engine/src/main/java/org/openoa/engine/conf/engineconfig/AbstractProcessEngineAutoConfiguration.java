@@ -173,12 +173,6 @@ public abstract class AbstractProcessEngineAutoConfiguration
     return super.formServiceBean(processEngine);
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  @Override
-  public IdentityService identityServiceBean(ProcessEngine processEngine) {
-    return super.identityServiceBean(processEngine);
-  }
 
   @Bean
   @ConditionalOnMissingBean

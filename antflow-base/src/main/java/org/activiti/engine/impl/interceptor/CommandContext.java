@@ -32,20 +32,16 @@ import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
-import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
-import org.activiti.engine.impl.persistence.entity.MembershipIdentityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.PropertyEntityManager;
 import org.activiti.engine.impl.persistence.entity.ResourceEntityManager;
 import org.activiti.engine.impl.persistence.entity.TableDataManager;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
-import org.activiti.engine.impl.persistence.entity.UserIdentityManager;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntityManager;
 import org.activiti.engine.impl.pvm.runtime.AtomicOperation;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
@@ -308,23 +304,7 @@ public class CommandContext {
   public EventLogEntryEntityManager getEventLogEntryEntityManager() {
   	return getSession(EventLogEntryEntityManager.class);
   }
-  
-  public UserIdentityManager getUserIdentityManager() {
-    return getSession(UserIdentityManager.class);
-  }
 
-  public GroupIdentityManager getGroupIdentityManager() {
-    return getSession(GroupIdentityManager.class);
-  }
-
-  public IdentityInfoEntityManager getIdentityInfoEntityManager() {
-    return getSession(IdentityInfoEntityManager.class);
-  }
-
-  public MembershipIdentityManager getMembershipIdentityManager() {
-    return getSession(MembershipIdentityManager.class);
-  }
-  
   public TableDataManager getTableDataManager() {
     return getSession(TableDataManager.class);
   }

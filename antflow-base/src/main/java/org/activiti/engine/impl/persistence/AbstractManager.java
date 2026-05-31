@@ -23,18 +23,14 @@ import org.activiti.engine.impl.interceptor.Session;
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
-import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
-import org.activiti.engine.impl.persistence.entity.MembershipIdentityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.ResourceEntityManager;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
-import org.activiti.engine.impl.persistence.entity.UserIdentityManager;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntityManager;
 
 
@@ -108,22 +104,6 @@ public abstract class AbstractManager implements Session {
     return getSession(HistoricTaskInstanceEntityManager.class);
   }
 
-  protected UserIdentityManager getUserIdentityManager() {
-    return getSession(UserIdentityManager.class);
-  }
-  
-  protected GroupIdentityManager getGroupIdentityManager() {
-    return getSession(GroupIdentityManager.class);
-  }
-  
-  protected IdentityInfoEntityManager getIdentityInfoManager() {
-    return getSession(IdentityInfoEntityManager.class);
-  }
-  
-  protected MembershipIdentityManager getMembershipIdentityManager() {
-    return getSession(MembershipIdentityManager.class);
-  }
-  
   protected HistoryManager getHistoryManager() {
     return getSession(HistoryManager.class);
   }

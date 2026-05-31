@@ -43,7 +43,6 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.DynamicBpmnService;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.IdentityService;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -59,7 +58,6 @@ import org.activiti.engine.form.AbstractFormType;
 import org.activiti.engine.impl.DynamicBpmnServiceImpl;
 import org.activiti.engine.impl.FormServiceImpl;
 import org.activiti.engine.impl.HistoryServiceImpl;
-import org.activiti.engine.impl.IdentityServiceImpl;
 import org.activiti.engine.impl.ManagementServiceImpl;
 import org.activiti.engine.impl.ProcessEngineImpl;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -113,9 +111,6 @@ import org.activiti.engine.impl.interceptor.LogInterceptor;
 import org.activiti.engine.impl.interceptor.SessionFactory;
 import org.activiti.engine.impl.persistence.DefaultHistoryManagerSessionFactory;
 import org.activiti.engine.impl.persistence.GenericManagerFactory;
-import org.activiti.engine.impl.persistence.GroupEntityManagerFactory;
-import org.activiti.engine.impl.persistence.MembershipEntityManagerFactory;
-import org.activiti.engine.impl.persistence.UserEntityManagerFactory;
 import org.activiti.engine.impl.persistence.deploy.DefaultDeploymentCache;
 import org.activiti.engine.impl.persistence.deploy.Deployer;
 import org.activiti.engine.impl.persistence.deploy.DeploymentCache;
@@ -130,7 +125,6 @@ import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntit
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
@@ -210,7 +204,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected RepositoryService repositoryService = new RepositoryServiceImpl();
   protected RuntimeService runtimeService = new RuntimeServiceImpl();
   protected HistoryService historyService = new HistoryServiceImpl(this);
-  protected IdentityService identityService = new IdentityServiceImpl();
   protected TaskService taskService = new TaskServiceImpl(this);
   protected FormService formService = new FormServiceImpl();
   protected ManagementService managementService = new ManagementServiceImpl();
@@ -504,7 +497,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initService(repositoryService);
     initService(runtimeService);
     initService(historyService);
-    initService(identityService);
     initService(taskService);
     initService(formService);
     initService(managementService);
@@ -783,7 +775,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       addSessionFactory(new GenericManagerFactory(HistoricProcessInstanceEntityManager.class));
       addSessionFactory(new GenericManagerFactory(HistoricVariableInstanceEntityManager.class));
       addSessionFactory(new GenericManagerFactory(HistoricTaskInstanceEntityManager.class));
-      addSessionFactory(new GenericManagerFactory(IdentityInfoEntityManager.class));
       addSessionFactory(new GenericManagerFactory(ProcessDefinitionEntityManager.class));
       addSessionFactory(new GenericManagerFactory(ProcessDefinitionInfoEntityManager.class));
       addSessionFactory(new GenericManagerFactory(PropertyEntityManager.class));
@@ -795,10 +786,6 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       addSessionFactory(new GenericManagerFactory(EventLogEntryEntityManager.class));
       
       addSessionFactory(new DefaultHistoryManagerSessionFactory());
-      
-      addSessionFactory(new UserEntityManagerFactory());
-      addSessionFactory(new GroupEntityManagerFactory());
-      addSessionFactory(new MembershipEntityManagerFactory());
     }
     
     if (customSessionFactories!=null) {
@@ -1404,16 +1391,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     this.historyService = historyService;
     return this;
   }
-  
-  public IdentityService getIdentityService() {
-    return identityService;
-  }
-  
-  public ProcessEngineConfigurationImpl setIdentityService(IdentityService identityService) {
-    this.identityService = identityService;
-    return this;
-  }
-  
+
   public TaskService getTaskService() {
     return taskService;
   }

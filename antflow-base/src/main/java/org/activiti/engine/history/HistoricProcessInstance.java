@@ -17,7 +17,6 @@ package org.activiti.engine.history;
 import java.util.Date;
 import java.util.Map;
 
-import org.activiti.engine.IdentityService;
 import org.activiti.engine.runtime.ProcessInstance;
 
 /** A single execution of a whole process definition that is stored permanently.
@@ -66,8 +65,7 @@ public interface HistoricProcessInstance {
   @Deprecated
   String getEndActivityId();
   
-  /** The authenticated user that started this process instance. 
-   * @see IdentityService#setAuthenticatedUserId(String) */
+  /** The authenticated user that started this process instance. */
   String getStartUserId();
   
   /** The start activity. */

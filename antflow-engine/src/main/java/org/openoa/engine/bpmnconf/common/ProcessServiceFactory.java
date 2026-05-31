@@ -19,49 +19,18 @@ import org.springframework.stereotype.Component;
 public class ProcessServiceFactory {
     @Autowired
     protected RepositoryService repositoryService;
-
     @Autowired
     protected RuntimeService runtimeService;
-
-    @Autowired
-    protected IdentityService identityService;
-
     @Autowired
     protected TaskService taskService;
-
-
-    @Autowired
-    protected ManagementService managementService;
-
-    @Autowired
-    protected BpmFlowruninfoServiceImpl bpmFlowruninfoMapper;
-
-
-    @Autowired
-    protected BpmTaskconfigMapper bpmTaskconfigMapper;
-
-
     @Autowired
     protected BpmBusinessProcessMapper bpmBusinessProcessMapper;
-
-    @Autowired
-    protected BpmTaskconfigServiceImpl bpmTaskconfigService;
-
-
-    @Autowired
-    protected BpmFlowrunEntrustServiceImpl entrustService;
-
     @Autowired
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
-
-
     @Autowired
     protected TaskMgmtMapper taskMgmtMapper;
-
     @Autowired
     protected ProcessEngine processEngine;
-
-
     @Autowired
     protected UserMessageServiceImpl userMessageService;
 }

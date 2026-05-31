@@ -9,19 +9,15 @@ import org.activiti.engine.impl.persistence.entity.ByteArrayEntity;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricScopeInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityInfoEntity;
-import org.activiti.engine.impl.persistence.entity.MembershipEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.PropertyEntity;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 
 
@@ -94,29 +90,9 @@ public class EntityDependencyOrder {
 		 * FK from execution
 		 */
 		DELETE_ORDER.add(ProcessDefinitionEntity.class);
-		
-		/*
-	   * FK to User
-	   * FK to Group
-	   */
-		DELETE_ORDER.add(MembershipEntity.class);
-		
-		/*
-		 * Fk from Membership
-		 */
-		DELETE_ORDER.add(UserEntity.class);
-	  
-	  /*
-	   * FK from Membership
-	   */
-		DELETE_ORDER.add(GroupEntity.class);
-	  
-
 
 	  // History entities have no FK's
 
-		DELETE_ORDER.add(IdentityInfoEntity.class);
-	  
 		DELETE_ORDER.add(HistoricActivityInstanceEntity.class);
 		DELETE_ORDER.add(HistoricProcessInstanceEntity.class);
 		DELETE_ORDER.add(HistoricTaskInstanceEntity.class);

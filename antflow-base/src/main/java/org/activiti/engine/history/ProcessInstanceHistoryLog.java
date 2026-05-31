@@ -3,7 +3,6 @@ package org.activiti.engine.history;
 import java.util.Date;
 import java.util.List;
 
-import org.activiti.engine.IdentityService;
 import org.activiti.engine.runtime.ProcessInstance;
 
 /**
@@ -31,8 +30,7 @@ public interface ProcessInstanceHistoryLog {
   /** The difference between {@link #getEndTime()} and {@link #getStartTime()} . */
   Long getDurationInMillis();
 
-  /** The authenticated user that started this process instance. 
-   * @see IdentityService#setAuthenticatedUserId(String) */
+  /** The authenticated user that started this process instance. */
   String getStartUserId();
   
   /** The start activity. */
