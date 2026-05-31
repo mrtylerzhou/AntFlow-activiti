@@ -133,4 +133,30 @@
         inner join bpm_business_process bbp on tbc.bpmn_code = bbp.VERSION
         where bbp.BUSINESS_NUMBER = #{processNumber}
     </select>
+
+    <select id="allProcess" resultType="org.openoa.base.vo.BpmProcessVo">
+        SELECT bpmn_name AS processName, form_code AS processKey
+        FROM t_bpmn_conf
+        WHERE is_del = 0 AND effective_status = 1
+    </select>
+
+    <select id="getBpmProcessVoByFormCode" resultType="org.openoa.base.vo.BpmProcessVo">
+        SELECT bpmn_name AS processName, form_code AS processKey
+        FROM t_bpmn_conf
+        WHERE form_code = #{formCode} AND is_del = 0 AND effective_status = 1
+        LIMIT 1
+    </select>
+
+    <select id="formCodeListByBpmnName" resultType="java.lang.String">
+        SELECT form_code
+        FROM t_bpmn_conf
+        WHERE bpmn_name = #{bpmnName} AND is_del = 0 AND effective_status = 1
+    </select>
+
+    <select id="formCodeListByConfId" resultType="java.lang.String">
+        SELECT b.form_code
+        FROM t_bpmn_conf a
+        INNER JOIN t_bpmn_conf b ON a.bpmn_name = b.bpmn_name AND b.is_del = 0 AND b.effective_status = 1
+        WHERE a.id = #{confId} AND a.is_del = 0
+    </select>
 </mapper>

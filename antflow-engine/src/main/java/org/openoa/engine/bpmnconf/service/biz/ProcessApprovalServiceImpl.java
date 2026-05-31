@@ -30,7 +30,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
+import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     @Autowired
     private BpmProcessForwardBizService processForwardBizService;
     @Autowired
-    private BpmProcessNameService bpmProcessNameService;
+    private BpmnConfMapper bpmnConfMapper;
     @Autowired
     private FormFactory formFactory;
     @Autowired
@@ -124,7 +124,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // recently build task
             case 3:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(bpmProcessNameService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcpNewlyBuildList(page, vo));
 
@@ -132,7 +132,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // already finished tasks
             case 4:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(bpmProcessNameService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcAlreadyDoneList(page, vo));
 
@@ -140,7 +140,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // running tasks
             case 5:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(bpmProcessNameService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcToDoList(page, vo));
 
@@ -214,8 +214,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                     }
                 }
                 if (!ObjectUtils.isEmpty(record.getProcessKey())) {
-                    BpmProcessVo bpmProcessVo = bpmProcessNameService.get(record.getProcessKey());
-                    if (!ObjectUtils.isEmpty(bpmProcessVo.getProcessKey())) {
+                    BpmProcessVo bpmProcessVo = bpmnConfMapper.getBpmProcessVoByFormCode(record.getProcessKey());
+                    if (bpmProcessVo != null && !ObjectUtils.isEmpty(bpmProcessVo.getProcessKey())) {
                         record.setProcessTypeName(bpmProcessVo.getProcessName());
                         record.setProcessCode(bpmProcessVo.getProcessKey());
                     }

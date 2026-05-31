@@ -109,6 +109,7 @@ CREATE TABLE if not exists `t_information_template`
     `status`         tinyint   NOT NULL DEFAULT '0' COMMENT 'status 0:in use,1:disabled',
      `event`          int                                    null,
     `event_name`     varchar(50)              null,
+    `is_default`     tinyint   NOT NULL DEFAULT '0' COMMENT 'is default template for event, 0:no,1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `is_del`         tinyint   NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
     `create_time`    timestamp    NOT NULL     DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
@@ -228,21 +229,6 @@ CREATE TABLE if not exists `bpm_process_forward`
   AUTO_INCREMENT = 1
    COMMENT ='process forward table';
 
-
-DROP TABLE IF EXISTS `bpm_process_node_record`;
-CREATE TABLE if not exists `bpm_process_node_record`
-(
-    `id`                 bigint NOT NULL AUTO_INCREMENT,
-    `processInstance_id` varchar(64)         DEFAULT NULL COMMENT 'process instance id',
-    `task_id`            varchar(50)         DEFAULT NULL COMMENT 'taskid',
-    `create_time`        timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `is_del`             int               DEFAULT '0',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `bpm_process_node_record_idx1` (`processInstance_id`),
-    KEY `bpm_process_node_record_idx2` (`task_id`)
-) ENGINE = InnoDB
-   COMMENT ='process over time node record';
 
 DROP TABLE IF EXISTS `bpm_process_node_submit`;
 CREATE TABLE if not exists `bpm_process_node_submit`
@@ -379,43 +365,6 @@ CREATE TABLE if not exists `bpm_verify_info`
   AUTO_INCREMENT = 1
    COMMENT ='verify info';
 
-DROP TABLE IF EXISTS `t_default_template`;
-CREATE TABLE if not exists `t_default_template`
-(
-    `id`          bigint NOT NULL AUTO_INCREMENT,
-    `event`       int             DEFAULT NULL COMMENT 'event',
-    `template_id` bigint          DEFAULT NULL COMMENT 'template id',
-    `is_del`      tinyint NOT NULL DEFAULT '0' COMMENT '（0:no 1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_time` timestamp  NOT NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `create_user` varchar(255)        DEFAULT '' COMMENT 'as its name says',
-    `update_time` timestamp NOT NULL     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user` varchar(255)        DEFAULT '' COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `t_default_template_idx1` (`template_id`)
-) ENGINE = InnoDB
-   COMMENT ='default tempalte';
-
-
-
-DROP TABLE IF EXISTS `t_user_email_send`;
-CREATE TABLE if not exists `t_user_email_send`
-(
-    `id`          int      NOT NULL AUTO_INCREMENT,
-    `sender`      varchar(32)  NOT NULL COMMENT 'sender',
-    `receiver`    varchar(100) NOT NULL,
-    `title`       varchar(255) NOT NULL,
-    `content`     text         NOT NULL,
-    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `create_user` varchar(50)  NOT NULL,
-    `update_user` varchar(50)  NOT NULL,
-     `is_del`      tinyint NOT NULL DEFAULT '0' COMMENT '（0:no 1:yes',
-      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `sender` (`receiver`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='user email send';
 
 -- 此表和租户无关
 DROP TABLE IF EXISTS `t_method_replay`;
@@ -527,21 +476,6 @@ CREATE TABLE if not exists `bpm_business_process`
 
 
 
-DROP TABLE IF EXISTS `bpm_process_name`;
-CREATE TABLE if not exists `bpm_process_name`
-(
-    `id`           bigint NOT NULL AUTO_INCREMENT,
-    `process_name` varchar(50)     DEFAULT NULL COMMENT 'process name',
-    `process_key`  varchar(50)     DEFAULT NULL COMMENT 'process key',
-    `is_del`       int         DEFAULT '0',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_time`  timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `process_key_index` (`process_key`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='process advanced search table';
-
 DROP TABLE IF EXISTS `t_user_message`;
 CREATE TABLE if not exists `t_user_message`
 (
@@ -584,6 +518,8 @@ CREATE TABLE IF NOT EXISTS `t_op_log`
     `hardware`       varchar(50)  DEFAULT NULL COMMENT 'hardware info',
     `system_version` varchar(50)  DEFAULT NULL COMMENT 'app version',
     `remark`         varchar(255) DEFAULT NULL COMMENT 'remark',
+    `log_type`       tinyint DEFAULT NULL COMMENT 'log type: null/0=operation, 1=email send',
+    `receiver`       varchar(255) DEFAULT NULL COMMENT 'email receiver (for email send logs)',
      is_del         tinyint null comment '0为未删除 1为已删除',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     PRIMARY KEY (`id`)
@@ -1033,30 +969,6 @@ comment '流程动态条件选择条件记录表';
 
 
 
-
-
-create table t_bpm_process_audit
-(
-    id             bigint auto_increment
-        primary key,
-    process_number varchar(64)                         null comment '流程编号',
-    form_code      varchar(50)                         null,
-    field_name     varchar(64)                         null,
-    old_value      varchar(256)                        null,
-    new_value      varchar(256)                        null,
-    tenant_id      varchar(255)                        null,
-    task_name      varchar(64)                         null,
-    task_def_key   varchar(64)                         null,
-    create_user    varchar(50)                         null,
-    create_time    timestamp default CURRENT_TIMESTAMP not null
-)
-    comment '流程审计表';
-
-create index t_bpm_process_audit_idx1
-    on t_bpm_process_audit (process_number);
-
-create index t_bpm_process_audit_idx2
-    on t_bpm_process_audit (task_def_key);
 
 
 

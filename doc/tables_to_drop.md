@@ -217,6 +217,70 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 
 ---
 
+## 五、本次会话删除的表（5 张）
+
+### Phase 1: 死表删除
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `bpm_process_node_record` | 节点超时记录（死表，零调用者） | 无（催办功能已合并到 `node_config_json`） | `BpmProcessNodeRecord.java`, `BpmProcessNodeRecordMapper.java`, `BpmProcessNodeRecordService.java`, `BpmProcessNodeRecordServiceImpl.java` |
+
+### Phase 2a: 流程名称表合并
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `bpm_process_name` | 流程名称/搜索表（与 `t_bpmn_conf` 冗余） | `t_bpmn_conf.form_code` / `bpmn_name` 直接查询 | `BpmProcessName.java`, `BpmProcessNameMapper.java`, `BpmProcessNameMapper.xml`, `BpmProcessNameService.java`, `BpmProcessNameServiceImpl.java`, `BpmProcessNameBizService.java`, `BpmProcessNameBizServiceImpl.java` 共 7 个文件 |
+
+**读路径变更：**
+- `ProcessApprovalServiceImpl` — `processKeyList()` 改用 `bpmnConfMapper.formCodeListByConfId()`；`get()` 改用 `bpmnConfMapper.getBpmProcessVoByFormCode()`
+- `SubmitProcessImpl` — `getBpmProcessName()` 改用 `bpmnConfMapper.getBpmProcessVoByFormCode()`
+- `BpmnConfBizServiceImpl` — 移除 `editProcessName()` 双写调用
+
+**新增 Mapper 方法（`BpmnConfMapper`）：**
+- `allProcess()` — 从 `t_bpmn_conf` 查询所有有效流程名
+- `getBpmProcessVoByFormCode(formCode)` — 按 `form_code` 查询流程名
+- `formCodeListByBpmnName(bpmnName)` — 按 `bpmn_name` 查询所有 `form_code`
+- `formCodeListByConfId(confId)` — 按 `t_bpmn_conf.id` 查询同名流程的所有 `form_code`
+
+### Phase 2b: 默认模板表合并
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `t_default_template` | 事件→默认模板映射表 | `t_information_template` 新增 `is_default` 列 | `DefaultTemplate.java`, `DefaultTemplateMapper.java`, `DefaultTemplateService.java`, `DefaultTemplateServiceImpl.java` |
+
+**Schema 变更：**
+- `t_information_template` 新增 `is_default TINYINT DEFAULT 0` 列
+
+**读路径变更：**
+- `InformationTemplateBizServiceImpl.getList()` — 从 `t_information_template` 直接查询 `is_default = 1` 的模板
+
+**写路径变更：**
+- `InformationTemplateBizServiceImpl.setList()` — 先清除所有 `is_default`，再按 event 设置新的默认模板
+
+### Phase 3a: 邮件发送表合并
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `t_user_email_send` | 邮件发送记录（写表，仅做计数） | `t_op_log` 新增 `log_type=1` + `receiver` 列 | `UserEmailSend.java`, `UserEmailSendMapper.java` |
+
+**Schema 变更：**
+- `t_op_log` 新增 `log_type TINYINT` 列（null/0=操作日志，1=邮件发送日志）
+- `t_op_log` 新增 `receiver VARCHAR(255)` 列（邮件接收人）
+
+**读路径变更：**
+- `UserMessageBizServiceImpl` — 邮件计数查询改用 `t_op_log`，条件为 `log_type = 1 AND receiver = ? AND op_time BETWEEN ? AND ?`
+
+**写路径变更：**
+- `UserMessageBizServiceImpl` — 邮件发送记录写入 `t_op_log`，`log_type=1`，`receiver` 存接收人，`remark` 存标题，`op_param` 存内容
+
+### Phase 3b: 流程审计表删除
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `t_bpm_process_audit` | 流程表单变更审计（写表，零读取者） | 无（删除，审计数据从未被读取） | `BpmProcessAudit.java`, `BpmProcessAuditMapper.java`, `ProcessAuditService.java`, `PorcessAuditServiceImpl.java`, `ProcessAuditBizService.java`, `ProcessAuditBizServiceImpl.java` 共 6 个文件 |
+
+---
+
 ## 保留的表
 
 | 表名 | 说明 | 新增字段 |
@@ -229,6 +293,8 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 | `t_bpm_variable_multiplayer_personnel` | 多人审批人员 | — |
 | `bpm_verify_info` | 审批记录 | `attachments_json` TEXT |
 | `t_quick_entry` | 快捷入口 | `type_config_json` VARCHAR(500) |
+| `t_information_template` | 通知模板 | `is_default` TINYINT |
+| `t_op_log` | 操作/邮件日志 | `log_type` TINYINT, `receiver` VARCHAR(255) |
 
 ---
 
@@ -269,6 +335,15 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
   └── t_bpm_variable_sign_up_personnel → variable_config_json (Phase 10)
 
 合计: 57 张表
+
+第六批（死表/冗余表/写表清理）: 5 张表
+  ├── bpm_process_node_record (死表，零调用者)
+  ├── bpm_process_name → t_bpmn_conf (Phase 2a, 冗余表)
+  ├── t_default_template → t_information_template (Phase 2b, 配置表合并)
+  ├── t_user_email_send → t_op_log (Phase 3a, 写表合并)
+  └── t_bpm_process_audit (Phase 3b, 写表，零读取者)
+
+合计: 62 张表
 ```
 
 ---

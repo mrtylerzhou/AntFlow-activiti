@@ -82,6 +82,11 @@ public class InformationTemplate implements TenantField, Serializable {
     @TableField("event_name")
     private String eventName;
     /**
+     * is default template for the event, 0: no, 1: yes
+     */
+    @TableField("is_default")
+    private Integer isDefault;
+    /**
      * is del 0 for no and 1 for yes
      */
     @TableField("is_del")

@@ -93,6 +93,16 @@ public class OpLog implements TenantField, Serializable {
      * 操作备注
      */
     private String remark;
+    /**
+     * log type: null/0=operation log, 1=email send log
+     */
+    @TableField("log_type")
+    private Integer logType;
+    /**
+     * email receiver (only for email send logs)
+     */
+    @TableField("receiver")
+    private String receiver;
     @TableField("is_del")
     private Integer isDel;
     @TableField("tenant_id")

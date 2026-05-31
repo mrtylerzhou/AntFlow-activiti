@@ -1,7 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.common.collect.Maps;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
@@ -16,7 +16,6 @@ import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizServi
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.DefaultTemplateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ import java.util.stream.Collectors;
 @Service
 public class InformationTemplateBizServiceImpl implements InformationTemplateBizService {
 
-    @Autowired
-    private DefaultTemplateService defaultTemplateService;
     @Autowired
     private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
@@ -89,31 +86,26 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
      */
     @Override
     public List<DefaultTemplateVo> getList() {
-        Map<Integer, Long> map = defaultTemplateService.getBaseMapper().selectList(
-                        new QueryWrapper<DefaultTemplate>()
-                                .eq("is_del", 0))
+        Map<Integer, InformationTemplate> defaultMap = getMapper().selectList(
+                        new QueryWrapper<InformationTemplate>()
+                                .eq("is_del", 0)
+                                .eq("is_default", 1))
                 .stream()
-                .filter(o -> !ObjectUtils.isEmpty(o.getTemplateId()))
-                .collect(Collectors.toMap(DefaultTemplate::getEvent,
-                        DefaultTemplate::getTemplateId,
+                .filter(o -> !ObjectUtils.isEmpty(o.getEvent()))
+                .collect(Collectors.toMap(InformationTemplate::getEvent,
+                        v -> v,
                         (a, b) -> a));
-        Map<Long, String> templateMap = !ObjectUtils.isEmpty(map.values())
-                ? getMapper().selectBatchIds(new ArrayList<>(map.values()))
-                .stream()
-                .collect(Collectors.toMap(InformationTemplate::getId,
-                        InformationTemplate::getName,
-                        (a, b) -> a))
-                : Maps.newHashMap();
         return Arrays.stream(EventTypeEnum.values())
-                .map(o -> DefaultTemplateVo
-                        .builder()
-                        .event(o.getCode())
-                        .eventValue(o.getDesc())
-                        .templateId(map.get(o.getCode()))
-                        .templateName(!ObjectUtils.isEmpty(map.get(o.getCode()))
-                                ? templateMap.get(map.get(o.getCode()))
-                                : null)
-                        .build())
+                .map(o -> {
+                    InformationTemplate template = defaultMap.get(o.getCode());
+                    return DefaultTemplateVo
+                            .builder()
+                            .event(o.getCode())
+                            .eventValue(o.getDesc())
+                            .templateId(template != null ? template.getId() : null)
+                            .templateName(template != null ? template.getName() : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -122,37 +114,20 @@ public class InformationTemplateBizServiceImpl implements InformationTemplateBiz
      */
     @Override
     public void setList(List<DefaultTemplateVo> vos) {
-        Map<Integer, DefaultTemplate> map = defaultTemplateService.getBaseMapper().selectList(
-                        new QueryWrapper<DefaultTemplate>()
-                                .eq("is_del", 0))
-                .stream()
-                .collect(Collectors.toMap(DefaultTemplate::getEvent,
-                        v -> v,
-                        (a, b) -> a));
-        List<DefaultTemplate> list = new ArrayList<>();
+        // clear all existing defaults
+        getMapper().update(null, new UpdateWrapper<InformationTemplate>()
+                .eq("is_del", 0)
+                .eq("is_default", 1)
+                .set("is_default", 0));
+        // set new defaults
         vos.forEach(o -> {
-            DefaultTemplate defaultTemplate = map.get(o.getEvent());
-            if (!ObjectUtils.isEmpty(defaultTemplate)) {
-                defaultTemplate.setTemplateId(o.getTemplateId());
-                defaultTemplate.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
-                defaultTemplate.setUpdateTime(new Date());
-                list.add(defaultTemplate);
-            } else {
-                list.add(DefaultTemplate
-                        .builder()
-                        .event(o.getEvent())
-                        .templateId(o.getTemplateId())
-                        .isDel(0)
-                        .createUser(SecurityUtils.getLogInEmpNameSafe())
-                        .createTime(new Date())
-                        .updateUser(SecurityUtils.getLogInEmpNameSafe())
-                        .updateTime(new Date())
-                        .build());
+            if (!ObjectUtils.isEmpty(o.getTemplateId())) {
+                getMapper().update(null, new UpdateWrapper<InformationTemplate>()
+                        .eq("id", o.getTemplateId())
+                        .eq("is_del", 0)
+                        .set("is_default", 1));
             }
         });
-        if (!ObjectUtils.isEmpty(list)) {
-            defaultTemplateService.insertOrUpdateAllColumnBatch(list);
-        }
     }
 
     private boolean isTemplateUsedInJson(Long templateId) {

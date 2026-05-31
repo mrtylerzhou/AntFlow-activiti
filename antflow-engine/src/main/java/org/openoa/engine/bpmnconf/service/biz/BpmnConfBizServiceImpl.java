@@ -100,8 +100,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     @Autowired
     private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
-    private BpmProcessNameBizService bpmProcessNameService;
-    @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
     @Lazy
@@ -841,8 +839,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 .isAll(getIsAll(bpmnConf, confInDb))
                 .effectiveStatus(1)
                 .build());
-
-        bpmProcessNameService.editProcessName(bpmnConf);
     }
 
 
