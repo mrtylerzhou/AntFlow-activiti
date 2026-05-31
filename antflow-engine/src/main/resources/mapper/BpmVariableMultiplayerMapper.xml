@@ -102,5 +102,12 @@
             #{item}
         </foreach>
     </select>
+    <select id="getNodeByElementId" resultType="org.openoa.base.entity.BpmnNode">
+        select tbn.*
+        from t_bpm_variable tbv
+        inner join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
+        inner join t_bpmn_node tbn on tbn.id=tbvm.node_id
+        where tbv.bpmn_code=#{bpmnCode} and tbvm.element_id=#{elementId}
+    </select>
 
 </mapper>
