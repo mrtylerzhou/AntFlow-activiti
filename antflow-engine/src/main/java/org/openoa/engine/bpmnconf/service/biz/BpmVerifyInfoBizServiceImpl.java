@@ -26,10 +26,8 @@ import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
@@ -80,8 +78,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private BpmVariableSignUpService bpmVariableSignUpService;
     @Autowired
     private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
-    @Autowired
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
@@ -658,15 +654,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private Map<String, List<BaseIdTranStruVo>> getNodeApproveds(Long variableId) {
 
         Map<String, List<BaseIdTranStruVo>> nodeApprovedsMap = Maps.newHashMap();
-        List<BpmVariableSingle> variableSingles = bpmVariableSingleService.getBaseMapper().
-                selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId)
-                        .eq("is_del", 0));
-
-        if (!variableSingles.isEmpty()) {
-            for (BpmVariableSingle bpmVariableSingle : variableSingles) {
-                nodeApprovedsMap.put(bpmVariableSingle.getElementId(), Lists.newArrayList(BaseIdTranStruVo.builder().id(bpmVariableSingle.getAssignee()).name(bpmVariableSingle.getAssigneeName()).build()));
-            }
-        }
         List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId));
 
         if (!bpmVariableMultiplayers.isEmpty()) {

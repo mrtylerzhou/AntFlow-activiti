@@ -9,10 +9,8 @@ import org.activiti.engine.task.Task;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.base.entity.BpmVariable;
 import org.openoa.base.entity.BpmVariableSignUpPersonnel;
@@ -50,8 +48,6 @@ public class BpmnUtils implements ApplicationContextAware {
 
     private static BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
 
-    private static BpmVariableSingleServiceImpl bpmVariableSingleService;
-
     private static BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     private static Environment environment;
@@ -65,7 +61,6 @@ public class BpmnUtils implements ApplicationContextAware {
         bpmVariableSignUpPersonnelService = applicationContext.getBean(BpmVariableSignUpPersonnelServiceImpl.class);
         bpmBusinessProcessService = applicationContext.getBean(BpmBusinessProcessServiceImpl.class);
         bpmVariableMultiplayerPersonnelService = applicationContext.getBean(BpmVariableMultiplayerPersonnelServiceImpl.class);
-        bpmVariableSingleService = applicationContext.getBean(BpmVariableSingleServiceImpl.class);
         environment = applicationContext.getEnvironment();
     }
 
@@ -131,19 +126,6 @@ public class BpmnUtils implements ApplicationContextAware {
 
 
     private static List<String> getNextNodeApproveds(Long variableId, String nextElementId) {
-
-        //query to check whether sign variable has parameter,if yes then return;
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>()
-                .eq("variable_id", variableId)
-                .eq("element_id", nextElementId)) > 0) {
-            List<String> nextNodeApproveds = Lists.newArrayList();
-            BpmVariableSingle bpmVariableSingle = bpmVariableSingleService.getBaseMapper().selectOne(new QueryWrapper<BpmVariableSingle>()
-                    .eq("variable_id", variableId)
-                    .eq("element_id", nextElementId));
-            nextNodeApproveds.add(bpmVariableSingle.getAssignee());
-            return nextNodeApproveds;
-        }
-
 
         //query to check whether multiplayer variables have parameter,if yes then return;
         if (bpmVariableMultiplayerService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMultiplayer>()

@@ -18,8 +18,6 @@ import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.LFFieldControlVO;
 import org.openoa.base.vo.ProcessRecordInfoVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.common.entity.BpmVariableSingle;
-import org.openoa.common.mapper.BpmVariableSingleMapper;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVariable;
@@ -64,8 +62,6 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private BpmVariableServiceImpl bpmnVariableService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
-    @Autowired
-    private BpmVariableSingleMapper bpmVariableSingleMapper;
     @Autowired
     private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
@@ -158,15 +154,6 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                     .list();
             if(!CollectionUtils.isEmpty(bpmVariableMultiplayers)){
                 nodeId = bpmVariableMultiplayers.get(0).getNodeId();
-            }
-            if(StringUtils.isBlank(nodeId)){
-                List<BpmVariableSingle> variableSingles = bpmVariableSingleMapper.selectList(new LambdaQueryWrapper<BpmVariableSingle>()
-                        .eq(BpmVariableSingle::getElementId, elementId)
-                        .eq(BpmVariableSingle::getVariableId, variableId)
-                );
-                if(!CollectionUtils.isEmpty(variableSingles)){
-                    nodeId = variableSingles.get(0).getNodeId();
-                }
             }
             if(StringUtils.isBlank(nodeId)){
                 List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());

@@ -23,10 +23,8 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.service.impl.*;
@@ -82,9 +80,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
 
     @Autowired
     private ProcessConstants processConstants;
-
-    @Autowired
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -505,19 +500,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      * @return
      */
     private List<String> getNextNodeApproveds(Long variableId, String nextElementId) {
-
-
-        //query to check whether sign variable has parameter,if yes then return;
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>()
-                .eq("variable_id", variableId)
-                .eq("element_id", nextElementId)) > 0) {
-            List<String> nextNodeApproveds = Lists.newArrayList();
-            BpmVariableSingle bpmVariableSingle = bpmVariableSingleService.getBaseMapper().selectOne(new QueryWrapper<BpmVariableSingle>()
-                    .eq("variable_id", variableId)
-                    .eq("element_id", nextElementId));
-            nextNodeApproveds.add(bpmVariableSingle.getAssignee());
-            return nextNodeApproveds;
-        }
 
 
         //query to check whether multiplayer variables have parameter,if yes then return;

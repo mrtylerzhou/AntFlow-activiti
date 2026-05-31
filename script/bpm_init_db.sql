@@ -535,32 +535,6 @@ CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
 
 
 
-DROP TABLE IF EXISTS `t_bpm_variable_single`;
-CREATE TABLE if not exists `t_bpm_variable_single`
-(
-    `id`                  bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id`         bigint          NOT NULL COMMENT 'variable id',
-    `element_id`          varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-     `node_id`            varchar(60)                                      null,
-    `element_name`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element name',
-    `assignee_param_name` varchar(60)         NOT NULL DEFAULT '' COMMENT 'variable name',
-    `assignee`            varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee',
-    `assignee_name`       varchar(60)         NOT NULL DEFAULT '' COMMENT 'assigneeName',
-    `remark`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`              tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user`         varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time`         timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user`         varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time`         timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id` (`variable_id`) USING BTREE,
-    KEY `variable_id_element_id` (`variable_id`, `element_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='node single assignee table';
-
-
 DROP TABLE IF EXISTS `t_bpm_variable_view_page_button`;
 CREATE TABLE if not exists `t_bpm_variable_view_page_button`
 (

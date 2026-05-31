@@ -15,12 +15,9 @@ import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.util.AFWrappers;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
-import org.openoa.common.mapper.BpmVariableSingleMapper;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 
 import java.util.Arrays;
@@ -36,9 +33,6 @@ class BpmVariableBizServiceImplTest extends MockBaseTest {
     @Spy
     @InjectMocks
     private BpmVariableBizServiceImpl bpmVariableBizService;
-
-    @Mock
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
 
     @Mock
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -212,19 +206,16 @@ class BpmVariableBizServiceImplTest extends MockBaseTest {
             bpmVariable.setProcessNum(processNumber);
 
             when(bpmVariableMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(bpmVariable);
-            when(bpmVariableSingleService.getBaseMapper()).thenReturn(mock(BpmVariableSingleMapper.class));
             when(bpmVariableMultiplayerService.getBaseMapper()).thenReturn(bpmVariableMultiplayerMapper);
 
             try (MockedStatic<AFWrappers> afWrappersMockedStatic = mockStatic(AFWrappers.class)) {
                 afWrappersMockedStatic.when(() -> AFWrappers.<BpmVariable>lambdaTenantQuery()).thenReturn(new LambdaQueryWrapper<>());
-                afWrappersMockedStatic.when(() -> AFWrappers.<BpmVariableSingle>lambdaTenantQuery()).thenReturn(new LambdaQueryWrapper<>());
                 afWrappersMockedStatic.when(() -> AFWrappers.<BpmVariableMultiplayer>lambdaTenantQuery()).thenReturn(new LambdaQueryWrapper<>());
 
                 bpmVariableBizService.deleteByProcessNumber(processNumber);
 
                 verify(bpmVariableMapper, times(1)).selectOne(any(LambdaQueryWrapper.class));
                 verify(bpmVariableMapper, times(1)).deleteById(variableId);
-                verify(bpmVariableSingleService.getBaseMapper(), times(1)).delete(any());
                 verify(bpmVariableMultiplayerMapper, times(1)).delete(any());
             }
         }

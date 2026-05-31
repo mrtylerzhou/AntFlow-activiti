@@ -4,23 +4,14 @@
 
 
     <select id="getElementIdsdByNodeId" resultType="java.lang.String">
-        select tbvs.element_id from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
-        where tbv.process_num=#{processNum} and tbvs.node_id=#{nodeId}
-        union all
         select tbvm.element_id from t_bpm_variable tbv join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvm.node_id=#{nodeId}
     </select>
     <select id="getVarNamesdByNodeId" resultType="java.lang.String">
-        select tbvs.assignee_param_name from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
-        where tbv.process_num=#{processNum} and tbvs.node_id=#{nodeId}
-        union all
         select tbvm.collection_name from t_bpm_variable tbv join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvm.node_id=#{nodeId}
     </select>
     <select id="getNodeIdsByeElementId" resultType="java.lang.String">
-        select tbvs.node_id from t_bpm_variable tbv join t_bpm_variable_single tbvs  on tbv.id=tbvs.variable_id
-        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId}
-        union all
         select tbvm.node_id from t_bpm_variable tbv join t_bpm_variable_multiplayer tbvm on tbvm.variable_id=tbv.id
         where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId}
     </select>
@@ -47,24 +38,12 @@
         where tbv.process_num = #{processNum}
         and tbvm.element_id = #{elementId}
     </select>
-    <update id="updateSingle">
-        update t_bpm_variable_single tbvs
-        inner join t_bpm_variable tbv on tbvs.variable_id = tbv.id
-        set tbvs.assignee=#{newAssignee},assignee_name=#{newAssigneeName}
-        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee=#{assignee}
-    </update>
     <update id="updateMultiPlayer">
         update t_bpm_variable_multiplayer_personnel tbvmp
         inner join t_bpm_variable_multiplayer tbvm on tbvmp.variable_multiplayer_id=tbvm.id
         inner join t_bpm_variable tbv on tbvm.variable_id=tbv.id
         set tbvmp.assignee=#{newAssignee},tbvmp.assignee_name=#{newAssigneeName}
         where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee=#{assignee}
-    </update>
-    <update id="updateSingleById">
-        update t_bpm_variable_single tbvs
-            inner join t_bpm_variable tbv on tbvs.variable_id = tbv.id
-            set tbvs.assignee=#{newAssignee},assignee_name=#{newAssigneeName}
-        where tbvs.id=#{id} and tbv.process_num=#{processNum} and tbvs.element_id=#{elementId} and tbvs.assignee=#{assignee}
     </update>
     <update id="updateMultiPlayerById">
         update t_bpm_variable_multiplayer_personnel tbvmp
@@ -74,17 +53,6 @@
         where tbvmp.id=#{id} and tbv.process_num=#{processNum} and tbvm.element_id=#{elementId} and tbvmp.assignee=#{assignee}
     </update>
 
-    <sql id="t_b_v_single">
-        select tbvs.node_id             as nodeId,
-        tbvs.element_id          as elementId,
-        1                        as isSingle,
-        tbvs.assignee_param_name as varName,
-        tbvs.assignee            as assignee,
-        tbvs.assignee_name       as assigneeName
-        from t_bpm_variable tbv
-        inner join antflow.t_bpm_variable_single tbvs
-        on tbv.id = tbvs.variable_id
-    </sql>
     <sql id="t_b_v_multi">
         select tbvm.node_id         as nodeId,
         tbvm.element_id      as elementId,
@@ -97,16 +65,10 @@
         left join t_bpm_variable_multiplayer_personnel tbvmp on tbvm.id = tbvmp.variable_multiplayer_id
     </sql>
     <select id="queryNodeIdByElementIdDetail" resultType="org.openoa.base.dto.NodeXelementXvarXverifyInfo">
-        <include refid="t_b_v_single"/>
-        where tbv.process_num=#{processNum} and tbvs.element_id=#{elementId}
-        union all
         <include refid="t_b_v_multi"/>
         where tbv.process_num=#{processNum} and tbvm.element_id=#{elementId}
     </select>
     <select id="queryElementIdByNodeIdDetail" resultType="org.openoa.base.dto.NodeXelementXvarXverifyInfo">
-        <include refid="t_b_v_single"/>
-        where tbv.process_num=#{processNum} and tbvs.node_id=#{nodeId}
-        union all
         <include refid="t_b_v_multi"/>
         where tbv.process_num=#{processNum} and tbvm.node_id=#{nodeId}
     </select>
