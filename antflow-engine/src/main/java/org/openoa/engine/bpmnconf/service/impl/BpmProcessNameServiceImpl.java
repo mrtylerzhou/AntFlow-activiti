@@ -80,5 +80,30 @@ public class BpmProcessNameServiceImpl extends ServiceImpl<BpmProcessNameMapper,
         return Optional.ofNullable(processVoMap.get(processKey)).orElse(new BpmProcessVo());
     }
 
+    @Override
+    public List<String> processKeyList(Long processNameId) {
+        BpmProcessName processName = this.getBaseMapper().selectById(processNameId);
+        if (processName == null || ObjectUtils.isEmpty(processName.getProcessName())) {
+            return Collections.emptyList();
+        }
+        return this.getBaseMapper().processKeyList(processName.getProcessName());
+    }
+
+    @Override
+    public boolean existsByFormCode(String formCode) {
+        QueryWrapper<BpmProcessName> wrapper = new QueryWrapper<>();
+        wrapper.eq("process_key", formCode);
+        wrapper.eq("is_del", 0);
+        return this.getBaseMapper().selectCount(wrapper) > 0;
+    }
+
+    @Override
+    public BpmProcessName findByFormCode(String formCode) {
+        QueryWrapper<BpmProcessName> wrapper = new QueryWrapper<>();
+        wrapper.eq("process_key", formCode);
+        wrapper.eq("is_del", 0);
+        return this.getBaseMapper().selectOne(wrapper);
+    }
+
 
 }

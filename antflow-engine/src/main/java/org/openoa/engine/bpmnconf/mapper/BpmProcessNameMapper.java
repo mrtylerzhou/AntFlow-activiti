@@ -16,4 +16,6 @@ public interface BpmProcessNameMapper extends BaseMapper<BpmProcessName> {
     public List<BpmProcessVo> allProcess();
 
     BpmProcessVo getBpmProcessVo(@Param("processKey") String processKey);
+
+    List<String> processKeyList(@Param("processName") String processName);
 }

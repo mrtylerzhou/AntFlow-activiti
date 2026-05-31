@@ -776,21 +776,6 @@ CREATE TABLE if not exists `bpm_business_process`
 
 
 
-DROP TABLE IF EXISTS `bpm_process_name_relevancy`;
-CREATE TABLE if not exists `bpm_process_name_relevancy`
-(
-    `id`              bigint NOT NULL AUTO_INCREMENT,
-    `process_name_id` bigint      DEFAULT NULL COMMENT 'process name id',
-    `process_key`     varchar(50)     DEFAULT NULL COMMENT 'process key',
-    `is_del`          int         DEFAULT '0',
-     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_time`     timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `process_key_index` (`process_key`) USING BTREE,
-    KEY `process_name_id_index` (`process_name_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='process advanced search table';
 
 
 
@@ -835,10 +820,12 @@ CREATE TABLE if not exists `bpm_process_name`
 (
     `id`           bigint NOT NULL AUTO_INCREMENT,
     `process_name` varchar(50)     DEFAULT NULL COMMENT 'process name',
+    `process_key`  varchar(50)     DEFAULT NULL COMMENT 'process key',
     `is_del`       int         DEFAULT '0',
     `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
     `create_time`  timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `process_key_index` (`process_key`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='process advanced search table';

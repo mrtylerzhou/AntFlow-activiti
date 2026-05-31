@@ -16,4 +16,10 @@ public interface BpmProcessNameService extends IService<BpmProcessName> {
     Map<String, BpmProcessVo> loadProcessName();
 
     BpmProcessVo get(String processKey);
+
+    List<String> processKeyList(Long processNameId);
+
+    boolean existsByFormCode(String formCode);
+
+    BpmProcessName findByFormCode(String formCode);
 }

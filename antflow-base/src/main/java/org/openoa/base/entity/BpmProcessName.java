@@ -31,6 +31,8 @@ public class BpmProcessName implements TenantField, Serializable {
     private Long id;
     @TableField("process_name")
     private String processName;
+    @TableField("process_key")
+    private String processKey;
     @TableField("is_del")
     private Integer isDel;
     @TableField("tenant_id")
