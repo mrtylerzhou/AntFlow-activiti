@@ -21,7 +21,7 @@ import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUp;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeLowCodeConfJson;
@@ -156,16 +156,16 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 nodeId = bpmVariableMultiplayers.get(0).getNodeId();
             }
             if(StringUtils.isBlank(nodeId)){
-                List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
-                BpmVariableSignUp  signUpParent=null;
+                List<SignUpItem> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
+                SignUpItem signUpParent=null;
                 if(!CollectionUtils.isEmpty(signUpList)){
-                    for (BpmVariableSignUp bpmVariableSignUp : signUpList) {
-                        String subElements = bpmVariableSignUp.getSubElements();
+                    for (SignUpItem signUpItem : signUpList) {
+                        String subElements = signUpItem.getSubElements();
                         List<BpmnConfCommonElementVo> subElementVos = JSON.parseArray(subElements, BpmnConfCommonElementVo.class);
                         if(!CollectionUtils.isEmpty(subElementVos)){
                             BpmnConfCommonElementVo bpmnConfCommonElementVo = subElementVos.get(0);
                             if(taskDefKey.equals(bpmnConfCommonElementVo.getElementId())){
-                                signUpParent=bpmVariableSignUp;
+                                signUpParent=signUpItem;
                                 break;
                             }
                         }

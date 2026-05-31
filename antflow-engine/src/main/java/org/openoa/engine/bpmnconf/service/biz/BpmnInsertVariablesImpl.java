@@ -3,26 +3,23 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.ButtonPageTypeEnum;
 import org.openoa.base.constant.enums.ElementTypeEnum;
+import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.base.constant.enums.ViewPageTypeEnum;
-import org.openoa.base.entity.*;
+import org.openoa.base.entity.BpmVariable;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.*;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.SpringBeanUtils;
-import org.openoa.base.vo.BpmnConfCommonElementVo;
-import org.openoa.base.vo.BpmnConfCommonVo;
-import org.openoa.base.vo.BpmnStartConditionsVo;
+import org.openoa.base.vo.*;
 import org.openoa.common.adaptor.BpmnInsertVariableSubs;
 import org.openoa.common.constant.enus.ElementPropertyEnum;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnInsertVariables;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableButtonService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -40,50 +37,41 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
     @Autowired
     private BpmVariableService bpmVariableService;
 
-    @Autowired
-    private BpmVariableButtonService bpmVariableButtonService;
-
-    @Autowired
-    private BpmVariableSignUpService bpmVariableSignUpService;
-
-    @Autowired
-    private BpmVariableMessageBizService bpmVariableMessageBizService;
-
 
     public void insertVariables(BpmnConfCommonVo bpmnConfCommonVo, BpmnStartConditionsVo bpmnStartConditions) {
+        // 1. Insert variable first to get the ID (needed by multiplayer adaptors)
         BpmVariable bpmVariable = BpmVariable
                 .builder()
                 .bpmnCode(bpmnConfCommonVo.getBpmnCode())
                 .processNum(bpmnConfCommonVo.getProcessNum())
                 .processName(bpmnConfCommonVo.getProcessName())
                 .processDesc(bpmnConfCommonVo.getProcessDesc())
-                .processStartConditions(JSON.toJSONString(bpmnStartConditions,JSONWriter.Feature.WriteNonStringKeyAsString))//process start condition
+                .processStartConditions(JSON.toJSONString(bpmnStartConditions, JSONWriter.Feature.WriteNonStringKeyAsString))
                 .createUser(SecurityUtils.getLogInEmpIdSafe())
                 .tenantId(MultiTenantUtil.getCurrentTenantId())
                 .createTime(new Date())
                 .build();
         bpmVariableService.getBaseMapper().insert(bpmVariable);
-
         Long variableId = Optional.ofNullable(bpmVariable.getId()).orElse(0L);
 
+        // 2. Build variable config JSON
+        VariableConfigJson config = new VariableConfigJson();
 
-        // insert viewPageButton
-        insertViewPageButton(bpmnConfCommonVo, variableId);
+        // build view page buttons
+        buildViewPageButtons(bpmnConfCommonVo, config);
 
-        //create a multiMap for signUp node
+        // create a multiMap for signUp node
         Multimap<String, BpmnConfCommonElementVo> signUpMultimap = ArrayListMultimap.create();
 
-
-        //get elementList
+        // get elementList
         List<BpmnConfCommonElementVo> elementList = bpmnConfCommonVo.getElementList();
 
         for (BpmnConfCommonElementVo elementVo : elementList) {
-
             Integer elementType = elementVo.getElementType();
-
             Integer elementProperty = elementVo.getElementProperty();
 
-            if (elementType.equals(ElementTypeEnum.ELEMENT_TYPE_USER_TASK.getCode())) {//UserTask
+            if (elementType.equals(ElementTypeEnum.ELEMENT_TYPE_USER_TASK.getCode())) {
+                // write to t_bpm_variable_multiplayer tables (kept, not part of JSON)
                 Class<? extends BpmnInsertVariableSubs> bpmnInsertVariableSubs = ElementPropertyEnum.getVariableSubClsByCode(elementProperty);
                 if (!ObjectUtils.isEmpty(bpmnInsertVariableSubs)) {
                     BpmnInsertVariableSubs bean = SpringBeanUtils.getBean(bpmnInsertVariableSubs);
@@ -92,171 +80,156 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                     }
                 }
 
-                //设置加批节点数据
-                //set nodesignup data
+                // set nodesignup data
                 if (elementVo.getIsSignUp() == 1) {
                     signUpMultimap.put(elementVo.getElementId(), new BpmnConfCommonElementVo());
                 }
-
 
                 if (elementVo.getIsSignUpSubElement() == 1) {
                     signUpMultimap.put(elementVo.getSignUpElementId(), elementVo);
                 }
 
-                //insert elementButton
-                insertElementButton(variableId, elementVo, elementVo.getElementId());
-
+                // build element buttons
+                buildElementButtons(config, elementVo, elementVo.getElementId());
             }
         }
 
+        // build signUp data
+        buildSignUps(config, signUpMultimap, elementList);
 
-        //insert signUp data
-        insertSignUp(variableId, signUpMultimap, elementList);
+        // build message and approveRemind data
+        buildMessagesAndApproveReminds(config, bpmnConfCommonVo);
 
-        // insert message data
-        bpmVariableMessageBizService.insertVariableMessage(variableId, bpmnConfCommonVo);
-
+        // 3. Update variable with config JSON
+        bpmVariable.setVariableConfigJson(JSON.toJSONString(config));
+        bpmVariableService.getBaseMapper().updateById(bpmVariable);
     }
 
-    /**
-     * insert signUp data
-     *
-     * @param variableId
-     * @param signUpMultimap
-     * @param elementList
-     */
-    private void insertSignUp(Long variableId, Multimap<String, BpmnConfCommonElementVo> signUpMultimap, List<BpmnConfCommonElementVo> elementList) {
-        if (!signUpMultimap.isEmpty()) {
-            List<BpmVariableSignUp> bpmVariableSignUps = Lists.newArrayList();
-            for (String key : signUpMultimap.keySet()) {
+    private void buildSignUps(VariableConfigJson config, Multimap<String, BpmnConfCommonElementVo> signUpMultimap, List<BpmnConfCommonElementVo> elementList) {
+        if (signUpMultimap.isEmpty()) {
+            return;
+        }
+        for (String key : signUpMultimap.keySet()) {
+            BpmnConfCommonElementVo elementVo = elementList
+                    .stream()
+                    .filter(o -> o.getElementId().equals(key))
+                    .findFirst()
+                    .orElse(new BpmnConfCommonElementVo());
 
-                //筛选获得加批节点元素对象
-                BpmnConfCommonElementVo elementVo = elementList
-                        .stream()
-                        .filter(o -> o.getElementId().equals(key))
-                        .findFirst()
-                        .orElse(new BpmnConfCommonElementVo());
+            List<BpmnConfCommonElementVo> subElements = signUpMultimap.get(key)
+                    .stream()
+                    .filter(o -> !ObjectUtils.isEmpty(o) && !ObjectUtils.isEmpty(o.getElementId()))
+                    .collect(Collectors.toList());
 
-
-                List<BpmnConfCommonElementVo> subElements = signUpMultimap.get(key)
-                        .stream()
-                        .filter(o -> !ObjectUtils.isEmpty(o) && !ObjectUtils.isEmpty(o.getElementId()))
-                        .collect(Collectors.toList());
-
-
-                bpmVariableSignUps.add(BpmVariableSignUp
-                        .builder()
-                        .variableId(variableId)
-                        .afterSignUpWay(elementVo.getAfterSignUpWay())
-                        .elementId(key)
-                        .nodeId(elementVo.getNodeId())
-                        .subElements(JSON.toJSONString(subElements))
-                        .tenantId(MultiTenantUtil.getCurrentTenantId())
-                        .build());
-            }
-
-            //save signup data in batch
-            bpmVariableSignUpService.saveBatch(bpmVariableSignUps);
+            config.getSignUps().add(SignUpItem.builder()
+                    .elementId(key)
+                    .nodeId(elementVo.getNodeId())
+                    .afterSignUpWay(elementVo.getAfterSignUpWay())
+                    .subElements(JSON.toJSONString(subElements))
+                    .build());
         }
     }
 
-    /**
-     * insert element button
-     *
-     * @param variableId
-     * @param elementVo
-     * @param elementId
-     */
-    private void insertElementButton(Long variableId, BpmnConfCommonElementVo elementVo, String elementId) {
-        //node button on start up page
+    private void buildElementButtons(VariableConfigJson config, BpmnConfCommonElementVo elementVo, String elementId) {
         if (!ObjectUtils.isEmpty(elementVo.getButtons().getStartPage())) {
-            bpmVariableButtonService.saveBatch(elementVo.getButtons().getStartPage()
-                    .stream()
-                    .map(o -> {
-                        return BpmVariableButton
-                                .builder()
-                                .variableId(variableId)
-                                .elementId(elementId)
-                                .buttonPageType(ButtonPageTypeEnum.INITIATE.getCode())
-                                .buttonType(o.getButtonType())
-                                .buttonName(o.getButtonName())
-                                .build();
-                    })
-                    .collect(Collectors.toList()));
+            elementVo.getButtons().getStartPage().forEach(o ->
+                    config.getButtons().add(ButtonItem.builder()
+                            .elementId(elementId)
+                            .buttonPageType(ButtonPageTypeEnum.INITIATE.getCode())
+                            .buttonType(o.getButtonType())
+                            .buttonName(o.getButtonName())
+                            .build()));
         }
 
-
-        //node button on approval page
         if (!ObjectUtils.isEmpty(elementVo.getButtons().getApprovalPage())) {
-            bpmVariableButtonService.saveBatch(elementVo.getButtons().getApprovalPage()
-                    .stream()
-                    .map(o -> {
-                        return BpmVariableButton
-                                .builder()
-                                .variableId(variableId)
-                                .elementId(elementId)
-                                .buttonPageType(ButtonPageTypeEnum.AUDIT.getCode())
-                                .buttonType(o.getButtonType())
-                                .buttonName(o.getButtonName())
-                                .build();
-                    })
-                    .collect(Collectors.toList()));
+            elementVo.getButtons().getApprovalPage().forEach(o ->
+                    config.getButtons().add(ButtonItem.builder()
+                            .elementId(elementId)
+                            .buttonPageType(ButtonPageTypeEnum.AUDIT.getCode())
+                            .buttonType(o.getButtonType())
+                            .buttonName(o.getButtonName())
+                            .build()));
         }
 
-        if(!ObjectUtils.isEmpty(elementVo.getButtons().getViewPage())){
-            bpmVariableButtonService.saveBatch(elementVo.getButtons().getViewPage()
-                    .stream()
-                    .map(o -> {
-                        return BpmVariableButton
-                                .builder()
-                                .variableId(variableId)
-                                .elementId(elementId)
-                                .buttonPageType(ButtonPageTypeEnum.TO_VIEW.getCode())
-                                .buttonType(o.getButtonType())
-                                .buttonName(o.getButtonName())
-                                .build();
-                    })
-                    .collect(Collectors.toList()));
+        if (!ObjectUtils.isEmpty(elementVo.getButtons().getViewPage())) {
+            elementVo.getButtons().getViewPage().forEach(o ->
+                    config.getButtons().add(ButtonItem.builder()
+                            .elementId(elementId)
+                            .buttonPageType(ButtonPageTypeEnum.TO_VIEW.getCode())
+                            .buttonType(o.getButtonType())
+                            .buttonName(o.getButtonName())
+                            .build()));
         }
     }
 
-    /**
-     * insert view page button
-     *
-     * @param bpmnConfCommonVo
-     * @param variableId
-     */
-    private void insertViewPageButton(BpmnConfCommonVo bpmnConfCommonVo, Long variableId) {
-        //get start user's view page
+    private void buildViewPageButtons(BpmnConfCommonVo bpmnConfCommonVo, VariableConfigJson config) {
         if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getViewPageButtons().getViewPageStart())) {
-            bpmVariableButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageStart()
-                    .stream()
-                    .map(o -> BpmVariableButton
-                            .builder()
-                            .variableId(variableId)
+            bpmnConfCommonVo.getViewPageButtons().getViewPageStart().forEach(o ->
+                    config.getButtons().add(ButtonItem.builder()
                             .buttonPageType(3)
                             .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_START.getCode())
                             .buttonType(o.getButtonType())
                             .buttonName(o.getButtonName())
-                            .tenantId(MultiTenantUtil.getCurrentTenantId())
-                            .build())
-                    .collect(Collectors.toList()));
+                            .build()));
         }
 
-        //get other user's view page
         if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getViewPageButtons().getViewPageOther())) {
-            bpmVariableButtonService.saveBatch(bpmnConfCommonVo.getViewPageButtons().getViewPageOther()
-                    .stream()
-                    .map(o -> BpmVariableButton
-                            .builder()
-                            .variableId(variableId)
+            bpmnConfCommonVo.getViewPageButtons().getViewPageOther().forEach(o ->
+                    config.getButtons().add(ButtonItem.builder()
                             .buttonPageType(3)
                             .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
                             .buttonType(o.getButtonType())
                             .buttonName(o.getButtonName())
-                            .tenantId(MultiTenantUtil.getCurrentTenantId())
-                            .build())
-                    .collect(Collectors.toList()));
+                            .build()));
         }
+    }
+
+    private void buildMessagesAndApproveReminds(VariableConfigJson config, BpmnConfCommonVo bpmnConfCommonVo) {
+        // out-of-node messages
+        if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getTemplateVos())) {
+            buildMessages(config, bpmnConfCommonVo.getTemplateVos(), "", 1);
+        }
+
+        // in-node messages and approve reminds
+        if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getElementList())) {
+            for (BpmnConfCommonElementVo elementVo : bpmnConfCommonVo.getElementList()) {
+                if (ObjectUtils.isEmpty(elementVo.getTemplateVos())) {
+                    continue;
+                }
+                buildMessages(config, elementVo.getTemplateVos(), elementVo.getElementId(), 2);
+
+                if (!ObjectUtils.isEmpty(elementVo.getApproveRemindVo()) &&
+                        !ObjectUtils.isEmpty(elementVo.getApproveRemindVo().getDays())) {
+                    config.getApproveReminds().add(ApproveRemindItem.builder()
+                            .elementId(elementVo.getElementId())
+                            .content(JSON.toJSONString(elementVo.getApproveRemindVo()))
+                            .build());
+                }
+            }
+        }
+    }
+
+    private void buildMessages(VariableConfigJson config, List<BpmnTemplateVo> templateVos, String elementId, Integer messageType) {
+        templateVos.forEach(o -> {
+            Integer eventType = o.getEvent();
+            Integer resolvedMessageType = getMessageSendType(eventType, messageType);
+            config.getMessages().add(MessageItem.builder()
+                    .elementId(elementId)
+                    .messageType(resolvedMessageType)
+                    .eventType(eventType)
+                    .content(JSON.toJSONString(o))
+                    .build());
+        });
+    }
+
+    private Integer getMessageSendType(Integer event, Integer defaultMessageSendType) {
+        if (event == null) {
+            return defaultMessageSendType;
+        }
+        EventTypeEnum eventTypeEnum = EventTypeEnum.getByCode(event);
+        if (eventTypeEnum == null) {
+            return defaultMessageSendType;
+        }
+        return eventTypeEnum.getIsInNode() ? 2 : 1;
     }
 }

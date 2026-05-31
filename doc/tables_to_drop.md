@@ -178,6 +178,43 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 
 **保留的文件：** `QuickEntryTypeVo.java`（测试文件引用）
 
+### Phase 10: 流程变量子表合并
+
+| 表名 | 说明 | 替代方案 | 删除的文件 |
+|------|------|---------|-----------|
+| `t_bpm_variable_button` | 流程变量按钮配置 | `t_bpm_variable.variable_config_json` → `buttons[]` | `BpmVariableButton.java`, `BpmVariableButtonMapper.java`, `BpmVariableButtonMapper.xml`, `BpmVariableButtonService.java`, `BpmVariableButtonServiceImpl.java` |
+| `t_bpm_variable_message` | 流程变量消息配置 | `t_bpm_variable.variable_config_json` → `messages[]` | `BpmVariableMessage.java`, `BpmVariableMessageMapper.java`, `BpmVariableMessageService.java`, `BpmVariableMessageServiceImpl.java` |
+| `t_bpm_variable_approve_remind` | 流程变量催办配置 | `t_bpm_variable.variable_config_json` → `approveReminds[]` | `BpmVariableApproveRemind.java`, `BpmVariableApproveRemindMapper.java`, `BpmVariableApproveRemindService.java`, `BpmVariableApproveRemindServiceImpl.java` |
+| `t_bpm_variable_sign_up` | 流程变量报名节点 | `t_bpm_variable.variable_config_json` → `signUps[]` | `BpmVariableSignUp.java`, `BpmVariableSignUpMapper.java`, `BpmVariableSignUpMapper.xml`, `BpmVariableSignUpService.java`, `BpmVariableSignUpServiceImpl.java` |
+| `t_bpm_variable_sign_up_personnel` | 报名人员明细 | `t_bpm_variable.variable_config_json` → `signUps[].personnelByElement` | `BpmVariableSignUpPersonnel.java`, `BpmVariableSignUpPersonnelMapper.java`, `BpmVariableSignUpPersonnelMapper.xml`, `BpmVariableSignUpPersonnelService.java`, `BpmVariableSignUpPersonnelServiceImpl.java` |
+
+**Schema 变更：**
+- `t_bpm_variable` 新增 `variable_config_json TEXT` 列
+
+**JSON 结构：**`VariableConfigJson`（`antflow-base/.../entity/jsonconf/VariableConfigJson.java`）
+- `buttons[]` — `ButtonItem`（elementId, buttonPageType, viewType, buttonType, buttonName）
+- `messages[]` — `MessageItem`（elementId, messageType, eventType, content）
+- `approveReminds[]` — `ApproveRemindItem`（elementId, content）
+- `signUps[]` — `SignUpItem`（elementId, nodeId, afterSignUpWay, subElements, personnelByElement）
+  - `personnelByElement` — `Map<String, List<PersonnelItem>>`，key 为子元素 elementId
+
+**读路径变更：**
+- `ConfigFlowButtonContans` — 从 JSON 解析 buttons 替代子表查询
+- `BpmVariableMessageBizServiceImpl` — 从 JSON 解析 messages 替代子表查询
+- `BpmVariableApproveRemindBizServiceImpl` — 从 JSON 解析 approveReminds 替代子表查询
+- `BpmVariableSignUpBizServiceImpl` — 从 JSON 解析 signUps 替代子表查询
+- `BpmVerifyInfoBizServiceImpl` — 从 JSON 解析 signUps.personnelByElement 替代子表查询
+- `BpmVariableBizServiceImpl` — 从 JSON 解析 signUps.personnelByElement 替代子表查询
+- `ActivitiAdditionalInfoServiceImpl` — 从 JSON 解析 signUps.personnelByElement 替代子表查询
+- `BpmnUtils` — 从 JSON 解析 signUps.personnelByElement 替代子表查询
+- `UserTaskActivityBehavior` — 从 JSON 解析 signUps.personnelByElement 替代子表查询
+
+**写路径变更：**
+- `BpmnInsertVariablesImpl` — 构建 `VariableConfigJson` 写入 `variable_config_json`，不再调用子表 `saveBatch`
+- `BpmVariableSignUpPersonnelBizServiceImpl` — 运行时修改：读取 JSON → 更新 personnelByElement → 写回
+
+**迁移脚本：**`script/migrate_variable_tables_to_json.sql`
+
 ---
 
 ## 保留的表
@@ -187,8 +224,9 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
 | `t_bpmn_conf` | 流程配置主表 | `conf_config_json` TEXT |
 | `t_bpmn_node` | 节点主表 | `node_config_json` TEXT |
 | `t_bpmn_node_to` | 节点流转关系 | — |
-| `t_bpm_variable` | 流程变量主表 | — |
-| `t_bpm_variable_button` | 流程变量按钮 | `view_type` INT |
+| `t_bpm_variable` | 流程变量主表 | `variable_config_json` TEXT |
+| `t_bpm_variable_multiplayer` | 多人审批变量 | — |
+| `t_bpm_variable_multiplayer_personnel` | 多人审批人员 | — |
 | `bpm_verify_info` | 审批记录 | `attachments_json` TEXT |
 | `t_quick_entry` | 快捷入口 | `type_config_json` VARCHAR(500) |
 
@@ -223,15 +261,22 @@ AntFlow 对 Activiti 原生表进行了裁剪，以下表已从 Java 代码（Ma
   ├── t_bpm_variable_sequence_flow (Phase 1b, 写死表)
   └── bpm_process_dept (Phase 2, 废弃表)
 
-合计: 52 张表
+第五批（流程变量子表 → JSON）: 5 张表
+  ├── t_bpm_variable_button → variable_config_json (Phase 10)
+  ├── t_bpm_variable_message → variable_config_json (Phase 10)
+  ├── t_bpm_variable_approve_remind → variable_config_json (Phase 10)
+  ├── t_bpm_variable_sign_up → variable_config_json (Phase 10)
+  └── t_bpm_variable_sign_up_personnel → variable_config_json (Phase 10)
+
+合计: 57 张表
 ```
 
 ---
 
 ## 注意事项
 
-1. **数据迁移**：第四批合并表需要执行数据迁移脚本，将子表数据回填到父表的 JSON 字段
-2. **迁移脚本位置**：待创建 `script/migrate_tables_to_json.sql`
+1. **数据迁移**：第四、五批合并表需要执行数据迁移脚本，将子表数据回填到父表的 JSON 字段
+2. **迁移脚本位置**：`script/migrate_variable_tables_to_json.sql`（第五批变量子表）
 3. **验证步骤**：
    - `mvn clean compile` 编译通过
    - `mvn test` 测试通过

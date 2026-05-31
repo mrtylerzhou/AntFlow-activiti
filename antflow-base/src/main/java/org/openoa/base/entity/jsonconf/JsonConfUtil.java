@@ -40,4 +40,12 @@ public class JsonConfUtil {
     public static String toConfConfigJson(BpmnConfConfigJson config) {
         return toJsonString(config);
     }
+
+    public static VariableConfigJson parseVariableConfig(String json) {
+        return parseObject(json, VariableConfigJson.class);
+    }
+
+    public static String toVariableConfigJson(VariableConfigJson config) {
+        return toJsonString(config);
+    }
 }

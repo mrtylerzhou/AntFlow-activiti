@@ -39,7 +39,6 @@ import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.service.BpmVariableService;
-import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.util.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -249,9 +248,27 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       Map<String, String> assigneeMap = variableService.getAssigneeNameByProcessNumAndElementId(processDefinitionKey, activityId);
       String userName = assigneeMap.get(task.getAssignee());
       if(StringUtils.isEmpty(userName)){
-        BpmVariableSignUpPersonnelService signUpPersonnelService = SpringBeanUtils.getBean(BpmVariableSignUpPersonnelService.class);
-        assigneeMap = signUpPersonnelService.getByProcessNumAndElementId(processDefinitionKey, activityId);
-        userName=assigneeMap.get(task.getAssignee());
+        // fallback: read signUpPersonnel from variable config JSON
+        com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<org.openoa.base.entity.BpmVariable> qw = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+        qw.eq("process_num", processDefinitionKey).eq("is_del", 0);
+        org.openoa.base.entity.BpmVariable bpmVar = variableService.getOne(qw, false);
+        if (bpmVar != null && !StringUtils.isEmpty(bpmVar.getVariableConfigJson())) {
+            org.openoa.base.entity.jsonconf.VariableConfigJson varConfig = com.alibaba.fastjson2.JSON.parseObject(bpmVar.getVariableConfigJson(), org.openoa.base.entity.jsonconf.VariableConfigJson.class);
+            if (varConfig != null && varConfig.getSignUps() != null) {
+                assigneeMap = new java.util.HashMap<>();
+                for (org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem signUp : varConfig.getSignUps()) {
+                    if (signUp.getPersonnelByElement() != null) {
+                        java.util.List<org.openoa.base.entity.jsonconf.VariableConfigJson.PersonnelItem> personnel = signUp.getPersonnelByElement().get(activityId);
+                        if (personnel != null) {
+                            for (org.openoa.base.entity.jsonconf.VariableConfigJson.PersonnelItem p : personnel) {
+                                assigneeMap.put(p.getAssignee(), p.getAssigneeName());
+                            }
+                        }
+                    }
+                }
+                userName = assigneeMap.get(task.getAssignee());
+            }
+        }
       }
       task.setAssigneeName(userName);
     }

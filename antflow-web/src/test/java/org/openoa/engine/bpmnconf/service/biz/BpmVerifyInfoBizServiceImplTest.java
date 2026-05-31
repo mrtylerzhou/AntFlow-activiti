@@ -14,7 +14,6 @@ import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVerifyInfoMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,9 +35,6 @@ class BpmVerifyInfoBizServiceImplTest extends MockBaseTest {
 
     @Mock
     private BpmFlowrunEntrustService bpmFlowrunEntrustService;
-
-    @Mock
-    private BpmVariableSignUpService bpmVariableSignUpService;
 
     @BeforeEach
     void setUp() {
@@ -151,9 +147,14 @@ class BpmVerifyInfoBizServiceImplTest extends MockBaseTest {
         void shouldReturnEmptyMapWhenNoSignUpVariables() {
             Long variableId = 999L;
 
-            org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpMapper signUpMapper = mock(org.openoa.engine.bpmnconf.mapper.BpmVariableSignUpMapper.class);
-            when(bpmVariableSignUpService.getBaseMapper()).thenReturn(signUpMapper);
-            when(signUpMapper.selectList(any(QueryWrapper.class))).thenReturn(Collections.emptyList());
+            // mock bpmVariableService to return variable with no JSON config
+            org.openoa.base.service.BpmVariableService mockVarService = mock(org.openoa.base.service.BpmVariableService.class);
+            org.openoa.engine.bpmnconf.mapper.BpmVariableMapper mockVarMapper = mock(org.openoa.engine.bpmnconf.mapper.BpmVariableMapper.class);
+            when(mockVarService.getBaseMapper()).thenReturn(mockVarMapper);
+            when(mockVarMapper.selectById(variableId)).thenReturn(null);
+
+            // use reflection to set the mocked service
+            org.springframework.test.util.ReflectionTestUtils.setField(bpmVerifyInfoBizService, "bpmVariableService", mockVarService);
 
             Map<String, String> result = bpmVerifyInfoBizService.getSignUpNodeCollectionNameMap(variableId);
 

@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.common;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -13,6 +14,9 @@ import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.ButtonItem;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.NodeUtil;
 import org.openoa.base.util.SecurityUtils;
@@ -21,17 +25,18 @@ import org.openoa.base.vo.ProcessActionButtonVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.ActHiTaskinstServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableButtonServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +56,7 @@ public class ConfigFlowButtonContans {
     @Autowired
     private BpmBusinessProcessServiceImpl bpmBusinessProcessService;
     @Autowired
-    private BpmVariableButtonServiceImpl bpmVariableButtonService;
+    private BpmVariableServiceImpl bpmVariableService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
@@ -89,23 +94,20 @@ public class ConfigFlowButtonContans {
         if (bpmBusinessProcess == null || bpmBusinessProcess.getProcessState() == null
                 || bpmBusinessProcess.getProcessState() == ProcessStateEnum.HANDLING_STATE.getCode()) {//审批中
 
-            if (processNum != null && StringUtils.hasText(elementId)) {
-                List<BpmVariableButton> bpmVariableButtons = bpmVariableButtonService
-                        .getButtonsByProcessNumber(processNum, Lists.newArrayList(elementId));
-                initiateButtons = getButtons(bpmVariableButtons,ButtonPageTypeEnum.INITIATE);
-                auditButtons = getButtons(bpmVariableButtons,ButtonPageTypeEnum.AUDIT);
+            if (processNum != null && StringUtils.isNotBlank(elementId)) {
+                List<ButtonItem> buttonItems = getButtonsFromJson(processNum, Lists.newArrayList(elementId));
+                initiateButtons = getButtons(buttonItems, ButtonPageTypeEnum.INITIATE);
+                auditButtons = getButtons(buttonItems, ButtonPageTypeEnum.AUDIT);
             }
 
             if (processNum != null) {
                 if(!CollectionUtils.isEmpty(viewNodeIds)){
-                    List<BpmVariableButton> bpmVariableButtons = bpmVariableButtonService
-                            .getButtonsByProcessNumber(processNum, viewNodeIds);
-                    toViewButtons=getButtons(bpmVariableButtons,ButtonPageTypeEnum.TO_VIEW);
+                    List<ButtonItem> buttonItems = getButtonsFromJson(processNum, viewNodeIds);
+                    toViewButtons=getButtons(buttonItems, ButtonPageTypeEnum.TO_VIEW);
                 }
-                List<BpmVariableButton> bpmVariableViewPageButtons = bpmVariableButtonService
-                        .getButtonsByProcessNumberAndPageType(processNum, 3);
+                List<ButtonItem> viewPageButtons = getViewPageButtonsFromJson(processNum);
 
-                List<ProcessActionButtonVo> globalViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
+                List<ProcessActionButtonVo> globalViewButtons = toViewButtons(viewPageButtons, isInitiate);
                 if(!CollectionUtils.isEmpty(globalViewButtons)){
                     toViewButtons.addAll(globalViewButtons);
                 }
@@ -162,10 +164,9 @@ public class ConfigFlowButtonContans {
 
             //query view page button
             if (processNum != null) {
-                List<BpmVariableButton> bpmVariableViewPageButtons = bpmVariableButtonService
-                        .getButtonsByProcessNumberAndPageType(processNum, 3);
+                List<ButtonItem> viewPageButtons = getViewPageButtonsFromJson(processNum);
 
-                toViewButtons = toViewButtons(bpmVariableViewPageButtons, isInitiate);
+                toViewButtons = toViewButtons(viewPageButtons, isInitiate);
 
                 //节点单独配置覆盖全局的,由于查看页并没有当前节点概念,因此取的是当前审批人所在的所有节点的按钮权限
                 List<ProcessActionButtonVo> nodeConfButtons = getNodeConfButtons(bpmBusinessProcess,isInitiate);
@@ -203,9 +204,9 @@ public class ConfigFlowButtonContans {
         return buttonMap;
     }
 
-    private List<ProcessActionButtonVo> toViewButtons(List<BpmVariableButton> btnVarList, Boolean isInitiate) {
+    private List<ProcessActionButtonVo> toViewButtons(List<ButtonItem> btnVarList, Boolean isInitiate) {
         List<ProcessActionButtonVo> buttonlist = new ArrayList<ProcessActionButtonVo>();
-        for (BpmVariableButton item : btnVarList) {
+        for (ButtonItem item : btnVarList) {
             if (isInitiate) {
                 if (item.getViewType() != null && item.getViewType() == 1) {
                     buttonlist.add(ProcessActionButtonVo.builder().buttonType(item.getButtonType())
@@ -223,17 +224,55 @@ public class ConfigFlowButtonContans {
         return buttonlist;
     }
 
-    private List<ProcessActionButtonVo> getButtons(List<BpmVariableButton> bpmVariableButtons,ButtonPageTypeEnum buttonPageTypeEnum) {
+    private List<ProcessActionButtonVo> getButtons(List<ButtonItem> buttonItems, ButtonPageTypeEnum buttonPageTypeEnum) {
         List<ProcessActionButtonVo> buttonlist = new ArrayList<>();
-        for (BpmVariableButton bpmVariableButton : bpmVariableButtons) {
-            if (bpmVariableButton.getButtonPageType() == buttonPageTypeEnum.getCode()) {
-                buttonlist.add(ProcessActionButtonVo.builder().buttonType(bpmVariableButton.getButtonType())
-                        .name(bpmVariableButton.getButtonName()).show(ProcessButtonEnum.DEAL_WITH_TYPE.getCode())
+        for (ButtonItem buttonItem : buttonItems) {
+            if (buttonItem.getButtonPageType() != null && buttonItem.getButtonPageType() == buttonPageTypeEnum.getCode()) {
+                buttonlist.add(ProcessActionButtonVo.builder().buttonType(buttonItem.getButtonType())
+                        .name(buttonItem.getButtonName()).show(ProcessButtonEnum.DEAL_WITH_TYPE.getCode())
                         .type(ProcessButtonEnum.DEFAULT_COLOR.getDesc()).build());
             }
         }
         return buttonlist;
     }
+
+    /**
+     * get buttons from variable config JSON filtered by elementIds
+     */
+    private List<ButtonItem> getButtonsFromJson(String processNum, Collection<String> elementIds) {
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(
+                new QueryWrapper<BpmVariable>().eq("process_num", processNum).eq("is_del", 0));
+        if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return Collections.emptyList();
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getButtons())) {
+            return Collections.emptyList();
+        }
+        Set<String> elementIdSet = new HashSet<>(elementIds);
+        return config.getButtons().stream()
+                .filter(b -> b.getElementId() != null && elementIdSet.contains(b.getElementId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * get view page buttons (buttonPageType==3) from variable config JSON
+     */
+    private List<ButtonItem> getViewPageButtonsFromJson(String processNum) {
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(
+                new QueryWrapper<BpmVariable>().eq("process_num", processNum).eq("is_del", 0));
+        if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return Collections.emptyList();
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getButtons())) {
+            return Collections.emptyList();
+        }
+        return config.getButtons().stream()
+                .filter(b -> b.getButtonPageType() != null && b.getButtonPageType() == 3)
+                .collect(Collectors.toList());
+    }
+
     /**
      * to check whether is more node and is or sign,and does not  undertaked
      * @param processNum
@@ -243,9 +282,9 @@ public class ConfigFlowButtonContans {
     public boolean isMoreNode(String processNum,String procInstId, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
         if(list==null){
-            List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(processNum);
+            List<SignUpItem> signUpList = bpmVariableSignUpBizService.getSignUpList(processNum);
             if(!CollectionUtils.isEmpty(signUpList)){
-                List<String> subElementStrs = signUpList.stream().map(BpmVariableSignUp::getSubElements).collect(Collectors.toList());
+                List<String> subElementStrs = signUpList.stream().map(SignUpItem::getSubElements).collect(Collectors.toList());
                 for (String subElementStr : subElementStrs) {
                     List<BpmnConfCommonElementVo> bpmnConfCommonElementVos = JSON.parseArray(subElementStr, BpmnConfCommonElementVo.class);
                     if(!CollectionUtils.isEmpty(bpmnConfCommonElementVos)){

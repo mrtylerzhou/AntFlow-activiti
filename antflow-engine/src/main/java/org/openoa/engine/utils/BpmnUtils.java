@@ -1,22 +1,23 @@
 package org.openoa.engine.utils;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmProcessDefinition;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUpPersonnel;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,8 +45,6 @@ public class BpmnUtils implements ApplicationContextAware {
 
     private static BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
-    private static BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
-
     private static BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
 
     private static BpmBusinessProcessServiceImpl bpmBusinessProcessService;
@@ -58,7 +57,6 @@ public class BpmnUtils implements ApplicationContextAware {
         activitiAdditionalInfoService = applicationContext.getBean(ActivitiAdditionalInfoServiceImpl.class);
         bpmVariableService = applicationContext.getBean(BpmVariableServiceImpl.class);
         bpmVariableMultiplayerService = applicationContext.getBean(BpmVariableMultiplayerServiceImpl.class);
-        bpmVariableSignUpPersonnelService = applicationContext.getBean(BpmVariableSignUpPersonnelServiceImpl.class);
         bpmBusinessProcessService = applicationContext.getBean(BpmBusinessProcessServiceImpl.class);
         bpmVariableMultiplayerPersonnelService = applicationContext.getBean(BpmVariableMultiplayerPersonnelServiceImpl.class);
         environment = applicationContext.getEnvironment();
@@ -144,18 +142,22 @@ public class BpmnUtils implements ApplicationContextAware {
         }
 
 
-        //query to check whether sign up node has parameters,if yes,then query and return data
-        if (bpmVariableSignUpPersonnelService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                .eq("variable_id", variableId)
-                .eq("element_id", nextElementId)) > 0) {
-            List<String> nextNodeApproveds = Lists.newArrayList();
-            nextNodeApproveds.addAll(bpmVariableSignUpPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                            .eq("variable_id", variableId)
-                            .eq("element_id", nextElementId))
-                    .stream()
-                    .map(BpmVariableSignUpPersonnel::getAssignee)
-                    .collect(Collectors.toList()));
-            return nextNodeApproveds;
+        //query to check whether sign up node has parameters from variable config JSON
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(variableId);
+        if (bpmVariable != null && !StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+            if (config != null && !ObjectUtils.isEmpty(config.getSignUps())) {
+                for (VariableConfigJson.SignUpItem signUp : config.getSignUps()) {
+                    if (!ObjectUtils.isEmpty(signUp.getPersonnelByElement())) {
+                        List<VariableConfigJson.PersonnelItem> personnel = signUp.getPersonnelByElement().get(nextElementId);
+                        if (!ObjectUtils.isEmpty(personnel)) {
+                            return personnel.stream()
+                                    .map(VariableConfigJson.PersonnelItem::getAssignee)
+                                    .collect(Collectors.toList());
+                        }
+                    }
+                }
+            }
         }
 
         return Collections.EMPTY_LIST;

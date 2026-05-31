@@ -292,6 +292,7 @@ CREATE TABLE if not exists `t_bpm_variable`
     `process_start_conditions` text                NOT NULL COMMENT 'process start conditions',
     `bpmn_code`                varchar(60)         NOT NULL DEFAULT '' COMMENT 'bpmn code',
     `is_new_data`              int                      DEFAULT '0' COMMENT 'is new data 0:no 1:yes',
+    `variable_config_json`     text                         DEFAULT NULL COMMENT 'JSON config for buttons, messages, sign-ups, approve-reminds',
     `remark`                   varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
     `is_del`                   tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
      `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
@@ -304,71 +305,6 @@ CREATE TABLE if not exists `t_bpm_variable`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='process variable table';
-
-DROP TABLE IF EXISTS `t_bpm_variable_approve_remind`;
-CREATE TABLE if not exists `t_bpm_variable_approve_remind`
-(
-    `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id` bigint          NOT NULL COMMENT 'variable id',
-    `element_id`  varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-    `content`     text                NOT NULL COMMENT 'approve content',
-    `remark`      varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`      tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id_element_id` (`variable_id`, `element_id`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='process remind variable';
-
-DROP TABLE IF EXISTS `t_bpm_variable_button`;
-CREATE TABLE if not exists `t_bpm_variable_button`
-(
-    `id`               bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id`      bigint          NOT NULL COMMENT 'variable id',
-    `element_id`       varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-    `button_page_type` int             NOT NULL COMMENT 'button,s page type 1:submit page,2:approve page,3:view page',
-    `view_type`        int                      DEFAULT NULL COMMENT 'view type 1:start user,2:other approvals (only for button_page_type=3)',
-    `button_type`      int             NOT NULL COMMENT 'button type see ButtonTypeEnum',
-    `button_name`      varchar(60)         NOT NULL DEFAULT '' COMMENT 'button name',
-    `remark`           varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`           tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user`      varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time`      timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id` (`variable_id`) USING BTREE,
-    KEY `t_bpm_variable_button__idx2` (`element_id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-   COMMENT ='variable button table';
-
-DROP TABLE IF EXISTS `t_bpm_variable_message`;
-CREATE TABLE if not exists `t_bpm_variable_message`
-(
-    `id`           bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id`  bigint         NOT NULL COMMENT 'variable id',
-    `element_id`   varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-    `message_type` int             NOT NULL DEFAULT '0' COMMENT 'message type 1:out of node 2:in node',
-    `event_type`   int             NOT NULL DEFAULT '0' COMMENT 'event type',
-    `content`      text                NOT NULL COMMENT 'content',
-    `remark`       varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`       tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user`  varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id_element_id_message_type_event_type` (`variable_id`, `element_id`, `message_type`, `event_type`) USING BTREE,
-    KEY `variable_id_message_type_event_type` (`variable_id`, `message_type`, `event_type`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='variable message table';
 
 DROP TABLE IF EXISTS `t_bpm_variable_multiplayer`;
 CREATE TABLE if not exists `t_bpm_variable_multiplayer`
@@ -414,52 +350,6 @@ CREATE TABLE if not exists `t_bpm_variable_multiplayer_personnel`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
    COMMENT ='multiplayer assignees variable table';
-
-DROP TABLE IF EXISTS `t_bpm_variable_sign_up`;
-CREATE TABLE if not exists `t_bpm_variable_sign_up`
-(
-    `id`                bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id`       bigint          NOT NULL COMMENT 'variable id',
-    `element_id`        varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-     `node_id`          varchar(60)                                        null,
-    `after_sign_up_way` int             NOT NULL DEFAULT '1' COMMENT 'after sign up way,1:back to current assignee,2 go on',
-    `sub_elements`      text                NOT NULL COMMENT 'sub elements stored in json',
-    `remark`            varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`            tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user`       varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time`       timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user`       varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time`       timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id` (`variable_id`) USING BTREE,
-    KEY `variable_id_element_id` (`variable_id`, `element_id`) USING BTREE
-) ENGINE = InnoDB
-   COMMENT ='process sign up node table';
-
-
-DROP TABLE IF EXISTS `t_bpm_variable_sign_up_personnel`;
-CREATE TABLE if not exists `t_bpm_variable_sign_up_personnel`
-(
-    `id`          bigint          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `variable_id` bigint          NOT NULL COMMENT 'variable id',
-    `element_id`  varchar(60)         NOT NULL DEFAULT '' COMMENT 'element id',
-    `assignee`    varchar(60)         NOT NULL DEFAULT '' COMMENT 'assignee',
-     `assignee_name`    varchar(60)   NOT NULL DEFAULT '' COMMENT 'assigneeName',
-    `remark`      varchar(255)        NOT NULL DEFAULT '' COMMENT 'remark',
-    `is_del`      tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0:no,1:yes',
-    `tenant_id`              varchar(255)        NOT NULL DEFAULT '' COMMENT 'tenantId',
-    `create_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'as its name says',
-    `update_user` varchar(50)                  DEFAULT '' COMMENT 'as its name says',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'as its name says',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `variable_id` (`variable_id`) USING BTREE,
-    KEY `variable_id_element_id` (`variable_id`, `element_id`) USING BTREE
-) ENGINE = InnoDB
-  COMMENT ='node sign up personnel table';
-
-
 
 DROP TABLE IF EXISTS `bpm_verify_info`;
 CREATE TABLE if not exists `bpm_verify_info`

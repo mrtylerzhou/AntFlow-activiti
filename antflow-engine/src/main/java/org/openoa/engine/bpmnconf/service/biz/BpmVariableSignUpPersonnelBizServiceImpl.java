@@ -6,18 +6,19 @@ import com.google.common.collect.Lists;
 import org.activiti.engine.TaskService;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUp;
-import org.openoa.base.entity.BpmVariableSignUpPersonnel;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.*;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,18 +29,8 @@ public class BpmVariableSignUpPersonnelBizServiceImpl implements BpmVariableSign
     @Autowired
     private BpmVariableServiceImpl bpmVariableService;
 
-    @Autowired
-    private BpmVariableSignUpService bpmVariableSignUpService;
-
     /**
-     * insert signup personnel and modify task variable
-     *
-     * @param taskService
-     * @param taskId
-     * @param processNumber
-     * @param nodeId
-     * @param assignee
-     * @param signUpUsers
+     * insert signup personnel and modify task variable (read-modify-write on JSON)
      */
     @Override
     public void insertSignUpPersonnel(TaskService taskService, String taskId, String processNumber, String nodeId, String assignee, List<BaseIdTranStruVo> signUpUsers) {
@@ -48,80 +39,83 @@ public class BpmVariableSignUpPersonnelBizServiceImpl implements BpmVariableSign
             return;
         }
 
-
-        //query variable main table's info by process number
+        // query variable main table's info by process number
         BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
                 .eq("process_num", processNumber)
                 .eq("is_del", 0));
 
-
-        //to check whether bpm variable is empty,if empty return
-        if (ObjectUtils.isEmpty(bpmVariable)) {
+        if (ObjectUtils.isEmpty(bpmVariable) || ObjectUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
             return;
         }
 
-
-        //query to check whether bpm signup variable sign up is empty,if empty return
-        BpmVariableSignUp bpmVariableSignUp = bpmVariableSignUpService.getBaseMapper().selectOne(new QueryWrapper<BpmVariableSignUp>()
-                .eq("variable_id", bpmVariable.getId())
-                .eq("element_id", nodeId));
-
-
-        //if bpm signup variable sign up is empty,return
-        if (ObjectUtils.isEmpty(bpmVariableSignUp) || ObjectUtils.isEmpty(bpmVariableSignUp.getSubElements())) {
+        // parse variable config JSON
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getSignUps())) {
             return;
         }
 
+        // find matching signUp by elementId == nodeId
+        SignUpItem signUp = config.getSignUps().stream()
+                .filter(s -> nodeId.equals(s.getElementId()))
+                .findFirst()
+                .orElse(null);
 
+        if (signUp == null || ObjectUtils.isEmpty(signUp.getSubElements())) {
+            return;
+        }
 
-        //deserialize sub element
-        List<BpmnConfCommonElementVo> subElementVos = JSON.parseArray(bpmVariableSignUp.getSubElements(), BpmnConfCommonElementVo.class);
+        // deserialize sub elements
+        List<BpmnConfCommonElementVo> subElementVos = JSON.parseArray(signUp.getSubElements(), BpmnConfCommonElementVo.class);
 
-        //get sign up node
-        BpmnConfCommonElementVo signUpElement = subElementVos.stream().filter(o -> o.getIsBackSignUp() == 0).findFirst().orElse(new BpmnConfCommonElementVo());
+        // get sign up node (non-back-sign-up)
+        BpmnConfCommonElementVo signUpElement = subElementVos.stream()
+                .filter(o -> o.getIsBackSignUp() == 0)
+                .findFirst()
+                .orElse(new BpmnConfCommonElementVo());
 
         List<String> signeeUpAssignees = signUpUsers.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
-        //set sign up node parameter
+        // set sign up node parameter
         taskService.setVariable(taskId, signUpElement.getCollectionName(), signeeUpAssignees);
 
-
-        //if it is serial sign up,we also need to set loop size param
+        // if it is serial sign up, also set loop size param
         if (!ObjectUtils.isEmpty(signUpElement.getElementProperty()) && signUpElement.getElementProperty().intValue() == ELEMENT_PROPERTY_SIGN_UP_SERIAL.getCode()) {
             taskService.setVariable(taskId, StringUtils.join(signUpElement.getElementId(), "size"), signUpUsers.size());
         }
-        BpmnConfCommonElementVo backSignUpElement=null;
-        if (bpmVariableSignUp.getAfterSignUpWay() == 1) {//come back to the node who add the sign up node
 
-            //back
-            backSignUpElement= subElementVos.stream().filter(o -> o.getIsBackSignUp() == 1).findFirst().orElse(new BpmnConfCommonElementVo());
+        // build personnel for signUp element
+        List<PersonnelItem> signUpPersonnel = signUpUsers.stream()
+                .map(o -> PersonnelItem.builder()
+                        .assignee(o.getId())
+                        .assigneeName(o.getName())
+                        .build())
+                .collect(Collectors.toList());
 
-            //set variables
+        // replace personnel for this sub-element (delete old + insert new)
+        signUp.getPersonnelByElement().put(signUpElement.getElementId(), signUpPersonnel);
+
+        BpmnConfCommonElementVo backSignUpElement = null;
+        if (signUp.getAfterSignUpWay() != null && signUp.getAfterSignUpWay() == 1) {
+            // back to sign-up user
+            backSignUpElement = subElementVos.stream()
+                    .filter(o -> o.getIsBackSignUp() == 1)
+                    .findFirst()
+                    .orElse(new BpmnConfCommonElementVo());
+
+            // set variables
             List<String> assignees = Lists.newArrayList(assignee);
             taskService.setVariable(taskId, backSignUpElement.getCollectionName(), assignees);
             taskService.setVariable(taskId, StringUtils.join(backSignUpElement.getElementId(), "size"), assignees.size());
+
+            // add back-sign-up personnel
+            signUp.getPersonnelByElement().put(backSignUpElement.getElementId(),
+                    Arrays.asList(PersonnelItem.builder()
+                            .assignee(assignee)
+                            .assigneeName(SecurityUtils.getLogInEmpName())
+                            .build()));
         }
 
-        //set corresponding node sign up personnel info(delete old one and then insert)
-        this.getService().getBaseMapper().delete(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                .eq("variable_id", bpmVariable.getId())
-                .eq("element_id", signUpElement.getElementId()));
-        this.getService().saveBatch(signUpUsers
-                .stream()
-                .map(o -> BpmVariableSignUpPersonnel
-                        .builder()
-                        .variableId(bpmVariable.getId())
-                        .assignee(o.getId())
-                        .assigneeName(o.getName())
-                        .elementId(signUpElement.getElementId())
-                        .build())
-                .collect(Collectors.toList()));
-        if(backSignUpElement!=null){
-            this.getService().save(BpmVariableSignUpPersonnel.builder()
-                    .variableId(bpmVariable.getId())
-                    .assignee(assignee)
-                    .assigneeName(SecurityUtils.getLogInEmpName())
-                    .elementId(backSignUpElement.getElementId())
-                    .build());
-        }
+        // serialize and write back
+        bpmVariable.setVariableConfigJson(JSON.toJSONString(config));
+        bpmVariableService.getBaseMapper().updateById(bpmVariable);
     }
 }

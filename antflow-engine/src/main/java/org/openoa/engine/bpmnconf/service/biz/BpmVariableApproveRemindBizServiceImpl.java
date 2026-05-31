@@ -10,6 +10,8 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.ApproveRemindItem;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
@@ -151,14 +153,6 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                         .collect(Collectors.toList())));
 
 
-        //get node approval remind info
-        List<BpmVariableApproveRemind> bpmVariableApproveReminds = this.getMapper().selectList(new QueryWrapper<BpmVariableApproveRemind>()
-                .in("variable_id", bpmVariables
-                        .stream()
-                        .map(BpmVariable::getId)
-                        .collect(Collectors.toList())));
-
-
         // iterate historic process instance list and bpm business process list,then connect them
         Map<String, BpmBusinessProcess> processMap = Maps.newHashMap();
         for (String procinstId : tasksMultimap.keys()) {
@@ -197,10 +191,15 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                 bpmnTimeoutReminderVariableVo.setProcessinessKey(val.getProcessinessKey());
                 bpmnTimeoutReminderVariableVo.setBusinessId(val.getBusinessId());
                 bpmnTimeoutReminderVariableVo.setEntryId(val.getEntryId());
-                bpmnTimeoutReminderVariableVo.setBpmVariableApproveReminds(bpmVariableApproveReminds
-                        .stream()
-                        .filter(o -> bpmVariable.getId().equals(o.getVariableId()))
-                        .collect(Collectors.toList()));
+                // read approveReminds from variable config JSON
+                List<ApproveRemindItem> approveRemindItems = new java.util.ArrayList<>();
+                if (!StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+                    VariableConfigJson varConfig = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+                    if (varConfig != null && !ObjectUtils.isEmpty(varConfig.getApproveReminds())) {
+                        approveRemindItems = varConfig.getApproveReminds();
+                    }
+                }
+                bpmnTimeoutReminderVariableVo.setBpmVariableApproveReminds(approveRemindItems);
 
                 //补全bpmnTimeoutReminderVariableVo参数信息
                 bpmnTimeoutReminderVariableVo.setBpmnName(bpmVariable.getProcessName());
@@ -381,11 +380,11 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
 
             //get node approve remind list
-            List<BpmVariableApproveRemind> bpmVariableApproveReminds = bpmnTimeoutReminderVariableVo.getBpmVariableApproveReminds();
+            List<ApproveRemindItem> approveRemindItems = bpmnTimeoutReminderVariableVo.getBpmVariableApproveReminds();
 
 
             //if the node approve remind list is empty then continue to loop
-            if (ObjectUtils.isEmpty(bpmVariableApproveReminds)) {
+            if (ObjectUtils.isEmpty(approveRemindItems)) {
                 continue;
             }
 
@@ -395,7 +394,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
 
                 //filtering the element id to get node approve remind configuration
-                BpmVariableApproveRemind bpmVariableApproveRemind = bpmVariableApproveReminds
+                ApproveRemindItem approveRemindItem = approveRemindItems
                         .stream()
                         .filter(o -> bpmnTimeoutReminderTaskVo.getElementId().equals(o.getElementId()))
                         .findFirst()
@@ -403,19 +402,19 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
 
                 //if the node approve remind configuration is empty then continue to loop
-                if (ObjectUtils.isEmpty(bpmVariableApproveRemind)) {
+                if (ObjectUtils.isEmpty(approveRemindItem)) {
                     continue;
                 }
 
 
                 //if the node approve remind content is empty then continue to loop
-                if (Strings.isNullOrEmpty(bpmVariableApproveRemind.getContent())) {
+                if (Strings.isNullOrEmpty(approveRemindItem.getContent())) {
                     continue;
                 }
 
 
                 //convert message configuration information content from Json string to approve remind vo object
-                BpmnApproveRemindVo bpmnApproveRemindVo = JSON.parseObject(bpmVariableApproveRemind.getContent(), BpmnApproveRemindVo.class);
+                BpmnApproveRemindVo bpmnApproveRemindVo = JSON.parseObject(approveRemindItem.getContent(), BpmnApproveRemindVo.class);
 
 
                 //if the day list is empty then continue to loop

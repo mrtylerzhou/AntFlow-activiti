@@ -11,7 +11,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.openoa.MockBaseTest;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.util.AFWrappers;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
@@ -39,9 +38,6 @@ class BpmVariableBizServiceImplTest extends MockBaseTest {
 
     @Mock
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
-
-    @Mock
-    private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
 
     @Mock
     private BpmVariableMapper bpmVariableMapper;
