@@ -34,6 +34,8 @@ public class MariaDB4jTestConfig {
             DBConfigurationBuilder config = DBConfigurationBuilder.newBuilder();
             config.setPort(PORT);
             config.setSecurityDisabled(true);
+            config.addArg("--character-set-server=utf8mb4");
+            config.addArg("--collation-server=utf8mb4_unicode_ci");
             db = DB.newEmbeddedDB(config.build());
             db.start();
             db.createDB(DB_NAME);
@@ -52,7 +54,7 @@ public class MariaDB4jTestConfig {
 
         DataSource ds = DataSourceBuilder.create()
                 .driverClassName("com.mysql.cj.jdbc.Driver")
-                .url("jdbc:mysql://localhost:" + PORT + "/" + DB_NAME)
+                .url("jdbc:mysql://localhost:" + PORT + "/" + DB_NAME + "?useUnicode=true&characterEncoding=UTF-8")
                 .username("root")
                 .password("")
                 .build();
