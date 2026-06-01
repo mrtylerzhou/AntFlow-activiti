@@ -76,20 +76,18 @@
         <scope>test</scope>
     </dependency>
     <dependency>
+        <!-- mariaDB4j-core 2.5.3 is the latest version compatible with Java 8 -->
         <groupId>ch.vorburger.mariaDB4j</groupId>
-        <artifactId>mariaDB4j-springboot</artifactId>
-        <version>3.3.1</version>
+        <artifactId>mariaDB4j-core</artifactId>
+        <version>2.5.3</version>
         <scope>test</scope>
-        <exclusions>
-            <exclusion>
-                <groupId>ch.vorburger.mariaDB4j</groupId>
-                <artifactId>mariaDB4j-db-linux64</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>ch.vorburger.mariaDB4j</groupId>
-                <artifactId>mariaDB4j-db-macos-arm64</artifactId>
-            </exclusion>
-        </exclusions>
+    </dependency>
+    <dependency>
+        <!-- Windows binary for MariaDB4j; for Linux use mariaDB4j-db-linux64, for Mac use mariaDB4j-db-mac64 -->
+        <groupId>ch.vorburger.mariaDB4j</groupId>
+        <artifactId>mariaDB4j-db-win32</artifactId>
+        <version>10.2.11</version>
+        <scope>test</scope>
     </dependency>
 </dependencies>
     <build>
@@ -114,6 +112,28 @@
                 <configuration>
                     <skipTests>false</skipTests>
                 </configuration>
+            </plugin>
+            <!-- Add project-root/script/ to test classpath so SQL init files are available via classpath: -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-script-to-test-classpath</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../script</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
