@@ -9,7 +9,9 @@
     "dev": "vite",
     "build:prod": "vite build",
     "build:stage": "vite build --mode staging",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
     "vuedraggable": "4.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@vitejs/plugin-vue": "5.2.4",
     "sass-embedded": "1.89.1",
     "unplugin-auto-import": "0.18.6",
