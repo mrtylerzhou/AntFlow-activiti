@@ -33,3 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Playwright MCP ###
+.playwright-mcp/
