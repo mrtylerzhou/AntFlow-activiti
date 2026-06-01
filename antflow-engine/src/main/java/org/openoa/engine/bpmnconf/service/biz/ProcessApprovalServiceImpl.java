@@ -348,11 +348,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                 return true;
             }
         }
-        BpmnNode node=bpmVariableMultiplayerMapper.getNodeByElementId(bpmnConf.getBpmnCode(),vo.getTaskName());
+        List<BpmnNode> nodes=bpmVariableMultiplayerMapper.getNodeByElementId(bpmnConf.getBpmnCode(),vo.getTaskName());
 
-        if (node == null) {
+        if (nodes.isEmpty()) {
             return true;
         }
+        BpmnNode node = nodes.get(0);
         BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
         if (nodeConfig == null || nodeConfig.getButtonSignConf() == null) {
             return true;
