@@ -36,3 +36,4 @@ build/
 
 ### Playwright MCP ###
 .playwright-mcp/
+playwright-report/
