@@ -164,6 +164,12 @@
                 <activatedProperties>pro</activatedProperties>
             </properties>
         </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <activatedProperties>test</activatedProperties>
+            </properties>
+        </profile>
     </profiles>
 
     <repositories>

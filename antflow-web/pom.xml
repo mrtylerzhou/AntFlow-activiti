@@ -75,6 +75,22 @@
         <version>5.9.3</version>
         <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>ch.vorburger.mariaDB4j</groupId>
+        <artifactId>mariaDB4j-springboot</artifactId>
+        <version>3.3.1</version>
+        <scope>test</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>ch.vorburger.mariaDB4j</groupId>
+                <artifactId>mariaDB4j-db-linux64</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>ch.vorburger.mariaDB4j</groupId>
+                <artifactId>mariaDB4j-db-macos-arm64</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
 </dependencies>
     <build>
         <plugins>

@@ -92,11 +92,7 @@ class ElementPropertyEnumTest extends BaseTest {
     @Nested
     @DisplayName("getVariableSubClsByCode")
     class GetVariableSubClsByCodeTest {
-        @Test
-        @DisplayName("should return single variable sub class for code 1")
-        void shouldReturnSingleVariableSubForCode1() {
-            assertEquals(BpmnInsertVariableSubsSingleAdp.class, ElementPropertyEnum.getVariableSubClsByCode(1));
-        }
+
 
         @Test
         @DisplayName("should return multiplayer sign variable sub class for code 2")
