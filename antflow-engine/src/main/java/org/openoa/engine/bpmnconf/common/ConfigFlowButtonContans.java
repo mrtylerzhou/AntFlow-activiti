@@ -320,7 +320,7 @@ public class ConfigFlowButtonContans {
         if (!CollectionUtils.isEmpty(jsonButtons)) {
             return jsonButtons;
         }
-        throw new AFBizException("migration error,please contact the author");
+       return new ArrayList<>();
     }
 
     private List<ProcessActionButtonVo> getNodeConfButtonsFromJson(BpmBusinessProcess bpmBusinessProcess, Boolean isInitiate) {
