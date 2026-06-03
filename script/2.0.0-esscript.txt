@@ -2,6 +2,8 @@
 ## Index: public-antflow-data
 ## Based on ProcessDataESDto entity
 
+## DELETE INDEX(IF needed)
+DELETE /public-antflow-data
 ## Create index
 PUT /public-antflow-data
 
@@ -23,15 +25,21 @@ PUT /public-antflow-data/_mapping
         "currentProcessingUserNames": {"type": "keyword"},
         "alreadyProcessedUsers": {"type": "keyword"},
         "backToModifyRelatedUser": {"type": "keyword"},
-        "allProcessRelatedUsers": {"type": "keyword"},
-        "processCreateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
-        "processUpdateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
-        "createTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
-        "updateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
+        "allProcessRelatedUsers": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "keyword"},
+                "name": {"type": "keyword"}
+            }
+        },
+        "processCreateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
+        "processUpdateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
+        "createTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
+        "updateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
         "formCode": {"type": "keyword"},
         "processKey": {"type": "keyword"},
         "description": {"type": "text"},
-        "currentTaskCreateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
+        "currentTaskCreateTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
         "currentNodeName": {"type": "keyword"},
         "currentTaskIds": {"type": "keyword"},
         "currentTaskDefKey": {"type": "keyword"},
@@ -47,13 +55,13 @@ PUT /public-antflow-data/_mapping
                 "taskId": {"type": "keyword"},
                 "taskName": {"type": "keyword"},
                 "assignee": {"type": "keyword"},
-                "startTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
-                "endTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
+                "startTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
+                "endTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"},
                 "durationInMillis": {"type": "long"},
                 "taskDefinitionKey": {"type": "keyword"},
                 "processInstanceId": {"type": "keyword"},
                 "userId": {"type": "keyword"},
-                "processTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"}
+                "processTime": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd||epoch_millis"}
             }
         }
     }

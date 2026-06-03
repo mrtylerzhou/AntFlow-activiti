@@ -81,9 +81,9 @@ public class ProcessDataESDto {
      */
     private String backToModifyRelatedUser;
     /**
-     * all process related user ids (all approvers)
+     * all process related users (all approvers), containing id and name
      */
-    private List<String> allProcessRelatedUsers;
+    private List<BaseIdTranStruVo> allProcessRelatedUsers;
 
     /**
      * process create time

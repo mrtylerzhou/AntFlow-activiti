@@ -13,10 +13,12 @@ import org.openoa.base.util.DateUtil;
 import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.HisTaskVo;
 import org.openoa.base.vo.MqProcessEventVo;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.ProcessDataESDto;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
+import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +47,8 @@ public class ProcessDataIndexService {
     private DepartmentServiceImpl departmentService;
     @Autowired(required = false)
     private EsClientAdaptor esClientAdaptor;
+    @Autowired
+    private BpmnEmployeeInfoProviderService bpmnEmployeeInfoProviderService;
 
     @Value("${antflow.es.index.name:antflow-process-data}")
     private String indexName;
@@ -140,7 +144,7 @@ public class ProcessDataIndexService {
         }
 
         // Get all related users (all approvers)
-        List<String> allRelatedUsers = getAllVerifyUserIds(processCode);
+        List<BaseIdTranStruVo> allRelatedUsers = getAllVerifyUserIds(processCode);
         dto.setAllProcessRelatedUsers(allRelatedUsers);
 
         // Final state: clear current processing users
@@ -187,9 +191,9 @@ public class ProcessDataIndexService {
     }
 
     /**
-     * Collect all verify user IDs from approval history.
+     * Collect all verify user IDs and names from approval history.
      */
-    private List<String> getAllVerifyUserIds(String processCode) {
+    private List<BaseIdTranStruVo> getAllVerifyUserIds(String processCode) {
         if (StringUtils.isBlank(processCode)) {
             return null;
         }
@@ -197,18 +201,25 @@ public class ProcessDataIndexService {
         if (verifyInfoVos == null || verifyInfoVos.isEmpty()) {
             return null;
         }
-        List<String> allUserIds = new ArrayList<>();
+        List<BaseIdTranStruVo> allUsers = new ArrayList<>();
+        List<String> batchLookupIds = new ArrayList<>();
         for (BpmVerifyInfoVo vo : verifyInfoVos) {
             if (StringUtils.isBlank(vo.getVerifyUserName())) {
                 continue;
             }
             if (StringUtils.isNotBlank(vo.getVerifyUserId())) {
-                allUserIds.add(vo.getVerifyUserId());
+                allUsers.add(BaseIdTranStruVo.builder().id(vo.getVerifyUserId()).name(vo.getVerifyUserName()).build());
             }
             if (vo.getVerifyUserIds() != null) {
-                allUserIds.addAll(vo.getVerifyUserIds());
+                batchLookupIds.addAll(vo.getVerifyUserIds());
             }
         }
-        return allUserIds;
+        if (!batchLookupIds.isEmpty()) {
+            Map<String, String> employeeInfoMap = bpmnEmployeeInfoProviderService.provideEmployeeInfo(batchLookupIds);
+            for (String userId : batchLookupIds) {
+                allUsers.add(BaseIdTranStruVo.builder().id(userId).name(employeeInfoMap.get(userId)).build());
+            }
+        }
+        return allUsers;
     }
 }
