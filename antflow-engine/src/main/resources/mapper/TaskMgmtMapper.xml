@@ -383,13 +383,13 @@
     </select>
 
     <!--get all approvers by entryId-->
-    <select id="getAssigneesByEntryId" resultType="java.lang.String">
+    <select id="getAssigneesByProcInstId" resultType="java.lang.String">
         SELECT DISTINCT t.ASSIGNEE_
         FROM AF_HI_TASKINST t
         WHERE t.PROC_INST_ID_ = (
             SELECT p.PROC_INST_ID_
             FROM AF_HI_PROCINST p
-            WHERE p.business_key_ = #{entryId}
+            WHERE p.PROC_INST_ID_ = #{procInstId}
         )
           and t.ASSIGNEE_  <![CDATA[<> ]]> ''
           and t.ASSIGNEE_ != 'back'

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.MsgProcessEventEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.entity.Department;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.EsClientAdaptor;
@@ -112,8 +111,8 @@ public class ProcessDataIndexService {
 
         String procInstId = bpmBusinessProcess.getProcInstId();
 
-        // Get already processed users
-        List<String> assignees = taskMgmtMapper.getAssigneesByEntryId(procInstId);
+        // Get already processed users (must use entryId, not procInstId)
+        List<String> assignees = taskMgmtMapper.getAssigneesByProcInstId(bpmBusinessProcess.getProcInstId());
         if (assignees != null && !assignees.isEmpty()) {
             dto.setAlreadyProcessedUsers(assignees);
         }

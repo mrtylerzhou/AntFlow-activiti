@@ -11,8 +11,6 @@ import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.AFExecutionEntity;
 import org.openoa.base.vo.HisTaskVo;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.engine.bpmnconf.service.cmd.DeleteRunningTaskCmd;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -198,10 +196,10 @@ public interface TaskMgmtMapper extends BaseMapper<TaskMgmtVO> {
     /**
      * get all approvers by entryId
      *
-     * @param entryId
+     * @param procInstId
      * @return
      */
-    public List<String> getAssigneesByEntryId(@Param("entryId") String entryId);
+    public List<String> getAssigneesByProcInstId(@Param("procInstId") String procInstId);
 
     /**
      * query current assignee by entryId

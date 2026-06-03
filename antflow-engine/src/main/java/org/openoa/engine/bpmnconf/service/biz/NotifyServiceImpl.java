@@ -7,9 +7,7 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.mapper.*;
@@ -115,7 +113,7 @@ public class NotifyServiceImpl {
             Map<String, Object> map = bpmTaskconfigMapper.findByAppRoute(procDefId, null, "test");
             String appUrl = StringUtils.join(processConstants.getMapValue(map, "routeUrl"), entryId.split(":")[1]);
             //经办人列表
-            List<String> assignees = taskMgmtMapper.getAssigneesByEntryId(entryId);
+            List<String> assignees = taskMgmtMapper.getAssigneesByProcInstId(bpmBusinessProcess.getProcInstId());
             if (!ObjectUtils.isEmpty(assignees)) {
                 for (String o : assignees) {
                     if (!Strings.isNullOrEmpty(o) && !o.equals(ProcessEnum.PROC_MAN.getDesc())) {
