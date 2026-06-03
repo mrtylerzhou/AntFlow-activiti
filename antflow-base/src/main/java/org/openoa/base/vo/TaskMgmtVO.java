@@ -216,9 +216,9 @@ public class TaskMgmtVO implements Serializable {
      */
     public Boolean isForward;
     /**
-     * check whether it is an old process or not
+     * where query all history process
      */
-    private Boolean isOld;
+    private Boolean isAll=false;
     /**
      * batch submit task ids
      */

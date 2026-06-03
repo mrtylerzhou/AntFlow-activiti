@@ -107,6 +107,10 @@
         <if test="taskMgmtVO.processDigest != null and taskMgmtVO.processDigest != ''">
             AND s.processDigest LIKE CONCAT('%', #{taskMgmtVO.processDigest},'%')
         </if>
+        <if test="taskMgmtVO.isAll!=null and  taskMgmtVO.isAll !=true ">
+            AND s.runTime &gt;= DATE_SUB(NOW(), INTERVAL ${queryMonthsBefore} MONTH)
+        </if>
+
     </sql>
     <!--already done prcoess-->
     <sql id="viewAlreadyDone">
