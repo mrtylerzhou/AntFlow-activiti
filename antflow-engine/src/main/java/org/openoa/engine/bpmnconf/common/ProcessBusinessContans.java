@@ -185,9 +185,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
             }
             if (StringUtils.isNotBlank(nodeId)) {
                 List<LFFieldControlVO> currentFieldControls = getFieldControlsFromNodeJson(Long.valueOf(nodeId));
-                if (CollectionUtils.isEmpty(currentFieldControls)) {
-                  throw new AFBizException("migration error,please contact the author");
-                }
+
                 processInfoVo.setLfFieldControlVOs(currentFieldControls);
             }
         }

@@ -412,6 +412,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      */
     @Override
     public BpmnConf getBpmnConfByFormCode(String formCode) {
+        //优先从ThreadLocal缓存中获取，避免重复查询数据库
+        Object cached = ThreadLocalContainer.get(StringConstants.AF_RUNTIME_BPMN_CONF);
+        if (cached instanceof BpmnConf) {
+            BpmnConf cachedConf = (BpmnConf) cached;
+            if (formCode.equals(cachedConf.getFormCode())) {
+                return cachedConf;
+            }
+        }
         return Optional.ofNullable(getService().getOne(new QueryWrapper<BpmnConf>()
                 .eq("form_code", formCode)
                 .eq("effective_status", 1)))
