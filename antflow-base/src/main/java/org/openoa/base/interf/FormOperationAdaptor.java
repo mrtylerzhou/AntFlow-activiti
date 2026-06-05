@@ -11,7 +11,7 @@ import java.util.Map;
  * FormOperationAdaptor is the core interface to adapt different business data to a process
  * @param <T>
  */
-public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessFinishListener, ActivitiService {
+public interface FormOperationAdaptor< T extends BusinessDataVo> extends ProcessFinishListener, ActivitiService {
 
     /**
      * set for preview condition,it is not a must method,but most of the time it is needed for preview a process
@@ -26,14 +26,14 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T
      */
-    void initData(T vo);
+    void initData(final T vo);
 
     /**
      * process's launch parameters,most of the time,it is a must method,even  rough you do not have any start conditions,you should always define a new empty one
      *
      * @param vo vo
      */
-    BpmnStartConditionsVo launchParameters(T vo);
+    BpmnStartConditionsVo launchParameters(final T vo);
 
 
     /**
@@ -41,14 +41,14 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param businessDataVo
      * @return
      */
-    Boolean automaticCondition(T businessDataVo);
+    Boolean automaticCondition(final T businessDataVo);
 
     /**
      * 执行的动作,可以执行预定制的动作,也可以自己定义一个或者多个动作来执行
      * @param businessDataVo
      * @param conditionResult 结果来自于 automaticCondition,如果需要无条件执行一个动作,automaticCondition返回null即可
      */
-    void  automaticAction(T businessDataVo,Boolean conditionResult);
+    void  automaticAction(final T businessDataVo,Boolean conditionResult);
     /**
      * query business data,most of the times,it is a must method,it is used to query business data for a process for approvers reference
      *
@@ -63,7 +63,7 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T(business data)
      */
-    void submitData(T vo);
+    void submitData(final T vo);
 
     /**
      * when an approver submit his/her approve,it will call this method to do some business logic,it is not a must method most of the times
@@ -71,21 +71,21 @@ public interface FormOperationAdaptor<T extends BusinessDataVo> extends ProcessF
      * @param vo vo
      * @return T(business data)
      */
-    void consentData(T vo);
+    void consentData(final T vo);
 
     /**
      * this method is called when a process is back to modify,it is not a must method most of the times
      *
      * @param vo vo
      */
-    void backToModifyData(T vo);
+    void backToModifyData(final T vo);
 
     /**
      * when a process is cancelled,it will call this method to do some business logic,it is a must method,usually,it is used to invalid the business data
      *
      * @param businessDataVo businessDataVo
      */
-    void cancellationData(T businessDataVo);
+    void cancellationData(final T businessDataVo);
 
     //流程完结以后(正常完成,被发起人拒绝,终止以后重新恢复
     void onProcessRecover(BusinessDataVo businessData);
