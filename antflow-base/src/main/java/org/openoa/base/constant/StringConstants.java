@@ -50,6 +50,7 @@ public class StringConstants {
     public static final String AUTOMATIC_NODE="auto_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
+    public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";
