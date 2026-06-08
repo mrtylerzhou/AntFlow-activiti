@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
@@ -139,17 +140,18 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
     private int  getFieldTypeByTypeString(String typeString) {
         switch (typeString) {
             case "number":
-                return 2;
+                return LFFieldTypeEnum.NUMBER.getType();
             case "date":
-                return 4;
+                return LFFieldTypeEnum.DATE_TIME.getType();
             case "switch":
-                return 6;
+                return LFFieldTypeEnum.BOOLEAN.getType();
             case "select":
             case "input":
             case "checkbox":
             case "time":
+                return LFFieldTypeEnum.STRING.getType();
             default:
-                return 1;
+                return LFFieldTypeEnum.STRING.getType();
         }
     }
     @Override
