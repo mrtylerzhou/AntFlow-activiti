@@ -143,16 +143,39 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
     }
     private int  getFieldTypeByTypeString(String typeString) {
         switch (typeString) {
+            // NUMBER
             case "number":
+            case "slider":
                 return LFFieldTypeEnum.NUMBER.getType();
+            // DATE
             case "date":
+                return LFFieldTypeEnum.DATE.getType();
+            // DATE_TIME
+            case "date-range":
+            case "time":
+            case "time-range":
                 return LFFieldTypeEnum.DATE_TIME.getType();
+            // BOOLEAN
             case "switch":
                 return LFFieldTypeEnum.BOOLEAN.getType();
+            // TEXT (long text)
+            case "textarea":
+            case "richtext-editor":
+                return LFFieldTypeEnum.TEXT.getType();
+            // STRING (short text) - default for most form fields
             case "select":
-            case "input":
+            case "radio":
             case "checkbox":
-            case "time":
+            case "cascader":
+            case "tree-select":
+            case "color-picker":
+            case "rate":
+            case "input":
+            case "number-range":
+            case "picture-upload":
+            case "file-upload":
+            case "icon-picker":
+            case "transfer":
                 return LFFieldTypeEnum.STRING.getType();
             default:
                 return LFFieldTypeEnum.STRING.getType();
