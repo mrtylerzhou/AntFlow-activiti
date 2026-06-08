@@ -8,7 +8,10 @@ public enum VariantFormContainerTypeEnum {
     CARD("card","卡片"),
     TAB("tab","标签页"),
     TABLE("table","表格"),
-    GRID("grid","栅格")
+    GRID("grid","栅格"),
+    SUB_FORM("sub-form","子表单"),
+    GRID_SUB_FORM("grid-sub-form","栅格子表单"),
+    TABLE_SUB_FORM("table-sub-form","表格子表单")
     ;
     private final String typeName;
     private final String desc;

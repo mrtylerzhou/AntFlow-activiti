@@ -88,12 +88,37 @@ public class LFMainField implements TenantField, Serializable {
         List<LFMainField> mainFields=new ArrayList<>(fieldMap.size());
         for (Map.Entry<String, Object> fieldId2ValueEntry : fieldMap.entrySet()) {
             String fieldId = fieldId2ValueEntry.getKey();
+            Object value = fieldId2ValueEntry.getValue();
             BpmnConfLfFormdataField fieldConfig = fieldConfigMap.get(fieldId);
+            // Check if this is a sub-form field: value is a List of Maps (rows)
+            // e.g. "subform46352": [{"input37412":"王五"},{"input37412":"李四"}]
+            if(fieldConfig == null && value instanceof List){
+                List<?> rows = (List<?>) value;
+                if(!rows.isEmpty() && rows.get(0) instanceof Map){
+                    // Sub-form: expand each row into individual LFMainField records
+                    int sort = 0;
+                    for (Object row : rows) {
+                        Map<String, Object> rowMap = (Map<String, Object>) row;
+                        for (Map.Entry<String, Object> cellEntry : rowMap.entrySet()) {
+                            BpmnConfLfFormdataField childConfig = fieldConfigMap.get(cellEntry.getKey());
+                            if(childConfig == null){
+                                continue;
+                            }
+                            LFMainField mainField = buildMainField(cellEntry.getValue(), mainId, sort, childConfig);
+                            mainField.setFormCode(formCode);
+                            mainField.setParentFieldId(fieldId);
+                            mainField.setParentFieldName(fieldId);
+                            mainFields.add(mainField);
+                        }
+                        sort++;
+                    }
+                    continue;
+                }
+            }
             if(fieldConfig==null){
                 continue;
                 //throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
-            Object value = fieldId2ValueEntry.getValue();
             LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
             mainField.setFormCode(formCode);
             mainFields.add(mainField);

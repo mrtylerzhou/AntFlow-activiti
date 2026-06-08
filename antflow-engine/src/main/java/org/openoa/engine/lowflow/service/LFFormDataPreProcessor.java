@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
@@ -97,9 +98,13 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 if(containerTypeEnum==null){
                     continue; //未定义低代码表单字段类型，直接跳过
                 }
-                if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)){
+                if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.SUB_FORM.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.TABLE_SUB_FORM.equals(containerTypeEnum)){
                     List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();
-                    parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                    if(!CollectionUtils.isEmpty(subWidgetList)){
+                        parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
+                    }
                 }else if(VariantFormContainerTypeEnum.TAB.equals(containerTypeEnum)){
                     List<FormConfigWrapper.LFWidget> tabs = lfWidget.getTabs();
                     for (FormConfigWrapper.LFWidget tab : tabs) {
@@ -139,17 +144,18 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
     private int  getFieldTypeByTypeString(String typeString) {
         switch (typeString) {
             case "number":
-                return 2;
+                return LFFieldTypeEnum.NUMBER.getType();
             case "date":
-                return 4;
+                return LFFieldTypeEnum.DATE_TIME.getType();
             case "switch":
-                return 6;
+                return LFFieldTypeEnum.BOOLEAN.getType();
             case "select":
             case "input":
             case "checkbox":
             case "time":
+                return LFFieldTypeEnum.STRING.getType();
             default:
-                return 1;
+                return LFFieldTypeEnum.STRING.getType();
         }
     }
     @Override
