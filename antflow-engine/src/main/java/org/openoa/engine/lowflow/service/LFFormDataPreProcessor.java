@@ -99,7 +99,8 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                     continue; //未定义低代码表单字段类型，直接跳过
                 }
                 if(VariantFormContainerTypeEnum.CARD.equals(containerTypeEnum)
-                        || VariantFormContainerTypeEnum.SUB_FORM.equals(containerTypeEnum)){
+                        || VariantFormContainerTypeEnum.SUB_FORM.equals(containerTypeEnum)
+                        || VariantFormContainerTypeEnum.TABLE_SUB_FORM.equals(containerTypeEnum)){
                     List<FormConfigWrapper.LFWidget> subWidgetList = lfWidget.getWidgetList();
                     if(!CollectionUtils.isEmpty(subWidgetList)){
                         parseWidgetListRecursively(subWidgetList,confId,formDataId,result);
