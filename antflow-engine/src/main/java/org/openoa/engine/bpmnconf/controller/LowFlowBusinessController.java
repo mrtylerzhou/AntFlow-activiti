@@ -97,11 +97,21 @@ public class LowFlowBusinessController {
             throw new AFBizException(Strings.lenientFormat("低代码流程 formCode:%s, confId:%s 没有表单数据", formCode, confId));
         }
 
-        // 6. 按fieldId分组处理多值字段
-        Map<String, List<LFMainField>> fieldId2FieldsMap = lfMainFields.stream()
+        // 6. Separate regular fields from sub-form child fields
+        List<LFMainField> regularFields = new ArrayList<>();
+        List<LFMainField> subFormChildren = new ArrayList<>();
+        for (LFMainField field : lfMainFields) {
+            if (field.getParentFieldId() != null && !field.getParentFieldId().isEmpty()) {
+                subFormChildren.add(field);
+            } else {
+                regularFields.add(field);
+            }
+        }
+
+        // 7. Build return data for regular fields
+        Map<String, List<LFMainField>> fieldId2FieldsMap = regularFields.stream()
                 .collect(Collectors.groupingBy(LFMainField::getFieldId));
 
-        // 7. 构建返回数据
         List<LowFlowBusinessDataVO.FieldInfo> fieldInfoList = new ArrayList<>();
 
         for (Map.Entry<String, List<LFMainField>> entry : fieldId2FieldsMap.entrySet()) {
@@ -126,6 +136,50 @@ public class LowFlowBusinessController {
                     .build();
 
             fieldInfoList.add(fieldInfo);
+        }
+
+        // 8. Build return data for sub-form fields: reconstruct as [{childField: value}, ...]
+        if (!subFormChildren.isEmpty()) {
+            Map<String, List<LFMainField>> subFormByParent = subFormChildren.stream()
+                    .collect(Collectors.groupingBy(LFMainField::getParentFieldId));
+            for (Map.Entry<String, List<LFMainField>> subFormEntry : subFormByParent.entrySet()) {
+                String parentFieldId = subFormEntry.getKey();
+                List<LFMainField> childFields = subFormEntry.getValue();
+
+                Map<Integer, List<LFMainField>> bySort = childFields.stream()
+                        .collect(Collectors.groupingBy(LFMainField::getSort));
+                TreeMap<Integer, List<LFMainField>> sortedBySort = new TreeMap<>(bySort);
+
+                List<Map<String, Object>> rows = new ArrayList<>();
+                for (Map.Entry<Integer, List<LFMainField>> sortEntry : sortedBySort.entrySet()) {
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    for (LFMainField field : sortEntry.getValue()) {
+                        BpmnConfLfFormdataField childConfig = fieldConfigMap.get(field.getFieldId());
+                        if (childConfig == null) {
+                            continue;
+                        }
+                        List<LFMainField> singleFieldList = Collections.singletonList(field);
+                        Object value = parseFieldValue(singleFieldList, childConfig, formCode, confId);
+                        row.put(field.getFieldId(), value);
+                    }
+                    rows.add(row);
+                }
+
+                // Get sub-form container config if available, otherwise use parentFieldId
+                BpmnConfLfFormdataField parentConfig = fieldConfigMap.get(parentFieldId);
+                String parentFieldName = parentConfig != null ? parentConfig.getFieldName() : parentFieldId;
+                Integer parentFieldType = parentConfig != null ? parentConfig.getFieldType() : null;
+
+                LowFlowBusinessDataVO.FieldInfo fieldInfo = LowFlowBusinessDataVO.FieldInfo.builder()
+                        .fieldId(parentFieldId)
+                        .fieldName(parentFieldName)
+                        .fieldLabel(parentFieldName)
+                        .fieldType(parentFieldType)
+                        .fieldValue(rows)
+                        .build();
+
+                fieldInfoList.add(fieldInfo);
+            }
         }
 
         // 8. 构建最终返回对象

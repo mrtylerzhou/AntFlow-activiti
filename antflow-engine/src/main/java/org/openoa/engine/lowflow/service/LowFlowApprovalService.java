@@ -117,19 +117,30 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long confId = lfMain.getConfId();
         String formCode = lfMain.getFormCode();
 
-        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
-        if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
-            Map<String, BpmnConfLfFormdataField> Id2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
-            allFieldConfMap.put(confId,Id2SelfMap);
-        }
-        lfFormdataFieldMap=allFieldConfMap.get(confId);
+        // Always refresh field config from DB to ensure sub-form fields are included
+        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+        allFieldConfMap.put(confId, lfFormdataFieldMap);
         List<LFMainField> lfMainFields = mainFieldService.listByMainIdAndFormCode(mainId, formCode);
         if(CollectionUtils.isEmpty(lfMainFields)){
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         //returned to page for presenting
         Map<String,Object> fieldVoMap=new HashMap<>(lfMainFields.size());
-        Map<String, List<LFMainField>> fieldName2SelfMap = lfMainFields.stream().collect(Collectors.groupingBy(LFMainField::getFieldId));
+        // Separate regular fields from sub-form child fields
+        Set<String> subFormFieldIds = new HashSet<>();
+        List<LFMainField> regularFields = new ArrayList<>();
+        List<LFMainField> subFormChildren = new ArrayList<>();
+        for (LFMainField field : lfMainFields) {
+            if (field.getParentFieldId() != null && !field.getParentFieldId().isEmpty()) {
+                subFormChildren.add(field);
+                subFormFieldIds.add(field.getFieldId());
+            } else {
+                regularFields.add(field);
+            }
+        }
+
+        // Process regular fields (original logic)
+        Map<String, List<LFMainField>> fieldName2SelfMap = regularFields.stream().collect(Collectors.groupingBy(LFMainField::getFieldId));
         for (Map.Entry<String, List<LFMainField>> Id2SelfEntry : fieldName2SelfMap.entrySet()) {
             String fieldName = Id2SelfEntry.getKey();
             BpmnConfLfFormdataField currentFieldProp = lfFormdataFieldMap.get(fieldName);
@@ -200,6 +211,61 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
                 fieldVoMap.put(fieldName,actualMultiValue);
             }
         }
+
+        // Process sub-form child fields: reconstruct as [{childField: value, ...}, ...]
+        if (!subFormChildren.isEmpty()) {
+            Map<String, List<LFMainField>> subFormByParent = subFormChildren.stream()
+                    .collect(Collectors.groupingBy(LFMainField::getParentFieldId));
+            for (Map.Entry<String, List<LFMainField>> subFormEntry : subFormByParent.entrySet()) {
+                String parentFieldId = subFormEntry.getKey();
+                List<LFMainField> childFields = subFormEntry.getValue();
+
+                // Group by sort (row index), sorted by key to preserve row order
+                Map<Integer, List<LFMainField>> bySort = childFields.stream()
+                        .collect(Collectors.groupingBy(LFMainField::getSort));
+                TreeMap<Integer, List<LFMainField>> sortedBySort = new TreeMap<>(bySort);
+
+                List<Map<String, Object>> rows = new ArrayList<>();
+                for (Map.Entry<Integer, List<LFMainField>> sortEntry : sortedBySort.entrySet()) {
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    for (LFMainField field : sortEntry.getValue()) {
+                        BpmnConfLfFormdataField currentFieldProp = lfFormdataFieldMap.get(field.getFieldId());
+                        if(currentFieldProp == null){
+                            continue;
+                        }
+                        Integer fieldType = currentFieldProp.getFieldType();
+                        LFFieldTypeEnum fieldTypeEnum = LFFieldTypeEnum.getByType(fieldType);
+                        if(fieldTypeEnum == null){
+                            continue;
+                        }
+                        Object actualValue = null;
+                        switch (fieldTypeEnum){
+                            case STRING:
+                                actualValue = field.getFieldValue();
+                                break;
+                            case NUMBER:
+                                actualValue = field.getFieldValueNumber();
+                                break;
+                            case DATE_TIME:
+                                actualValue = DateUtil.SDF_DATETIME_PATTERN.format(field.getFieldValueDt());
+                                break;
+                            case DATE:
+                                actualValue = DateUtil.SDF_DATE_PATTERN.format(field.getFieldValueDt());
+                                break;
+                            case TEXT:
+                                actualValue = field.getFieldValueText();
+                                break;
+                            case BOOLEAN:
+                                actualValue = Boolean.parseBoolean(field.getFieldValue());
+                                break;
+                        }
+                        row.put(field.getFieldId(), actualValue);
+                    }
+                    rows.add(row);
+                }
+                fieldVoMap.put(parentFieldId, rows);
+            }
+        }
         vo.setLfFields(fieldVoMap);
 
         List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
@@ -238,12 +304,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         mainService.save(main);
         Long mainId = main.getId();
 
-        Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
-        if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
-            Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
-            allFieldConfMap.put(confId,name2SelfMap);
-        }
-        Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
+        // Always refresh field config from DB to ensure sub-form fields are included
+        Map<String, BpmnConfLfFormdataField> fieldConfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+        allFieldConfMap.put(confId, fieldConfMap);
         if(CollectionUtils.isEmpty(fieldConfMap)){
             throw  new AFBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
@@ -315,12 +378,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 	    // 如果vo.getLfFields()里面有lfMainFields没有的元素，那么就将没有的元素save到LFMainField表中
 	    Map<String, Object> submitLfFields = vo.getLfFields();
 	    if (ObjectUtils.isNotEmpty(submitLfFields)) {
-		    Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
-		    if (ObjectUtils.isEmpty(lfFormdataFieldMap)) {
-			    Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
-			    allFieldConfMap.put(confId,name2SelfMap);
-		    }
-		    Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMap.get(confId);
+		    // Always refresh field config from DB to ensure sub-form fields are included
+		    Map<String, BpmnConfLfFormdataField> fieldConfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
+		    allFieldConfMap.put(confId, fieldConfMap);
 		    if (ObjectUtils.isEmpty(fieldConfMap)) {
 			    throw new AFBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
 		    }
