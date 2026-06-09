@@ -395,17 +395,13 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
             throw  new AFBizException(Strings.lenientFormat("lowcode form with formcode:%s,confid:%s has no formdata",formCode,confId));
         }
         List<LFFieldControlVO> currentFieldControls = getFieldControlsFromJson(confId, vo.getTaskDefKey());
-        if (CollectionUtils.isEmpty(currentFieldControls)) {
-           throw new AFBizException("migration error,please contact the author");
-        }
+
         for (LFMainField field : lfMainFields){
             if(!CollectionUtils.isEmpty(currentFieldControls)){
                 LFFieldControlVO lfFieldControlVO = currentFieldControls.stream().filter(control -> control.getFieldId().equals(field.getFieldId())).findFirst().orElse(null);
                 if(lfFieldControlVO!=null
-                        &&(StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
-                        ||StringConstants.READ_ONLY_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())
-                          )
-                ){
+                        &&(StringConstants.HIDDEN_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm()) ||StringConstants.READ_ONLY_FIELD_PERMISSION.equals(lfFieldControlVO.getPerm())))
+                {
                           continue;
                 }
             }
