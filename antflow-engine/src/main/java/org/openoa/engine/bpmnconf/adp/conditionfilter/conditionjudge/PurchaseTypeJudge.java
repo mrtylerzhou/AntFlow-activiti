@@ -25,6 +25,6 @@ public class PurchaseTypeJudge implements ConditionJudge {
         if (ObjectUtils.isEmpty(bpmnStartConditionsVo.getPurchaseType())) {
             throw new AFBizException("the process has no Purchase Type  when start up,but it is a must,please contact the administrator");
         }
-        return conditionsConf.getPurchaseType().equals(bpmnStartConditionsVo.getPurchaseType());
+        return conditionsConf.getPurchaseType().contains(bpmnStartConditionsVo.getPurchaseType());
     }
 }
