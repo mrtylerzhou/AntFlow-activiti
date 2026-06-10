@@ -13,12 +13,12 @@ class JsonConfUtilTest extends BaseTest {
     @DisplayName("toJsonString")
     class ToJsonStringTest {
         @Test
-        @DisplayName("should serialize object with WriteClassName")
-        void shouldSerializeWithWriteClassName() {
+        @DisplayName("should serialize object without @type")
+        void shouldSerializeWithoutTypeName() {
             BpmnNodeConfigJson config = BpmnNodeConfigJson.builder().build();
             String json = JsonConfUtil.toJsonString(config);
             assertNotNull(json);
-            assertTrue(json.contains("approverConf") || json.contains("BpmnNodeConfigJson"));
+            assertFalse(json.contains("@type"), "JSON should not contain @type field after removing WriteClassName");
         }
 
         @Test

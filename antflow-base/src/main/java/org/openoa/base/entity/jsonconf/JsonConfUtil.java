@@ -1,7 +1,6 @@
 package org.openoa.base.entity.jsonconf;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONWriter;
 
 /**
  * Utility for serializing/deserializing BPMN configuration JSON.
@@ -15,7 +14,7 @@ public class JsonConfUtil {
         if (obj == null) {
             return null;
         }
-        return JSON.toJSONString(obj, JSONWriter.Feature.WriteClassName);
+        return JSON.toJSONString(obj);
     }
 
     public static <T> T parseObject(String json, Class<T> clazz) {
