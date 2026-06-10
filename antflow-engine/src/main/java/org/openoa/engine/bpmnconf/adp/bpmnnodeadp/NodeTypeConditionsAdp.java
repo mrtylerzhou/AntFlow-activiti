@@ -76,6 +76,9 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
             baseVo.setSort(firstGroup.getSort());
             baseVo.setGroupRelation(firstGroup.getGroupRelation());
             setProperty(bpmnNodeVo, baseVo);
+            bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
+            bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
+            bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(firstGroup.getGroupRelation()));
             return;
         }
 
@@ -127,6 +130,8 @@ public class NodeTypeConditionsAdp implements BpmnNodeAdaptor {
 
         setProperty(bpmnNodeVo, baseVo);
 
+        bpmnNodeVo.getProperty().setIsDefault(firstGroup.getIsDefault());
+        bpmnNodeVo.getProperty().setSort(firstGroup.getSort());
         bpmnNodeVo.getProperty().setGroupRelation(ConditionRelationShipEnum.getValueByCode(firstGroup.getGroupRelation()));
         bpmnNodeVo.getProperty().setConditionList(extFieldsGroup);
     }
