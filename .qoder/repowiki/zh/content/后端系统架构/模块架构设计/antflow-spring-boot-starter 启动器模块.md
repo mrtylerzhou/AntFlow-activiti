@@ -448,7 +448,7 @@ antflow-spring-boot-starter 启动器模块通过精心设计的自动配置机�
 <dependency>
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
-    <version>2.0.0-m1</version>
+    <version>2.0.0-m2</version>
 </dependency>
 ```
 
