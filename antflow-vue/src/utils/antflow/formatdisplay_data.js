@@ -173,6 +173,9 @@ export class FormatDisplayUtils {
         node.priorityLevel = node.property.sort;
         node.isDefault = node.property.isDefault;
         node.groupRelation = node.property.groupRelation;
+        node.formAssigneeProperty = node.property.formAssigneeProperty
+        node.formInfos = node.property.formInfos?? [];
+        
         Object.assign(node, { conditionList: [] });
         node.conditionList = node.property.conditionList
           ? node.property.conditionList

@@ -50,6 +50,7 @@ export let setTypes = [
   { value: 12, label: "发起人自己" },
   { value: 7, label: "发起人自选审批人" },
   // { value: 14, label: '指定部门' },
+  { value: 16, label: '表单中选择' },
 ];
 export let hrbpOptions = [
   { value: 1, label: "HRBP" },
@@ -68,6 +69,35 @@ export let opt1s = [
   { value: "<", label: "<" },
   { value: "≤", label: "≤" },
 ];
+ 
+export const formUserOptionSet = [
+  { label: '表单中的人员', value: 1 },
+  { label: '表单中的角色', value: 2 },
+  { label: '表单中人员的HRBP', value: 3 },
+  { label: '表单中人员的直属领导', value: 4 },
+  { label: '表单中人员所在部门负责人', value: 5 },
+  { label: '表单中部门的负责人', value: 6 },
+  { label: '表单中人员多级领导', value: 7 },
+  { label: '表单中人员全部层级领导', value: 8 }
+]
+
+export const NO_USER_FIELD_WIDGETS = new Set([
+    "textarea",
+    "number",
+    "switch",
+    "time",
+    "date",
+    "date-range",
+    "time-range",
+    "rate", 
+    "slider",
+    "color",
+    "picture-upload",
+    "file-upload",
+    "rich-editor",
+    "rich-editor",
+]);
+
 /**审批按钮lable-value */
 export class approvalButtonConf {
   static preview = 0; //预览

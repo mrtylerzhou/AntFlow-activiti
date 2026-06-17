@@ -10,7 +10,7 @@
                         <div>
                             <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
-                                    }}</el-radio>
+                                }}</el-radio>
                             </el-radio-group>
                         </div>
                         <div v-show="approverConfig.setType == 5">
@@ -76,6 +76,27 @@
                         <div class="approver_text" v-if="approverConfig.setType == 7">
                             <p class="tip">该审批节点设置“发起人自选审批人”后，审批人在发起业务表单时由发起人选择</p>
                         </div>
+                        <div class="approver_text" v-if="approverConfig.setType == 16">
+                            <div>
+                                <p><i style="color: red;">*</i>审批人类型:</p>
+                                <el-select v-model="approverConfig.property.formAssigneeProperty" placeholder="请选审批人类型"
+                                    style="width: 300px">
+                                 <el-option
+                                        v-for="item in formUserOptionSet"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                        />
+                                </el-select>
+                            </div>
+                            <div>
+                                <p><i style="color: red;">*</i>表单中的人员组件</p>
+                                <el-radio-group v-model="formInfoSelected" class="clear">
+                                    <el-radio :value="valueItem.id" v-for="valueItem in formInfoOptions" :key="valueItem.id">{{valueItem.name}}</el-radio> 
+                                </el-radio-group>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="approver_block">
                         <p>✍多人审批时采用的审批方式</p>
@@ -164,20 +185,21 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons,NO_USER_FIELD_WIDGETS,formUserOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
 import noticeConf from "./noticeConfig/index.vue";
 const { proxy } = getCurrentInstance();
-let store = useStore()
-let props = defineProps({
+const store = useStore()
+const props = defineProps({
     directorMaxLevel: {
         type: Number,
         default: 0
     }
 });
+const lowCodeFormFields = computed(() => store.lowCodeFormField)
 let approverConfig = ref({});
 let approverUserVisible = ref(false);
 let approverRoleVisible = ref(false);
@@ -197,6 +219,9 @@ let formStepShow = ref(false);
 let noticeStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
+
+const formInfoSelected = ref(null);
+const formInfoOptions = ref([]);
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" })
@@ -225,6 +250,12 @@ watch(approverConfig1, (val) => {
 
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => {
+    if(!approverConfig.value.property) {
+        approverConfig.value.property = {};
+    }
+    if (!approverConfig.value.property.formAssigneeProperty) {
+        approverConfig.value.property.formAssigneeProperty = 1;
+    }
     approvalPageBtns.value = val.buttons?.approvalPage;
     if (val.nodeProperty == 6) {//nodeProperty == 6 指 HRBP
         checkedHRBP.value = val.property.hrbpConfType
@@ -234,7 +265,30 @@ watch(approverConfig, (val) => {
     } else {
         approvalBtnSubOption.value = approverConfig.value?.property?.signUpType;
     }
+    if (val.nodeProperty == 16) {//nodeProperty == 16 指 表单中人员
+        initFormInfoOptions();
+        formInfoSelected.value = approverConfig.value.property.formInfos?.[0]?.id; 
+    } 
 }, { deep: true });
+
+ 
+watch(formInfoSelected, (val) => {
+    const property = approverConfig.value.property;
+    if (!property) {
+        approverConfig.value.property = {};
+    }
+    if (!approverConfig.value.property.formInfos) {
+          approverConfig.value.property.formInfos = [];
+    } 
+    const info = formInfoOptions.value.find(item => item.id === val); 
+    if (info) {
+        property.formInfos = [{
+            id: info.id,
+            name: info.name
+        }];
+    }   
+}, { immediate: true });
+
 /**处理HRBP选项 */
 watch(checkedHRBP, (val) => {
     if (approverConfig.value.setType != 6) {
@@ -246,8 +300,12 @@ watch(checkedHRBP, (val) => {
         approverConfig.value.nodeApproveList = [{ "type": 6, "targetId": val, "name": labelName }];
     }
 });
+
+
+
 /**选择审批人类型更改事件 */
 const changeType = (val) => {
+    formInfoOptions.value = [];
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;
     approverConfig.value.noHeaderAction = 0;
@@ -255,7 +313,30 @@ const changeType = (val) => {
     if (val == 3) {
         approverConfig.value.directorLevel = 1;
     }
+    if(val == 16){ 
+       initFormInfoOptions();
+    }
+    else {
+        formInfoOptions.value = [];
+    }
 }
+
+const initFormInfoOptions = () => {
+    formInfoOptions.value = [];
+    if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
+        return;
+    }
+    lowCodeFormFields.value.formFields.filter(item => { return item.type; }).map((item, index) => { 
+        if (NO_USER_FIELD_WIDGETS.has(item.type)) {
+            return;
+        } 
+        formInfoOptions.value.push({
+            id: item.id,
+            name: item.options.label
+        }); 
+    }); 
+}
+
 /**添加审批人 */
 const addApprover = () => {
     approverUserVisible.value = true;
@@ -390,7 +471,7 @@ const handleTabClick = (tab, event) => {
 }
 
 .approver_text {
-    padding: 28px 0px;
+    padding: 8px 15px;
 }
 
 .opt-description {
