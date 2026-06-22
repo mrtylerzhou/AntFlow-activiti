@@ -1,7 +1,7 @@
 import { parseTime } from "@/utils/ruoyi";
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
-import { formUserOptionSet } from '@/utils/antflow/const';
-function All() { }
+import { formUserOptionSet } from "@/utils/antflow/const";
+function All() {}
 All.prototype = {
   arrToStr(arr) {
     if (arr) {
@@ -90,11 +90,12 @@ All.prototype = {
       return "直属领导";
     } else if (nodeConfig.setType == 7) {
       return "由发起人自选审批人";
-    }else if (nodeConfig.setType == 16) {
-      console.log("表单中的数据=======",nodeConfig);
-      const info = formUserOptionSet.find(item=>item.value == nodeConfig.property?.formAssigneeProperty);
-      return "表单中的数据:"+ info?.label;
-    }  else {
+    } else if (nodeConfig.setType == 16) {
+      const info = formUserOptionSet.find(
+        (item) => item.value == nodeConfig.property?.formAssigneeProperty,
+      );
+      return "表单中的数据:" + info?.label;
+    } else {
       return "";
     }
   },
@@ -220,7 +221,7 @@ All.prototype = {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
-            "{y}-{m}-{d}"
+            "{y}-{m}-{d}",
           )} ${relationTip} `;
         }
       } else if (fieldTypeName == "time") {
@@ -228,7 +229,7 @@ All.prototype = {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
-            "{h}:{i}:{s}"
+            "{h}:{i}:{s}",
           )} ${relationTip} `;
         }
       } else if (fieldTypeName == "number") {
