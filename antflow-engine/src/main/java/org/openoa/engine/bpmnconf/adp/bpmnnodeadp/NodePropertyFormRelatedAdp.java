@@ -30,7 +30,6 @@ public class NodePropertyFormRelatedAdp implements BpmnNodeAdaptor {
                     .formInfos(formNameAndValues)
                     .build());
         }
-    throw new AFBizException("migration error,please contact the author");
     }
 
 
