@@ -25,6 +25,3 @@ yarn.lock
 # Environment files
 .env.development
 .env.production
-
-# Playwright MCP
-.playwright-mcp
