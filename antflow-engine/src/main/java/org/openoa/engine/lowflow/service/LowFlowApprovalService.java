@@ -73,6 +73,9 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }else {
             startConditionsVo.setLfConditions(vo.getLfFields());
         }
+        BpmnConfVo bpmnConfVo = vo.getBpmnConfVo();
+        processFormRelatedUserConf(bpmnConfVo,vo);
+        startConditionsVo.setBusinessDataVo(vo);
         return startConditionsVo;
     }
 
@@ -315,45 +318,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         vo.setBusinessId(mainId.toString());
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(LowFlowApprovalService.class.getSimpleName());
-        Integer extraFlags = bpmnConfVo.getExtraFlags();
-        if (extraFlags != null && BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.flagsContainsCurrent(extraFlags)) {
-            List<BpmnNode> formRelatedNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery()
-                    .eq(BpmnNode::getConfId, confId)
-                    .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_FORM_RELATED.getCode()));
-            Map<String, List<String>> node2formRelatedAssignees = new HashMap<>();
-            if (!CollectionUtils.isEmpty(formRelatedNodes)) {
-                for (BpmnNode node : formRelatedNodes) {
-                    List<BpmnNodeApproverConfJson.FormRelatedUserConf> formRelatedConfs = getFormRelatedConfsFromNode(node);
-                    for (BpmnNodeApproverConfJson.FormRelatedUserConf formRelatedConf : formRelatedConfs) {
-                        String valueJson = formRelatedConf.getValueJson();
-                        if (StringUtils.isEmpty(valueJson)) {
-                            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
-                        }
-                        List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
-                        List<String> formValues = new ArrayList<>();
-                        for (BaseIdTranStruVo formInfo : formInfos) {
-                            String formName = formInfo.getId();
-                            Object formVal = lfFields.get(formName);
-                            if (formVal instanceof Iterable) {
-                                Iterable iterablef = (Iterable) formVal;
-                                Iterator iteratorf = iterablef.iterator();
-                                while (iteratorf.hasNext()) {
-                                    Object bValue = iteratorf.next();
-                                    formValues.add(bValue.toString());
-                                }
-                            } else {
-                                formValues.add(formVal.toString());
-                            }
-                        }
-                        node2formRelatedAssignees.put(node.getId().toString(), formValues);
-                    }
-                }
-            }
-            if (node2formRelatedAssignees.isEmpty()) {
-               throw new AFBizException("migration error,please contact the author");
-            }
-            vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
-        }
+        processFormRelatedUserConf(bpmnConfVo,vo);
 
     }
 
@@ -533,4 +498,48 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         return nodeConfig.getApproverConf().getFormRelatedUserConfList();
     }
 
+    private void  processFormRelatedUserConf(BpmnConfVo bpmnConfVo,UDLFApplyVo vo) {
+        Long confId =bpmnConfVo.getId();
+        Map<String, Object> lfFields = vo.getLfFields();
+        Integer extraFlags = bpmnConfVo.getExtraFlags();
+        if (extraFlags != null && BpmnConfFlagsEnum.HAS_FORM_RELATED_ASSIGNEES.flagsContainsCurrent(extraFlags)) {
+            List<BpmnNode> formRelatedNodes = bpmnNodeService.list(Wrappers.<BpmnNode>lambdaQuery()
+                    .eq(BpmnNode::getConfId, confId)
+                    .eq(BpmnNode::getNodeProperty, NodePropertyEnum.NODE_PROPERTY_FORM_RELATED.getCode()));
+            Map<String, List<String>> node2formRelatedAssignees = new HashMap<>();
+            if (!CollectionUtils.isEmpty(formRelatedNodes)) {
+                for (BpmnNode node : formRelatedNodes) {
+                    List<BpmnNodeApproverConfJson.FormRelatedUserConf> formRelatedConfs = getFormRelatedConfsFromNode(node);
+                    for (BpmnNodeApproverConfJson.FormRelatedUserConf formRelatedConf : formRelatedConfs) {
+                        String valueJson = formRelatedConf.getValueJson();
+                        if (StringUtils.isEmpty(valueJson)) {
+                            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL);
+                        }
+                        List<BaseIdTranStruVo> formInfos = JSON.parseArray(valueJson, BaseIdTranStruVo.class);
+                        List<String> formValues = new ArrayList<>();
+                        for (BaseIdTranStruVo formInfo : formInfos) {
+                            String formName = formInfo.getId();
+                            Object formVal = lfFields.get(formName);
+                            if (formVal instanceof Iterable) {
+                                Iterable iterablef = (Iterable) formVal;
+                                Iterator iteratorf = iterablef.iterator();
+                                while (iteratorf.hasNext()) {
+                                    Object bValue = iteratorf.next();
+                                    formValues.add(bValue.toString());
+                                }
+                            } else {
+                                formValues.add(formVal.toString());
+                            }
+                        }
+                        node2formRelatedAssignees.put(node.getId().toString(), formValues);
+                    }
+                }
+            }
+            if (node2formRelatedAssignees.isEmpty()) {
+                throw new AFBizException("migration error,please contact the author");
+            }
+            vo.setNode2formRelatedAssignees(node2formRelatedAssignees);
+        }
+
+    }
 }

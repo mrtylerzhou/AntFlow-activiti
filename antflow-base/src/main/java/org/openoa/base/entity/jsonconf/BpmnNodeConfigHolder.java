@@ -1,10 +1,10 @@
 package org.openoa.base.entity.jsonconf;
 
 import org.openoa.base.constant.enums.ButtonTypeEnum;
+import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.vo.*;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -226,6 +226,19 @@ public class BpmnNodeConfigHolder {
             addButtonsFromIntList(buttonList, btns.getStartPage(), 1, 0);
             addButtonsFromIntList(buttonList, btns.getApprovalPage(), 2, 0);
             addButtonsFromIntList(buttonList, btns.getViewPage(), 3, 0);
+            // START(发起人)节点的审批页必须要有"重新提交"按钮
+            // 前端设计器(promoterDrawer)没有审批按钮配置UI，需要后端兜底
+            boolean isStartNode = vo.getNodeType() != null && NodeTypeEnum.NODE_TYPE_START.getCode().equals(vo.getNodeType());
+            if (isStartNode) {
+                boolean hasResubmit = btns.getApprovalPage() != null && btns.getApprovalPage().contains(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode());
+                if (!hasResubmit) {
+                    buttonList.add(BpmnNodeButtonSignConfJson.ButtonConf.builder()
+                            .buttonPageType(2)
+                            .buttonType(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                            .buttonName(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getDesc())
+                            .build());
+                }
+            }
             bs.setButtonConfList(buttonList);
         }
 
