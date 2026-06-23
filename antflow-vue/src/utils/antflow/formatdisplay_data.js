@@ -168,21 +168,19 @@ export class FormatDisplayUtils {
   static formatDisplayStructNodeList(nodeList) {
     if (!nodeList) return;
     if (isEmptyArray(nodeList)) return nodeList;
-    for (let node of nodeList) {
+    for (let node of nodeList) { 
       if (node.nodeType == 3) {
         node.priorityLevel = node.property.sort;
         node.isDefault = node.property.isDefault;
         node.groupRelation = node.property.groupRelation;
-        node.formAssigneeProperty = node.property.formAssigneeProperty
-        node.formInfos = node.property.formInfos?? [];
-        
         Object.assign(node, { conditionList: [] });
         node.conditionList = node.property.conditionList
           ? node.property.conditionList
           : [];
         delete node.property;
       }
-
+      node.formAssigneeProperty = node?.property?.formAssigneeProperty
+      node.formInfos = node?.property?.formInfos ?? [];        
       if (node.nodeType == 4 || node.nodeType == 6) {
         let empList = [];
         if (node.nodeProperty == 6) {
