@@ -91,9 +91,13 @@
                             </div>
                             <div>
                                 <p><i style="color: red;">*</i>表单中的人员组件</p>
-                                <el-radio-group v-model="formInfoSelected" class="clear">
-                                    <el-radio :value="valueItem.id" v-for="valueItem in formInfoOptions" :key="valueItem.id">{{valueItem.name}}</el-radio> 
-                                </el-radio-group>
+                                 <el-select v-model="formInfoSelected" placeholder="请选择人员组件"
+                                    style="width: 300px">
+                                 <el-option v-for="item in formInfoOptions"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id" />
+                                </el-select> 
                             </div>
                         </div>
 
@@ -326,7 +330,11 @@ const initFormInfoOptions = () => {
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
         return;
     }
-    lowCodeFormFields.value.formFields.filter(item => { return item.type; }).map((item, index) => { 
+    lowCodeFormFields.value.formFields.filter(item => { 
+            if(item.options.label){
+                return item.type; 
+            }
+        }).map((item, index) => { 
         if (NO_USER_FIELD_WIDGETS.has(item.type)) {
             return;
         } 
