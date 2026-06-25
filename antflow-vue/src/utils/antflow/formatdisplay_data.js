@@ -179,7 +179,8 @@ export class FormatDisplayUtils {
           : [];
         delete node.property;
       }
-
+      node.formAssigneeProperty = node?.property?.formAssigneeProperty;
+      node.formInfos = node?.property?.formInfos ?? [];
       if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
         let empList = [];
         if (node.nodeProperty == 6) {

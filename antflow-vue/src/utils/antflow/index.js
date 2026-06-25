@@ -89,6 +89,11 @@ All.prototype = {
       return "直属领导";
     } else if (nodeConfig.setType == 7) {
       return "由发起人自选审批人";
+    } else if (nodeConfig.setType == 16) {
+      const info = formUserOptionSet.find(
+        (item) => item.value == nodeConfig.property?.formAssigneeProperty,
+      );
+      return "表单中的数据:" + info?.label;
     } else {
       return "";
     }

@@ -132,6 +132,8 @@ export class FormatCommitUtils {
 
       if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
         let approveObj = {
+          formAssigneeProperty: 0,
+          formInfos: [],
           emplIds: [],
           emplList: [],
           roleIds: [],
@@ -142,7 +144,6 @@ export class FormatCommitUtils {
           signUpType: 1,
           afterSignUpWay: 2,
         };
-
         if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
           if (node.setType == 4) {
             for (let approve of node.nodeApproveList) {
@@ -167,6 +168,9 @@ export class FormatCommitUtils {
           }
         } else if (node.setType == 3) {
           approveObj.assignLevelGrade = node.directorLevel;
+        } else if (node.setType == 16) {
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
+          approveObj.formInfos = node.property.formInfos ?? [];
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
