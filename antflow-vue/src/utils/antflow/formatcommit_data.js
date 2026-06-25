@@ -130,7 +130,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
         let approveObj = {
           emplIds: [],
           emplList: [],
@@ -273,7 +273,7 @@ const handleConditionGetway = (nodesGroup, parmData) => {
                 (c) => {
                   //并行聚合节点
                   return !info.nodeTo.includes(c.nodeId);
-                }
+                },
               );
               condition_parallelWayChild.nodeTo = [comNode.nodeId];
               return;

@@ -124,12 +124,13 @@ const templateForm = ref({
     templateId: ""
 });
 
-let props = defineProps({
+const props = defineProps({
     formData: {
         type: Array,
         default: [],
     }
 });
+console.log('formData=====', props.formData);
 const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
 //加载的时候判断，赋默认值
 onBeforeMount(() => {

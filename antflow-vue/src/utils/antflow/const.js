@@ -13,6 +13,8 @@ export let bgColors = [
   "255, 148, 62",
   "50, 150, 250",
   "50, 150, 250",
+  "",
+  "4, 96, 187",
 ]; // '灰色, 蓝色, 橙色, 黄色, 黄色'
 export let placeholderList = [
   "",
@@ -43,6 +45,17 @@ export let setTypes = [
   { value: 5, label: "指定人员" },
   { value: 4, label: "指定角色" },
   { value: 6, label: "HRBP" },
+  { value: 13, label: "直属领导" },
+  // { value: 2, label: '层层审批' },
+  { value: 3, label: "指定层级审批" },
+  // { value: 8, label: '关联业务表' },
+  { value: 12, label: "发起人自己" },
+  { value: 7, label: "发起人自选审批人" },
+  // { value: 14, label: '指定部门' },
+];
+export let setCopyerTypes = [
+  { value: 5, label: "指定人员" },
+  { value: 4, label: "指定角色" },
   { value: 13, label: "直属领导" },
   // { value: 2, label: '层层审批' },
   { value: 3, label: "指定层级审批" },

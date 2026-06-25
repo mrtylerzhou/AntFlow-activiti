@@ -1,6 +1,6 @@
 import { parseTime } from "@/utils/ruoyi";
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
-function All() { }
+function All() {}
 All.prototype = {
   arrToStr(arr) {
     if (arr) {
@@ -89,6 +89,66 @@ All.prototype = {
       return "直属领导";
     } else if (nodeConfig.setType == 7) {
       return "由发起人自选审批人";
+    } else {
+      return "";
+    }
+  },
+  setCopyStrV2(nodeConfig) {
+    if (!nodeConfig) return;
+    if (nodeConfig.setType == 5) {
+      if (nodeConfig.nodeApproveList.length == 1) {
+        return nodeConfig.nodeApproveList[0].name;
+      } else if (nodeConfig.nodeApproveList.length > 1) {
+        if (nodeConfig.signType == 2) {
+          return this.arrToStr(nodeConfig.nodeApproveList);
+        } else if (nodeConfig.signType == 1) {
+          return (
+            nodeConfig.nodeApproveList.length +
+            "人(" +
+            this.arrToStr(nodeConfig.nodeApproveList) +
+            ")"
+          );
+        } else if (nodeConfig.signType == 3) {
+          return (
+            nodeConfig.nodeApproveList.length +
+            "人(" +
+            this.arrToStr(nodeConfig.nodeApproveList) +
+            ")"
+          );
+        }
+      }
+    } else if (nodeConfig.setType == 3) {
+      const levelMap = {
+        1: "直接主管",
+        2: "第二主管",
+        3: "第三主管",
+      };
+      let level =
+        levelMap[nodeConfig.directorLevel] ||
+        `第${nodeConfig.directorLevel}级主管`;
+      if (nodeConfig.signType == 2) {
+        return level + "";
+      } else {
+        return level;
+      }
+    } else if (nodeConfig.setType == 4) {
+      if (nodeConfig.nodeApproveList.length > 0) {
+        return "指定 (" + this.arrToStr(nodeConfig.nodeApproveList) + ") 角色";
+      }
+      return "";
+    } else if (nodeConfig.setType == 6) {
+      if (nodeConfig.nodeApproveList.length > 0) {
+        return "指定 (" + this.arrToStr(nodeConfig.nodeApproveList) + ")";
+      }
+      return "";
+    } else if (nodeConfig.setType == 14) {
+      return "指定部门";
+    } else if (nodeConfig.setType == 12) {
+      return "发起人自己";
+    } else if (nodeConfig.setType == 13) {
+      return "直属领导";
+    } else if (nodeConfig.setType == 7) {
+      return "由发起人自选抄送人";
     } else {
       return "";
     }
@@ -215,7 +275,7 @@ All.prototype = {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
-            "{y}-{m}-{d}"
+            "{y}-{m}-{d}",
           )} ${relationTip} `;
         }
       } else if (fieldTypeName == "time") {
@@ -223,7 +283,7 @@ All.prototype = {
           var optTypeStr = ["", "≥", ">", "≤", "<", "="][optType];
           str += `${showName} ${optTypeStr} ${parseTime(
             zdy1,
-            "{h}:{i}:{s}"
+            "{h}:{i}:{s}",
           )} ${relationTip} `;
         }
       } else if (fieldTypeName == "number") {

@@ -19,6 +19,7 @@
     <promoterDrawer />
     <approverDrawer :directorMaxLevel="directorMaxLevel" />
     <copyerDrawer />
+    <copyerV2Drawer />
     <conditionDrawer />
 </template>
 
@@ -30,6 +31,7 @@ import errorDialog from "@/components/Workflow/dialog/errorDialog.vue";
 import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
+import copyerV2Drawer from "@/components/Workflow/drawer/copyerDrawerV2.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
 import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
 import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
