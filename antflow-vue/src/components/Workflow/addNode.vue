@@ -22,12 +22,12 @@
                         </div>
                     </a>
 
-                    <a class="add-node-popover-item notifier-v2" @click="addType(8)">
+                    <!-- <a class="add-node-popover-item notifier-v2" @click="addType(8)">
                         <div class="item-wrapper">
                             <svg-icon icon-class="copy-user" class="iconfont" />
                             <p>抄送人V2</p>
                         </div>
-                    </a>
+                    </a> -->
                 </div>
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item condition" @click="addType(4)">
