@@ -117,7 +117,7 @@ export class FormatDisplayUtils {
           } else if (4 == itemNode.nodeType) {
             let isTrueParallelNode = this.isParallelChildNode(
               itemNode,
-              parmData
+              parmData,
             );
             if (isTrueParallelNode == false) {
               node.childNode = itemNode;
@@ -168,7 +168,7 @@ export class FormatDisplayUtils {
   static formatDisplayStructNodeList(nodeList) {
     if (!nodeList) return;
     if (isEmptyArray(nodeList)) return nodeList;
-    for (let node of nodeList) { 
+    for (let node of nodeList) {
       if (node.nodeType == 3) {
         node.priorityLevel = node.property.sort;
         node.isDefault = node.property.isDefault;
@@ -179,16 +179,16 @@ export class FormatDisplayUtils {
           : [];
         delete node.property;
       }
-      node.formAssigneeProperty = node?.property?.formAssigneeProperty
-      node.formInfos = node?.property?.formInfos ?? [];        
-      if (node.nodeType == 4 || node.nodeType == 6) {
+      node.formAssigneeProperty = node?.property?.formAssigneeProperty;
+      node.formInfos = node?.property?.formInfos ?? [];
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
         let empList = [];
         if (node.nodeProperty == 6) {
           let approveObj = {
             type: 5,
             targetId: node.property.hrbpConfType || 0,
             name: hrbpOptions.find(
-              (item) => item.value == node.property.hrbpConfType
+              (item) => item.value == node.property.hrbpConfType,
             )?.label,
           };
           empList.push(approveObj);

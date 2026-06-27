@@ -130,7 +130,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
         let approveObj = {
           formAssigneeProperty: 0,
           formInfos: [],
@@ -143,7 +143,7 @@ export class FormatCommitUtils {
           signType: node.signType,
           signUpType: 1,
           afterSignUpWay: 2,
-        }; 
+        };
         if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
           if (node.setType == 4) {
             for (let approve of node.nodeApproveList) {
@@ -168,16 +168,15 @@ export class FormatCommitUtils {
           }
         } else if (node.setType == 3) {
           approveObj.assignLevelGrade = node.directorLevel;
-        }
-        else if (node.setType == 16) {
-          approveObj.formAssigneeProperty = node.property.formAssigneeProperty
-          approveObj.formInfos = node.property.formInfos?? [];
+        } else if (node.setType == 16) {
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
+          approveObj.formInfos = node.property.formInfos ?? [];
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
         node.nodeProperty = node.setType;
         node.property = approveObj;
-        delete node.nodeApproveList; 
+        delete node.nodeApproveList;
       }
     }
     return nodeList;
@@ -278,7 +277,7 @@ const handleConditionGetway = (nodesGroup, parmData) => {
                 (c) => {
                   //并行聚合节点
                   return !info.nodeTo.includes(c.nodeId);
-                }
+                },
               );
               condition_parallelWayChild.nodeTo = [comNode.nodeId];
               return;

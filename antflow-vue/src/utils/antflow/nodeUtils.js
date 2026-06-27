@@ -80,6 +80,47 @@ export class NodeUtils {
     };
     return copyNode;
   }
+
+  /**
+   * 创建抄送人节点的V2版本
+   * @param {Object} child - 子节点信息
+   * @returns {Object}
+   */
+  /**
+   * 创建审批节点的副本（版本2）
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 返回一个包含审批节点所有属性的对象
+   */
+  static createCopyNodeV2(child) {
+    let copyNodeV2 = {
+      nodeId: this.idGenerator(), // 生成唯一节点ID
+      nodeName: "抄送人v2", // 节点名称
+      nodeDisplayName: "抄送人v2",
+      nodeType: 8, //节点类型 8、抄送人v2
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签-需全部同意，2:或签-一人同意即可，3：顺序会签
+      isSignUp: 1, //是否加批 0:否，1:是
+      directorLevel: 1, // 审批级别
+      noHeaderAction: 0,
+      childNode: child, // 子节点引用
+      error: true,
+      property: {
+        afterSignUpWay: 1, // 加签后处理方式
+        signUpType: 1, // 加签类型
+      },
+      lfFieldControlVOs: [], // 字段控制对象数组（初始为空）
+      buttons: {
+        startPage: [1], // 开始页面可用的按钮ID数组
+        approvalPage: [3, 4, 18, 19, 21], // 审批页面可用的按钮ID数组
+        viewPage: [0],
+      },
+      nodeApproveList: [], // 节点审批人列表（初始为空）
+      templateVos: [], // 模板对象数组（初始为空）
+    };
+    return copyNodeV2; // 返回创建的审批节点对象
+  }
   /**
    * 创建网关对象
    * @returns object
@@ -211,7 +252,7 @@ export class NodeUtils {
           nodeName: "发起人",
           nodeDisplayName: "发起人",
           annotation: null,
-          isDeduplication: 0, 
+          isDeduplication: 0,
           orderedNodeType: null,
           remark: "",
           isDel: 0,
@@ -256,7 +297,7 @@ export class NodeUtils {
     fieldTypeName,
     multiple,
     multipleLimit,
-    fixedDownBoxValue
+    fixedDownBoxValue,
   ) {
     let judgeNode = {
       formId: formId,
