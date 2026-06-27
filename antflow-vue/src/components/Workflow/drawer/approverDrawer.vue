@@ -81,23 +81,16 @@
                                 <p><i style="color: red;">*</i>审批人类型:</p>
                                 <el-select v-model="approverConfig.property.formAssigneeProperty" placeholder="请选审批人类型"
                                     style="width: 300px">
-                                 <el-option
-                                        v-for="item in formUserOptionSet"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                        />
+                                    <el-option v-for="item in formUserOptionSet" :key="item.value" :label="item.label"
+                                        :value="item.value" />
                                 </el-select>
                             </div>
                             <div>
                                 <p><i style="color: red;">*</i>表单中的人员组件</p>
-                                 <el-select v-model="formInfoSelected" placeholder="请选择人员组件"
-                                    style="width: 300px">
-                                 <el-option v-for="item in formInfoOptions"
-                                        :key="item.id"
-                                        :label="item.name"
+                                <el-select v-model="formInfoSelected" placeholder="请选择人员组件" style="width: 300px">
+                                    <el-option v-for="item in formInfoOptions" :key="item.id" :label="item.name"
                                         :value="item.id" />
-                                </el-select> 
+                                </el-select>
                             </div>
                         </div>
 
@@ -189,7 +182,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons,NO_USER_FIELD_WIDGETS,formUserOptionSet } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
@@ -254,7 +247,7 @@ watch(approverConfig1, (val) => {
 
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => {
-    if(!approverConfig.value.property) {
+    if (!approverConfig.value.property) {
         approverConfig.value.property = {};
     }
     if (!approverConfig.value.property.formAssigneeProperty) {
@@ -271,26 +264,26 @@ watch(approverConfig, (val) => {
     }
     if (val.nodeProperty == 16) {//nodeProperty == 16 指 表单中人员
         initFormInfoOptions();
-        formInfoSelected.value = approverConfig.value.property.formInfos?.[0]?.id; 
-    } 
+        formInfoSelected.value = approverConfig.value.property.formInfos?.[0]?.id;
+    }
 }, { deep: true });
 
- 
+
 watch(formInfoSelected, (val) => {
     const property = approverConfig.value.property;
     if (!property) {
         approverConfig.value.property = {};
     }
     if (!approverConfig.value.property.formInfos) {
-          approverConfig.value.property.formInfos = [];
-    } 
-    const info = formInfoOptions.value.find(item => item.id === val); 
+        approverConfig.value.property.formInfos = [];
+    }
+    const info = formInfoOptions.value.find(item => item.id === val);
     if (info) {
         property.formInfos = [{
             id: info.id,
             name: info.name
         }];
-    }   
+    }
 }, { immediate: true });
 
 /**处理HRBP选项 */
@@ -317,8 +310,8 @@ const changeType = (val) => {
     if (val == 3) {
         approverConfig.value.directorLevel = 1;
     }
-    if(val == 16){ 
-       initFormInfoOptions();
+    if (val == 16) {
+        initFormInfoOptions();
     }
     else {
         formInfoOptions.value = [];
@@ -330,19 +323,19 @@ const initFormInfoOptions = () => {
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
         return;
     }
-    lowCodeFormFields.value.formFields.filter(item => { 
-            if(item.options.label){
-                return item.type; 
-            }
-        }).map((item, index) => { 
+    lowCodeFormFields.value.formFields.filter(item => {
+        if (item.options.required && item.options.label) {
+            return item.type;
+        }
+    }).map((item, index) => {
         if (NO_USER_FIELD_WIDGETS.has(item.type)) {
             return;
-        } 
+        }
         formInfoOptions.value.push({
             id: item.id,
             name: item.options.label
-        }); 
-    }); 
+        });
+    });
 }
 
 /**添加审批人 */
