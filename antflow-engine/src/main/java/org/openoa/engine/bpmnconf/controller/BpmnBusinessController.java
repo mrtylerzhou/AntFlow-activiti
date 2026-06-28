@@ -62,6 +62,21 @@ public class BpmnBusinessController {
             result.addAll(diyList);
         }
 
+        return Result.newSuccessResult(result);
+    }
+
+    @PostMapping("/getAllFormCodeList")
+    public Result getAllFormCodeList(String desc) {
+        List<DIYProcessInfoDTO> result = new ArrayList<>();
+        // DIY流程
+        List<DIYProcessInfoDTO> diyList = taskMgmtService.viewProcessInfo(desc);
+        if (!CollectionUtils.isEmpty(diyList)) {
+            for (DIYProcessInfoDTO dto : diyList) {
+                dto.setValue("【DIY】" + dto.getValue());
+            }
+            result.addAll(diyList);
+        }
+
         // 低代码流程(LF)
         List<BaseKeyValueStruVo> lfList = lowCodeFlowBizService.getLowCodeFlowFormCodes();
         if (!CollectionUtils.isEmpty(lfList)) {
@@ -89,7 +104,6 @@ public class BpmnBusinessController {
         }
         return Result.newSuccessResult(result);
     }
-
     /**
      * 获取委托列表
      *

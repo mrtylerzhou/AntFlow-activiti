@@ -18,6 +18,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.RuntimeActivityDefinitionEntityIntepreter;
+import org.openoa.base.util.FilterUtil;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
@@ -234,12 +235,15 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 				runtimeService.setVariable(executionId,"nrOfCompletedInstances",0);
 			}
 
-			currentEqualCount+=finishedHistoryTasks.size();
+			if(currentTaskEntitys.size()>1){
+				currentEqualCount+=finishedHistoryTasks.size();
+			}
 		}
 
 		if(currentEqualCount<assigneeListByElementId.size()){
 			List<BaseIdTranStruVo> baseIdTranStruVos = assigneeListByElementId.subList(currentEqualCount, assigneeListByElementId.size());
 			AddAssigneeProcessImpl bean = SpringBeanUtils.getBean(AddAssigneeProcessImpl.class);
+			baseIdTranStruVos=baseIdTranStruVos.stream().filter(FilterUtil.distinctByKeys(BaseIdTranStruVo::getId)).collect(Collectors.toList());
 			BusinessDataVo vo=new BusinessDataVo();
 			vo.setFormCode(variables.get("formCode").toString());
 			vo.setProcessNumber(processNumber);

@@ -82,7 +82,7 @@ public class BpmnConfConfigHolder {
                 .build();
     }
 
-    private static List<BpmnConfConfigJson.ConfTemplateConf> buildConfTemplates(List<BpmnTemplateVo> templateVos, String formCode) {
+    public static List<BpmnConfConfigJson.ConfTemplateConf> buildConfTemplates(List<BpmnTemplateVo> templateVos, String formCode) {
         if (CollectionUtils.isEmpty(templateVos)) {
             return null;
         }

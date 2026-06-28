@@ -440,6 +440,75 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     }
 
     /**
+     * Save process notice configuration by partially updating conf_config_json.
+     * <p>
+     * Replaces the legacy {@code BpmProcessNoticeServiceImpl.saveProcessNotice}
+     * which wrote to the now-deleted {@code bpm_process_notice} table and
+     * {@code t_bpmn_template} (conf-level) table. Both data sets are now stored
+     * inside {@code t_bpmn_conf.conf_config_json}:
+     * <ul>
+     *   <li>notice channel types → {@code noticeChannelTypes: List<Integer>}</li>
+     *   <li>conf-level templates  → {@code confTemplates[]}</li>
+     * </ul>
+     *
+     * @param vo carries processKey, notifyTypeIds and templateVos
+     */
+    @Override
+    @Transactional
+    public void saveProcessNotices(ProcessConfVo vo) {
+        String processKey = vo.getProcessKey();
+        if (StringUtils.isBlank(processKey)) {
+            throw new AFBizException("processKey can not be null");
+        }
+
+        List<Integer> notifyTypeIds = vo.getNotifyTypeIds();
+        List<BpmnTemplateVo> templateVos = vo.getTemplateVos();
+
+        // Load the existing effective BpmnConf record for this formCode
+        BpmnConf bpmnConf = getService().getOne(new QueryWrapper<BpmnConf>()
+                .eq("form_code", processKey)
+                .eq("effective_status", 1));
+        if (bpmnConf == null || bpmnConf.getId() == null) {
+            throw new AFBizException(Strings.lenientFormat("can not find bpmn conf for formCode:%s", processKey));
+        }
+
+        // Parse existing conf-level JSON (or start fresh)
+        BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(bpmnConf.getConfConfigJson());
+        if (confConfig == null) {
+            confConfig = new BpmnConfConfigJson();
+        }
+
+        // --- Advanced notification templates ---
+        if (!CollectionUtils.isEmpty(templateVos)) {
+            // 如果设置了高级通知,但是没有设置普通通知类型,就高级的赋值给普通的
+            if (CollectionUtils.isEmpty(confConfig.getNoticeChannelTypes())) {
+                List<Integer> advancedNotifyIds = templateVos.stream()
+                        .filter(t -> !CollectionUtils.isEmpty(t.getMessageSendTypeList()))
+                        .flatMap(t -> t.getMessageSendTypeList().stream())
+                        .map(a -> a.getId().intValue())
+                        .distinct()
+                        .collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(advancedNotifyIds)) {
+                    notifyTypeIds = new ArrayList<>(advancedNotifyIds);
+                }
+            }
+            // Replace conf-level templates (equivalent to delete-all + re-insert)
+            confConfig.setConfTemplates(BpmnConfConfigHolder.buildConfTemplates(templateVos, processKey));
+        }
+
+        // --- Notice channel types ---
+        if (!ObjectUtils.isEmpty(notifyTypeIds)) {
+            confConfig.setNoticeChannelTypes(notifyTypeIds);
+        }
+
+        // Persist the updated JSON
+        BpmnConf updateConf = new BpmnConf();
+        updateConf.setId(bpmnConf.getId());
+        updateConf.setConfConfigJson(JsonConfUtil.toConfConfigJson(confConfig));
+        getService().updateById(updateConf);
+    }
+
+    /**
      * //todo
      * update bpmn conf's extra information
      *
