@@ -13,6 +13,16 @@ public interface BpmnConfBizService extends BizService<BpmnConfMapper, BpmnConfS
     @Transactional
     void edit(BpmnConfVo bpmnConfVo);
 
+    /**
+     * Save process notice configuration (notice channel types and advanced
+     * notification templates) by partially updating conf_config_json.
+     *
+     * @param vo process configuration vo carrying processKey, notifyTypeIds
+     *           and templateVos
+     */
+    @Transactional
+    void saveProcessNotices(ProcessConfVo vo);
+
     BpmnConf getBpmnConfByFormCode(String formCode);
 
     List<BpmnConf> getBpmnConfByFormCodeBatch(List<String> formCodes);

@@ -6,7 +6,9 @@ import org.openoa.base.entity.DictData;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseNumIdStruVo;
+import org.openoa.base.vo.ProcessConfVo;
 import org.openoa.engine.bpmnconf.service.interf.DicDataService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,20 @@ public class BpmProcessControlController {
 
     @Autowired
     private DicDataService dicDataService;
+    @Autowired
+    private BpmnConfBizService bpmnConfBizService;
+
+    /**
+     * 流程图标下面弄一个配置选项,保存流程权限(目前尚未实现),流程通知类型
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("/taskMgmt")
+    public Result saveProcessNotices(@RequestBody ProcessConfVo vo) {
+        bpmnConfBizService.saveProcessNotices(vo);
+        return Result.success();
+    }
 
     @GetMapping("/getFormRelatedOptions")
     public Result<List<BaseNumIdStruVo>> getFormRelatedOptions(){
