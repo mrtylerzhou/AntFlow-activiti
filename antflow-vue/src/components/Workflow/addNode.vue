@@ -21,6 +21,13 @@
                             <p>抄送人</p>
                         </div>
                     </a>
+
+                    <!-- <a class="add-node-popover-item notifier-v2" @click="addType(8)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="copy-user" class="iconfont" />
+                            <p>抄送人V2</p>
+                        </div>
+                    </a> -->
                 </div>
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item condition" @click="addType(4)">
@@ -70,6 +77,10 @@ const createApproveNode = (childNode) => {
 const createCopyNode = (childNode) => {
     return NodeUtils.createCopyNode(childNode);
 }
+
+const createCopyNodeV2 = (childNode) => {
+    return NodeUtils.createCopyNodeV2(childNode);
+}
 /**创建并行审批人节点 */
 const createParallelWayNode = (childNode) => {
     return NodeUtils.createParallelWayNode(childNode);
@@ -93,7 +104,8 @@ const createNodeMap = new Map([
     [3, createParallelWayNode],
     [4, createGatewayNode],
     [5, createDynamicConditionWayNode],
-    [6, createParallelConditionWayNode]
+    [6, createParallelConditionWayNode],
+    [8, createCopyNodeV2],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -217,6 +229,12 @@ const addType = (type) => {
         &.notifier {
             .item-wrapper {
                 color: #3296fa
+            }
+        }
+
+        &.notifier-v2 {
+            .item-wrapper {
+                color: #0460bb
             }
         }
 

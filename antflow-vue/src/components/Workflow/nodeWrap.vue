@@ -13,6 +13,7 @@
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
                 <template v-else>
                     <svg-icon icon-class="copy-user" class="iconfont" v-if="nodeConfig.nodeType == 6" />
+                    <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -170,13 +171,15 @@ let {
     setApproverConfig,
     setCopyerConfig,
     setConditionsConfig,
+    setCopyerV2,
+    setCopyerConfigV2,
 } = store;
 let isTried = computed(() => store.isTried)
 let flowPermission1 = computed(() => store.flowPermission1)
 let approverConfig1 = computed(() => store.approverConfig1)
 let copyerConfig1 = computed(() => store.copyerConfig1)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
-
+let copyerConfigV2 = computed(() => store.copyerConfigV2)
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
@@ -191,6 +194,7 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '发起人';
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -247,6 +251,12 @@ watch(approverConfig1, (approver) => {
 watch(copyerConfig1, (copyer) => {
     if (copyer.flag && copyer.id === _uid) {
         emits("update:nodeConfig", copyer.value);
+    }
+});
+/**抄送人节点监听 */
+watch(copyerConfigV2, (copyerV2) => {
+    if (copyerV2.flag && copyerV2.id === _uid) {
+        emits("update:nodeConfig", copyerV2.value);
     }
 });
 /**条件节点监听 */
@@ -432,6 +442,14 @@ const setNodeInfo = (index) => {
                 ...JSON.parse(JSON.stringify(props.nodeConfig)),
                 index: index,
             },
+            flag: false,
+            id: _uid,
+        });
+    }
+    else if (nodeType == 8) {
+        setCopyerV2(true);
+        setCopyerConfigV2({
+            value: JSON.parse(JSON.stringify(props.nodeConfig)),
             flag: false,
             id: _uid,
         });
