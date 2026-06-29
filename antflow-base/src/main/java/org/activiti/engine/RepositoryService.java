@@ -18,17 +18,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.DeploymentQuery;
 import org.activiti.engine.repository.DiagramLayout;
-import org.activiti.engine.repository.Model;
-import org.activiti.engine.repository.ModelQuery;
 import org.activiti.engine.repository.NativeDeploymentQuery;
-import org.activiti.engine.repository.NativeModelQuery;
 import org.activiti.engine.repository.NativeProcessDefinitionQuery;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
-import org.activiti.engine.task.IdentityLink;
 import org.activiti.validation.ValidationError;
 
 /** Service providing access to the repository of process definitions and deployments.
@@ -323,104 +320,6 @@ public interface RepositoryService {
   DiagramLayout getProcessDiagramLayout(String processDefinitionId);
   
   /**
-   * Creates a new model. The model is transient and must be saved using 
-   * {@link #saveModel(Model)}.
-   */
-  Model newModel();
-
-  /**
-   * Saves the model. If the model already existed, the model is updated
-   * otherwise a new model is created.
-   * @param model model to save, cannot be null.
-   */
-  void saveModel(Model model);
-
-  /**
-   * @param modelId id of model to delete, cannot be null. When an id is passed
-   * for an unexisting model, this operation is ignored.
-   */
-  void deleteModel(String modelId);
-  
-  /**
-   * Saves the model editor source for a model
-   * @param modelId id of model to delete, cannot be null. When an id is passed
-   * for an unexisting model, this operation is ignored.
-   */
-  void addModelEditorSource(String modelId, byte[] bytes);
-  
-  /**
-   * Saves the model editor source extra for a model
-   * @param modelId id of model to delete, cannot be null. When an id is passed
-   * for an unexisting model, this operation is ignored.
-   */
-  void addModelEditorSourceExtra(String modelId, byte[] bytes);
-  
-  /** Query models. */
-  ModelQuery createModelQuery();
-
-  /**
-   * Returns a new {@link org.activiti.engine.query.NativeQuery} for process definitions.
-   */
-  NativeModelQuery createNativeModelQuery();
-  
-  /**
-   * Returns the {@link Model}
-   * @param modelId id of model
-   */
-  Model getModel(String modelId);
-  
-  /**
-   * Returns the model editor source as a byte array
-   * @param modelId id of model
-   */
-  byte[] getModelEditorSource(String modelId);
-  
-  /**
-   * Returns the model editor source extra as a byte array
-   * @param modelId id of model
-   */
-  byte[] getModelEditorSourceExtra(String modelId);
-  
-  /**
-   * Authorizes a candidate user for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or user doesn't exist.
-   */
-  void addCandidateStarterUser(String processDefinitionId, String userId);
-  
-  /**
-   * Authorizes a candidate group for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param groupId id of the group involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or group doesn't exist.
-   */
-  void addCandidateStarterGroup(String processDefinitionId, String groupId);
-  
-  /**
-   * Removes the authorization of a candidate user for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or user doesn't exist.
-   */
-  void deleteCandidateStarterUser(String processDefinitionId, String userId);
-  
-  /**
-   * Removes the authorization of a candidate group for a process definition.
-   * @param processDefinitionId id of the process definition, cannot be null.
-   * @param groupId id of the group involve, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the process definition or group doesn't exist.
-   */
-  void deleteCandidateStarterGroup(String processDefinitionId, String groupId);
-
-  /**
-   * Retrieves the {@link IdentityLink}s associated with the given process definition.
-   * Such an {@link IdentityLink} informs how a certain identity (eg. group or user)
-   * is authorized for a certain process definition
-   */
-  List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId);
-  
-  /**
    * Validates the given process definition against the rules for executing a process definition
    * on the Activiti engine.
    * 
@@ -433,5 +332,20 @@ public interface RepositoryService {
    * 
    */
   List<ValidationError> validateProcess(BpmnModel bpmnModel);
+
+  /** Adds a candidate starter user to the process definition. */
+  void addCandidateStarterUser(String processDefinitionId, String userId);
+
+  /** Adds a candidate starter group to the process definition. */
+  void addCandidateStarterGroup(String processDefinitionId, String groupId);
+
+  /** Removes a candidate starter user from the process definition. */
+  void deleteCandidateStarterUser(String processDefinitionId, String userId);
+
+  /** Removes a candidate starter group from the process definition. */
+  void deleteCandidateStarterGroup(String processDefinitionId, String groupId);
+
+  /** Retrieves the identity links associated with a process definition. */
+  List<IdentityLink> getIdentityLinksForProcessDefinition(String processDefinitionId);
 
 }

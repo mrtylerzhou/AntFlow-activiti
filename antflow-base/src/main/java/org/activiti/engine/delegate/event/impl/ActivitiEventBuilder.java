@@ -32,10 +32,8 @@ import org.activiti.engine.delegate.event.ActivitiSignalEvent;
 import org.activiti.engine.delegate.event.ActivitiVariableEvent;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.context.ExecutionContext;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.variable.VariableType;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.task.Task;
 
 /**
@@ -284,27 +282,10 @@ public class ActivitiEventBuilder {
 		if(!extractedFromContext){
 			if(event instanceof ActivitiEntityEvent) {
 				Object persistendObject = ((ActivitiEntityEvent) event).getEntity();
-				if(persistendObject instanceof Job) {
-					event.setExecutionId(((Job) persistendObject).getExecutionId());
-					event.setProcessInstanceId(((Job) persistendObject).getProcessInstanceId());
-					event.setProcessDefinitionId(((Job) persistendObject).getProcessDefinitionId());
-				} else if(persistendObject instanceof DelegateExecution) {
+				if(persistendObject instanceof DelegateExecution) {
 					event.setExecutionId(((DelegateExecution) persistendObject).getId());
 					event.setProcessInstanceId(((DelegateExecution) persistendObject).getProcessInstanceId());
 					event.setProcessDefinitionId(((DelegateExecution) persistendObject).getProcessDefinitionId());
-				} else if(persistendObject instanceof IdentityLinkEntity) {
-					IdentityLinkEntity idLink = (IdentityLinkEntity) persistendObject;
-					if(idLink.getProcessDefinitionId() != null) {
-						event.setProcessDefinitionId(idLink.getProcessDefId());
-					} else if(idLink.getProcessInstance() != null) {
-						event.setProcessDefinitionId(idLink.getProcessInstance().getProcessDefinitionId());
-						event.setProcessInstanceId(idLink.getProcessInstanceId());
-						event.setExecutionId(idLink.getProcessInstanceId());
-					} else if(idLink.getTask() != null) {
-						event.setProcessDefinitionId(idLink.getTask().getProcessDefinitionId());
-						event.setProcessInstanceId(idLink.getTask().getProcessInstanceId());
-						event.setExecutionId(idLink.getTask().getExecutionId());
-					}
 				} else if(persistendObject instanceof Task) {
 					event.setProcessInstanceId(((Task)persistendObject).getProcessInstanceId());
 					event.setExecutionId(((Task)persistendObject).getExecutionId());

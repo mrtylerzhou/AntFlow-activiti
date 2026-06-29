@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.BpmProcessVo;
 
 import java.util.List;
 
@@ -27,4 +28,12 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
     List<BpmnConfVo> selectOutSideFormCodeList(Page page,@Param("bpmnConfVo") BpmnConfVo vo);
 
     BpmnConf getConfByProcessNumber(@Param("processNumber") String processNumber);
+
+    List<BpmProcessVo> allProcess();
+
+    BpmProcessVo getBpmProcessVoByFormCode(@Param("formCode") String formCode);
+
+    List<String> formCodeListByBpmnName(@Param("bpmnName") String bpmnName);
+
+    List<String> formCodeListByConfId(@Param("confId") Long confId);
 }

@@ -1,9 +1,13 @@
 package org.openoa.base.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -129,7 +133,7 @@ public class BpmnConfVo {
     /**
      * buttons on view page
      */
-    private BpmnViewPageButtonBaseVo viewPageButtons;
+    private BpmnViewPageButtonBaseVo viewPageButtons=new BpmnViewPageButtonBaseVo();
 
     /**
      * out of scope notice template
@@ -181,4 +185,34 @@ public class BpmnConfVo {
      * 如果节点有多个通知类型,只会选出一个,用于给前端此字段不为空则说明当前节点有通知
      */
     private String noticeFormCode;
+
+    /**
+     * Notice channel types for this process (1=mail, 2=sms, 3=app, etc.)
+     * Sent from frontend during edit, stored in conf_config_json.
+     */
+    private List<Integer> noticeChannelTypes;
+
+    /**
+     * Transient conf config JSON - populated during read flow
+     */
+    @JsonIgnore
+    private BpmnConfConfigJson confConfigJsonObj;
+
+    /**
+     * Parse confConfigJson string into confConfigJsonObj
+     */
+    @JsonIgnore
+    public BpmnConfConfigJson getOrParseConfConfigJson(String confConfigJson) {
+        if (this.confConfigJsonObj == null && confConfigJson != null) {
+            this.confConfigJsonObj = JsonConfUtil.parseConfConfig(confConfigJson);
+        }
+        return this.confConfigJsonObj;
+    }
+
+    @JsonIgnore
+    public void setConfConfigJson(String confConfigJson) {
+        if (confConfigJson != null && !confConfigJson.isEmpty()) {
+            this.confConfigJsonObj = JsonConfUtil.parseConfConfig(confConfigJson);
+        }
+    }
 }

@@ -94,6 +94,11 @@ public class BpmnConf implements TenantField, Serializable {
     @TableField("extra_flags")
     private Integer extraFlags;
     /**
+     * Consolidated conf configuration JSON
+     */
+    @TableField("conf_config_json")
+    private String confConfigJson;
+    /**
      * remark
      */
     private String remark;

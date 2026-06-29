@@ -7,7 +7,6 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
-import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.cfg.IdGenerator;
@@ -83,21 +82,6 @@ public class TaskRecoverProcessImpl implements ProcessOperationAdaptor {
         IdGenerator idGenerator = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getIdGenerator();
         taskMgmtService.insertExecution(idGenerator, hisInstances, bpmBusinessProcess);
 
-
-        List<HistoricIdentityLink> hstIdentityLinks = historyService.getHistoricIdentityLinksForProcessInstance(bpmBusinessProcess.getProcInstId());
-        List<IdentityLinkEntity> identityLinkEntities = new ArrayList<>();
-        for (HistoricIdentityLink historicIdentityLink : hstIdentityLinks) {
-            IdentityLinkEntity identityLink = new IdentityLinkEntity();
-            identityLink.setId(idGenerator.getNextId());
-            identityLink.setType(historicIdentityLink.getType());
-            identityLink.setUserId(historicIdentityLink.getUserId());
-            identityLink.setTaskId(historicIdentityLink.getTaskId());
-            identityLink.setProcessInstanceId(historicIdentityLink.getProcessInstanceId());
-            identityLinkEntities.add(identityLink);
-        }
-
-
-        taskMgmtMapper.bulkInsertIdentityLink(identityLinkEntities);
 
         List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(bpmBusinessProcess.getProcInstId())

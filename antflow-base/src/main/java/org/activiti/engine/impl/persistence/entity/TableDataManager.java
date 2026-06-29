@@ -25,24 +25,17 @@ import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.history.HistoricActivityInstance;
-import org.activiti.engine.history.HistoricDetail;
-import org.activiti.engine.history.HistoricFormProperty;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
-import org.activiti.engine.history.HistoricVariableUpdate;
-import org.activiti.engine.identity.Group;
-import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.TablePageQueryImpl;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.persistence.AbstractManager;
 import org.activiti.engine.management.TableMetaData;
 import org.activiti.engine.management.TablePage;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.ibatis.session.RowBounds;
@@ -62,77 +55,36 @@ public class TableDataManager extends AbstractManager {
   
   static {
     // runtime
-    persistentObjectToTableNameMap.put(TaskEntity.class, "ACT_RU_TASK");
-    persistentObjectToTableNameMap.put(ExecutionEntity.class, "ACT_RU_EXECUTION");
-    persistentObjectToTableNameMap.put(IdentityLinkEntity.class, "ACT_RU_IDENTITYLINK");
-    persistentObjectToTableNameMap.put(VariableInstanceEntity.class, "ACT_RU_VARIABLE");
-    
-    persistentObjectToTableNameMap.put(JobEntity.class, "ACT_RU_JOB");
-    persistentObjectToTableNameMap.put(MessageEntity.class, "ACT_RU_JOB");
-    persistentObjectToTableNameMap.put(TimerEntity.class, "ACT_RU_JOB");
-    
-    persistentObjectToTableNameMap.put(EventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");
-    persistentObjectToTableNameMap.put(CompensateEventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");    
-    persistentObjectToTableNameMap.put(MessageEventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");    
-    persistentObjectToTableNameMap.put(SignalEventSubscriptionEntity.class, "ACT_RU_EVENT_SUBSCR");
-        
+    persistentObjectToTableNameMap.put(TaskEntity.class, "AF_RU_TASK");
+    persistentObjectToTableNameMap.put(ExecutionEntity.class, "AF_RU_EXECUTION");
+    persistentObjectToTableNameMap.put(VariableInstanceEntity.class, "AF_RU_VARIABLE");
+
     // repository
-    persistentObjectToTableNameMap.put(DeploymentEntity.class, "ACT_RE_DEPLOYMENT");
-    persistentObjectToTableNameMap.put(ProcessDefinitionEntity.class, "ACT_RE_PROCDEF");
-    persistentObjectToTableNameMap.put(ModelEntity.class, "ACT_RE_MODEL");
-    
-    // history
-    persistentObjectToTableNameMap.put(CommentEntity.class, "ACT_HI_COMMENT");
-    
-    persistentObjectToTableNameMap.put(HistoricActivityInstanceEntity.class, "ACT_HI_ACTINST");
-    persistentObjectToTableNameMap.put(AttachmentEntity.class, "ACT_HI_ATTACHMEN");
-    persistentObjectToTableNameMap.put(HistoricProcessInstanceEntity.class, "ACT_HI_PROCINST");
-    persistentObjectToTableNameMap.put(HistoricVariableInstanceEntity.class, "ACT_HI_VARINST");
-    persistentObjectToTableNameMap.put(HistoricTaskInstanceEntity.class, "ACT_HI_TASKINST");
-    persistentObjectToTableNameMap.put(HistoricIdentityLinkEntity.class, "ACT_HI_IDENTITYLINK");
-    
-    // a couple of stuff goes to the same table
-    persistentObjectToTableNameMap.put(HistoricDetailAssignmentEntity.class, "ACT_HI_DETAIL");
-    persistentObjectToTableNameMap.put(HistoricDetailTransitionInstanceEntity.class, "ACT_HI_DETAIL");
-    persistentObjectToTableNameMap.put(HistoricFormPropertyEntity.class, "ACT_HI_DETAIL");
-    persistentObjectToTableNameMap.put(HistoricDetailVariableInstanceUpdateEntity.class, "ACT_HI_DETAIL");
-    persistentObjectToTableNameMap.put(HistoricDetailEntity.class, "ACT_HI_DETAIL");
-    
-    
-    // Identity module
-    persistentObjectToTableNameMap.put(GroupEntity.class, "ACT_ID_GROUP");
-    persistentObjectToTableNameMap.put(MembershipEntity.class, "ACT_ID_MEMBERSHIP");
-    persistentObjectToTableNameMap.put(UserEntity.class, "ACT_ID_USER");
-    persistentObjectToTableNameMap.put(IdentityInfoEntity.class, "ACT_ID_INFO");
-    
+    persistentObjectToTableNameMap.put(DeploymentEntity.class, "AF_RE_DEPLOYMENT");
+    persistentObjectToTableNameMap.put(ProcessDefinitionEntity.class, "AF_RE_PROCDEF");
+
+    persistentObjectToTableNameMap.put(HistoricActivityInstanceEntity.class, "AF_HI_ACTINST");
+    persistentObjectToTableNameMap.put(HistoricProcessInstanceEntity.class, "AF_HI_PROCINST");
+    persistentObjectToTableNameMap.put(HistoricVariableInstanceEntity.class, "AF_HI_VARINST");
+    persistentObjectToTableNameMap.put(HistoricTaskInstanceEntity.class, "AF_HI_TASKINST");
+
     // general
-    persistentObjectToTableNameMap.put(PropertyEntity.class, "ACT_GE_PROPERTY");
-    persistentObjectToTableNameMap.put(ByteArrayEntity.class, "ACT_GE_BYTEARRAY");
-    persistentObjectToTableNameMap.put(ResourceEntity.class, "ACT_GE_BYTEARRAY");
-    
+    persistentObjectToTableNameMap.put(PropertyEntity.class, "AF_GE_PROPERTY");
+    persistentObjectToTableNameMap.put(ByteArrayEntity.class, "AF_GE_BYTEARRAY");
+    persistentObjectToTableNameMap.put(ResourceEntity.class, "AF_GE_BYTEARRAY");
+
     // and now the map for the API types (does not cover all cases)
-    apiTypeToTableNameMap.put(Task.class, "ACT_RU_TASK");
-    apiTypeToTableNameMap.put(Execution.class, "ACT_RU_EXECUTION");
-    apiTypeToTableNameMap.put(ProcessInstance.class, "ACT_RU_EXECUTION");
-    apiTypeToTableNameMap.put(ProcessDefinition.class, "ACT_RE_PROCDEF");
-    apiTypeToTableNameMap.put(Deployment.class, "ACT_RE_DEPLOYMENT");    
-    apiTypeToTableNameMap.put(Job.class, "ACT_RU_JOB");
-    apiTypeToTableNameMap.put(Model.class, "ACT_RE_MODEL");
-    
+    apiTypeToTableNameMap.put(Task.class, "AF_RU_TASK");
+    apiTypeToTableNameMap.put(Execution.class, "AF_RU_EXECUTION");
+    apiTypeToTableNameMap.put(ProcessInstance.class, "AF_RU_EXECUTION");
+    apiTypeToTableNameMap.put(ProcessDefinition.class, "AF_RE_PROCDEF");
+    apiTypeToTableNameMap.put(Deployment.class, "AF_RE_DEPLOYMENT");
+
     // history
-    apiTypeToTableNameMap.put(HistoricProcessInstance.class, "ACT_HI_PROCINST");
-    apiTypeToTableNameMap.put(HistoricActivityInstance.class, "ACT_HI_ACTINST");
-    apiTypeToTableNameMap.put(HistoricDetail.class, "ACT_HI_DETAIL");
-    apiTypeToTableNameMap.put(HistoricVariableUpdate.class, "ACT_HI_DETAIL");
-    apiTypeToTableNameMap.put(HistoricFormProperty.class, "ACT_HI_DETAIL");
-    apiTypeToTableNameMap.put(HistoricTaskInstance.class, "ACT_HI_TASKINST");        
-    apiTypeToTableNameMap.put(HistoricVariableInstance.class, "ACT_HI_VARINST");
-
-    // identity
-    apiTypeToTableNameMap.put(Group.class, "ACT_ID_GROUP");
-    apiTypeToTableNameMap.put(User.class, "ACT_ID_USER");
-
-    // TODO: Identity skipped for the moment as no SQL injection is provided here
+    apiTypeToTableNameMap.put(HistoricProcessInstance.class, "AF_HI_PROCINST");
+    apiTypeToTableNameMap.put(HistoricActivityInstance.class, "AF_HI_ACTINST");
+    apiTypeToTableNameMap.put(HistoricTaskInstance.class, "AF_HI_TASKINST");
+    apiTypeToTableNameMap.put(HistoricVariableInstance.class, "AF_HI_VARINST");
   }
 
   public Map<String, Long> getTableCount() {
@@ -158,12 +110,12 @@ public class TableDataManager extends AbstractManager {
       try {
         log.debug("retrieving activiti tables from jdbc metadata");
         String databaseTablePrefix = getDbSqlSession().getDbSqlSessionFactory().getDatabaseTablePrefix();
-        String tableNameFilter = databaseTablePrefix+"ACT_%";
+        String tableNameFilter = databaseTablePrefix+"AF_%";
         if ("postgres".equals(getDbSqlSession().getDbSqlSessionFactory().getDatabaseType())) {
-          tableNameFilter = databaseTablePrefix+"act\\_%";
+          tableNameFilter = databaseTablePrefix+"af\\_%";
         }
         if ("oracle".equals(getDbSqlSession().getDbSqlSessionFactory().getDatabaseType())) {
-          tableNameFilter = databaseTablePrefix+"ACT" + databaseMetaData.getSearchStringEscape() + "_%";
+          tableNameFilter = databaseTablePrefix+"AF" + databaseMetaData.getSearchStringEscape() + "_%";
         }
         
         String catalog = null;

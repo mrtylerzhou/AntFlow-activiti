@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,15 +23,15 @@ public class BpmnNodeButtonConfBaseVo implements Serializable {
     /**
      * start page button list
      */
-    private List<Integer> startPage;
+    private List<Integer> startPage=new ArrayList<>();
 
     /**
      * approval page button list
      */
-    private List<Integer> approvalPage;
+    private List<Integer> approvalPage = new ArrayList<>();
 
     /**
      * view page button list
      */
-    private List<Integer> viewPage;
+    private List<Integer> viewPage = new ArrayList<>();
 }

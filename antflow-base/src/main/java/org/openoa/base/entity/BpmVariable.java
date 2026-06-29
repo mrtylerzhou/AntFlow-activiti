@@ -57,6 +57,11 @@ public class BpmVariable implements TenantField, Serializable {
     @TableField("bpmn_code")
     private String bpmnCode;
     /**
+     * variable config json (buttons, messages, signUps, approveReminds)
+     */
+    @TableField("variable_config_json")
+    private String variableConfigJson;
+    /**
      * remark
      */
     private String remark;

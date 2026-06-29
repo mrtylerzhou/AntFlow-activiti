@@ -1,37 +1,36 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUp;
-import org.openoa.base.service.BpmVariableService;
-import org.openoa.common.entity.BpmVariableMultiplayer;
-import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
+import org.openoa.common.entity.BpmVariableMultiplayer;
+import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BpmVariableSignUpBizServiceImpl implements BpmVariableSignUpBizService {
     @Autowired
-    private BpmVariableService bpmVariableService;
+    private BpmVariableServiceImpl bpmVariableService;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
     /**
      * check whether a node is sign up by processNumber and nodeId
-     *
-     * @param processNumber
-     * @param nodeId
-     * @return
      */
     @Override
     public Boolean checkNodeIsSignUp(String processNumber, String nodeId) {
-
         if (Strings.isNullOrEmpty(processNumber) || Strings.isNullOrEmpty(nodeId)) {
             return false;
         }
@@ -40,42 +39,50 @@ public class BpmVariableSignUpBizServiceImpl implements BpmVariableSignUpBizServ
             return false;
         }
 
-        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
-                .eq("process_num", processNumber)
-                .eq("is_del", 0));
+        List<SignUpItem> signUps = getSignUpsFromJson(processNumber);
+        if (ObjectUtils.isEmpty(signUps)) {
+            return false;
+        }
 
-        long count = this.getMapper().selectCount(new QueryWrapper<BpmVariableSignUp>()
-                .eq("variable_id", bpmVariable.getId())
-                .eq("element_id", nodeId));
-
-        return count > 0;
+        return signUps.stream().anyMatch(s -> nodeId.equals(s.getElementId()));
     }
 
+    /**
+     * get sign up list by process number
+     */
     @Override
-    public List<BpmVariableSignUp> getSignUpList(String processNumber) {
+    public List<SignUpItem> getSignUpList(String processNumber) {
         if (Strings.isNullOrEmpty(processNumber)) {
             return null;
         }
-        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
-                .eq("process_num", processNumber)
-                .eq("is_del", 0));
-
-        return this.getMapper().selectList(new QueryWrapper<BpmVariableSignUp>()
-                .eq("variable_id", bpmVariable.getId()));
+        return getSignUpsFromJson(processNumber);
     }
+
     /**
      * to check whether the node has more than one assignees
-     *
-     * @param processNum
-     * @param elementId
-     * @return
      */
     private boolean isMoreNode(String processNum, String elementId) {
         List<BpmVariableMultiplayer> list = bpmVariableMultiplayerService.isMoreNode(processNum, elementId);
-        //if it is a multiple assignees node,and the task has not been undertaken yet,and the number of people is more than one,return true
         if (list != null && list.size() > 1 && list.get(0).getSignType() == 2) {
             return true;
         }
         return false;
+    }
+
+    private List<SignUpItem> getSignUpsFromJson(String processNumber) {
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
+                .eq("process_num", processNumber)
+                .eq("is_del", 0));
+
+        if (ObjectUtils.isEmpty(bpmVariable) || ObjectUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return Collections.emptyList();
+        }
+
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getSignUps())) {
+            return Collections.emptyList();
+        }
+
+        return config.getSignUps();
     }
 }

@@ -13,7 +13,6 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
@@ -46,8 +45,6 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
     @Autowired
     @Lazy
     private QuickEntryService quickEntryService;
-    @Autowired
-    private BpmProcessDeptBizService processDeptBizService;
     @Autowired
     private BpmnConfBizService bpmnConfBizService;
     @Autowired
@@ -204,7 +201,9 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
 
         List<ProcessTypeInforVo> typeInforVoList = new ArrayList<>();
 
-        List<String> collect = processDeptBizService.findProcessKey();
+        List<String> collect = new ArrayList<>(Optional.ofNullable(processPermissionsBizService.getProcessKey(SecurityUtils.getLogInEmpIdSafe(), ProcessJurisdictionEnum.CREATE_TYPE.getCode())).orElse(Arrays.asList()));
+        List<BpmnConf> isAllConfs = Optional.ofNullable(bpmnConfBizService.getIsAllConfs()).orElse(Arrays.asList());
+        collect.addAll(isAllConfs.stream().map(BpmnConf::getFormCode).collect(Collectors.toList()));
 
         collect.addAll(this.permissionsProcessKeys());
 
@@ -446,14 +445,12 @@ public class BpmProcessAppApplicationBizServiceImpl implements BpmProcessAppAppl
             return Arrays.asList();
         }
 
-        //get all process
-        List<String> allProcess = processDeptBizService.getService().getAllProcess();
+        //get all process from conf and permissions
+        List<String> allProcess = new ArrayList<>();
 
-        // process's detailed conf
+        // process's detailed conf (is_all=1)
         List<BpmnConf> allConfList = Optional.ofNullable(bpmnConfBizService.getIsAllConfs()).orElse(Arrays.asList());
-        List<String> collect = allConfList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList());
-        allProcess.addAll(collect);
-        // allProcess.addAll(ProcessTypeQuery.getprocessKeyList(VPN_TYPE.getCode()));
+        allProcess.addAll(allConfList.stream().map(BpmnConf::getFormCode).collect(Collectors.toList()));
 
         //get all process that a specified user has permission to create
         List<String> processKeyList = processPermissionsBizService.getProcessKey(genericEmployee.getUserId(), ProcessJurisdictionEnum.CREATE_TYPE.getCode());

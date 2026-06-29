@@ -3,7 +3,7 @@ package org.openoa.engine.bpmnconf.service.biz;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.constant.enums.MessageLimit;
 import org.openoa.base.entity.DetailedUser;
-import org.openoa.base.entity.UserEmailSend;
+import org.openoa.base.entity.OpLog;
 import org.openoa.base.entity.UserMessage;
 import org.openoa.base.entity.UserMessageStatus;
 import org.openoa.base.exception.AFBizException;
@@ -11,7 +11,7 @@ import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.DateUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.mapper.UserEmailSendMapper;
+import org.openoa.engine.bpmnconf.mapper.OpLogMapper;
 import org.openoa.engine.bpmnconf.mapper.UserMessageStatusMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.UserMessageBizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
     private UserMessageStatusMapper userMessageStatusMapper;
 
     @Autowired
-    private UserEmailSendMapper userEmailSendMapper;
+    private OpLogMapper opLogMapper;
 
     @Autowired
     private AfUserService employeeService;
@@ -93,31 +93,31 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
                 if (sendInfo.getMail() != null) {
 
                     //to check whether the user has sent the emails reach the ceiling today
-                    QueryWrapper<UserEmailSend> wrapper = new QueryWrapper<>();
+                    QueryWrapper<OpLog> wrapper = new QueryWrapper<>();
+                    wrapper.eq("log_type", 1);
                     wrapper.eq("receiver", sendInfo.getMail().getReceiver());
-                    wrapper.ge("create_time", dayStar);
-                    wrapper.le("create_time", dayEnd);
-                    long totalCount = userEmailSendMapper.selectCount(wrapper).longValue();
+                    wrapper.ge("op_time", dayStar);
+                    wrapper.le("op_time", dayEnd);
+                    long totalCount = opLogMapper.selectCount(wrapper).longValue();
                     if (totalCount < MessageLimit.EMAIL_A_DAY.getCode()) {
 
-                        UserEmailSend userEmailSend = new UserEmailSend();
-                        userEmailSend.setTitle(sendInfo.getMail().getTitle());
-                        userEmailSend.setReceiver(sendInfo.getMail().getReceiver());
-
-                        //build email address
                         String emailJumpUrl = "";
                         if ("".equals(sendInfo.getUserMessage().getUrl()) || sendInfo.getUserMessage().getUrl() == null) {
                             emailJumpUrl = "";
                         } else {
                             emailJumpUrl = "<a href='http://" + systemDomain + "#" + sendInfo.getUserMessage().getUrl() + "'>点击查看详情</a>";
                         }
-                        //String emailJumpUrl = "<a href='oa" + systemDomain +"#" + sendInfo.getUserMessage().getUrl() + "'>查看更多</a>";
                         sendInfo.getMail().setContent(sendInfo.getMail().getContent() + emailJumpUrl);
-                        userEmailSend.setContent(sendInfo.getMail().getContent());
-                        userEmailSend.setUpdateUser(senderName);
-                        userEmailSend.setCreateUser(senderName);
-                        userEmailSend.setSender(senderName);
-                        userEmailSendMapper.insert(userEmailSend);
+
+                        OpLog emailLog = OpLog.builder()
+                                .logType(1)
+                                .receiver(sendInfo.getMail().getReceiver())
+                                .remark(sendInfo.getMail().getTitle())
+                                .opParam(sendInfo.getMail().getContent())
+                                .opUserName(senderName)
+                                .opTime(new Date())
+                                .build();
+                        opLogMapper.insert(emailLog);
 
                         //send email
                         MailInfo mail = new MailInfo();
@@ -174,17 +174,13 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
 
         if (sendInfo.getMail() != null) {
 
-            QueryWrapper<UserEmailSend> wrapper = new QueryWrapper<>();
+            QueryWrapper<OpLog> wrapper = new QueryWrapper<>();
+            wrapper.eq("log_type", 1);
             wrapper.eq("receiver", sendInfo.getMail().getReceiver());
-            wrapper.ge("create_time", dayStar);
-            wrapper.le("create_time", dayEnd);
-            long totalCount = userEmailSendMapper.selectCount(wrapper).longValue();
+            wrapper.ge("op_time", dayStar);
+            wrapper.le("op_time", dayEnd);
+            long totalCount = opLogMapper.selectCount(wrapper).longValue();
             if (totalCount < MessageLimit.EMAIL_A_DAY.getCode()) {
-
-                UserEmailSend userEmailSend = new UserEmailSend();
-                userEmailSend.setTitle(sendInfo.getMail().getTitle());
-                userEmailSend.setReceiver(sendInfo.getMail().getReceiver());
-
 
                 String emailJumpUrl = "";
                 if ("".equals(sendInfo.getUserMessage().getUrl()) || sendInfo.getUserMessage().getUrl() == null) {
@@ -192,14 +188,17 @@ public class UserMessageBizServiceImpl implements UserMessageBizService {
                 } else {
                     emailJumpUrl = "<a href='http://" + systemDomain + "#" + sendInfo.getUserMessage().getUrl() + "'>点击查看详情</a>";
                 }
-                //String emailJumpUrl = "<a href='oa" + systemDomain +"#" + sendInfo.getUserMessage().getUrl() + "'>查看更多</a>";
                 sendInfo.getMail().setContent(sendInfo.getMail().getContent() + emailJumpUrl);
-                userEmailSend.setContent(sendInfo.getMail().getContent());
-                userEmailSend.setUpdateUser(senderName);
-                userEmailSend.setCreateUser(senderName);
-                userEmailSend.setSender(senderName);
-                userEmailSendMapper.insert(userEmailSend);
 
+                OpLog emailLog = OpLog.builder()
+                        .logType(1)
+                        .receiver(sendInfo.getMail().getReceiver())
+                        .remark(sendInfo.getMail().getTitle())
+                        .opParam(sendInfo.getMail().getContent())
+                        .opUserName(senderName)
+                        .opTime(new Date())
+                        .build();
+                opLogMapper.insert(emailLog);
 
                 MailInfo mail = new MailInfo();
                 mail.setContent(sendInfo.getMail().getContent());

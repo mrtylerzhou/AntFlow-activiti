@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.base.vo.BpmProcessDeptVo;
+import org.openoa.base.vo.ProcessConfVo;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessPermissionsMapper;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessPermissionsService;
 import org.openoa.engine.vo.GenericEmployee;
@@ -25,7 +25,7 @@ import java.util.List;
 public class BpmProcessPermissionsServiceImpl extends ServiceImpl<BpmProcessPermissionsMapper, BpmProcessPermissions> implements BpmProcessPermissionsService {
 
 
-    public void saveProcessPermissions(BpmProcessDeptVo vo) {
+    public void saveProcessPermissions(ProcessConfVo vo) {
         GenericEmployee genericEmployee =new GenericEmployee();
         genericEmployee.setUserId(SecurityUtils.getLogInEmpIdSafe());
         genericEmployee.setUsername(SecurityUtils.getLogInEmpNameSafe());

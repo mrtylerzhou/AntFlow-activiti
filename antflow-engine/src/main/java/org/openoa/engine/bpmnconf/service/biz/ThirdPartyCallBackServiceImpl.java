@@ -4,17 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.CallbackTypeEnum;
 import org.openoa.base.interf.MethodReplay;
 import org.openoa.base.vo.BpmnConfVo;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableMessageService;
 import org.openoa.engine.factory.ThirdPartyCallbackFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static org.openoa.base.constant.enums.CallbackTypeEnum.PROC_END_CALL_BACK;
 @Slf4j
 @Service
 public class ThirdPartyCallBackServiceImpl {
-    @Autowired
-    private BpmVariableMessageService bpmVariableMessageService;
 
     @MethodReplay
    public void doCallback(CallbackTypeEnum callbackTypeEnum, BpmnConfVo bpmnConfVo,

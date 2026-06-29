@@ -25,16 +25,16 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ActivitiServiceAnno;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.SecurityUtils;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.vo.BaseNumIdStruVo;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.DIYProcessInfoDTO;
 import org.openoa.base.vo.TaskMgmtVO;
-import org.openoa.base.entity.BpmProcessNotice;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.base.interf.LFFormOperationAdaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +69,6 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     @Autowired
     @Lazy
     private BpmnConfBizService bpmnConfBizService;
-    @Autowired
-    private BpmProcessNoticeServiceImpl bpmProcessNoticeService;
     @Autowired
     private HistoryService historyService;
 
@@ -173,7 +171,7 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
         }
         List<String> formCodes = diyProcessInfoDTOS.stream().map(DIYProcessInfoDTO::getKey).collect(Collectors.toList());
         LambdaQueryWrapper<BpmnConf> queryWrapper = Wrappers.<BpmnConf>lambdaQuery()
-                .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags)
+                .select(BpmnConf::getFormCode, BpmnConf::getExtraFlags, BpmnConf::getConfConfigJson)
                 .in(BpmnConf::getFormCode, formCodes)
                 .eq(BpmnConf::getEffectiveStatus, 1);
         List<BpmnConf> bpmnConfs = bpmnConfBizService.getService().list(queryWrapper);
@@ -182,7 +180,14 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     .stream()
                     .filter(a->a.getExtraFlags()!=null)
                     .collect(Collectors.toMap(BpmnConf::getFormCode, BpmnConf::getExtraFlags, (v1, v2) -> v1));
-            Map<String, List<BpmProcessNotice>> processNoticeMap = bpmProcessNoticeService.processNoticeMap(formCodes);
+            Map<String, List<Integer>> formCode2NoticeTypes = new HashMap<>();
+            for (BpmnConf conf : bpmnConfs) {
+                BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(conf.getConfConfigJson());
+                List<Integer> types = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
+                if (!CollectionUtils.isEmpty(types)) {
+                    formCode2NoticeTypes.put(conf.getFormCode(), types);
+                }
+            }
             for (DIYProcessInfoDTO diyProcessInfoDTO : diyProcessInfoDTOS) {
                 String formCode = diyProcessInfoDTO.getKey();
                 Integer flags = formCode2Flags.get(formCode);
@@ -190,20 +195,15 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
                     boolean hasStartUserChooseModules = BpmnConfFlagsEnum.HAS_STARTUSER_CHOOSE_MODULES.flagsContainsCurrent(flags);
                     diyProcessInfoDTO.setHasStarUserChooseModule(hasStartUserChooseModules);
                 }
-                List<BpmProcessNotice> bpmProcessNotices = processNoticeMap.get(diyProcessInfoDTO.getKey());
-                if(!CollectionUtils.isEmpty(bpmProcessNotices)){
+                List<Integer> noticeChannelTypes = formCode2NoticeTypes.get(formCode);
+                if(!CollectionUtils.isEmpty(noticeChannelTypes)){
                     List<BaseNumIdStruVo> processNotices=new ArrayList<>();
-
                     for (ProcessNoticeEnum value : ProcessNoticeEnum.values()) {
-                        Integer type = value.getCode();
-                        String descByCode = value.getDesc();
                         BaseNumIdStruVo struVo=new BaseNumIdStruVo();
-                        struVo.setId(type.longValue());
-                        struVo.setName(descByCode);
-                        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
-                           if(Objects.equals(value.getCode(),bpmProcessNotice.getType())){
-                               struVo.setActive(true);
-                           }
+                        struVo.setId(value.getCode().longValue());
+                        struVo.setName(value.getDesc());
+                        if(noticeChannelTypes.contains(value.getCode())){
+                            struVo.setActive(true);
                         }
                         processNotices.add(struVo);
                     }

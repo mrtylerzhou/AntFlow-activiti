@@ -15,8 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcesTypeEnum;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.base.service.BpmVariableService;
-import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.util.AFWrappers;
 import org.openoa.base.util.SecurityUtils;
@@ -26,10 +27,8 @@ import org.openoa.base.vo.BpmVerifyInfoVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
@@ -38,8 +37,6 @@ import org.openoa.engine.bpmnconf.mapper.EmployeeMapper;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableSignUpService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVerifyAttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -77,12 +74,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     @Autowired
     private ActivitiAdditionalInfoServiceImpl activitiAdditionalInfoService;
     @Autowired
-    private BpmVariableSignUpService bpmVariableSignUpService;
-    @Autowired
-    private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
-    @Autowired
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
-    @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
     @Autowired
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
@@ -106,8 +97,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     @Autowired
     private BpmnNodeMapper bpmnNodeMapper;
 
-    @Autowired
-    private BpmVerifyAttachmentService bpmVerifyAttachmentService;
 
 
     @Override
@@ -196,9 +185,8 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
                 bpmVerifyInfoVo.setVerifyStatusName(StringUtils.EMPTY);
             }
 
-            if (!StringUtils.isEmpty(bpmVerifyInfoVo.getId()) && bpmVerifyInfoVo.getId().matches("\\d+")) {
-                Long verifyInfoId = Long.parseLong(bpmVerifyInfoVo.getId());
-                List<BpmVerifyAttachmentVo> bpmVerifyAttachmentList = bpmVerifyAttachmentService.getBpmVerifyAttachment(verifyInfoId);
+            if (!StringUtils.isEmpty(bpmVerifyInfoVo.getAttachmentsJson())) {
+                List<BpmVerifyAttachmentVo> bpmVerifyAttachmentList = JSON.parseArray(bpmVerifyInfoVo.getAttachmentsJson(), BpmVerifyAttachmentVo.class);
                 bpmVerifyInfoVo.setVerifyAttachments(bpmVerifyAttachmentList);
             }
             bpmVerifyInfoVo.setSort(sort);
@@ -309,8 +297,23 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
             ActHiTaskinst prevTask = processConstants.getPrevTask(elementId, procInstId);
             if(prevTask!=null){
                 String taskDefinitionKey = prevTask.getTaskDefKey();
-                bpmnNodeIds = bpmVariableSignUpService.getMapper().getSignUpPrevNodeIdsByeElementId(processNumber, taskDefinitionKey);
-
+                // find parent signUp element that contains this sub-element, read from JSON
+                BpmVariable bpmVarForSignUp = bpmVariableService.getBaseMapper().selectOne(
+                        new QueryWrapper<BpmVariable>().eq("process_num", processNumber).eq("is_del", 0));
+                if (bpmVarForSignUp != null && !StringUtils.isEmpty(bpmVarForSignUp.getVariableConfigJson())) {
+                    VariableConfigJson varConfig = JSON.parseObject(bpmVarForSignUp.getVariableConfigJson(), VariableConfigJson.class);
+                    if (varConfig != null && !ObjectUtils.isEmpty(varConfig.getSignUps())) {
+                        for (SignUpItem signUp : varConfig.getSignUps()) {
+                            if (!StringUtils.isEmpty(signUp.getSubElements()) && !StringUtils.isEmpty(signUp.getNodeId())) {
+                                List<BpmnConfCommonElementVo> subVos = JSON.parseArray(signUp.getSubElements(), BpmnConfCommonElementVo.class);
+                                if (!ObjectUtils.isEmpty(subVos) && subVos.stream().anyMatch(s -> taskDefinitionKey.equals(s.getElementId()))) {
+                                    bpmnNodeIds = Collections.singletonList(signUp.getNodeId());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         if(CollectionUtils.isEmpty(bpmnNodeIds)){
@@ -488,11 +491,19 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
 
         Map<String, String> signUpNodeCollectionNameMap = Maps.newHashMap();
 
-        List<BpmVariableSignUp> bpmVariableSignUps = bpmVariableSignUpService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSignUp>().eq("variable_id", variableId));
+        // read signUps from variable config JSON
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(variableId);
+        if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return signUpNodeCollectionNameMap;
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getSignUps())) {
+            return signUpNodeCollectionNameMap;
+        }
 
-        for (BpmVariableSignUp variableSignUp : bpmVariableSignUps) {
-            if (!ObjectUtils.isEmpty(variableSignUp.getSubElements())) {
-                List<BpmnConfCommonElementVo> bpmnConfCommonElementVos = JSON.parseArray(variableSignUp.getSubElements(), BpmnConfCommonElementVo.class);
+        for (SignUpItem signUp : config.getSignUps()) {
+            if (!ObjectUtils.isEmpty(signUp.getSubElements())) {
+                List<BpmnConfCommonElementVo> bpmnConfCommonElementVos = JSON.parseArray(signUp.getSubElements(), BpmnConfCommonElementVo.class);
                 if (!ObjectUtils.isEmpty(bpmnConfCommonElementVos)) {
                     for (BpmnConfCommonElementVo bpmnConfCommonElementVo : bpmnConfCommonElementVos) {
                         signUpNodeCollectionNameMap.put(bpmnConfCommonElementVo.getElementId(), bpmnConfCommonElementVo.getCollectionName());
@@ -658,15 +669,6 @@ public class BpmVerifyInfoBizServiceImpl implements BpmVerifyInfoBizService {
     private Map<String, List<BaseIdTranStruVo>> getNodeApproveds(Long variableId) {
 
         Map<String, List<BaseIdTranStruVo>> nodeApprovedsMap = Maps.newHashMap();
-        List<BpmVariableSingle> variableSingles = bpmVariableSingleService.getBaseMapper().
-                selectList(new QueryWrapper<BpmVariableSingle>().eq("variable_id", variableId)
-                        .eq("is_del", 0));
-
-        if (!variableSingles.isEmpty()) {
-            for (BpmVariableSingle bpmVariableSingle : variableSingles) {
-                nodeApprovedsMap.put(bpmVariableSingle.getElementId(), Lists.newArrayList(BaseIdTranStruVo.builder().id(bpmVariableSingle.getAssignee()).name(bpmVariableSingle.getAssigneeName()).build()));
-            }
-        }
         List<BpmVariableMultiplayer> bpmVariableMultiplayers = bpmVariableMultiplayerService.getBaseMapper().selectList(new QueryWrapper<BpmVariableMultiplayer>().eq("variable_id", variableId));
 
         if (!bpmVariableMultiplayers.isEmpty()) {

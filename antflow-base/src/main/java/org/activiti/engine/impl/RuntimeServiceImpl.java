@@ -27,8 +27,6 @@ import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.form.FormData;
 import org.activiti.engine.impl.cmd.ActivateProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.AddEventListenerCommand;
-import org.activiti.engine.impl.cmd.AddIdentityLinkForProcessInstanceCmd;
-import org.activiti.engine.impl.cmd.DeleteIdentityLinkForProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DeleteProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DispatchEventCommand;
 import org.activiti.engine.impl.cmd.FindActiveActivityIdsCmd;
@@ -37,19 +35,14 @@ import org.activiti.engine.impl.cmd.GetExecutionVariableInstanceCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariableInstancesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.GetExecutionsVariablesCmd;
-import org.activiti.engine.impl.cmd.GetIdentityLinksForProcessInstanceCmd;
-import org.activiti.engine.impl.cmd.GetProcessInstanceEventsCmd;
 import org.activiti.engine.impl.cmd.GetStartFormCmd;
 import org.activiti.engine.impl.cmd.HasExecutionVariableCmd;
-import org.activiti.engine.impl.cmd.MessageEventReceivedCmd;
 import org.activiti.engine.impl.cmd.RemoveEventListenerCommand;
 import org.activiti.engine.impl.cmd.RemoveExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.SetExecutionVariablesCmd;
 import org.activiti.engine.impl.cmd.SetProcessInstanceBusinessKeyCmd;
 import org.activiti.engine.impl.cmd.SetProcessInstanceNameCmd;
 import org.activiti.engine.impl.cmd.SignalCmd;
-import org.activiti.engine.impl.cmd.SignalEventReceivedCmd;
-import org.activiti.engine.impl.cmd.StartProcessInstanceByMessageCmd;
 import org.activiti.engine.impl.cmd.StartProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.SuspendProcessInstanceCmd;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
@@ -60,9 +53,7 @@ import org.activiti.engine.runtime.NativeProcessInstanceQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
-import org.activiti.engine.task.Event;
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 
 /**
  * @author Tom Baeyens
@@ -288,42 +279,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
     commandExecutor.execute(new SignalCmd(executionId, null, null, processVariables));
   }
 
-  public void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, identityLinkType));
-  }
-
-  public void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, identityLinkType));
-  }
-
-  public void addParticipantUser(String processInstanceId, String userId) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void addParticipantGroup(String processInstanceId, String groupId) {
-    commandExecutor.execute(new AddIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteParticipantUser(String processInstanceId, String userId) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteParticipantGroup(String processInstanceId, String groupId) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, IdentityLinkType.PARTICIPANT));
-  }
-
-  public void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, userId, null, identityLinkType));
-  }
-
-  public void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
-    commandExecutor.execute(new DeleteIdentityLinkForProcessInstanceCmd(processInstanceId, null, groupId, identityLinkType));
-  }
-
-  public List<IdentityLink> getIdentityLinksForProcessInstance(String processInstanceId) {
-    return commandExecutor.execute(new GetIdentityLinksForProcessInstanceCmd(processInstanceId));
-  }
-
   public ProcessInstanceQuery createProcessInstanceQuery() {
     return new ProcessInstanceQueryImpl(commandExecutor);
   }
@@ -344,89 +299,6 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
     commandExecutor.execute(new ActivateProcessInstanceCmd(processInstanceId));
   }
   
-  public ProcessInstance startProcessInstanceByMessage(String messageName) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, null, null));
-  }
-
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, null, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, String businessKey) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, null, null));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String businessKey, String tenantId) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, null, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, Map<String, Object> processVariables) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, processVariables, null));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, Map<String, Object> processVariables, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, null, processVariables, tenantId));
-  }
-  
-  public ProcessInstance startProcessInstanceByMessage(String messageName, String businessKey, Map<String, Object> processVariables) {
-    return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, processVariables, null));
-  }
-  
-  @Override
-  public ProcessInstance startProcessInstanceByMessageAndTenantId(String messageName, String businessKey, 
-  		Map<String, Object> processVariables, String tenantId) {
-  	return commandExecutor.execute(new StartProcessInstanceByMessageCmd(messageName, businessKey, processVariables, tenantId));
-  }
-
-  public void signalEventReceived(String signalName) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, null, null));
-  }
-  
-  public void signalEventReceivedWithTenantId(String signalName, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, null, tenantId));
-  }
-  
-  public void signalEventReceivedAsync(String signalName) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, true, null));
-  }
-  
-  public void signalEventReceivedAsyncWithTenantId(String signalName, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, true, tenantId));
-  }
-  
-  public void signalEventReceived(String signalName, Map<String, Object> processVariables) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, processVariables, null));
-  }
-  
-  public void signalEventReceivedWithTenantId(String signalName,
-      Map<String, Object> processVariables, String tenantId) {
-  	commandExecutor.execute(new SignalEventReceivedCmd(signalName, null, processVariables, tenantId));
-  }
-
-  public void signalEventReceived(String signalName, String executionId) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, null, null));
-  }
-
-  public void signalEventReceived(String signalName, String executionId, Map<String, Object> processVariables) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, processVariables, null));
-  }
-
-  public void signalEventReceivedAsync(String signalName, String executionId) {
-    commandExecutor.execute(new SignalEventReceivedCmd(signalName, executionId, true, null));
-  }
-  
-  public void messageEventReceived(String messageName, String executionId) {
-    commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, null));
-  }
-
-  public void messageEventReceived(String messageName, String executionId, Map<String, Object> processVariables) {
-    commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, processVariables));
-  }
-  
-  public void messageEventReceivedAsync(String messageName, String executionId) {
-	  commandExecutor.execute(new MessageEventReceivedCmd(messageName, executionId, true));
-  }
-
 	@Override
   public void addEventListener(ActivitiEventListener listenerToAdd) {
 		commandExecutor.execute(new AddEventListenerCommand(listenerToAdd));
@@ -453,16 +325,48 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   }
 
   @Override
-  public List<Event> getProcessInstanceEvents(String processInstanceId) {
-    return commandExecutor.execute(new GetProcessInstanceEventsCmd(processInstanceId));
-  }
-
-  @Override
   public ProcessInstanceBuilder createProcessInstanceBuilder() {
 	return new ProcessInstanceBuilderImpl(this);
   }
   
   public ProcessInstance startProcessInstance(ProcessInstanceBuilderImpl processInstanceBuilder){
     return commandExecutor.execute(new StartProcessInstanceCmd<ProcessInstance>(processInstanceBuilder));
+  }
+
+  public void addUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantUser(String processInstanceId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantGroup(String processInstanceId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantUser(String processInstanceId, String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantGroup(String processInstanceId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteUserIdentityLink(String processInstanceId, String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteGroupIdentityLink(String processInstanceId, String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public List<IdentityLink> getIdentityLinksForProcessInstance(String processInstanceId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
   }
 }

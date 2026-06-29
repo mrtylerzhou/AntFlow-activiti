@@ -10,8 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface BpmnNodeLfFormdataFieldControlMapper extends BaseMapper<BpmnNodeLfFormdataFieldControl> {
-    List<LFFieldControlVO> getFieldControlByProcessNumberAndElementId(@Param("processNum") String processNum,
-                                                                      @Param("elementId") String elementId);
 
     /**
      * 根据审批节点nodeId 获取当前节点的表单权限设置

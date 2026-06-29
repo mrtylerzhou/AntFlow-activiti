@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JuelExpressionConditionJudge implements ConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
         String expression = conditionsConf.getExpression();
         return JuelEvaluator.evaluate(expression, bpmnStartConditionsVo);
     }

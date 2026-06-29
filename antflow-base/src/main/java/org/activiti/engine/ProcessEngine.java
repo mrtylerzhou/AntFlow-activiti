@@ -25,10 +25,6 @@ package org.activiti.engine;
  * (standalone) {@link org.activiti.engine.task.Task}s, such as claiming, completing and
  * assigning tasks</li>
  * <li>
- * <b>{@link org.activiti.engine.IdentityService}: </b> Used for managing
- * {@link org.activiti.engine.identity.User}s, {@link org.activiti.engine.identity.Group}s and
- * the relations between them<</li>
- * <li>
  * <b>{@link org.activiti.engine.ManagementService}: </b> Exposes engine admin and
  * maintenance operations</li>
  *  <li>
@@ -49,7 +45,7 @@ package org.activiti.engine;
 public interface ProcessEngine extends EngineServices {
 
   /** the version of the activiti library */
-  public static String VERSION = "5.23.0.0";
+  public static String VERSION = "2.0.0";
 
   /** The name as specified in 'process-engine-name' in 
    * the activiti.cfg.xml configuration file.

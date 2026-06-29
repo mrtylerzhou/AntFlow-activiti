@@ -45,7 +45,8 @@
         else '' end as verifyStatusName,
         w.verify_date as verifyDate,
         w.verify_desc as verifyDesc,
-        w.original_id originalId
+        w.original_id originalId,
+        w.attachments_json as attachmentsJson
         from bpm_verify_info w where 1=1
         <if test="processCode!=null and processCode!=''">
             and w.process_code=#{processCode}
@@ -74,7 +75,7 @@
                null            AS verifyDate,
                ''              AS verifyDesc,
                t.TASK_DEF_KEY_ AS elementId
-        from ACT_RU_TASK t
+        from AF_RU_TASK t
         where t.PROC_INST_ID_=#{procInstId}
 
     </select>

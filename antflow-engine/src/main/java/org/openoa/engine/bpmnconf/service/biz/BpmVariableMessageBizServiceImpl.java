@@ -11,29 +11,29 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.MessageItem;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfRoleService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.service.BpmVariableService;
 import org.openoa.base.util.DateUtil;
-import org.openoa.base.util.MultiTenantUtil;
 import org.openoa.base.util.PropertyUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableMessageBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessForwardService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmVariableApproveRemindService;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.utils.InformationTemplateUtils;
 import org.openoa.engine.utils.ReflectionUtils;
@@ -57,15 +57,10 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private BpmVariableService bpmVariableService;
 
     @Autowired
-    private BpmVariableApproveRemindService bpmVariableApproveRemindService;
-
-    @Autowired
     private AfUserService userService;
     @Autowired
     private AfRoleService roleService;
 
-    @Autowired
-    private BpmProcessNoticeService bpmProcessNoticeService;
 
     @Autowired
     private ProcessBusinessContans processBusinessContans;
@@ -84,16 +79,10 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private ProcessConstants processConstants;
 
     @Autowired
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
-
-    @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
     @Autowired
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
-
-    @Autowired
-    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
 
     @Autowired
     private BpmProcessForwardService bpmProcessForwardService;
@@ -101,63 +90,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private InformationTemplateUtils informationTemplateUtils;
 
 
-    /**
-     * insert variable message config
-     * @param variableId
-     * @param bpmnConfCommonVo
-     */
-    @Override
-    public void insertVariableMessage(Long variableId, BpmnConfCommonVo bpmnConfCommonVo) {
-
-
-        //variable message list
-        List<BpmVariableMessage> bpmVariableMessages = Lists.newArrayList();
-
-
-        //process node approval remind list
-        List<BpmVariableApproveRemind> bpmVariableApproveReminds = Lists.newArrayList();
-
-
-        // add out of node variable message config
-        if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getTemplateVos())) {
-            bpmVariableMessages.addAll(getBpmVariableMessages(variableId, bpmnConfCommonVo.getTemplateVos(), StringUtils.EMPTY, 1));
-        }
-
-
-        //add in node message config
-        if (!ObjectUtils.isEmpty(bpmnConfCommonVo.getElementList())) {
-            for (BpmnConfCommonElementVo elementVo : bpmnConfCommonVo.getElementList()) {
-                if (ObjectUtils.isEmpty(elementVo.getTemplateVos())) {
-                    continue;
-                }
-                bpmVariableMessages.addAll(getBpmVariableMessages(variableId, elementVo.getTemplateVos(), elementVo.getElementId(), 2));
-
-                //add process node approval remind list
-                if (!ObjectUtils.isEmpty(elementVo.getApproveRemindVo()) &&
-                        !ObjectUtils.isEmpty(elementVo.getApproveRemindVo().getDays())) {
-                    bpmVariableApproveReminds.add(BpmVariableApproveRemind
-                            .builder()
-                            .variableId(variableId)
-                            .elementId(elementVo.getElementId())
-                            .content(JSON.toJSONString(elementVo.getApproveRemindVo()))
-                            .tenantId(MultiTenantUtil.getCurrentTenantId())
-                            .build());
-                }
-            }
-        }
-
-
-        // if variable messages are not empty,then save them in batch
-        if (!ObjectUtils.isEmpty(bpmVariableMessages)) {
-            this.getService().saveBatch(bpmVariableMessages);
-        }
-
-
-        //if approval reminds are not empty then save them in batch
-        if (!ObjectUtils.isEmpty(bpmVariableApproveReminds)) {
-            bpmVariableApproveRemindService.saveBatch(bpmVariableApproveReminds);
-        }
-    }
     /**
 
      * check whether to to send messages by template
@@ -169,20 +101,21 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     public Boolean checkIsSendByTemplate(BpmVariableMessageVo vo) {
 
         BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>().eq("process_num", vo.getProcessNumber()));
-        if (ObjectUtils.isEmpty(bpmVariable)) {
+        if (ObjectUtils.isEmpty(bpmVariable) || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return false;
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getMessages())) {
             return false;
         }
         if (vo.getMessageType()!=null&& vo.getMessageType()== 2) {//in node messages
-            return this.getMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    //.eq("element_id", vo.getElementId())
-                    .eq("message_type", 2)
-                    .eq("event_type", vo.getEventType())) > 0;
+            return config.getMessages().stream()
+                    .anyMatch(m -> m.getMessageType() != null && m.getMessageType() == 2
+                            && vo.getEventType().equals(m.getEventType()));
         } else if (vo.getMessageType()!=null&&vo.getMessageType()==1) {//out of node messages
-            return this.getMapper().selectCount(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", bpmVariable.getId())
-                    .eq("message_type", 1)
-                    .eq("event_type", vo.getEventType())) > 0;
+            return config.getMessages().stream()
+                    .anyMatch(m -> m.getMessageType() != null && m.getMessageType() == 1
+                            && vo.getEventType().equals(m.getEventType()));
         }
         return false;
     }
@@ -464,40 +397,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     }
 
     /**
-     * get variable messages list
-     *
-     * @param variableId
-     * @param templateVos
-     * @param messageType
-     * @return
-     */
-    private List<BpmVariableMessage> getBpmVariableMessages(Long variableId, List<BpmnTemplateVo> templateVos, String elementId, Integer messageType) {
-        return templateVos
-                .stream()
-                .map(o -> BpmVariableMessage
-                        .builder()
-                        .variableId(variableId)
-                        .elementId(elementId)
-                        .messageType(getMessageSendType(o.getEvent(),messageType))
-                        .eventType(o.getEvent())
-                        .content(JSON.toJSONString(o))
-                        .tenantId(MultiTenantUtil.getCurrentTenantId())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private Integer getMessageSendType(Integer event,Integer defaultMessageSendType){
-        if(event==null){
-            return defaultMessageSendType;
-        }
-        EventTypeEnum eventTypeEnum = EventTypeEnum.getByCode(event);
-        if(eventTypeEnum==null){
-            return defaultMessageSendType;
-        }
-        return eventTypeEnum.getIsInNode()?2:1;
-    }
-
-    /**
      * get next node's approvers
      *
      * @param variableId
@@ -505,19 +404,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      * @return
      */
     private List<String> getNextNodeApproveds(Long variableId, String nextElementId) {
-
-
-        //query to check whether sign variable has parameter,if yes then return;
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>()
-                .eq("variable_id", variableId)
-                .eq("element_id", nextElementId)) > 0) {
-            List<String> nextNodeApproveds = Lists.newArrayList();
-            BpmVariableSingle bpmVariableSingle = bpmVariableSingleService.getBaseMapper().selectOne(new QueryWrapper<BpmVariableSingle>()
-                    .eq("variable_id", variableId)
-                    .eq("element_id", nextElementId));
-            nextNodeApproveds.add(bpmVariableSingle.getAssignee());
-            return nextNodeApproveds;
-        }
 
 
         //query to check whether multiplayer variables have parameter,if yes then return;
@@ -537,18 +423,22 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
         }
 
 
-        //query to check whether sign up node has parameters,if yes,then query and return data
-        if (bpmVariableSignUpPersonnelService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                .eq("variable_id", variableId)
-                .eq("element_id", nextElementId)) > 0) {
-            List<String> nextNodeApproveds = Lists.newArrayList();
-            nextNodeApproveds.addAll(bpmVariableSignUpPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                            .eq("variable_id", variableId)
-                            .eq("element_id", nextElementId))
-                    .stream()
-                    .map(BpmVariableSignUpPersonnel::getAssignee)
-                    .collect(Collectors.toList()));
-            return nextNodeApproveds;
+        //query to check whether sign up node has parameters from variable config JSON
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(variableId);
+        if (bpmVariable != null && !StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+            if (config != null && !ObjectUtils.isEmpty(config.getSignUps())) {
+                for (SignUpItem signUp : config.getSignUps()) {
+                    if (!ObjectUtils.isEmpty(signUp.getPersonnelByElement())) {
+                        List<VariableConfigJson.PersonnelItem> personnel = signUp.getPersonnelByElement().get(nextElementId);
+                        if (!ObjectUtils.isEmpty(personnel)) {
+                            return personnel.stream()
+                                    .map(VariableConfigJson.PersonnelItem::getAssignee)
+                                    .collect(Collectors.toList());
+                        }
+                    }
+                }
+            }
         }
 
         return Collections.EMPTY_LIST;
@@ -570,45 +460,51 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             }
         }
 
+        // read messages from variable config JSON
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(vo.getVariableId());
+        if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return;
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getMessages())) {
+            return;
+        }
+
         if (Objects.equals(vo.getMessageType(), 1)) {//out of node messages
-            List<BpmVariableMessage> bpmVariableMessages = this.getMapper().selectList(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", vo.getVariableId())
-                    .eq("message_type", 1)
-                    .eq("event_type", vo.getEventType()));
-            if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
-                for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
-                    doSendTemplateMessages(bpmVariableMessage, vo);
-                }
+            List<MessageItem> messageItems = config.getMessages().stream()
+                    .filter(m -> m.getMessageType() != null && m.getMessageType() == 1
+                            && vo.getEventType().equals(m.getEventType()))
+                    .collect(Collectors.toList());
+            for (MessageItem messageItem : messageItems) {
+                doSendTemplateMessages(messageItem, vo);
             }
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
-            List<BpmVariableMessage> bpmVariableMessages = this.getMapper().selectList(new QueryWrapper<BpmVariableMessage>()
-                    .eq("variable_id", vo.getVariableId())
-                    .eq("event_type", vo.getEventType()));
+            List<MessageItem> messageItems = config.getMessages().stream()
+                    .filter(m -> vo.getEventType().equals(m.getEventType()))
+                    .collect(Collectors.toList());
             if(!StringUtils.isEmpty(vo.getElementId())){
-                List<BpmVariableMessage> currentNodeVariableMessages = bpmVariableMessages
+                List<MessageItem> currentNodeMessages = messageItems
                         .stream()
                         .filter(a -> vo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
-                if(!CollectionUtils.isEmpty(currentNodeVariableMessages)){
-                    bpmVariableMessages=currentNodeVariableMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
+                if(!CollectionUtils.isEmpty(currentNodeMessages)){
+                    messageItems=currentNodeMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
                 }
             }
-            if (!CollectionUtils.isEmpty(bpmVariableMessages)) {
-                for (BpmVariableMessage bpmVariableMessage : bpmVariableMessages) {
-                    doSendTemplateMessages(bpmVariableMessage, vo);
-                }
+            for (MessageItem messageItem : messageItems) {
+                doSendTemplateMessages(messageItem, vo);
             }
         }
     }
     /**
      * do send templated messages
      *
-     * @param bpmVariableMessage
+     * @param messageItem
      */
-    private void doSendTemplateMessages(BpmVariableMessage bpmVariableMessage, BpmVariableMessageVo vo) {
+    private void doSendTemplateMessages(MessageItem messageItem, BpmVariableMessageVo vo) {
 
         BpmnTemplateVo bpmnTemplateVo = new BpmnTemplateVo();
-        if (!ObjectUtils.isEmpty(bpmVariableMessage.getContent())) {
-            bpmnTemplateVo = JSON.parseObject(bpmVariableMessage.getContent(), BpmnTemplateVo.class);
+        if (!ObjectUtils.isEmpty(messageItem.getContent())) {
+            bpmnTemplateVo = JSON.parseObject(messageItem.getContent(), BpmnTemplateVo.class);
         }
 
 
@@ -639,13 +535,16 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      * @param detailedUsers
      */
     private void sendMessage(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo, List<DetailedUser> detailedUsers) {
-        //query all types of the messages
-        List<MessageSendTypeEnum> messageSendTypeEnums = bpmProcessNoticeService.processNoticeList(vo.getFormCode())
-                .stream()
-                .map(o -> {
-                    return MessageSendTypeEnum.getEnumByCode(o.getType());
-                })
-                .collect(Collectors.toList());
+        //query all types of the messages from conf_config_json
+        BpmnConf bpmnConf = bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+                .eq("form_code", vo.getFormCode()).eq("effective_status", 1));
+        BpmnConfConfigJson confConfig = bpmnConf != null ? JsonConfUtil.parseConfConfig(bpmnConf.getConfConfigJson()) : null;
+        List<Integer> noticeChannelTypes = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
+        List<MessageSendTypeEnum> messageSendTypeEnums = CollectionUtils.isEmpty(noticeChannelTypes)
+                ? new ArrayList<>()
+                : noticeChannelTypes.stream()
+                    .map(MessageSendTypeEnum::getEnumByCode)
+                    .collect(Collectors.toList());
 
         List<BaseNumIdStruVo> messageSendTypeList = bpmnTemplateVo.getMessageSendTypeList();
         if(!messageSendTypeEnums.isEmpty()&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知

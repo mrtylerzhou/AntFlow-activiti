@@ -55,14 +55,6 @@ public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
     List<TaskMgmtVO> allProcessList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
 
     /**
-     * query whether current node is operable
-     *
-     * @param taskMgmtVO
-     * @return
-     */
-    Integer isOperational(@Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
-
-    /**
      * get today's alread done count
      *
      * @param createUserId

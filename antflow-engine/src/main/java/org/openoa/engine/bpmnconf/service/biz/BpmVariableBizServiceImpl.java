@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
@@ -10,17 +11,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.NodeElementDto;
 import org.openoa.base.dto.NodeXelementXvarXverifyInfo;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUpPersonnel;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
-import org.openoa.base.service.BpmVariableSignUpPersonnelService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.service.BpmVariableMultiplayerPersonnelServiceImpl;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
-import org.openoa.common.service.BpmVariableSingleServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableBizService;
 import org.openoa.base.util.AFWrappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +33,10 @@ import java.util.stream.Collectors;
 @Service
 public class BpmVariableBizServiceImpl implements BpmVariableBizService {
     @Autowired
-    private BpmVariableSingleServiceImpl bpmVariableSingleService;
-
-    @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
     @Autowired
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
-
-    @Autowired
-    private BpmVariableSignUpPersonnelService bpmVariableSignUpPersonnelService;
 
     /**
      * to check whether login employee is in process(whether he/she is related to a specified process)
@@ -74,16 +67,6 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
         List<String> assignees = Lists.newArrayList();
 
 
-        //query to check whether single variable has value, if yes, query and set Map
-        if (bpmVariableSingleService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSingle>()
-                .eq("variable_id", variableId)) > 0) {
-            for (BpmVariableSingle bpmVariableSingle : bpmVariableSingleService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSingle>()
-                    .eq("variable_id", variableId))) {
-                assignees.add(bpmVariableSingle.getAssignee());
-            }
-        }
-
-
         //query to check whether multiplayer variable has value, if yes, query and set Map
         if (bpmVariableMultiplayerService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableMultiplayer>()
                 .eq("variable_id", variableId)) > 0) {
@@ -101,17 +84,21 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
         }
 
 
-        //query to check whether signUp variable has value, if yes, query and set Map
-        if (bpmVariableSignUpPersonnelService.getBaseMapper().selectCount(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                .eq("variable_id", variableId)) > 0) {
-            Multimap<String, String> listMultimap = ArrayListMultimap.create();
-            for (BpmVariableSignUpPersonnel bpmVariableSignUpPersonnel : bpmVariableSignUpPersonnelService.getBaseMapper().selectList(new QueryWrapper<BpmVariableSignUpPersonnel>()
-                    .eq("variable_id", variableId))) {
-                listMultimap.put(bpmVariableSignUpPersonnel.getElementId(), bpmVariableSignUpPersonnel.getAssignee());
-            }
-            for (String key : listMultimap.keySet()) {
-                List<String> signUpAssignees = listMultimap.get(key).stream().collect(Collectors.toList());
-                assignees.addAll(signUpAssignees);
+        //query to check whether signUp variable has value from JSON config, if yes, query and set
+        if (!StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            VariableConfigJson varConfig = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+            if (varConfig != null && !ObjectUtils.isEmpty(varConfig.getSignUps())) {
+                for (SignUpItem signUp : varConfig.getSignUps()) {
+                    if (!ObjectUtils.isEmpty(signUp.getPersonnelByElement())) {
+                        for (List<VariableConfigJson.PersonnelItem> personnel : signUp.getPersonnelByElement().values()) {
+                            if (!ObjectUtils.isEmpty(personnel)) {
+                                for (VariableConfigJson.PersonnelItem p : personnel) {
+                                    assignees.add(p.getAssignee());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -147,11 +134,6 @@ public class BpmVariableBizServiceImpl implements BpmVariableBizService {
         BpmVariable bpmVariable = this.getMapper().selectOne(variableQry);
         Long variableId = bpmVariable.getId();
         this.getMapper().deleteById(variableId);
-
-        // 删除t_bpm_variable_single表数据
-        LambdaQueryWrapper<BpmVariableSingle> singleQry = AFWrappers.<BpmVariableSingle>lambdaTenantQuery()
-                .eq(BpmVariableSingle::getVariableId, variableId);
-        bpmVariableSingleService.getBaseMapper().delete(singleQry);
 
         // 删除t_bpm_variable_multiplayer表数据
         LambdaQueryWrapper<BpmVariableMultiplayer> multiplayerQry = AFWrappers.<BpmVariableMultiplayer>lambdaTenantQuery()

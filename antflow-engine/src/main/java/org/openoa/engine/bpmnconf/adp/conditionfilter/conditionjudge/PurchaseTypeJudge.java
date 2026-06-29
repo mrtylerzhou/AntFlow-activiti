@@ -18,13 +18,13 @@ import org.springframework.util.ObjectUtils;
 public class PurchaseTypeJudge implements ConditionJudge {
 
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
         if (ObjectUtils.isEmpty(conditionsConf.getPurchaseType())) {
             throw new AFBizException("the process has no Purchase Type conf,please contact the administrator to add one");
         }
         if (ObjectUtils.isEmpty(bpmnStartConditionsVo.getPurchaseType())) {
             throw new AFBizException("the process has no Purchase Type  when start up,but it is a must,please contact the administrator");
         }
-        return conditionsConf.getPurchaseType().equals(bpmnStartConditionsVo.getPurchaseType());
+        return conditionsConf.getPurchaseType().contains(bpmnStartConditionsVo.getPurchaseType());
     }
 }

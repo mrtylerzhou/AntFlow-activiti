@@ -12,7 +12,6 @@
  */
 package org.activiti.engine.impl.bpmn.parser.handler;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ import org.activiti.bpmn.model.Association;
 import org.activiti.bpmn.model.BaseElement;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.DataSpec;
-import org.activiti.bpmn.model.EventDefinition;
 import org.activiti.bpmn.model.EventGateway;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Gateway;
@@ -41,7 +39,6 @@ import org.activiti.engine.impl.bpmn.data.DataRef;
 import org.activiti.engine.impl.bpmn.data.IOSpecification;
 import org.activiti.engine.impl.bpmn.data.ItemDefinition;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
-import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ScopeImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
@@ -60,8 +57,6 @@ public abstract class AbstractBpmnParseHandler<T extends BaseElement> implements
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBpmnParseHandler.class);
   
   public static final String PROPERTYNAME_IS_FOR_COMPENSATION = "isForCompensation";
-  
-  public static final String PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION = "eventDefinitions";
   
   public static final String PROPERTYNAME_ERROR_EVENT_DEFINITIONS = "errorEventDefinitions";
   
@@ -138,29 +133,6 @@ public abstract class AbstractBpmnParseHandler<T extends BaseElement> implements
       executionListener = bpmnParse.getListenerFactory().createDelegateExpressionExecutionListener(activitiListener);
     }
     return executionListener;
-  }
-  
-  @SuppressWarnings("unchecked")
-  protected void addEventSubscriptionDeclaration(BpmnParse bpmnParse, EventSubscriptionDeclaration subscription, EventDefinition parsedEventDefinition, ScopeImpl scope) {
-    List<EventSubscriptionDeclaration> eventDefinitions = (List<EventSubscriptionDeclaration>) scope.getProperty(PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION);
-    if(eventDefinitions == null) {
-      eventDefinitions = new ArrayList<EventSubscriptionDeclaration>();
-      scope.setProperty(PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION, eventDefinitions);
-    } else {
-      // if this is a message event, validate that it is the only one with the provided name for this scope
-      if(subscription.getEventType().equals("message")) {
-        for (EventSubscriptionDeclaration eventDefinition : eventDefinitions) {
-          if(eventDefinition.getEventType().equals("message")
-            && eventDefinition.getEventName().equals(subscription.getEventName()) 
-            && eventDefinition.isStartEvent() == subscription.isStartEvent()) {
-            
-            logger.warn("Cannot have more than one message event subscription with name '" + subscription.getEventName() +
-                "' for scope '"+scope.getId()+"'");
-          }
-        }
-      }
-    }  
-    eventDefinitions.add(subscription);
   }
   
   protected String getPrecedingEventBasedGateway(BpmnParse bpmnParse, IntermediateCatchEvent event) {

@@ -14,12 +14,11 @@ import org.openoa.base.exception.AFBizException;
 
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmProcessName;
-
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNameBizService;
+import org.openoa.base.vo.BpmProcessVo;
 import org.openoa.engine.factory.FormFactory;
 import org.openoa.base.util.MultiTenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
     protected BpmBusinessProcessServiceImpl bpmBusinessProcessService;
 
     @Autowired
-    private BpmProcessNameBizService bpmProcessNameBizService;
+    private BpmnConfMapper bpmnConfMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo businessDataVo) {
@@ -79,9 +78,8 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         }
 
         //process's name
-        String processName = Optional
-                .ofNullable(bpmProcessNameBizService.getBpmProcessName(businessDataVo.getFormCode()))
-                .orElse(new BpmProcessName()).getProcessName();
+        BpmProcessVo bpmProcessVo = bpmnConfMapper.getBpmProcessVoByFormCode(businessDataVo.getFormCode());
+        String processName = bpmProcessVo != null ? bpmProcessVo.getProcessName() : "";
         //apply user info
         String applyName = SecurityUtils.getLogInEmpName();
         //save business and process information

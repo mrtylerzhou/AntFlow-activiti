@@ -10,13 +10,16 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.base.entity.BpmProcessNotice;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.InformationTemplate;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.constant.enums.EventTypeEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessNoticeServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableApproveRemindBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -34,7 +37,7 @@ public class InformationTemplateController {
     @Resource
     private BpmVariableApproveRemindBizService variableApproveRemindBizService;
     @Autowired
-    private BpmProcessNoticeServiceImpl processNoticeService;
+    private BpmnConfBizService bpmnConfBizService;
 
     /**
      * query information template vos;
@@ -186,12 +189,15 @@ public class InformationTemplateController {
         if(StringUtils.isEmpty(formCode)){
             throw new AFBizException("请传入表单编码");
         }
-        List<BpmProcessNotice> bpmProcessNotices = processNoticeService.processNoticeList(formCode);
+        BpmnConf bpmnConf = bpmnConfBizService.getBpmnConfByFormCode(formCode);
+        BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(bpmnConf.getConfConfigJson());
+        List<Integer> noticeChannelTypes = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
         List<BaseNumIdStruVo> lists = new ArrayList<>();
-        for (BpmProcessNotice bpmProcessNotice : bpmProcessNotices) {
-            Integer type = bpmProcessNotice.getType();
-            String descByCode = ProcessNoticeEnum.getDescByCode(type);
-            lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).active(true).build());
+        if (!CollectionUtils.isEmpty(noticeChannelTypes)) {
+            for (Integer type : noticeChannelTypes) {
+                String descByCode = ProcessNoticeEnum.getDescByCode(type);
+                lists.add(BaseNumIdStruVo.builder().id(Long.valueOf(type)).name(descByCode).active(true).build());
+            }
         }
         return Result.newSuccessResult(lists);
     }

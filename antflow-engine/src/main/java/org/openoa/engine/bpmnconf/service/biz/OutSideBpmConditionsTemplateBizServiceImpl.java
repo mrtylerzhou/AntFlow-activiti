@@ -1,17 +1,23 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.vo.BpmnNodeConditionsConfVueVo;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.vo.ResultAndPage;
@@ -53,9 +59,6 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
 
     @Autowired
     private BpmnNodeConditionsConfService bpmnNodeConditionsConfService;
-
-    @Autowired
-    private BpmnNodeConditionsParamConfService bpmnNodeConditionsParamConfService;
 
     @Autowired
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
@@ -266,6 +269,9 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
 
     /**
      * check whether template is used
+     * Reads template marks from extJson (Vue3 model) instead of t_bpmn_node_conditions_param_conf.
+     * In the Vue3 model, CONDITION_TEMPLATEMARK (columnId=9999) entries store selected template IDs
+     * in zdy1 (comma-separated keys against fixedDownBoxValue).
      *
      * @param id
      * @return
@@ -286,31 +292,37 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
                     .in("node_type", Lists.newArrayList(NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode(), NodeTypeEnum.NODE_TYPE_OUT_SIDE_CONDITIONS.getCode())));
 
             if (!CollectionUtils.isEmpty(bpmnNodes)) {
-                List<BpmnNodeConditionsConf> bpmnNodeConditionsConfs = bpmnNodeConditionsConfService.list(new QueryWrapper<BpmnNodeConditionsConf>()
-                        .in("bpmn_node_id", bpmnNodes
-                                .stream()
-                                .map(BpmnNode::getId)
-                                .collect(Collectors.toList())));
-
-                if (!CollectionUtils.isEmpty(bpmnNodeConditionsConfs)) {
-
-                    ConditionTypeEnum conditionTemplatemark = ConditionTypeEnum.CONDITION_TEMPLATEMARK;
-
-                    List<BpmnNodeConditionsParamConf> bpmnNodeConditionsParamConfs = bpmnNodeConditionsParamConfService.list(new QueryWrapper<BpmnNodeConditionsParamConf>()
-                            .in("bpmn_node_conditions_id", bpmnNodeConditionsConfs
-                                    .stream()
-                                    .map(BpmnNodeConditionsConf::getId)
-                                    .collect(Collectors.toList()))
-                            .eq("condition_param_type", conditionTemplatemark.getCode()));
-
-                    if (!CollectionUtils.isEmpty(bpmnNodeConditionsParamConfs)) {
-                        List<Integer> usedTempList = Lists.newArrayList();
-                        for (BpmnNodeConditionsParamConf bpmnNodeConditionsParamConf : bpmnNodeConditionsParamConfs) {
-                            List<Integer> confTempList = (List<Integer>) JSON.parseArray(bpmnNodeConditionsParamConf.getConditionParamJsom(), conditionTemplatemark.getFieldCls());
-                            usedTempList.addAll(confTempList);
+                String templateMarkColumnId = String.valueOf(ConditionTypeEnum.CONDITION_TEMPLATEMARK.getCode());
+                for (BpmnNode node : bpmnNodes) {
+                    List<BpmnNodeConditionsConfJson.ConditionGroup> groups = getConditionGroupsFromNode(node);
+                    if (CollectionUtils.isEmpty(groups)) {
+                        continue;
+                    }
+                    for (BpmnNodeConditionsConfJson.ConditionGroup group : groups) {
+                        if (Objects.equals(group.getIsDefault(), 1) || StringUtils.isEmpty(group.getExtJson())) {
+                            continue;
                         }
-                        if (usedTempList.contains(id)) {
-                            return true;
+                        List<List<BpmnNodeConditionsConfVueVo>> extFieldsGroup = JSON.parseObject(
+                                group.getExtJson(), new TypeReference<List<List<BpmnNodeConditionsConfVueVo>>>() {});
+                        if (CollectionUtils.isEmpty(extFieldsGroup)) {
+                            continue;
+                        }
+                        for (List<BpmnNodeConditionsConfVueVo> groupList : extFieldsGroup) {
+                            for (BpmnNodeConditionsConfVueVo cond : groupList) {
+                                if (templateMarkColumnId.equals(cond.getColumnId())
+                                        && !StringUtils.isEmpty(cond.getZdy1())) {
+                                    String zdy1 = cond.getZdy1();
+                                    if (zdy1.startsWith("[") && zdy1.endsWith("]")) {
+                                        zdy1 = zdy1.substring(1, zdy1.length() - 1);
+                                    }
+                                    String[] keys = zdy1.split(",");
+                                    for (String key : keys) {
+                                        if (String.valueOf(id).equals(key.trim())) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -318,6 +330,10 @@ public class OutSideBpmConditionsTemplateBizServiceImpl implements OutSideBpmCon
         }
 
         return false;
+    }
+
+    private List<BpmnNodeConditionsConfJson.ConditionGroup> getConditionGroupsFromNode(BpmnNode node) {
+        throw new NotImplementedException("to be implemented");
     }
 
 }

@@ -14,10 +14,8 @@
 package org.activiti.engine.impl.persistence.entity;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,16 +27,12 @@ import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.delegate.event.impl.ActivitiEventBuilder;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
-import org.activiti.engine.impl.bpmn.parser.BpmnParse;
-import org.activiti.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.history.HistoryManager;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.jobexecutor.AsyncContinuationJobHandler;
-import org.activiti.engine.impl.jobexecutor.TimerDeclarationImpl;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmException;
 import org.activiti.engine.impl.pvm.PvmExecution;
@@ -59,7 +53,6 @@ import org.activiti.engine.impl.pvm.runtime.OutgoingExecution;
 import org.activiti.engine.impl.pvm.runtime.StartingExecution;
 import org.activiti.engine.impl.util.BitMaskUtil;
 import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +73,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   private static Logger log = LoggerFactory.getLogger(ExecutionEntity.class);
   
   // Persistent refrenced entities state //////////////////////////////////////
-  protected static final int EVENT_SUBSCRIPTIONS_STATE_BIT = 1;
   protected static final int TASKS_STATE_BIT = 2;
-  protected static final int JOBS_STATE_BIT = 3;
   
   // current position /////////////////////////////////////////////////////////
   
@@ -148,11 +139,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // associated entities /////////////////////////////////////////////////////
   
-  // (we cache associated entities here to minimize db queries) 
-  protected List<EventSubscriptionEntity> eventSubscriptions;  
-  protected List<JobEntity> jobs;
+  // (we cache associated entities here to minimize db queries)
   protected List<TaskEntity> tasks;
-  protected List<IdentityLinkEntity> identityLinks;
   protected int cachedEntityState;
   
   // cascade deletion ////////////////////////////////////////////////////////
@@ -341,46 +329,16 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   // scopes ///////////////////////////////////////////////////////////////////
 
-  @SuppressWarnings("unchecked")
   public void initialize() {
     log.debug("initializing {}", this);
 
-    ScopeImpl scope = getScopeObject();
     ensureParentInitialized();
 
     // initialize the lists of referenced objects (prevents db queries)
     variableInstances = new HashMap<String, VariableInstanceEntity>();
-    eventSubscriptions = new ArrayList<EventSubscriptionEntity>();
-    
+
     // Cached entity-state initialized to null, all bits are zero, indicating NO entities present
     cachedEntityState = 0;
-    
-    List<TimerDeclarationImpl> timerDeclarations = (List<TimerDeclarationImpl>) scope.getProperty(BpmnParse.PROPERTYNAME_TIMER_DECLARATION);
-    if (timerDeclarations!=null) {
-      for (TimerDeclarationImpl timerDeclaration : timerDeclarations) {
-        TimerEntity timer = timerDeclaration.prepareTimerEntity(this);
-        if (timer!=null) {
-          Context
-            .getCommandContext()
-            .getJobEntityManager()
-            .schedule(timer);
-        }
-      }
-    }
-    
-    // create event subscriptions for the current scope
-    List<EventSubscriptionDeclaration> eventSubscriptionDeclarations = (List<EventSubscriptionDeclaration>) scope.getProperty(BpmnParse.PROPERTYNAME_EVENT_SUBSCRIPTION_DECLARATION);
-    if(eventSubscriptionDeclarations != null) {
-      for (EventSubscriptionDeclaration eventSubscriptionDeclaration : eventSubscriptionDeclarations) {        
-        if(!eventSubscriptionDeclaration.isStartEvent()) {
-          EventSubscriptionEntity eventSubscriptionEntity = eventSubscriptionDeclaration.prepareEventSubscriptionEntity(this); 
-          if (getTenantId() != null) {
-          	eventSubscriptionEntity.setTenantId(getTenantId());
-          }
-          eventSubscriptionEntity.insert();
-        }        
-      }
-    }
   }
   
   public void start() {
@@ -653,28 +611,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
 
   protected void scheduleAtomicOperationAsync(AtomicOperation executionOperation) {
-    MessageEntity message = new MessageEntity();
-    message.setExecution(this);
-    message.setExclusive(getActivity().isExclusive());
-    message.setJobHandlerType(AsyncContinuationJobHandler.TYPE);
-    // At the moment, only AtomicOperationTransitionCreateScope can be performed asynchronously,
-    // so there is no need to pass it to the handler
-    
-    GregorianCalendar expireCal = new GregorianCalendar();
-    ProcessEngineConfiguration processEngineConfig = Context.getCommandContext().getProcessEngineConfiguration();
-    expireCal.setTime(processEngineConfig.getClock().getCurrentTime());
-    expireCal.add(Calendar.SECOND, processEngineConfig.getLockTimeAsyncJobWaitTime());
-    message.setLockExpirationTime(expireCal.getTime());
-    
-    // Inherit tenant id (if applicable)
-    if (getTenantId() != null) {
-    	message.setTenantId(getTenantId());
-    }
-
-    Context
-      .getCommandContext()
-      .getJobEntityManager()
-      .send(message);
+    // Job infrastructure removed - fall back to synchronous execution
+    performOperationSync(executionOperation);
   }
 
   public boolean isActive(String activityId) {
@@ -987,19 +925,10 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     
     // delete all the tasks
     removeTasks(null);
-    
-    // remove all jobs
-    removeJobs();
-    
-    // remove all event subscriptions for this scope, if the scope has event subscriptions:
-    removeEventSubscriptions();
-    
-    // remove event scopes:            
+
+    // remove event scopes:
     removeEventScopes();
-    
-    // remove identity links
-    removeIdentityLinks();
-    
+
     if(Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
     	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
     			ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_DELETED, this));
@@ -1033,8 +962,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
     
     removeTasks(reason);
-    removeJobs();
-  } 
+  }
     
   private void removeEventScopes() {
     List<InterpretableExecution> childExecutions = new ArrayList<InterpretableExecution>(getExecutions());
@@ -1044,18 +972,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
         childExecution.destroy();
         childExecution.remove();
       }
-    }
-  }
-
-  private void removeEventSubscriptions() {
-    for (EventSubscriptionEntity eventSubscription : getEventSubscriptions()) {
-      eventSubscription.delete();
-    }
-  }
-
-  private void removeJobs() {
-    for (Job job: getJobs()) {
-      ((JobEntity) job).delete();
     }
   }
 
@@ -1118,28 +1034,16 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       this.replacedBy.addTask(task);
     }
     
-    // All tasks have been moved to 'replacedBy', safe to clear the list 
+    // All tasks have been moved to 'replacedBy', safe to clear the list
     this.tasks.clear();
-    
+
     tasks = dbSqlSession.findInCache(TaskEntity.class);
     for (TaskEntity task: tasks) {
       if (id.equals(task.getExecutionId())) {
         task.setExecutionId(replacedBy.getId());
       }
     }
-    
-    // update the related jobs
-    List<JobEntity> jobs = getJobs();
-    for (JobEntity job: jobs) {
-      job.setExecution((ExecutionEntity) replacedBy);
-    }
-    
-    // update the related event subscriptions
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptions();
-    for (EventSubscriptionEntity subscriptionEntity: eventSubscriptions) {
-      subscriptionEntity.setExecution((ExecutionEntity) replacedBy);
-    }
-    
+
     // update the related process variables
     List<VariableInstanceEntity> variables = (List) commandContext
       .getVariableInstanceEntityManager()
@@ -1180,7 +1084,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return getParent();
   }
 
-  /** used to calculate the sourceActivityExecution for method {@link #updateActivityInstanceIdInHistoricVariableUpdate(HistoricDetailVariableInstanceUpdateEntity, ExecutionEntity)} */
   protected ExecutionEntity getSourceActivityExecution() {
     return (activityId!=null ? this : null);
   }
@@ -1310,87 +1213,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return id;
   }
   
-  // event subscription support //////////////////////////////////////////////
-  
-  public List<EventSubscriptionEntity> getEventSubscriptionsInternal() {
-    ensureEventSubscriptionsInitialized();   
-    return eventSubscriptions;
-  }
-  
-  public List<EventSubscriptionEntity> getEventSubscriptions() {
-    return new ArrayList<EventSubscriptionEntity>(getEventSubscriptionsInternal());
-  }
-  
-  public List<CompensateEventSubscriptionEntity> getCompensateEventSubscriptions() {
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptionsInternal();
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>(eventSubscriptions.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      if(eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity) {
-        result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-      }
-    }
-    return result;
-  }
-  
-  public List<CompensateEventSubscriptionEntity> getCompensateEventSubscriptions(String activityId) {
-    List<EventSubscriptionEntity> eventSubscriptions = getEventSubscriptionsInternal();
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>(eventSubscriptions.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      if(eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity) {
-        if(activityId.equals(eventSubscriptionEntity.getActivityId())) {
-          result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-        }
-      }
-    }
-    return result;
-  }
-
-  protected void ensureEventSubscriptionsInitialized() {
-    if (eventSubscriptions == null || eventSubscriptions.isEmpty()) {
-      eventSubscriptions = Context.getCommandContext()
-        .getEventSubscriptionEntityManager()
-        .findEventSubscriptionsByExecution(id);
-    }
-  }
-  
-  public void addEventSubscription(EventSubscriptionEntity eventSubscriptionEntity) {
-    getEventSubscriptionsInternal().add(eventSubscriptionEntity);
-    
-  }
-
-  public void removeEventSubscription(EventSubscriptionEntity eventSubscriptionEntity) {
-    getEventSubscriptionsInternal().remove(eventSubscriptionEntity);
-  }
-  
-  // referenced job entities //////////////////////////////////////////////////
-  
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  protected void ensureJobsInitialized() {
-    if(jobs == null) {    
-      jobs = (List)Context.getCommandContext()
-        .getJobEntityManager()
-        .findJobsByExecutionId(id);
-    }    
-  }
-  
-  protected List<JobEntity> getJobsInternal() {
-    ensureJobsInitialized();
-    return jobs;
-  }
-  
-  public List<JobEntity> getJobs() {
-    return new ArrayList<JobEntity>(getJobsInternal());
-  }
-  
-  public void addJob(JobEntity jobEntity) {
-    getJobsInternal().add(jobEntity);
-  }
-  
-  public void removeJob(JobEntity job) {
-    getJobsInternal().remove(job);
-  }
-  
-  // referenced task entities ///////////////////////////////////////////////////
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   protected void ensureTasksInitialized() {
@@ -1417,80 +1239,27 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   public void removeTask(TaskEntity task) {
     getTasksInternal().remove(task);
   }
-    
-  // identity links ///////////////////////////////////////////////////////////
 
-  public List<IdentityLinkEntity> getIdentityLinks() {
-    if (identityLinks == null) {
-      identityLinks = Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .findIdentityLinksByProcessInstanceId(id);
-    }
-    
-    return identityLinks;
-  }
-
-  public IdentityLinkEntity addIdentityLink(String userId, String groupId, String type) {
-    IdentityLinkEntity identityLinkEntity = new IdentityLinkEntity();
-    getIdentityLinks().add(identityLinkEntity);
-    identityLinkEntity.setProcessInstance(this);
-    identityLinkEntity.setUserId(userId);
-    identityLinkEntity.setGroupId(groupId);
-    identityLinkEntity.setType(type);
-    identityLinkEntity.insert();
-    return identityLinkEntity;
-  }
-  
-  /** 
-   * Adds an IdentityLink for this user with the specified type, 
-   * but only if the user is not associated with this instance yet.
-   **/
-  public IdentityLinkEntity involveUser(String userId, String type) {
-    for (IdentityLinkEntity identityLink : getIdentityLinks()) {
-      if (identityLink.isUser() && identityLink.getUserId().equals(userId)) {
-        return identityLink;
-      }
-    }
-    return addIdentityLink(userId, null, type);
-  }
-  
-  public void removeIdentityLinks() {
-    Context
-      .getCommandContext()
-      .getIdentityLinkEntityManager()
-      .deleteIdentityLinksByProcInstance(id);
-  }
-  
   // getters and setters //////////////////////////////////////////////////////
   
   
   public void setCachedEntityState(int cachedEntityState) {
     this.cachedEntityState = cachedEntityState;
-    
+
     // Check for flags that are down. These lists can be safely initialized as empty, preventing
     // additional queries that end up in an empty list anyway
-    if(jobs == null && !BitMaskUtil.isBitOn(cachedEntityState, JOBS_STATE_BIT)) {
-      jobs = new ArrayList<JobEntity>();
-    }
     if(tasks == null && !BitMaskUtil.isBitOn(cachedEntityState, TASKS_STATE_BIT)) {
       tasks = new ArrayList<TaskEntity>();
-    }
-    if(eventSubscriptions == null && !BitMaskUtil.isBitOn(cachedEntityState, EVENT_SUBSCRIPTIONS_STATE_BIT)) {
-      eventSubscriptions = new ArrayList<EventSubscriptionEntity>();
     }
   }
     
   public int getCachedEntityState() {
     cachedEntityState = 0;
-    
+
     // Only mark a flag as false when the list is not-null and empty. If null, we can't be sure there are no entries in it since
     // the list hasn't been initialized/queried yet.
     cachedEntityState = BitMaskUtil.setBit(cachedEntityState, TASKS_STATE_BIT, (tasks == null || !tasks.isEmpty()));
-    cachedEntityState = BitMaskUtil.setBit(cachedEntityState, EVENT_SUBSCRIPTIONS_STATE_BIT, (eventSubscriptions == null || !eventSubscriptions
-            .isEmpty()));
-    cachedEntityState = BitMaskUtil.setBit(cachedEntityState, JOBS_STATE_BIT, (jobs == null || !jobs.isEmpty()));
-    
+
     return cachedEntityState;
   }
   
@@ -1718,20 +1487,34 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     }
     return null;
   }
-  
-  public void deleteIdentityLink(String userId, String groupId, String type) {
-    List<IdentityLinkEntity> identityLinks = Context.getCommandContext().getIdentityLinkEntityManager()
-            .findIdentityLinkByProcessInstanceUserGroupAndType(id, userId, groupId, type);
-
-    for (IdentityLinkEntity identityLink : identityLinks) {
-      Context.getCommandContext().getIdentityLinkEntityManager().deleteIdentityLink(identityLink, true);
-    }
-
-    getIdentityLinks().removeAll(identityLinks);
-
-  }
 
   public void setExecuteListeners(boolean executeListeners) {
     this.executeListeners = executeListeners;
+  }
+
+  // Identity link methods (no-op after removal of IdentityLinkEntity)
+
+  public void addIdentityLink(String userId, String groupId, String type) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteIdentityLink(String userId, String groupId, String type) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addParticipantGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteParticipantGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
   }
 }

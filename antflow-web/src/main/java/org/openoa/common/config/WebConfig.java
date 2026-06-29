@@ -1,6 +1,9 @@
 package org.openoa.common.config;
 
-import com.alibaba.fastjson2.JSON;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.support.config.FastJsonConfig;
 import com.alibaba.fastjson2.support.spring.http.converter.FastJsonHttpMessageConverter;
@@ -21,11 +24,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
 
 /**
  * @Author: jwz
@@ -57,6 +55,8 @@ public class WebConfig  implements WebMvcConfigurer {
                 JSONWriter.Feature.WriteNullStringAsEmpty,
                 JSONWriter.Feature.WriteNullBooleanAsFalse
         );*/
+        // Override default writerFeatures which includes BrowserSecure (causes < to be escaped as \u003C)
+        fastJsonConfig.setWriterFeatures(new JSONWriter.Feature[0]);
         //默认日期格式
         fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
         fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
@@ -68,13 +68,9 @@ public class WebConfig  implements WebMvcConfigurer {
         mediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
         mediaTypes.add(MediaType.TEXT_PLAIN);
         fastJsonHttpMessageConverter.setSupportedMediaTypes(mediaTypes);
-        for (int i = 0; i < converters.size(); i++) {
-            if (converters.get(i) instanceof MappingJackson2HttpMessageConverter) {
-                converters.remove(i);
-            }
-        }
+        // Remove all Jackson converters (use removeIf to avoid skip-after-remove bug)
+        converters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter);
 
-//        converters.add(jackson2HttpMessageConverter);
         converters.add(0, fastJsonHttpMessageConverter);
     }
 

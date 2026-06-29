@@ -1,5 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
@@ -11,12 +13,17 @@ import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnConf;
+import org.openoa.base.entity.BpmnNode;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
+import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.common.ConfigFlowButtonContans;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.engine.bpmnconf.mapper.ProcessApprovalMapper;
@@ -25,8 +32,8 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessForwardBizService
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.ProcessApprovalService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameRelevancyService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNameService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
+import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,16 +59,13 @@ import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMapper, TaskMgmtVO> implements ProcessApprovalService {
     @Autowired
     private ButtonPreOperationService buttonPreOperationService;
-    @Autowired
-    private BpmProcessNameRelevancyService processNameRelevancyService;
-    @Autowired
-    private TaskMgmtMapper taskMgmtMapper;
+
     @Autowired
     private BpmnConfBizService bpmnConfCommonService;
     @Autowired
     private BpmProcessForwardBizService processForwardBizService;
     @Autowired
-    private BpmProcessNameService bpmProcessNameService;
+    private BpmnConfMapper bpmnConfMapper;
     @Autowired
     private FormFactory formFactory;
     @Autowired
@@ -74,6 +78,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
 
     /**
      * button operation
@@ -120,7 +126,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // recently build task
             case 3:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(processNameRelevancyService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcpNewlyBuildList(page, vo));
 
@@ -128,7 +134,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // already finished tasks
             case 4:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(processNameRelevancyService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcAlreadyDoneList(page, vo));
 
@@ -136,7 +142,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             // running tasks
             case 5:
                 if (!ObjectUtils.isEmpty(vo.getProcessType())) {
-                    vo.setProcessKeyList(processNameRelevancyService.processKeyList(Long.parseLong(vo.getProcessType())));
+                    vo.setProcessKeyList(bpmnConfMapper.formCodeListByConfId(Long.parseLong(vo.getProcessType())));
                 }
                 page.setRecords(this.getBaseMapper().viewPcToDoList(page, vo));
 
@@ -200,7 +206,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                     record.setIsForward(processForwardBizService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
                         record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
-                                .taskName(record.getTaskName()).type(ProcessButtonEnum.VIEW_TYPE.getCode()).build()));
+                                .taskName(record.getTaskName()).type(ProcessButtonEnum.VIEW_TYPE.getCode()).build(),bpmnConf));
                         record.setNodeType(ProcessNodeEnum.getCodeByDesc(record.getTaskName()));
                     }
                 }
@@ -210,8 +216,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                     }
                 }
                 if (!ObjectUtils.isEmpty(record.getProcessKey())) {
-                    BpmProcessVo bpmProcessVo = bpmProcessNameService.get(record.getProcessKey());
-                    if (!ObjectUtils.isEmpty(bpmProcessVo.getProcessKey())) {
+                    BpmProcessVo bpmProcessVo = bpmnConfMapper.getBpmProcessVoByFormCode(record.getProcessKey());
+                    if (bpmProcessVo != null && !ObjectUtils.isEmpty(bpmProcessVo.getProcessKey())) {
                         record.setProcessTypeName(bpmProcessVo.getProcessName());
                         record.setProcessCode(bpmProcessVo.getProcessKey());
                     }
@@ -330,13 +336,33 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     }
     /**
      * check whether current node is operatable
+     * Reads operationTypes from node_config_json instead of bpm_process_operation table.
      *
      * @param vo
      * @return
      */
-    private Boolean isOperatable(TaskMgmtVO vo) {
-        return this.getBaseMapper().isOperational(vo) <= 0;
+    private Boolean isOperatable(TaskMgmtVO vo,BpmnConf bpmnConf) {
+        if (bpmnConf == null) {
+            bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(vo.getProcessKey());
+            if (bpmnConf == null || bpmnConf.getBpmnCode() == null) {
+                return true;
+            }
+        }
+        List<BpmnNode> nodes=bpmVariableMultiplayerMapper.getNodeByElementId(bpmnConf.getBpmnCode(),vo.getTaskName());
 
+        if (nodes.isEmpty()) {
+            return true;
+        }
+        BpmnNode node = nodes.get(0);
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+        if (nodeConfig == null || nodeConfig.getButtonSignConf() == null) {
+            return true;
+        }
+        List<Integer> operationTypes = nodeConfig.getButtonSignConf().getOperationTypes();
+        if (CollectionUtils.isEmpty(operationTypes)) {
+            return true;
+        }
+        return !operationTypes.contains(vo.getType());
     }
     //todo some process approval access right check
 }

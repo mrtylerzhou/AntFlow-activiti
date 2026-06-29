@@ -11,6 +11,6 @@
         select * from t_student
     </select>
     <select id="selectAllStudent" resultType="org.openoa.base.vo.BaseIdTranStruVo">
-        select t.${empTblIdFieldName} as id,user_name as name from ${empTblName} t
+        select t.id as id,t.user_name as name from t_user t
     </select>
 </mapper>

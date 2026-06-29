@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.common;
 
+import com.alibaba.fastjson2.JSON;
 import com.google.common.collect.Lists;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -9,14 +10,17 @@ import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.dto.ParallelPair;
+import org.openoa.base.entity.BpmVariable;
+import org.openoa.base.entity.jsonconf.VariableConfigJson;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.empinfoprovider.BpmnEmployeeInfoProviderService;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
-import org.openoa.engine.bpmnconf.service.impl.BpmVariableSignUpPersonnelServiceImpl;
+import org.openoa.engine.bpmnconf.service.impl.BpmVariableServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,10 +41,13 @@ public class ActivitiAdditionalInfoServiceImpl {
     @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
-    private BpmVariableSignUpPersonnelServiceImpl bpmVariableSignUpPersonnelService;
+    private BpmVariableServiceImpl bpmVariableService;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
 
+    public ActivitiAdditionalInfoServiceImpl(BpmnEmployeeInfoProviderService employeeInfoProvider) {
+        this.employeeInfoProvider = employeeInfoProvider;
+    }
 
 
     public List<ActivityImpl> getActivitiList(String procDefId){
@@ -103,10 +110,27 @@ public class ActivitiAdditionalInfoServiceImpl {
     public String getVerifyUserNameFromHis(String elementId, Long variableId) {
 
         String verifyUserName = StringUtils.EMPTY;
-        List<BaseIdTranStruVo> assigneeMap = bpmVariableSignUpPersonnelService.getSignUpInfoByVariableAndElementId(variableId, elementId);
-        if(!CollectionUtils.isEmpty(assigneeMap)){
-            verifyUserName= StringUtils.join(assigneeMap.stream().map(BaseIdTranStruVo::getName).collect(Collectors.toList()), ',');
-            return verifyUserName;
+        // read signUpPersonnel from variable config JSON
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(variableId);
+        if (bpmVariable != null && !StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+            if (config != null && !ObjectUtils.isEmpty(config.getSignUps())) {
+                List<String> names = new ArrayList<>();
+                for (VariableConfigJson.SignUpItem signUp : config.getSignUps()) {
+                    if (!ObjectUtils.isEmpty(signUp.getPersonnelByElement())) {
+                        List<VariableConfigJson.PersonnelItem> personnel = signUp.getPersonnelByElement().get(elementId);
+                        if (!ObjectUtils.isEmpty(personnel)) {
+                            personnel.stream()
+                                    .filter(p -> !StringUtils.isEmpty(p.getAssigneeName()))
+                                    .forEach(p -> names.add(p.getAssigneeName()));
+                        }
+                    }
+                }
+                if (!names.isEmpty()) {
+                    verifyUserName = StringUtils.join(names, ',');
+                    return verifyUserName;
+                }
+            }
         }
         //String collectionName = signUpNodeCollectionNameMap.get(elementId);
        /* if (!ObjectUtils.isEmpty(collectionName)) {

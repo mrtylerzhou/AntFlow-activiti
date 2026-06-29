@@ -21,40 +21,27 @@ import java.util.Map;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiOptimisticLockingException;
 import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
-import org.activiti.engine.JobNotFoundException;
 import org.activiti.engine.delegate.event.ActivitiEventDispatcher;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cfg.TransactionContext;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.history.HistoryManager;
-import org.activiti.engine.impl.jobexecutor.FailedJobCommandFactory;
-import org.activiti.engine.impl.persistence.entity.AttachmentEntityManager;
+
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityManager;
-import org.activiti.engine.impl.persistence.entity.CommentEntityManager;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntityManager;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntityManager;
-import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager;
-import org.activiti.engine.impl.persistence.entity.GroupIdentityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.HistoricDetailEntityManager;
-import org.activiti.engine.impl.persistence.entity.HistoricIdentityLinkEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityManager;
 import org.activiti.engine.impl.persistence.entity.HistoricVariableInstanceEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityInfoEntityManager;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntityManager;
-import org.activiti.engine.impl.persistence.entity.JobEntityManager;
-import org.activiti.engine.impl.persistence.entity.MembershipIdentityManager;
-import org.activiti.engine.impl.persistence.entity.ModelEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityManager;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
 import org.activiti.engine.impl.persistence.entity.PropertyEntityManager;
 import org.activiti.engine.impl.persistence.entity.ResourceEntityManager;
 import org.activiti.engine.impl.persistence.entity.TableDataManager;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
-import org.activiti.engine.impl.persistence.entity.UserIdentityManager;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntityManager;
 import org.activiti.engine.impl.pvm.runtime.AtomicOperation;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
@@ -78,7 +65,6 @@ public class CommandContext {
   protected Throwable exception = null;
   protected LinkedList<AtomicOperation> nextOperations = new LinkedList<AtomicOperation>();
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
-  protected FailedJobCommandFactory failedJobCommandFactory;
 	protected List<CommandContextCloseListener> closeListeners;
   protected Map<String, Object> attributes; // General-purpose storing of anything during the lifetime of a command context
 
@@ -108,7 +94,6 @@ public class CommandContext {
   public CommandContext(Command<?> command, ProcessEngineConfigurationImpl processEngineConfiguration) {
     this.command = command;
     this.processEngineConfiguration = processEngineConfiguration;
-    this.failedJobCommandFactory = processEngineConfiguration.getFailedJobCommandFactory();
     sessionFactories = processEngineConfiguration.getSessionFactories();
     this.transactionContext = processEngineConfiguration
       .getTransactionContextFactory()
@@ -161,7 +146,7 @@ public class CommandContext {
         	}
 
           if (exception != null) {
-            if (exception instanceof JobNotFoundException || exception instanceof ActivitiTaskAlreadyClaimedException) {
+            if (exception instanceof ActivitiTaskAlreadyClaimedException) {
               // reduce log level, because this may have been caused because of job deletion due to cancelActiviti="true"
               log.info("Error while closing command context", exception);
             } else if (exception instanceof ActivitiOptimisticLockingException) {
@@ -284,10 +269,6 @@ public class CommandContext {
     return getSession(ProcessDefinitionEntityManager.class);
   }
   
-  public ModelEntityManager getModelEntityManager() {
-    return getSession(ModelEntityManager.class);
-  }
-  
   public ProcessDefinitionInfoEntityManager getProcessDefinitionInfoEntityManager() {
     return getSession(ProcessDefinitionInfoEntityManager.class);
   }
@@ -300,10 +281,6 @@ public class CommandContext {
     return getSession(TaskEntityManager.class);
   }
 
-  public IdentityLinkEntityManager getIdentityLinkEntityManager() {
-    return getSession(IdentityLinkEntityManager.class);
-  }
-
   public VariableInstanceEntityManager getVariableInstanceEntityManager() {
     return getSession(VariableInstanceEntityManager.class);
   }
@@ -312,10 +289,6 @@ public class CommandContext {
     return getSession(HistoricProcessInstanceEntityManager.class);
   }
 
-  public HistoricDetailEntityManager getHistoricDetailEntityManager() {
-    return getSession(HistoricDetailEntityManager.class);
-  }
-  
   public HistoricVariableInstanceEntityManager getHistoricVariableInstanceEntityManager() {
     return getSession(HistoricVariableInstanceEntityManager.class);
   }
@@ -327,53 +300,18 @@ public class CommandContext {
   public HistoricTaskInstanceEntityManager getHistoricTaskInstanceEntityManager() {
     return getSession(HistoricTaskInstanceEntityManager.class);
   }
-  
-  public HistoricIdentityLinkEntityManager getHistoricIdentityLinkEntityManager() {
-    return getSession(HistoricIdentityLinkEntityManager.class);
-  }
-  
+
   public EventLogEntryEntityManager getEventLogEntryEntityManager() {
   	return getSession(EventLogEntryEntityManager.class);
-  }
-  
-  public JobEntityManager getJobEntityManager() {
-    return getSession(JobEntityManager.class);
-  }
-
-  public UserIdentityManager getUserIdentityManager() {
-    return getSession(UserIdentityManager.class);
-  }
-
-  public GroupIdentityManager getGroupIdentityManager() {
-    return getSession(GroupIdentityManager.class);
-  }
-
-  public IdentityInfoEntityManager getIdentityInfoEntityManager() {
-    return getSession(IdentityInfoEntityManager.class);
-  }
-
-  public MembershipIdentityManager getMembershipIdentityManager() {
-    return getSession(MembershipIdentityManager.class);
-  }
-  
-  public AttachmentEntityManager getAttachmentEntityManager() {
-    return getSession(AttachmentEntityManager.class);
   }
 
   public TableDataManager getTableDataManager() {
     return getSession(TableDataManager.class);
   }
 
-  public CommentEntityManager getCommentEntityManager() {
-    return getSession(CommentEntityManager.class);
-  }
   
   public PropertyEntityManager getPropertyEntityManager() {
     return getSession(PropertyEntityManager.class);
-  }
-  
-  public EventSubscriptionEntityManager getEventSubscriptionEntityManager() {
-    return getSession(EventSubscriptionEntityManager.class);
   }
   
   public Map<Class< ? >, SessionFactory> getSessionFactories() {
@@ -397,9 +335,6 @@ public class CommandContext {
   }
   public Throwable getException() {
     return exception;
-  }
-  public FailedJobCommandFactory getFailedJobCommandFactory() {
-    return failedJobCommandFactory;
   }
   public ProcessEngineConfigurationImpl getProcessEngineConfiguration() {
 	  return processEngineConfiguration;

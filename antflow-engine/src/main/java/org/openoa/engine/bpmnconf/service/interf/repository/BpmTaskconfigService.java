@@ -29,7 +29,5 @@ public interface BpmTaskconfigService extends IService<BpmTaskconfig> {
 
     Integer deleteByTask(String procDefId, String taskKey);
 
-    Integer disagreeType(String nodeKey, String processKey);
-
     String getProcessKey(String deploymentId);
 }

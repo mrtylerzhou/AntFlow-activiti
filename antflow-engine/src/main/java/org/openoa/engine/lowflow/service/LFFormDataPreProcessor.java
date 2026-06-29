@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
@@ -138,18 +139,42 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
     }
     private int  getFieldTypeByTypeString(String typeString) {
         switch (typeString) {
+            // NUMBER
             case "number":
-                return 2;
+            case "slider":
+                return LFFieldTypeEnum.NUMBER.getType();
+            // DATE
             case "date":
-                return 4;
-            case "switch":
-                return 6;
-            case "select":
-            case "input":
-            case "checkbox":
+                return LFFieldTypeEnum.DATE.getType();
+            // DATE_TIME
+            case "date-range":
             case "time":
+            case "time-range":
+                return LFFieldTypeEnum.DATE_TIME.getType();
+            // BOOLEAN
+            case "switch":
+                return LFFieldTypeEnum.BOOLEAN.getType();
+            // TEXT (long text)
+            case "textarea":
+            case "richtext-editor":
+                return LFFieldTypeEnum.TEXT.getType();
+            // STRING (short text) - default for most form fields
+            case "select":
+            case "radio":
+            case "checkbox":
+            case "cascader":
+            case "tree-select":
+            case "color-picker":
+            case "rate":
+            case "input":
+            case "number-range":
+            case "picture-upload":
+            case "file-upload":
+            case "icon-picker":
+            case "transfer":
+                return LFFieldTypeEnum.STRING.getType();
             default:
-                return 1;
+                return LFFieldTypeEnum.STRING.getType();
         }
     }
     @Override
