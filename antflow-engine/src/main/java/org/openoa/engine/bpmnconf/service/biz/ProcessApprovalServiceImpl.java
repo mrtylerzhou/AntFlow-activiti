@@ -38,6 +38,7 @@ import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -226,6 +227,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
     }
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessDataVo getBusinessInfo(String params, String formCode) {
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
         return getBusinessInfo(vo);
