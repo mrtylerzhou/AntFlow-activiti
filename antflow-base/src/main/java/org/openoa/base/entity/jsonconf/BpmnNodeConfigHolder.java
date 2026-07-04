@@ -364,6 +364,6 @@ public class BpmnNodeConfigHolder {
 
     private static String convertMessageSendTypeList(List<BaseNumIdStruVo> list) {
         if (CollectionUtils.isEmpty(list)) return null;
-        return list.stream().map(BaseNumIdStruVo::toString).collect(Collectors.joining(","));
+        return list.stream().map(a->a.getId().toString()).collect(Collectors.joining(","));
     }
 }
