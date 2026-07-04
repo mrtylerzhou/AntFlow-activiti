@@ -218,7 +218,10 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                 .distinct()
                 .collect(Collectors.toList()));
 
-
+        long count = hisTask.stream().filter(a -> a.getTaskDefKey().equals(vo.getTaskId()) && a.getEndTime() != null).count();
+        if(count>0){
+            vo.setCurrentNodeInformed(true);
+        }
         //if the current node approver is empty, then get it from login user info
         if (StringUtils.isEmpty(vo.getAssignee())) {
 
@@ -627,14 +630,14 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      */
     private List<String> getSendToUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
         List<String> sendUsers = Lists.newArrayList();
+        boolean flowNodeAlreadyInformed=EventTypeEnum.PROCESS_FLOW.getCode().equals(bpmnTemplateVo.getEvent())&&vo.isCurrentNodeInformed();
         //specified assignees
-        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())) {
+        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())&&!flowNodeAlreadyInformed) {
             sendUsers.addAll(new ArrayList<>(bpmnTemplateVo.getEmpIdList()));
         }
 
-
         //specified roles
-        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
+        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())&&!flowNodeAlreadyInformed) {
             List<BaseIdTranStruVo> users = null;
             if(Boolean.TRUE.equals(vo.getIsOutside())&& !PropertyUtil.isFullSaSSMode()){
                 users=roleService.querySassUserByRoleIds(bpmnTemplateVo.getRoleIdList());
@@ -677,6 +680,9 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             for (String informId : bpmnTemplateVo.getInformIdList()) {
                 InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
                 if(informEnum==InformEnum.ASSIGNED_USER||informEnum==InformEnum.ASSIGNEED_ROLES){
+                    continue;
+                }
+                if(informEnum!=InformEnum.CURRENT_APPROVER&&flowNodeAlreadyInformed){
                     continue;
                 }
                 //todo check whether the result is valid
