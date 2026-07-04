@@ -215,7 +215,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
             Integer resolvedMessageType = getMessageSendType(eventType, messageType);
             config.getMessages().add(MessageItem.builder()
                     .elementId(elementId)
-                    .messageType(resolvedMessageType)
+                    .messageType(2)
                     .eventType(eventType)
                     .content(JSON.toJSONString(o))
                     .build());

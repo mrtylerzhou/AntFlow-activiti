@@ -293,7 +293,7 @@ public class BpmnNodeConfigHolder {
             tc.setTemplates(vo.getTemplateVos().stream()
                     .map(t -> BpmnNodeTemplateConfJson.TemplateConf.builder()
                             .event(t.getEvent())
-                            .informList(t.getInformList())
+                            .informIdList(t.getInformIdList())
                             .empList(t.getEmpList())
                             .roleList(t.getRoleList())
                             .funcList(t.getFuncList())

@@ -40,7 +40,7 @@ public class BpmnNodeTemplateConfJson implements Serializable {
     @NoArgsConstructor
     public static class TemplateConf implements Serializable {
         private Integer event;
-        private List<BaseIdTranStruVo> informList;
+        private List<String> informIdList;
         private List<BaseIdTranStruVo> empList;
         private List<BaseIdTranStruVo> roleList;
         private List<BaseIdTranStruVo> funcList;

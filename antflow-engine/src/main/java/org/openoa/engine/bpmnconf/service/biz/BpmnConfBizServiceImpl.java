@@ -1880,13 +1880,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             List<BpmnTemplateVo> templateVos = tcConf.getTemplates().stream().map(t -> {
                 BpmnTemplateVo vo =new  BpmnTemplateVo();
                 vo.setEvent(t.getEvent());
-                List<BaseIdTranStruVo> informList = t.getInformList();
+                List<String> informIdList = t.getInformIdList();
                 List<BaseIdTranStruVo> empList = t.getEmpList();
                 List<BaseIdTranStruVo> roleList = t.getRoleList();
                 List<BaseIdTranStruVo> funcList = t.getFuncList();
-                if(!CollectionUtils.isEmpty(informList)){
+                if(!CollectionUtils.isEmpty(informIdList)){
                     List<String> informIds=new ArrayList<>();
-                   informList.forEach(a->informIds.add(a.getId()));
                    vo.setInforms(String.join(",",informIds));
                    vo.setInformIdList(informIds);
                 }
@@ -1908,7 +1907,19 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     vo.setFuncs(String.join(",",funcIds));
                     vo.setFuncIdList(funcIds);
                 }
-
+                String messageSendType = t.getMessageSendType();
+                if(!StringUtils.isEmpty(messageSendType)){
+                    List<BaseNumIdStruVo> messageSendTypeList=new ArrayList<>();
+                    String[] split = messageSendType.split(",");
+                    for (String s : split) {
+                        Long id=Long.parseLong(s);
+                        MessageSendTypeEnum enumByCode = MessageSendTypeEnum.getEnumByCode(id.intValue());
+                        String typeName=Optional.ofNullable(enumByCode).map(MessageSendTypeEnum::getDesc).orElse(null);
+                        messageSendTypeList.add(BaseNumIdStruVo.builder().id(id).name(typeName).build());
+                    }
+                    vo.setMessageSendTypeList(messageSendTypeList);
+                }
+                vo.setTemplateId(t.getTemplateId());
                 vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
                 return vo;
             }).collect(Collectors.toList());
