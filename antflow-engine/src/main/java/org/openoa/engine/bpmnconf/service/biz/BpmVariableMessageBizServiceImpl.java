@@ -632,6 +632,10 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             sendUsers.addAll(new ArrayList<>(bpmnTemplateVo.getEmpIdList()));
         }
 
+        if(!StringUtils.isEmpty(vo.getAssignee())&&EventTypeEnum.PROCESS_FLOW.getCode().equals(vo.getEventType())){
+            sendUsers.add(vo.getAssignee());
+        }
+
         //specified roles
         if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
             List<BaseIdTranStruVo> users = null;

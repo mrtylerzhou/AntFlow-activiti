@@ -1885,9 +1885,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 List<BaseIdTranStruVo> roleList = t.getRoleList();
                 List<BaseIdTranStruVo> funcList = t.getFuncList();
                 if(!CollectionUtils.isEmpty(informIdList)){
-                    List<String> informIds=new ArrayList<>();
-                   vo.setInforms(String.join(",",informIds));
-                   vo.setInformIdList(informIds);
+                   vo.setInforms(String.join(",",informIdList));
+                   vo.setInformIdList(informIdList);
                 }
                 if(!CollectionUtils.isEmpty(empList)){
                     List<String> empIds=new ArrayList<>();
