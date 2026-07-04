@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.vo.BaseIdTranStruVo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,10 +40,10 @@ public class BpmnNodeTemplateConfJson implements Serializable {
     @NoArgsConstructor
     public static class TemplateConf implements Serializable {
         private Integer event;
-        private String informs;
-        private String emps;
-        private String roles;
-        private String funcs;
+        private List<BaseIdTranStruVo> informList;
+        private List<BaseIdTranStruVo> empList;
+        private List<BaseIdTranStruVo> roleList;
+        private List<BaseIdTranStruVo> funcList;
         private Long templateId;
         private String messageSendType;
         private String formCode;
