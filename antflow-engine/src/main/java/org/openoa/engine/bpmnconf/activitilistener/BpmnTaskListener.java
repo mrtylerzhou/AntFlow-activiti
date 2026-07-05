@@ -2,50 +2,22 @@ package org.openoa.engine.bpmnconf.activitilistener;
 
 
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.el.FixedValue;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
-import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
-import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.BpmNextTaskDto;
 import org.openoa.base.dto.NodeExtraInfoDTO;
-import org.openoa.base.entity.BpmnConf;
-import org.openoa.base.exception.AFBizException;
-import org.openoa.base.exception.BusinessErrorEnum;
-import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.service.ProcessorFactory;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.*;
-import org.openoa.engine.bpmnconf.common.NodeAdditionalInfoServiceImpl;
-import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
-import org.openoa.base.entity.BpmFlowrunEntrust;
-import org.openoa.base.entity.BpmProcessForward;
-import org.openoa.base.constant.enums.EventTypeEnum;
-import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
-import org.openoa.engine.bpmnconf.service.biz.BpmVariableMessageListenerServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
-import org.openoa.base.util.AFWrappers;
-import org.openoa.engine.factory.FormFactory;
-import org.openoa.engine.utils.ActivitiTemplateMsgUtils;
-import org.openoa.engine.vo.ProcessInforVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.*;
 
 /**

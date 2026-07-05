@@ -455,14 +455,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private void doSendTemplateMessages(BpmVariableMessageVo vo) {
 
 
-        //if next node's approvers is empty then query current tasks instead
-        if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
-            if (!ObjectUtils.isEmpty(tasks)) {
-                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
-            }
-        }
-
         // read messages from variable config JSON
         BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(vo.getVariableId());
         if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
@@ -473,16 +465,14 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             return;
         }
 
+        List<MessageItem> messageItems=null;
         if (Objects.equals(vo.getMessageType(), 1)) {//out of node messages
-            List<MessageItem> messageItems = config.getMessages().stream()
+            messageItems = config.getMessages().stream()
                     .filter(m -> m.getMessageType() != null && m.getMessageType() == 1
                             && vo.getEventType().equals(m.getEventType()))
                     .collect(Collectors.toList());
-            for (MessageItem messageItem : messageItems) {
-                doSendTemplateMessages(messageItem, vo);
-            }
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
-            List<MessageItem> messageItems = config.getMessages().stream()
+             messageItems = config.getMessages().stream()
                     .filter(m -> vo.getEventType().equals(m.getEventType()))
                     .collect(Collectors.toList());
             if(!StringUtils.isEmpty(vo.getElementId())){
@@ -491,6 +481,15 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         .filter(a -> vo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
                 if(!CollectionUtils.isEmpty(currentNodeMessages)){
                     messageItems=currentNodeMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
+                }
+            }
+        }
+        if(!CollectionUtils.isEmpty(messageItems)){
+            //if next node's approvers is empty then query current tasks instead
+            if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
+                List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
+                if (!ObjectUtils.isEmpty(tasks)) {
+                    vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
                 }
             }
             for (MessageItem messageItem : messageItems) {
