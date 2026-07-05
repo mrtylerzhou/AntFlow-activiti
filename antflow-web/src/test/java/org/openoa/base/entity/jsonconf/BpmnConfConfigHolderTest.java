@@ -53,39 +53,7 @@ class BpmnConfConfigHolderTest extends BaseTest {
         }
     }
 
-    @Nested
-    @DisplayName("joinList")
-    class JoinListTest {
-        @Test
-        @DisplayName("should return null for null list")
-        void nullList() throws Exception {
-            assertNull(invokePrivate("joinList", new Class[]{List.class}, (Object) null));
-        }
 
-        @Test
-        @DisplayName("should return null for empty list")
-        void emptyList() throws Exception {
-            assertNull(invokePrivate("joinList", Arrays.asList()));
-        }
-
-        @Test
-        @DisplayName("should join list elements with comma")
-        void joinWithComma() throws Exception {
-            assertEquals("a,b,c", invokePrivate("joinList", Arrays.asList("a", "b", "c")));
-        }
-
-        @Test
-        @DisplayName("should join single element")
-        void singleElement() throws Exception {
-            assertEquals("hello", invokePrivate("joinList", Arrays.asList("hello")));
-        }
-
-        @Test
-        @DisplayName("should join integer list")
-        void integerList() throws Exception {
-            assertEquals("1,2,3", invokePrivate("joinList", Arrays.asList(1, 2, 3)));
-        }
-    }
 
     @Nested
     @DisplayName("convertMessageSendTypeList")
@@ -103,7 +71,7 @@ class BpmnConfConfigHolderTest extends BaseTest {
         }
 
         @Test
-        @DisplayName("should convert BaseNumIdStruVo list to comma-separated toString")
+        @DisplayName("should convert BaseNumIdStruVo list to comma-separated ids")
         void convertList() throws Exception {
             BaseNumIdStruVo v1 = new BaseNumIdStruVo();
             v1.setId(1L);
@@ -112,10 +80,7 @@ class BpmnConfConfigHolderTest extends BaseTest {
             v2.setId(2L);
             v2.setName("sms");
             String result = (String) invokePrivate("convertMessageSendTypeList", Arrays.asList(v1, v2));
-            assertNotNull(result);
-            assertTrue(result.contains("email"));
-            assertTrue(result.contains("sms"));
-            assertTrue(result.contains(","));
+            assertEquals("1,2", result);
         }
     }
 
@@ -229,9 +194,9 @@ class BpmnConfConfigHolderTest extends BaseTest {
             BpmnTemplateVo t = BpmnTemplateVo.builder()
                     .event(1)
                     .informIdList(Arrays.asList("I1", "I2"))
-                    .empIdList(Arrays.asList("E1"))
-                    .roleIdList(Arrays.asList("R1"))
-                    .funcIdList(Arrays.asList("F1"))
+                    .empList(Arrays.asList(BaseIdTranStruVo.builder().id("E1").name("Emp").build()))
+                    .roleList(Arrays.asList(BaseIdTranStruVo.builder().id("R1").name("Role").build()))
+                    .funcList(Arrays.asList(BaseIdTranStruVo.builder().id("F1").name("Func").build()))
                     .templateId(100L)
                     .build();
             @SuppressWarnings("unchecked")
@@ -241,10 +206,13 @@ class BpmnConfConfigHolderTest extends BaseTest {
             assertEquals(1, result.size());
             BpmnConfConfigJson.ConfTemplateConf conf = result.get(0);
             assertEquals(1, conf.getEvent());
-            assertEquals("I1,I2", conf.getInforms());
-            assertEquals("E1", conf.getEmps());
-            assertEquals("R1", conf.getRoles());
-            assertEquals("F1", conf.getFuncs());
+            assertEquals(Arrays.asList("I1", "I2"), conf.getInformIdList());
+            assertEquals(1, conf.getEmpList().size());
+            assertEquals("E1", conf.getEmpList().get(0).getId());
+            assertEquals(1, conf.getRoleList().size());
+            assertEquals("R1", conf.getRoleList().get(0).getId());
+            assertEquals(1, conf.getFuncList().size());
+            assertEquals("F1", conf.getFuncList().get(0).getId());
             assertEquals(100L, conf.getTemplateId());
             assertEquals("FORM001", conf.getFormCode());
         }

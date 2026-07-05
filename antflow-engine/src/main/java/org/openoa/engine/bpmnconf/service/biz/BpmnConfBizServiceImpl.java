@@ -1563,30 +1563,37 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private void setBpmnTemplateVosFromJson(BpmnConfVo bpmnConfVo, BpmnConfConfigJson confConfig) {
         List<BpmnTemplateVo> templateVos = new ArrayList<>();
         for (BpmnConfConfigJson.ConfTemplateConf tc : confConfig.getConfTemplates()) {
-            BpmnTemplateVo vo = BpmnTemplateVo.builder()
-                    .event(tc.getEvent())
-                    .informs(tc.getInforms())
-                    .emps(tc.getEmps())
-                    .roles(tc.getRoles())
-                    .funcs(tc.getFuncs())
-                    .templateId(tc.getTemplateId())
-                    .formCode(tc.getFormCode())
-                    .build();
-            // enrich with display names (same logic as buildBpmnTemplateVo)
-            vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
-            if (!StringUtils.isEmpty(vo.getInforms())) {
-                vo.setInformIdList(Arrays.stream(vo.getInforms().split(",")).collect(Collectors.toList()));
-                vo.setInformList(vo.getInformIdList().stream()
-                        .map(o -> BaseIdTranStruVo.builder().id(o).name(InformEnum.getDescByByCode(Integer.parseInt(o))).build())
-                        .collect(Collectors.toList()));
+            BpmnTemplateVo vo = new BpmnTemplateVo();
+            vo.setEvent(tc.getEvent());
+            vo.setTemplateId(tc.getTemplateId());
+            vo.setFormCode(tc.getFormCode());
+
+            if (!CollectionUtils.isEmpty(tc.getInformIdList())) {
+                vo.setInformIdList(tc.getInformIdList());
+                vo.setInforms(String.join(",", tc.getInformIdList()));
             }
-            if (!StringUtils.isEmpty(vo.getEmps())) {
-                vo.setEmpIdList(Arrays.stream(vo.getEmps().split(",")).collect(Collectors.toList()));
-                Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
-                vo.setEmpList(vo.getEmpIdList().stream()
-                        .map(o -> BaseIdTranStruVo.builder().id(o).name(employeeInfo.get(o)).build())
-                        .collect(Collectors.toList()));
+
+            if (!CollectionUtils.isEmpty(tc.getEmpList())) {
+                vo.setEmpList(tc.getEmpList());
+                if (!CollectionUtils.isEmpty(vo.getEmpIdList())) {
+                    vo.setEmps(String.join(",", vo.getEmpIdList()));
+                }
             }
+
+            if (!CollectionUtils.isEmpty(tc.getRoleList())) {
+                vo.setRoleList(tc.getRoleList());
+                if (!CollectionUtils.isEmpty(vo.getRoleIdList())) {
+                    vo.setRoles(String.join(",", vo.getRoleIdList()));
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(tc.getFuncList())) {
+                vo.setFuncList(tc.getFuncList());
+                if (!CollectionUtils.isEmpty(vo.getFuncIdList())) {
+                    vo.setFuncs(String.join(",", vo.getFuncIdList()));
+                }
+            }
+
             if (!StringUtils.isEmpty(tc.getMessageSendType())) {
                 String[] messageSendTypesStr = tc.getMessageSendType().split(",");
                 List<BaseNumIdStruVo> messageSendTypes = Arrays.stream(messageSendTypesStr)
@@ -1594,14 +1601,36 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         .collect(Collectors.toList());
                 vo.setMessageSendTypeList(messageSendTypes);
             }
-            vo.setTemplateName(Optional
-                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
-                    .orElse(new InformationTemplate())
-                    .getName());
+
+            hydrateBpmnTemplateVo(vo);
             templateVos.add(vo);
         }
         bpmnConfVo.setTemplateVos(templateVos);
     }
+
+    private void hydrateBpmnTemplateVo(BpmnTemplateVo vo) {
+        if (vo.getEvent() != null) {
+            vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
+        }
+        if (!CollectionUtils.isEmpty(vo.getInformIdList())) {
+            vo.setInformList(vo.getInformIdList().stream()
+                    .map(o -> BaseIdTranStruVo.builder().id(o).name(InformEnum.getDescByByCode(Integer.parseInt(o))).build())
+                    .collect(Collectors.toList()));
+        }
+        if (CollectionUtils.isEmpty(vo.getEmpList()) && !CollectionUtils.isEmpty(vo.getEmpIdList())) {
+            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
+            vo.setEmpList(vo.getEmpIdList().stream()
+                    .map(o -> BaseIdTranStruVo.builder().id(o).name(employeeInfo.get(o)).build())
+                    .collect(Collectors.toList()));
+        }
+        if (vo.getTemplateId() != null && vo.getTemplateId() > 0) {
+            vo.setTemplateName(Optional
+                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
+                    .orElse(new InformationTemplate())
+                    .getName());
+        }
+    }
+
 
     /**
      * convert volist

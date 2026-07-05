@@ -89,10 +89,10 @@ public class BpmnConfConfigHolder {
         return templateVos.stream()
                 .map(t -> BpmnConfConfigJson.ConfTemplateConf.builder()
                         .event(t.getEvent())
-                        .informs(joinList(t.getInformIdList()))
-                        .emps(joinList(t.getEmpIdList()))
-                        .roles(joinList(t.getRoleIdList()))
-                        .funcs(joinList(t.getFuncIdList()))
+                        .informIdList(t.getInformIdList())
+                        .empList(t.getEmpList())
+                        .roleList(t.getRoleList())
+                        .funcList(t.getFuncList())
                         .templateId(t.getTemplateId())
                         .messageSendType(convertMessageSendTypeList(t.getMessageSendTypeList()))
                         .formCode(formCode)
@@ -107,13 +107,8 @@ public class BpmnConfConfigHolder {
         return lcConfig;
     }
 
-    private static String joinList(List<?> list) {
-        if (CollectionUtils.isEmpty(list)) return null;
-        return list.stream().map(Object::toString).collect(Collectors.joining(","));
-    }
-
     private static String convertMessageSendTypeList(List<BaseNumIdStruVo> list) {
         if (CollectionUtils.isEmpty(list)) return null;
-        return list.stream().map(Object::toString).collect(Collectors.joining(","));
+        return list.stream().map(o -> o.getId().toString()).collect(Collectors.joining(","));
     }
 }
