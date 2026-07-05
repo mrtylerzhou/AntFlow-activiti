@@ -1,5 +1,7 @@
 package org.openoa.engine.conf.aspect;
 
+import com.alibaba.fastjson2.JSON;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -8,6 +10,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.ThreadLocalContainer;
@@ -25,8 +28,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.openoa.base.constant.NumberConstants.BPMN_FLOW_TYPE_OUTSIDE;
@@ -148,7 +153,17 @@ public class BpmnSendMessageAspect {
                 doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty, processOperationEunm, joinPoint);
                 ThreadLocalContainer.remove(StringConstants.AF_RUNTIME_BUISINESS_INFO);
             }
-
+            String confConfigJson = bpmnConf.getConfConfigJson();
+            if(StringUtils.isNotBlank(confConfigJson)){
+                BpmnConfConfigJson bpmnConfConfigJson= JSON.parseObject(confConfigJson,BpmnConfConfigJson.class);
+                List<BpmnConfConfigJson.ConfTemplateConf> confTemplates = bpmnConfConfigJson.getConfTemplates();
+                if(CollectionUtils.isEmpty(confTemplates)){
+                    return;
+                }
+            }
+            if(ProcessOperationEnum.BUTTON_TYPE_AGREE.getCode().equals(businessDataVo.getOperationType())){
+                return;
+            }
             //send message
             if (!ObjectUtils.isEmpty(vo)) {
                 businessDataVo.setIsLowCodeFlow(bpmnConfVo.getIsLowCodeFlow());

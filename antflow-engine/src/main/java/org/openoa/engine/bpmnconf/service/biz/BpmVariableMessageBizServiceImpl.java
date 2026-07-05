@@ -550,7 +550,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                     .collect(Collectors.toList());
 
         List<BaseNumIdStruVo> messageSendTypeList = bpmnTemplateVo.getMessageSendTypeList();
-        if(!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知
+        if(!CollectionUtils.isEmpty(messageSendTypeEnums)&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知
             messageSendTypeEnums= messageSendTypeList.stream().map(a -> MessageSendTypeEnum.getEnumByCode(a.getId().intValue())).filter(Objects::nonNull).collect(Collectors.toList());
         }
         Map<Integer, String> wildcardCharacterMap = getWildcardCharacterMap(vo);
