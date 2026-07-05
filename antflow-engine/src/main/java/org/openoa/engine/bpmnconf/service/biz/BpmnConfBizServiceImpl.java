@@ -2288,6 +2288,19 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
                     if (actionType == 0 || actionType == 1)//change assignee
                     {
+                        // 检查当前 ACT_RU_TASK 里该节点的 assignee 是否还等于转办的 actual（张三）。
+                        //- 等于 → 转办还在生效 → 预览显示张三
+                        //- 不等于 → 转办已失效 → 预览显示小马
+                        List<Task> tasks = taskService.createTaskQuery()
+                                .processInstanceId(procInstId)
+                                .taskDefinitionKey(bpmFlowrunEntrust.getRuntaskid())
+                                .list();
+                        boolean transferStillActive = tasks.stream()
+                                .anyMatch(t -> bpmFlowrunEntrust.getActual().equals(t.getAssignee()));
+                        if (!transferStillActive) {
+                            continue;
+                        }
+
                         BaseIdTranStruVo matchEmp = emplList.stream().filter(a-> a.getId().equals(bpmFlowrunEntrust.getOriginal())).findFirst().orElse(null);
                         if (matchEmp == null)
                         {
