@@ -1893,18 +1893,21 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     empList.forEach(a->empIds.add(a.getId()));
                     vo.setEmps(String.join(",",empIds));
                     vo.setEmpIdList(empIds);
+                    vo.setEmpList(empList);
                 }
                 if(!CollectionUtils.isEmpty(roleList)){
                     List<String> roleIds=new ArrayList<>();
                     roleList.forEach(a->roleIds.add(a.getId()));
                     vo.setRoles(String.join(",",roleIds));
                     vo.setRoleIdList(roleIds);
+                    vo.setRoleList(roleList);
                 }
                 if(!CollectionUtils.isEmpty(funcList)){
                     List<String> funcIds=new ArrayList<>();
                     funcList.forEach(a->funcIds.add(a.getId()));
                     vo.setFuncs(String.join(",",funcIds));
                     vo.setFuncIdList(funcIds);
+                    vo.setFuncList(funcList);
                 }
                 String messageSendType = t.getMessageSendType();
                 if(!StringUtils.isEmpty(messageSendType)){
