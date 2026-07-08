@@ -97,7 +97,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref, watchEffect, onBeforeMount } from "vue";
+import { onMounted, ref, watchEffect, computed, onBeforeMount } from "vue";
 import { getAllNoticeTypes, getProcessEvents, getInformationTemplateById } from "@/api/workflow/flowMsgApi";
 import flowMsgTemplete from "./flowMsgTemplateDialog.vue";
 import msgViewDialog from "./msgViewDialog.vue";
@@ -113,8 +113,7 @@ const eventOptions = ref([]);
 const dialogMsgVisible = ref(false);
 const dialogMsgViewVisible = ref(false);
 const chooseUserVisible = ref(false);
-const chooseRoleVisible = ref(false);
-const noticeUserType = ref("1");
+const chooseRoleVisible = ref(false); 
 
 const noticeChooseUserVisible = computed(() => {
     return templateForm.value.informIdList.includes("5");
@@ -153,9 +152,7 @@ onBeforeMount(() => {
     selectValues.value = [{
         id: templateForm.value.templateId,
         name: templateForm.value.templateName
-    }]
-    noticeUserType.value = templateForm.value.informIdList;
-    //templateForm.value.informList = []
+    }] 
 })
 
 watchEffect(() => { 
@@ -273,8 +270,7 @@ const handleReverwTemplate = (id) => {
 
 const resetForm = () => {
     checkedMsgSendTypeList.value = [];
-    selectValues.value = [];
-    noticeUserType.value = [];
+    selectValues.value = []; 
     templateForm.value = {
         nodeId: undefined,
         messageSendTypeList: [],
