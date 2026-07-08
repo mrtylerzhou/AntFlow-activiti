@@ -79,7 +79,7 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
         TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
        try {
             assignees.addAll(userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
-            taskFlowControlService.split(taskDefKey,  assignees.toArray(new String[0]));
+            taskFlowControlService.split(taskDefKey, vo.getNodeName(), true, assignees.toArray(new String[0]));
        }catch (Exception e){
            log.error("插入节点失败:{}",e.getMessage());
            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"插入节点失败:"+e.getMessage());

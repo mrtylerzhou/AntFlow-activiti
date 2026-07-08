@@ -279,10 +279,16 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 	@Override
 	public ActivityImpl split(String targetTaskDefinitionKey, String... assignee) throws Exception
 	{
-		return split(targetTaskDefinitionKey, true, assignee);
+		return split(targetTaskDefinitionKey, null, true, assignee);
 	}
 	@Override
 	public ActivityImpl split(String targetTaskDefinitionKey, boolean isSequential, String... assignees)
+			throws Exception
+	{
+		return split(targetTaskDefinitionKey, null, isSequential, assignees);
+	}
+	@Override
+	public ActivityImpl split(String targetTaskDefinitionKey, String cloneActivityName, boolean isSequential, String... assignees)
 			throws Exception
 	{
 		SimpleRuntimeActivityDefinitionEntity info = new SimpleRuntimeActivityDefinitionEntity();
@@ -294,6 +300,7 @@ public class DefaultTaskFlowControlService implements TaskFlowControlService
 		radei.setPrototypeActivityId(targetTaskDefinitionKey);
 		radei.setAssignees((List<String>) CollectionUtils.arrayToList(assignees));
 		radei.setSequential(isSequential);
+		radei.setCloneActivityName(cloneActivityName);
 
 		ActivityImpl clone = new MultiInstanceActivityCreator(radei).createActivities(_processEngine, _processDefinition,
 				info)[0];

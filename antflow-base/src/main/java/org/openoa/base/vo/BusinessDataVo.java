@@ -70,6 +70,10 @@ public class BusinessDataVo extends PageDto implements Serializable {
     private String nodeId;
     private String elementId;
     /**
+     * 分裂/插入节点时指定的新节点名称
+     */
+    private String nodeName;
+    /**
      * variable object map
      */
     Map<String, Object> objectMap;
