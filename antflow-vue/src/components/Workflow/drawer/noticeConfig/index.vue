@@ -47,21 +47,26 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <el-form-item label="通知人选择" prop="name">
-                        <el-radio-group v-model="noticeUserType" class="clear" @change="changeUserType">
+                    <el-form-item label="通知人选择" prop="informIdList">
+                        <!-- <el-radio-group v-model="noticeUserType" class="clear" @change="changeUserType">
                             <el-radio v-for="({ value, label }) in noticeUserList" :value="value">{{ label }}</el-radio>
-                        </el-radio-group>
+                        </el-radio-group> --> 
+                        <el-checkbox-group v-model="templateForm.informIdList">
+                            <el-checkbox style="margin: 5px;" v-for="(item, index) in noticeUserList" :value="item.value"
+                                :key="item.value"> {{ item.label }} 
+                            </el-checkbox>
+                        </el-checkbox-group>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
                     <el-form-item prop="name">
-                        <div v-show="noticeUserType == 5">
+                        <div style="margin: 5px;" v-show="noticeChooseUserVisible">
                             <el-button type="primary" plain icon="Plus"
                                 @click="chooseUserVisible = true">添加/修改人员</el-button>
                         </div>
-                        <div v-show="noticeUserType == 6">
+                        <div style="margin: 5px;" v-show="noticeChooseRoleVisible">
                             <el-button type="primary" plain icon="Plus"
                                 @click="chooseRoleVisible = true">添加/修改角色</el-button>
                         </div>
@@ -111,6 +116,14 @@ const chooseUserVisible = ref(false);
 const chooseRoleVisible = ref(false);
 const noticeUserType = ref("1");
 
+const noticeChooseUserVisible = computed(() => {
+    return templateForm.value.informIdList.includes("5");
+});
+
+const noticeChooseRoleVisible = computed(() => {
+    return templateForm.value.informIdList.includes("6");
+});
+
 const selectValues = ref([]);
 const selectTemplateForm = ref(null);
 const checkedMsgSendTypeList = ref([]);
@@ -129,8 +142,7 @@ const props = defineProps({
         type: Array,
         default: [],
     }
-});
-console.log('formData=====', props.formData);
+}); 
 const emits = defineEmits(["update:visible", "changeFlowMsgSet"]);
 //加载的时候判断，赋默认值
 onBeforeMount(() => {
@@ -142,11 +154,11 @@ onBeforeMount(() => {
         id: templateForm.value.templateId,
         name: templateForm.value.templateName
     }]
-    noticeUserType.value = templateForm.value.informIdList[0];
-    templateForm.value.informList = []
+    noticeUserType.value = templateForm.value.informIdList;
+    //templateForm.value.informList = []
 })
 
-watchEffect(() => {
+watchEffect(() => { 
     templateForm.value.messageSendTypeList = checkedMsgSendTypeList.value.map(item => {
         return {
             id: item
@@ -154,9 +166,9 @@ watchEffect(() => {
     });
 
     const propsToCheck = ['messageSendTypeList', 'event', 'templateId', 'informIdList'];
-    if (proxy.hasEmptyValue(templateForm.value, propsToCheck)) {
+    if (proxy.hasEmptyValue(templateForm.value, propsToCheck)) { 
         emits('changeFlowMsgSet')
-    } else {
+    } else { 
         emits('changeFlowMsgSet', templateForm.value)
     }
 })
@@ -262,7 +274,7 @@ const handleReverwTemplate = (id) => {
 const resetForm = () => {
     checkedMsgSendTypeList.value = [];
     selectValues.value = [];
-    noticeUserType.value = 1;
+    noticeUserType.value = [];
     templateForm.value = {
         nodeId: undefined,
         messageSendTypeList: [],
