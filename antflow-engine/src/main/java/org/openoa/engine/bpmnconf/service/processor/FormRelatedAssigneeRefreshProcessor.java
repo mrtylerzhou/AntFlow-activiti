@@ -27,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +78,11 @@ public class FormRelatedAssigneeRefreshProcessor implements AntFlowNextNodeBefor
         }
         // 轻量门控:明确非低代码流程时直接跳过,避免对全局每个任务查询节点;businessDataVo 为空时仍走节点查询保底
         BusinessDataVo businessDataVo = bpmNextTaskDto.getBusinessDataVo();
-        if (businessDataVo != null && !Integer.valueOf(1).equals(businessDataVo.getIsLowCodeFlow())) {
+        if(businessDataVo==null){
+            return;
+        }
+        //目前仅支持低代码LF流程
+        if(Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
             return;
         }
 

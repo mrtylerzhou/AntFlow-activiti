@@ -49,9 +49,7 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
         FormOperationAdaptor formAdapter = formFactory.getFormAdaptor(businessDataVo);
 
 
-        if(!Boolean.TRUE.equals(businessDataVo.getIsMigration())){
-           formAdapter.submitData(businessDataVo);
-        }
+        formAdapter.submitData(businessDataVo);
         // call the process's launch method to get launch parameters
         BpmnStartConditionsVo bpmnStartConditionsVo = formAdapter.launchParameters(businessDataVo);
         bpmnStartConditionsVo.setBusinessDataVo(businessDataVo);
