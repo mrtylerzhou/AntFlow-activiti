@@ -82,7 +82,7 @@ public class FormRelatedAssigneeRefreshProcessor implements AntFlowNextNodeBefor
             return;
         }
         //目前仅支持低代码LF流程
-        if(Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+        if(!Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
             return;
         }
 
