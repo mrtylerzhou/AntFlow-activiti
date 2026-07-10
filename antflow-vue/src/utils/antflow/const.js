@@ -52,7 +52,7 @@ export let setTypes = [
   { value: 12, label: "发起人自己" },
   { value: 7, label: "发起人自选审批人" },
   // { value: 14, label: '指定部门' },
-  //{ value: 16, label: "表单中选择" },
+  { value: 16, label: "表单中选择" },
 ];
 export let setCopyerTypes = [
   { value: 5, label: "指定人员" },
