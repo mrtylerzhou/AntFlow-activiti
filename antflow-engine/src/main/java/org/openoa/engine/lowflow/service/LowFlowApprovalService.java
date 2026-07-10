@@ -96,6 +96,8 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         }else {
             startConditionsVo.setLfConditions(vo.getLfFields());
         }
+        BpmnConfVo bpmnConfVo = vo.getBpmnConfVo();
+        processFormRelatedUserConf(bpmnConfVo,vo);
         return startConditionsVo;
     }
 
@@ -255,7 +257,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         vo.setBusinessId(mainId.toString());
         vo.setProcessDigest(vo.getRemark());
         vo.setEntityName(LowFlowApprovalService.class.getSimpleName());
-        processFormRelatedUserConf(bpmnConfVo,vo);
+
 
     }
 
