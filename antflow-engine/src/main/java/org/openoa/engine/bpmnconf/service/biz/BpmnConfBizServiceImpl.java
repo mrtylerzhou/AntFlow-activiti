@@ -324,6 +324,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     BpmnNodeConfigHolder.setUdrConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_FORM_RELATED) {
                     BpmnNodeConfigHolder.setFormRelatedUserConf(bpmnNodeVo);
+                } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_PREV_NODE_RELATED) {
+                    BpmnNodeConfigHolder.setPrevNodeRelatedUserConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_OUT_SIDE_ACCESS) {
                     BpmnNodeConfigHolder.setOutSideAccessConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_BUSINESSTABLE) {

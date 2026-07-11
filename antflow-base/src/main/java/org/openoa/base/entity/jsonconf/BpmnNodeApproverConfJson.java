@@ -64,6 +64,11 @@ public class BpmnNodeApproverConfJson implements Serializable {
     private List<FormRelatedUserConf> formRelatedUserConfList;
 
     /**
+     * Previous node related user approver config (node_property = PREV_NODE_RELATED)
+     */
+    private List<PrevNodeRelatedUserConf> prevNodeRelatedUserConfList;
+
+    /**
      * Outside access approver config (node_property = OUT_SIDE_ACCESS)
      */
     private OutSideAccessConf outSideAccessConf;
@@ -160,6 +165,16 @@ public class BpmnNodeApproverConfJson implements Serializable {
     @NoArgsConstructor
     public static class FormRelatedUserConf implements Serializable {
         private String valueJson;
+        private Integer signType;
+        private Integer valueType;
+        private String valueTypeName;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PrevNodeRelatedUserConf implements Serializable {
         private Integer signType;
         private Integer valueType;
         private String valueTypeName;

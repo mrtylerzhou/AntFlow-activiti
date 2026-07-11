@@ -175,6 +175,27 @@ public class BpmnNodeConfigHolder {
     }
 
     /**
+     * Build previous node related user approver config from node VO
+     */
+    public static void setPrevNodeRelatedUserConf(BpmnNodeVo vo) {
+        BpmnNodePropertysVo prop = vo.getProperty();
+        if (prop == null) return;
+        BpmnNodeApproverConfJson approverConf = getOrCreateApproverConf(vo);
+        BpmnNodeApproverConfJson.PrevNodeRelatedUserConf conf = BpmnNodeApproverConfJson.PrevNodeRelatedUserConf.builder()
+                .signType(prop.getSignType())
+                .valueType(prop.getFormAssigneeProperty())
+                .valueTypeName(org.openoa.base.constant.enums.NodePrevNodeAssigneePropertyEnum
+                        .getDescByCode(prop.getFormAssigneeProperty()))
+                .build();
+        List<BpmnNodeApproverConfJson.PrevNodeRelatedUserConf> list = approverConf.getPrevNodeRelatedUserConfList();
+        if (list == null) {
+            list = new ArrayList<>();
+            approverConf.setPrevNodeRelatedUserConfList(list);
+        }
+        list.add(conf);
+    }
+
+    /**
      * Build outside access approver config from node VO
      */
     public static void setOutSideAccessConf(BpmnNodeVo vo) {
