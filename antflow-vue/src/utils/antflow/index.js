@@ -1,6 +1,9 @@
 import { parseTime } from "@/utils/ruoyi";
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
-import { formUserOptionSet } from "@/utils/antflow/const";
+import {
+  formUserOptionSet,
+  formPrevNodeApproverOptionSet,
+} from "@/utils/antflow/const";
 function All() {}
 All.prototype = {
   arrToStr(arr) {
@@ -95,6 +98,11 @@ All.prototype = {
         (item) => item.value == nodeConfig.property?.formAssigneeProperty,
       );
       return "表单中的数据:" + info?.label;
+    } else if (nodeConfig.setType == 18) {
+      const info = formPrevNodeApproverOptionSet.find(
+        (item) => item.value == nodeConfig.property?.formAssigneeProperty,
+      );
+      return "" + info?.label;
     } else {
       return "";
     }

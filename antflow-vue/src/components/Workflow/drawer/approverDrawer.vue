@@ -93,7 +93,16 @@
                                 </el-select>
                             </div>
                         </div>
-
+                        <div class="approver_text" v-if="approverConfig.setType == 18">
+                            <div>
+                                <p><i style="color: red;">*</i>审批人类型:</p>
+                                <el-select v-model="approverConfig.property.formAssigneeProperty" placeholder="请选审批人类型"
+                                    style="width: 300px">
+                                    <el-option v-for="item in formPrevNodeApproverOptionSet" :key="item.value" :label="item.label"
+                                        :value="item.value" />
+                                </el-select>
+                            </div> 
+                        </div>
                     </div>
                     <div class="approver_block">
                         <p>✍多人审批时采用的审批方式</p>
@@ -182,7 +191,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
@@ -247,6 +256,8 @@ watch(approverConfig1, (val) => {
 
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => {
+    
+    console.log('approverConfig.value====', approverConfig.value)
     if (!approverConfig.value.property) {
         approverConfig.value.property = {};
     }

@@ -171,6 +171,8 @@ export class FormatCommitUtils {
         } else if (node.setType == 16) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
           approveObj.formInfos = node.property.formInfos ?? [];
+        } else if (node.setType == 18) {
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty; 
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
