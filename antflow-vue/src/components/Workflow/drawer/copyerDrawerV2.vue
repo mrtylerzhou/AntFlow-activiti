@@ -91,7 +91,8 @@
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
                     <form-perm-conf v-if="formStepShow" default-perm="R" :show-e="false" v-model:formItems="formItems"
-                        @changePermVal="changePermVal" />
+                        :formHidden="formHiddenMap"
+                        @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
@@ -127,6 +128,7 @@ let ccSelfSelectFlag = ref([])
 let copyerVisible = ref(false)
 let checkedList = ref([])
 let formItems = ref([])
+let formHiddenMap = ref({})
 
 let approverRoleVisible = ref(false);
 let checkedRoleList = ref([]);
@@ -156,6 +158,7 @@ let visible = computed({
 watch(copyerConfigV2, (val) => {
     copyerConfig.value = val.value;
     formItems.value = copyerConfig.value.lfFieldControlVOs || [];
+    formHiddenMap.value = copyerConfig.value.formHidden || {};
     templateVos.value = copyerConfig.value.templateVos || [];
     //console.log("copyerConfig.value========", JSON.stringify(copyerConfig.value))
     ccSelfSelectFlag.value = copyerConfig.value.ccSelfSelectFlag == 0 ? [] : [copyerConfig.value.ccSelfSelectFlag]
@@ -220,6 +223,10 @@ const handleTabClick = (tab, event) => {
 const changePermVal = (data) => {
     copyerConfig.value.lfFieldControlVOs = data;
     //console.log("copyerConfig.value.lfFieldControlVOs========",JSON.stringify(copyerConfig.value))
+}
+/**外部表单模式: 整表隐藏标记变化 */
+const changeFormHidden = (data) => {
+    copyerConfig.value.formHidden = data;
 }
 
 /**消息设置 */

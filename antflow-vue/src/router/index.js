@@ -289,6 +289,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/system/lfForm-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/system/lfForm-design",
+        component: () => import("@/views/system/lfForm/design"),
+        name: "lfForm-design",
+        meta: {
+          title: "表单设计",
+          activeMenu: "/system/lfForm",
+        },
+      },
+    ],
+  },
+  {
     path: "/flowDevOps/flowPrint",
     hidden: true,
     permissions: ["system"],

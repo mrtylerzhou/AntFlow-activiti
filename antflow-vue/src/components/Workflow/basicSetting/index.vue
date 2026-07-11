@@ -65,6 +65,20 @@
                     </el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
+            <!-- 外部表单模式(仅低代码流程可用) -->
+            <el-form-item v-if="flowType === 'LF'" label="外部表单" prop="useExternalForm">
+                <el-checkbox v-model="form.useExternalForm">使用外部表单(多表单)</el-checkbox>
+            </el-form-item>
+            <el-form-item v-if="flowType === 'LF' && form.useExternalForm" label="关联表单" prop="lfFormdataIdsArr">
+                <el-select v-model="form.lfFormdataIdsArr" multiple filterable placeholder="请选择关联表单"
+                    :style="{ width: '100%' }" @visible-change="onFormSelectVisible">
+                    <el-option v-for="item in externalFormOptions" :key="item.id" :label="item.formName"
+                        :value="item.id">
+                        <span style="float: left">【{{ item.formCode }}】 {{ item.formName }}</span>
+                    </el-option>
+                </el-select>
+                <div class="ext-form-tip">启用后,本流程将引用独立表单管理中已生效的表单版本;表单设计步骤将被禁用。</div>
+            </el-form-item>
             <el-form-item label=" 流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
@@ -77,12 +91,17 @@
 import { ref, reactive, onMounted, watch, getCurrentInstance } from 'vue'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { getDIYFromCodeData } from "@/api/workflow/index";
-import { getLowCodeFlowFormCodes } from "@/api/workflow/lowcodeApi";
+import { getLowCodeFlowFormCodes, listEffectiveForSelect } from "@/api/workflow/lowcodeApi";
 const { query } = useRoute();
 const { proxy } = getCurrentInstance()
-const emit = defineEmits(['nextChange'])
+const emit = defineEmits(['nextChange', 'externalFormChange'])
 let loading = ref(false);
 const copyOpt = query?.copy ?? 0 > 0 ? true : false;
+// 外部表单模式常量: BpmnConfFlagsEnum.USE_EXTERNAL_FORM = 0b1000000 = 64
+const USE_EXTERNAL_FORM_FLAG = 64;
+// 外部表单可选项(独立表单管理中已生效的版本)
+let externalFormOptions = ref([]);
+let externalFormLoaded = ref(false);
 let props = defineProps({
     flowType: {
         type: String,
@@ -127,6 +146,11 @@ const form = reactive({
     remark: '',
     effectiveStatus: false,
     deduplicationType: 1,
+    //外部表单模式相关字段
+    extraFlags: 0,
+    useExternalForm: false,         //由 extraFlags & USE_EXTERNAL_FORM 派生
+    lfFormdataIds: '',              //CSV 字符串,提交后端
+    lfFormdataIdsArr: [],           //Number 数组,前端编辑用
     viewPageButtons: {
         viewPageStart: [],
         viewPageOther: [],
@@ -142,6 +166,26 @@ watch(() => form.formCode, (val) => {
         })
     }
 });
+// 监听外部表单勾选变化,通知父组件
+watch(() => form.useExternalForm, (val) => {
+    emitExternalFormState();
+});
+// 监听关联表单选择变化,通知父组件(用于 store 同步多表单字段)
+watch(() => form.lfFormdataIdsArr, () => {
+    emitExternalFormState();
+}, { deep: true });
+
+/**向父组件发射外部表单模式当前状态(含选中的表单定义列表) */
+const emitExternalFormState = () => {
+    if (!form.useExternalForm) {
+        emit('externalFormChange', { useExternalForm: false, lfFormdataList: [] });
+        return;
+    }
+    //根据选中ID从已加载选项中取出完整表单定义(含 formdata JSON)
+    const selectedIds = new Set(form.lfFormdataIdsArr || []);
+    const selectedForms = externalFormOptions.value.filter(f => selectedIds.has(f.id));
+    emit('externalFormChange', { useExternalForm: true, lfFormdataList: selectedForms });
+};
 onMounted(async () => {
     if (!proxy.isEmpty(props.basicData) && !proxy.isEmpty(props.basicData.formCode)) {
         form.bpmnName = props.basicData.bpmnName;
@@ -150,6 +194,23 @@ onMounted(async () => {
         form.remark = props.basicData.remark;
         form.deduplicationType = props.basicData.deduplicationType;
         form.viewPageButtons = props.basicData.viewPageButtons;
+        //回显外部表单模式
+        const flags = Number(props.basicData.extraFlags || 0);
+        form.extraFlags = flags;
+        //先加载选项再设置勾选状态,避免 watch 在选项未就绪时发射空列表
+        const isExternal = (flags & USE_EXTERNAL_FORM_FLAG) === USE_EXTERNAL_FORM_FLAG;
+        if (isExternal) {
+            await loadExternalFormOptions();
+        }
+        form.useExternalForm = isExternal;
+        form.lfFormdataIds = props.basicData.lfFormdataIds || '';
+        form.lfFormdataIdsArr = form.lfFormdataIds
+            ? form.lfFormdataIds.split(',').map(s => Number(s)).filter(n => !isNaN(n))
+            : [];
+        //选项已就绪,手动发射一次同步给父组件
+        if (isExternal) {
+            emitExternalFormState();
+        }
     }
     else {
         form.bpmnCode = generatorID;
@@ -162,6 +223,27 @@ onMounted(async () => {
         getLFFromCodeList();
     }
 });
+
+/**加载独立表单管理中已生效的表单列表 */
+const loadExternalFormOptions = async () => {
+    if (externalFormLoaded.value) return;
+    loading.value = true;
+    try {
+        const res = await listEffectiveForSelect();
+        if (res.code == 200) {
+            externalFormOptions.value = res.data || [];
+            externalFormLoaded.value = true;
+        }
+    } finally {
+        loading.value = false;
+    }
+}
+/**下拉框展开时懒加载 */
+const onFormSelectVisible = (visible) => {
+    if (visible && !externalFormLoaded.value) {
+        loadExternalFormOptions();
+    }
+}
 
 /**获取全部DIY FromCode */
 const getDIYFromCodeList = async () => {
@@ -200,6 +282,16 @@ const rules = {
         message: '请输入流程编号',
         trigger: 'blur'
     }],
+    lfFormdataIdsArr: [{
+        validator: (rule, value, callback) => {
+            if (form.useExternalForm && (!value || value.length === 0)) {
+                callback(new Error('启用外部表单后,请至少选择一个关联表单'));
+            } else {
+                callback();
+            }
+        },
+        trigger: 'change'
+    }],
 };
 
 // 给父级页面提供得获取本页数据得方法
@@ -211,6 +303,17 @@ const getData = () => {
                 reject({ valid: false });
             }
             form.effectiveStatus = form.effectiveStatus ? 1 : 0;
+            //序列化外部表单字段
+            let flags = Number(form.extraFlags || 0);
+            if (form.useExternalForm) {
+                flags = flags | USE_EXTERNAL_FORM_FLAG;
+                form.lfFormdataIds = (form.lfFormdataIdsArr || []).join(',');
+            } else {
+                flags = flags & ~USE_EXTERNAL_FORM_FLAG;
+                form.lfFormdataIds = '';
+                form.lfFormdataIdsArr = [];
+            }
+            form.extraFlags = flags;
             resolve({ formData: form })  // TODO 提交表单
         })
     })
@@ -229,5 +332,12 @@ defineExpose({
     bottom: 0;
     right: 0;
     margin: auto;
+}
+
+.ext-form-tip {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #909399;
+    line-height: 1.4;
 }
 </style>

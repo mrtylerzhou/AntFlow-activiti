@@ -36,4 +36,10 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
     List<String> formCodeListByBpmnName(@Param("bpmnName") String bpmnName);
 
     List<String> formCodeListByConfId(@Param("confId") Long confId);
+
+    /**
+     * 统计有多少生效流程(effective_status=1)在 lf_formdata_ids 中引用了指定表单版本id
+     * 用于独立表单删除保护
+     */
+    int countEffectiveConfReferencingFormdata(@Param("formdataId") Long formdataId);
 }

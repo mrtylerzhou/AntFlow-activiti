@@ -6,7 +6,9 @@
                     <component ref="componentFormRef"
                         :key="Math.random().toString(36).slice(2) + Date.now().toString(36)" :is="loadedComponent"
                         :previewData="componentData" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
-                        :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit">
+                        :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit"
+                        :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+                        :formHidden="formHiddenConfig">
                     </component>
                 </div>
             </el-scrollbar>
@@ -36,7 +38,7 @@ import repulseDialog from './repulseDialog.vue';
 import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
@@ -58,6 +60,10 @@ let componentLoaded = ref(false);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+let lfFormdataListConfig = ref([]);
+let lfFieldsMultiConfig = ref({});
+let formHiddenConfig = ref({});
+let useExternalForm = ref(false);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 let approveSubData = ref(null);
@@ -125,8 +131,15 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接 
-                        approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
+                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                        if (useExternalForm.value) {
+                            // 外部表单模式: getFromData 返回 { [formdataId]: fieldMap } 结构
+                            approveSubData.value.lfFieldsMulti = JSON.parse(data);
+                            approveSubData.value.lfFields = null;
+                        } else {
+                            approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
+                            approveSubData.value.lfFieldsMulti = null;
+                        }
                     } else {
                         let componentFormData = JSON.parse(data);
                         approveSubData.value = { ...approveSubData.value, ...componentFormData };
@@ -216,11 +229,30 @@ const preview = async (viewData) => {
                 hasResubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             }
             try {
-                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接 
-                    lfFormDataConfig.value = response.data.lfFormData;
-                    lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
-                    lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
-                    loadedComponent.value = await loadLFComponent();
+                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                    const responseData = response.data;
+                    const formdataList = responseData.lfFormdataList;
+                    const isExternal = Array.isArray(formdataList) && formdataList.length > 0;
+                    useExternalForm.value = isExternal;
+                    if (isExternal) {
+                        // 外部表单模式: 多 tab 渲染
+                        lfFormdataListConfig.value = formdataList;
+                        lfFieldsMultiConfig.value = responseData.lfFieldsMulti || {};
+                        lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo?.lfFieldControlVOs || []);
+                        formHiddenConfig.value = responseData.processRecordInfo?.formHidden || {};
+                        lfFormDataConfig.value = null;
+                        lfFieldsConfig.value = '{}';
+                        loadedComponent.value = await loadLFMultiFormComponent();
+                    } else {
+                        // 内联表单模式: 兼容旧逻辑
+                        lfFormDataConfig.value = responseData.lfFormData;
+                        lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
+                        lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
+                        lfFormdataListConfig.value = [];
+                        lfFieldsMultiConfig.value = {};
+                        formHiddenConfig.value = {};
+                        loadedComponent.value = await loadLFComponent();
+                    }
                     componentLoaded.value = true;
                 } else {//自定义表单
                     componentData.value = response.data;

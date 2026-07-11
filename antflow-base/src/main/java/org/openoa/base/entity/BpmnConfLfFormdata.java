@@ -18,22 +18,40 @@ public class BpmnConfLfFormdata implements TenantField, Serializable {
   
     private static final long serialVersionUID = 1L;  
   
-    /**  
-     * 主键ID  
-     */  
-    @TableId(value = "id", type = IdType.AUTO)  
-    private Long id;  
-  
-    /**  
-     * 流程配置ID  
+    /**
+     * 主键ID
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 流程配置ID（独立表单为NULL；内联表单指向所属流程的conf id）
      */
     @TableField("bpmn_conf_id")
-    private Long bpmnConfId;  
-  
-    /**  
-     * 表单数据（JSON格式）  
-     */  
-    @TableField("formdata")  
+    private Long bpmnConfId;
+
+    /**
+     * 独立表单家族标识（同族各版本共享；内联表单为NULL）
+     */
+    @TableField("form_code")
+    private String formCode;
+
+    /**
+     * 独立表单显示名（内联表单为NULL）
+     */
+    @TableField("form_name")
+    private String formName;
+
+    /**
+     * 是否当前生效版本 0否 1是（仅独立表单使用；内联表单恒为0）
+     */
+    @TableField("effective_status")
+    private Integer effectiveStatus;
+
+    /**
+     * 表单数据（JSON格式）
+     */
+    @TableField("formdata")
     private String formdata;  
   
     /**  

@@ -40,6 +40,10 @@ export class FormatDisplayUtils {
       isLowCodeFlow: nodeData.isLowCodeFlow,
       lfFormData: nodeData.lfFormData,
       lfFormDataId: nodeData.lfFormDataId,
+      //外部表单模式相关字段
+      extraFlags: nodeData.extraFlags || 0,
+      lfFormdataIds: nodeData.lfFormdataIds || '',
+      lfFormdataList: nodeData.lfFormdataList || null,
       viewPageButtons: nodeData.viewPageButtons,
       property: nodeData.property,
       remark: nodeData.remark,

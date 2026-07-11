@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
 
@@ -181,6 +182,15 @@ public class BpmnConfVo {
     private Integer type;
     private String lfFormData;
     private Long lfFormDataId;
+    /**
+     * 外部表单模式: 引用的表单版本id列表(CSV), 仅外部表单模式使用
+     */
+    private String lfFormdataIds;
+    /**
+     * 归一化后的表单列表(外部模式多个,内联模式单个),供前端统一渲染多tab表单视图
+     * 由 preReadProcess 填充
+     */
+    private List<BpmnConfLfFormdata> lfFormdataList;
     /**
      * 如果节点有多个通知类型,只会选出一个,用于给前端此字段不为空则说明当前节点有通知
      */

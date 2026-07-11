@@ -19,7 +19,9 @@
                 <el-main>
                     <div v-if="componentLoaded" class="component">
                         <component :is="loadedComponent" :previewData="componentData" :lfFormData="lfFormDataConfig"
-                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview">
+                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
+                            :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+                            :formHidden="formHiddenConfig">
                         </component>
                     </div>
                 </el-main>
@@ -32,7 +34,7 @@ import { ref, computed } from 'vue';
 import { useWindowSize } from '@vueuse/core'
 import { getViewBusinessProcess, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
 import { useRouter } from 'vue-router'; // 新增
 const { proxy } = getCurrentInstance();
@@ -72,6 +74,9 @@ let loadedComponent = ref(null);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+let lfFormdataListConfig = ref([]);
+let lfFieldsMultiConfig = ref({});
+let formHiddenConfig = ref({});
 
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
@@ -123,10 +128,27 @@ const preview = async (param) => {
             componentLoaded.value = true
             initiatorPermBtns.value = responseData.processRecordInfo?.pcButtons?.toView || [];
             if (isTrue(responseData.isLowCodeFlow)) {//低代码表单 和 三方接入
-                lfFormDataConfig.value = responseData.lfFormData;
-                lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
-                lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
-                loadedComponent.value = await loadLFComponent(param.formCode);
+                const formdataList = responseData.lfFormdataList;
+                const isExternal = Array.isArray(formdataList) && formdataList.length > 0;
+                if (isExternal) {
+                    // 外部表单模式: 多 tab 渲染
+                    lfFormdataListConfig.value = formdataList;
+                    lfFieldsMultiConfig.value = responseData.lfFieldsMulti || {};
+                    lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo?.lfFieldControlVOs || []);
+                    formHiddenConfig.value = responseData.processRecordInfo?.formHidden || {};
+                    lfFormDataConfig.value = null;
+                    lfFieldsConfig.value = '{}';
+                    loadedComponent.value = await loadLFMultiFormComponent();
+                } else {
+                    // 内联表单模式: 兼容旧逻辑
+                    lfFormDataConfig.value = responseData.lfFormData;
+                    lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
+                    lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
+                    lfFormdataListConfig.value = [];
+                    lfFieldsMultiConfig.value = {};
+                    formHiddenConfig.value = {};
+                    loadedComponent.value = await loadLFComponent(param.formCode);
+                }
             }
             else {//自定义开发表单
                 loadedComponent.value = await loadDIYComponent(param.formCode).catch((err) => { proxy.$modal.msgError(err); });

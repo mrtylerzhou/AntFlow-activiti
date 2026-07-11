@@ -18,7 +18,9 @@
         <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
           <div v-if="processConfig" class="component">
             <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
-              :lfFieldPerm="lfFieldControlVOs" :isPreview="true">
+              :lfFieldPerm="lfFieldControlVOs" :isPreview="true"
+              :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+              :formHidden="formHiddenConfig">
             </component>
           </div>
         </el-col>
@@ -39,7 +41,7 @@ import { getApiWorkFlowData } from "@/api/workflow/index";
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
 
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -47,6 +49,9 @@ const activeTab = ref('flowForm')
 let processConfig = ref(null)
 let lfFormDataConfig = ref(null)
 let lfFieldControlVOs = ref(null)
+let lfFormdataListConfig = ref([])
+let lfFieldsMultiConfig = ref({})
+let formHiddenConfig = ref({})
 let nodeConfig = ref(null)
 let title = ref('')
 let id = route.query?.id
@@ -73,9 +78,26 @@ const init = async () => {
   title.value = data?.bpmnName;
   nodeConfig.value = data?.nodeConfig;
   if (data.isLowCodeFlow == '1') {//低代码表单
-    lfFormDataConfig.value = data?.lfFormData
-    lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);
-    loadedComponent.value = await loadLFComponent();
+    const USE_EXTERNAL_FORM_FLAG = 64;
+    const flags = Number(data?.extraFlags || 0);
+    const isExternal = (flags & USE_EXTERNAL_FORM_FLAG) === USE_EXTERNAL_FORM_FLAG;
+    if (isExternal) {
+      // 外部表单模式: 多 tab 渲染
+      lfFormdataListConfig.value = data?.lfFormdataList || [];
+      lfFieldsMultiConfig.value = {};
+      formHiddenConfig.value = {};
+      lfFormDataConfig.value = null;
+      lfFieldControlVOs.value = '[]';
+      loadedComponent.value = await loadLFMultiFormComponent();
+    } else {
+      // 内联表单模式: 兼容旧逻辑
+      lfFormDataConfig.value = data?.lfFormData
+      lfFieldControlVOs.value = JSON.stringify(data.processRecordInfo?.lfFieldControlVOs);
+      lfFormdataListConfig.value = [];
+      lfFieldsMultiConfig.value = {};
+      formHiddenConfig.value = {};
+      loadedComponent.value = await loadLFComponent();
+    }
     componentLoaded.value = true;
   } else {//自定义表单
     loadedComponent.value = await loadDIYComponent(data.formCode).catch((err) => {

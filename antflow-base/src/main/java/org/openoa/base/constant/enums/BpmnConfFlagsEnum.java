@@ -15,7 +15,8 @@ public enum BpmnConfFlagsEnum implements BinaryAfEnumBase<BpmnConfFlagsEnum>{
     HAS_DYNAMIC_CONDITIONS(0b100,"是否包含动态条件"),
     HAS_COPY(0b1000,"是否包含抄送"),
     HAS_LAST_NODE_COPY(0b10000,"最后一个节点是否包含抄送"),
-    HAS_FORM_RELATED_ASSIGNEES(0b100000,"包含表单中选取人员")
+    HAS_FORM_RELATED_ASSIGNEES(0b100000,"包含表单中选取人员"),
+    USE_EXTERNAL_FORM(0b1000000,"使用外部表单模式")
     ;
     private final Integer code;
     private final String desc;

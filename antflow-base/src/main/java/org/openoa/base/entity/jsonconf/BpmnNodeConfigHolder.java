@@ -341,18 +341,25 @@ public class BpmnNodeConfigHolder {
      * Build low-code field control config from node VO
      */
     public static void setLowCodeConf(BpmnNodeVo vo) {
-        if (CollectionUtils.isEmpty(vo.getLfFieldControlVOs())) return;
+        boolean hasFieldControls = !CollectionUtils.isEmpty(vo.getLfFieldControlVOs());
+        boolean hasFormHidden = vo.getFormHidden() != null && !vo.getFormHidden().isEmpty();
+        if (!hasFieldControls && !hasFormHidden) return;
         BpmnNodeConfigJson config = vo.getOrCreateNodeConfigJson();
-        config.setLowCodeConf(BpmnNodeLowCodeConfJson.builder()
-                .fieldControls(vo.getLfFieldControlVOs().stream()
-                        .map(fc -> BpmnNodeLowCodeConfJson.FieldControl.builder()
-                                .formdataId(fc.getFormdataId())
-                                .fieldId(fc.getFieldId())
-                                .fieldName(fc.getFieldName())
-                                .perm(fc.getPerm())
-                                .build())
-                        .collect(Collectors.toList()))
-                .build());
+        BpmnNodeLowCodeConfJson.BpmnNodeLowCodeConfJsonBuilder builder = BpmnNodeLowCodeConfJson.builder();
+        if (hasFieldControls) {
+            builder.fieldControls(vo.getLfFieldControlVOs().stream()
+                    .map(fc -> BpmnNodeLowCodeConfJson.FieldControl.builder()
+                            .formdataId(fc.getFormdataId())
+                            .fieldId(fc.getFieldId())
+                            .fieldName(fc.getFieldName())
+                            .perm(fc.getPerm())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
+        if (hasFormHidden) {
+            builder.formHidden(vo.getFormHidden());
+        }
+        config.setLowCodeConf(builder.build());
     }
 
     // ============ Private helpers ============

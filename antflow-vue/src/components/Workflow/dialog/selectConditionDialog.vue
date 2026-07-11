@@ -26,6 +26,7 @@ const routePath = route.path || ''
 const store = useStore()
 let tableId = computed(() => store.tableId)
 let lowCodeFormFields = computed(() => store.lowCodeFormField)
+let useExternalForm = computed(() => store.useExternalForm)
 let configData = ref(null);
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 
@@ -145,6 +146,12 @@ const widgetToValueType = new Map([
 /**低代码表单条件加载 */
 const loadLFFormCondition = () => {
   return new Promise((resolve, reject) => {
+    //外部表单模式: 从多表单字段列表加载
+    if (useExternalForm.value) {
+      resolve(loadLFFormConditionMulti());
+      return;
+    }
+    //内联表单模式: 原逻辑
     let conditionArr = [];
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
       resolve(conditionArr);
@@ -181,6 +188,47 @@ const loadLFFormCondition = () => {
   });
 };
 
+/**
+ * 外部表单模式: 从 store.lowCodeFormFieldsMulti 加载所有表单字段作为条件候选
+ * 跨表单连续编号 formId,showName 前缀表单名以便用户区分
+ */
+const loadLFFormConditionMulti = () => {
+  const forms = store.lowCodeFormFieldsMulti || [];
+  const result = [];
+  let fieldIdx = 0;
+  for (const form of forms) {
+    const fields = form.formFields || [];
+    const formPrefix = forms.length > 1 ? `【${form.formName || form.formCode}】` : '';
+    for (const item of fields) {
+      if (!item.type || !widgetToFieldTypeCode.has(item.type)) continue;
+      let optionGroup = [];
+      if (item.options.optionItems) {
+        optionGroup = item.options.optionItems.map(c => {
+          let convertValue = parseInt(c.value);
+          if (!isNaN(convertValue)) {
+            return { key: convertValue, value: c.label }
+          }
+        }).filter(c => c);
+      }
+      fieldIdx++;
+      result.push({
+        formId: fieldIdx,
+        formdataId: form.formdataId,
+        columnId: widgetToColumnTypeCode.get(item.type),
+        showType: widgetToFieldTypeCode.get(item.type),
+        showName: formPrefix + (item.options.label || item.options.name),
+        columnName: item.options.name,
+        columnType: widgetToValueType.get(item.type),
+        fieldTypeName: item.type,
+        multiple: item.options.multiple,
+        multipleLimit: item.options.multipleLimit,
+        fixedDownBoxValue: JSON.stringify(optionGroup)
+      });
+    }
+  }
+  return result;
+};
+
 /**过滤空值 */
 const nullableFilter = (elm) => {
   return (elm != null && elm !== false && elm !== "");
@@ -190,11 +238,15 @@ const nullableFilter = (elm) => {
  */
 const chooseCondition = () => {
   for (var i = 0; i < conditionList.value.length; i++) {
-    var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue } = conditionList.value[i];
+    var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue, formdataId } = conditionList.value[i];
     if ($func.toggleClass(configData.value.conditionList[props.activeGroupIdx], conditionList.value[i], "formId")) {
       continue;
     }
     const judgeObj = NodeUtils.createJudgeNode(formId, columnId, 2, showName, showType, columnName, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue);
+    //外部表单模式: 附加 formdataId 便于后端定位字段所属表单
+    if (formdataId != null) {
+      judgeObj.formdataId = formdataId;
+    }
     if (columnId == 0) {
       configData.value.conditionList[props.activeGroupIdx].push({ formId: formId, columnId: columnId, type: 1, showName: '发起人' });
     } else {

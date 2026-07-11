@@ -2002,18 +2002,23 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             bpmnNodeVo.setProperty(propertysVo);
         }
 
-        // set field controls from lowCodeConf
+        // set field controls and formHidden from lowCodeConf
         BpmnNodeLowCodeConfJson lowCodeConf = nodeConfig.getLowCodeConf();
-        if (lowCodeConf != null && !CollectionUtils.isEmpty(lowCodeConf.getFieldControls())) {
-            List<LFFieldControlVO> fieldControlVOS = lowCodeConf.getFieldControls().stream().map(fc -> {
-                LFFieldControlVO vo = new LFFieldControlVO();
-                vo.setFormdataId(fc.getFormdataId());
-                vo.setFieldId(fc.getFieldId());
-                vo.setFieldName(fc.getFieldName());
-                vo.setPerm(fc.getPerm());
-                return vo;
-            }).collect(Collectors.toList());
-            bpmnNodeVo.setLfFieldControlVOs(fieldControlVOS);
+        if (lowCodeConf != null) {
+            if (!CollectionUtils.isEmpty(lowCodeConf.getFieldControls())) {
+                List<LFFieldControlVO> fieldControlVOS = lowCodeConf.getFieldControls().stream().map(fc -> {
+                    LFFieldControlVO vo = new LFFieldControlVO();
+                    vo.setFormdataId(fc.getFormdataId());
+                    vo.setFieldId(fc.getFieldId());
+                    vo.setFieldName(fc.getFieldName());
+                    vo.setPerm(fc.getPerm());
+                    return vo;
+                }).collect(Collectors.toList());
+                bpmnNodeVo.setLfFieldControlVOs(fieldControlVOS);
+            }
+            if (lowCodeConf.getFormHidden() != null) {
+                bpmnNodeVo.setFormHidden(lowCodeConf.getFormHidden());
+            }
         }
 
         // set labels from buttonSignConf

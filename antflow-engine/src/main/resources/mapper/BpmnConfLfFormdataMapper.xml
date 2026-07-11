@@ -7,4 +7,60 @@
         from t_bpmn_conf_lf_formdata tbclf
         inner join t_bpmn_conf tbc on tbclf.bpmn_conf_id = tbc.id and tbc.effective_status = 1 and tbc.form_code=#{formCode}
     </select>
+
+    <!-- 分页查询独立表单的当前生效版本（每族一行生效版本） -->
+    <select id="listEffectiveFormPage" resultType="org.openoa.base.vo.LfFormManageVo">
+        SELECT t.id, t.form_code, t.form_name, t.effective_status,
+               t.create_user, t.create_time, t.update_user, t.update_time,
+               cnt.version_count
+        FROM t_bpmn_conf_lf_formdata t
+        INNER JOIN (
+            SELECT form_code, MAX(id) AS max_id, COUNT(*) AS version_count
+            FROM t_bpmn_conf_lf_formdata
+            WHERE bpmn_conf_id IS NULL AND is_del = 0 AND effective_status = 1
+            GROUP BY form_code
+        ) cnt ON t.form_code = cnt.form_code AND t.id = cnt.max_id
+        WHERE t.bpmn_conf_id IS NULL AND t.is_del = 0 AND t.effective_status = 1
+        <if test="vo.search != null and vo.search != ''">
+            AND (t.form_name LIKE CONCAT('%', #{vo.search}, '%') OR t.form_code LIKE CONCAT('%', #{vo.search}, '%'))
+        </if>
+        ORDER BY t.update_time DESC
+    </select>
+
+    <!-- 查询某家族所有版本（历史版本查看，含已软删） -->
+    <select id="listVersionsByFormCode" resultType="org.openoa.base.vo.LfFormManageVo">
+        SELECT id, form_code, form_name, effective_status, is_del,
+               create_user, create_time, update_user, update_time
+        FROM t_bpmn_conf_lf_formdata
+        WHERE form_code = #{formCode} AND bpmn_conf_id IS NULL
+        ORDER BY id DESC
+    </select>
+
+    <!-- 所有生效独立表单（流程设计多选下拉框，含formdata以供前端解析条件字段） -->
+    <select id="listAllEffectiveForms" resultType="org.openoa.base.vo.LfFormManageVo">
+        SELECT id, form_code, form_name, formdata
+        FROM t_bpmn_conf_lf_formdata
+        WHERE bpmn_conf_id IS NULL AND is_del = 0 AND effective_status = 1
+        ORDER BY update_time DESC
+    </select>
+
+    <!-- 按 id 查询（含已软删，供运行中流程实例读取） -->
+    <select id="getByIdIgnoreDeleted" resultType="org.openoa.base.entity.BpmnConfLfFormdata">
+        SELECT * FROM t_bpmn_conf_lf_formdata WHERE id = #{id}
+    </select>
+
+    <!-- 按 id 列表批量查询（含已软删，供运行中流程实例读取） -->
+    <select id="listByIdsIgnoreDeleted" resultType="org.openoa.base.entity.BpmnConfLfFormdata">
+        SELECT * FROM t_bpmn_conf_lf_formdata WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 生成新的家族 formCode -->
+    <select id="getMaxFormCode" resultType="java.lang.String">
+        SELECT MAX(form_code)
+        FROM t_bpmn_conf_lf_formdata
+        WHERE form_code LIKE CONCAT(#{prefix}, '%')
+    </select>
 </mapper>

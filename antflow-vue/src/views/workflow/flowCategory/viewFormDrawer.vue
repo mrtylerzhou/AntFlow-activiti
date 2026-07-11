@@ -8,7 +8,9 @@
         <template #default>
             <div class="component">
                 <component v-if="componentLoaded" :is="loadedComponent" :lfFormData="lfFormDataConfig"
-                    :isPreview="true">
+                    :isPreview="true"
+                    :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+                    :formHidden="formHiddenConfig">
                 </component>
             </div>
         </template>
@@ -21,10 +23,13 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { getStartFormData } from '@/api/workflow/lowcodeApi';
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
 const { proxy } = getCurrentInstance();
 let lfFormDataConfig = ref(null);
+let lfFormdataListConfig = ref([]);
+let lfFieldsMultiConfig = ref({});
+let formHiddenConfig = ref({});
 let loadedComponent = ref(null);
 let componentLoaded = ref(null);
 
@@ -58,10 +63,24 @@ const handleLFTemp = async (row) => {
     loadedComponent.value = null;
     proxy.$modal.loading();
     if (row.type == 'LF') {//低代码表单
-        await getLowCodeFromCodeData(row.key).then(async (res) => {
+        await getStartFormData(row.key).then(async (res) => {
             if (res.code == 200) {
-                lfFormDataConfig.value = res.data
-                loadedComponent.value = await loadLFComponent();
+                const data = res.data;
+                if (data.useExternalForm) {
+                    // 外部表单模式: 多 tab 渲染
+                    lfFormdataListConfig.value = data.lfFormdataList || [];
+                    lfFieldsMultiConfig.value = {};
+                    formHiddenConfig.value = {};
+                    lfFormDataConfig.value = null;
+                    loadedComponent.value = await loadLFMultiFormComponent();
+                } else {
+                    // 内联表单模式: 兼容旧逻辑
+                    lfFormDataConfig.value = data.lfFormData;
+                    lfFormdataListConfig.value = [];
+                    lfFieldsMultiConfig.value = {};
+                    formHiddenConfig.value = {};
+                    loadedComponent.value = await loadLFComponent();
+                }
                 componentLoaded.value = true;
             } else {
                 proxy.$modal.msgWarning("未定义业务表单组件");

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname BpmnNodeVo
@@ -167,6 +168,12 @@ public class BpmnNodeVo  implements Serializable {
     private Integer isOutSideProcess;
     private Integer isLowCodeFlow;
     private List<LFFieldControlVO> lfFieldControlVOs;
+    /**
+     * 外部表单模式: 节点级整表隐藏标记
+     * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true 表示该表单在此节点整体隐藏
+     * 仅外部表单模式使用; 内联模式为 null
+     */
+    private Map<Long, Boolean> formHidden;
     /**
      * forwarded emp list
      */

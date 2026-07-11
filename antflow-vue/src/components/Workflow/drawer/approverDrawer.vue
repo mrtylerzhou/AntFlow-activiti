@@ -93,16 +93,7 @@
                                 </el-select>
                             </div>
                         </div>
-                        <div class="approver_text" v-if="approverConfig.setType == 18">
-                            <div>
-                                <p><i style="color: red;">*</i>审批人类型:</p>
-                                <el-select v-model="approverConfig.property.formAssigneeProperty" placeholder="请选审批人类型"
-                                    style="width: 300px">
-                                    <el-option v-for="item in formPrevNodeApproverOptionSet" :key="item.value" :label="item.label"
-                                        :value="item.value" />
-                                </el-select>
-                            </div> 
-                        </div>
+
                     </div>
                     <div class="approver_block">
                         <p>✍多人审批时采用的审批方式</p>
@@ -174,7 +165,8 @@
             </el-tab-pane>
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
-                    @changePermVal="changePermVal" />
+                    :formHidden="formHiddenMap"
+                    @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
             </el-tab-pane>
             <el-tab-pane lazy label="通知设置" name="noticeStep">
                 <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
@@ -191,7 +183,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
@@ -218,6 +210,7 @@ let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
 let formItems = ref([]);
+let formHiddenMap = ref({});
 let templateVos = ref([]);
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
@@ -243,12 +236,14 @@ watch(approverConfig1, (val) => {
         let currParallel = val.value.parallelNodes[val.value.index]
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || [];
+        formHiddenMap.value = currParallel.formHidden || {};
         templateVos.value = currParallel.templateVos || [];
         checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
     }
     else {
         approverConfig.value = val.value;
         formItems.value = val.value.lfFieldControlVOs || [];
+        formHiddenMap.value = val.value.formHidden || {};
         templateVos.value = val.value.templateVos || [];
         checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
     }
@@ -256,8 +251,6 @@ watch(approverConfig1, (val) => {
 
 /**监听 approverConfig 对象*/
 watch(approverConfig, (val) => {
-    
-    console.log('approverConfig.value====', approverConfig.value)
     if (!approverConfig.value.property) {
         approverConfig.value.property = {};
     }
@@ -290,10 +283,15 @@ watch(formInfoSelected, (val) => {
     }
     const info = formInfoOptions.value.find(item => item.id === val);
     if (info) {
-        property.formInfos = [{
+        const formInfo = {
             id: info.id,
             name: info.name
-        }];
+        };
+        //外部表单模式: 附带 formdataId 便于后端定位人员所属表单
+        if (info.formdataId != null) {
+            formInfo.formdataId = info.formdataId;
+        }
+        property.formInfos = [formInfo];
     }
 }, { immediate: true });
 
@@ -331,6 +329,26 @@ const changeType = (val) => {
 
 const initFormInfoOptions = () => {
     formInfoOptions.value = [];
+    //外部表单模式: 从多表单字段列表加载人员组件
+    if (store.useExternalForm) {
+        const forms = store.lowCodeFormFieldsMulti || [];
+        for (const form of forms) {
+            const fields = form.formFields || [];
+            fields.forEach(item => {
+                if (!item.options || !item.options.required || !item.options.label) return;
+                if (NO_USER_FIELD_WIDGETS.has(item.type)) return;
+                formInfoOptions.value.push({
+                    id: item.id,
+                    name: forms.length > 1
+                        ? `【${form.formName || form.formCode}】${item.options.label}`
+                        : item.options.label,
+                    formdataId: form.formdataId
+                });
+            });
+        }
+        return;
+    }
+    //内联表单模式: 原逻辑
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
         return;
     }
@@ -411,6 +429,10 @@ const closeDrawer = () => {
 /**低代码表单字段权限 */
 const changePermVal = (data) => {
     approverConfig.value.lfFieldControlVOs = data;
+}
+/**外部表单模式: 整表隐藏标记变化 */
+const changeFormHidden = (data) => {
+    approverConfig.value.formHidden = data;
 }
 /**消息设置 */
 const handleFlowMsgSet = (data) => {

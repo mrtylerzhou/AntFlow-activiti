@@ -16,6 +16,10 @@ export const useStore = defineStore("store", {
     previewDrawer: false,
     instanceViewConfig1: {},
     lowCodeFormField: {},
+    // 多表单模式(外部表单)相关状态
+    useExternalForm: false,                          //是否启用外部表单模式
+    lfFormdataList: [],                              //后端返回的表单版本列表(含 formdata JSON),供前端渲染多 tab
+    lowCodeFormFieldsMulti: [],                      //解析后的多表单字段列表: [{ formdataId, formCode, formName, formFields:[] }]
     approveChooseFlowNode: {},
     copyerDrawerV2: false,
     copyerConfigV2: {},
@@ -62,6 +66,15 @@ export const useStore = defineStore("store", {
     },
     setLowCodeFormField(payload) {
       this.lowCodeFormField = payload;
+    },
+    setUseExternalForm(payload) {
+      this.useExternalForm = !!payload;
+    },
+    setLfFormdataList(payload) {
+      this.lfFormdataList = payload || [];
+    },
+    setLowCodeFormFieldsMulti(payload) {
+      this.lowCodeFormFieldsMulti = payload || [];
     },
     setApproveChooseFlowNodeConfig(payload) {
       this.approveChooseFlowNode = payload;
