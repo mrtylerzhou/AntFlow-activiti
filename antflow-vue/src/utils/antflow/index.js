@@ -39,6 +39,10 @@ All.prototype = {
   },
   setApproverStr(nodeConfig) {
     if (!nodeConfig) return;
+    let baseStr = this._buildApproverBaseStr(nodeConfig);
+    return this._appendExtraSignStr(baseStr, nodeConfig);
+  },
+  _buildApproverBaseStr(nodeConfig) {
     if (nodeConfig.setType == 5) {
       if (nodeConfig.nodeApproveList.length == 1) {
         return nodeConfig.nodeApproveList[0].name;
@@ -106,6 +110,38 @@ All.prototype = {
     } else {
       return "";
     }
+  },
+  _appendExtraSignStr(baseStr, nodeConfig) {
+    const list = nodeConfig?.property?.additionalSignInfoList || [];
+    if (list.length == 0) return baseStr;
+    let result = baseStr;
+    const addList = list.filter(a => a.propertyType == 1);
+    const excludeList = list.filter(a => a.propertyType == 2);
+    if (addList.length > 0) {
+      const names = [];
+      for (const item of addList) {
+        const suffix = item.nodeProperty == 5 ? "（人员）" : "（角色）";
+        for (const info of item.signInfos || []) {
+          names.push(info.name + suffix);
+        }
+      }
+      if (names.length > 0) {
+        result += " + " + names.join(",");
+      }
+    }
+    if (excludeList.length > 0) {
+      const names = [];
+      for (const item of excludeList) {
+        const suffix = item.nodeProperty == 5 ? "（人员）" : "（角色）";
+        for (const info of item.signInfos || []) {
+          names.push(info.name + suffix);
+        }
+      }
+      if (names.length > 0) {
+        result += " - " + names.join(",");
+      }
+    }
+    return result;
   },
   setCopyStrV2(nodeConfig) {
     if (!nodeConfig) return;

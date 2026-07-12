@@ -143,6 +143,7 @@ export class FormatCommitUtils {
           signType: node.signType,
           signUpType: 1,
           afterSignUpWay: 2,
+          additionalSignInfoList: node.property?.additionalSignInfoList || [],
         };
         if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
           if (node.setType == 4) {

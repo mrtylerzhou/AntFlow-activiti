@@ -41,6 +41,7 @@ export class NodeUtils {
       property: {
         afterSignUpWay: 1,
         signUpType: 1,
+        additionalSignInfoList: [],
       },
       lfFieldControlVOs: [],
       buttons: {
@@ -364,6 +365,7 @@ export class NodeUtils {
       property: {
         afterSignUpWay: 1, //是否回到加批人 1:是，2:否
         signUpType: 1, //加批类型 1:顺序会签，2:会签 特别 3指: 回到加批人，afterSignUpWay赋值为1，signUpType赋值为1
+        additionalSignInfoList: [],
       },
       buttons: {
         startPage: [1],
