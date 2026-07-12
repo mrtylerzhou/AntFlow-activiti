@@ -10,6 +10,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.LfFormManageVo;
 import org.openoa.base.vo.ResultAndPage;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataMapper;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
@@ -163,6 +164,14 @@ public class LfFormManageBizServiceImpl implements LfFormManageBizService {
     @Override
     public List<LfFormManageVo> listEffectiveForSelect() {
         return lfFormdataMapper.listAllEffectiveForms();
+    }
+
+    @Override
+    public List<BpmnConfVo> listReferencingConfs(Long formdataId) {
+        if (formdataId == null) {
+            throw new AFBizException("formdataId不能为空");
+        }
+        return bpmnConfMapper.listConfsReferencingFormdata(formdataId);
     }
 
     /**

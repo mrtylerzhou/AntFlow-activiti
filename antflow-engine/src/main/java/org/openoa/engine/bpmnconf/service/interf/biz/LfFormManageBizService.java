@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.interf.biz;
 
 import org.openoa.base.dto.PageDto;
+import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.vo.LfFormManageVo;
 import org.openoa.base.vo.ResultAndPage;
 
@@ -48,4 +49,9 @@ public interface LfFormManageBizService {
      * 列出所有生效独立表单（流程设计多选下拉框）
      */
     List<LfFormManageVo> listEffectiveForSelect();
+
+    /**
+     * 查询引用了指定表单版本的所有流程配置
+     */
+    List<BpmnConfVo> listReferencingConfs(Long formdataId);
 }

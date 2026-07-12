@@ -184,4 +184,12 @@ public class LowCodeFlowController {
         return Result.success();
     }
 
+    /**
+     * 查询引用了指定表单版本的流程配置列表（查看引用）
+     */
+    @GetMapping("/form/references/{formdataId}")
+    public Result<List<BpmnConfVo>> listReferencingConfs(@PathVariable Long formdataId) {
+        return Result.newSuccessResult(lfFormManageBizService.listReferencingConfs(formdataId));
+    }
+
 }

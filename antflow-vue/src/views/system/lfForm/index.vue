@@ -64,15 +64,47 @@
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="220" align="center">
+        <el-table-column label="操作" fixed="right" width="280" align="center">
           <template #default="scope">
             <el-button v-if="scope.row.effectiveStatus !== 1" link type="success" @click="handleEffective(scope.row)">生效</el-button>
             <el-button link type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button link type="primary" @click="handleViewVersion(scope.row)">查看</el-button>
+            <el-button link type="warning" @click="handleViewReferences(scope.row)">查看引用</el-button>
             <el-button v-if="scope.row.effectiveStatus !== 1" link type="danger" @click="handleHistoryDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+    </el-dialog>
+
+    <!-- 查看引用对话框 -->
+    <el-dialog v-model="refVisible" :title="'查看引用 - ' + refFormName" width="700px" append-to-body>
+      <div class="ref-info">
+        <el-alert
+          :title="'共 ' + refList.length + ' 个流程配置引用了此表单版本'"
+          type="info"
+          :closable="false"
+          show-icon
+          style="margin-bottom: 16px"
+        />
+        <el-table :data="refList" v-loading="refLoading" border size="small">
+          <el-table-column label="流程编码" align="center" prop="bpmnCode" width="160" />
+          <el-table-column label="流程名称" align="center" prop="bpmnName" show-overflow-tooltip />
+          <el-table-column label="状态" align="center" prop="effectiveStatus" width="80">
+            <template #default="scope">
+              <el-tag :type="scope.row.effectiveStatus === 1 ? 'success' : 'info'" size="small">
+                {{ scope.row.effectiveStatus === 1 ? '生效' : '未生效' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="创建人" align="center" prop="createUser" width="90" />
+          <el-table-column label="创建时间" align="center" prop="createTime" width="150">
+            <template #default="scope">
+              <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-empty v-if="!refLoading && refList.length === 0" description="暂无引用该表单版本的流程配置" />
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -80,7 +112,7 @@
 <script setup>
 import { ref, reactive, toRefs, onMounted, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
-import { listFormPage, deleteForm, listFormHistory, effectiveForm } from "@/api/workflow/lowcodeApi";
+import { listFormPage, deleteForm, listFormHistory, effectiveForm, listFormReferences } from "@/api/workflow/lowcodeApi";
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -100,6 +132,12 @@ const { pageDto, queryParams } = toRefs(data);
 const historyVisible = ref(false);
 const historyLoading = ref(false);
 const historyList = ref([]);
+
+// 查看引用对话框
+const refVisible = ref(false);
+const refLoading = ref(false);
+const refList = ref([]);
+const refFormName = ref("");
 
 onMounted(async () => {
   await getList();
@@ -187,6 +225,21 @@ const handleHistoryDelete = (row) => {
       proxy.$modal.msgError(e?.data?.msg || "删除失败");
     }
   }).catch(() => {});
+};
+
+const handleViewReferences = async (row) => {
+  refFormName.value = row.formName;
+  refVisible.value = true;
+  refLoading.value = true;
+  try {
+    const res = await listFormReferences(row.id);
+    refList.value = res.data || [];
+  } catch (e) {
+    proxy.$modal.msgError("获取引用信息失败");
+    refList.value = [];
+  } finally {
+    refLoading.value = false;
+  }
 };
 
 const handleDelete = (row) => {

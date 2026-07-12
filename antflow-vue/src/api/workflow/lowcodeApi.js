@@ -152,3 +152,12 @@ export function listEffectiveForSelect() {
 export function effectiveForm(id) {
   return http.put(`${baseUrl}/lowcode/form/effective/${id}`, { headers });
 }
+
+/**
+ * 查询引用了指定表单版本的流程配置列表（查看引用）
+ * @param {Number} formdataId
+ * @returns
+ */
+export function listFormReferences(formdataId) {
+  return http.get(`${baseUrl}/lowcode/form/references/${formdataId}`, { headers });
+}

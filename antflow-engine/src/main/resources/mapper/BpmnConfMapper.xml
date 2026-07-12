@@ -168,4 +168,15 @@
           AND lf_formdata_ids IS NOT NULL
           AND FIND_IN_SET(#{formdataId}, lf_formdata_ids) &gt; 0
     </select>
+
+    <!-- 查询所有引用了指定表单版本的流程配置（查看引用弹窗） -->
+    <select id="listConfsReferencingFormdata" resultType="org.openoa.base.vo.BpmnConfVo">
+        SELECT id, bpmn_code, bpmn_name, effective_status,
+               create_user, create_time, update_user, update_time
+        FROM t_bpmn_conf
+        WHERE is_del = 0
+          AND lf_formdata_ids IS NOT NULL
+          AND FIND_IN_SET(#{formdataId}, lf_formdata_ids) &gt; 0
+        ORDER BY id DESC
+    </select>
 </mapper>

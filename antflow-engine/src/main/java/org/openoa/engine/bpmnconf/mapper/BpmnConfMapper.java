@@ -42,4 +42,9 @@ public interface BpmnConfMapper extends BaseMapper<BpmnConf> {
      * 用于独立表单删除保护
      */
     int countEffectiveConfReferencingFormdata(@Param("formdataId") Long formdataId);
+
+    /**
+     * 查询所有在 lf_formdata_ids 中引用了指定表单版本的流程配置（查看引用用）
+     */
+    List<BpmnConfVo> listConfsReferencingFormdata(@Param("formdataId") Long formdataId);
 }
