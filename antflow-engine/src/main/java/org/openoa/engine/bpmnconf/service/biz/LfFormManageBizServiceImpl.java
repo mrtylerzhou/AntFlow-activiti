@@ -118,6 +118,10 @@ public class LfFormManageBizServiceImpl implements LfFormManageBizService {
         if (formdata == null) {
             throw new AFBizException("表单不存在或已删除");
         }
+        // 删除保护：当前生效版本不可删除
+        if (formdata.getEffectiveStatus() != null && formdata.getEffectiveStatus() == 1) {
+            throw new AFBizException("当前生效的版本不可删除");
+        }
         // 删除保护：被生效流程引用时拒绝
         int refCount = bpmnConfMapper.countEffectiveConfReferencingFormdata(id);
         if (refCount > 0) {

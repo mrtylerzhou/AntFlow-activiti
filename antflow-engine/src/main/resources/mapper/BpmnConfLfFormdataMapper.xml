@@ -27,12 +27,12 @@
         ORDER BY t.update_time DESC
     </select>
 
-    <!-- 查询某家族所有版本（历史版本查看，含已软删） -->
+    <!-- 查询某家族所有版本（历史版本查看，排除已软删） -->
     <select id="listVersionsByFormCode" resultType="org.openoa.base.vo.LfFormManageVo">
         SELECT id, form_code, form_name, effective_status, is_del,
                create_user, create_time, update_user, update_time
         FROM t_bpmn_conf_lf_formdata
-        WHERE form_code = #{formCode} AND bpmn_conf_id IS NULL
+        WHERE form_code = #{formCode} AND bpmn_conf_id IS NULL AND is_del = 0
         ORDER BY id DESC
     </select>
 

@@ -64,11 +64,12 @@
             <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="180" align="center">
+        <el-table-column label="操作" fixed="right" width="220" align="center">
           <template #default="scope">
             <el-button v-if="scope.row.effectiveStatus !== 1" link type="success" @click="handleEffective(scope.row)">生效</el-button>
             <el-button link type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button link type="primary" @click="handleViewVersion(scope.row)">查看</el-button>
+            <el-button v-if="scope.row.effectiveStatus !== 1" link type="danger" @click="handleHistoryDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -172,6 +173,20 @@ const handleViewVersion = (row) => {
     path: "/system/lfForm-design",
     query: { id: row.id, formCode: row.formCode, formName: row.formName, readonly: "1" },
   });
+};
+
+const handleHistoryDelete = (row) => {
+  proxy.$modal.confirm(`确认删除该版本"${row.formName}"吗？`).then(async () => {
+    try {
+      await deleteForm(row.id);
+      proxy.$modal.msgSuccess("删除成功");
+      const res = await listFormHistory(row.formCode);
+      historyList.value = res.data || [];
+      getList();
+    } catch (e) {
+      proxy.$modal.msgError(e?.data?.msg || "删除失败");
+    }
+  }).catch(() => {});
 };
 
 const handleDelete = (row) => {
