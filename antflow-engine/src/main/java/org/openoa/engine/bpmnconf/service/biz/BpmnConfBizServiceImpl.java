@@ -609,6 +609,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         String processNumber = jsonObject.getString("processNumber");
         Boolean isLowCodeFlow = jsonObject.getBoolean("isLowCodeFlow");
 
+        // 流程监控查看: 未带流程编号时,不查 BpmVariable 的存储表单,直接使用前端提交的表单数据 + bpmnCode + startUserId 预览
+        // (保留 isStartPagePreview=false 以使用真实发起人,而非当前登录管理员)
+        if (Strings.isNullOrEmpty(processNumber)) {
+            return getPreviewNode(params, false);
+        }
+
         QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
         wrapper.eq("process_num", processNumber);
         BpmVariable bpmnVariable = bpmVariableBizService.getService().getOne(wrapper);

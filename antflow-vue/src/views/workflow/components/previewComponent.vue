@@ -18,12 +18,10 @@
                 </el-header>
                 <el-main>
                     <div v-if="componentLoaded" class="component">
-                        <component :is="loadedComponent" :previewData="componentData" :lfFormData="lfFormDataConfig"
+                        <component ref="formCompRef" :is="loadedComponent" :previewData="componentData" :lfFormData="lfFormDataConfig"
                             :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
                             :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
-                            :formHidden="formHiddenConfig">
-                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
-                            :ignoreReadonly="ignoreReadonly">
+                            :formHidden="formHiddenConfig" :ignoreReadonly="ignoreReadonly">
                         </component>
                     </div>
                 </el-main>
@@ -83,6 +81,8 @@ let lfFieldControlVOs = ref(null);
 let lfFormdataListConfig = ref([]);
 let lfFieldsMultiConfig = ref({});
 let formHiddenConfig = ref({});
+const formCompRef = ref(null);
+let isMultiForm = ref(false);
 
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
@@ -138,6 +138,7 @@ const preview = async (param) => {
                 const isExternal = Array.isArray(formdataList) && formdataList.length > 0;
                 if (isExternal) {
                     // 外部表单模式: 多 tab 渲染
+                    isMultiForm.value = true;
                     lfFormdataListConfig.value = formdataList;
                     lfFieldsMultiConfig.value = responseData.lfFieldsMulti || {};
                     lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo?.lfFieldControlVOs || []);
@@ -147,6 +148,7 @@ const preview = async (param) => {
                     loadedComponent.value = await loadLFMultiFormComponent();
                 } else {
                     // 内联表单模式: 兼容旧逻辑
+                    isMultiForm.value = false;
                     lfFormDataConfig.value = responseData.lfFormData;
                     lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
                     lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
@@ -157,6 +159,7 @@ const preview = async (param) => {
                 }
             }
             else {//自定义开发表单
+                isMultiForm.value = false;
                 loadedComponent.value = await loadDIYComponent(param.formCode).catch((err) => { proxy.$modal.msgError(err); });
                 componentData.value = responseData;
             }
@@ -180,6 +183,15 @@ const openInNewPage = () => {
     const routeData = router.resolve({ path: '/flowDevOps/flowPrint', query });
     window.open(routeData.href, '_blank');
 };
+/** 读取当前表单数据(供流程监控查看页做发起页式流程预览) */
+const getFromData = () => {
+    if (formCompRef.value && typeof formCompRef.value.getFromData === 'function') {
+        return formCompRef.value.getFromData();
+    }
+    return Promise.reject('');
+};
+defineExpose({ getFromData, isMultiForm });
+
 </script>
 <style lang="scss" scoped>
 .component {

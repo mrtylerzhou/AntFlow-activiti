@@ -12,6 +12,7 @@
           :lfFieldPerm="getFieldPerm(form.id)"
           :isPreview="isPreview"
           :showSubmit="false"
+          :ignoreReadonly="ignoreReadonly"
         />
       </el-tab-pane>
     </el-tabs>
@@ -24,6 +25,7 @@
         :lfFieldPerm="getFieldPerm(form.id)"
         :isPreview="isPreview"
         :showSubmit="false"
+        :ignoreReadonly="ignoreReadonly"
       />
     </template>
     <div class="multi-form-footer" v-if="!isPreview && showSubmit">
@@ -64,6 +66,10 @@ const props = defineProps({
     default: true
   },
   showSubmit: {
+    type: Boolean,
+    default: false
+  },
+  ignoreReadonly: {//管理员预览：忽略只读权限控制（隐藏仍生效），让只读字段可编辑
     type: Boolean,
     default: false
   }

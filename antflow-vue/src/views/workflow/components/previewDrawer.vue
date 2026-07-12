@@ -8,7 +8,7 @@
         <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
           <el-tab-pane label="表单信息" name="baseTab">
             <div v-if="baseTabShow" aria-hidden="true">
-              <previewComponent :isPreview="true" :ignoreReadonly="ignoreReadonly" />
+              <previewComponent ref="previewCompRef" :isPreview="true" :ignoreReadonly="ignoreReadonly" />
             </div>
           </el-tab-pane>
           <el-tab-pane label="审批记录" name="flowStep">
@@ -18,7 +18,7 @@
           </el-tab-pane>
           <el-tab-pane label="流程预览" name="flowReview">
             <div v-if="flowReviewShow">
-              <ReviewWarp />
+              <ReviewWarp :previewConf="ignoreReadonly ? previewConf : null" :key="reviewKey" />
             </div>
           </el-tab-pane>
           <el-tab-pane label="流程模板" name="flowTemplate">
@@ -62,6 +62,9 @@ let flowReviewShow = ref(false);
 let flowTemplateShow = ref(false);
 let nodeConfig = ref(null);
 let templateLoadFail = ref(false);
+let previewConf = ref(null);
+let reviewKey = ref(0);
+const previewCompRef = ref(null);
 let visible = computed({
   get() {
     return previewDrawer.value
@@ -70,13 +73,18 @@ let visible = computed({
     closeDrawer()
   }
 })
-const handleTabClick = (tab, event) => {
+const handleTabClick = async (tab, event) => {
   activeName.value = tab.paneName;
   if (tab.paneName == 'baseTab') {
     baseTabShow.value = true;
   } else if (tab.paneName == 'flowStep') {
     flowStepShow.value = true;
   } else if (tab.paneName == 'flowReview') {
+    if (ignoreReadonly.value) {
+      // 流程监控查看：用当前可编辑表单 + bpmnCode 做发起页式预览，支持改表单看不同分支
+      await buildFlowPreviewConf();
+      reviewKey.value++;
+    }
     flowReviewShow.value = true;
   } else if (tab.paneName == 'flowTemplate') {
     flowTemplateShow.value = true;
@@ -111,6 +119,39 @@ const loadFlowTemplate = async () => {
   } finally {
     proxy.$modal.closeLoading();
   }
+}
+/**
+ * 流程监控查看：基于当前可编辑表单内容 + bpmnCode + 真实发起人构建流程预览参数
+ * 不带 processNumber(后端 taskPagePreviewNode 检测到无编号则不查 BpmVariable 存储表单,改用此处提交的表单数据)
+ * 保留 isStartPreview=false,沿用真实发起人计算审批人(而非当前登录管理员),仅模仿发起页预览的"按表单算分支"行为
+ */
+const buildFlowPreviewConf = async () => {
+  let conf = {
+    isStartPreview: false,
+    formCode: viewConfig.value.formCode,
+    isLowCodeFlow: viewConfig.value.isLowCodeFlow || false,
+    isOutSideAccessProc: viewConfig.value.isOutSideAccess || false,
+    bpmnCode: viewConfig.value.bpmnCode,
+    startUserId: viewConfig.value.startUserId,
+  };
+  try {
+    const comp = previewCompRef.value;
+    const formDataStr = await comp?.getFromData();
+    if (comp?.isMultiForm) {
+      // 外部表单模式: 数据为 { [formdataId]: fieldMap }
+      conf.lfFieldsMulti = JSON.parse(formDataStr);
+      conf.lfFields = null;
+    } else {
+      // 内联表单模式: 数据含 approversList/approversValid
+      const lfFormdata = JSON.parse(formDataStr);
+      conf.approversList = lfFormdata.approversList;
+      conf.approversValid = lfFormdata.approversValid;
+      conf.lfFields = lfFormdata;
+    }
+  } catch (e) {
+    // 表单数据获取失败时，仅按 bpmnCode 预览流程设计
+  }
+  previewConf.value = conf;
 }
 /**
  * 关闭抽屉

@@ -194,6 +194,10 @@ function handlePreview(row) {
     isLowCodeFlow: row.isLowCodeFlow,
     processState: row.processState,
     confId: row.confId,
+    // version 字段即 bpmnCode(见 BpmBusinessProcessServiceImpl.setVersion(bpmnCode)),用于按实例版本预览流程分支
+    bpmnCode: row.version,
+    // 真实发起人(列表 userId 即 h.START_USER_ID_),流程预览时保留原发起人以正确计算审批人(如直属领导)
+    startUserId: row.userId,
     // 管理员从流程监控查看：忽略表单只读权限控制（隐藏仍生效），方便按字段值变化预览不同效果
     ignoreReadonly: true,
   })
