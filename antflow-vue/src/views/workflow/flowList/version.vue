@@ -55,6 +55,7 @@
                   <el-button v-else type="success" link @click="effectiveById(scope.row)">启动</el-button>
                   <el-button link type="primary" @click="handleEdit(scope.row)">编辑</el-button>
                   <el-button link type="success" @click="handlePreview(scope.row)">预览</el-button>
+                  <el-button link type="warning" @click="handleDebug(scope.row)">调试</el-button>
                </template>
             </el-table-column>
          </el-table>
@@ -141,6 +142,14 @@ function handlePreview(row) {
       id: row.id
    };
    let obj = { path: "/workflow/flowPreview", query: params };
+   proxy.$tab.openPage(obj);
+}
+/** 调试:管理员在流程未发起时,通过必填+条件字段+发起人预览流程执行路径 */
+function handleDebug(row) {
+   const params = {
+      id: row.id
+   };
+   let obj = { path: "/workflow/flowDebug", query: params };
    proxy.$tab.openPage(obj);
 }
 /**  返回按钮操作 */

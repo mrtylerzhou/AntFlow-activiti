@@ -191,6 +191,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/flowDebug",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowDebug",
+        component: () => import("@/views/workflow/flowDebug/index"),
+        name: "flowDebug",
+        meta: {
+          title: "流程调试",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,
