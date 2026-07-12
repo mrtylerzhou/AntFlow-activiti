@@ -6,7 +6,7 @@
                     <component ref="componentFormRef"
                         :key="Math.random().toString(36).slice(2) + Date.now().toString(36)" :is="loadedComponent"
                         :previewData="componentData" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
-                        :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit"
+                        :lfFieldPerm="lfFieldControlVOs" :lfFieldControlVOs="lfFieldControlVOsArr" :isPreview="!hasResubmit"
                         :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
                         :formHidden="formHiddenConfig">
                     </component>
@@ -60,6 +60,7 @@ let componentLoaded = ref(false);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+let lfFieldControlVOsArr = ref([]);
 let lfFormdataListConfig = ref([]);
 let lfFieldsMultiConfig = ref({});
 let formHiddenConfig = ref({});
@@ -238,7 +239,8 @@ const preview = async (viewData) => {
                         // 外部表单模式: 多 tab 渲染
                         lfFormdataListConfig.value = formdataList;
                         lfFieldsMultiConfig.value = responseData.lfFieldsMulti || {};
-                        lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo?.lfFieldControlVOs || []);
+                        lfFieldControlVOsArr.value = responseData.processRecordInfo?.lfFieldControlVOs || [];
+                        lfFieldControlVOs.value = JSON.stringify(lfFieldControlVOsArr.value);
                         formHiddenConfig.value = responseData.processRecordInfo?.formHidden || {};
                         lfFormDataConfig.value = null;
                         lfFieldsConfig.value = '{}';
@@ -246,7 +248,8 @@ const preview = async (viewData) => {
                     } else {
                         // 内联表单模式: 兼容旧逻辑
                         lfFormDataConfig.value = responseData.lfFormData;
-                        lfFieldControlVOs.value = JSON.stringify(responseData.processRecordInfo.lfFieldControlVOs);
+                        lfFieldControlVOsArr.value = responseData.processRecordInfo.lfFieldControlVOs || [];
+                        lfFieldControlVOs.value = JSON.stringify(lfFieldControlVOsArr.value);
                         lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
                         lfFormdataListConfig.value = [];
                         lfFieldsMultiConfig.value = {};
