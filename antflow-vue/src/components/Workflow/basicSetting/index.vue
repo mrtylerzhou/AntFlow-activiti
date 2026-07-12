@@ -48,7 +48,7 @@
             </el-form-item>
 
             <el-form-item label=" 审批人去重" prop="deduplicationType">
-                <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :style="{ width: '100%' }">
+                <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :disabled="readonly" :style="{ width: '100%' }">
                     <el-option v-for="(item, index) in duplicateOptions" :key="index" :label="item.label"
                         :value="item.value"></el-option>
                 </el-select>
@@ -58,7 +58,7 @@
                 <el-switch v-model="form.effectiveStatus" />
             </el-form-item> -->
             <el-form-item label="发起人权限" prop="viewPageStart">
-                <el-checkbox-group v-model="form.viewPageButtons.viewPageStart">
+                <el-checkbox-group v-model="form.viewPageButtons.viewPageStart" :disabled="readonly">
                     <el-checkbox v-for="item in viewPageButtons" :key="item.value" :label="item.label"
                         :value="item.value">
                         {{ item.label }}
@@ -67,11 +67,11 @@
             </el-form-item>
             <!-- 外部表单模式(仅低代码流程可用) -->
             <el-form-item v-if="flowType === 'LF'" label="外部表单" prop="useExternalForm">
-                <el-checkbox v-model="form.useExternalForm">使用外部表单(多表单)</el-checkbox>
+                <el-checkbox v-model="form.useExternalForm" :disabled="readonly">使用外部表单(多表单)</el-checkbox>
             </el-form-item>
             <el-form-item v-if="flowType === 'LF' && form.useExternalForm" label="关联表单" prop="lfFormdataIdsArr">
                 <el-select v-model="form.lfFormdataIdsArr" multiple filterable placeholder="请选择关联表单"
-                    :style="{ width: '100%' }" @visible-change="onFormSelectVisible">
+                    :disabled="readonly" :style="{ width: '100%' }" @visible-change="onFormSelectVisible">
                     <el-option v-for="item in externalFormOptions" :key="item.id" :label="item.formName"
                         :value="item.id">
                         <span style="float: left">【{{ item.formCode }}】 {{ item.formName }}</span>
@@ -81,7 +81,7 @@
             </el-form-item>
             <el-form-item label=" 流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
-                    :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
+                    :disabled="readonly" :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
             </el-form-item>
         </el-form>
     </div>
@@ -110,6 +110,10 @@ let props = defineProps({
     basicData: {
         type: Object,
         default: () => (null),
+    },
+    readonly: {
+        type: Boolean,
+        default: () => false,
     }
 });
 
