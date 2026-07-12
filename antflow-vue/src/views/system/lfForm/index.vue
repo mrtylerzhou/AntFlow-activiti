@@ -87,7 +87,11 @@
           style="margin-bottom: 16px"
         />
         <el-table :data="refList" v-loading="refLoading" border size="small">
-          <el-table-column label="流程编码" align="center" prop="bpmnCode" width="160" />
+          <el-table-column label="流程编码" align="center" prop="bpmnCode" width="160">
+            <template #default="scope">
+              <el-button link type="primary" @click="handleGotoPreview(scope.row)">{{ scope.row.bpmnCode }}</el-button>
+            </template>
+          </el-table-column>
           <el-table-column label="流程名称" align="center" prop="bpmnName" show-overflow-tooltip />
           <el-table-column label="状态" align="center" prop="effectiveStatus" width="80">
             <template #default="scope">
@@ -240,6 +244,12 @@ const handleViewReferences = async (row) => {
   } finally {
     refLoading.value = false;
   }
+};
+
+const handleGotoPreview = (row) => {
+  refVisible.value = false;
+  historyVisible.value = false;
+  router.push({ path: "/workflow/flowPreview", query: { id: row.id } });
 };
 
 const handleDelete = (row) => {
