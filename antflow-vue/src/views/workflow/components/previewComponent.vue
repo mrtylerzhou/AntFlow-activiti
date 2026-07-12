@@ -19,7 +19,8 @@
                 <el-main>
                     <div v-if="componentLoaded" class="component">
                         <component :is="loadedComponent" :previewData="componentData" :lfFormData="lfFormDataConfig"
-                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview">
+                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
+                            :ignoreReadonly="ignoreReadonly">
                         </component>
                     </div>
                 </el-main>
@@ -41,6 +42,10 @@ let store = useStore()
 let viewConfig = computed(() => store.instanceViewConfig1)
 let props = defineProps({
     isPreview: {
+        type: Boolean,
+        default: false,
+    },
+    ignoreReadonly: {
         type: Boolean,
         default: false,
     }

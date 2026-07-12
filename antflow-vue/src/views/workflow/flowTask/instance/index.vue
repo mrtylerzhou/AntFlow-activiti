@@ -186,14 +186,17 @@ function resetQuery() {
 }
 
 function handlePreview(row) {
-   setPreviewDrawer(true);
-   setPreviewDrawerConfig({
-      formCode: row.processKey,
-      processNumber: row.processNumber,
-      isOutSideAccess: row.isOutSideProcess,
-      isLowCodeFlow: row.isLowCodeFlow,
-      processState: row.processState,
-   })
+  setPreviewDrawer(true);
+  setPreviewDrawerConfig({
+    formCode: row.processKey,
+    processNumber: row.processNumber,
+    isOutSideAccess: row.isOutSideProcess,
+    isLowCodeFlow: row.isLowCodeFlow,
+    processState: row.processState,
+    confId: row.confId,
+    // 管理员从流程监控查看：忽略表单只读权限控制（隐藏仍生效），方便按字段值变化预览不同效果
+    ignoreReadonly: true,
+  })
 }
 
 /** 减签 */
