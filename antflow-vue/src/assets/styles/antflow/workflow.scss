@@ -923,7 +923,7 @@ html {
 .start-node.node-wrap-box .content .text {
   display: block;
   white-space: nowrap;
-  cursor: not-allowed;
+  cursor: pointer;
 }
 
 .node-wrap-box:before {
@@ -943,7 +943,7 @@ html {
 
 .node-wrap-box.start-node:before {
   content: none;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .top-left-cover-line {

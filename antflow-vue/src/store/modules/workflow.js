@@ -4,6 +4,7 @@ export const useStore = defineStore("store", {
     tableId: "",
     isTried: false,
     promoterDrawer: false,
+    promoterConfig: {},
     flowPermission1: {},
     approverDrawer: false,
     approverConfig1: {},
@@ -36,6 +37,9 @@ export const useStore = defineStore("store", {
     },
     setPromoter(payload) {
       this.promoterDrawer = payload;
+    },
+    setPromoterConfig(payload) {
+      this.promoterConfig = payload;
     },
     setFlowPermission(payload) {
       this.flowPermission1 = payload;

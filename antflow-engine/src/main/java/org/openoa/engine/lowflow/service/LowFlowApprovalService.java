@@ -13,6 +13,7 @@ import org.openoa.base.constant.enums.ButtonTypeEnum;
 import org.openoa.base.constant.enums.LFControlTypeEnum;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.ActivitiService;
@@ -240,6 +241,17 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         mainService.save(main);
         Long mainId = main.getId();
 
+        // 发起人节点字段权限校验: 过滤掉隐藏(H)字段,防止前端绕过
+        List<LFFieldControlVO> startFieldControls = getFieldControlsFromJson(confId, ProcessNodeEnum.START_TASK_KEY.getDesc());
+        if (!CollectionUtils.isEmpty(startFieldControls)) {
+            lfFields.entrySet().removeIf(entry -> {
+                LFFieldControlVO ctrl = startFieldControls.stream()
+                        .filter(c -> c.getFieldId().equals(entry.getKey()))
+                        .findFirst().orElse(null);
+                return ctrl != null && StringConstants.HIDDEN_FIELD_PERMISSION.equals(ctrl.getPerm());
+            });
+        }
+
         Map<String, BpmnConfLfFormdataField> lfFormdataFieldMap = allFieldConfMap.get(confId);
         if(CollectionUtils.isEmpty(lfFormdataFieldMap)){
             Map<String, BpmnConfLfFormdataField> name2SelfMap = lfFormdataFieldService.qryFormDataFieldMap(confId);
@@ -288,11 +300,31 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
         Long mainId = main.getId();
 
         List<LFMainField> allMainFields = new ArrayList<>();
+
+        // 发起人节点字段权限校验: 过滤隐藏表单和隐藏字段
+        BpmnNodeLowCodeConfJson startLowCodeConf = getLowCodeConfJson(confId, ProcessNodeEnum.START_TASK_KEY.getDesc());
+        Map<String, Boolean> startFormHidden = (startLowCodeConf != null) ? startLowCodeConf.getFormHidden() : null;
+        List<BpmnNodeLowCodeConfJson.FieldControl> startFieldControls =
+                (startLowCodeConf != null && startLowCodeConf.getFieldControls() != null) ? startLowCodeConf.getFieldControls() : Collections.emptyList();
+
         for (Map.Entry<String, Map<String, Object>> entry : lfFieldsMulti.entrySet()) {
             Long formdataId = Long.parseLong(entry.getKey());
+            // 整表隐藏: 跳过该表单
+            if (startFormHidden != null && Boolean.TRUE.equals(startFormHidden.get(String.valueOf(formdataId)))) {
+                continue;
+            }
             Map<String, Object> fields = entry.getValue();
             if(CollectionUtils.isEmpty(fields)){
                 continue;
+            }
+            // 过滤隐藏字段
+            if (!CollectionUtils.isEmpty(startFieldControls)) {
+                fields.entrySet().removeIf(fieldEntry -> {
+                    BpmnNodeLowCodeConfJson.FieldControl ctrl = startFieldControls.stream()
+                            .filter(c -> Objects.equals(c.getFormdataId(), formdataId) && c.getFieldId().equals(fieldEntry.getKey()))
+                            .findFirst().orElse(null);
+                    return ctrl != null && StringConstants.HIDDEN_FIELD_PERMISSION.equals(ctrl.getPerm());
+                });
             }
             Map<String, BpmnConfLfFormdataField> fieldConfMap = allFieldConfMapByFormdataId.get(formdataId);
             if(CollectionUtils.isEmpty(fieldConfMap)){

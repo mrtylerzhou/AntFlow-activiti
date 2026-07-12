@@ -7,11 +7,13 @@ import org.openoa.base.entity.Result;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BaseKeyValueStruVo;
 import org.openoa.base.vo.BpmnConfVo;
+import org.openoa.base.vo.BpmnNodeVo;
 import org.openoa.base.vo.DetailRequestDto;
 import org.openoa.base.vo.LfStartFormVo;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.vo.LfFormManageVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
@@ -107,6 +109,16 @@ public class LowCodeFlowController {
             result.setLfFormdataList(confVo.getLfFormdataList());
         } else {
             result.setLfFormData(confVo.getLfFormData());
+        }
+        // 提取发起人节点(nodeType=1)的表单字段权限
+        if (confVo.getNodes() != null) {
+            for (BpmnNodeVo node : confVo.getNodes()) {
+                if (NodeTypeEnum.NODE_TYPE_START.getCode().equals(node.getNodeType())) {
+                    result.setLfFieldControlVOs(node.getLfFieldControlVOs());
+                    result.setFormHidden(node.getFormHidden());
+                    break;
+                }
+            }
         }
         return Result.newSuccessResult(result);
     }

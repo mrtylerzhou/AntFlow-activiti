@@ -164,6 +164,7 @@ let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
 let store = useStore();
 let {
     setPromoter,
+    setPromoterConfig,
     setApprover,
     setCopyer,
     setCondition,
@@ -176,6 +177,7 @@ let {
 } = store;
 let isTried = computed(() => store.isTried)
 let flowPermission1 = computed(() => store.flowPermission1)
+let promoterConfig1 = computed(() => store.promoterConfig)
 let approverConfig1 = computed(() => store.approverConfig1)
 let copyerConfig1 = computed(() => store.copyerConfig1)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
@@ -239,6 +241,12 @@ onMounted(() => {
 watch(flowPermission1, (flow) => {
     if (flow.flag && flow.id === _uid) {
         emits("update:flowPermission", flow.value);
+    }
+});
+/**发起人节点配置监听(含表单权限) */
+watch(promoterConfig1, (promoter) => {
+    if (promoter.flag && promoter.id === _uid) {
+        emits("update:nodeConfig", promoter.value);
     }
 });
 /**审批人节点监听 */
@@ -413,6 +421,13 @@ const setNodeInfo = (index) => {
     var { nodeType } = props.nodeConfig;
     if (nodeType == 1) {
         setPromoter(true);
+        setPromoterConfig({
+            value: {
+                ...JSON.parse(JSON.stringify(props.nodeConfig))
+            },
+            flag: false,
+            id: _uid,
+        });
         setFlowPermission({
             value: props.flowPermission,
             flag: false,

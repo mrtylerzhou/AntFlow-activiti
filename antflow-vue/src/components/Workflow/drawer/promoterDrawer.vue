@@ -7,66 +7,126 @@
 <template>
     <el-drawer :append-to-body="true" title="发起人" v-model="visible" class="set_promoter" :with-header="false"
         :size="680">
-        <span class="drawer-title">发起人</span>
-        <div class="demo-drawer__content">
-            <div class="promoter_content drawer_content">
-                <p>{{ $func.arrToStr(flowPermission) || '发起人' }}</p>
-                <el-button type="primary" @click="addPromoter">添加/修改发起人</el-button>
-            </div>
-            <div class="demo-drawer__footer clear">
-                <el-button type="primary" @click="savePromoter">确 定</el-button>
-                <el-button @click="closeDrawer">取 消</el-button>
-            </div>
-
+        <div class="el-drawer__header">
+            <span class="drawer-title">发起人</span>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleTabClick">
+            <el-tab-pane label="发起人设置" name="promoterStep">
+                <div class="promoter_content drawer_content">
+                    <p>发起人在流程发起时自动获取，无需设置</p>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane lazy label="表单权限设置" name="formStep">
+                <form-perm-conf v-if="formStepShow" default-perm="E" v-model:formItems="formItems"
+                    :formHidden="formHiddenMap"
+                    @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
+            </el-tab-pane>
+        </el-tabs>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="savePromoter">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
         </div>
     </el-drawer>
 </template>
 <script setup>
 import $func from '@/utils/antflow/index'
-import { useStore } from '@/store/modules/outsideflow'
+import { useStore } from '@/store/modules/workflow'
 import { computed, ref, watch } from 'vue'
+import formPermConf from "./permConfig/FormPermConf.vue";
+
 let flowPermission = ref([])
-let promoterVisible = ref(false)
 let checkedList = ref([])
+let formItems = ref([])
+let formHiddenMap = ref({})
+let activeName = ref('promoterStep')
+let formStepShow = ref(false)
 
 let store = useStore()
-let { setPromoter, setFlowPermission } = store
-let promoterDrawer = computed(() => store.promoterDrawer)
+let { setPromoter, setPromoterConfig, setFlowPermission } = store
+let promoterDrawerVisible = computed(() => store.promoterDrawer)
+let promoterConfig1 = computed(() => store.promoterConfig)
 let flowPermission1 = computed(() => store.flowPermission1)
+
+let localNodeConfig = ref({})
+
 let visible = computed({
     get() {
-        return promoterDrawer.value
+        handleTabClick({ paneName: "promoterStep" })
+        return promoterDrawerVisible.value
     },
     set() {
         closeDrawer()
     }
 })
-watch(flowPermission1, (val) => {
-    flowPermission.value = val.value
+
+/** 监听 store 中传入的节点配置 */
+watch(promoterConfig1, (val) => {
+    if (val && val.value) {
+        localNodeConfig.value = val.value;
+        formItems.value = val.value.lfFieldControlVOs || [];
+        formHiddenMap.value = val.value.formHidden || {};
+    }
+})
+
+watch(flowPermission1, (flow) => {
+    flowPermission.value = flow.value
 })
 
 const addPromoter = () => {
     checkedList.value = flowPermission.value
-    promoterVisible.value = true;
+    // TODO: open user select dialog if needed
 }
-const surePromoter = (data) => {
-    flowPermission.value = data;
-    promoterVisible.value = false;
+
+/**低代码表单字段权限 */
+const changePermVal = (data) => {
+    localNodeConfig.value.lfFieldControlVOs = data;
 }
+
+/**外部表单模式: 整表隐藏标记变化 */
+const changeFormHidden = (data) => {
+    localNodeConfig.value.formHidden = data;
+}
+
 const savePromoter = () => {
     setFlowPermission({
         value: flowPermission.value,
         flag: true,
-        id: flowPermission1.value.id
+        id: promoterConfig1.value.id,
+    })
+    setPromoterConfig({
+        value: localNodeConfig.value,
+        flag: true,
+        id: promoterConfig1.value.id,
     })
     closeDrawer()
 }
+
 const closeDrawer = () => {
     setPromoter(false)
+}
+
+/**
+ * 切换tab
+ */
+const handleTabClick = (tab) => {
+    activeName.value = tab.paneName;
+    if (tab.paneName == 'formStep') {
+        formStepShow.value = true;
+    } else {
+        formStepShow.value = false;
+    }
 }
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/dialog.scss";
+
+.el-drawer__header {
+    margin-bottom: 5px !important;
+}
+
+.el-tabs {
+    margin-left: 20px !important;
+}
 
 .set_promoter {
     .promoter_content {

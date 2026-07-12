@@ -4,6 +4,7 @@ import lombok.Data;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 发起流程时的表单数据响应 VO
@@ -27,4 +28,16 @@ public class LfStartFormVo {
      * 内联表单模式: null
      */
     private List<BpmnConfLfFormdata> lfFormdataList;
+
+    /**
+     * 发起人节点的表单字段权限控制列表
+     * 从发起人节点(nodeType=1)的 node_config_json.lowCodeConf 中提取
+     */
+    private List<LFFieldControlVO> lfFieldControlVOs;
+
+    /**
+     * 发起人节点的外部表单整表隐藏标记
+     * Key = formdataId, Value = true 表示该表单在发起时整表隐藏
+     */
+    private Map<String, Boolean> formHidden;
 }

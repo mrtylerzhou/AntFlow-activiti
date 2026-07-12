@@ -66,7 +66,7 @@ const optionData = reactive({});
 const vFormRef = ref(null);
 /**表单渲染预处理 */
 const advanceHandleFormData = () => {
-  if (!isEmpty(props.lfFieldsData)) {
+  if (!isEmpty(props.lfFieldsData) || props.showSubmit) {
     traverseFieldWidgetsList(formJson.widgetList, handlerFn);
   }
 }
@@ -80,8 +80,36 @@ const handlerFn = (w) => {
     }
   }
   if (props.showSubmit) {
-    w.options.disabled = false;
-    w.options.readonly = false;
+    // 发起模式：优先检查发起人节点的字段权限配置
+    if (!isEmpty(props.lfFieldPerm)) {
+      let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });
+      if (info) {
+        if (info.perm == 'R') {
+          w.options.disabled = true;
+        } else if (info.perm == 'E') {
+          w.options.readonly = false;
+        } else if (info.perm == 'H') {
+          if (w.type != 'textarea' && w.options.type != 'input') {
+            w.type = 'input';
+            w.options.type = 'text';
+          }
+          formData[w.options.name] = '******';
+          delete w.options.format;
+          delete w.options.valueFormat;
+          w.options.disabled = true;
+        } else {
+          w.options.disabled = false;
+          w.options.readonly = false;
+        }
+      } else {
+        // 未配置权限的字段默认可编辑
+        w.options.disabled = false;
+        w.options.readonly = false;
+      }
+    } else {
+      w.options.disabled = false;
+      w.options.readonly = false;
+    }
   }
   else if (props.ignoreReadonly) {
     // 管理员预览：忽略只读权限控制，仅隐藏字段仍保持隐藏

@@ -10,6 +10,7 @@
                         <div v-if="componentLoaded">
                             <component ref="formRef" v-if="componentLoaded" :is="loadedComponent"
                                 :lfFormData="lfFormData" :isPreview="false" :showSubmit="true"
+                                :lfFieldPerm="lfFieldPermConfig"
                                 :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
                                 :formHidden="formHiddenConfig"
                                 @handleBizBtn="handleSubmit">
@@ -49,6 +50,7 @@ let lfFormData = ref(null);
 let lfFormdataListConfig = ref([]);
 let lfFieldsMultiConfig = ref({});
 let formHiddenConfig = ref({});
+let lfFieldPermConfig = ref("[]");
 let useExternalForm = ref(false);
 const isLFFlow = route.query?.formType == 'LF';
 
@@ -65,7 +67,8 @@ const adapFlowType = async () => {
                     useExternalForm.value = true;
                     lfFormdataListConfig.value = data.lfFormdataList || [];
                     lfFieldsMultiConfig.value = {};
-                    formHiddenConfig.value = {};
+                    formHiddenConfig.value = data.formHidden || {};
+                    lfFieldPermConfig.value = JSON.stringify(data.lfFieldControlVOs || []);
                     lfFormData.value = null;
                     loadedComponent.value = await loadLFMultiFormComponent();
                 } else {
@@ -74,7 +77,8 @@ const adapFlowType = async () => {
                     lfFormData.value = data.lfFormData;
                     lfFormdataListConfig.value = [];
                     lfFieldsMultiConfig.value = {};
-                    formHiddenConfig.value = {};
+                    formHiddenConfig.value = data.formHidden || {};
+                    lfFieldPermConfig.value = JSON.stringify(data.lfFieldControlVOs || []);
                     loadedComponent.value = await loadLFComponent();
                 }
                 componentLoaded.value = true;
