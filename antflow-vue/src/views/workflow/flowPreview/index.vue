@@ -12,7 +12,7 @@
       <el-row>
         <el-col :span="24" v-if="activeTab === 'flowForm'" class="item">
           <div v-if="processConfig">
-            <BasicSetting ref="basicSetting" :basicData="processConfig" />
+            <BasicSetting ref="basicSetting" :basicData="processConfig" :flowType="flowType" :readonly="true" />
           </div>
         </el-col>
         <el-col :span="24" v-if="activeTab === 'formRender'" class="item">
@@ -55,6 +55,7 @@ let formHiddenConfig = ref({})
 let nodeConfig = ref(null)
 let title = ref('')
 let id = route.query?.id
+let flowType = ref('DIY')
 let loadedComponent = ref(null)
 let componentLoaded = ref(null)
 
@@ -75,6 +76,7 @@ const init = async () => {
   }
   let data = FormatDisplayUtils.getToTree(mockjson.data);
   processConfig.value = data;
+  flowType.value = data?.isLowCodeFlow == '1' ? 'LF' : 'DIY';
   title.value = data?.bpmnName;
   nodeConfig.value = data?.nodeConfig;
   if (data.isLowCodeFlow == '1') {//低代码表单
