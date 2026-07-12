@@ -172,6 +172,9 @@ export class FormatCommitUtils {
         } else if (node.setType == 16) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
           approveObj.formInfos = node.property.formInfos ?? [];
+        } else if (node.setType == 17) {
+          approveObj.udrAssigneeProperty = node.property.udrAssigneeProperty ?? null;
+          approveObj.udrValueJson = node.property.udrValueJson ?? null;
         } else if (node.setType == 18) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty; 
         }

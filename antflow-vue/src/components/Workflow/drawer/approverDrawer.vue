@@ -103,6 +103,14 @@
                                 </el-select>
                             </div> 
                         </div>
+                        <div class="approver_text" v-if="approverConfig.setType == 17">
+                            <div>
+                                <p><i style="color: red;">*</i>自定义审批规则:</p>
+                                <el-select v-model="udrSelectedId" placeholder="请选择自定义审批规则" style="width: 300px">
+                                    <el-option v-for="item in udrOptions" :key="item.id" :label="item.name" :value="item.id" />
+                                </el-select>
+                            </div>
+                        </div>
                     </div>
                     <div class="approver_block" v-if="approverConfig.nodeType == 4">
                         <p>额外增加审批</p>
@@ -225,6 +233,7 @@ import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
+import { getUDROptions } from '@/api/workflow/index';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
@@ -246,6 +255,8 @@ let checkedUserList = ref([]);
 let checkApprovalPageBtns = ref([]);
 let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
+let udrOptions = ref([]);
+let udrSelectedId = ref(null);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
@@ -327,6 +338,10 @@ watch(approverConfig, (val) => {
         initFormInfoOptions();
         formInfoSelected.value = approverConfig.value.property.formInfos?.[0]?.id;
     }
+    if (val.setType == 17) {//setType == 17 指 自定义审批规则
+        initUdrOptions();
+        udrSelectedId.value = approverConfig.value.property.udrAssigneeProperty?.id || null;
+    }
 }, { deep: true });
 
 
@@ -344,6 +359,22 @@ watch(formInfoSelected, (val) => {
             id: info.id,
             name: info.name
         }];
+    }
+}, { immediate: true });
+
+watch(udrSelectedId, (val) => {
+    const property = approverConfig.value.property;
+    if (!property) {
+        approverConfig.value.property = {};
+    }
+    const info = udrOptions.value.find(item => item.id === val);
+    if (info) {
+        property.udrAssigneeProperty = {
+            id: info.id,
+            name: info.name
+        };
+    } else {
+        property.udrAssigneeProperty = null;
     }
 }, { immediate: true });
 
@@ -397,6 +428,18 @@ const initFormInfoOptions = () => {
             name: item.options.label
         });
     });
+}
+
+const initUdrOptions = async () => {
+    if (udrOptions.value.length > 0) {
+        return;
+    }
+    try {
+        const res = await getUDROptions();
+        udrOptions.value = res.data || [];
+    } catch (error) {
+        proxy.$modal.msgError("获取自定义审批规则失败");
+    }
 }
 
 /**添加审批人 */

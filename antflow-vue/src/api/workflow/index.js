@@ -282,3 +282,11 @@ export function getStartUserChooseModules(formCode) {
     { headers },
   );
 }
+
+/**
+ * 获取自定义审批规则选项
+ * @returns
+ */
+export function getUDROptions() {
+  return http.get(`${baseUrl}/taskMgmt/getUDROptions`, { headers });
+}

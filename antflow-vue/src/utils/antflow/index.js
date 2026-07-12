@@ -102,6 +102,9 @@ All.prototype = {
         (item) => item.value == nodeConfig.property?.formAssigneeProperty,
       );
       return "表单中的数据:" + info?.label;
+    } else if (nodeConfig.setType == 17) {
+      const name = nodeConfig.property?.udrAssigneeProperty?.name;
+      return name ? "自定义：" + name : "自定义";
     } else if (nodeConfig.setType == 18) {
       const info = formPrevNodeApproverOptionSet.find(
         (item) => item.value == nodeConfig.property?.formAssigneeProperty,
