@@ -119,5 +119,5 @@ public class ProcessRecordInfoVo {
      * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true 表示该表单在此节点不展示
      * 仅外部表单模式使用; 内联模式为 null
      */
-    private Map<Long, Boolean> formHidden;
+    private Map<String, Boolean> formHidden;
 }

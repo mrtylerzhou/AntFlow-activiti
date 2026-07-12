@@ -403,7 +403,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
 
         // 获取节点级配置: formHidden + fieldControls
         BpmnNodeLowCodeConfJson lowCodeConf = getLowCodeConfJson(confId, vo.getTaskDefKey());
-        Map<Long, Boolean> formHidden = (lowCodeConf != null) ? lowCodeConf.getFormHidden() : null;
+        Map<String, Boolean> formHidden = (lowCodeConf != null) ? lowCodeConf.getFormHidden() : null;
         List<BpmnNodeLowCodeConfJson.FieldControl> fieldControls =
                 (lowCodeConf != null && lowCodeConf.getFieldControls() != null) ? lowCodeConf.getFieldControls() : Collections.emptyList();
 

@@ -29,7 +29,7 @@ public class BpmnNodeLowCodeConfJson implements Serializable {
      * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true if the whole form is hidden at this node.
      * Only used in external-form mode; null/empty in inline mode.
      */
-    private Map<Long, Boolean> formHidden;
+    private Map<String, Boolean> formHidden;
 
     @Data
     @Builder

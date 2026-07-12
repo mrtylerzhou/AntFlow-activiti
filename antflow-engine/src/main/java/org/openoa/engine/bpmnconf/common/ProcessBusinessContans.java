@@ -377,7 +377,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     /**
      * 读取节点级整表隐藏标记(外部表单模式)
      */
-    private Map<Long, Boolean> getFormHiddenFromNodeJson(Long nodeId) {
+    private Map<String, Boolean> getFormHiddenFromNodeJson(Long nodeId) {
         if (nodeId == null) {
             return null;
         }
