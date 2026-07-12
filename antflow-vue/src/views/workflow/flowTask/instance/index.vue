@@ -82,6 +82,16 @@
                                     <CirclePlus />
                                  </el-icon>加签
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowAddNode(scope.row)">
+                                 <el-icon>
+                                    <Plus />
+                                 </el-icon>增加节点
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowRemoveNode(scope.row)">
+                                 <el-icon>
+                                    <Minus />
+                                 </el-icon>删除节点
+                              </el-dropdown-item>
                               <el-dropdown-item @click="handleFlowChange(scope.row)">
                                  <el-icon>
                                     <Switch />
@@ -213,6 +223,24 @@ function handleFlowAddSign(row) {
    const processNumber = row.processNumber
    router.push({
       path: "/workflow/instance/addSign/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 增加节点 */
+function handleFlowAddNode(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/addNode/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 删除节点 */
+function handleFlowRemoveNode(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/removeNode/processNumber/" + processNumber,
       query: row
    });
 }
