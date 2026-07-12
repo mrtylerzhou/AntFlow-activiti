@@ -211,6 +211,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "lfFormManage",
+          "path": "lfForm",
+          "hidden": false,
+          "component": "system/lfForm/index",
+          "meta": {
+            "title": "表单管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },
@@ -225,34 +237,6 @@
         "noCache": false,
         "link": "http://14.103.207.27:7001/doc.html"
       }
-    },
-    {
-      "name": "systemMgt",
-      "path": "/system",
-      "hidden": false,
-      "redirect": "noRedirect",
-      "component": "Layout",
-      "alwaysShow": true,
-      "meta": {
-        "title": "系统管理",
-        "icon": "dict",
-        "noCache": false,
-        "link": null
-      },
-      "children": [
-        {
-          "name": "lfFormManage",
-          "path": "lfForm",
-          "hidden": false,
-          "component": "system/lfForm/index",
-          "meta": {
-            "title": "表单管理",
-            "icon": "",
-            "noCache": false,
-            "link": null
-          }
-        }
-      ]
     },
     {
       "name": "outsideMgt",

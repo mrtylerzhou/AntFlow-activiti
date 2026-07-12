@@ -300,7 +300,7 @@ export const dynamicRoutes = [
         name: "lfForm-design",
         meta: {
           title: "表单设计",
-          activeMenu: "/system/lfForm",
+          activeMenu: "/flowDevOps/lfForm",
         },
       },
     ],
