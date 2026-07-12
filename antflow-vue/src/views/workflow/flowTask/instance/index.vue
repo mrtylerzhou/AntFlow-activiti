@@ -11,6 +11,10 @@
                   @keyup.enter="handleQuery" />
             </el-form-item>
 
+            <el-form-item label="" prop="includeAllFlag">
+               <el-checkbox v-model="taskMgmtVO.includeAllFlag" :true-value="1" :false-value="0">查询全部</el-checkbox>
+            </el-form-item>
+
             <el-form-item>
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -136,7 +140,8 @@ const data = reactive({
    },
    taskMgmtVO: {
       processNumber: undefined,
-      processTypeName: undefined
+      processTypeName: undefined,
+      includeAllFlag: 0
    },
    rules: {
       processNumber: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
@@ -155,6 +160,8 @@ const getList = async () => {
       dataList.value = response.data;
       total.value = response.pagination.totalCount;
       loading.value = false;
+      // 查询全部为一次性操作，查询成功后取消勾选，避免影响后续性能
+      taskMgmtVO.value.includeAllFlag = 0;
    }).catch((r) => {
       loading.value = false;
       console.log(r);
@@ -170,7 +177,8 @@ const handleQuery = async () => {
 function resetQuery() {
    taskMgmtVO.value = {
       processNumber: undefined,
-      processTypeName: undefined
+      processTypeName: undefined,
+      includeAllFlag: 0
    };
    handleQuery();
 }
