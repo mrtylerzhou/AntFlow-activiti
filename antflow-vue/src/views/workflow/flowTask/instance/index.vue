@@ -40,8 +40,10 @@
                      </template>
                      {{ substringHidden(item.row.processNumber) }}
                   </el-tooltip>
+                  <el-button link type="primary" icon="CopyDocument" @click="copyProcessNumber(item.row.processNumber)"></el-button>
                </template>
             </el-table-column>
+            <el-table-column label="版本编号" align="center" prop="version" width="100" />
             <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
             <el-table-column label="状态" align="center" prop="effectiveStatus">
                <template #default="item">
@@ -184,14 +186,17 @@ function resetQuery() {
 }
 
 function handlePreview(row) {
-   setPreviewDrawer(true);
-   setPreviewDrawerConfig({
-      formCode: row.processKey,
-      processNumber: row.processNumber,
-      isOutSideAccess: row.isOutSideProcess,
-      isLowCodeFlow: row.isLowCodeFlow,
-      processState: row.processState,
-   })
+  setPreviewDrawer(true);
+  setPreviewDrawerConfig({
+    formCode: row.processKey,
+    processNumber: row.processNumber,
+    isOutSideAccess: row.isOutSideProcess,
+    isLowCodeFlow: row.isLowCodeFlow,
+    processState: row.processState,
+    confId: row.confId,
+    // 管理员从流程监控查看：忽略表单只读权限控制（隐藏仍生效），方便按字段值变化预览不同效果
+    ignoreReadonly: true,
+  })
 }
 
 /** 减签 */
@@ -266,6 +271,32 @@ function handleFlowRepeal(row) {
       });
       proxy.$modal.closeLoading();
    }).catch(() => { })
+}
+
+/** 复制流程编号 */
+function copyProcessNumber(processNumber) {
+   if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(processNumber).then(() => {
+         proxy.$modal.msgSuccess("复制成功");
+      }).catch(() => {
+         fallbackCopy(processNumber);
+      });
+   } else {
+      fallbackCopy(processNumber);
+   }
+}
+function fallbackCopy(text) {
+   const input = document.createElement("input");
+   input.value = text;
+   document.body.appendChild(input);
+   input.select();
+   try {
+      document.execCommand("copy");
+      proxy.$modal.msgSuccess("复制成功");
+   } catch (e) {
+      proxy.$modal.msgError("复制失败");
+   }
+   document.body.removeChild(input);
 }
 
 </script>

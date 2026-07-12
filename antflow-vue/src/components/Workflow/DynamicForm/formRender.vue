@@ -52,6 +52,10 @@ let props = defineProps({
   isPreview: {//是否预览
     type: Boolean,
     default: true,
+  },
+  ignoreReadonly: {//管理员预览：忽略只读权限控制（隐藏仍生效），让只读字段可编辑
+    type: Boolean,
+    default: false,
   }
 });
 /* 注意：formJson是指表单设计器导出的json，此处演示的formJson只是一个空白表单json！！ */
@@ -78,6 +82,23 @@ const handlerFn = (w) => {
   if (props.showSubmit) {
     w.options.disabled = false;
     w.options.readonly = false;
+  }
+  else if (props.ignoreReadonly) {
+    // 管理员预览：忽略只读权限控制，仅隐藏字段仍保持隐藏
+    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });
+    if (info && info.perm == 'H') {
+      if (w.type != 'textarea' && w.options.type != 'input') {
+        w.type = 'input';
+        w.options.type = 'text';
+      }
+      formData[w.options.name] = '******';
+      delete w.options.format;
+      delete w.options.valueFormat;
+      w.options.disabled = true;
+    } else {
+      w.options.disabled = false;
+      w.options.readonly = false;
+    }
   }
   else if (!isEmpty(props.lfFieldPerm)) {
     let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });

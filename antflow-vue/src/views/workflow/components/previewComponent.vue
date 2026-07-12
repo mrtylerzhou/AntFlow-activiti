@@ -22,6 +22,8 @@
                             :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
                             :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
                             :formHidden="formHiddenConfig">
+                            :lfFieldsData="lfFieldsConfig" :lfFieldPerm="lfFieldControlVOs" :isPreview="isPreview"
+                            :ignoreReadonly="ignoreReadonly">
                         </component>
                     </div>
                 </el-main>
@@ -43,6 +45,10 @@ let store = useStore()
 let viewConfig = computed(() => store.instanceViewConfig1)
 let props = defineProps({
     isPreview: {
+        type: Boolean,
+        default: false,
+    },
+    ignoreReadonly: {
         type: Boolean,
         default: false,
     }

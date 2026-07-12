@@ -161,7 +161,7 @@ public class TaskMgmtVO implements Serializable {
     /**
      * process version
      */
-    private Integer version;
+    private String version;
 
     /**
      * apptime
