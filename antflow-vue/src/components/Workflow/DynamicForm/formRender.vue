@@ -9,6 +9,8 @@
           </div>
           <div class="el-footer" v-if="!isPreview && props.showSubmit">
             <el-button type="primary" @click="submitForm">提交</el-button>
+            <el-button @click="saveDraft">保存草稿</el-button>
+            <el-button @click="loadDraftData">加载草稿</el-button>
           </div>
         </div>
       </el-col>
@@ -22,6 +24,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import { processOperation, loadDraft } from '@/api/workflow/index';
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -247,6 +250,60 @@ const replaceEmptyStringWithNull = (obj) => {
     });
   }
   return obj;
+}
+/**保存草稿*/
+const saveDraft = async () => {
+  try {
+    const formDataStr = await getFromData();
+    const lfFields = JSON.parse(formDataStr);
+    const bizFrom = {
+      formCode: formCode,
+      operationType: 30,
+      isLowCodeFlow: true,
+      lfFields: lfFields
+    };
+    proxy.$modal.loading();
+    processOperation(bizFrom).then((res) => {
+      if (res.code == 200) {
+        proxy.$modal.msgSuccess("草稿保存成功");
+      } else {
+        proxy.$modal.msgError("草稿保存失败:" + res.errMsg);
+      }
+      proxy.$modal.closeLoading();
+    }).catch((err) => {
+      proxy.$modal.msgError("草稿保存失败");
+      proxy.$modal.closeLoading();
+    });
+  } catch (error) {
+    proxy.$modal.msgError("草稿保存失败:" + error);
+  }
+}
+/**加载草稿*/
+const loadDraftData = () => {
+  proxy.$modal.confirm('加载草稿将覆盖当前表单内容，是否继续？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    proxy.$modal.loading();
+    try {
+      const res = await loadDraft(formCode);
+      if (res.code == 200) {
+        if (res.data && res.data.lfFields) {
+          Object.assign(formData, res.data.lfFields);
+          vFormRef.value.setFormData(formData);
+          proxy.$modal.msgSuccess("草稿加载成功");
+        } else {
+          proxy.$modal.msgWarning("无可用草稿");
+        }
+      } else {
+        proxy.$modal.msgError("加载草稿失败:" + res.errMsg);
+      }
+    } catch (error) {
+      proxy.$modal.msgError("加载草稿失败:" + error);
+    }
+    proxy.$modal.closeLoading();
+  }).catch(() => { });
 }
 defineExpose({
   handleValidate,

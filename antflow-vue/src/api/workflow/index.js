@@ -222,6 +222,15 @@ export function getViewBusinessProcess(data) {
 }
 
 /**
+ * 加载流程草稿
+ * @param {string} formCode
+ * @returns
+ */
+export function loadDraft(formCode) {
+  return http.get(`${baseUrl}/processDraft/loadDraft?formCode=${formCode}`, { headers });
+}
+
+/**
  * 获取审批页面 审批人配置类型
  * @returns
  */
