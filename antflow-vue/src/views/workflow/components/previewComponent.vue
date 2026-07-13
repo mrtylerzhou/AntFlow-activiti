@@ -26,6 +26,7 @@
                 </el-main>
             </el-container>
         </el-scrollbar>
+        <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
     </div>
 </template>
 <script setup>
@@ -36,6 +37,7 @@ import { useStore } from '@/store/modules/workflow';
 import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
 import { useRouter } from 'vue-router'; // 新增
+import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 const { proxy } = getCurrentInstance();
 const { width, height } = useWindowSize()
 let store = useStore()
@@ -60,9 +62,10 @@ const buttonColor = {
     3: "success", //同意
     4: "danger", //拒绝
     5: "danger", //
-    6: "danger", // 
-    7: "danger", // 
+    6: "danger", //
+    7: "danger", //
     8: "primary", //
+    15: "warning", //转发
     18: "warning", //退回
     19: "success", //加批
     21: "primary", //转办
@@ -81,6 +84,8 @@ let lfFieldControlVOs = ref(null);
 
 let initiatorPermBtns = ref([]);//发起人权限按钮
 
+let forwardDialogVisible = ref(false); //转发选人对话框
+
 let tips = "*未获取到外部表单信息，请联系管理员。";
 let visible = computed({
     get() {
@@ -88,8 +93,13 @@ let visible = computed({
     }
 })
 
-/** 撤回/作废 */
+/** 撤回/作废/转发 */
 async function clickButten(row) {
+    // 转发按钮需要先选人
+    if (row.buttonType === 15) {
+        forwardDialogVisible.value = true;
+        return;
+    }
     let pramForm = {
         operationType: row.buttonType,
         formCode: viewConfig.value.formCode,
@@ -111,6 +121,33 @@ async function clickButten(row) {
         });
         proxy.$modal.closeLoading();
     }).catch(() => { })
+}
+
+/** 转发选人确认回调 */
+const handleForwardUserSelected = async (selectedUsers) => {
+    if (!selectedUsers || selectedUsers.length === 0) {
+        proxy.$modal.msgWarning("请至少选择一个转发用户");
+        return;
+    }
+    let pramForm = {
+        operationType: 15,
+        formCode: viewConfig.value.formCode,
+        processNumber: viewConfig.value.processNumber,
+        isLowCodeFlow: viewConfig.value.isLowCodeFlow,
+        userInfos: selectedUsers.map(u => ({
+            id: u.targetId,
+            name: u.name
+        }))
+    };
+    proxy.$modal.loading();
+    await processOperation(pramForm).then((res) => {
+        if (res.code == 200) {
+            proxy.$modal.msgSuccess("转发操作成功");
+        } else {
+            proxy.$modal.msgError("转发操作失败:" + res.errMsg);
+        }
+    });
+    proxy.$modal.closeLoading();
 }
 /**预览 */
 const preview = async (param) => {

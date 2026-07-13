@@ -107,6 +107,11 @@
                                     <CircleClose />
                                  </el-icon>作废
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowForward(scope.row)">
+                                 <el-icon>
+                                    <Promotion />
+                                 </el-icon>转发
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -118,6 +123,7 @@
             @pagination="getList" />
       </div>
       <previewDrawer v-if="visible" />
+      <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
    </div>
 </template>
 
@@ -125,6 +131,7 @@
 import { getAllProcesslistPage, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 import { onMounted } from "vue";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -135,6 +142,8 @@ const dataList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
+const forwardDialogVisible = ref(false);
+const currentForwardRow = ref(null);
 
 let visible = computed({
    get() {
@@ -299,6 +308,40 @@ function handleFlowRepeal(row) {
       });
       proxy.$modal.closeLoading();
    }).catch(() => { })
+}
+
+/** 转发 - 打开选人对话框 */
+function handleFlowForward(row) {
+   currentForwardRow.value = row;
+   forwardDialogVisible.value = true;
+}
+
+/** 转发选人确认回调 */
+function handleForwardUserSelected(selectedUsers) {
+   if (!selectedUsers || selectedUsers.length === 0) {
+      proxy.$modal.msgWarning("请至少选择一个转发用户");
+      return;
+   }
+   let row = currentForwardRow.value;
+   let pramForm = {
+      operationType: 15,
+      formCode: row.processKey,
+      processNumber: row.processNumber,
+      isLowCodeFlow: row.isLowCodeFlow,
+      userInfos: selectedUsers.map(u => ({
+         id: u.targetId,
+         name: u.name
+      }))
+   };
+   proxy.$modal.loading();
+   processOperation(pramForm).then((res) => {
+      if (res.code == 200) {
+         proxy.$modal.msgSuccess("转发操作成功");
+      } else {
+         proxy.$modal.msgError("转发操作失败:" + res.errMsg);
+      }
+   });
+   proxy.$modal.closeLoading();
 }
 
 /** 复制流程编号 */
