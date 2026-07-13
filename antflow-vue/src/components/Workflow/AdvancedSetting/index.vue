@@ -154,17 +154,13 @@ defineExpose({
 .form-container {
     background: white !important;
     padding: 20px;
-    max-width: 750px;
     min-height: 80vh;
-    left: 0;
-    bottom: 0;
-    right: 0;
     margin: auto;
 }
 
 .setting-cards {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 }
 
@@ -210,5 +206,18 @@ defineExpose({
     color: #909399;
     line-height: 1.6;
     margin: 0 0 12px 0;
+}
+
+/* 响应式：小屏幕时回退为两列或单列 */
+@media (max-width: 1200px) {
+    .setting-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .setting-cards {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
