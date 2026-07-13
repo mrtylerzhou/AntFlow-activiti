@@ -45,6 +45,9 @@
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
             <Process ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
         </div>
+        <div v-if="processConfig" v-show="activeStep === 'advancedSetting'">
+            <AdvancedSetting ref="advancedSetting" :basicData="processConfig" @nextChange="changeSteps" />
+        </div>
         <jsonDialog v-model:visible="viewJson" :title="jsonTitle" :modelValue="nodeConfig" />
     </div>
 </template>
@@ -59,6 +62,7 @@ import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import { useStore } from '@/store/modules/workflow';
 import { extractFormFieldsMulti } from '@/utils/antflow/formFieldExtractor';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
+import AdvancedSetting from "@/components/Workflow/AdvancedSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
@@ -66,6 +70,7 @@ const { proxy } = getCurrentInstance()
 const route = useRoute();
 const store = useStore();
 const basicSetting = ref(null);
+const advancedSetting = ref(null);
 const processDesign = ref(null);
 const formDesign = ref(null);
 let activeStep = ref("basicSetting"); // 激活的步骤面板
@@ -76,6 +81,7 @@ let steps = ref([
     { label: "基础设置", key: "basicSetting" },
     { label: "表单设计", key: "formDesign" },
     { label: "流程设计", key: "processDesign" },
+    { label: "高级设置", key: "advancedSetting" },
 ]);
 const changeSteps = (item) => {
     //外部表单模式下,表单设计步骤被禁用
@@ -160,17 +166,20 @@ const publish = () => {
         ? Promise.resolve({ formData: { widgetList: [], formConfig: {} } })
         : formDesign.value.getData();
     const step3 = processDesign.value.getData();
+    const step4 = advancedSetting.value.getData();
     proxy.$modal.loading();
-    Promise.all([step1, step2, step3])
+    Promise.all([step1, step2, step3, step4])
         .then((res) => {
             let basicData = res[0].formData;
             //同步外部表单模式标记到 lf.vue (用户在 basicSetting 中可能切换了勾选)
             useExternalForm.value = !!basicData.useExternalForm;
-            basicData.isLowCodeFlow = 1; // 1代表低代码表单 
+            basicData.isLowCodeFlow = 1; // 1代表低代码表单
             let lowcodeformData = res[1].formData;
             Object.assign(basicData, { lfFormData: JSON.stringify(lowcodeformData) });
             var nodes = FormatCommitUtils.formatSettings(res[2].formData);
             Object.assign(basicData, { nodes: nodes });
+            // 高级设置覆盖 deduplicationType 和 viewPageButtons
+            Object.assign(basicData, res[3].formData);
             return basicData;
         })
         .then((data) => {

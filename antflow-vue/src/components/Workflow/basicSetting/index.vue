@@ -47,24 +47,6 @@
                 <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly />
             </el-form-item>
 
-            <el-form-item label=" 审批人去重" prop="deduplicationType">
-                <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :disabled="readonly" :style="{ width: '100%' }">
-                    <el-option v-for="(item, index) in duplicateOptions" :key="index" :label="item.label"
-                        :value="item.value"></el-option>
-                </el-select>
-            </el-form-item>
-
-            <!-- <el-form-item label="启用流程" prop="effectiveStatus">
-                <el-switch v-model="form.effectiveStatus" />
-            </el-form-item> -->
-            <el-form-item label="发起人权限" prop="viewPageStart">
-                <el-checkbox-group v-model="form.viewPageButtons.viewPageStart" :disabled="readonly">
-                    <el-checkbox v-for="item in viewPageButtons" :key="item.value" :label="item.label"
-                        :value="item.value">
-                        {{ item.label }}
-                    </el-checkbox>
-                </el-checkbox-group>
-            </el-form-item>
             <!-- 外部表单模式(仅低代码流程可用) -->
             <el-form-item v-if="flowType === 'LF'" label="外部表单" prop="useExternalForm">
                 <el-checkbox v-model="form.useExternalForm" :disabled="readonly">使用外部表单(多表单)</el-checkbox>
@@ -79,7 +61,7 @@
                 </el-select>
                 <div class="ext-form-tip">启用后,本流程将引用独立表单管理中已生效的表单版本;表单设计步骤将被禁用。</div>
             </el-form-item>
-            <el-form-item label=" 流程说明" prop="remark">
+            <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :disabled="readonly" :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
             </el-form-item>
@@ -119,28 +101,6 @@ let props = defineProps({
 
 const generatorID = "PROJECT_" + NodeUtils.idGenerator();
 const ruleFormRef = ref(null);
-const duplicateOptions = [{
-    "label": "不去重",
-    "value": 1
-}, {
-    "label": "前去重",
-    "value": 2
-}, {
-    "label": "后去重",
-    "value": 3
-}, {
-    "label": "相邻节点去重",
-    "value": 4
-}];
-
-const viewPageButtons = [{
-    "label": "撤回",
-    "value": 29
-}, {
-    "label": "作废",
-    "value": 7
-}];
-
 let formCodeOptions = ref([]);
 const form = reactive({
     bpmnName: '',

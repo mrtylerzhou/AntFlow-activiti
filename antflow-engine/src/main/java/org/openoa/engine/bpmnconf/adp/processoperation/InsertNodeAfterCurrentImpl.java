@@ -13,6 +13,7 @@ import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
     private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private BpmVariableMapper bpmVariableMapper;
 
 
     @Override
@@ -47,8 +50,17 @@ public class InsertNodeAfterCurrentImpl implements ProcessOperationAdaptor {
         if (CollectionUtils.isEmpty(userInfos)){
             throw new AFBizException("要添加的节点人员不能为空");
         }
+        //taskDefKey为空时,根据nodeId反查elementId作为taskDefKey
         if(StringUtils.isEmpty(taskDefKey)){
-            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL.getCodeStr(),"taskDefKey不能为空");
+            if(StringUtils.isEmpty(vo.getNodeId())){
+                throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL.getCodeStr(),"taskDefKey和nodeId不能同时为空");
+            }
+            List<String> elementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, vo.getNodeId());
+            if(CollectionUtils.isEmpty(elementIds)){
+                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"未能根据nodeId获取taskDefKey:" + vo.getNodeId());
+            }
+            taskDefKey = elementIds.get(0);
+            vo.setTaskDefKey(taskDefKey);
         }
 
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);

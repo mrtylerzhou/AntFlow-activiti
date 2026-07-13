@@ -93,7 +93,54 @@
                                 </el-select>
                             </div>
                         </div>
-
+                        <div class="approver_text" v-if="approverConfig.setType == 18">
+                            <div>
+                                <p><i style="color: red;">*</i>审批人类型:</p>
+                                <el-select v-model="approverConfig.property.formAssigneeProperty" placeholder="请选审批人类型"
+                                    style="width: 300px">
+                                    <el-option v-for="item in formPrevNodeApproverOptionSet" :key="item.value" :label="item.label"
+                                        :value="item.value" />
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="approver_text" v-if="approverConfig.setType == 17">
+                            <div>
+                                <p><i style="color: red;">*</i>自定义审批规则:</p>
+                                <el-select v-model="udrSelectedId" placeholder="请选择自定义审批规则" style="width: 300px">
+                                    <el-option v-for="item in udrOptions" :key="item.id" :label="item.name" :value="item.id" />
+                                </el-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="approver_block" v-if="approverConfig.nodeType == 4">
+                        <p>额外增加审批</p>
+                        <div>
+                            <el-button type="primary" plain icon="Plus" @click="openExtraDialog(1, 5)">指定人员</el-button>
+                            <el-button type="primary" plain icon="Plus" @click="openExtraDialog(1, 4)">指定角色</el-button>
+                        </div>
+                        <div class="gap-2">
+                            <template v-for="item in additionalSignInfoAddList" :key="item.nodeProperty">
+                                <el-tag v-for="(info, idx) in item.signInfos" :key="info.id" size="large" closable
+                                    @close="removeExtraSignInfo(1, item.nodeProperty, idx)">
+                                    {{ info.name }}{{ item.nodeProperty == 5 ? '（人员）' : '（角色）' }}
+                                </el-tag>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="approver_block" v-if="approverConfig.nodeType == 4">
+                        <p>额外排除审批</p>
+                        <div>
+                            <el-button type="primary" plain icon="Plus" @click="openExtraDialog(2, 5)">指定人员</el-button>
+                            <el-button type="primary" plain icon="Plus" @click="openExtraDialog(2, 4)">指定角色</el-button>
+                        </div>
+                        <div class="gap-2">
+                            <template v-for="item in additionalSignInfoExcludeList" :key="item.nodeProperty">
+                                <el-tag v-for="(info, idx) in item.signInfos" :key="info.id" size="large" closable
+                                    @close="removeExtraSignInfo(2, item.nodeProperty, idx)">
+                                    {{ info.name }}{{ item.nodeProperty == 5 ? '（人员）' : '（角色）' }}
+                                </el-tag>
+                            </template>
+                        </div>
                     </div>
                     <div class="approver_block">
                         <p>✍多人审批时采用的审批方式</p>
@@ -178,6 +225,8 @@
         </div>
         <select-user-dialog v-model:visible="approverUserVisible" :data="checkedUserList" @change="sureUserApprover" />
         <select-role-dialog v-model:visible="approverRoleVisible" :data="checkedRoleList" @change="sureRoleApprover" />
+        <select-user-dialog v-model:visible="extraUserVisible" :data="extraUserList" @change="confirmExtraUser" />
+        <select-role-dialog v-model:visible="extraRoleVisible" :data="extraRoleList" @change="confirmExtraRole" />
     </el-drawer>
 </template>
 <script setup>
@@ -185,6 +234,7 @@ import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
+import { getUDROptions } from '@/api/workflow/index';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
@@ -206,6 +256,8 @@ let checkedUserList = ref([]);
 let checkApprovalPageBtns = ref([]);
 let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
+let udrOptions = ref([]);
+let udrSelectedId = ref(null);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
@@ -221,6 +273,21 @@ let approverDrawer = computed(() => store.approverDrawer);
 
 const formInfoSelected = ref(null);
 const formInfoOptions = ref([]);
+
+// 额外增加/排除审批人相关状态
+let extraUserVisible = ref(false);
+let extraRoleVisible = ref(false);
+let extraUserList = ref([]);
+let extraRoleList = ref([]);
+let currentEditPropertyType = ref(1); // 1:增加, 2:排除
+let currentEditNodeProperty = ref(5); // 5:指定人员, 4:指定角色
+
+const additionalSignInfoAddList = computed(() => {
+    return (approverConfig.value?.property?.additionalSignInfoList || []).filter(a => a.propertyType == 1);
+});
+const additionalSignInfoExcludeList = computed(() => {
+    return (approverConfig.value?.property?.additionalSignInfoList || []).filter(a => a.propertyType == 2);
+});
 let visible = computed({
     get() {
         handleTabClick({ paneName: "approverStep" })
@@ -254,6 +321,9 @@ watch(approverConfig, (val) => {
     if (!approverConfig.value.property) {
         approverConfig.value.property = {};
     }
+    if (!approverConfig.value.property.additionalSignInfoList) {
+        approverConfig.value.property.additionalSignInfoList = [];
+    }
     if (!approverConfig.value.property.formAssigneeProperty) {
         approverConfig.value.property.formAssigneeProperty = 1;
     }
@@ -269,6 +339,10 @@ watch(approverConfig, (val) => {
     if (val.nodeProperty == 16) {//nodeProperty == 16 指 表单中人员
         initFormInfoOptions();
         formInfoSelected.value = approverConfig.value.property.formInfos?.[0]?.id;
+    }
+    if (val.setType == 17) {//setType == 17 指 自定义审批规则
+        initUdrOptions();
+        udrSelectedId.value = approverConfig.value.property.udrAssigneeProperty?.id || null;
     }
 }, { deep: true });
 
@@ -292,6 +366,22 @@ watch(formInfoSelected, (val) => {
             formInfo.formdataId = info.formdataId;
         }
         property.formInfos = [formInfo];
+    }
+}, { immediate: true });
+
+watch(udrSelectedId, (val) => {
+    const property = approverConfig.value.property;
+    if (!property) {
+        approverConfig.value.property = {};
+    }
+    const info = udrOptions.value.find(item => item.id === val);
+    if (info) {
+        property.udrAssigneeProperty = {
+            id: info.id,
+            name: info.name
+        };
+    } else {
+        property.udrAssigneeProperty = null;
     }
 }, { immediate: true });
 
@@ -367,6 +457,18 @@ const initFormInfoOptions = () => {
     });
 }
 
+const initUdrOptions = async () => {
+    if (udrOptions.value.length > 0) {
+        return;
+    }
+    try {
+        const res = await getUDROptions();
+        udrOptions.value = res.data || [];
+    } catch (error) {
+        proxy.$modal.msgError("获取自定义审批规则失败");
+    }
+}
+
 /**添加审批人 */
 const addApprover = () => {
     approverUserVisible.value = true;
@@ -387,6 +489,71 @@ const sureRoleApprover = (data) => {
     approverConfig.value.nodeApproveList = data;
     approverRoleVisible.value = false;
 }
+
+/**打开额外审批人弹窗 */
+const openExtraDialog = (propertyType, nodeProperty) => {
+    currentEditPropertyType.value = propertyType;
+    currentEditNodeProperty.value = nodeProperty;
+    const list = getExtraSignInfos(propertyType, nodeProperty);
+    if (nodeProperty == 5) {
+        extraUserList.value = list.map(item => ({ targetId: item.id, name: item.name }));
+        extraUserVisible.value = true;
+    } else if (nodeProperty == 4) {
+        extraRoleList.value = list.map(item => ({ targetId: item.id, name: item.name }));
+        extraRoleVisible.value = true;
+    }
+}
+/**获取额外审批人列表 */
+const getExtraSignInfos = (propertyType, nodeProperty) => {
+    const list = approverConfig.value?.property?.additionalSignInfoList || [];
+    const item = list.find(a => a.propertyType == propertyType && a.nodeProperty == nodeProperty);
+    return item ? item.signInfos : [];
+}
+/**设置额外审批人列表 */
+const setExtraSignInfos = (propertyType, nodeProperty, signInfos) => {
+    if (!approverConfig.value.property) {
+        approverConfig.value.property = {};
+    }
+    if (!approverConfig.value.property.additionalSignInfoList) {
+        approverConfig.value.property.additionalSignInfoList = [];
+    }
+    const list = approverConfig.value.property.additionalSignInfoList;
+    const idx = list.findIndex(a => a.propertyType == propertyType && a.nodeProperty == nodeProperty);
+    if (signInfos && signInfos.length > 0) {
+        const item = { propertyType, nodeProperty, signInfos };
+        if (idx >= 0) {
+            list[idx] = item;
+        } else {
+            list.push(item);
+        }
+    } else if (idx >= 0) {
+        list.splice(idx, 1);
+    }
+}
+/**移除单个额外审批人 */
+const removeExtraSignInfo = (propertyType, nodeProperty, index) => {
+    const list = approverConfig.value?.property?.additionalSignInfoList || [];
+    const idx = list.findIndex(a => a.propertyType == propertyType && a.nodeProperty == nodeProperty);
+    if (idx >= 0) {
+        list[idx].signInfos.splice(index, 1);
+        if (list[idx].signInfos.length == 0) {
+            list.splice(idx, 1);
+        }
+    }
+}
+/**选择额外人员确认 */
+const confirmExtraUser = (data) => {
+    const signInfos = data.map(item => ({ id: item.targetId ?? item.id, name: item.name }));
+    setExtraSignInfos(currentEditPropertyType.value, currentEditNodeProperty.value, signInfos);
+    extraUserVisible.value = false;
+}
+/**选择额外角色确认 */
+const confirmExtraRole = (data) => {
+    const signInfos = data.map(item => ({ id: item.targetId ?? item.id, name: item.name }));
+    setExtraSignInfos(currentEditPropertyType.value, currentEditNodeProperty.value, signInfos);
+    extraRoleVisible.value = false;
+}
+
 /**处理权限按钮变更事件 */
 const handleCheckedButtonsChange = (val) => {
     if (proxy.isEmpty(approvalPageBtns)) return;

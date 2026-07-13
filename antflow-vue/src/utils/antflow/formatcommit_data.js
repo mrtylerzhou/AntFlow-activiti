@@ -143,6 +143,7 @@ export class FormatCommitUtils {
           signType: node.signType,
           signUpType: 1,
           afterSignUpWay: 2,
+          additionalSignInfoList: node.property?.additionalSignInfoList || [],
         };
         if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
           if (node.setType == 4) {
@@ -171,6 +172,9 @@ export class FormatCommitUtils {
         } else if (node.setType == 16) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
           approveObj.formInfos = node.property.formInfos ?? [];
+        } else if (node.setType == 17) {
+          approveObj.udrAssigneeProperty = node.property.udrAssigneeProperty ?? null;
+          approveObj.udrValueJson = node.property.udrValueJson ?? null;
         } else if (node.setType == 18) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty; 
         }

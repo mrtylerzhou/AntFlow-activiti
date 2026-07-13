@@ -63,8 +63,17 @@ public class InsertNodeAfterFutureImpl extends AbstractAddOrRemoveFutureAssignee
         if (CollectionUtils.isEmpty(userInfos)){
             throw new AFBizException("要添加的节点人员不能为空");
         }
+        //taskDefKey为空时,根据nodeId反查elementId作为taskDefKey
         if(StringUtils.isEmpty(taskDefKey)){
-            throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL.getCodeStr(),"taskDefKey不能为空");
+            if(StringUtils.isEmpty(vo.getNodeId())){
+                throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL.getCodeStr(),"taskDefKey和nodeId不能同时为空");
+            }
+            List<String> elementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, vo.getNodeId());
+            if(CollectionUtils.isEmpty(elementIds)){
+                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"未能根据nodeId获取taskDefKey:" + vo.getNodeId());
+            }
+            taskDefKey = elementIds.get(0);
+            vo.setTaskDefKey(taskDefKey);
         }
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(null==bpmBusinessProcess){
@@ -81,7 +90,8 @@ public class InsertNodeAfterFutureImpl extends AbstractAddOrRemoveFutureAssignee
         if(CollectionUtils.isEmpty(activitiList)){
             throw new RuntimeException("未能根据流程定义id:"+procDefId+"找到流程图");
         }
-        List<ActivityImpl> currentActivities = activitiList.stream().filter(a -> a.getId().equals(taskDefKey)).collect(Collectors.toList());
+        String finalTaskDefKey = taskDefKey;
+        List<ActivityImpl> currentActivities = activitiList.stream().filter(a -> a.getId().equals(finalTaskDefKey)).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(currentActivities)){
             throw new RuntimeException("未能根据流程节点key:"+taskDefKey+"找到流程图对应节点信息");
         }

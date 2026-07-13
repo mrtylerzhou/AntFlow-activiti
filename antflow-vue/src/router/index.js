@@ -323,6 +323,36 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/instance/addNode",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowAddNode"),
+        name: "addNode",
+        meta: { title: "流程增加节点", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
+    path: "/workflow/instance/removeNode",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowRemoveNode"),
+        name: "removeNode",
+        meta: { title: "流程删除节点", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
     path: "/flowDevOps/flowPrint",
     hidden: true,
     permissions: ["system"],
