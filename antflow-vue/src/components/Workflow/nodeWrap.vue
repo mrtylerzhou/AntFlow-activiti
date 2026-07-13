@@ -21,6 +21,7 @@
                     <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
                     <i class="anticon anticon-close close" @click="delNode()"></i>
                     <i v-if="noticeIconShow" class="anticon anticon-notice notice"></i>
+                    <i v-if="labelIconShow" class="anticon anticon-tag label-icon"></i>
                 </template>
             </div>
             <div class="content" @click="setNodeInfo">
@@ -105,6 +106,8 @@
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                     <i v-if="item.templateVos && item.templateVos.length > 0"
                                         class="anticon anticon-notice notice"></i>
+                                    <i v-if="item.labelList && item.labelList.length > 0"
+                                        class="anticon anticon-tag label-icon"></i>
                                 </div>
 
                                 <div class="content" @click="setNodeInfo(index)">
@@ -186,6 +189,10 @@ let defaultText = computed(() => {
 
 let noticeIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.templateVos);
+});
+
+let labelIconShow = computed(() => {
+    return !proxy.isEmptyArray(props.nodeConfig.labelList);
 });
 
 /**节点名称展示 */
