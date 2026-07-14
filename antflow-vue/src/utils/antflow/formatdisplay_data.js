@@ -226,6 +226,20 @@ export class FormatDisplayUtils {
         node.nodeApproveList = empList;
         //delete node.property;
       }
+
+      // 自动节点反显: nodeType=4 + automaticNode标签 → nodeType=9
+      if (node.nodeType == 4 && node.labelList && node.labelList.some(l => l.labelValue === "auto_node")) {
+        node.nodeType = 9;
+        node.nodeName = node.nodeName || "自动节点";
+        node.nodeDisplayName = node.nodeDisplayName || "自动节点";
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
     }
     return nodeList;
   }

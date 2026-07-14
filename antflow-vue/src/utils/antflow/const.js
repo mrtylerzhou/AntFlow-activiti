@@ -15,7 +15,8 @@ export let bgColors = [
   "50, 150, 250",
   "",
   "4, 96, 187",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色'
+  "155, 89, 182",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色'
 export let placeholderList = [
   "",
   "发起人",
@@ -25,6 +26,8 @@ export let placeholderList = [
   "",
   "抄送人",
   "审核人",
+  "抄送人v2",
+  "自动节点",
 ];
 export let nodeTypeList = [
   "未知",
@@ -35,6 +38,8 @@ export let nodeTypeList = [
   "未知",
   "抄送人",
   "并行审批",
+  "抄送人V2",
+  "自动节点",
 ];
 export let signTypeObj = {
   1: "会签",
