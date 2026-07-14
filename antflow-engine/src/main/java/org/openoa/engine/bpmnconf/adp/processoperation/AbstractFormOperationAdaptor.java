@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -97,6 +98,8 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
                 return false;
             }
             return evaluateConditions(autoNodeConf, lfFields);
+        } catch (AFBizException e) {
+            throw e;
         } catch (Exception e) {
             log.warn("automaticCondition evaluation failed, returning null: {}", e.getMessage());
             return null;
@@ -113,14 +116,14 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
         if (!StringUtils.hasText(processNumber) || !StringUtils.hasText(taskDefKey)) {
             return null;
         }
-        // Find active BpmnConf by processNumber (bpmnCode)
+        // Find active BpmnConf by formCode
         BpmnConfBizService bpmnConfBizService = SpringBeanUtils.getBean(BpmnConfBizService.class);
         BpmnConf bpmnConf =bpmnConfBizService.getBpmnConfByFormCode(vo.getFormCode());
         if (bpmnConf == null) {
            throw  new AFBizException("cant not get bpmnconf by formcode+"+vo.getFormCode());
         }
         String nodeId = bpmVariableMultiplayerMapper.getNodeIdByElementId(vo.getProcessNumber(), vo.getTaskDefKey());
-        // Find BpmnNode by confId and nodeId (taskDefKey is the element ID = nodeId)
+        // Find BpmnNode by confId and nodeId (nodeId is looked up from taskDefKey via getNodeIdByElementId)
         BpmnNode bpmnNode = bpmnNodeService.getOne(
                 Wrappers.<BpmnNode>lambdaQuery()
                         .eq(BpmnNode::getConfId, bpmnConf.getId())
@@ -139,6 +142,14 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
 
     /**
      * Evaluate auto node conditions against form fields.
+     * <p>
+     * NOTE: This is a simplified reimplementation of condition evaluation.
+     * The design doc references {@link org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge}
+     * implementations (LFStringConditionJudge, LFNumberFormatJudge, etc.), but those operate on
+     * BpmnNodeConditionsConfBaseVo (processed format) while auto node stores conditions in
+     * BpmnNodeConditionsConfVueVo (raw frontend format). Reusing ConditionJudge directly would
+     * require a non-trivial format conversion. Consider refactoring to reuse existing judges
+     * if condition semantics need to stay perfectly aligned with condition nodes.
      */
     private Boolean evaluateConditions(BpmnNodeAutoNodeConfJson autoNodeConf, Map<String, Object> formFields) {
         List<List<BpmnNodeConditionsConfVueVo>> conditionList = autoNodeConf.getConditionList();
@@ -215,9 +226,12 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
             return targetValue.equals(formValueStr);
         }
 
-        // Checkbox: check if form value contains the target
+        // Checkbox: check if form value collection contains the target element
         if ("checkbox".equals(fieldTypeName)) {
-            return formValueStr.contains(targetValue);
+            if (!StringUtils.hasText(formValueStr) || !StringUtils.hasText(targetValue)) {
+                return false;
+            }
+            return Arrays.asList(formValueStr.split(",")).contains(targetValue);
         }
 
         // Numeric / Date / Time comparisons using optType
