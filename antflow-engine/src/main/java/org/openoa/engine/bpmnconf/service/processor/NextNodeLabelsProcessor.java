@@ -62,12 +62,12 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
-            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide);
+            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
         }
     }
 
-    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide) {
+    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,DelegateTask delegateTask) {
         
         if (!StringConstants.AUTOMATIC_NODE.equals(nodeLabelVO.getLabelValue())){
             return;
@@ -87,6 +87,9 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         BusinessDataVo convertedBusinessDatavo = formFactory.dataFormConversion(vo);
         Boolean conditionResult = formAdaptor.automaticCondition(convertedBusinessDatavo);
         formAdaptor.automaticAction(convertedBusinessDatavo,conditionResult);
+        Map<String,Object> varMap=new HashMap<>();
+        varMap.put(StringConstants.TASK_ASSIGNEE_NAME,AFSpecialAssigneeEnum.AUTO_NODE_SKIP);
+        ((TaskEntity) delegateTask).complete(varMap,false);
     }
 
     private void processCopyV2(BpmnNodeLabelVO nodeLabelVO, String procInstId, String assignee, String assigneeName, String processNumber,DelegateTask delegateTask) {
