@@ -3,7 +3,9 @@ package org.openoa.base.util;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ElementTypeEnum;
+import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.constant.enums.SignTypeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
@@ -154,6 +156,28 @@ public class NodeUtil {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
             bpmnNodeVo.setIsCarbonCopyNode(true);
         }
+        if(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode().equals(nodeType)){
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsAutomaticNode(true);
+            bpmnNodeVo.setNodeProperty(NodePropertyEnum.NODE_PROPERTY_PERSONNEL.getCode());
+            BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
+            if (prop == null) {
+                prop = new BpmnNodePropertysVo();
+                bpmnNodeVo.setProperty(prop);
+            }
+            if (prop.getSignType() == null) {
+                prop.setSignType(1);
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplIds())) {
+                prop.setEmplIds(Lists.newArrayList(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId()));
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplList())) {
+                BaseIdTranStruVo virtualUser = new BaseIdTranStruVo(
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId(),
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc());
+                prop.setEmplList(Lists.newArrayList(virtualUser));
+            }
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -163,6 +187,9 @@ public class NodeUtil {
         for (BpmnNodeLabelVO nodeLabelVO : labelList) {
             if(NodeLabelConstants.copyNodeV2.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_COPY_V2.getCode());
+            }
+            if(NodeLabelConstants.automaticNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode());
             }
         }
     }

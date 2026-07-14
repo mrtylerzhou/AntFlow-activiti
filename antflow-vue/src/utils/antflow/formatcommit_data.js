@@ -176,12 +176,24 @@ export class FormatCommitUtils {
           approveObj.udrAssigneeProperty = node.property.udrAssigneeProperty ?? null;
           approveObj.udrValueJson = node.property.udrValueJson ?? null;
         } else if (node.setType == 18) {
-          approveObj.formAssigneeProperty = node.property.formAssigneeProperty; 
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
         node.nodeProperty = node.setType;
         node.property = approveObj;
+        delete node.nodeApproveList;
+      }
+
+      // 自动节点: 后端 NodeUtil#nodeSpecialProcess 处理 nodeType 9→4 转换和虚拟审批人
+      // 前端只需将条件数据放入 autoNodeConf, 后端存入 node_config_json
+      if (node.nodeType == 9) {
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
         delete node.nodeApproveList;
       }
     }

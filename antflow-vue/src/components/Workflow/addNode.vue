@@ -21,7 +21,6 @@
                             <p>抄送人</p>
                         </div>
                     </a>
-
                     <a class="add-node-popover-item notifier-v2" @click="addType(8)">
                         <div class="item-wrapper">
                             <svg-icon icon-class="copy-user" class="iconfont" />
@@ -46,6 +45,12 @@
                         <div class="item-wrapper">
                             <svg-icon icon-class="parallel-condition" class="iconfont" />
                             <p>条件并行</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item auto-node" @click="addType(9)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approve" class="iconfont" />
+                            <p>自动节点</p>
                         </div>
                     </a>
                 </div>
@@ -81,6 +86,10 @@ const createCopyNode = (childNode) => {
 const createCopyNodeV2 = (childNode) => {
     return NodeUtils.createCopyNodeV2(childNode);
 }
+/**创建自动节点 */
+const createAutoNode = (childNode) => {
+    return NodeUtils.createAutoNode(childNode);
+}
 /**创建并行审批人节点 */
 const createParallelWayNode = (childNode) => {
     return NodeUtils.createParallelWayNode(childNode);
@@ -106,6 +115,7 @@ const createNodeMap = new Map([
     [5, createDynamicConditionWayNode],
     [6, createParallelConditionWayNode],
     [8, createCopyNodeV2],
+    [9, createAutoNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -235,6 +245,12 @@ const addType = (type) => {
         &.notifier-v2 {
             .item-wrapper {
                 color: #0460bb
+            }
+        }
+
+        &.auto-node {
+            .item-wrapper {
+                color: #9b59b6
             }
         }
 

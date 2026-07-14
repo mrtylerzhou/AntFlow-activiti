@@ -54,6 +54,11 @@ public class PurchaseTestService extends AbstractFormOperationAdaptor<BizPurchas
     }
 
     @Override
+    public void automaticAction(BizPurchaseVo businessDataVo, Boolean conditionResult) {
+
+    }
+
+    @Override
     public void queryData(BizPurchaseVo vo) {
         BizPurchase purchase = bizPurchaseMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(purchase,vo);
@@ -99,6 +104,11 @@ public class PurchaseTestService extends AbstractFormOperationAdaptor<BizPurchas
     @Override
     public void cancellationData(BizPurchaseVo vo) {
 
+    }
+
+    @Override
+    public Boolean autoCondition(BizPurchaseVo vo) {
+        return null;
     }
 
     @Override

@@ -123,6 +123,49 @@ export class NodeUtils {
     return copyNodeV2; // 返回创建的审批节点对象
   }
   /**
+   * 创建自动节点对象
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 自动节点
+   */
+  static createAutoNode(child) {
+    let autoNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "自动节点",
+      nodeDisplayName: "自动节点",
+      nodeType: 9, //节点类型 9、自动节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (虚拟人员 AUTO_NODE_SKIP)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: false,
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: [1],
+        approvalPage: [3, 4, 18, 19, 21],
+        viewPage: [0],
+      },
+      nodeApproveList: [
+        { targetId: "-3", name: "自动节点自动跳过", type: 5 },
+      ],
+      templateVos: [],
+      labelList: [
+        { labelValue: "auto_node", labelName: "自动节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件节点相同的多条件组结构
+      groupRelation: false, //条件组关系 false:且 true:或
+    };
+    return autoNode;
+  }
+  /**
    * 创建网关对象
    * @returns object
    */

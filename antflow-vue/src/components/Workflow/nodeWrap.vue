@@ -176,6 +176,8 @@ let {
     setConditionsConfig,
     setCopyerV2,
     setCopyerConfigV2,
+    setAutoNode,
+    setAutoNodeConfig,
 } = store;
 let isTried = computed(() => store.isTried)
 let flowPermission1 = computed(() => store.flowPermission1)
@@ -183,6 +185,7 @@ let approverConfig1 = computed(() => store.approverConfig1)
 let copyerConfig1 = computed(() => store.copyerConfig1)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 let copyerConfigV2 = computed(() => store.copyerConfigV2)
+let autoNodeConfig1 = computed(() => store.autoNodeConfig1)
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
@@ -202,6 +205,7 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 9) return $func.autoNodeConditionStr(props.nodeConfig);
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -264,6 +268,12 @@ watch(copyerConfig1, (copyer) => {
 watch(copyerConfigV2, (copyerV2) => {
     if (copyerV2.flag && copyerV2.id === _uid) {
         emits("update:nodeConfig", copyerV2.value);
+    }
+});
+/**自动节点监听 */
+watch(autoNodeConfig1, (autoNode) => {
+    if (autoNode.flag && autoNode.id === _uid) {
+        emits("update:nodeConfig", autoNode.value);
     }
 });
 /**条件节点监听 */
@@ -456,6 +466,14 @@ const setNodeInfo = (index) => {
     else if (nodeType == 8) {
         setCopyerV2(true);
         setCopyerConfigV2({
+            value: JSON.parse(JSON.stringify(props.nodeConfig)),
+            flag: false,
+            id: _uid,
+        });
+    }
+    else if (nodeType == 9) {
+        setAutoNode(true);
+        setAutoNodeConfig({
             value: JSON.parse(JSON.stringify(props.nodeConfig)),
             flag: false,
             id: _uid,

@@ -21,6 +21,7 @@
     <copyerDrawer />
     <copyerV2Drawer />
     <conditionDrawer />
+    <autoNodeDrawer />
 </template>
 
 <script setup>
@@ -33,6 +34,7 @@ import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
 import copyerV2Drawer from "@/components/Workflow/drawer/copyerDrawerV2.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
+import autoNodeDrawer from "@/components/Workflow/drawer/autoNodeDrawer.vue";
 import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
 import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();

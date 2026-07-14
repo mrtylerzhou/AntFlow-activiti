@@ -265,6 +265,31 @@ All.prototype = {
     return str;
   },
 
+  autoNodeConditionStr(nodeConfig) {
+    if (!nodeConfig) return "";
+    let conditionList = nodeConfig.conditionList;
+    let groupRelation = nodeConfig.groupRelation;
+    if (!conditionList || isEmptyArray(conditionList)) {
+      return "请设置自动条件";
+    }
+    const flatArray = conditionList
+      .reduce((acc, val) => acc.concat(val), [])
+      .filter((item) => item.columnId && item.columnId !== 0);
+    if (flatArray.length == 0) {
+      return "请设置自动条件";
+    }
+    let str = "";
+    for (let i = 0; i < conditionList.length; i++) {
+      str = str + "条件组" + (i + 1) + "：【";
+      str = str + this.getConditionStr(conditionList[i]);
+      str = str + "】  ";
+      if (i + 1 != conditionList.length) {
+        str = str + (groupRelation == false ? " 且 " : " 或 ");
+      }
+    }
+    return str;
+  },
+
   getConditionStr(conditionArray) {
     let str = "";
     for (let condition of conditionArray) {
