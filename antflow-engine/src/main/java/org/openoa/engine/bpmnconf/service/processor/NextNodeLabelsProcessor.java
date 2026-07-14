@@ -18,6 +18,7 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BusinessDataVo;
+import org.openoa.base.vo.UDLFApplyVo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
@@ -62,31 +63,36 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
-            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide);
+            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
         }
     }
 
-    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide) {
+    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,DelegateTask delegateTask) {
         
         if (!StringConstants.AUTOMATIC_NODE.equals(nodeLabelVO.getLabelValue())){
             return;
         }
-        BusinessDataVo vo=new BusinessDataVo();
-        vo.setProcessNumber(processNumber);
-        vo.setTaskDefKey(elementId);
-        vo.setFormCode(formCode);
-        vo.setIsLowCodeFlow(businessDataVo.getIsLowCodeFlow());
-        vo.setFormData(formCode);
-        vo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(vo);
+
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsLowCodeFlow(businessDataVo.getIsLowCodeFlow());
+        businessDataVo.setFormData(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
         if(formAdaptor==null){
             throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
         }
-
-        BusinessDataVo convertedBusinessDatavo = formFactory.dataFormConversion(vo);
-        Boolean conditionResult = formAdaptor.automaticCondition(convertedBusinessDatavo);
-        formAdaptor.automaticAction(convertedBusinessDatavo,conditionResult);
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+        Boolean conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        formAdaptor.automaticAction(businessDataVo,conditionResult);
+        Map<String,Object> varMap=new HashMap<>();
+        varMap.put(StringConstants.TASK_ASSIGNEE_NAME,AFSpecialAssigneeEnum.AUTO_NODE_SKIP);
+        ((TaskEntity) delegateTask).complete(varMap,false);
     }
 
     private void processCopyV2(BpmnNodeLabelVO nodeLabelVO, String procInstId, String assignee, String assigneeName, String processNumber,DelegateTask delegateTask) {

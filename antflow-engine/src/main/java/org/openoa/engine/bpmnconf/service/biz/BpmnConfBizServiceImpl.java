@@ -238,6 +238,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
             BpmnNodeConfigHolder.setLowCodeConf(bpmnNodeVo);
 
+            // Transfer autoNodeConf from VO to node config JSON (for auto nodes)
+            if (bpmnNodeVo.getAutoNodeConf() != null) {
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                String autoNodeConfJson = JSON.toJSONString(bpmnNodeVo.getAutoNodeConf());
+                BpmnNodeAutoNodeConfJson autoConf = JSON.parseObject(autoNodeConfJson, BpmnNodeAutoNodeConfJson.class);
+                nodeCfgJson.setAutoNodeConf(autoConf);
+            }
+
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
@@ -2044,6 +2052,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setIsCarbonCopyNode(true);
             }
             bpmnNodeVo.setLabelList(labelVOList);
+        }
+
+        // set autoNodeConf from node config JSON (for auto node display)
+        if (nodeConfig.getAutoNodeConf() != null) {
+            bpmnNodeVo.setAutoNodeConf(nodeConfig.getAutoNodeConf());
         }
 
         return bpmnNodeVo;

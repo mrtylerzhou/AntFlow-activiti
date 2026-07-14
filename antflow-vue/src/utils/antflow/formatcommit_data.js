@@ -176,12 +176,49 @@ export class FormatCommitUtils {
           approveObj.udrAssigneeProperty = node.property.udrAssigneeProperty ?? null;
           approveObj.udrValueJson = node.property.udrValueJson ?? null;
         } else if (node.setType == 18) {
-          approveObj.formAssigneeProperty = node.property.formAssigneeProperty; 
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
         node.nodeProperty = node.setType;
         node.property = approveObj;
+        delete node.nodeApproveList;
+      }
+
+      // 自动节点转换: nodeType=9 → nodeType=4 + 虚拟审批人 + automaticNode标签
+      if (node.nodeType == 9) {
+        node.nodeType = 4;
+        node.nodeProperty = 5; // 指定人员
+        let approveObj = {
+          formAssigneeProperty: 0,
+          formInfos: [],
+          emplIds: ["-3"],
+          emplList: [{ id: "-3", name: "自动节点自动跳过" }],
+          roleIds: [],
+          roleList: [],
+          hrbpConfType: 0,
+          assignLevelGrade: 0,
+          signType: 1,
+          signUpType: 1,
+          afterSignUpWay: 2,
+          additionalSignInfoList: [],
+        };
+        node.property = approveObj;
+        // 确保 automaticNode 标签存在
+        if (!node.labelList) {
+          node.labelList = [];
+        }
+        let hasAutoLabel = node.labelList.some(l => l.labelValue === "auto_node");
+        if (!hasAutoLabel) {
+          node.labelList.push({ labelValue: "auto_node", labelName: "自动节点" });
+        }
+        // 保存自动节点条件到 autoNodeConf (传递到后端存入 node_config_json)
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
         delete node.nodeApproveList;
       }
     }

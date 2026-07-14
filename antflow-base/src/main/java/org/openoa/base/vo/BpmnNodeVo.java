@@ -196,6 +196,11 @@ public class BpmnNodeVo  implements Serializable {
      * @see MissingAssigneeProcessStragtegyEnum
      */
     private Integer noHeaderAction;
+    /**
+     * Auto node condition configuration (received from frontend during edit,
+     * sent to frontend during display). Stored in node_config_json.autoNodeConf.
+     */
+    private Object autoNodeConf;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

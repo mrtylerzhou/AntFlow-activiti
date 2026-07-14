@@ -24,6 +24,8 @@ export const useStore = defineStore("store", {
     approveChooseFlowNode: {},
     copyerDrawerV2: false,
     copyerConfigV2: {},
+    autoNodeDrawer: false,
+    autoNodeConfig1: {},
   }),
   actions: {
     setUserId(payload) {
@@ -88,6 +90,12 @@ export const useStore = defineStore("store", {
     },
     setCopyerConfigV2(payload) {
       this.copyerConfigV2 = payload;
+    },
+    setAutoNode(payload) {
+      this.autoNodeDrawer = payload;
+    },
+    setAutoNodeConfig(payload) {
+      this.autoNodeConfig1 = payload;
     },
   },
 });

@@ -43,6 +43,11 @@ public class BpmnNodeConfigJson implements Serializable {
     private BpmnNodeLowCodeConfJson lowCodeConf;
 
     /**
+     * Auto node configuration (conditions for automatic execution)
+     */
+    private BpmnNodeAutoNodeConfJson autoNodeConf;
+
+    /**
      * Back type for disagree action (migrated from bpm_process_node_back)
      */
     private Integer backType;

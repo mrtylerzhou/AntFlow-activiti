@@ -299,3 +299,12 @@ export function getStartUserChooseModules(formCode) {
 export function getUDROptions() {
   return http.get(`${baseUrl}/taskMgmt/getUDROptions`, { headers });
 }
+
+/**
+ * 通用字典数据查询
+ * @param {string} dictType 字典类型
+ * @returns
+ */
+export function getDictDataByType(dictType) {
+  return http.get(`${baseUrl}/taskMgmt/getDictDataByType?dictType=${dictType}`, { headers });
+}

@@ -143,6 +143,17 @@ svg:not(:root) {
   width: 18px; // 根据实际图片大小调整
   height: 18px;
 }
+.anticon-tag:before {
+  content: "#";
+  font-weight: bold;
+}
+.anticon-tag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  font-size: 16px;
+  font-weight: bold;
+}
 .fd-btn {
   line-height: 1.5;
   display: inline-block;
@@ -834,6 +845,12 @@ html {
   display: none;
 }
 
+.node-wrap-box.active .label-icon,
+.node-wrap-box:active .label-icon,
+.node-wrap-box:hover .label-icon {
+  display: none;
+}
+
 .node-wrap-box.error:after {
   border: 1px solid #f25643;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
@@ -882,6 +899,20 @@ html {
   display: block;
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 20px;
+}
+.node-wrap-box .label-icon {
+  display: block;
+  position: absolute;
+  right: 35px;
   top: 50%;
   transform: translateY(-50%);
   width: 20px;

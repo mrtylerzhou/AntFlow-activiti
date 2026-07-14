@@ -218,6 +218,19 @@
             <el-tab-pane lazy label="通知设置" name="noticeStep">
                 <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
+            <el-tab-pane lazy label="高级设置" name="advancedStep">
+                <div v-if="advancedStepShow" class="advanced-setting-content">
+                    <div class="setting-group">
+                        <p class="setting-group-title">流程标签</p>
+                        <el-select v-model="selectedLabelValues" multiple filterable clearable
+                            placeholder="请选择流程标签" style="width: 100%">
+                            <el-option v-for="item in labelOptions" :key="item.id" :label="item.name"
+                                :value="item.id" />
+                        </el-select>
+                        <p class="tip">为当前节点设置流程标签，用于后续分类和统计</p>
+                    </div>
+                </div>
+            </el-tab-pane>
         </el-tabs>
         <div class="demo-drawer__footer clear">
             <el-button type="primary" @click="saveApprover">确 定</el-button>
@@ -234,7 +247,7 @@ import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
-import { getUDROptions } from '@/api/workflow/index';
+import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
@@ -258,6 +271,8 @@ let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
 let udrOptions = ref([]);
 let udrSelectedId = ref(null);
+let labelOptions = ref([]);
+let selectedLabelValues = ref([]);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
@@ -268,6 +283,7 @@ let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
 let noticeStepShow = ref(false);
+let advancedStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
 
@@ -306,6 +322,7 @@ watch(approverConfig1, (val) => {
         formHiddenMap.value = currParallel.formHidden || {};
         templateVos.value = currParallel.templateVos || [];
         checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
+        selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
     }
     else {
         approverConfig.value = val.value;
@@ -313,6 +330,7 @@ watch(approverConfig1, (val) => {
         formHiddenMap.value = val.value.formHidden || {};
         templateVos.value = val.value.templateVos || [];
         checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+        selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
     }
 });
 
@@ -384,6 +402,20 @@ watch(udrSelectedId, (val) => {
         property.udrAssigneeProperty = null;
     }
 }, { immediate: true });
+
+/**同步流程标签选择到 approverConfig.labelList */
+watch(selectedLabelValues, (vals) => {
+    if (!approverConfig.value) return;
+    const existingList = approverConfig.value.labelList || [];
+    approverConfig.value.labelList = (vals || []).map(v => {
+        const opt = labelOptions.value.find(item => item.id === v);
+        const existing = existingList.find(item => item.labelValue === v);
+        return {
+            labelValue: v,
+            labelName: opt ? opt.name : (existing ? existing.labelName : '')
+        };
+    });
+}, { deep: true });
 
 /**处理HRBP选项 */
 watch(checkedHRBP, (val) => {
@@ -466,6 +498,18 @@ const initUdrOptions = async () => {
         udrOptions.value = res.data || [];
     } catch (error) {
         proxy.$modal.msgError("获取自定义审批规则失败");
+    }
+}
+
+const initLabelOptions = async () => {
+    if (labelOptions.value.length > 0) {
+        return;
+    }
+    try {
+        const res = await getDictDataByType('processlabel');
+        labelOptions.value = res.data || [];
+    } catch (error) {
+        proxy.$modal.msgError("获取流程标签失败");
     }
 }
 
@@ -627,6 +671,12 @@ const handleTabClick = (tab, event) => {
     } else {
         noticeStepShow.value = false;
     }
+    if (tab.paneName == 'advancedStep') {
+        advancedStepShow.value = true;
+        initLabelOptions();
+    } else {
+        advancedStepShow.value = false;
+    }
 }
 
 </script>
@@ -691,5 +741,20 @@ const handleTabClick = (tab, event) => {
     gap: 0.5rem;
     flex-wrap: wrap;
     margin-top: 10px;
+}
+
+.advanced-setting-content {
+    padding: 10px 0;
+}
+
+.setting-group {
+    padding: 10px 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.setting-group-title {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
 }
 </style>
