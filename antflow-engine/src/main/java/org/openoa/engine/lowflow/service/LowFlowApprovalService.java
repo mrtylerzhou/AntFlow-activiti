@@ -33,6 +33,7 @@ import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeLowCodeConfJson;
 import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataMapper;
+import org.openoa.engine.bpmnconf.adp.processoperation.AbstractFormOperationAdaptor;
 import org.openoa.engine.bpmnconf.service.interf.repository.*;
 import org.openoa.engine.lowflow.entity.LFMain;
 import org.openoa.engine.lowflow.entity.LFMainField;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
  * desc = 拖拽表单低代码审批流
  * */
 @ActivitiServiceAnno(svcName = StringConstants.LOWFLOW_FORM_CODE,desc = "")
-public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>, ActivitiService {
+public class LowFlowApprovalService extends AbstractFormOperationAdaptor<UDLFApplyVo> implements ActivitiService {
     private static final Logger log = LoggerFactory.getLogger(LowFlowApprovalService.class);
     //key is confid,value is a list of condition fields names which belongs to this conf
     private static Map<Long,List<String>> conditionFieldNameMap=new HashMap<>();
@@ -113,7 +114,7 @@ public class LowFlowApprovalService implements FormOperationAdaptor<UDLFApplyVo>
     }
 
     @Override
-    public Boolean automaticCondition(UDLFApplyVo businessDataVo) {
+    public Boolean autoCondition(UDLFApplyVo businessDataVo) {
         return null;
     }
 

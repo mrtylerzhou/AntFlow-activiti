@@ -62,6 +62,12 @@ public class AskForLeaveTestService extends AbstractFormOperationAdaptor<BizLeav
                 .startUserId(userId)
                 .leaveHour(vo.getLeaveHour()).build();
     }
+
+    @Override
+    public void automaticAction(BizLeaveTimeVo businessDataVo, Boolean conditionResult) {
+
+    }
+
     /**
      * 查询业务数据，大多数时候这是一个必须的方法，它用于查询指定流程的业务数据以供审批人参考
      * @param vo businessId 业务id，它将由antflow引擎传递，你应该使用它来查询业务数据
@@ -129,6 +135,12 @@ public class AskForLeaveTestService extends AbstractFormOperationAdaptor<BizLeav
     public void cancellationData(BizLeaveTimeVo vo) {
 
     }
+
+    @Override
+    public Boolean autoCondition(BizLeaveTimeVo vo) {
+        return null;
+    }
+
     /**
      * 流程结束
      * @param vo

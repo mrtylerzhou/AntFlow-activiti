@@ -27,7 +27,8 @@ const store = useStore()
 let tableId = computed(() => store.tableId)
 let lowCodeFormFields = computed(() => store.lowCodeFormField)
 let useExternalForm = computed(() => store.useExternalForm)
-let configData = ref(null);
+let storeConfigData = ref(null);
+let configData = computed(() => props.nodeConfig || storeConfigData.value);
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 
 const props = defineProps({
@@ -37,6 +38,10 @@ const props = defineProps({
   },
   activeGroupIdx: {
     type: Number,
+    default: null,
+  },
+  nodeConfig: {
+    type: Object,
     default: null,
   },
 });
@@ -54,7 +59,7 @@ let visibleDialog = computed({
 });
 
 watch(conditionsConfig1, (val) => {
-  configData.value = val.value?.conditionNodes[val.priorityLevel - 1];
+  storeConfigData.value = val.value?.conditionNodes[val.priorityLevel - 1];
 });
 watch(() => props.visible, (val) => {
   if (val) {
@@ -65,7 +70,7 @@ watch(() => props.visible, (val) => {
 const getCondition = async () => {
   conditionList.value = [];
   conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-  if (configData.value.conditionList) {
+  if (configData.value?.conditionList) {
     for (var i = 0; i < configData.value.conditionList[props.activeGroupIdx].length; i++) {
       var { formId, columnId } = configData.value.conditionList[props.activeGroupIdx][i];
       if (columnId == 0) {
@@ -237,6 +242,7 @@ const nullableFilter = (elm) => {
  * 选择条件
  */
 const chooseCondition = () => {
+  if (!configData.value?.conditionList) return;
   for (var i = 0; i < conditionList.value.length; i++) {
     var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue, formdataId } = conditionList.value[i];
     if ($func.toggleClass(configData.value.conditionList[props.activeGroupIdx], conditionList.value[i], "formId")) {

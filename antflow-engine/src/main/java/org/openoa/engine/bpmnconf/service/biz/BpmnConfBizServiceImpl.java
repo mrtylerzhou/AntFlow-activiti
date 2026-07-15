@@ -1886,6 +1886,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsCarbonCopyNode(true);
             }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.automaticNode.getLabelValue())){
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsAutomaticNode(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
 
         }

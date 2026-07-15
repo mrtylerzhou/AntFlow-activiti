@@ -2,8 +2,10 @@ package org.openoa.engine.bpmnconf.service.processor;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
@@ -14,6 +16,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.AFWrappers;
+import org.openoa.base.util.FilterUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -34,6 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProcessor {
     @Resource
     private BpmProcessForwardServiceImpl bpmProcessForwardService;
@@ -59,7 +63,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         String formCode= bpmnNextTaskDto.getFormCode();
         Boolean isOutSide = bpmnNextTaskDto.getIsOutSide();
         DelegateTask delegateTask = bpmnNextTaskDto.getDelegateTask();
-        
+        nodeLabelVOS=nodeLabelVOS.stream().filter(FilterUtil.distinctByKeys(BpmnNodeLabelVO::getLabelValue)).collect(Collectors.toList());
         for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
@@ -69,7 +73,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     }
 
     private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,DelegateTask delegateTask) {
-        
+
         if (!StringConstants.AUTOMATIC_NODE.equals(nodeLabelVO.getLabelValue())){
             return;
         }
@@ -77,8 +81,6 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         businessDataVo.setProcessNumber(processNumber);
         businessDataVo.setTaskDefKey(elementId);
         businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsLowCodeFlow(businessDataVo.getIsLowCodeFlow());
-        businessDataVo.setFormData(formCode);
         businessDataVo.setIsOutSideAccessProc(isOutSide);
         FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
         if(formAdaptor==null){
@@ -88,11 +90,32 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
             vo.setLfConditions(vo.getLfFields());
         }
-        Boolean conditionResult = formAdaptor.automaticCondition(businessDataVo);
-        formAdaptor.automaticAction(businessDataVo,conditionResult);
-        Map<String,Object> varMap=new HashMap<>();
-        varMap.put(StringConstants.TASK_ASSIGNEE_NAME,AFSpecialAssigneeEnum.AUTO_NODE_SKIP);
-        ((TaskEntity) delegateTask).complete(varMap,false);
+        String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+            formAdaptor.automaticAction(businessDataVo, conditionResult);
+        } catch (Exception e) {
+            log.error("自动节点条件判断或动作执行异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        } finally {
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+            ((TaskEntity) delegateTask).complete(varMap,false);
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                    .builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT,conditionResult))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+        }
     }
 
     private void processCopyV2(BpmnNodeLabelVO nodeLabelVO, String procInstId, String assignee, String assigneeName, String processNumber,DelegateTask delegateTask) {

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,7 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
 
     }
 
+    public  abstract Boolean autoCondition(T vo);
     /**
      * 默认实现: 仅支持低代码流程 (UDLFApplyVo).
      * 从节点配置的 autoNodeConf 中读取条件, 对 lfFields 进行基础评估.
@@ -82,7 +84,12 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
      * 如果没有配置条件, 返回 null (无条件执行 automaticAction).
      */
     @Override
-    public Boolean automaticCondition(BusinessDataVo vo) {
+    public Boolean automaticCondition(T vo) {
+        //如果用户想要自定义自动流转条件,则需要重写autoCondition,并返回非null,值,如果返回了null,则走默认的自动流转条件
+        Boolean b = autoCondition(vo);
+        if (b != null) {
+            return b;
+        }
         // DIY/regular flows: users must override this method
         if (!(vo instanceof UDLFApplyVo)) {
             return false;
@@ -97,6 +104,8 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
                 return false;
             }
             return evaluateConditions(autoNodeConf, lfFields);
+        } catch (AFBizException e) {
+            throw e;
         } catch (Exception e) {
             log.warn("automaticCondition evaluation failed, returning null: {}", e.getMessage());
             return null;
@@ -113,18 +122,19 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
         if (!StringUtils.hasText(processNumber) || !StringUtils.hasText(taskDefKey)) {
             return null;
         }
-        // Find active BpmnConf by processNumber (bpmnCode)
+        // Find active BpmnConf by formCode
         BpmnConfBizService bpmnConfBizService = SpringBeanUtils.getBean(BpmnConfBizService.class);
         BpmnConf bpmnConf =bpmnConfBizService.getBpmnConfByFormCode(vo.getFormCode());
         if (bpmnConf == null) {
            throw  new AFBizException("cant not get bpmnconf by formcode+"+vo.getFormCode());
         }
         String nodeId = bpmVariableMultiplayerMapper.getNodeIdByElementId(vo.getProcessNumber(), vo.getTaskDefKey());
-        // Find BpmnNode by confId and nodeId (taskDefKey is the element ID = nodeId)
+        long longId=Long.parseLong(nodeId);
+        // Find BpmnNode by confId and nodeId (nodeId is looked up from taskDefKey via getNodeIdByElementId)
         BpmnNode bpmnNode = bpmnNodeService.getOne(
                 Wrappers.<BpmnNode>lambdaQuery()
                         .eq(BpmnNode::getConfId, bpmnConf.getId())
-                        .eq(BpmnNode::getNodeId, nodeId)
+                        .eq(BpmnNode::getId, longId)
                         .eq(BpmnNode::getIsDel, 0)
         );
         if (bpmnNode == null || !StringUtils.hasText(bpmnNode.getNodeConfigJson())) {
@@ -139,6 +149,14 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
 
     /**
      * Evaluate auto node conditions against form fields.
+     * <p>
+     * NOTE: This is a simplified reimplementation of condition evaluation.
+     * The design doc references {@link org.openoa.engine.bpmnconf.adp.conditionfilter.ConditionJudge}
+     * implementations (LFStringConditionJudge, LFNumberFormatJudge, etc.), but those operate on
+     * BpmnNodeConditionsConfBaseVo (processed format) while auto node stores conditions in
+     * BpmnNodeConditionsConfVueVo (raw frontend format). Reusing ConditionJudge directly would
+     * require a non-trivial format conversion. Consider refactoring to reuse existing judges
+     * if condition semantics need to stay perfectly aligned with condition nodes.
      */
     private Boolean evaluateConditions(BpmnNodeAutoNodeConfJson autoNodeConf, Map<String, Object> formFields) {
         List<List<BpmnNodeConditionsConfVueVo>> conditionList = autoNodeConf.getConditionList();
@@ -215,9 +233,12 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
             return targetValue.equals(formValueStr);
         }
 
-        // Checkbox: check if form value contains the target
+        // Checkbox: check if form value collection contains the target element
         if ("checkbox".equals(fieldTypeName)) {
-            return formValueStr.contains(targetValue);
+            if (!StringUtils.hasText(formValueStr) || !StringUtils.hasText(targetValue)) {
+                return false;
+            }
+            return Arrays.asList(formValueStr.split(",")).contains(targetValue);
         }
 
         // Numeric / Date / Time comparisons using optType
@@ -268,8 +289,4 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
         }
     }
 
-    @Override
-    public void automaticAction(BusinessDataVo autoActionDto,Boolean conditionResult) {
-
-    }
 }

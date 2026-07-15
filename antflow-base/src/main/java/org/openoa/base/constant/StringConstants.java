@@ -52,6 +52,7 @@ public class StringConstants {
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
+    public static final String AF_AUTO_EVALUATE_SKIP_COMMENT ="自动节点自动跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";
     public static final String AF_NODE_OR_SIGN_SUFFIX ="\uD83D\uDD02";

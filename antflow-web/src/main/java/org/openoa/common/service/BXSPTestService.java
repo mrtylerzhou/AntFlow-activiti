@@ -49,6 +49,11 @@ public class BXSPTestService extends AbstractFormOperationAdaptor<BizRefundVo> {
     }
 
     @Override
+    public void automaticAction(BizRefundVo businessDataVo, Boolean conditionResult) {
+
+    }
+
+    @Override
     public void queryData(BizRefundVo vo) {
         BizRefund refund = bizRefundMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(refund,vo);
@@ -93,6 +98,11 @@ public class BXSPTestService extends AbstractFormOperationAdaptor<BizRefundVo> {
     @Override
     public void cancellationData(BizRefundVo vo) {
 
+    }
+
+    @Override
+    public Boolean autoCondition(BizRefundVo vo) {
+        return null;
     }
 
     @Override

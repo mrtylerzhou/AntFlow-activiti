@@ -29,7 +29,7 @@
                                         <div class="l pl10" v-if="conditionGroupArray.length > 1">
                                             <el-text class="ml10" type="warning">组内条件关系：
                                                 且<el-switch
-                                                    v-model="conditionGroupArray[conditionGroupIdx].condRelation" />或
+                                                    v-model="conditionGroupArray[0].condRelation" />或
                                             </el-text>
                                         </div>
                                         <div @click="deleteConditionGroup(conditionGroupIdx)" class="r clickable">
@@ -189,7 +189,7 @@
             </el-main>
         </el-container>
     </el-drawer>
-    <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
+    <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" :nodeConfig="originalConfigData" />
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
