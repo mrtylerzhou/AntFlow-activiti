@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
@@ -15,6 +16,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.FormOperationAdaptor;
 import org.openoa.base.util.AFWrappers;
+import org.openoa.base.util.FilterUtil;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -61,7 +63,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         String formCode= bpmnNextTaskDto.getFormCode();
         Boolean isOutSide = bpmnNextTaskDto.getIsOutSide();
         DelegateTask delegateTask = bpmnNextTaskDto.getDelegateTask();
-        
+        nodeLabelVOS=nodeLabelVOS.stream().filter(FilterUtil.distinctByKeys(BpmnNodeLabelVO::getLabelValue)).collect(Collectors.toList());
         for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
@@ -109,7 +111,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                     .verifyUserName(assigneeName)
                     .taskDefKey(delegateTask.getTaskDefinitionKey())
                     .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                    .verifyDesc(StringConstants.AF_AUTO_SKIP_COMMENT)
+                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT,conditionResult))
                     .processCode(processNumber)
                     .build();
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);

@@ -189,7 +189,7 @@
             </el-main>
         </el-container>
     </el-drawer>
-    <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
+    <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" :nodeConfig="originalConfigData" />
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'

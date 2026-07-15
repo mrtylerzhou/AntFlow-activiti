@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.service.biz.personnelinfoprovider;
 
 import com.google.common.base.Strings;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmnPersonnelProviderService;
 import org.openoa.base.vo.*;
@@ -38,16 +39,13 @@ public class UserPointedPersonnelProvider implements BpmnPersonnelProviderServic
         if(Strings.isNullOrEmpty(elementName)){
             elementName="指定人员";
         }
+        List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
         if(bpmnNodeVo.getIsOutSideProcess()!=null&&bpmnNodeVo.getIsOutSideProcess().equals(1)){
-            List<BaseIdTranStruVo> emplList = bpmnNodeVo.getProperty().getEmplList();
-            if(CollectionUtils.isEmpty(emplList)){
-                throw new AFBizException("thirdy party process role node has no employee info");
-            }
+
           return assigneeVoBuildUtils.buildVOs(emplList,elementName,false);
         }
-        List<String> emplIds = propertysVo.getEmplIds();
 
-        List<BpmnNodeParamsAssigneeVo> bpmnNodeParamsAssigneeVos = assigneeVoBuildUtils.buildVos(emplIds, elementName,false);
+        List<BpmnNodeParamsAssigneeVo> bpmnNodeParamsAssigneeVos = assigneeVoBuildUtils.buildVOs(emplList, elementName,false);
         return bpmnNodeParamsAssigneeVos;
     }
 }

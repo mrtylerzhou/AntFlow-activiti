@@ -76,6 +76,7 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
 
     }
 
+    public  abstract Boolean autoCondition(T vo);
     /**
      * 默认实现: 仅支持低代码流程 (UDLFApplyVo).
      * 从节点配置的 autoNodeConf 中读取条件, 对 lfFields 进行基础评估.
@@ -83,7 +84,12 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
      * 如果没有配置条件, 返回 null (无条件执行 automaticAction).
      */
     @Override
-    public Boolean automaticCondition(BusinessDataVo vo) {
+    public Boolean automaticCondition(T vo) {
+        //如果用户想要自定义自动流转条件,则需要重写autoCondition,并返回非null,值,如果返回了null,则走默认的自动流转条件
+        Boolean b = autoCondition(vo);
+        if (b != null) {
+            return b;
+        }
         // DIY/regular flows: users must override this method
         if (!(vo instanceof UDLFApplyVo)) {
             return false;
@@ -123,11 +129,12 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
            throw  new AFBizException("cant not get bpmnconf by formcode+"+vo.getFormCode());
         }
         String nodeId = bpmVariableMultiplayerMapper.getNodeIdByElementId(vo.getProcessNumber(), vo.getTaskDefKey());
+        long longId=Long.parseLong(nodeId);
         // Find BpmnNode by confId and nodeId (nodeId is looked up from taskDefKey via getNodeIdByElementId)
         BpmnNode bpmnNode = bpmnNodeService.getOne(
                 Wrappers.<BpmnNode>lambdaQuery()
                         .eq(BpmnNode::getConfId, bpmnConf.getId())
-                        .eq(BpmnNode::getNodeId, nodeId)
+                        .eq(BpmnNode::getId, longId)
                         .eq(BpmnNode::getIsDel, 0)
         );
         if (bpmnNode == null || !StringUtils.hasText(bpmnNode.getNodeConfigJson())) {
@@ -282,8 +289,4 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
         }
     }
 
-    @Override
-    public void automaticAction(BusinessDataVo autoActionDto,Boolean conditionResult) {
-
-    }
 }
