@@ -106,7 +106,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         if (CollectionUtils.isEmpty(taskList)) {
             throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
-        if(Objects.equals(bpmBusinessProcess.getProcessState(), ProcessStateEnum.HANDLING_STATE.getCode())){
+        if(!Objects.equals(bpmBusinessProcess.getProcessState(), ProcessStateEnum.HANDLING_STATE.getCode())){
             throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前流程非审批中状态,无法操作");
         }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
