@@ -109,6 +109,7 @@ async function clickButten(row) {
     const alterMsg = {
         7: row.name + "操作成功，关闭抽屉，刷新【我的发起】列表",
         29: row.name + "操作成功，请到【我的代办】页查看",
+        32: "撤销同意操作成功，请重新审批",
     };
     proxy.$confirm('确认"' + row.name + '"编号为"' + viewConfig.value.processNumber + '"的流程吗？', "温馨提示").then(async () => {
         proxy.$modal.loading();

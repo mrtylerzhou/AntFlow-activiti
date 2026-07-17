@@ -152,6 +152,7 @@ export class approvalButtonConf {
   static futureNodeReduceSign = 27; //未来节点减签
   static futureNodeAddSign = 28; //未来节点加签
   static withdraw = 29; //流程撤回
+  static drawBackAgree = 32; //撤销同意
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -180,6 +181,7 @@ export class approvalButtonConf {
     27: "未来节点减签",
     28: "未来节点加签",
     29: "流程撤回",
+    32: "撤销同意",
   };
 }
 /**
@@ -228,6 +230,16 @@ export let viewPageButtons = [
   { value: approvalButtonConf.forward, label: "转发" },
 ];
 /**
+ * 流程设计节点查看页按钮配置（节点级，区别于流程级 viewPageButtons）
+ */
+export let nodeViewPageButtons = [
+  {
+    value: approvalButtonConf.drawBackAgree,
+    label: "撤销同意",
+    description: "撤销当前节点的同意操作，撤销后需重新审批",
+  },
+];
+/**
  * 自定义表单路径与FormCode映射
  */
 export const bizFormMaps = new Map([
@@ -255,6 +267,7 @@ export let approveButtonColor = {
   19: "success", //加批
   21: "primary", //转办
   23: "warning", //驳回
+  32: "danger", //撤销同意
   99: "success", //处理中
   100: "info",
 };

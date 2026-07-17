@@ -229,6 +229,26 @@
                         </el-radio>
                     </el-radio-group>
                 </div>
+
+                <p style="margin-top: 16px;">【查看页面】按钮权限显示控制</p>
+                <el-checkbox-group class="clear" v-model="checkViewPageBtns">
+                    <div class="btn-row" v-for="opt in nodeViewPageButtons" :key="opt.value">
+                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default'"
+                            @change="handleCheckedViewButtonsChange(opt.value)">
+                            【{{ opt.label }}】
+                        </el-checkbox>
+                        <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                            <template #reference>
+                                <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                            </template>
+                            <div>{{ opt.description }}</div>
+                        </el-popover>
+                        <el-input class="btn-name-input" v-model="viewButtonCustomNames[opt.value]"
+                            maxlength="8" placeholder="自定义名称" size="small"
+                            :disabled="!checkViewPageBtns.includes(opt.value)"
+                            @input="syncViewPageButtons" />
+                    </div>
+                </el-checkbox-group>
             </el-tab-pane>
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
@@ -264,7 +284,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
@@ -287,10 +307,13 @@ let approverRoleVisible = ref(false);
 let checkedRoleList = ref([]);
 let checkedUserList = ref([]);
 let checkApprovalPageBtns = ref([]);
+let checkViewPageBtns = ref([]);
 let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
 /**按钮自定义名称映射 { [buttonType]: 自定义名称 } */
 let buttonCustomNames = ref({});
+/**查看页按钮自定义名称映射 { [buttonType]: 自定义名称 } */
+let viewButtonCustomNames = ref({});
 let udrOptions = ref([]);
 let udrSelectedId = ref(null);
 let labelOptions = ref([]);
@@ -342,6 +365,7 @@ watch(approverConfig1, (val) => {
         formItems.value = currParallel.lfFieldControlVOs || [];
         templateVos.value = currParallel.templateVos || [];
         loadApprovalPageButtons(currParallel.buttons?.approvalPage);
+        loadViewPageButtons(currParallel.buttons?.viewPage);
         selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
     }
     else {
@@ -349,6 +373,7 @@ watch(approverConfig1, (val) => {
         formItems.value = val.value.lfFieldControlVOs || [];
         templateVos.value = val.value.templateVos || [];
         loadApprovalPageButtons(val.value.buttons?.approvalPage);
+        loadViewPageButtons(val.value.buttons?.viewPage);
         selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
     }
 });
@@ -623,6 +648,34 @@ const syncApprovalPageButtons = () => {
     approverConfig.value.buttons.approvalPage = checkApprovalPageBtns.value.map(bt => ({
         buttonType: bt,
         buttonName: buttonCustomNames.value[bt] || ''
+    }));
+}
+
+/**处理查看页权限按钮变更事件 */
+const handleCheckedViewButtonsChange = () => {
+    syncViewPageButtons();
+}
+
+/**从后端返回的 viewPage(对象数组)解析出勾选值与自定义名称 */
+const loadViewPageButtons = (viewPageList) => {
+    const list = viewPageList || [];
+    checkViewPageBtns.value = list.map(item => typeof item === 'number' ? item : item.buttonType);
+    const names = {};
+    nodeViewPageButtons.forEach(opt => {
+        const item = list.find(i => typeof i === 'object' && i.buttonType === opt.value);
+        names[opt.value] = (item && item.buttonName && item.buttonName !== opt.label) ? item.buttonName : '';
+    });
+    viewButtonCustomNames.value = names;
+    syncViewPageButtons();
+}
+
+/**将勾选状态与自定义名称同步到 approverConfig.buttons.viewPage(对象数组) */
+const syncViewPageButtons = () => {
+    if (!approverConfig.value) return;
+    if (!approverConfig.value.buttons) approverConfig.value.buttons = {};
+    approverConfig.value.buttons.viewPage = checkViewPageBtns.value.map(bt => ({
+        buttonType: bt,
+        buttonName: viewButtonCustomNames.value[bt] || ''
     }));
 }
 
