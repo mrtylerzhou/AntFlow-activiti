@@ -169,14 +169,22 @@
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
-                    <el-checkbox style="margin: 6px 0;width: 100%;height: 45px;" border
-                        v-for="opt in approvalPageButtons" :value="opt.value" :disabled="opt.type === 'default'"
-                        @change="handleCheckedButtonsChange(opt.value)">
-                        【{{ opt.label }}】
-                        <span class="opt-description">
-                            {{ opt.description }}
-                        </span>
-                    </el-checkbox>
+                    <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
+                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default'"
+                            @change="handleCheckedButtonsChange(opt.value)">
+                            【{{ opt.label }}】
+                        </el-checkbox>
+                        <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                            <template #reference>
+                                <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                            </template>
+                            <div>{{ opt.description }}</div>
+                        </el-popover>
+                        <el-input class="btn-name-input" v-model="buttonCustomNames[opt.value]"
+                            maxlength="8" placeholder="自定义名称" size="small"
+                            :disabled="!checkApprovalPageBtns.includes(opt.value)"
+                            @input="syncApprovalPageButtons" />
+                    </div>
                 </el-checkbox-group>
 
                 <div v-if="afterSignUpWayVisible">
@@ -184,28 +192,40 @@
                         @change="handleApprovalBtnSubOption(approvalBtnSubOption)" class="clear">
                         <el-radio :value="1" class="auth-btn" border>
                             【顺序会签】
-                            <span class="opt-description">
-                                多个会签人员，依次进行审批
-                            </span>
+                            <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                                <template #reference>
+                                    <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                                </template>
+                                <div>多个会签人员，依次进行审批</div>
+                            </el-popover>
                         </el-radio>
                         <el-radio :value="2" class="auth-btn" border>
                             【会签】
-                            <span class="opt-description">
-                                多个会签人员，同步进行审批
-                            </span>
+                            <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                                <template #reference>
+                                    <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                                </template>
+                                <div>多个会签人员，同步进行审批</div>
+                            </el-popover>
                         </el-radio>
 
                         <el-radio :value="3" class="auth-btn" border>
                             【或签】
-                            <span class="opt-description">
-                                只需一名审批人同意或拒绝即可
-                            </span>
+                            <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                                <template #reference>
+                                    <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                                </template>
+                                <div>只需一名审批人同意或拒绝即可</div>
+                            </el-popover>
                         </el-radio>
                         <el-radio :value="9" class="auth-btn" border>
                             【回到加批人】
-                            <span class="opt-description">
-                                只能是顺序会签，加批人审批完之后，会回到本节点的审批人再次审批
-                            </span>
+                            <el-popover placement="top" :width="240" trigger="click" popper-class="btn-desc-popover">
+                                <template #reference>
+                                    <el-icon class="btn-help-icon" @click.stop><QuestionFilled /></el-icon>
+                                </template>
+                                <div>只能是顺序会签，加批人审批完之后，会回到本节点的审批人再次审批</div>
+                            </el-popover>
                         </el-radio>
                     </el-radio-group>
                 </div>
@@ -245,6 +265,7 @@
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
+import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
@@ -268,6 +289,8 @@ let checkedUserList = ref([]);
 let checkApprovalPageBtns = ref([]);
 let checkedHRBP = ref('');
 let approvalPageBtns = ref([]);
+/**按钮自定义名称映射 { [buttonType]: 自定义名称 } */
+let buttonCustomNames = ref({});
 let udrOptions = ref([]);
 let udrSelectedId = ref(null);
 let labelOptions = ref([]);
@@ -318,14 +341,14 @@ watch(approverConfig1, (val) => {
         approverConfig.value = currParallel;
         formItems.value = currParallel.lfFieldControlVOs || [];
         templateVos.value = currParallel.templateVos || [];
-        checkApprovalPageBtns.value = currParallel.buttons?.approvalPage;
+        loadApprovalPageButtons(currParallel.buttons?.approvalPage);
         selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
     }
     else {
         approverConfig.value = val.value;
         formItems.value = val.value.lfFieldControlVOs || [];
         templateVos.value = val.value.templateVos || [];
-        checkApprovalPageBtns.value = val.value.buttons?.approvalPage;
+        loadApprovalPageButtons(val.value.buttons?.approvalPage);
         selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
     }
 });
@@ -343,7 +366,6 @@ watch(approverConfig, (val) => {
     if (!approverConfig.value.property.formAssigneeProperty) {
         approverConfig.value.property.formAssigneeProperty = 1;
     }
-    approvalPageBtns.value = val.buttons?.approvalPage;
     if (val.nodeProperty == 6) {//nodeProperty == 6 指 HRBP
         checkedHRBP.value = val.property.hrbpConfType
     }
@@ -572,17 +594,36 @@ const confirmExtraRole = (data) => {
 }
 
 /**处理权限按钮变更事件 */
-const handleCheckedButtonsChange = (val) => {
-    if (proxy.isEmpty(approvalPageBtns)) return;
-    if (proxy.isEmptyArray(approvalPageBtns.value)) return;
-    const index = approvalPageBtns.value.indexOf(val);
-    index < 0 ? approvalPageBtns.value.push(val) : approvalPageBtns.value.splice(index, 1);
-    const isAddStep = approvalPageBtns.value.indexOf(19);
-    if (isAddStep >= 0) {
-        approverConfig.value.isSignUp = 1;
-    } else {
-        approverConfig.value.isSignUp = 0;
-    }
+const handleCheckedButtonsChange = () => {
+    //checkApprovalPageBtns 由 v-model 自动维护勾选状态
+    const isAddStep = checkApprovalPageBtns.value.indexOf(19);
+    approverConfig.value.isSignUp = isAddStep >= 0 ? 1 : 0;
+    syncApprovalPageButtons();
+}
+
+/**从后端返回的 approvalPage(对象数组)解析出勾选值与自定义名称 */
+const loadApprovalPageButtons = (approvalPageList) => {
+    const list = approvalPageList || [];
+    //兼容老数据:元素可能是数字或对象
+    checkApprovalPageBtns.value = list.map(item => typeof item === 'number' ? item : item.buttonType);
+    const names = {};
+    approvalPageButtons.forEach(opt => {
+        const item = list.find(i => typeof i === 'object' && i.buttonType === opt.value);
+        //只有当 buttonName 与默认 label 不同时才回填(否则视为未自定义,显示空)
+        names[opt.value] = (item && item.buttonName && item.buttonName !== opt.label) ? item.buttonName : '';
+    });
+    buttonCustomNames.value = names;
+    syncApprovalPageButtons();
+}
+
+/**将勾选状态与自定义名称同步到 approverConfig.buttons.approvalPage(对象数组) */
+const syncApprovalPageButtons = () => {
+    if (!approverConfig.value) return;
+    if (!approverConfig.value.buttons) approverConfig.value.buttons = {};
+    approverConfig.value.buttons.approvalPage = checkApprovalPageBtns.value.map(bt => ({
+        buttonType: bt,
+        buttonName: buttonCustomNames.value[bt] || ''
+    }));
 }
 
 /**处理加批按钮 子操作 */
@@ -697,6 +738,31 @@ const handleTabClick = (tab, event) => {
 .opt-description {
     font-size: smaller;
     color: gray;
+}
+
+.btn-row {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    width: 100%;
+    gap: 8px;
+}
+
+.btn-help-icon {
+    color: #909399;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.btn-help-icon:hover {
+    color: #409eff;
+}
+
+.btn-name-input {
+    margin-left: auto;
+    width: 160px;
+    flex-shrink: 0;
 }
 
 .auth-btn {

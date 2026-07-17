@@ -1,5 +1,7 @@
 //import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
+/** 将按钮类型码转为带 buttonType 字段的对象数组(与后端 BpmnConfCommonButtonPropertyVo 对应) */
+const btns = (...types) => types.map(t => ({ buttonType: t }));
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
@@ -45,9 +47,9 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [],
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       nodeApproveList: [],
       templateVos: [],
@@ -113,9 +115,9 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [], // 字段控制对象数组（初始为空）
       buttons: {
-        startPage: [1], // 开始页面可用的按钮ID数组
-        approvalPage: [3, 4, 18, 19, 21], // 审批页面可用的按钮ID数组
-        viewPage: [0],
+        startPage: btns(1), // 开始页面可用的按钮ID数组
+        approvalPage: btns(3, 4, 18, 19, 21), // 审批页面可用的按钮ID数组
+        viewPage: btns(0),
       },
       nodeApproveList: [], // 节点审批人列表（初始为空）
       templateVos: [], // 模板对象数组（初始为空）
@@ -149,9 +151,9 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [],
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       nodeApproveList: [
         { targetId: "-3", name: "自动节点自动跳过", type: 5 },
@@ -411,9 +413,9 @@ export class NodeUtils {
         additionalSignInfoList: [],
       },
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       error: true,
       childNode: childNode,

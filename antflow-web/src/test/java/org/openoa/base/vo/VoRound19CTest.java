@@ -160,14 +160,19 @@ class VoRound19CTest extends BaseTest {
         @Test
         @DisplayName("builder pattern")
         void builder() {
+            BpmnConfCommonButtonPropertyVo b1 = BpmnConfCommonButtonPropertyVo.builder().buttonType(1).build();
+            BpmnConfCommonButtonPropertyVo b2 = BpmnConfCommonButtonPropertyVo.builder().buttonType(2).build();
+            BpmnConfCommonButtonPropertyVo b3 = BpmnConfCommonButtonPropertyVo.builder().buttonType(3).build();
+            BpmnConfCommonButtonPropertyVo b4 = BpmnConfCommonButtonPropertyVo.builder().buttonType(4).build();
+            BpmnConfCommonButtonPropertyVo b5 = BpmnConfCommonButtonPropertyVo.builder().buttonType(5).build();
             BpmnNodeButtonConfBaseVo vo = BpmnNodeButtonConfBaseVo.builder()
-                    .startPage(Arrays.asList(1, 2))
-                    .approvalPage(Arrays.asList(3))
-                    .viewPage(Arrays.asList(4, 5))
+                    .startPage(Arrays.asList(b1, b2))
+                    .approvalPage(Arrays.asList(b3))
+                    .viewPage(Arrays.asList(b4, b5))
                     .build();
-            assertEquals(Arrays.asList(1, 2), vo.getStartPage());
-            assertEquals(Arrays.asList(3), vo.getApprovalPage());
-            assertEquals(Arrays.asList(4, 5), vo.getViewPage());
+            assertEquals(Arrays.asList(b1, b2), vo.getStartPage());
+            assertEquals(Arrays.asList(b3), vo.getApprovalPage());
+            assertEquals(Arrays.asList(b4, b5), vo.getViewPage());
         }
     }
 

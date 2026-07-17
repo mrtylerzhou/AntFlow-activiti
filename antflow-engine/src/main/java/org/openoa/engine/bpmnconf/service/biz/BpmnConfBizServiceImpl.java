@@ -1913,11 +1913,20 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (bsConf != null && !CollectionUtils.isEmpty(bsConf.getButtonConfList())) {
             BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
             buttons.setStartPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 1).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 1)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setApprovalPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 2).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 2)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setViewPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 3).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 3)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             bpmnNodeVo.setButtons(buttons);
         }
 
@@ -2091,13 +2100,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param buttonPageTypeEnum
      * @return
      */
-    private List<Integer> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
+    private List<BpmnConfCommonButtonPropertyVo> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
         return bpmnNodeButtonConfs
                 .stream()
                 .filter(o -> o.getButtonPageType().intValue() == buttonPageTypeEnum.getCode())
-                .map(BpmnNodeButtonConf::getButtonType)
-                .collect(Collectors.toList())
-                .stream()
+                .map(o -> BpmnConfCommonButtonPropertyVo.builder()
+                        .buttonType(o.getButtonType())
+                        .buttonName(o.getButtonName())
+                        .build())
                 .distinct()
                 .collect(Collectors.toList());
     }

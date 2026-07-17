@@ -207,7 +207,9 @@ const preview = async (viewData) => {
             let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
             if (Array.isArray(auditButtons) && auditButtons.length > 0) {
                 approvalButtons.value = auditButtons.map(c => {
-                    return { value: c.buttonType, label: c.name };
+                    //兜底:后端返回的 name 为空时使用按钮类型对应的默认名称
+                    let label = c.name || approvalButtonConf.buttonsObj[c.buttonType] || '';
+                    return { value: c.buttonType, label };
                 }).sort(function (a, b) {
                     return a.value - b.value
                 });

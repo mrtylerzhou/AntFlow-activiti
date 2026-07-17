@@ -23,15 +23,15 @@ public class BpmnNodeButtonConfBaseVo implements Serializable {
     /**
      * start page button list
      */
-    private List<Integer> startPage=new ArrayList<>();
+    private List<BpmnConfCommonButtonPropertyVo> startPage=new ArrayList<>();
 
     /**
      * approval page button list
      */
-    private List<Integer> approvalPage = new ArrayList<>();
+    private List<BpmnConfCommonButtonPropertyVo> approvalPage = new ArrayList<>();
 
     /**
      * view page button list
      */
-    private List<Integer> viewPage = new ArrayList<>();
+    private List<BpmnConfCommonButtonPropertyVo> viewPage = new ArrayList<>();
 }
