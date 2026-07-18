@@ -27,12 +27,6 @@
                             <p>抄送人V2</p>
                         </div>
                     </a>
-                    <a class="add-node-popover-item condition-approver-node" @click="addType(12)">
-                        <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
-                            <p>条件审批</p>
-                        </div>
-                    </a>
                 </div>
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item condition" @click="addType(4)">
@@ -77,6 +71,12 @@
                         <div class="item-wrapper">
                             <svg-icon icon-class="approve" class="iconfont" />
                             <p>克隆器</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item condition-approver-node" @click="addType(12)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approve" class="iconfont" />
+                            <p>条件审批</p>
                         </div>
                     </a>
                 </div>

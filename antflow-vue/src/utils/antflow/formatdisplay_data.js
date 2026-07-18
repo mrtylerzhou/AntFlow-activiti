@@ -181,7 +181,7 @@ export class FormatDisplayUtils {
       }
       node.formAssigneeProperty = node?.property?.formAssigneeProperty;
       node.formInfos = node?.property?.formInfos ?? [];
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12) {
         let empList = [];
         if (node.nodeProperty == 6) {
           let approveObj = {
@@ -241,9 +241,9 @@ export class FormatDisplayUtils {
         }
       }
 
-      // 条件审批节点反显: nodeType=4 + condition_approve_node标签 → nodeType=12
+      // 条件审批节点反显: nodeType=4 或 12 (后端可能已转) + condition_approve_node标签
       // 与 auto node 类似, 但保留真实审批人 (不替换为虚拟人)
-      if (node.nodeType == 4 && node.labelList && node.labelList.some(l => l.labelValue === "condition_approve_node")) {
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_approve_node")) {
         node.nodeType = 12;
         node.nodeName = node.nodeName || "条件审批";
         node.nodeDisplayName = node.nodeDisplayName || "条件审批";
