@@ -178,6 +178,12 @@ public class NodeUtil {
                 prop.setEmplList(Lists.newArrayList(virtualUser));
             }
         }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode().equals(nodeType)){
+            //条件审批节点: 设计期 nodeType=12, 运行期统一为审批人节点 4
+            //与 auto node 不同: 不强制 nodeProperty, 不塞虚拟审批人, 保留用户配置的真实 nodeApproveList
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionApproveNode(true);
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -190,6 +196,9 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.automaticNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode());
+            }
+            if(NodeLabelConstants.conditionApproveNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
             }
         }
     }

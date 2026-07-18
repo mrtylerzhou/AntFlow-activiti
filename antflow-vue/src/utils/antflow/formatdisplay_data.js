@@ -240,6 +240,21 @@ export class FormatDisplayUtils {
           node.groupRelation = node.autoNodeConf.groupRelation || false;
         }
       }
+
+      // 条件审批节点反显: nodeType=4 + condition_approve_node标签 → nodeType=12
+      // 与 auto node 类似, 但保留真实审批人 (不替换为虚拟人)
+      if (node.nodeType == 4 && node.labelList && node.labelList.some(l => l.labelValue === "condition_approve_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件审批";
+        node.nodeDisplayName = node.nodeDisplayName || "条件审批";
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
     }
     return nodeList;
   }

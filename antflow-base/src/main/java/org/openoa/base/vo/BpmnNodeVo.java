@@ -51,6 +51,11 @@ public class BpmnNodeVo  implements Serializable {
     private boolean aggregationNode;
     private Boolean isAutomaticNode;
     /**
+     * 条件审批节点标记: 设计期 nodeType=12, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 automaticNode 类似, 但保留真实审批人, 仅在条件满足时自动 complete
+     */
+    private Boolean isConditionApproveNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

@@ -1,5 +1,6 @@
 // import { FormatUtils } from '@/utils/antflowformatcommit_data'
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
+import $func from "@/utils/antflow/index";
 export class FormatCommitUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
@@ -130,7 +131,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12) {
         let approveObj = {
           formAssigneeProperty: 0,
           formInfos: [],
@@ -195,6 +196,19 @@ export class FormatCommitUtils {
         delete node.conditionList;
         delete node.groupRelation;
         delete node.nodeApproveList;
+      }
+
+      // 条件审批节点: 与 auto node 类似, 把 conditionList 塞进 autoNodeConf
+      // 但不删 nodeApproveList (L185 已删, 后端从 property 拿真实审批人)
+      // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
+      if (node.nodeType == 12) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
       }
     }
     return nodeList;

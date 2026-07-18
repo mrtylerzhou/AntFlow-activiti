@@ -69,6 +69,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
             processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
+            processConditionApproveNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
         }
     }
 
@@ -116,6 +117,63 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                     .build();
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
         }
+    }
+
+    /**
+     * 条件审批节点处理:
+     * - 复用 auto node 的条件评估逻辑 (formAdaptor.automaticCondition)
+     * - 与 auto node 的关键差异: 仅当 conditionResult==true 时才 complete 任务;
+     *   conditionResult==false 或 null 时, 不 complete, 留给真实审批人人工处理
+     * - 不调用 formAdaptor.automaticAction (那是 auto node 专属副作用)
+     */
+    private void processConditionApproveNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_APPROVE_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if(formAdaptor==null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        }
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        } catch (Exception e) {
+            log.error("条件审批节点条件判断异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        }
+
+        //仅当条件满足时才自动 complete; 否则留给真实审批人
+        if (Boolean.TRUE.equals(conditionResult)) {
+            String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+            ((TaskEntity) delegateTask).complete(varMap,false);
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                    .builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_CONDITION_APPROVE_AUTO_PASS_COMMENT, conditionResult))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+        }
+        //conditionResult == false 或 null: 不 complete, 留给真实审批人
     }
 
     private void processCopyV2(BpmnNodeLabelVO nodeLabelVO, String procInstId, String assignee, String assigneeName, String processNumber,DelegateTask delegateTask) {

@@ -206,6 +206,7 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 9) return $func.autoNodeConditionStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -435,7 +436,7 @@ const setNodeInfo = (index) => {
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4) {
+    } else if (nodeType == 4 || nodeType == 12) {
         setApprover(true);
         setApproverConfig({
             value: {

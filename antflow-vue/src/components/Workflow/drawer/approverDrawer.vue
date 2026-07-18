@@ -166,6 +166,14 @@
                     </div>
                 </div>
             </el-tab-pane>
+            <el-tab-pane lazy v-if="approverConfig.nodeType === 12" label="条件设置" name="conditionStep">
+                <ConditionGroupEditor
+                    :conditionList="approverConfig.conditionList"
+                    v-model:groupRelation="approverConfig.groupRelation"
+                    v-model:nodeApproveList="approverConfig.nodeApproveList">
+                    <template #tip>当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理</template>
+                </ConditionGroupEditor>
+            </el-tab-pane>
             <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
@@ -292,6 +300,7 @@ import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
 import noticeConf from "./noticeConfig/index.vue";
+import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
 const { proxy } = getCurrentInstance();
 const store = useStore()
 const props = defineProps({

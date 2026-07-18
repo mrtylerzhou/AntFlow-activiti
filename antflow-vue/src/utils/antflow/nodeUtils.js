@@ -214,6 +214,50 @@ export class NodeUtils {
     return autoNode;
   }
   /**
+   * 创建条件审批节点对象
+   * 本质是审批人节点(nodeType=4) + 条件配置 + condition_approve_node 标签
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 保留真实审批人
+   * 与 auto node 的差异: 保留真实审批人(非虚拟人), 仅条件满足时自动 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件审批节点
+   */
+  static createConditionApproveNode(child) {
+    let conditionApproveNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件审批",
+      nodeDisplayName: "条件审批",
+      nodeType: 12, //节点类型 12、条件审批节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人(与 approver 一致, auto node 是 false)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置(不塞虚拟人)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_approve_node", labelName: "条件审批节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件节点/自动节点相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+    };
+    return conditionApproveNode;
+  }
+  /**
    * 创建网关对象
    * @returns object
    */

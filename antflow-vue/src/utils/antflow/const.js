@@ -16,7 +16,10 @@ export let bgColors = [
   "",
   "4, 96, 187",
   "155, 89, 182",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色'
+  "",
+  "",
+  "46, 167, 167",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批)'
 export let placeholderList = [
   "",
   "发起人",
@@ -28,6 +31,9 @@ export let placeholderList = [
   "审核人",
   "抄送人v2",
   "自动节点",
+  "办理人",
+  "自动办理",
+  "条件审批",
 ];
 export let nodeTypeList = [
   "未知",
@@ -40,6 +46,9 @@ export let nodeTypeList = [
   "并行审批",
   "抄送人V2",
   "自动节点",
+  "办理节点",
+  "自动办理",
+  "条件审批",
 ];
 export let signTypeObj = {
   1: "会签",
