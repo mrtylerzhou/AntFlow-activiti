@@ -94,7 +94,7 @@
                               </el-dropdown-item>
                               <el-dropdown-item @click="handleFlowFastForward(scope.row)">
                                  <el-icon>
-                                    <Promotion />
+                                    <DArrowRight />
                                  </el-icon>推进流程
                               </el-dropdown-item>
                               <el-dropdown-item @click="handleFlowChange(scope.row)">
