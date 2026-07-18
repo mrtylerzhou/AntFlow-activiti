@@ -24,6 +24,7 @@ import org.openoa.base.util.StrUtils;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
+import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
@@ -57,6 +58,8 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
     private BpmFlowrunEntrustService bpmFlowrunEntrustService;
     @Autowired
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
+    @Autowired
+    private BpmVariableMapper bpmVariableMapper;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -66,7 +69,15 @@ public class FastForwardProcessImpl implements ProcessOperationAdaptor {
             throw new AFBizException("请输入流程编号");
         }
         if(!StringUtils.hasText(taskDefKey)){
-            throw new AFBizException("请输入要跳转到的节点");
+            if(!StringUtils.hasText(vo.getNodeId())){
+                throw new AFBizException("taskDefKey和nodeId不能同时为空");
+            }
+            List<String> elementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, vo.getNodeId());
+            if(CollectionUtils.isEmpty(elementIds)){
+                throw new AFBizException("未能根据nodeId获取taskDefKey:" + vo.getNodeId());
+            }
+            taskDefKey = elementIds.get(0);
+            vo.setTaskDefKey(taskDefKey);
         }
         BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
         if(bpmBusinessProcess==null){
