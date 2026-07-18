@@ -61,6 +61,12 @@
                             <p>办理节点</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item auto-process-node" @click="addType(11)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approve" class="iconfont" />
+                            <p>自动办理</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
