@@ -18,6 +18,7 @@ public enum NodeTypeEnum implements AfEnumBase{
     NODE_TYPE_COPY_V2(8,"抄送节点v2",0),
     NODE_TYPE_AUTO_NODE(9,"自动节点",0),
     NODE_TYPE_CONDITION_APPROVE(12,"条件审批节点",0),
+    NODE_TYPE_CONDITION_COPY(13,"条件抄送节点",0),
     ;
 
     @Getter

@@ -56,6 +56,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isConditionApproveNode;
     /**
+     * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
+     */
+    private Boolean isConditionCopyNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

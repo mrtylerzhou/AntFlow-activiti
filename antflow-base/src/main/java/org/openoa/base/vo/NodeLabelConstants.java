@@ -12,8 +12,9 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO copyNodeV2=new BpmnNodeLabelVO(StringConstants.COPY_NODEV2,"抄送节点V2");
     BpmnNodeLabelVO automaticNode=new BpmnNodeLabelVO(StringConstants.AUTOMATIC_NODE,"自动节点");
     BpmnNodeLabelVO conditionApproveNode=new BpmnNodeLabelVO(StringConstants.CONDITION_APPROVE_NODE,"条件审批节点");
+    BpmnNodeLabelVO conditionCopyNode=new BpmnNodeLabelVO(StringConstants.CONDITION_COPY_NODE,"条件抄送节点");
     BpmnNodeLabelVO skippedAssignees=new BpmnNodeLabelVO(StringConstants.SKIPPED_ASSIGNEE,"跳过的审批人");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
-      copyNodeV2,automaticNode
+      copyNodeV2,automaticNode,conditionCopyNode
     );
 }

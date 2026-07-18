@@ -258,6 +258,49 @@ export class NodeUtils {
     return conditionApproveNode;
   }
   /**
+   * 创建条件抄送节点对象
+   * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理
+   * 与抄送V2 的差异: 仅条件满足时才写 BpmProcessForward 抄送记录; 无论条件如何都 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件抄送节点
+   */
+  static createConditionCopyNode(child) {
+    let conditionCopyNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件抄送",
+      nodeDisplayName: "条件抄送",
+      nodeType: 13, //节点类型 13、条件抄送节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //抄送人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选抄送人(与抄送V2 一致)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实抄送人,由用户配置(运行期由 processConditionCopyNode 设 CC_NODE)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_copy_node", labelName: "条件抄送节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件节点/自动节点/条件审批节点相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+    };
+    return conditionCopyNode;
+  }
+  /**
    * 创建网关对象
    * @returns object
    */

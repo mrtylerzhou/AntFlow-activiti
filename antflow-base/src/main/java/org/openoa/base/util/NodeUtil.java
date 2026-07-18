@@ -184,6 +184,12 @@ public class NodeUtil {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
             bpmnNodeVo.setIsConditionApproveNode(true);
         }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode().equals(nodeType)){
+            //条件抄送节点: 设计期 nodeType=13, 运行期统一为审批人节点 4
+            //与 copyNodeV2 类似, 但不在这里塞虚拟审批人; 运行期由 processConditionCopyNode 设 CC_NODE
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionCopyNode(true);
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -199,6 +205,9 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.conditionApproveNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+            }
+            if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
             }
         }
     }

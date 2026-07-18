@@ -181,7 +181,7 @@ export class FormatDisplayUtils {
       }
       node.formAssigneeProperty = node?.property?.formAssigneeProperty;
       node.formInfos = node?.property?.formInfos ?? [];
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13) {
         let empList = [];
         if (node.nodeProperty == 6) {
           let approveObj = {
@@ -247,6 +247,21 @@ export class FormatDisplayUtils {
         node.nodeType = 12;
         node.nodeName = node.nodeName || "条件审批";
         node.nodeDisplayName = node.nodeDisplayName || "条件审批";
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
+      // 条件抄送节点反显: nodeType=4 或 8 或 13 (后端可能已转) + condition_copy_node标签
+      // 与抄送V2 类似, 但带条件; 保留真实抄送人 (运行期由后端设 CC_NODE)
+      if ((node.nodeType == 4 || node.nodeType == 8 || node.nodeType == 13) && node.labelList && node.labelList.some(l => l.labelValue === "condition_copy_node")) {
+        node.nodeType = 13;
+        node.nodeName = node.nodeName || "条件抄送";
+        node.nodeDisplayName = node.nodeDisplayName || "条件抄送";
         // 从 autoNodeConf 中恢复条件数据
         node.conditionList = [[]];
         node.groupRelation = false;

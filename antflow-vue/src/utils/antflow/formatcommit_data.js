@@ -131,7 +131,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13) {
         let approveObj = {
           formAssigneeProperty: 0,
           formInfos: [],
@@ -202,6 +202,18 @@ export class FormatCommitUtils {
       // 但不删 nodeApproveList (L185 已删, 后端从 property 拿真实审批人)
       // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
       if (node.nodeType == 12) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+      }
+
+      // 条件抄送节点: 与抄送V2 类似, 但带条件; 把 conditionList 塞进 autoNodeConf
+      // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
+      if (node.nodeType == 13) {
         $func.convertConditionNodeValue(node.conditionList, false);
         node.autoNodeConf = {
           conditionList: node.conditionList || [[]],

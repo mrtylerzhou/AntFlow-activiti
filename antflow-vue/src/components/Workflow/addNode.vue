@@ -80,6 +80,14 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item condition-copy-node" @click="addType(13)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="copy-user" class="iconfont" />
+                            <p>条件抄送</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -149,6 +157,10 @@ const createAutoNode = (childNode) => {
 const createConditionApproveNode = (childNode) => {
     return NodeUtils.createConditionApproveNode(childNode);
 }
+/**创建条件抄送节点 */
+const createConditionCopyNode = (childNode) => {
+    return NodeUtils.createConditionCopyNode(childNode);
+}
 /**创建办理节点（一次性生成两个审批人节点） */
 const createProcessNode = (childNode) => {
     return NodeUtils.createProcessNode(childNode);
@@ -186,6 +198,7 @@ const createNodeMap = new Map([
     [10, createProcessNode],
     [11, createAutoProcessNode],
     [12, createConditionApproveNode],
+    [13, createConditionCopyNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -352,6 +365,12 @@ const confirmClone = () => {
         &.condition-approver-node {
             .item-wrapper {
                 color: #2ea7a7
+            }
+        }
+
+        &.condition-copy-node {
+            .item-wrapper {
+                color: #4682b4
             }
         }
 

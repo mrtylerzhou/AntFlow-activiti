@@ -70,6 +70,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
             processConditionApproveNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
+            processConditionCopyNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
         }
     }
 
@@ -174,6 +175,87 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
         }
         //conditionResult == false 或 null: 不 complete, 留给真实审批人
+    }
+
+    /**
+     * 条件抄送节点处理:
+     * - 复用 auto node 的条件评估逻辑 (formAdaptor.automaticCondition)
+     * - 与 copyNodeV2 的关键差异: 仅当 conditionResult==true 时才写 BpmProcessForward 抄送记录
+     * - 与条件审批节点的关键差异: 无论条件结果如何都 complete; 条件不满足时仅跳过抄送动作
+     * - 不调用 formAdaptor.automaticAction (那是 auto node 专属副作用)
+     */
+    private void processConditionCopyNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, String procInstId, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_COPY_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+
+        // === 条件评估 (复用 auto node 的逻辑) ===
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if(formAdaptor==null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        }
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        } catch (Exception e) {
+            log.error("条件抄送节点条件判断异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        }
+
+        // === 无论条件如何都 complete (与 copyNodeV2 一致, assignee=CC_NODE) ===
+        String assignee = AFSpecialAssigneeEnum.CC_NODE.getId();
+        String assigneeName = AFSpecialAssigneeEnum.CC_NODE.getDesc();
+        if(delegateTask instanceof TaskEntity){
+            delegateTask.setAssignee(assignee);
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+            ((TaskEntity) delegateTask).complete(varMap,false);
+        }
+
+        // === 仅条件满足时写抄送记录 ===
+        if (Boolean.TRUE.equals(conditionResult)) {
+            List<BpmProcessForward> bpmProcessForwards = bpmProcessForwardService.list(AFWrappers.<BpmProcessForward>lambdaTenantQuery()
+                    .eq(BpmProcessForward::getProcessInstanceId, procInstId)
+                    .eq(BpmProcessForward::getForwardUserId, assignee));
+            if(CollectionUtils.isEmpty(bpmProcessForwards)){
+                bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
+                        .createTime(new Date())
+                        .createUserId(assignee)
+                        .forwardUserId(assignee)
+                        .ForwardUserName(assigneeName)
+                        .processInstanceId(procInstId)
+                        .processNumber(processNumber)
+                        .build());
+            }
+        }
+
+        // === 写 verifyInfo (文案随条件结果变化) ===
+        String comment = Boolean.TRUE.equals(conditionResult)
+                ? "(抄送给"+assigneeName+")自动通过"
+                : String.format(StringConstants.AF_CONDITION_COPY_SKIP_COMMENT, conditionResult);
+        BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                .builder()
+                .verifyDate(new Date())
+                .taskName(delegateTask.getName())
+                .taskId(delegateTask.getId())
+                .runInfoId(procInstId)
+                .verifyUserId(assignee)
+                .verifyUserName(assigneeName)
+                .taskDefKey(delegateTask.getTaskDefinitionKey())
+                .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                .verifyDesc(comment)
+                .processCode(processNumber)
+                .build();
+        bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
     }
 
     private void processCopyV2(BpmnNodeLabelVO nodeLabelVO, String procInstId, String assignee, String assigneeName, String processNumber,DelegateTask delegateTask) {
