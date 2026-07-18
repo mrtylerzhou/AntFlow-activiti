@@ -67,6 +67,12 @@
                             <p>自动办理</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item cloner-node" @click="openCloneDialog()">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approve" class="iconfont" />
+                            <p>克隆器</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -76,9 +82,33 @@
             </el-popover>
         </div>
     </div>
+    <!-- 克隆器弹窗 -->
+    <el-dialog v-model="cloneDialogVisible" title="克隆节点" width="420px" append-to-body>
+        <div v-if="cloneableNodes.length === 0" style="text-align: center; padding: 20px 0; color: #999;">
+            当前流程没有可克隆的审批人/抄送人V2节点
+        </div>
+        <div v-else>
+            <el-form label-width="80px">
+                <el-form-item label="选择节点">
+                    <el-select v-model="selectedCloneNodeId" placeholder="请选择要克隆的节点" style="width: 100%;">
+                        <el-option
+                            v-for="item in cloneableNodes"
+                            :key="item.nodeId"
+                            :label="item.nodeName + (item.nodeType === 4 ? '（审批人）' : '（抄送人V2）')"
+                            :value="item.nodeId"
+                        />
+                    </el-select>
+                </el-form-item>
+            </el-form>
+        </div>
+        <template #footer>
+            <el-button @click="cloneDialogVisible = false">取 消</el-button>
+            <el-button type="primary" :disabled="!selectedCloneNodeId" @click="confirmClone">确 定</el-button>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 let props = defineProps({
     childNodeP: {
@@ -88,6 +118,11 @@ let props = defineProps({
 })
 let emits = defineEmits(['update:childNodeP'])
 let visible = ref(false)
+const rootNode = inject('rootNode', null)
+// 克隆器状态
+let cloneDialogVisible = ref(false)
+let selectedCloneNodeId = ref(null)
+let cloneableNodes = ref([])
 /**创建审批人节点 */
 const createApproveNode = (childNode) => {
     return NodeUtils.createApproveNode(childNode);
@@ -146,7 +181,26 @@ const addType = (type) => {
     const handleCreateNodeFunc = createNodeMap.get(type);
     const newNodeInfo = handleCreateNodeFunc(props.childNodeP);
     emits("update:childNodeP", newNodeInfo)
-} 
+}
+/**打开克隆器弹窗：收集整棵树中 nodeType=4 和 nodeType=8 的节点 */
+const openCloneDialog = () => {
+    visible.value = false;
+    selectedCloneNodeId.value = null;
+    if (rootNode && rootNode.value) {
+        cloneableNodes.value = NodeUtils.collectNodesByType(rootNode.value, [4, 8]);
+    } else {
+        cloneableNodes.value = [];
+    }
+    cloneDialogVisible.value = true;
+}
+/**确认克隆：深拷贝源节点并插入当前位置 */
+const confirmClone = () => {
+    const sourceNode = cloneableNodes.value.find(n => n.nodeId === selectedCloneNodeId.value);
+    if (!sourceNode) return;
+    const clonedNode = NodeUtils.cloneNode(sourceNode, props.childNodeP);
+    emits("update:childNodeP", clonedNode);
+    cloneDialogVisible.value = false;
+}
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/workflow.scss";
@@ -293,6 +347,12 @@ const addType = (type) => {
         &.auto-process-node {
             .item-wrapper {
                 color: #9b59b6
+            }
+        }
+
+        &.cloner-node {
+            .item-wrapper {
+                color: #e67e22
             }
         }
 

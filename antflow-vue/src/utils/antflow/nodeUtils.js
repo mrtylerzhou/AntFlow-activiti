@@ -306,6 +306,63 @@ export class NodeUtils {
   }
 
   /**
+   * 克隆节点：深拷贝源节点属性，重置结构字段为新节点
+   * @param {Object} sourceNode - 要克隆的源节点
+   * @param {Object} childNode - 新节点的后续节点（即当前插入位置的 childNodeP）
+   * @returns {Object} 克隆后的新节点
+   */
+  static cloneNode(sourceNode, childNode) {
+    const cloned = JSON.parse(JSON.stringify(sourceNode));
+    cloned.nodeId = this.idGenerator();
+    cloned.nodeFrom = "";
+    cloned.nodeTo = [];
+    cloned.childNode = childNode;
+    // 使用默认名称，用户可自行修改
+    if (cloned.nodeType === 4) {
+      cloned.nodeName = "审核人";
+      cloned.nodeDisplayName = "审核人";
+    } else if (cloned.nodeType === 8) {
+      cloned.nodeName = "抄送人v2";
+      cloned.nodeDisplayName = "抄送人v2";
+    }
+    return cloned;
+  }
+
+  /**
+   * 遍历整棵节点树，收集所有指定 nodeType 的节点
+   * @param {Object} rootNode - 根节点
+   * @param {Array} targetTypes - 目标 nodeType 列表，如 [4, 8]
+   * @returns {Array} 符合条件的节点列表
+   */
+  static collectNodesByType(rootNode, targetTypes) {
+    const result = [];
+    function traverse(node) {
+      if (!node) return;
+      if (targetTypes.includes(node.nodeType)) {
+        result.push(node);
+      }
+      // 条件网关/动态网关/条件并行的 conditionNodes
+      if (node.conditionNodes && node.conditionNodes.length) {
+        for (const cond of node.conditionNodes) {
+          traverse(cond);
+        }
+      }
+      // 并行审批的 parallelNodes
+      if (node.parallelNodes && node.parallelNodes.length) {
+        for (const par of node.parallelNodes) {
+          traverse(par);
+        }
+      }
+      // 链式子节点
+      if (node.childNode) {
+        traverse(node.childNode);
+      }
+    }
+    traverse(rootNode);
+    return result;
+  }
+
+  /**
    * 初始化流程数据
    * @returns object
    */
