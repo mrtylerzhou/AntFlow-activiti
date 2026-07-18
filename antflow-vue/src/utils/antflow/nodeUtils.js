@@ -125,6 +125,52 @@ export class NodeUtils {
     return copyNodeV2; // 返回创建的审批节点对象
   }
   /**
+   * 创建办理节点（纯前端组合：一次性生成两个审批人节点）
+   * 第一个：办理人，审批页面仅保留"同意"按钮
+   * 第二个：发起人确认，审批人类型为"发起人自己"(setType=12)
+   * 两个节点串联，第二个节点的 childNode 指向传入的 child
+   * @param {Object} child - 原后续节点
+   * @returns {Object} 第一个审批人节点（其 childNode 指向第二个节点）
+   */
+  static createProcessNode(child) {
+    // 第二个节点：发起人确认
+    let confirmNode = this.createApproveNode(child);
+    confirmNode.nodeName = "发起人确认";
+    confirmNode.nodeDisplayName = "发起人确认";
+    confirmNode.setType = 12; // 发起人自己
+    confirmNode.error = false;
+
+    // 第一个节点：办理人，审批页面仅"同意"按钮
+    let processNode = this.createApproveNode(confirmNode);
+    processNode.nodeName = "办理人";
+    processNode.nodeDisplayName = "办理人";
+    processNode.buttons = {
+      startPage: btns(1),
+      approvalPage: btns(3), // 仅同意
+      viewPage: btns(0),
+    };
+
+    return processNode;
+  }
+  /**
+   * 创建自动办理节点（纯前端组合：自动节点 + 发起人确认审批人节点）
+   * 与办理节点不同，第一个节点为自动节点(nodeType=9)
+   * @param {Object} child - 原后续节点
+   * @returns {Object} 自动节点（其 childNode 指向发起人确认节点）
+   */
+  static createAutoProcessNode(child) {
+    // 第二个节点：发起人确认
+    let confirmNode = this.createApproveNode(child);
+    confirmNode.nodeName = "发起人确认";
+    confirmNode.nodeDisplayName = "发起人确认";
+    confirmNode.setType = 12; // 发起人自己
+    confirmNode.error = false;
+
+    // 第一个节点：自动节点
+    let autoProcessNode = this.createAutoNode(confirmNode);
+    return autoProcessNode;
+  }
+  /**
    * 创建自动节点对象
    * @param {Object} child - 子节点信息
    * @returns {Object} 自动节点

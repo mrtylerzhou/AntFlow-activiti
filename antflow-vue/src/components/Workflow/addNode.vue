@@ -54,6 +54,14 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item process-node" @click="addType(10)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approve" class="iconfont" />
+                            <p>办理节点</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -90,6 +98,14 @@ const createCopyNodeV2 = (childNode) => {
 const createAutoNode = (childNode) => {
     return NodeUtils.createAutoNode(childNode);
 }
+/**创建办理节点（一次性生成两个审批人节点） */
+const createProcessNode = (childNode) => {
+    return NodeUtils.createProcessNode(childNode);
+}
+/**创建自动办理节点（自动节点 + 发起人确认审批人节点） */
+const createAutoProcessNode = (childNode) => {
+    return NodeUtils.createAutoProcessNode(childNode);
+}
 /**创建并行审批人节点 */
 const createParallelWayNode = (childNode) => {
     return NodeUtils.createParallelWayNode(childNode);
@@ -116,6 +132,8 @@ const createNodeMap = new Map([
     [6, createParallelConditionWayNode],
     [8, createCopyNodeV2],
     [9, createAutoNode],
+    [10, createProcessNode],
+    [11, createAutoProcessNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -198,6 +216,12 @@ const addType = (type) => {
 .add-node-popover-body {
     display: flex;
 
+    &.align-left {
+        .add-node-popover-item {
+            flex: 0 0 auto;
+        }
+    }
+
     .add-node-popover-item {
         margin-right: 10px;
         cursor: pointer;
@@ -249,6 +273,18 @@ const addType = (type) => {
         }
 
         &.auto-node {
+            .item-wrapper {
+                color: #9b59b6
+            }
+        }
+
+        &.process-node {
+            .item-wrapper {
+                color: #15bc83
+            }
+        }
+
+        &.auto-process-node {
             .item-wrapper {
                 color: #9b59b6
             }
