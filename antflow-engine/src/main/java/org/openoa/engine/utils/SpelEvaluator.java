@@ -23,7 +23,7 @@ public class SpelEvaluator {
             ctx.addPropertyAccessor(new MapAccessor());
             evaluationContext = ctx;
         }else{
-            evaluationContext = SpringBeanUtils.getBean(EvaluationContext.class);
+            evaluationContext = new StandardEvaluationContext();
             evaluationContext.setVariable(AntFlowConstants.SCRIPT_CONTEXT, businessDataVo);
         }
         Boolean evaluatedResult = expressionParser.parseExpression(expression).getValue(evaluationContext,Boolean.class);
