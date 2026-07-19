@@ -32,6 +32,7 @@ create table ACT_HI_ACTINST (
     END_TIME_ TIMESTAMP(6),
     DURATION_ NUMBER(19,0),
     TENANT_ID_ NVARCHAR2(255) default '',
+    NODE_ID_ NVARCHAR2(64),
     primary key (ID_)
 );
 
@@ -56,6 +57,7 @@ create table ACT_HI_TASKINST (
     FORM_KEY_ NVARCHAR2(255),
     CATEGORY_ NVARCHAR2(255),
     TENANT_ID_ NVARCHAR2(255) default '',
+    NODE_ID_ NVARCHAR2(64),
     primary key (ID_)
 );
 

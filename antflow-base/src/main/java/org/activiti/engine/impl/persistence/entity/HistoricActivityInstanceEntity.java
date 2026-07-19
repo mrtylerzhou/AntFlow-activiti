@@ -36,6 +36,8 @@ public class HistoricActivityInstanceEntity extends HistoricScopeInstanceEntity 
   protected String assignee;
   protected String taskId;
   protected String calledProcessInstanceId;
+  /** antflow extension: design-time node id */
+  protected String nodeId;
   protected String tenantId = ProcessEngineConfiguration.NO_TENANT_ID;
   
   public HistoricActivityInstanceEntity() {
@@ -101,6 +103,14 @@ public class HistoricActivityInstanceEntity extends HistoricScopeInstanceEntity 
   }
   public void setCalledProcessInstanceId(String calledProcessInstanceId) {
     this.calledProcessInstanceId = calledProcessInstanceId;
+  }
+
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
   }
 
   public String getTenantId() {

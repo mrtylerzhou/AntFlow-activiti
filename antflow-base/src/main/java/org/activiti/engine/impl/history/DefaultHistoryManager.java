@@ -26,6 +26,7 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.HistoricActivityInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricTaskInstanceQueryImpl;
 import org.activiti.engine.impl.HistoricVariableInstanceQueryImpl;
+import org.activiti.engine.impl.bpmn.parser.handler.UserTaskParseHandler;
 import org.activiti.engine.impl.cfg.IdGenerator;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
@@ -251,6 +252,8 @@ public void recordActivityStart(ExecutionEntity executionEntity) {
     		historicActivityInstance.setActivityId(executionEntity.getActivityId());
     		historicActivityInstance.setActivityName((String) executionEntity.getActivity().getProperty("name"));
     		historicActivityInstance.setActivityType((String) executionEntity.getActivity().getProperty("type"));
+    		// antflow extension: design-time node id (only present on user task activities)
+    		historicActivityInstance.setNodeId((String) executionEntity.getActivity().getProperty(UserTaskParseHandler.PROPERTY_NODE_ID));
     		historicActivityInstance.setStartTime(Context.getProcessEngineConfiguration().getClock().getCurrentTime());
     		
     	  // Inherit tenant id (if applicable)

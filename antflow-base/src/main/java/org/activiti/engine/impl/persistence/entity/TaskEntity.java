@@ -36,6 +36,7 @@ import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.delegate.TaskListenerInvocation;
+import org.activiti.engine.impl.bpmn.parser.handler.UserTaskParseHandler;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
@@ -91,6 +92,9 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   protected TaskDefinition taskDefinition;
   protected String taskDefinitionKey;
   protected String formKey;
+
+  /** antflow extension: design-time node id, parsed from the bpmn element extension attribute */
+  protected String nodeId;
   
   protected boolean isDeleted;
   
@@ -120,6 +124,16 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public void insert(ExecutionEntity execution) {
     CommandContext commandContext = Context.getCommandContext();
     DbSqlSession dbSqlSession = commandContext.getDbSqlSession();
+
+    // antflow extension: inherit the design-time node id from the activity property
+    // (parsed from the user task extension attribute, see UserTaskParseHandler)
+    if (execution != null && execution.getActivity() != null) {
+      Object nodeIdProperty = execution.getActivity().getProperty(UserTaskParseHandler.PROPERTY_NODE_ID);
+      if (nodeIdProperty != null) {
+        this.nodeId = nodeIdProperty.toString();
+      }
+    }
+
     dbSqlSession.insert(this);
     
     // Inherit tenant id (if applicable)
@@ -235,6 +249,9 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     }
     if (parentTaskId != null) {
       persistentState.put("parentTaskId", this.parentTaskId);
+    }
+    if (nodeId != null) {
+      persistentState.put("nodeId", this.nodeId);
     }
     if (delegationState != null) {
       persistentState.put("delegationState", this.delegationState);
@@ -731,6 +748,14 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public String getAssigneeName(){return assigneeName;}
   public String getTaskDefinitionKey() {
     return taskDefinitionKey;
+  }
+
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
   }
   
   public void setTaskDefinitionKey(String taskDefinitionKey) {

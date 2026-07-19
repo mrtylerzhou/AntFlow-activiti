@@ -66,6 +66,9 @@ public interface DelegateTask extends VariableScope {
   /** The id of the activity in the process defining this task or null if this is not related to a process */
   String getTaskDefinitionKey();
 
+  /** The design-time node id of the user task (antflow extension attribute on the bpmn element) or null if not set */
+  String getNodeId();
+
   /** Indicated whether this task is suspended or not. */
   boolean isSuspended();
 
