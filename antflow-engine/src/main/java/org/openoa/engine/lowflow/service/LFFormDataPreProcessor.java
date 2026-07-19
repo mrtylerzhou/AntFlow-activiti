@@ -2,13 +2,17 @@ package org.openoa.engine.lowflow.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.BpmnConfFlagsEnum;
+import org.openoa.base.constant.enums.LFFieldTypeEnum;
+import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BpmnConfVo;
 import org.openoa.base.entity.BpmnConfLfFormdata;
 import org.openoa.base.entity.BpmnConfLfFormdataField;
+import org.openoa.base.vo.FormConfigWrapper;
 import org.openoa.engine.bpmnconf.mapper.BpmnConfLfFormdataMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataFieldServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnConfLfFormdataServiceImpl;
@@ -96,7 +100,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         // 同时填充 lfFormdataList,供前端统一渲染多tab表单视图
         confVo.setLfFormdataList(bpmnConfLfFormdataList);
     }
-    private void parseWidgetListRecursively(List<FormConfigWrapper.LFWidget> widgetList,Long confId,Long formDataId,List<BpmnConfLfFormdataField> result){
+    private void parseWidgetListRecursively(List<FormConfigWrapper.LFWidget> widgetList, Long confId, Long formDataId, List<BpmnConfLfFormdataField> result){
         for (FormConfigWrapper.LFWidget lfWidget : widgetList) {
             if(!StringConstants.LOWFLOW_FORM_CONTAINER_TYPE.equals(lfWidget.getCategory())){
                 FormConfigWrapper.LFWidget.LFOption lfOption = lfWidget.getOptions();
