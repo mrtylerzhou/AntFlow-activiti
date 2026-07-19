@@ -160,6 +160,21 @@
                                                     <input type="text" style="width:75px;" v-model="item.zdy2">
                                                 </p>
                                             </div>
+                                            <div v-else-if="item.fieldTypeName == 'expression'">
+                                                <p class="check_box">
+                                                    <el-radio-group v-model="item.columnId">
+                                                        <el-radio label="20001">SpEL</el-radio>
+                                                        <el-radio label="20000">JUEL</el-radio>
+                                                    </el-radio-group>
+                                                </p>
+                                                <p>
+                                                    <input type="text" v-model="item.zdy1"
+                                                        :placeholder="'请输入' + item.showName" style="width: 350px;">
+                                                </p>
+                                                <p class="expression-tip">
+                                                    提示：表达式可引用流程启动表单变量，使用 it 表示整个表单对象，如 it.amount > 1000
+                                                </p>
+                                            </div>
                                             <div v-else>
                                                 <p class="check_box">
                                                     <input v-model="item.optType" hidden>
@@ -468,6 +483,13 @@ const convertConditionNodeValue = (data, isPreview = true) => {
 
         .el-button {
             margin-bottom: 5px;
+        }
+
+        .expression-tip {
+            color: #999;
+            font-size: 12px;
+            line-height: 18px;
+            margin-top: 5px;
         }
     }
 }

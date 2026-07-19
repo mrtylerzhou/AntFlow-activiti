@@ -88,10 +88,36 @@ const sureCondition = () => {
   chooseCondition();
   handleClose();
 };
+/**
+ * 固定表达式条件项
+ * columnId 使用 ConditionTypeEnum 中表达式类型 code，默认 SpEL(20001)
+ */
+/**
+ * 默认表达式类型 code（SpEL）
+ * 同时作为前端弹窗中"表达式"项的 formId，减少魔法变量
+ */
+const DEFAULT_EXPRESSION_COLUMN_ID = '20001';
+
+const EXPRESSION_CONDITION = {
+  formId: DEFAULT_EXPRESSION_COLUMN_ID,
+  columnId: DEFAULT_EXPRESSION_COLUMN_ID,
+  showType: '1',
+  showName: '表达式',
+  columnName: 'expression',
+  columnType: 'String',
+  fieldTypeName: 'expression',
+  multiple: false,
+  multipleLimit: 0,
+  fixedDownBoxValue: ''
+};
+
 /**自定义表单条件加载 */
 const loadDIYFormCondition = () => {
   return new Promise(async (resolve, reject) => {
     let { data } = await getConditions({ tableId: tableId.value });
+    if (Array.isArray(data)) {
+      data.push(EXPRESSION_CONDITION);
+    }
     resolve(data);
     reject([]);
   });
@@ -181,6 +207,7 @@ const loadLFFormCondition = () => {
       }
     })
     conditionArr = conditionArr.filter(nullableFilter);
+    conditionArr.push(EXPRESSION_CONDITION);
     resolve(conditionArr);
     reject([]);
   });

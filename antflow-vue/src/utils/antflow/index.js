@@ -371,6 +371,9 @@ All.prototype = {
         } else if (optType >= 6 && zdy1 && zdy2) {
           str += `${zdy1} ${opt1} ${showName} ${opt2} ${zdy2} ${relationTip} `;
         }
+      } else if (fieldTypeName == "expression") {
+        const engineName = columnId == "20000" ? "JUEL" : "SpEL";
+        str += `表达式(${engineName})${relationTip}`;
       } else {
         str += null;
       }
