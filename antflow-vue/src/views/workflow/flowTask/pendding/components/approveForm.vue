@@ -244,15 +244,16 @@ const preview = async (viewData) => {
  * 确定Dialog 弹框
  */
 const sureDialogBtn = async (data) => {
-    approveSubData.value.operationType = handleClickType.value;
-    approveSubData.value.approvalComment = data.remark;
     if (handleClickType.value == approvalButtonConf.appointNextNodeApprover) {
-        //指定下一节点审批人:仅允许1人,不预置当前用户,写入 nextNodeApprovers
+        //指定下一节点审批人:仅允许1人,不预置当前用户,暂存到 nextNodeApprovers,不提交
         const selectList = (data.selectList || []).filter(item => item.id);
         approveSubData.value.nextNodeApprovers = selectList.map(u => ({ id: u.id, name: u.name }));
-        //走同意流程提交
-        approveSubData.value.operationType = approvalButtonConf.agree;
-    } else if (!isMultiple.value) {
+        dialogVisible.value = false;
+        return;
+    }
+    approveSubData.value.operationType = handleClickType.value;
+    approveSubData.value.approvalComment = data.remark;
+    if (!isMultiple.value) {
         data.selectList.unshift({
             id: Cookies.get('userId'),
             name: decodeURIComponent(Cookies.get('userName')),

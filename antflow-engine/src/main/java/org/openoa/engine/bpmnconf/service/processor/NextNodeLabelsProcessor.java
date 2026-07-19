@@ -259,8 +259,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
         }
         if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
+            businessDataVo.setLfConditions(businessDataVo.getLfFields());
         }
 
         Boolean conditionResult = null;

@@ -247,6 +247,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
 
     private MsgProcessEventEnum msgProcessEventEnum;
 
+    private Map<String,Object> lfFields;
     private Map<String,Object> lfConditions;
     private  Boolean isMigration;
     /**

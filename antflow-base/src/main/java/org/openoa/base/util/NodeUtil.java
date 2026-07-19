@@ -158,6 +158,10 @@ public class NodeUtil {
         if(!CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
             bpmnNodeVo.setLabelList(null);
         }
+        //上一节点指定审批人:根据前端传入的 isPrevNodeAppointed 标识,自动贴标签
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsPrevNodeAppointed())){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.prevNodeAppointed);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;
@@ -218,6 +222,9 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
+            }
+            if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setIsPrevNodeAppointed(true);
             }
         }
     }

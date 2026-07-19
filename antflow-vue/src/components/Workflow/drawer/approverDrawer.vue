@@ -295,7 +295,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, LABEL_PREV_NODE_APPOINTED } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME } from '@/utils/antflow/const';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
@@ -345,29 +345,22 @@ let approverDrawer = computed(() => store.approverDrawer);
 
 /**
  * 上一节点指定审批人: radio 显示值映射
- * - get: 当 setType==5 且 labelList 含 LABEL_PREV_NODE_APPOINTED 且 nodeApproveList 含虚拟用户 "-4" 时, 返回 19
- * - set: val==19 时, 切换为 setType=5 + 虚拟用户 + signType=1 + 添加 LABEL_PREV_NODE_APPOINTED 标签
- *        val!=19 时, 移除 LABEL_PREV_NODE_APPOINTED 标签, 设置 setType=val
+ * - get: 当 isPrevNodeAppointed==true 时, 返回 19; 否则返回 setType
+ * - set: val==19 时, 设置 isPrevNodeAppointed=true + setType=5 + 虚拟用户 + signType=1
+ *        val!=19 时, 设置 isPrevNodeAppointed=false + setType=val
+ * 标签不由前端传,而是通过 isPrevNodeAppointed 标识让后端自动贴(防止 nodeSpecialProcess 清空 labelList)
  */
 const displaySetType = computed({
     get() {
         if (!approverConfig.value) return null;
-        const setType = approverConfig.value.setType;
-        if (setType === 5) {
-            const labels = approverConfig.value.labelList || [];
-            const hasLabel = labels.some(l => l.labelValue === LABEL_PREV_NODE_APPOINTED);
-            if (hasLabel) {
-                const approveList = approverConfig.value.nodeApproveList || [];
-                const hasVirtualUser = approveList.some(u => u.targetId === PREV_NODE_APPOINTED_VIRTUAL_USER_ID);
-                if (hasVirtualUser) {
-                    return PREV_NODE_APPOINTED_SET_TYPE;
-                }
-            }
+        if (approverConfig.value.isPrevNodeAppointed) {
+            return PREV_NODE_APPOINTED_SET_TYPE;
         }
-        return setType;
+        return approverConfig.value.setType;
     },
     set(val) {
         if (val === PREV_NODE_APPOINTED_SET_TYPE) {
+            approverConfig.value.isPrevNodeAppointed = true;
             approverConfig.value.setType = 5;
             approverConfig.value.signType = 1;
             approverConfig.value.noHeaderAction = 0;
@@ -376,13 +369,8 @@ const displaySetType = computed({
                 targetId: PREV_NODE_APPOINTED_VIRTUAL_USER_ID,
                 name: PREV_NODE_APPOINTED_VIRTUAL_USER_NAME
             }];
-            if (!selectedLabelValues.value.includes(LABEL_PREV_NODE_APPOINTED)) {
-                selectedLabelValues.value = [...selectedLabelValues.value, LABEL_PREV_NODE_APPOINTED];
-            }
         } else {
-            if (selectedLabelValues.value.includes(LABEL_PREV_NODE_APPOINTED)) {
-                selectedLabelValues.value = selectedLabelValues.value.filter(v => v !== LABEL_PREV_NODE_APPOINTED);
-            }
+            approverConfig.value.isPrevNodeAppointed = false;
             approverConfig.value.setType = val;
         }
     }

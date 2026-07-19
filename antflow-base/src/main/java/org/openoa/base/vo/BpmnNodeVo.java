@@ -200,6 +200,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Integer noHeaderAction;
     /**
+     * 标识当前节点为"上一节点指定"审批人类型
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴 af_syslabel_prev_node_appointed 标签
+     */
+    private Boolean isPrevNodeAppointed;
+    /**
      * Auto node condition configuration (received from frontend during edit,
      * sent to frontend during display). Stored in node_config_json.autoNodeConf.
      */

@@ -20,6 +20,7 @@ public class StringConstants {
     public static final String DB_NAME_2="jimu_biz";
     public static final String DRUID_POOL_NAME_PREFIX="druidDataSourcePool_";
     public static final String DB_TRANSACTION_MANAGERNAME_SUFFIX="transactionmanager";
+    public static final String NEXT_NODE_APPROVER="nextNodeApprover";
 
     public static final String CURRENT_USER_ALREADY_PROCESSED="currentUserAlreadyProcessed";
 
