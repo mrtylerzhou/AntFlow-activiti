@@ -416,7 +416,7 @@ let currentEditNodeProperty = ref(5); // 5:指定人员, 4:指定角色
 
 // 层层审批 (setType == 2) 状态
 let loopEndType = ref(1); // 1=按层级数, 2=按结束人
-let loopNumberPlies = ref(1);
+let loopNumberPlies = ref(10);
 let loopEndPersonList = ref([]); // [{targetId, name}]
 let loopEndPersonVisible = ref(false);
 let loopEndPersonCheckedList = ref([]);
@@ -489,7 +489,7 @@ watch(approverConfig, (val) => {
     if (val.setType == 2) {//setType == 2 指 层层审批
         const prop = approverConfig.value.property || {};
         loopEndType.value = prop.loopEndType || 1;
-        loopNumberPlies.value = prop.loopNumberPlies || 1;
+        loopNumberPlies.value = prop.loopNumberPlies || 10;
         // 回填已有人员对象
         if (prop.loopEndPersonObjList && prop.loopEndPersonObjList.length > 0) {
             loopEndPersonList.value = prop.loopEndPersonObjList.map(
@@ -592,7 +592,7 @@ const changeType = (val) => {
             approverConfig.value.property = {};
         }
         loopEndType.value = approverConfig.value.property.loopEndType || 1;
-        loopNumberPlies.value = approverConfig.value.property.loopNumberPlies || 1;
+        loopNumberPlies.value = approverConfig.value.property.loopNumberPlies || 10;
         loopEndPersonList.value = [];
         // 回填已有的人员列表
         if (approverConfig.value.property.loopEndPersonObjList) {
@@ -749,9 +749,9 @@ const changeLoopEndType = (val) => {
         loopEndPersonList.value = [];
         approverConfig.value.property.loopEndPersonList = [];
     } else {
-        // 切到按结束人，清空层数
-        loopNumberPlies.value = 1;
-        approverConfig.value.property.loopNumberPlies = 1;
+        // 切到按结束人，重置层数为默认值
+        loopNumberPlies.value = 10;
+        approverConfig.value.property.loopNumberPlies = 10;
     }
 }
 

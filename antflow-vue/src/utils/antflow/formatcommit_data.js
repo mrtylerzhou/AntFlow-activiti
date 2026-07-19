@@ -182,7 +182,7 @@ export class FormatCommitUtils {
           // 层层审批: loop 字段必须显式写入 approveObj, 否则 node.property = approveObj 会丢失
           approveObj.signType = 3;
           approveObj.loopEndType = node.property?.loopEndType || 1;
-          approveObj.loopNumberPlies = node.property?.loopNumberPlies || 1;
+          approveObj.loopNumberPlies = node.property?.loopNumberPlies || 10;
           approveObj.loopEndPersonList = node.property?.loopEndPersonList || [];
           approveObj.loopEndGrade = node.property?.loopEndGrade || 0;
         }

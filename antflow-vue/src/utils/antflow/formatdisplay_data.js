@@ -224,7 +224,7 @@ export class FormatDisplayUtils {
           node.property = {
             ...prop,
             loopEndType: prop.loopEndType || 1,
-            loopNumberPlies: prop.loopNumberPlies || 1,
+            loopNumberPlies: prop.loopNumberPlies || 10,
             loopEndGrade: prop.loopEndGrade,
             loopEndPersonList: prop.loopEndPersonList || [],
             loopEndPersonObjList: (prop.loopEndPersonObjList || []).map(
