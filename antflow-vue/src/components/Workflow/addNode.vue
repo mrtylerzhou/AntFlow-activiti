@@ -49,7 +49,7 @@
                     </a>
                     <a class="add-node-popover-item auto-node" @click="addType(9)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
+                            <svg-icon icon-class="auto-approve" class="iconfont" />
                             <p>自动节点</p>
                         </div>
                     </a>
@@ -57,25 +57,25 @@
                 <div class="add-node-popover-body align-left">
                     <a class="add-node-popover-item process-node" @click="addType(10)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
+                            <svg-icon icon-class="handle-task" class="iconfont" />
                             <p>办理节点</p>
                         </div>
                     </a>
                     <a class="add-node-popover-item auto-process-node" @click="addType(11)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
+                            <svg-icon icon-class="auto-task" class="iconfont" />
                             <p>自动办理</p>
                         </div>
                     </a>
                     <a class="add-node-popover-item cloner-node" @click="openCloneDialog()">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
+                            <svg-icon icon-class="approver-clone" class="iconfont" />
                             <p>克隆器</p>
                         </div>
                     </a>
                     <a class="add-node-popover-item condition-approver-node" @click="addType(12)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="approve" class="iconfont" />
+                            <svg-icon icon-class="condition-approve" class="iconfont" />
                             <p>条件审批</p>
                         </div>
                     </a>
@@ -83,7 +83,7 @@
                 <div class="add-node-popover-body align-left">
                     <a class="add-node-popover-item condition-copy-node" @click="addType(13)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="copy-user" class="iconfont" />
+                            <svg-icon icon-class="condition-copy" class="iconfont" />
                             <p>条件抄送</p>
                         </div>
                     </a>
