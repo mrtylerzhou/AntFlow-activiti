@@ -34,8 +34,10 @@
                      </template>
                      {{ substringHidden(item.row.processNumber) }}
                   </el-tooltip>
+                  <el-button link type="primary" icon="CopyDocument" @click="copyProcessNumber(item.row.processNumber)"></el-button>
                </template>
             </el-table-column>
+            <el-table-column label="版本编号" align="center" prop="version" width="100" />
             <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
             <el-table-column label="状态" align="center" prop="effectiveStatus">
                <template #default="item">
@@ -141,6 +143,32 @@ function handlePreview(row) {
       isLowCodeFlow: row.isLowCodeFlow,
       processState: row.processState,
    })
+}
+
+/** 复制流程编号 */
+function copyProcessNumber(processNumber) {
+   if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(processNumber).then(() => {
+         proxy.$modal.msgSuccess("复制成功");
+      }).catch(() => {
+         fallbackCopy(processNumber);
+      });
+   } else {
+      fallbackCopy(processNumber);
+   }
+}
+function fallbackCopy(text) {
+   const input = document.createElement("input");
+   input.value = text;
+   document.body.appendChild(input);
+   input.select();
+   try {
+      document.execCommand("copy");
+      proxy.$modal.msgSuccess("复制成功");
+   } catch (e) {
+      proxy.$modal.msgError("复制失败");
+   }
+   document.body.removeChild(input);
 }
 
 getList();

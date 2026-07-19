@@ -32,6 +32,19 @@ public class RuntimeActivityDefinitionEntityIntepreter
 		return _entity.getProperty("cloneActivityId");
 	}
 
+	/**
+	 * 克隆节点的自定义名称,为空时沿用原型节点名称
+	 */
+	public String getCloneActivityName()
+	{
+		return _entity.getProperty("cloneActivityName");
+	}
+
+	public void setCloneActivityName(String cloneActivityName)
+	{
+		_entity.setProperty("cloneActivityName", cloneActivityName);
+	}
+
 	public List<String> getCloneActivityIds()
 	{
 		return _entity.getProperty("cloneActivityIds");

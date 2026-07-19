@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname BpmnNodeVo
@@ -50,6 +51,16 @@ public class BpmnNodeVo  implements Serializable {
     private Boolean isCarbonCopyNode;
     private boolean aggregationNode;
     private Boolean isAutomaticNode;
+    /**
+     * 条件审批节点标记: 设计期 nodeType=12, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 automaticNode 类似, 但保留真实审批人, 仅在条件满足时自动 complete
+     */
+    private Boolean isConditionApproveNode;
+    /**
+     * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
+     */
+    private Boolean isConditionCopyNode;
     /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
@@ -168,6 +179,12 @@ public class BpmnNodeVo  implements Serializable {
     private Integer isLowCodeFlow;
     private List<LFFieldControlVO> lfFieldControlVOs;
     /**
+     * 外部表单模式: 节点级整表隐藏标记
+     * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true 表示该表单在此节点整体隐藏
+     * 仅外部表单模式使用; 内联模式为 null
+     */
+    private Map<String, Boolean> formHidden;
+    /**
      * forwarded emp list
      */
     private List<BaseIdTranStruVo> empToForwardList=new ArrayList<>();
@@ -189,6 +206,16 @@ public class BpmnNodeVo  implements Serializable {
      * @see MissingAssigneeProcessStragtegyEnum
      */
     private Integer noHeaderAction;
+    /**
+     * 标识当前节点为"上一节点指定"审批人类型
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴 af_syslabel_prev_node_appointed 标签
+     */
+    private Boolean isPrevNodeAppointed;
+    /**
+     * Auto node condition configuration (received from frontend during edit,
+     * sent to frontend during display). Stored in node_config_json.autoNodeConf.
+     */
+    private Object autoNodeConf;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

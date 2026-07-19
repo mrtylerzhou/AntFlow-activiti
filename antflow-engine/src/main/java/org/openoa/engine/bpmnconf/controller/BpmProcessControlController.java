@@ -59,4 +59,18 @@ public class BpmProcessControlController {
                 .collect(Collectors.toList());
         return Result.newSuccessResult(baseIdTranStruVoList);
     }
+
+    /**
+     * 通用字典数据查询接口
+     * @param dictType 字典类型
+     * @return 字典项列表（id=value, name=label）
+     */
+    @GetMapping("/getDictDataByType")
+    public Result<List<BaseIdTranStruVo>> getDictDataByType(@RequestParam("dictType") String dictType){
+        List<DictData> dictData = dicDataService.queryDicDataByCategory(dictType);
+        List<BaseIdTranStruVo> baseIdTranStruVoList = dictData.stream()
+                .map(a -> BaseIdTranStruVo.builder().id(a.getValue()).name(a.getLabel()).build())
+                .collect(Collectors.toList());
+        return Result.newSuccessResult(baseIdTranStruVoList);
+    }
 }

@@ -17,4 +17,10 @@ public class LFMainFieldServiceImpl extends ServiceImpl<LFMainFieldMapper, LFMai
                 .eq(LFMainField::getMainId, mainId)
                 .eq(LFMainField::getFormCode, formCode));
     }
+
+    @Override
+    public List<LFMainField> listByMainId(Long mainId) {
+        return this.list(Wrappers.<LFMainField>lambdaQuery()
+                .eq(LFMainField::getMainId, mainId));
+    }
 }

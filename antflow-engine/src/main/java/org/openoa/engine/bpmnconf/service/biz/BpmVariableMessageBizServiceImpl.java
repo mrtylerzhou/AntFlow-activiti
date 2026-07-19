@@ -218,7 +218,10 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                 .distinct()
                 .collect(Collectors.toList()));
 
-
+        long count = hisTask.stream().filter(a -> a.getTaskDefKey().equals(vo.getTaskId()) && a.getEndTime() != null).count();
+        if(count>0){
+            vo.setCurrentNodeInformed(true);
+        }
         //if the current node approver is empty, then get it from login user info
         if (StringUtils.isEmpty(vo.getAssignee())) {
 
@@ -452,14 +455,6 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
     private void doSendTemplateMessages(BpmVariableMessageVo vo) {
 
 
-        //if next node's approvers is empty then query current tasks instead
-        if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
-            List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
-            if (!ObjectUtils.isEmpty(tasks)) {
-                vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
-            }
-        }
-
         // read messages from variable config JSON
         BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectById(vo.getVariableId());
         if (bpmVariable == null || StringUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
@@ -470,16 +465,14 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             return;
         }
 
+        List<MessageItem> messageItems=null;
         if (Objects.equals(vo.getMessageType(), 1)) {//out of node messages
-            List<MessageItem> messageItems = config.getMessages().stream()
+            messageItems = config.getMessages().stream()
                     .filter(m -> m.getMessageType() != null && m.getMessageType() == 1
                             && vo.getEventType().equals(m.getEventType()))
                     .collect(Collectors.toList());
-            for (MessageItem messageItem : messageItems) {
-                doSendTemplateMessages(messageItem, vo);
-            }
         } else if (Objects.equals(vo.getMessageType(), 2)) {//in node messages
-            List<MessageItem> messageItems = config.getMessages().stream()
+             messageItems = config.getMessages().stream()
                     .filter(m -> vo.getEventType().equals(m.getEventType()))
                     .collect(Collectors.toList());
             if(!StringUtils.isEmpty(vo.getElementId())){
@@ -488,6 +481,15 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                         .filter(a -> vo.getElementId().equals(a.getElementId())).collect(Collectors.toList());
                 if(!CollectionUtils.isEmpty(currentNodeMessages)){
                     messageItems=currentNodeMessages;//如果当前节点有节点内通知消息,则覆盖全局通用的,否则使用全局的
+                }
+            }
+        }
+        if(!CollectionUtils.isEmpty(messageItems)){
+            //if next node's approvers is empty then query current tasks instead
+            if (CollectionUtils.isEmpty(vo.getNextNodeApproveds())) {
+                List<Task> tasks = taskService.createTaskQuery().processInstanceId(vo.getProcessInsId()).list();
+                if (!ObjectUtils.isEmpty(tasks)) {
+                    vo.setNextNodeApproveds(tasks.stream().map(Task::getAssignee).distinct().collect(Collectors.toList()));
                 }
             }
             for (MessageItem messageItem : messageItems) {
@@ -547,7 +549,7 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
                     .collect(Collectors.toList());
 
         List<BaseNumIdStruVo> messageSendTypeList = bpmnTemplateVo.getMessageSendTypeList();
-        if(!messageSendTypeEnums.isEmpty()&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知
+        if(!CollectionUtils.isEmpty(messageSendTypeEnums)&&!CollectionUtils.isEmpty(messageSendTypeList)){//如果有模板自身的通知方式,则使用模板自身的通知方式,前提是有默认通知,即默认通知关闭以后节点也不会再通知
             messageSendTypeEnums= messageSendTypeList.stream().map(a -> MessageSendTypeEnum.getEnumByCode(a.getId().intValue())).filter(Objects::nonNull).collect(Collectors.toList());
         }
         Map<Integer, String> wildcardCharacterMap = getWildcardCharacterMap(vo);
@@ -627,13 +629,14 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
      */
     private List<String> getSendToUsers(BpmVariableMessageVo vo, BpmnTemplateVo bpmnTemplateVo) {
         List<String> sendUsers = Lists.newArrayList();
+        boolean flowNodeAlreadyInformed=EventTypeEnum.PROCESS_FLOW.getCode().equals(bpmnTemplateVo.getEvent())&&vo.isCurrentNodeInformed();
         //specified assignees
-        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())) {
+        if (!ObjectUtils.isEmpty(bpmnTemplateVo.getEmpIdList())&&!flowNodeAlreadyInformed) {
             sendUsers.addAll(new ArrayList<>(bpmnTemplateVo.getEmpIdList()));
         }
 
         //specified roles
-        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())) {
+        if (!CollectionUtils.isEmpty(bpmnTemplateVo.getRoleIdList())&&!flowNodeAlreadyInformed) {
             List<BaseIdTranStruVo> users = null;
             if(Boolean.TRUE.equals(vo.getIsOutside())&& !PropertyUtil.isFullSaSSMode()){
                 users=roleService.querySassUserByRoleIds(bpmnTemplateVo.getRoleIdList());
@@ -676,6 +679,9 @@ public class BpmVariableMessageBizServiceImpl implements BpmVariableMessageBizSe
             for (String informId : bpmnTemplateVo.getInformIdList()) {
                 InformEnum informEnum = InformEnum.getEnumByByCode(Integer.parseInt(informId));
                 if(informEnum==InformEnum.ASSIGNED_USER||informEnum==InformEnum.ASSIGNEED_ROLES){
+                    continue;
+                }
+                if(informEnum!=InformEnum.CURRENT_APPROVER&&flowNodeAlreadyInformed){
                     continue;
                 }
                 //todo check whether the result is valid

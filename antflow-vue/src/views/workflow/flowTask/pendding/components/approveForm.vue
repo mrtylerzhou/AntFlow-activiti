@@ -6,7 +6,9 @@
                     <component ref="componentFormRef"
                         :key="Math.random().toString(36).slice(2) + Date.now().toString(36)" :is="loadedComponent"
                         :previewData="componentData" :lfFormData="lfFormDataConfig" :lfFieldsData="lfFieldsConfig"
-                        :lfFieldPerm="lfFieldControlVOs" :isPreview="!hasResubmit">
+                        :lfFieldPerm="lfFieldControlVOs" :lfFieldControlVOs="lfFieldControlVOsArr" :isPreview="!hasResubmit"
+                        :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+                        :formHidden="formHiddenConfig">
                     </component>
                 </div>
             </el-scrollbar>
@@ -36,7 +38,7 @@ import repulseDialog from './repulseDialog.vue';
 import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js';
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
 import { isTrue } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
@@ -58,6 +60,11 @@ let componentLoaded = ref(false);
 let lfFormDataConfig = ref(null);
 let lfFieldsConfig = ref(null);
 let lfFieldControlVOs = ref(null);
+let lfFieldControlVOsArr = ref([]);
+let lfFormdataListConfig = ref([]);
+let lfFieldsMultiConfig = ref({});
+let formHiddenConfig = ref({});
+let useExternalForm = ref(false);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 let approveSubData = ref(null);
@@ -94,6 +101,7 @@ const clickApproveSubmit = async (btnType) => {
     switch (btnType) {
         case approvalButtonConf.addApproval:
         case approvalButtonConf.transfer:
+        case approvalButtonConf.appointNextNodeApprover:
             dialogTitle.value = `设置${approvalButtonConf.buttonsObj[btnType]}人员`;
             addUserDialog();
             break;
@@ -125,8 +133,15 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接 
-                        approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
+                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                        if (useExternalForm.value) {
+                            // 外部表单模式: getFromData 返回 { [formdataId]: fieldMap } 结构
+                            approveSubData.value.lfFieldsMulti = JSON.parse(data);
+                            approveSubData.value.lfFields = null;
+                        } else {
+                            approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
+                            approveSubData.value.lfFieldsMulti = null;
+                        }
                     } else {
                         let componentFormData = JSON.parse(data);
                         approveSubData.value = { ...approveSubData.value, ...componentFormData };
@@ -207,7 +222,9 @@ const preview = async (viewData) => {
             let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
             if (Array.isArray(auditButtons) && auditButtons.length > 0) {
                 approvalButtons.value = auditButtons.map(c => {
-                    return { value: c.buttonType, label: c.name };
+                    //兜底:后端返回的 name 为空时使用按钮类型对应的默认名称
+                    let label = c.name || approvalButtonConf.buttonsObj[c.buttonType] || '';
+                    return { value: c.buttonType, label };
                 }).sort(function (a, b) {
                     return a.value - b.value
                 });
@@ -216,11 +233,32 @@ const preview = async (viewData) => {
                 hasResubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             }
             try {
-                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接 
-                    lfFormDataConfig.value = response.data.lfFormData;
-                    lfFieldControlVOs.value = JSON.stringify(response.data.processRecordInfo.lfFieldControlVOs);
-                    lfFieldsConfig.value = JSON.stringify(response.data.lfFields);
-                    loadedComponent.value = await loadLFComponent();
+                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                    const responseData = response.data;
+                    const formdataList = responseData.lfFormdataList;
+                    const isExternal = Array.isArray(formdataList) && formdataList.length > 0;
+                    useExternalForm.value = isExternal;
+                    if (isExternal) {
+                        // 外部表单模式: 多 tab 渲染
+                        lfFormdataListConfig.value = formdataList;
+                        lfFieldsMultiConfig.value = responseData.lfFieldsMulti || {};
+                        lfFieldControlVOsArr.value = responseData.processRecordInfo?.lfFieldControlVOs || [];
+                        lfFieldControlVOs.value = JSON.stringify(lfFieldControlVOsArr.value);
+                        formHiddenConfig.value = responseData.processRecordInfo?.formHidden || {};
+                        lfFormDataConfig.value = null;
+                        lfFieldsConfig.value = '{}';
+                        loadedComponent.value = await loadLFMultiFormComponent();
+                    } else {
+                        // 内联表单模式: 兼容旧逻辑
+                        lfFormDataConfig.value = responseData.lfFormData;
+                        lfFieldControlVOsArr.value = responseData.processRecordInfo.lfFieldControlVOs || [];
+                        lfFieldControlVOs.value = JSON.stringify(lfFieldControlVOsArr.value);
+                        lfFieldsConfig.value = JSON.stringify(responseData.lfFields);
+                        lfFormdataListConfig.value = [];
+                        lfFieldsMultiConfig.value = {};
+                        formHiddenConfig.value = {};
+                        loadedComponent.value = await loadLFComponent();
+                    }
                     componentLoaded.value = true;
                 } else {//自定义表单
                     componentData.value = response.data;
@@ -241,6 +279,13 @@ const preview = async (viewData) => {
  * 确定Dialog 弹框
  */
 const sureDialogBtn = async (data) => {
+    if (handleClickType.value == approvalButtonConf.appointNextNodeApprover) {
+        //指定下一节点审批人:仅允许1人,不预置当前用户,暂存到 nextNodeApprovers,不提交
+        const selectList = (data.selectList || []).filter(item => item.id);
+        approveSubData.value.nextNodeApprovers = selectList.map(u => ({ id: u.id, name: u.name }));
+        dialogVisible.value = false;
+        return;
+    }
     approveSubData.value.operationType = handleClickType.value;
     approveSubData.value.approvalComment = data.remark;
     if (!isMultiple.value) {
@@ -252,7 +297,7 @@ const sureDialogBtn = async (data) => {
     } else {
         approveSubData.value.signUpUsers = data.selectList.filter(item => item.id);
     }
-    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));
     await approveProcess(approveSubData.value);
 }
 /**

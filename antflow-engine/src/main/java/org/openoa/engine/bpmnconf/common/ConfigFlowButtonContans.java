@@ -115,6 +115,12 @@ public class ConfigFlowButtonContans {
                 List<ProcessActionButtonVo> nodeConfButtons = getNodeConfButtons(bpmBusinessProcess,isInitiate);
 
                 if(!CollectionUtils.isEmpty(nodeConfButtons)){
+                    //发起人查看流程时,查看页不应展示提交/同意/重新提交/不同意/保存草稿等纯操作类按钮
+                    if (isInitiate) {
+                        nodeConfButtons = nodeConfButtons.stream()
+                                .filter(b -> !isInitiatorViewInvalidButton(b.getButtonType()))
+                                .collect(Collectors.toList());
+                    }
                     toViewButtons.addAll(nodeConfButtons);
                 }
             }
@@ -173,13 +179,15 @@ public class ConfigFlowButtonContans {
                 if(!CollectionUtils.isEmpty(nodeConfButtons)){
                     toViewButtons=nodeConfButtons;
                 }
-                //process complete, filter invalid button
+                //process complete, filter invalid button,action buttons such as submit/agree/abandoned/draw back/stop/resubmit should not be shown on the view page
                 for (ProcessActionButtonVo processActionButtonVo : toViewButtons) {
                     if (!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_ABANDONED.getCode())
-                    ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())
-                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_STOP.getCode())
-                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode())
-                            ||!processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                    && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode())
+                            && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_STOP.getCode())
+                            && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode())
+                            && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode())
+                            && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode())
+                            && !processActionButtonVo.getButtonType().equals(ButtonTypeEnum.BUTTON_TYPE_DRAW_BACK_AGREE.getCode())
                     ) {
                         toViewButtonsComplete.add(processActionButtonVo);
                     }
@@ -222,6 +230,18 @@ public class ConfigFlowButtonContans {
             }
         }
         return buttonlist;
+    }
+
+    /**
+     * 判断发起人查看流程时,查看页不应展示的纯操作类按钮(提交/重新提交/同意/不同意/保存草稿)
+     * 撤回、作废等流程级操作在审批中仍可由发起人执行,故不在此列
+     */
+    private boolean isInitiatorViewInvalidButton(Integer buttonType) {
+        return ButtonTypeEnum.BUTTON_TYPE_SUBMIT.getCode().equals(buttonType)
+                || ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode().equals(buttonType)
+                || ButtonTypeEnum.BUTTON_TYPE_AGREE.getCode().equals(buttonType)
+                || ButtonTypeEnum.BUTTON_TYPE_DISAGREE.getCode().equals(buttonType)
+                || ButtonTypeEnum.BUTTON_TYPE_SAVE_DRAFT.getCode().equals(buttonType);
     }
 
     private List<ProcessActionButtonVo> getButtons(List<ButtonItem> buttonItems, ButtonPageTypeEnum buttonPageTypeEnum) {

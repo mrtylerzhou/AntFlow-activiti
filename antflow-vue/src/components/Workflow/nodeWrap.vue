@@ -13,6 +13,7 @@
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
                 <template v-else>
                     <svg-icon icon-class="copy-user" class="iconfont" v-if="nodeConfig.nodeType == 6" />
+                    <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8 || nodeConfig.nodeType == 13" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -20,6 +21,7 @@
                     <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
                     <i class="anticon anticon-close close" @click="delNode()"></i>
                     <i v-if="noticeIconShow" class="anticon anticon-notice notice"></i>
+                    <i v-if="labelIconShow" class="anticon anticon-tag label-icon"></i>
                 </template>
             </div>
             <div class="content" @click="setNodeInfo">
@@ -104,6 +106,8 @@
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                     <i v-if="item.templateVos && item.templateVos.length > 0"
                                         class="anticon anticon-notice notice"></i>
+                                    <i v-if="item.labelList && item.labelList.length > 0"
+                                        class="anticon anticon-tag label-icon"></i>
                                 </div>
 
                                 <div class="content" @click="setNodeInfo(index)">
@@ -163,6 +167,7 @@ let emits = defineEmits(["update:flowPermission", "update:nodeConfig"]);
 let store = useStore();
 let {
     setPromoter,
+    setPromoterConfig,
     setApprover,
     setCopyer,
     setCondition,
@@ -170,13 +175,19 @@ let {
     setApproverConfig,
     setCopyerConfig,
     setConditionsConfig,
+    setCopyerV2,
+    setCopyerConfigV2,
+    setAutoNode,
+    setAutoNodeConfig,
 } = store;
 let isTried = computed(() => store.isTried)
 let flowPermission1 = computed(() => store.flowPermission1)
+let promoterConfig1 = computed(() => store.promoterConfig)
 let approverConfig1 = computed(() => store.approverConfig1)
 let copyerConfig1 = computed(() => store.copyerConfig1)
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
-
+let copyerConfigV2 = computed(() => store.copyerConfigV2)
+let autoNodeConfig1 = computed(() => store.autoNodeConfig1)
 let defaultText = computed(() => {
     return placeholderList[props.nodeConfig.nodeType]
 });
@@ -185,12 +196,20 @@ let noticeIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.templateVos);
 });
 
+let labelIconShow = computed(() => {
+    return !proxy.isEmptyArray(props.nodeConfig.labelList);
+});
+
 /**节点名称展示 */
 let showText = computed(() => {
     if (!props.nodeConfig.nodeType) return '';
     if (props.nodeConfig.nodeType == 1) return $func.arrToStr(props.flowPermission) || '发起人';
     if (props.nodeConfig.nodeType == 4) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 9) return $func.autoNodeConditionStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 13) return $func.setCopyStrV2(props.nodeConfig);
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -237,6 +256,12 @@ watch(flowPermission1, (flow) => {
         emits("update:flowPermission", flow.value);
     }
 });
+/**发起人节点配置监听(含表单权限) */
+watch(promoterConfig1, (promoter) => {
+    if (promoter.flag && promoter.id === _uid) {
+        emits("update:nodeConfig", promoter.value);
+    }
+});
 /**审批人节点监听 */
 watch(approverConfig1, (approver) => {
     if (approver.flag && approver.id === _uid) {
@@ -247,6 +272,18 @@ watch(approverConfig1, (approver) => {
 watch(copyerConfig1, (copyer) => {
     if (copyer.flag && copyer.id === _uid) {
         emits("update:nodeConfig", copyer.value);
+    }
+});
+/**抄送人节点监听 */
+watch(copyerConfigV2, (copyerV2) => {
+    if (copyerV2.flag && copyerV2.id === _uid) {
+        emits("update:nodeConfig", copyerV2.value);
+    }
+});
+/**自动节点监听 */
+watch(autoNodeConfig1, (autoNode) => {
+    if (autoNode.flag && autoNode.id === _uid) {
+        emits("update:nodeConfig", autoNode.value);
     }
 });
 /**条件节点监听 */
@@ -403,12 +440,19 @@ const setNodeInfo = (index) => {
     var { nodeType } = props.nodeConfig;
     if (nodeType == 1) {
         setPromoter(true);
+        setPromoterConfig({
+            value: {
+                ...JSON.parse(JSON.stringify(props.nodeConfig))
+            },
+            flag: false,
+            id: _uid,
+        });
         setFlowPermission({
             value: props.flowPermission,
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4) {
+    } else if (nodeType == 4 || nodeType == 12) {
         setApprover(true);
         setApproverConfig({
             value: {
@@ -432,6 +476,22 @@ const setNodeInfo = (index) => {
                 ...JSON.parse(JSON.stringify(props.nodeConfig)),
                 index: index,
             },
+            flag: false,
+            id: _uid,
+        });
+    }
+    else if (nodeType == 8 || nodeType == 13) {
+        setCopyerV2(true);
+        setCopyerConfigV2({
+            value: JSON.parse(JSON.stringify(props.nodeConfig)),
+            flag: false,
+            id: _uid,
+        });
+    }
+    else if (nodeType == 9) {
+        setAutoNode(true);
+        setAutoNodeConfig({
+            value: JSON.parse(JSON.stringify(props.nodeConfig)),
             flag: false,
             id: _uid,
         });

@@ -30,7 +30,8 @@
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
                     <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
-                        @changePermVal="changePermVal" />
+                        :formHidden="formHiddenMap"
+                        @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
                 </div>
             </el-tab-pane>
         </el-tabs>
@@ -52,6 +53,7 @@ let ccSelfSelectFlag = ref([])
 let copyerVisible = ref(false)
 let checkedList = ref([])
 let formItems = ref([])
+let formHiddenMap = ref({})
 
 let activeName = ref('copyStep')
 let copyStepShow = ref(true)
@@ -75,6 +77,7 @@ let visible = computed({
 watch(copyerConfig1, (val) => {
     copyerConfig.value = val.value;
     formItems.value = copyerConfig.value.lfFieldControlVOs || [];
+    formHiddenMap.value = copyerConfig.value.formHidden || {};
     //console.log("copyerConfig.value========", JSON.stringify(copyerConfig.value))
     ccSelfSelectFlag.value = copyerConfig.value.ccSelfSelectFlag == 0 ? [] : [copyerConfig.value.ccSelfSelectFlag]
 })
@@ -115,6 +118,10 @@ const handleTabClick = (tab, event) => {
 const changePermVal = (data) => {
     copyerConfig.value.lfFieldControlVOs = data;
     //console.log("copyerConfig.value.lfFieldControlVOs========",JSON.stringify(copyerConfig.value))
+}
+/**外部表单模式: 整表隐藏标记变化 */
+const changeFormHidden = (data) => {
+    copyerConfig.value.formHidden = data;
 }
 
 </script>

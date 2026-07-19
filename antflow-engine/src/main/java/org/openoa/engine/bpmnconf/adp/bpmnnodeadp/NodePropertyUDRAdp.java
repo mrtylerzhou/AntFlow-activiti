@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
@@ -36,7 +35,6 @@ public class NodePropertyUDRAdp implements BpmnNodeAdaptor {
                     .ext4(udr.getExt4())
                     .build());
         }
-        throw new AFBizException("migration error,please contact the author");
     }
 
 

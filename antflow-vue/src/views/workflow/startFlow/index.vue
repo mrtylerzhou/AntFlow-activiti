@@ -10,6 +10,9 @@
                         <div v-if="componentLoaded">
                             <component ref="formRef" v-if="componentLoaded" :is="loadedComponent"
                                 :lfFormData="lfFormData" :isPreview="false" :showSubmit="true"
+                                :lfFieldPerm="lfFieldPermConfig"
+                                :lfFormdataList="lfFormdataListConfig" :lfFieldsMulti="lfFieldsMultiConfig"
+                                :formHidden="formHiddenConfig"
                                 @handleBizBtn="handleSubmit">
                             </component>
                         </div>
@@ -31,8 +34,8 @@
 import { ref, getCurrentInstance, onMounted } from 'vue'
 import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue'
 import { processOperation } from '@/api/workflow/index'
-import { getLowCodeFromCodeData } from '@/api/workflow/lowcodeApi'
-import { loadDIYComponent, loadLFComponent } from '@/views/workflow/components/componentload.js'
+import { getStartFormData } from '@/api/workflow/lowcodeApi'
+import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js'
 
 const { proxy } = getCurrentInstance()
 const route = useRoute();
@@ -44,6 +47,11 @@ const previewConf = ref({})
 let componentLoaded = ref(false);
 let loadedComponent = ref(null);
 let lfFormData = ref(null);
+let lfFormdataListConfig = ref([]);
+let lfFieldsMultiConfig = ref({});
+let formHiddenConfig = ref({});
+let lfFieldPermConfig = ref("[]");
+let useExternalForm = ref(false);
 const isLFFlow = route.query?.formType == 'LF';
 
 onMounted(async () => {
@@ -51,13 +59,31 @@ onMounted(async () => {
 })
 const adapFlowType = async () => {
     if (isLFFlow && isLFFlow == true) {
-        await getLowCodeFromCodeData(flowCode).then((res) => {
+        await getStartFormData(flowCode).then(async (res) => {
             if (res.code == 200) {
-                lfFormData.value = res.data
+                const data = res.data;
+                if (data.useExternalForm) {
+                    // 外部表单模式: 多 tab 渲染
+                    useExternalForm.value = true;
+                    lfFormdataListConfig.value = data.lfFormdataList || [];
+                    lfFieldsMultiConfig.value = {};
+                    formHiddenConfig.value = data.formHidden || {};
+                    lfFieldPermConfig.value = JSON.stringify(data.lfFieldControlVOs || []);
+                    lfFormData.value = null;
+                    loadedComponent.value = await loadLFMultiFormComponent();
+                } else {
+                    // 内联表单模式: 兼容旧逻辑
+                    useExternalForm.value = false;
+                    lfFormData.value = data.lfFormData;
+                    lfFormdataListConfig.value = [];
+                    lfFieldsMultiConfig.value = {};
+                    formHiddenConfig.value = data.formHidden || {};
+                    lfFieldPermConfig.value = JSON.stringify(data.lfFieldControlVOs || []);
+                    loadedComponent.value = await loadLFComponent();
+                }
+                componentLoaded.value = true;
             }
         });
-        loadedComponent.value = await loadLFComponent();
-        componentLoaded.value = lfFormData.value ? true : false;
     } else {
         loadedComponent.value = await loadDIYComponent(flowCode)
             .catch((err) => { console.log('err=======', err); proxy.$modal.msgError(err); componentLoaded.value = false; });
@@ -70,8 +96,8 @@ const handleSubmit = (param) => {
 }
 /**
  * 点击tab切换
- * @param tab 
- * @param event 
+ * @param tab
+ * @param event
  */
 const handleClick = async (tab, event) => {
     if (componentLoaded.value != true) { return; }
@@ -89,10 +115,16 @@ const handleClick = async (tab, event) => {
         } else {
             const _formData = await formRef.value.getFromData();
             if (isLFFlow && isLFFlow == true) {
-                let lfFormdata = JSON.parse(_formData);
-                previewConf.value.approversList = lfFormdata.approversList;
-                previewConf.value.approversValid = lfFormdata.approversValid;
-                previewConf.value.lfFields = JSON.parse(_formData);
+                if (useExternalForm.value) {
+                    // 外部表单模式: _formData 是 { [formdataId]: fieldMap } 结构
+                    previewConf.value.lfFieldsMulti = JSON.parse(_formData);
+                    previewConf.value.lfFields = null;
+                } else {
+                    let lfFormdata = JSON.parse(_formData);
+                    previewConf.value.approversList = lfFormdata.approversList;
+                    previewConf.value.approversValid = lfFormdata.approversValid;
+                    previewConf.value.lfFields = lfFormdata;
+                }
             } else {
                 previewConf.value = JSON.parse(_formData);
             }
@@ -103,14 +135,12 @@ const handleClick = async (tab, event) => {
             reviewWarpShow.value = true;
         }
     }).catch((r) => {
-        //console.log('errormsg',r);
         activeName.value = "createFrom";
-        //proxy.$modal.msgError("加载失败:" + r.message);
     });
 }
 /**
  * 发起流程
- * @param param 
+ * @param param
  */
 const startTest = async (param) => {
     await formRef.value.handleValidate().then(async (isValid) => {
@@ -123,16 +153,22 @@ const startTest = async (param) => {
                 bizFrom = {};
             }
             bizFrom.formCode = flowCode || '';
-            bizFrom.operationType = 1;//operationType 1发起 3 审批 
+            bizFrom.operationType = 1;//operationType 1发起 3 审批
             bizFrom.isLowCodeFlow = false;
             bizFrom.lfFields = null;
+            bizFrom.lfFieldsMulti = null;
             if (isLFFlow && isLFFlow == true) {
                 bizFrom.isLowCodeFlow = true;
                 const _formData = await formRef.value.getFromData();
-                let lfFormdata = JSON.parse(_formData);
-                bizFrom.approversList = lfFormdata.approversList;
-                bizFrom.approversValid = lfFormdata.approversValid;
-                bizFrom.lfFields = lfFormdata;
+                if (useExternalForm.value) {
+                    // 外部表单模式: _formData 是 { [formdataId]: fieldMap } 结构
+                    bizFrom.lfFieldsMulti = JSON.parse(_formData);
+                } else {
+                    let lfFormdata = JSON.parse(_formData);
+                    bizFrom.approversList = lfFormdata.approversList;
+                    bizFrom.approversValid = lfFormdata.approversValid;
+                    bizFrom.lfFields = lfFormdata;
+                }
             }
             proxy.$modal.loading();
             processOperation(bizFrom).then((res) => {

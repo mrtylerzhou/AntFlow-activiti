@@ -11,6 +11,10 @@
                   @keyup.enter="handleQuery" />
             </el-form-item>
 
+            <el-form-item label="" prop="includeAllFlag">
+               <el-checkbox v-model="taskMgmtVO.includeAllFlag" :true-value="1" :false-value="0">查询全部</el-checkbox>
+            </el-form-item>
+
             <el-form-item>
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -36,8 +40,10 @@
                      </template>
                      {{ substringHidden(item.row.processNumber) }}
                   </el-tooltip>
+                  <el-button link type="primary" icon="CopyDocument" @click="copyProcessNumber(item.row.processNumber)"></el-button>
                </template>
             </el-table-column>
+            <el-table-column label="版本编号" align="center" prop="version" width="100" />
             <el-table-column label="流程描述" align="center" prop="description" :show-overflow-tooltip="true" />
             <el-table-column label="状态" align="center" prop="effectiveStatus">
                <template #default="item">
@@ -76,6 +82,21 @@
                                     <CirclePlus />
                                  </el-icon>加签
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowAddNode(scope.row)">
+                                 <el-icon>
+                                    <Plus />
+                                 </el-icon>增加节点
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowRemoveNode(scope.row)">
+                                 <el-icon>
+                                    <Minus />
+                                 </el-icon>删除节点
+                              </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowFastForward(scope.row)">
+                                 <el-icon>
+                                    <DArrowRight />
+                                 </el-icon>推进流程
+                              </el-dropdown-item>
                               <el-dropdown-item @click="handleFlowChange(scope.row)">
                                  <el-icon>
                                     <Switch />
@@ -91,6 +112,11 @@
                                     <CircleClose />
                                  </el-icon>作废
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowForward(scope.row)">
+                                 <el-icon>
+                                    <Promotion />
+                                 </el-icon>转发
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -102,6 +128,7 @@
             @pagination="getList" />
       </div>
       <previewDrawer v-if="visible" />
+      <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
    </div>
 </template>
 
@@ -109,6 +136,7 @@
 import { getAllProcesslistPage, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 import { onMounted } from "vue";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -119,6 +147,8 @@ const dataList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
+const forwardDialogVisible = ref(false);
+const currentForwardRow = ref(null);
 
 let visible = computed({
    get() {
@@ -136,7 +166,8 @@ const data = reactive({
    },
    taskMgmtVO: {
       processNumber: undefined,
-      processTypeName: undefined
+      processTypeName: undefined,
+      includeAllFlag: 0
    },
    rules: {
       processNumber: [{ required: true, message: "关键字不能为空", trigger: "blur" }],
@@ -155,6 +186,8 @@ const getList = async () => {
       dataList.value = response.data;
       total.value = response.pagination.totalCount;
       loading.value = false;
+      // 查询全部为一次性操作，查询成功后取消勾选，避免影响后续性能
+      taskMgmtVO.value.includeAllFlag = 0;
    }).catch((r) => {
       loading.value = false;
       console.log(r);
@@ -170,20 +203,28 @@ const handleQuery = async () => {
 function resetQuery() {
    taskMgmtVO.value = {
       processNumber: undefined,
-      processTypeName: undefined
+      processTypeName: undefined,
+      includeAllFlag: 0
    };
    handleQuery();
 }
 
 function handlePreview(row) {
-   setPreviewDrawer(true);
-   setPreviewDrawerConfig({
-      formCode: row.processKey,
-      processNumber: row.processNumber,
-      isOutSideAccess: row.isOutSideProcess,
-      isLowCodeFlow: row.isLowCodeFlow,
-      processState: row.processState,
-   })
+  setPreviewDrawer(true);
+  setPreviewDrawerConfig({
+    formCode: row.processKey,
+    processNumber: row.processNumber,
+    isOutSideAccess: row.isOutSideProcess,
+    isLowCodeFlow: row.isLowCodeFlow,
+    processState: row.processState,
+    confId: row.confId,
+    // version 字段即 bpmnCode(见 BpmBusinessProcessServiceImpl.setVersion(bpmnCode)),用于按实例版本预览流程分支
+    bpmnCode: row.version,
+    // 真实发起人(列表 userId 即 h.START_USER_ID_),流程预览时保留原发起人以正确计算审批人(如直属领导)
+    startUserId: row.userId,
+    // 管理员从流程监控查看：忽略表单只读权限控制（隐藏仍生效），方便按字段值变化预览不同效果
+    ignoreReadonly: true,
+  })
 }
 
 /** 减签 */
@@ -200,6 +241,33 @@ function handleFlowAddSign(row) {
    const processNumber = row.processNumber
    router.push({
       path: "/workflow/instance/addSign/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 增加节点 */
+function handleFlowAddNode(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/addNode/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 推进流程 */
+function handleFlowFastForward(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/fastForward/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 删除节点 */
+function handleFlowRemoveNode(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/removeNode/processNumber/" + processNumber,
       query: row
    });
 }
@@ -258,6 +326,66 @@ function handleFlowRepeal(row) {
       });
       proxy.$modal.closeLoading();
    }).catch(() => { })
+}
+
+/** 转发 - 打开选人对话框 */
+function handleFlowForward(row) {
+   currentForwardRow.value = row;
+   forwardDialogVisible.value = true;
+}
+
+/** 转发选人确认回调 */
+function handleForwardUserSelected(selectedUsers) {
+   if (!selectedUsers || selectedUsers.length === 0) {
+      proxy.$modal.msgWarning("请至少选择一个转发用户");
+      return;
+   }
+   let row = currentForwardRow.value;
+   let pramForm = {
+      operationType: 15,
+      formCode: row.processKey,
+      processNumber: row.processNumber,
+      isLowCodeFlow: row.isLowCodeFlow,
+      userInfos: selectedUsers.map(u => ({
+         id: u.targetId,
+         name: u.name
+      }))
+   };
+   proxy.$modal.loading();
+   processOperation(pramForm).then((res) => {
+      if (res.code == 200) {
+         proxy.$modal.msgSuccess("转发操作成功");
+      } else {
+         proxy.$modal.msgError("转发操作失败:" + res.errMsg);
+      }
+   });
+   proxy.$modal.closeLoading();
+}
+
+/** 复制流程编号 */
+function copyProcessNumber(processNumber) {
+   if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(processNumber).then(() => {
+         proxy.$modal.msgSuccess("复制成功");
+      }).catch(() => {
+         fallbackCopy(processNumber);
+      });
+   } else {
+      fallbackCopy(processNumber);
+   }
+}
+function fallbackCopy(text) {
+   const input = document.createElement("input");
+   input.value = text;
+   document.body.appendChild(input);
+   input.select();
+   try {
+      document.execCommand("copy");
+      proxy.$modal.msgSuccess("复制成功");
+   } catch (e) {
+      proxy.$modal.msgError("复制失败");
+   }
+   document.body.removeChild(input);
 }
 
 </script>

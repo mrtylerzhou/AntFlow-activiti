@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import org.openoa.base.vo.BaseIdTranStruVo;
+
+
 
 /**
  * Conf-level configuration JSON for t_bpmn_conf.
@@ -79,10 +82,10 @@ public class BpmnConfConfigJson implements Serializable {
     @NoArgsConstructor
     public static class ConfTemplateConf implements Serializable {
         private Integer event;
-        private String informs;
-        private String emps;
-        private String roles;
-        private String funcs;
+        private List<String> informIdList;
+        private List<BaseIdTranStruVo> empList;
+        private List<BaseIdTranStruVo> roleList;
+        private List<BaseIdTranStruVo> funcList;
         private Long templateId;
         private String messageSendType;
         private String formCode;

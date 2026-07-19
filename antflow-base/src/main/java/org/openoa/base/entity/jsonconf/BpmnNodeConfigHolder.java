@@ -175,6 +175,27 @@ public class BpmnNodeConfigHolder {
     }
 
     /**
+     * Build previous node related user approver config from node VO
+     */
+    public static void setPrevNodeRelatedUserConf(BpmnNodeVo vo) {
+        BpmnNodePropertysVo prop = vo.getProperty();
+        if (prop == null) return;
+        BpmnNodeApproverConfJson approverConf = getOrCreateApproverConf(vo);
+        BpmnNodeApproverConfJson.PrevNodeRelatedUserConf conf = BpmnNodeApproverConfJson.PrevNodeRelatedUserConf.builder()
+                .signType(prop.getSignType())
+                .valueType(prop.getFormAssigneeProperty())
+                .valueTypeName(org.openoa.base.constant.enums.NodePrevNodeAssigneePropertyEnum
+                        .getDescByCode(prop.getFormAssigneeProperty()))
+                .build();
+        List<BpmnNodeApproverConfJson.PrevNodeRelatedUserConf> list = approverConf.getPrevNodeRelatedUserConfList();
+        if (list == null) {
+            list = new ArrayList<>();
+            approverConf.setPrevNodeRelatedUserConfList(list);
+        }
+        list.add(conf);
+    }
+
+    /**
      * Build outside access approver config from node VO
      */
     public static void setOutSideAccessConf(BpmnNodeVo vo) {
@@ -219,18 +240,19 @@ public class BpmnNodeConfigHolder {
         BpmnNodeConfigJson config = vo.getOrCreateNodeConfigJson();
         BpmnNodeButtonSignConfJson bs = new BpmnNodeButtonSignConfJson();
 
-        // Buttons - BpmnNodeButtonConfBaseVo has startPage, approvalPage, viewPage (List<Integer>)
+        // Buttons - BpmnNodeButtonConfBaseVo has startPage, approvalPage, viewPage (List<BpmnConfCommonButtonPropertyVo>)
         BpmnNodeButtonConfBaseVo btns = vo.getButtons();
         if (btns != null) {
             List<BpmnNodeButtonSignConfJson.ButtonConf> buttonList = new ArrayList<>();
-            addButtonsFromIntList(buttonList, btns.getStartPage(), 1, 0);
-            addButtonsFromIntList(buttonList, btns.getApprovalPage(), 2, 0);
-            addButtonsFromIntList(buttonList, btns.getViewPage(), 3, 0);
+            addButtonsFromList(buttonList, btns.getStartPage(), 1, 0);
+            addButtonsFromList(buttonList, btns.getApprovalPage(), 2, 0);
+            addButtonsFromList(buttonList, btns.getViewPage(), 3, 0);
             // START(发起人)节点的审批页必须要有"重新提交"按钮
             // 前端设计器(promoterDrawer)没有审批按钮配置UI，需要后端兜底
             boolean isStartNode = vo.getNodeType() != null && NodeTypeEnum.NODE_TYPE_START.getCode().equals(vo.getNodeType());
             if (isStartNode) {
-                boolean hasResubmit = btns.getApprovalPage() != null && btns.getApprovalPage().contains(ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode());
+                boolean hasResubmit = btns.getApprovalPage() != null && btns.getApprovalPage().stream()
+                        .anyMatch(b -> ButtonTypeEnum.BUTTON_TYPE_RESUBMIT.getCode().equals(b.getButtonType()));
                 if (!hasResubmit) {
                     buttonList.add(BpmnNodeButtonSignConfJson.ButtonConf.builder()
                             .buttonPageType(2)
@@ -293,10 +315,10 @@ public class BpmnNodeConfigHolder {
             tc.setTemplates(vo.getTemplateVos().stream()
                     .map(t -> BpmnNodeTemplateConfJson.TemplateConf.builder()
                             .event(t.getEvent())
-                            .informs(t.getInforms())
-                            .emps(t.getEmps())
-                            .roles(t.getRoles())
-                            .funcs(t.getFuncs())
+                            .informIdList(t.getInformIdList())
+                            .empList(t.getEmpList())
+                            .roleList(t.getRoleList())
+                            .funcList(t.getFuncList())
                             .templateId(t.getTemplateId())
                             .messageSendType(convertMessageSendTypeList(t.getMessageSendTypeList()))
                             .formCode(t.getFormCode())
@@ -320,18 +342,25 @@ public class BpmnNodeConfigHolder {
      * Build low-code field control config from node VO
      */
     public static void setLowCodeConf(BpmnNodeVo vo) {
-        if (CollectionUtils.isEmpty(vo.getLfFieldControlVOs())) return;
+        boolean hasFieldControls = !CollectionUtils.isEmpty(vo.getLfFieldControlVOs());
+        boolean hasFormHidden = vo.getFormHidden() != null && !vo.getFormHidden().isEmpty();
+        if (!hasFieldControls && !hasFormHidden) return;
         BpmnNodeConfigJson config = vo.getOrCreateNodeConfigJson();
-        config.setLowCodeConf(BpmnNodeLowCodeConfJson.builder()
-                .fieldControls(vo.getLfFieldControlVOs().stream()
-                        .map(fc -> BpmnNodeLowCodeConfJson.FieldControl.builder()
-                                .formdataId(fc.getFormdataId())
-                                .fieldId(fc.getFieldId())
-                                .fieldName(fc.getFieldName())
-                                .perm(fc.getPerm())
-                                .build())
-                        .collect(Collectors.toList()))
-                .build());
+        BpmnNodeLowCodeConfJson.BpmnNodeLowCodeConfJsonBuilder builder = BpmnNodeLowCodeConfJson.builder();
+        if (hasFieldControls) {
+            builder.fieldControls(vo.getLfFieldControlVOs().stream()
+                    .map(fc -> BpmnNodeLowCodeConfJson.FieldControl.builder()
+                            .formdataId(fc.getFormdataId())
+                            .fieldId(fc.getFieldId())
+                            .fieldName(fc.getFieldName())
+                            .perm(fc.getPerm())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
+        if (hasFormHidden) {
+            builder.formHidden(vo.getFormHidden());
+        }
+        config.setLowCodeConf(builder.build());
     }
 
     // ============ Private helpers ============
@@ -344,14 +373,20 @@ public class BpmnNodeConfigHolder {
         return config.getApproverConf();
     }
 
-    private static void addButtonsFromIntList(List<BpmnNodeButtonSignConfJson.ButtonConf> list,
-                                              List<Integer> buttonTypes, int pageType, int startPageOnly) {
-        if (CollectionUtils.isEmpty(buttonTypes)) return;
-        for (Integer btnType : buttonTypes) {
+    private static void addButtonsFromList(List<BpmnNodeButtonSignConfJson.ButtonConf> list,
+                                           List<BpmnConfCommonButtonPropertyVo> buttonItems, int pageType, int startPageOnly) {
+        if (CollectionUtils.isEmpty(buttonItems)) return;
+        for (BpmnConfCommonButtonPropertyVo item : buttonItems) {
+            Integer btnType = item.getButtonType();
+            // 自定义名称非空时使用自定义值,否则回退到按钮类型对应的默认名称
+            String customName = item.getButtonName();
+            String resolvedName = (customName != null && !customName.trim().isEmpty())
+                    ? customName
+                    : ButtonTypeEnum.getDescByCode(btnType);
             list.add(BpmnNodeButtonSignConfJson.ButtonConf.builder()
                     .buttonPageType(pageType)
                     .buttonType(btnType)
-                    .buttonName(ButtonTypeEnum.getDescByCode(btnType))
+                    .buttonName(resolvedName)
                     .startPageOnly(startPageOnly)
                     .build());
         }
@@ -364,6 +399,6 @@ public class BpmnNodeConfigHolder {
 
     private static String convertMessageSendTypeList(List<BaseNumIdStruVo> list) {
         if (CollectionUtils.isEmpty(list)) return null;
-        return list.stream().map(BaseNumIdStruVo::toString).collect(Collectors.joining(","));
+        return list.stream().map(a->a.getId().toString()).collect(Collectors.joining(","));
     }
 }

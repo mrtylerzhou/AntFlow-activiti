@@ -177,7 +177,9 @@ select {
 }
 
 .demo-drawer__footer {
+  z-index: 999 !important;
   padding: 10px 30px !important;
+  background: #fff !important;
   border-top: 1px solid #f2f2f2 !important;
   position: fixed;
   bottom: 0;

@@ -211,6 +211,18 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "lfFormManage",
+          "path": "lfForm",
+          "hidden": false,
+          "component": "system/lfForm/index",
+          "meta": {
+            "title": "表单管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     },

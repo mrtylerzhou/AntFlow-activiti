@@ -52,17 +52,10 @@ public class BpmnBusinessController {
      */
     @GetMapping("/getDIYFormCodeList")
     public Result getDIYFormCodeList(String desc) {
-        List<DIYProcessInfoDTO> result = new ArrayList<>();
         // DIY流程
         List<DIYProcessInfoDTO> diyList = taskMgmtService.viewProcessInfo(desc);
-        if (!CollectionUtils.isEmpty(diyList)) {
-                for (DIYProcessInfoDTO dto : diyList) {
-                    dto.setValue("【DIY】" + dto.getValue());
-                }
-            result.addAll(diyList);
-        }
 
-        return Result.newSuccessResult(result);
+        return Result.newSuccessResult(diyList);
     }
 
     @PostMapping("/getAllFormCodeList")

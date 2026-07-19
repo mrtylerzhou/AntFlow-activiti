@@ -87,6 +87,12 @@ public class BpmnConf implements TenantField, Serializable {
     private Integer isLowCodeFlow;
 
     /**
+     * 外部表单引用的表单版本id列表(CSV),仅外部表单模式(extra_flags含USE_EXTERNAL_FORM)使用
+     */
+    @TableField("lf_formdata_ids")
+    private String lfFormdataIds;
+
+    /**
      * business party mark
      */
     @TableField("business_party_id")

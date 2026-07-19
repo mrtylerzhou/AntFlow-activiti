@@ -156,6 +156,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                     config.getButtons().add(ButtonItem.builder()
                             .elementId(elementId)
                             .buttonPageType(ButtonPageTypeEnum.TO_VIEW.getCode())
+                            .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
                             .buttonType(o.getButtonType())
                             .buttonName(o.getButtonName())
                             .build()));
@@ -215,7 +216,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
             Integer resolvedMessageType = getMessageSendType(eventType, messageType);
             config.getMessages().add(MessageItem.builder()
                     .elementId(elementId)
-                    .messageType(resolvedMessageType)
+                    .messageType(2)
                     .eventType(eventType)
                     .content(JSON.toJSONString(o))
                     .build());

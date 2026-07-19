@@ -106,6 +106,11 @@ public class ProcessRecordInfoVo {
     private String processKey;
 
     /**
+     * 当前任务的 formKey (NodeExtraInfoDTO JSON), 用于运行时标签检查
+     */
+    private String formKey;
+
+    /**
      * start page init data
      */
     private Object initDatas;
@@ -113,4 +118,11 @@ public class ProcessRecordInfoVo {
      * lowcode flow field permissions
      */
     private List<LFFieldControlVO> lfFieldControlVOs;
+
+    /**
+     * 外部表单模式: 节点级整表隐藏标记
+     * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true 表示该表单在此节点不展示
+     * 仅外部表单模式使用; 内联模式为 null
+     */
+    private Map<String, Boolean> formHidden;
 }

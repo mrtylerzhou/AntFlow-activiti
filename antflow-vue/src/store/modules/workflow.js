@@ -1,9 +1,10 @@
- export const useStore = defineStore('store', {
+export const useStore = defineStore("store", {
   state: () => ({
-    userId: '',
-    tableId: '',
+    userId: "",
+    tableId: "",
     isTried: false,
     promoterDrawer: false,
+    promoterConfig: {},
     flowPermission1: {},
     approverDrawer: false,
     approverConfig1: {},
@@ -16,53 +17,85 @@
     previewDrawer: false,
     instanceViewConfig1: {},
     lowCodeFormField: {},
+    // 多表单模式(外部表单)相关状态
+    useExternalForm: false,                          //是否启用外部表单模式
+    lfFormdataList: [],                              //后端返回的表单版本列表(含 formdata JSON),供前端渲染多 tab
+    lowCodeFormFieldsMulti: [],                      //解析后的多表单字段列表: [{ formdataId, formCode, formName, formFields:[] }]
     approveChooseFlowNode: {},
+    copyerDrawerV2: false,
+    copyerConfigV2: {},
+    autoNodeDrawer: false,
+    autoNodeConfig1: {},
   }),
   actions: {
     setUserId(payload) {
-      this.userId = payload
+      this.userId = payload;
     },
     setTableId(payload) {
-      this.tableId = payload
+      this.tableId = payload;
     },
     setIsTried(payload) {
-      this.isTried = payload
+      this.isTried = payload;
     },
     setPromoter(payload) {
-      this.promoterDrawer = payload
+      this.promoterDrawer = payload;
+    },
+    setPromoterConfig(payload) {
+      this.promoterConfig = payload;
     },
     setFlowPermission(payload) {
-      this.flowPermission1 = payload
+      this.flowPermission1 = payload;
     },
     setApprover(payload) {
-      this.approverDrawer = payload
+      this.approverDrawer = payload;
     },
     setApproverConfig(payload) {
-      this.approverConfig1 = payload
+      this.approverConfig1 = payload;
     },
     setCopyer(payload) {
-      this.copyerDrawer = payload
+      this.copyerDrawer = payload;
     },
     setCopyerConfig(payload) {
-      this.copyerConfig1 = payload
+      this.copyerConfig1 = payload;
     },
     setCondition(payload) {
-      this.conditionDrawer = payload
+      this.conditionDrawer = payload;
     },
     setConditionsConfig(payload) {
-      this.conditionsConfig1 = payload
+      this.conditionsConfig1 = payload;
     },
     setPreviewDrawer(payload) {
-      this.previewDrawer = payload
+      this.previewDrawer = payload;
     },
     setPreviewDrawerConfig(payload) {
-      this.instanceViewConfig1 = payload
+      this.instanceViewConfig1 = payload;
     },
     setLowCodeFormField(payload) {
-      this.lowCodeFormField = payload
-    }, 
+      this.lowCodeFormField = payload;
+    },
+    setUseExternalForm(payload) {
+      this.useExternalForm = !!payload;
+    },
+    setLfFormdataList(payload) {
+      this.lfFormdataList = payload || [];
+    },
+    setLowCodeFormFieldsMulti(payload) {
+      this.lowCodeFormFieldsMulti = payload || [];
+    },
     setApproveChooseFlowNodeConfig(payload) {
-      this.approveChooseFlowNode = payload
-    }
-  }
-})
+      this.approveChooseFlowNode = payload;
+    },
+    setCopyerV2(payload) {
+      this.copyerDrawerV2 = payload;
+    },
+    setCopyerConfigV2(payload) {
+      this.copyerConfigV2 = payload;
+    },
+    setAutoNode(payload) {
+      this.autoNodeDrawer = payload;
+    },
+    setAutoNodeConfig(payload) {
+      this.autoNodeConfig1 = payload;
+    },
+  },
+});

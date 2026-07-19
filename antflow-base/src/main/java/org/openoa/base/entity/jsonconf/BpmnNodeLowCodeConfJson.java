@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Low-code form field control configuration JSON for a BPMN node.
@@ -19,9 +20,16 @@ import java.util.List;
 public class BpmnNodeLowCodeConfJson implements Serializable {
 
     /**
-     * Form field permissions for this node
+     * Form field permissions for this node (per formdataId via FieldControl.formdataId)
      */
     private List<FieldControl> fieldControls;
+
+    /**
+     * Per-form whole-form hide flag for external-form mode.
+     * Key = formdataId (t_bpmn_conf_lf_formdata.id), Value = true if the whole form is hidden at this node.
+     * Only used in external-form mode; null/empty in inline mode.
+     */
+    private Map<String, Boolean> formHidden;
 
     @Data
     @Builder

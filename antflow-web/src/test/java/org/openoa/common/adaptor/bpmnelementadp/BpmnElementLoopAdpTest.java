@@ -8,6 +8,7 @@ import org.openoa.MockBaseTest;
 import org.openoa.base.constant.enums.DuplicationProcessStrategyEnum;
 import org.openoa.base.constant.enums.NodePropertyEnum;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
+import org.openoa.base.vo.BpmnConfCommonButtonPropertyVo;
 import org.openoa.base.vo.BpmnConfCommonElementVo;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
@@ -52,9 +53,13 @@ class BpmnElementLoopAdpTest extends MockBaseTest {
         nodeVo.setProperty(property);
 
         BpmnNodeButtonConfBaseVo buttons = BpmnNodeButtonConfBaseVo.builder()
-                .startPage(Arrays.asList(1, 2))
-                .approvalPage(Arrays.asList(3))
-                .viewPage(Arrays.asList(4))
+                .startPage(Arrays.asList(
+                        BpmnConfCommonButtonPropertyVo.builder().buttonType(1).build(),
+                        BpmnConfCommonButtonPropertyVo.builder().buttonType(2).build()))
+                .approvalPage(Arrays.asList(
+                        BpmnConfCommonButtonPropertyVo.builder().buttonType(3).build()))
+                .viewPage(Arrays.asList(
+                        BpmnConfCommonButtonPropertyVo.builder().buttonType(4).build()))
                 .build();
         nodeVo.setButtons(buttons);
 

@@ -33,6 +33,9 @@
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
             <Process ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
         </div>
+        <div v-if="processConfig" v-show="activeStep === 'advancedSetting'">
+            <AdvancedSetting ref="advancedSetting" :basicData="processConfig" @nextChange="changeSteps" />
+        </div>
         <jsonDialog v-model:visible="viewJson" :title="jsonTitle" :modelValue="nodeConfig" />
     </div>
 </template>
@@ -45,18 +48,21 @@ import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
+import AdvancedSetting from "@/components/Workflow/AdvancedSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 //import { getWorkFlowData } from '@/api/workflow/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
 const basicSetting = ref(null);
+const advancedSetting = ref(null);
 const processDesign = ref(null);
 let activeStep = ref("basicSetting"); // 激活的步骤面板
 
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
     { label: "流程设计", key: "processDesign" },
+    { label: "高级设置", key: "advancedSetting" },
 ]);
 
 const changeSteps = (item) => {
@@ -94,13 +100,16 @@ onMounted(async () => {
 const publish = () => {
     const step1 = basicSetting.value.getData();
     const step2 = processDesign.value.getData();
+    const step3 = advancedSetting.value.getData();
     proxy.$modal.loading();
-    Promise.all([step1, step2])
+    Promise.all([step1, step2, step3])
         .then((res) => {
             //proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
             let basicData = res[0].formData;
             var nodes = FormatCommitUtils.formatSettings(res[1].formData);
             Object.assign(basicData, { nodes: nodes });
+            // 高级设置覆盖 deduplicationType 和 viewPageButtons
+            Object.assign(basicData, res[2].formData);
             console.log("New===Json==========", JSON.stringify(basicData));
             return basicData;
         })

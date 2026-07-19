@@ -12,6 +12,7 @@ import org.openoa.base.vo.*;
 import org.openoa.common.constant.enus.ElementPropertyEnum;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,6 +42,13 @@ class BpmnElementAdaptorTest extends MockBaseTest {
     @BeforeEach
     void setUp() {
         adaptor = new TestableBpmnElementAdaptor();
+    }
+
+    /** 将按钮类型码转换为 BpmnConfCommonButtonPropertyVo 列表(buttonName 留空,由适配器回退默认名) */
+    private static List<BpmnConfCommonButtonPropertyVo> btns(Integer... types) {
+        return Arrays.stream(types)
+                .map(t -> BpmnConfCommonButtonPropertyVo.builder().buttonType(t).build())
+                .collect(Collectors.toList());
     }
 
     private BpmnNodeVo createBasicNodeVo() {
@@ -142,7 +150,7 @@ class BpmnElementAdaptorTest extends MockBaseTest {
         void shouldSetButtonsOnElementVo() {
             List<BpmnConfCommonElementVo> elements = new ArrayList<>();
             BpmnNodeVo nodeVo = createBasicNodeVo();
-            nodeVo.getButtons().setApprovalPage(Arrays.asList(3, 4));
+            nodeVo.getButtons().setApprovalPage(btns(3, 4));
             HashMap<String, Integer> numMap = new HashMap<>();
             numMap.put("nodeCode", 0);
             numMap.put("sequenceFlowNum", 0);
@@ -609,7 +617,7 @@ class BpmnElementAdaptorTest extends MockBaseTest {
         @DisplayName("should map startPage button codes to BpmnConfCommonButtonPropertyVo")
         void shouldMapStartPageButtonCodes() {
             BpmnNodeVo nodeVo = createBasicNodeVo();
-            nodeVo.getButtons().setStartPage(Arrays.asList(1, 0));
+            nodeVo.getButtons().setStartPage(btns(1, 0));
             BpmnConfCommonElementVo elementVo = BpmnConfCommonElementVo.builder().build();
 
             adaptor.setElementButtons(nodeVo, elementVo);
@@ -625,7 +633,7 @@ class BpmnElementAdaptorTest extends MockBaseTest {
         @DisplayName("should map approvalPage button codes to BpmnConfCommonButtonPropertyVo")
         void shouldMapApprovalPageButtonCodes() {
             BpmnNodeVo nodeVo = createBasicNodeVo();
-            nodeVo.getButtons().setApprovalPage(Arrays.asList(3, 4));
+            nodeVo.getButtons().setApprovalPage(btns(3, 4));
             BpmnConfCommonElementVo elementVo = BpmnConfCommonElementVo.builder().build();
 
             adaptor.setElementButtons(nodeVo, elementVo);
@@ -643,7 +651,7 @@ class BpmnElementAdaptorTest extends MockBaseTest {
         @DisplayName("should map viewPage button codes to BpmnConfCommonButtonPropertyVo")
         void shouldMapViewPageButtonCodes() {
             BpmnNodeVo nodeVo = createBasicNodeVo();
-            nodeVo.getButtons().setViewPage(Arrays.asList(8));
+            nodeVo.getButtons().setViewPage(btns(8));
             BpmnConfCommonElementVo elementVo = BpmnConfCommonElementVo.builder().build();
 
             adaptor.setElementButtons(nodeVo, elementVo);
@@ -659,7 +667,7 @@ class BpmnElementAdaptorTest extends MockBaseTest {
         @DisplayName("should use ButtonTypeEnum.getDescByCode for button names")
         void shouldUseButtonTypeEnumForNames() {
             BpmnNodeVo nodeVo = createBasicNodeVo();
-            nodeVo.getButtons().setApprovalPage(Arrays.asList(3));
+            nodeVo.getButtons().setApprovalPage(btns(3));
             BpmnConfCommonElementVo elementVo = BpmnConfCommonElementVo.builder().build();
 
             adaptor.setElementButtons(nodeVo, elementVo);

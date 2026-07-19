@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.util.NodeUtil;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
@@ -38,6 +40,7 @@ import org.openoa.engine.factory.ButtonPreOperationService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -45,6 +48,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
@@ -226,6 +230,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
     }
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessDataVo getBusinessInfo(String params, String formCode) {
         BusinessDataVo vo = formFactory.dataFormConversion(params,formCode);
         return getBusinessInfo(vo);
@@ -275,6 +280,10 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if (nodeIsSignUp) {
             //set the add approver button
             addApproverButton(vo);
+        }
+        //上一节点指定审批人:当前节点贴有 appoint_next_node_approver 标签时,渲染[指定下一节点审批人]按钮
+        if (hasAppointNextNodeApproverLabel(vo)) {
+            addAppointNextNodeApproverButton(vo);
         }
         if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
             return vo;
@@ -334,6 +343,44 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         businessDataVo.getProcessRecordInfo().setPcButtons(pcButtons);
     }
+
+    /**
+     * 检查当前节点是否需要渲染[指定下一节点审批人]按钮
+     * 从 ProcessRecordInfoVo.formKey 读取标签
+     */
+    private boolean hasAppointNextNodeApproverLabel(BusinessDataVo businessDataVo) {
+        try {
+            if (businessDataVo == null || businessDataVo.getProcessRecordInfo() == null) {
+                return false;
+            }
+            String formKey = businessDataVo.getProcessRecordInfo().getFormKey();
+            if (org.apache.commons.lang3.StringUtils.isEmpty(formKey)) {
+                return false;
+            }
+            NodeExtraInfoDTO extraInfoDTO = com.alibaba.fastjson2.JSON.parseObject(formKey, NodeExtraInfoDTO.class);
+            return NodeUtil.nodeLabelContainsAny(extraInfoDTO, StringConstants.AF_SYSLABEL_APPOINT_NEXT_NODE_APPROVER);
+        } catch (Exception e) {
+            log.warn("hasAppointNextNodeApproverLabel check failed", e);
+            return false;
+        }
+    }
+
+    /**
+     * 添加[指定下一节点审批人]按钮
+     */
+    private void addAppointNextNodeApproverButton(BusinessDataVo businessDataVo) {
+        ProcessActionButtonVo button = ProcessActionButtonVo
+                .builder()
+                .buttonType(BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER.getCode())
+                .name(BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER.getDesc())
+                .build();
+        Map<String, List<ProcessActionButtonVo>> pcButtons = businessDataVo.getProcessRecordInfo().getPcButtons();
+        List<ProcessActionButtonVo> pcProcButtons = pcButtons.get(ButtonPageTypeEnum.AUDIT.getName());
+        if (pcProcButtons != null && !pcProcButtons.stream().anyMatch(a -> BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER.getCode().equals(a.getButtonType()))) {
+            pcProcButtons.add(button);
+        }
+    }
+
     /**
      * check whether current node is operatable
      * Reads operationTypes from node_config_json instead of bpm_process_operation table.

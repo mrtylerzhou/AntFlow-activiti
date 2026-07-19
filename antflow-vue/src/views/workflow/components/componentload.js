@@ -2,6 +2,7 @@ import { markRaw } from "vue";
 import { bizFormMaps } from "@/utils/antflow/const";
 const modules = import.meta.glob("./forms/*.vue"); // 动态引入组件
 import FormRender from "@/components/Workflow/DynamicForm/formRender.vue"; // 低代码表单渲染组件
+import MultiFormRender from "@/components/Workflow/DynamicForm/MultiFormRender.vue"; // 多表单(外部表单模式)渲染组件
 /**
  * 动态加载自定义（DIY）表单组件
  */
@@ -29,5 +30,14 @@ export const loadDIYComponent = (flowCode) => {
 export const loadLFComponent = () => {
   return new Promise((resolve, reject) => {
     resolve(markRaw(FormRender));
+  });
+};
+
+/**
+ * 动态加载多表单(外部表单模式)渲染组件
+ */
+export const loadLFMultiFormComponent = () => {
+  return new Promise((resolve, reject) => {
+    resolve(markRaw(MultiFormRender));
   });
 };

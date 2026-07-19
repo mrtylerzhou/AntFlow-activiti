@@ -191,6 +191,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                    nodeLabelVO = NodeLabelConstants.copyNodeV2;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutomaticNode())){
                     nodeLabelVO=NodeLabelConstants.automaticNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionApproveNode())){
+                    nodeLabelVO=NodeLabelConstants.conditionApproveNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionCopyNode())){
+                    nodeLabelVO=NodeLabelConstants.conditionCopyNode;
                 }
                if(nodeLabelVO!=null){
                    bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
@@ -237,6 +241,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 }
             }
             BpmnNodeConfigHolder.setLowCodeConf(bpmnNodeVo);
+
+            // Transfer autoNodeConf from VO to node config JSON (for auto nodes)
+            if (bpmnNodeVo.getAutoNodeConf() != null) {
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                String autoNodeConfJson = JSON.toJSONString(bpmnNodeVo.getAutoNodeConf());
+                BpmnNodeAutoNodeConfJson autoConf = JSON.parseObject(autoNodeConfJson, BpmnNodeAutoNodeConfJson.class);
+                nodeCfgJson.setAutoNodeConf(autoConf);
+            }
 
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
@@ -324,6 +336,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     BpmnNodeConfigHolder.setUdrConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_FORM_RELATED) {
                     BpmnNodeConfigHolder.setFormRelatedUserConf(bpmnNodeVo);
+                } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_PREV_NODE_RELATED) {
+                    BpmnNodeConfigHolder.setPrevNodeRelatedUserConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_OUT_SIDE_ACCESS) {
                     BpmnNodeConfigHolder.setOutSideAccessConf(bpmnNodeVo);
                 } else if (propEnum == NodePropertyEnum.NODE_PROPERTY_BUSINESSTABLE) {
@@ -606,6 +620,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         JSONObject jsonObject = JSONObject.parseObject(params);
         String processNumber = jsonObject.getString("processNumber");
         Boolean isLowCodeFlow = jsonObject.getBoolean("isLowCodeFlow");
+
+        // 流程监控查看: 未带流程编号时,不查 BpmVariable 的存储表单,直接使用前端提交的表单数据 + bpmnCode + startUserId 预览
+        // (保留 isStartPagePreview=false 以使用真实发起人,而非当前登录管理员)
+        if (Strings.isNullOrEmpty(processNumber)) {
+            return getPreviewNode(params, false);
+        }
 
         QueryWrapper<BpmVariable> wrapper = new QueryWrapper<>();
         wrapper.eq("process_num", processNumber);
@@ -1025,6 +1045,13 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         }else{
             //call business logic to set start up preview conditions
             bpmnStartConditionsVo = formFactory.getFormAdaptor(vo).previewSetCondition(vo);
+        }
+        // DIY流程的适配器通常只设置具体类型字段(如 accountType),未填充通用 lfConditions;
+        // 若前端传入了 lfConditions(调试页按条件字段提交),在此兜底合并,使条件评估(AbstractLFConditionJudge)能按 columnDbname 命中
+        // LF流程适配器已设置 lfConditions,此处不会覆盖;不影响既有行为
+        if (CollectionUtils.isEmpty(bpmnStartConditionsVo.getLfConditions())
+                && !CollectionUtils.isEmpty(vo.getLfConditions())) {
+            bpmnStartConditionsVo.setLfConditions(vo.getLfConditions());
         }
 
 
@@ -1563,30 +1590,37 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private void setBpmnTemplateVosFromJson(BpmnConfVo bpmnConfVo, BpmnConfConfigJson confConfig) {
         List<BpmnTemplateVo> templateVos = new ArrayList<>();
         for (BpmnConfConfigJson.ConfTemplateConf tc : confConfig.getConfTemplates()) {
-            BpmnTemplateVo vo = BpmnTemplateVo.builder()
-                    .event(tc.getEvent())
-                    .informs(tc.getInforms())
-                    .emps(tc.getEmps())
-                    .roles(tc.getRoles())
-                    .funcs(tc.getFuncs())
-                    .templateId(tc.getTemplateId())
-                    .formCode(tc.getFormCode())
-                    .build();
-            // enrich with display names (same logic as buildBpmnTemplateVo)
-            vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
-            if (!StringUtils.isEmpty(vo.getInforms())) {
-                vo.setInformIdList(Arrays.stream(vo.getInforms().split(",")).collect(Collectors.toList()));
-                vo.setInformList(vo.getInformIdList().stream()
-                        .map(o -> BaseIdTranStruVo.builder().id(o).name(InformEnum.getDescByByCode(Integer.parseInt(o))).build())
-                        .collect(Collectors.toList()));
+            BpmnTemplateVo vo = new BpmnTemplateVo();
+            vo.setEvent(tc.getEvent());
+            vo.setTemplateId(tc.getTemplateId());
+            vo.setFormCode(tc.getFormCode());
+
+            if (!CollectionUtils.isEmpty(tc.getInformIdList())) {
+                vo.setInformIdList(tc.getInformIdList());
+                vo.setInforms(String.join(",", tc.getInformIdList()));
             }
-            if (!StringUtils.isEmpty(vo.getEmps())) {
-                vo.setEmpIdList(Arrays.stream(vo.getEmps().split(",")).collect(Collectors.toList()));
-                Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
-                vo.setEmpList(vo.getEmpIdList().stream()
-                        .map(o -> BaseIdTranStruVo.builder().id(o).name(employeeInfo.get(o)).build())
-                        .collect(Collectors.toList()));
+
+            if (!CollectionUtils.isEmpty(tc.getEmpList())) {
+                vo.setEmpList(tc.getEmpList());
+                if (!CollectionUtils.isEmpty(vo.getEmpIdList())) {
+                    vo.setEmps(String.join(",", vo.getEmpIdList()));
+                }
             }
+
+            if (!CollectionUtils.isEmpty(tc.getRoleList())) {
+                vo.setRoleList(tc.getRoleList());
+                if (!CollectionUtils.isEmpty(vo.getRoleIdList())) {
+                    vo.setRoles(String.join(",", vo.getRoleIdList()));
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(tc.getFuncList())) {
+                vo.setFuncList(tc.getFuncList());
+                if (!CollectionUtils.isEmpty(vo.getFuncIdList())) {
+                    vo.setFuncs(String.join(",", vo.getFuncIdList()));
+                }
+            }
+
             if (!StringUtils.isEmpty(tc.getMessageSendType())) {
                 String[] messageSendTypesStr = tc.getMessageSendType().split(",");
                 List<BaseNumIdStruVo> messageSendTypes = Arrays.stream(messageSendTypesStr)
@@ -1594,14 +1628,36 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                         .collect(Collectors.toList());
                 vo.setMessageSendTypeList(messageSendTypes);
             }
-            vo.setTemplateName(Optional
-                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
-                    .orElse(new InformationTemplate())
-                    .getName());
+
+            hydrateBpmnTemplateVo(vo);
             templateVos.add(vo);
         }
         bpmnConfVo.setTemplateVos(templateVos);
     }
+
+    private void hydrateBpmnTemplateVo(BpmnTemplateVo vo) {
+        if (vo.getEvent() != null) {
+            vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
+        }
+        if (!CollectionUtils.isEmpty(vo.getInformIdList())) {
+            vo.setInformList(vo.getInformIdList().stream()
+                    .map(o -> BaseIdTranStruVo.builder().id(o).name(InformEnum.getDescByByCode(Integer.parseInt(o))).build())
+                    .collect(Collectors.toList()));
+        }
+        if (CollectionUtils.isEmpty(vo.getEmpList()) && !CollectionUtils.isEmpty(vo.getEmpIdList())) {
+            Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
+            vo.setEmpList(vo.getEmpIdList().stream()
+                    .map(o -> BaseIdTranStruVo.builder().id(o).name(employeeInfo.get(o)).build())
+                    .collect(Collectors.toList()));
+        }
+        if (vo.getTemplateId() != null && vo.getTemplateId() > 0) {
+            vo.setTemplateName(Optional
+                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
+                    .orElse(new InformationTemplate())
+                    .getName());
+        }
+    }
+
 
     /**
      * convert volist
@@ -1834,6 +1890,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsCarbonCopyNode(true);
             }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.automaticNode.getLabelValue())){
+                bpmnNodeVo.setDeduplicationExclude(true);
+                bpmnNodeVo.setIsAutomaticNode(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
 
         }
@@ -1863,11 +1923,20 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (bsConf != null && !CollectionUtils.isEmpty(bsConf.getButtonConfList())) {
             BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
             buttons.setStartPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 1).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 1)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setApprovalPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 2).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 2)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setViewPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 3).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 3)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             bpmnNodeVo.setButtons(buttons);
         }
 
@@ -1878,40 +1947,51 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         BpmnNodeTemplateConfJson tcConf = nodeConfig.getTemplateConf();
         if (tcConf != null && !CollectionUtils.isEmpty(tcConf.getTemplates())) {
             List<BpmnTemplateVo> templateVos = tcConf.getTemplates().stream().map(t -> {
-                BpmnTemplateVo vo = BpmnTemplateVo.builder()
-                        .event(t.getEvent())
-                        .informs(t.getInforms())
-                        .emps(t.getEmps())
-                        .roles(t.getRoles())
-                        .funcs(t.getFuncs())
-                        .templateId(t.getTemplateId())
-                        .formCode(t.getFormCode())
-                        .build();
+                BpmnTemplateVo vo =new  BpmnTemplateVo();
+                vo.setEvent(t.getEvent());
+                List<String> informIdList = t.getInformIdList();
+                List<BaseIdTranStruVo> empList = t.getEmpList();
+                List<BaseIdTranStruVo> roleList = t.getRoleList();
+                List<BaseIdTranStruVo> funcList = t.getFuncList();
+                if(!CollectionUtils.isEmpty(informIdList)){
+                   vo.setInforms(String.join(",",informIdList));
+                   vo.setInformIdList(informIdList);
+                }
+                if(!CollectionUtils.isEmpty(empList)){
+                    List<String> empIds=new ArrayList<>();
+                    empList.forEach(a->empIds.add(a.getId()));
+                    vo.setEmps(String.join(",",empIds));
+                    vo.setEmpIdList(empIds);
+                    vo.setEmpList(empList);
+                }
+                if(!CollectionUtils.isEmpty(roleList)){
+                    List<String> roleIds=new ArrayList<>();
+                    roleList.forEach(a->roleIds.add(a.getId()));
+                    vo.setRoles(String.join(",",roleIds));
+                    vo.setRoleIdList(roleIds);
+                    vo.setRoleList(roleList);
+                }
+                if(!CollectionUtils.isEmpty(funcList)){
+                    List<String> funcIds=new ArrayList<>();
+                    funcList.forEach(a->funcIds.add(a.getId()));
+                    vo.setFuncs(String.join(",",funcIds));
+                    vo.setFuncIdList(funcIds);
+                    vo.setFuncList(funcList);
+                }
+                String messageSendType = t.getMessageSendType();
+                if(!StringUtils.isEmpty(messageSendType)){
+                    List<BaseNumIdStruVo> messageSendTypeList=new ArrayList<>();
+                    String[] split = messageSendType.split(",");
+                    for (String s : split) {
+                        Long id=Long.parseLong(s);
+                        MessageSendTypeEnum enumByCode = MessageSendTypeEnum.getEnumByCode(id.intValue());
+                        String typeName=Optional.ofNullable(enumByCode).map(MessageSendTypeEnum::getDesc).orElse(null);
+                        messageSendTypeList.add(BaseNumIdStruVo.builder().id(id).name(typeName).build());
+                    }
+                    vo.setMessageSendTypeList(messageSendTypeList);
+                }
+                vo.setTemplateId(t.getTemplateId());
                 vo.setEventValue(EventTypeEnum.getDescByByCode(vo.getEvent()));
-                if (!StringUtils.isEmpty(vo.getInforms())) {
-                    vo.setInformIdList(Arrays.stream(vo.getInforms().split(",")).collect(Collectors.toList()));
-                    vo.setInformList(vo.getInformIdList().stream()
-                            .map(o -> BaseIdTranStruVo.builder().id(o).name(InformEnum.getDescByByCode(Integer.parseInt(o))).build())
-                            .collect(Collectors.toList()));
-                }
-                if (!StringUtils.isEmpty(vo.getEmps())) {
-                    vo.setEmpIdList(Arrays.stream(vo.getEmps().split(",")).collect(Collectors.toList()));
-                    Map<String, String> employeeInfo = employeeInfoProvider.provideEmployeeInfo(vo.getEmpIdList());
-                    vo.setEmpList(vo.getEmpIdList().stream()
-                            .map(o -> BaseIdTranStruVo.builder().id(o).name(employeeInfo.get(o)).build())
-                            .collect(Collectors.toList()));
-                }
-                if (!StringUtils.isEmpty(t.getMessageSendType())) {
-                    String[] messageSendTypesStr = t.getMessageSendType().split(",");
-                    List<BaseNumIdStruVo> messageSendTypes = Arrays.stream(messageSendTypesStr)
-                            .map(a -> BaseNumIdStruVo.builder().id(Long.parseLong(a)).name(MessageSendTypeEnum.getEnumByCode(Integer.parseInt(a)).getDesc()).active(true).build())
-                            .collect(Collectors.toList());
-                    vo.setMessageSendTypeList(messageSendTypes);
-                }
-                vo.setTemplateName(Optional
-                        .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
-                        .orElse(new InformationTemplate())
-                        .getName());
                 return vo;
             }).collect(Collectors.toList());
             bpmnNodeVo.setTemplateVos(templateVos);
@@ -1960,18 +2040,23 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             bpmnNodeVo.setProperty(propertysVo);
         }
 
-        // set field controls from lowCodeConf
+        // set field controls and formHidden from lowCodeConf
         BpmnNodeLowCodeConfJson lowCodeConf = nodeConfig.getLowCodeConf();
-        if (lowCodeConf != null && !CollectionUtils.isEmpty(lowCodeConf.getFieldControls())) {
-            List<LFFieldControlVO> fieldControlVOS = lowCodeConf.getFieldControls().stream().map(fc -> {
-                LFFieldControlVO vo = new LFFieldControlVO();
-                vo.setFormdataId(fc.getFormdataId());
-                vo.setFieldId(fc.getFieldId());
-                vo.setFieldName(fc.getFieldName());
-                vo.setPerm(fc.getPerm());
-                return vo;
-            }).collect(Collectors.toList());
-            bpmnNodeVo.setLfFieldControlVOs(fieldControlVOS);
+        if (lowCodeConf != null) {
+            if (!CollectionUtils.isEmpty(lowCodeConf.getFieldControls())) {
+                List<LFFieldControlVO> fieldControlVOS = lowCodeConf.getFieldControls().stream().map(fc -> {
+                    LFFieldControlVO vo = new LFFieldControlVO();
+                    vo.setFormdataId(fc.getFormdataId());
+                    vo.setFieldId(fc.getFieldId());
+                    vo.setFieldName(fc.getFieldName());
+                    vo.setPerm(fc.getPerm());
+                    return vo;
+                }).collect(Collectors.toList());
+                bpmnNodeVo.setLfFieldControlVOs(fieldControlVOS);
+            }
+            if (lowCodeConf.getFormHidden() != null) {
+                bpmnNodeVo.setFormHidden(lowCodeConf.getFormHidden());
+            }
         }
 
         // set labels from buttonSignConf
@@ -1983,7 +2068,15 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsCarbonCopyNode(true);
             }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.prevNodeAppointed.getLabelValue())){
+                bpmnNodeVo.setIsPrevNodeAppointed(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
+        }
+
+        // set autoNodeConf from node config JSON (for auto node display)
+        if (nodeConfig.getAutoNodeConf() != null) {
+            bpmnNodeVo.setAutoNodeConf(nodeConfig.getAutoNodeConf());
         }
 
         return bpmnNodeVo;
@@ -2025,13 +2118,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param buttonPageTypeEnum
      * @return
      */
-    private List<Integer> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
+    private List<BpmnConfCommonButtonPropertyVo> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
         return bpmnNodeButtonConfs
                 .stream()
                 .filter(o -> o.getButtonPageType().intValue() == buttonPageTypeEnum.getCode())
-                .map(BpmnNodeButtonConf::getButtonType)
-                .collect(Collectors.toList())
-                .stream()
+                .map(o -> BpmnConfCommonButtonPropertyVo.builder()
+                        .buttonType(o.getButtonType())
+                        .buttonName(o.getButtonName())
+                        .build())
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -2248,6 +2342,19 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
                     if (actionType == 0 || actionType == 1)//change assignee
                     {
+                        // 检查当前 ACT_RU_TASK 里该节点的 assignee 是否还等于转办的 actual（张三）。
+                        //- 等于 → 转办还在生效 → 预览显示张三
+                        //- 不等于 → 转办已失效 → 预览显示小马
+                        List<Task> tasks = taskService.createTaskQuery()
+                                .processInstanceId(procInstId)
+                                .taskDefinitionKey(bpmFlowrunEntrust.getRuntaskid())
+                                .list();
+                        boolean transferStillActive = tasks.stream()
+                                .anyMatch(t -> bpmFlowrunEntrust.getActual().equals(t.getAssignee()));
+                        if (!transferStillActive) {
+                            continue;
+                        }
+
                         BaseIdTranStruVo matchEmp = emplList.stream().filter(a-> a.getId().equals(bpmFlowrunEntrust.getOriginal())).findFirst().orElse(null);
                         if (matchEmp == null)
                         {

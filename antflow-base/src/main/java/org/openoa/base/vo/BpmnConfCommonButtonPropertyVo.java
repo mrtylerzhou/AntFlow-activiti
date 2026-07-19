@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @since 0.5
  * @author AntFlow
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BpmnConfCommonButtonPropertyVo {
+public class BpmnConfCommonButtonPropertyVo  implements Serializable {
 
     /**
      * button type

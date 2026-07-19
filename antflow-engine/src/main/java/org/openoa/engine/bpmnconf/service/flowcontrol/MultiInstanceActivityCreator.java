@@ -119,7 +119,17 @@ public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport 
 
 		TaskActivityBehavior innerBehavior;
 		ActivityBehavior prototypeActivityActivityBehavior = prototypeActivity.getActivityBehavior();
-		if(prototypeActivityActivityBehavior instanceof MultiInstanceActivityBehavior){
+		String cloneActivityName = radei.getCloneActivityName();
+		if (cloneActivityName != null && cloneActivityName.trim().length() > 0) {
+			//指定了自定义节点名称:始终克隆TaskDefinition,避免影响原型节点,并设置自定义名称表达式
+			TaskDefinition prototypeTaskDef = prototypeInner.getTaskDefinition();
+			TaskDefinition newTaskDef = cloneTaskDefinition(prototypeTaskDef);
+			ProcessEngineConfigurationImpl processEngineConfig = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
+			newTaskDef.setAssigneeExpression(ExpressionUtils.stringToExpression(processEngineConfig, "${" + newVarName + "}"));
+			String newExp = isSequential ? cloneActivityName + "-" + "${" + "(loopCounter + 1)}" : cloneActivityName;
+			newTaskDef.setNameExpression(ExpressionUtils.stringToExpression(processEngineConfig, newExp));
+			innerBehavior = new UserTaskActivityBehavior(prototypeActivity.getId(), newTaskDef);
+		} else if(prototypeActivityActivityBehavior instanceof MultiInstanceActivityBehavior){
 			if (prototypeActivityActivityBehavior instanceof SequentialMultiInstanceBehavior) {
 				TaskDefinition prototypeTaskDef = prototypeInner.getTaskDefinition();
 				TaskDefinition newTaskDef = cloneTaskDefinition(prototypeTaskDef);

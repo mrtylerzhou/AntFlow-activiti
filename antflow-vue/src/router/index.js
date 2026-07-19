@@ -191,6 +191,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/flowDebug",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowDebug",
+        component: () => import("@/views/workflow/flowDebug/index"),
+        name: "flowDebug",
+        meta: {
+          title: "流程调试",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,
@@ -285,6 +302,68 @@ export const dynamicRoutes = [
           import("@/views/workflow/flowTask/instance/flowChangeSign"),
         name: "changeSign",
         meta: { title: "变更审批人", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
+    path: "/system/lfForm-design",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/system/lfForm-design",
+        component: () => import("@/views/system/lfForm/design"),
+        name: "lfForm-design",
+        meta: {
+          title: "表单设计",
+          activeMenu: "/flowDevOps/lfForm",
+        },
+      },
+    ],
+  },
+  {
+    path: "/workflow/instance/addNode",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowAddNode"),
+        name: "addNode",
+        meta: { title: "流程增加节点", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
+    path: "/workflow/instance/fastForward",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowFastForward"),
+        name: "fastForward",
+        meta: { title: "流程推进", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
+    path: "/workflow/instance/removeNode",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowRemoveNode"),
+        name: "removeNode",
+        meta: { title: "流程删除节点", activeMenu: "/workflow/instance" },
       },
     ],
   },

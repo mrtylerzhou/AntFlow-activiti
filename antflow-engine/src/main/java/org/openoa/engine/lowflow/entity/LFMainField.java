@@ -28,6 +28,8 @@ public class LFMainField implements TenantField, Serializable {
     private Long mainId;
     @TableField("form_code")
     private String formCode;
+    @TableField("formdata_id")
+    private Long formdataId;
     @TableField("field_id")
     private String fieldId;
     @TableField("field_name")
@@ -79,6 +81,13 @@ public class LFMainField implements TenantField, Serializable {
 
 
     public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId,String formCode){
+        return parseFromMap(fieldMap, fieldConfigMap, mainId, formCode, null);
+    }
+
+    /**
+     * 多表单重载: 额外传入 formdataId 以区分表单版本
+     */
+    public static List<LFMainField> parseFromMap(Map<String,Object> fieldMap, Map<String,BpmnConfLfFormdataField> fieldConfigMap, Long mainId,String formCode, Long formdataId){
         if(CollectionUtils.isEmpty(fieldMap)){
             throw new AFBizException("form data has no value");
         }
@@ -117,10 +126,10 @@ public class LFMainField implements TenantField, Serializable {
             }
             if(fieldConfig==null){
                 continue;
-                //throw new JiMuBizException(Strings.lenientFormat("field %s has no config",fieldId));
             }
             LFMainField mainField = buildMainField(value, mainId, 0, fieldConfig);
             mainField.setFormCode(formCode);
+            mainField.setFormdataId(formdataId);
             mainFields.add(mainField);
         }
         return mainFields;

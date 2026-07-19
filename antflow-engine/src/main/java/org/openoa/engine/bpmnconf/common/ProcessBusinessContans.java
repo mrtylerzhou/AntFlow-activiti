@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,6 +120,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 viewNodeIds=list.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
             }
             processInfoVo.setTaskId(list.get(0).getId());
+            processInfoVo.setFormKey(list.get(0).getFormKey());
             processInfoVo.setViewNodeIds(viewNodeIds);
             processInfoVo.setNodeId(taskDefKey);
 
@@ -187,6 +189,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 List<LFFieldControlVO> currentFieldControls = getFieldControlsFromNodeJson(Long.valueOf(nodeId));
 
                 processInfoVo.setLfFieldControlVOs(currentFieldControls);
+                processInfoVo.setFormHidden(getFormHiddenFromNodeJson(Long.valueOf(nodeId)));
             }
         }
         return processInfoVo;
@@ -370,5 +373,23 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
             result.add(vo);
         }
         return result;
+    }
+
+    /**
+     * 读取节点级整表隐藏标记(外部表单模式)
+     */
+    private Map<String, Boolean> getFormHiddenFromNodeJson(Long nodeId) {
+        if (nodeId == null) {
+            return null;
+        }
+        BpmnNode node = bpmnNodeService.getById(nodeId);
+        if (node == null || StringUtils.isEmpty(node.getNodeConfigJson())) {
+            return null;
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+        if (nodeConfig == null || nodeConfig.getLowCodeConf() == null) {
+            return null;
+        }
+        return nodeConfig.getLowCodeConf().getFormHidden();
     }
 }

@@ -27,7 +27,8 @@ public enum PersonnelEnum {
     DEPARTMENT_LEADER_PERSONNEL(NODE_PROPERTY_DEPARTMENT_LEADER,"部门负责人"),
     APPROVED_USERS_PERSONNEL(NODE_PROPERTY_APPROVED_USERS,"被审批人自己"),
     FORM_USERS_PERSONNEL(NODE_PROPERTY_FORM_RELATED,"表单上下文人员"),
-    UDR_USERS_PERSONNEL(NODE_PROPERTY_ZDY_RULES,"用户自定义规则人员")
+    UDR_USERS_PERSONNEL(NODE_PROPERTY_ZDY_RULES,"用户自定义规则人员"),
+    PREV_NODE_USERS_PERSONNEL(NODE_PROPERTY_PREV_NODE_RELATED,"上一节点上下文人员")
     ;
     PersonnelEnum(NodePropertyEnum nodePropertyEnum,  String desc){
         this.nodePropertyEnum = nodePropertyEnum;

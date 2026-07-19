@@ -20,6 +20,7 @@ public class StringConstants {
     public static final String DB_NAME_2="jimu_biz";
     public static final String DRUID_POOL_NAME_PREFIX="druidDataSourcePool_";
     public static final String DB_TRANSACTION_MANAGERNAME_SUFFIX="transactionmanager";
+    public static final String NEXT_NODE_APPROVER="nextNodeApprover";
 
     public static final String CURRENT_USER_ALREADY_PROCESSED="currentUserAlreadyProcessed";
 
@@ -48,10 +49,19 @@ public class StringConstants {
     public static final String LASTNODE_COPY="af_syslabel_lastnode_copy";
     public static final String EXPRESSION_FIELD_NAME="expression";
     public static final String AUTOMATIC_NODE="auto_node";
+    public static final String CONDITION_APPROVE_NODE="condition_approve_node";
+    public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
+    /**当前节点为"上一节点指定"审批人类型时贴此标签,触发运行时替换虚拟审批人*/
+    public static final String AF_SYSLABEL_PREV_NODE_APPOINTED="af_syslabel_prev_node_appointed";
+    /**上一节点贴此标签,审批页渲染[指定下一节点审批人]按钮*/
+    public static final String AF_SYSLABEL_APPOINT_NEXT_NODE_APPROVER="af_syslabel_appoint_next_node_approver";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
+    public static final String AF_AUTO_EVALUATE_SKIP_COMMENT ="自动节点自动跳过,条件评估结果:%s";
+    public static final String AF_CONDITION_APPROVE_AUTO_PASS_COMMENT ="条件审批自动通过,条件评估结果:%s";
+    public static final String AF_CONDITION_COPY_SKIP_COMMENT ="条件抄送跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";
     public static final String AF_NODE_OR_SIGN_SUFFIX ="\uD83D\uDD02";

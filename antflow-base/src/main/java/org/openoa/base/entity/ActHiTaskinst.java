@@ -75,4 +75,7 @@ public class ActHiTaskinst {
 
     @TableField("TENANT_ID_")
     private String tenantId;
+
+    @TableField("NODE_ID_")
+    private String nodeId;
 }
