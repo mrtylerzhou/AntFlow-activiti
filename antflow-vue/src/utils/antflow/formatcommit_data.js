@@ -178,6 +178,13 @@ export class FormatCommitUtils {
           approveObj.udrValueJson = node.property.udrValueJson ?? null;
         } else if (node.setType == 18) {
           approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
+        } else if (node.setType == 2) {
+          // 层层审批: loop 字段必须显式写入 approveObj, 否则 node.property = approveObj 会丢失
+          approveObj.signType = 3;
+          approveObj.loopEndType = node.property?.loopEndType || 1;
+          approveObj.loopNumberPlies = node.property?.loopNumberPlies || 1;
+          approveObj.loopEndPersonList = node.property?.loopEndPersonList || [];
+          approveObj.loopEndGrade = node.property?.loopEndGrade || 0;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;

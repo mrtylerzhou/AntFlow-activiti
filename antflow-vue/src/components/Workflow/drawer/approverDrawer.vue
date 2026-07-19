@@ -61,6 +61,32 @@
                             <p class="tip">找不到主管时，由上级主管代审批</p>
                         </div>
 
+                        <div v-if="approverConfig.setType == 2">
+                            <div style="margin-bottom: 12px;">
+                                <span>结束条件：</span>
+                                <el-radio-group v-model="loopEndType" @change="changeLoopEndType">
+                                    <el-radio :value="1">按层级数</el-radio>
+                                    <el-radio :value="2">按结束人</el-radio>
+                                </el-radio-group>
+                            </div>
+                            <div v-if="loopEndType == 1" style="margin-bottom: 12px;">
+                                <span>向上审批层数：</span>
+                                <el-input-number v-model="loopNumberPlies" :min="1" :max="20"
+                                    style="width: 200px" />
+                            </div>
+                            <div v-if="loopEndType == 2" style="margin-bottom: 12px;">
+                                <el-button type="primary" plain icon="Plus"
+                                    @click="addLoopEndPerson">选择结束人</el-button>
+                                <div class="gap-2">
+                                    <el-tag v-for="(item, index) in loopEndPersonList" :key="item.targetId"
+                                        size="large" closable
+                                        @close="removeLoopEndPerson(index)">
+                                        {{ item.name }}
+                                    </el-tag>
+                                </div>
+                            </div>
+                        </div>
+
                         <div v-if="approverConfig.setType == 6">
                             <div>
                                 <span>HRBP选择：</span>
@@ -145,7 +171,7 @@
                             </template>
                         </div>
                     </div>
-                    <div class="approver_block">
+                    <div class="approver_block" v-if="approverConfig.setType != 2">
                         <p>✍多人审批时采用的审批方式</p>
                         <el-radio-group v-model="approverConfig.signType" class="clear">
                             <el-radio :value="1">会签（需所有审批人同意，不限顺序）</el-radio>
@@ -290,6 +316,7 @@
         <select-role-dialog v-model:visible="approverRoleVisible" :data="checkedRoleList" @change="sureRoleApprover" />
         <select-user-dialog v-model:visible="extraUserVisible" :data="extraUserList" @change="confirmExtraUser" />
         <select-role-dialog v-model:visible="extraRoleVisible" :data="extraRoleList" @change="confirmExtraRole" />
+        <select-user-dialog v-model:visible="loopEndPersonVisible" :data="loopEndPersonCheckedList" @change="confirmLoopEndPerson" />
     </el-drawer>
 </template>
 <script setup>
@@ -387,6 +414,13 @@ let extraRoleList = ref([]);
 let currentEditPropertyType = ref(1); // 1:增加, 2:排除
 let currentEditNodeProperty = ref(5); // 5:指定人员, 4:指定角色
 
+// 层层审批 (setType == 2) 状态
+let loopEndType = ref(1); // 1=按层级数, 2=按结束人
+let loopNumberPlies = ref(1);
+let loopEndPersonList = ref([]); // [{targetId, name}]
+let loopEndPersonVisible = ref(false);
+let loopEndPersonCheckedList = ref([]);
+
 const additionalSignInfoAddList = computed(() => {
     return (approverConfig.value?.property?.additionalSignInfoList || []).filter(a => a.propertyType == 1);
 });
@@ -452,6 +486,18 @@ watch(approverConfig, (val) => {
         initUdrOptions();
         udrSelectedId.value = approverConfig.value.property.udrAssigneeProperty?.id || null;
     }
+    if (val.setType == 2) {//setType == 2 指 层层审批
+        const prop = approverConfig.value.property || {};
+        loopEndType.value = prop.loopEndType || 1;
+        loopNumberPlies.value = prop.loopNumberPlies || 1;
+        // 回填已有人员对象
+        if (prop.loopEndPersonObjList && prop.loopEndPersonObjList.length > 0) {
+            loopEndPersonList.value = prop.loopEndPersonObjList.map(
+                item => ({ targetId: item.id, name: item.name }));
+        } else {
+            loopEndPersonList.value = [];
+        }
+    }
 }, { deep: true });
 
 
@@ -487,6 +533,15 @@ watch(udrSelectedId, (val) => {
         property.udrAssigneeProperty = null;
     }
 }, { immediate: true });
+
+/**同步层层审批 loopNumberPlies 到 approverConfig.property */
+watch(loopNumberPlies, (val) => {
+    if (approverConfig.value.setType != 2) return;
+    if (!approverConfig.value.property) {
+        approverConfig.value.property = {};
+    }
+    approverConfig.value.property.loopNumberPlies = val;
+});
 
 /**同步流程标签选择到 approverConfig.labelList */
 watch(selectedLabelValues, (vals) => {
@@ -529,6 +584,21 @@ const changeType = (val) => {
     checkedHRBP.value = '';
     if (val == 3) {
         approverConfig.value.directorLevel = 1;
+    }
+    if (val == 2) {
+        // 层层审批: 强制顺序会签，初始化 loop 字段
+        approverConfig.value.signType = 3;
+        if (!approverConfig.value.property) {
+            approverConfig.value.property = {};
+        }
+        loopEndType.value = approverConfig.value.property.loopEndType || 1;
+        loopNumberPlies.value = approverConfig.value.property.loopNumberPlies || 1;
+        loopEndPersonList.value = [];
+        // 回填已有的人员列表
+        if (approverConfig.value.property.loopEndPersonObjList) {
+            loopEndPersonList.value = approverConfig.value.property.loopEndPersonObjList.map(
+                item => ({ targetId: item.id, name: item.name }));
+        }
     }
     if (val == 16) {
         initFormInfoOptions();
@@ -665,6 +735,48 @@ const confirmExtraRole = (data) => {
     const signInfos = data.map(item => ({ id: item.targetId ?? item.id, name: item.name }));
     setExtraSignInfos(currentEditPropertyType.value, currentEditNodeProperty.value, signInfos);
     extraRoleVisible.value = false;
+}
+
+/**层层审批: 切换结束类型 */
+const changeLoopEndType = (val) => {
+    loopEndType.value = val;
+    if (!approverConfig.value.property) {
+        approverConfig.value.property = {};
+    }
+    approverConfig.value.property.loopEndType = val;
+    if (val == 1) {
+        // 切到按层级数，清空结束人
+        loopEndPersonList.value = [];
+        approverConfig.value.property.loopEndPersonList = [];
+    } else {
+        // 切到按结束人，清空层数
+        loopNumberPlies.value = 1;
+        approverConfig.value.property.loopNumberPlies = 1;
+    }
+}
+
+/**层层审批: 打开结束人选择弹窗 */
+const addLoopEndPerson = () => {
+    loopEndPersonCheckedList.value = [...loopEndPersonList.value];
+    loopEndPersonVisible.value = true;
+}
+
+/**层层审批: 确认结束人 */
+const confirmLoopEndPerson = (data) => {
+    loopEndPersonList.value = data;
+    if (!approverConfig.value.property) {
+        approverConfig.value.property = {};
+    }
+    approverConfig.value.property.loopEndPersonList = data.map(item => item.targetId ?? item.id);
+    loopEndPersonVisible.value = false;
+}
+
+/**层层审批: 移除结束人 */
+const removeLoopEndPerson = (index) => {
+    loopEndPersonList.value.splice(index, 1);
+    if (approverConfig.value.property) {
+        approverConfig.value.property.loopEndPersonList = loopEndPersonList.value.map(item => item.targetId ?? item.id);
+    }
 }
 
 /**处理权限按钮变更事件 */

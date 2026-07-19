@@ -218,6 +218,21 @@ export class FormatDisplayUtils {
           }
         } else if (node.nodeProperty == 3) {
           node.directorLevel = node.property.assignLevelGrade;
+        } else if (node.nodeProperty == 2) {
+          // 层层审批: 回填 loop 字段和人员对象到 property 供 drawer 使用
+          const prop = node.property || {};
+          node.property = {
+            ...prop,
+            loopEndType: prop.loopEndType || 1,
+            loopNumberPlies: prop.loopNumberPlies || 1,
+            loopEndGrade: prop.loopEndGrade,
+            loopEndPersonList: prop.loopEndPersonList || [],
+            loopEndPersonObjList: (prop.loopEndPersonObjList || []).map(
+              item => ({ id: item.id, name: item.name })),
+            noparticipatingStaffIds: prop.noparticipatingStaffIds || [],
+            noparticipatingStaffs: (prop.noparticipatingStaffs || []).map(
+              item => ({ id: item.id, name: item.name })),
+          };
         }
         Object.assign(node, { signType: node.property?.signType });
         node.setType = node.nodeProperty;

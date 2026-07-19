@@ -59,9 +59,10 @@ public class NodePropertyLoopAdp implements BpmnNodeAdaptor {
                     .noparticipatingStaffs(noparticipatingStaffs)
                     .build());
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.LOOP_NODE.getCode());
+            return;
         }
 
-        throw new AFBizException("migration error,please contact the author");
+        // No JSON config available, skip (DB fallback not implemented)
     }
 
     @Override
