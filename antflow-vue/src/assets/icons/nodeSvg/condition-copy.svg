@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: currentColor; }
+            .white { fill: #FFFFFF; }
+            /* 隔离层：用于切开纸飞机 wing 的白色背景 */
+            .mask-bg { fill: #FFFFFF; }
+        </style>
+    </defs>
+
+    <!-- 1. 纸飞机部分 (根据你提供的路径缩放并居中) -->
+    <g id="paper-plane" transform="translate(4, 4) scale(0.4)">
+        <path class="main" d="M1.482 70.131l36.204 16.18 69.932-65.485-61.38 70.594 46.435 18.735c1.119.425 2.397-.17 2.797-1.363v-.085L127.998.047 1.322 65.874c-1.12.597-1.519 1.959-1.04 3.151.32.511.72.937 1.2 1.107zm44.676 57.821L64.22 107.26l-18.062-7.834v28.527z"/>
+    </g>
+
+    <!-- 2. 右下角过滤状态标识 -->
+    <g transform="translate(46, 46)">
+        <!-- 核心隔离层：白色大圆，确保纸飞机翅膀被干净地切断 -->
+        <circle class="mask-bg" cx="0" cy="0" r="16" />
+        
+        <!-- 橙色圆形底座 -->
+        <circle class="main" cx="0" cy="0" r="13" />
+        
+        <!-- 白色漏斗图标 (基于之前的漏斗比例缩小) -->
+        <path class="white" d="
+            M -6, -6 
+            H 6 
+            L 2, 0 
+            V 5 
+            L -2, 6 
+            V 0 
+            Z" />
+        <!-- 漏斗顶部的圆角横条 -->
+        <rect class="white" x="-6" y="-7" width="12" height="2.5" rx="1" />
+    </g>
+
+</svg>

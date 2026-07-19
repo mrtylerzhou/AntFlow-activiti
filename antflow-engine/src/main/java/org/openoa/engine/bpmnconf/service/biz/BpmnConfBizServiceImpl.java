@@ -191,6 +191,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                    nodeLabelVO = NodeLabelConstants.copyNodeV2;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutomaticNode())){
                     nodeLabelVO=NodeLabelConstants.automaticNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionApproveNode())){
+                    nodeLabelVO=NodeLabelConstants.conditionApproveNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionCopyNode())){
+                    nodeLabelVO=NodeLabelConstants.conditionCopyNode;
                 }
                if(nodeLabelVO!=null){
                    bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
@@ -1919,11 +1923,20 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (bsConf != null && !CollectionUtils.isEmpty(bsConf.getButtonConfList())) {
             BpmnNodeButtonConfBaseVo buttons = new BpmnNodeButtonConfBaseVo();
             buttons.setStartPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 1).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 1)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setApprovalPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 2).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 2)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             buttons.setViewPage(bsConf.getButtonConfList().stream()
-                    .filter(b -> b.getButtonPageType() == 3).map(BpmnNodeButtonSignConfJson.ButtonConf::getButtonType).collect(Collectors.toList()));
+                    .filter(b -> b.getButtonPageType() == 3)
+                    .map(b -> BpmnConfCommonButtonPropertyVo.builder()
+                            .buttonType(b.getButtonType()).buttonName(b.getButtonName()).build())
+                    .collect(Collectors.toList()));
             bpmnNodeVo.setButtons(buttons);
         }
 
@@ -2055,6 +2068,9 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo.setDeduplicationExclude(true);
                 bpmnNodeVo.setIsCarbonCopyNode(true);
             }
+            if(NodeUtil.nodeLabelContainsAny(labelVOList,NodeLabelConstants.prevNodeAppointed.getLabelValue())){
+                bpmnNodeVo.setIsPrevNodeAppointed(true);
+            }
             bpmnNodeVo.setLabelList(labelVOList);
         }
 
@@ -2102,13 +2118,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
      * @param buttonPageTypeEnum
      * @return
      */
-    private List<Integer> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
+    private List<BpmnConfCommonButtonPropertyVo> getButtons(List<BpmnNodeButtonConf> bpmnNodeButtonConfs, ButtonPageTypeEnum buttonPageTypeEnum) {
         return bpmnNodeButtonConfs
                 .stream()
                 .filter(o -> o.getButtonPageType().intValue() == buttonPageTypeEnum.getCode())
-                .map(BpmnNodeButtonConf::getButtonType)
-                .collect(Collectors.toList())
-                .stream()
+                .map(o -> BpmnConfCommonButtonPropertyVo.builder()
+                        .buttonType(o.getButtonType())
+                        .buttonName(o.getButtonName())
+                        .build())
                 .distinct()
                 .collect(Collectors.toList());
     }

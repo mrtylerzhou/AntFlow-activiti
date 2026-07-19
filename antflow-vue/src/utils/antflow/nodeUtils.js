@@ -1,5 +1,7 @@
 //import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
+/** 将按钮类型码转为带 buttonType 字段的对象数组(与后端 BpmnConfCommonButtonPropertyVo 对应) */
+const btns = (...types) => types.map(t => ({ buttonType: t }));
 export class NodeUtils {
   /**
    * 根据自增数生成64进制id
@@ -45,9 +47,9 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [],
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       nodeApproveList: [],
       templateVos: [],
@@ -113,14 +115,60 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [], // 字段控制对象数组（初始为空）
       buttons: {
-        startPage: [1], // 开始页面可用的按钮ID数组
-        approvalPage: [3, 4, 18, 19, 21], // 审批页面可用的按钮ID数组
-        viewPage: [0],
+        startPage: btns(1), // 开始页面可用的按钮ID数组
+        approvalPage: btns(3, 4, 18, 19, 21), // 审批页面可用的按钮ID数组
+        viewPage: btns(0),
       },
       nodeApproveList: [], // 节点审批人列表（初始为空）
       templateVos: [], // 模板对象数组（初始为空）
     };
     return copyNodeV2; // 返回创建的审批节点对象
+  }
+  /**
+   * 创建办理节点（纯前端组合：一次性生成两个审批人节点）
+   * 第一个：办理人，审批页面仅保留"同意"按钮
+   * 第二个：发起人确认，审批人类型为"发起人自己"(setType=12)
+   * 两个节点串联，第二个节点的 childNode 指向传入的 child
+   * @param {Object} child - 原后续节点
+   * @returns {Object} 第一个审批人节点（其 childNode 指向第二个节点）
+   */
+  static createProcessNode(child) {
+    // 第二个节点：发起人确认
+    let confirmNode = this.createApproveNode(child);
+    confirmNode.nodeName = "发起人确认";
+    confirmNode.nodeDisplayName = "发起人确认";
+    confirmNode.setType = 12; // 发起人自己
+    confirmNode.error = false;
+
+    // 第一个节点：办理人，审批页面仅"同意"按钮
+    let processNode = this.createApproveNode(confirmNode);
+    processNode.nodeName = "办理人";
+    processNode.nodeDisplayName = "办理人";
+    processNode.buttons = {
+      startPage: btns(1),
+      approvalPage: btns(3), // 仅同意
+      viewPage: btns(0),
+    };
+
+    return processNode;
+  }
+  /**
+   * 创建自动办理节点（纯前端组合：自动节点 + 发起人确认审批人节点）
+   * 与办理节点不同，第一个节点为自动节点(nodeType=9)
+   * @param {Object} child - 原后续节点
+   * @returns {Object} 自动节点（其 childNode 指向发起人确认节点）
+   */
+  static createAutoProcessNode(child) {
+    // 第二个节点：发起人确认
+    let confirmNode = this.createApproveNode(child);
+    confirmNode.nodeName = "发起人确认";
+    confirmNode.nodeDisplayName = "发起人确认";
+    confirmNode.setType = 12; // 发起人自己
+    confirmNode.error = false;
+
+    // 第一个节点：自动节点
+    let autoProcessNode = this.createAutoNode(confirmNode);
+    return autoProcessNode;
   }
   /**
    * 创建自动节点对象
@@ -149,9 +197,9 @@ export class NodeUtils {
       },
       lfFieldControlVOs: [],
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       nodeApproveList: [
         { targetId: "-3", name: "自动节点自动跳过", type: 5 },
@@ -164,6 +212,93 @@ export class NodeUtils {
       groupRelation: false, //条件组关系 false:且 true:或
     };
     return autoNode;
+  }
+  /**
+   * 创建条件审批节点对象
+   * 本质是审批人节点(nodeType=4) + 条件配置 + condition_approve_node 标签
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 保留真实审批人
+   * 与 auto node 的差异: 保留真实审批人(非虚拟人), 仅条件满足时自动 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件审批节点
+   */
+  static createConditionApproveNode(child) {
+    let conditionApproveNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件审批",
+      nodeDisplayName: "条件审批",
+      nodeType: 12, //节点类型 12、条件审批节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人(与 approver 一致, auto node 是 false)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置(不塞虚拟人)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_approve_node", labelName: "条件审批节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件节点/自动节点相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+    };
+    return conditionApproveNode;
+  }
+  /**
+   * 创建条件抄送节点对象
+   * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理
+   * 与抄送V2 的差异: 仅条件满足时才写 BpmProcessForward 抄送记录; 无论条件如何都 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件抄送节点
+   */
+  static createConditionCopyNode(child) {
+    let conditionCopyNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件抄送",
+      nodeDisplayName: "条件抄送",
+      nodeType: 13, //节点类型 13、条件抄送节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //抄送人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选抄送人(与抄送V2 一致)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实抄送人,由用户配置(运行期由 processConditionCopyNode 设 CC_NODE)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_copy_node", labelName: "条件抄送节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件节点/自动节点/条件审批节点相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+    };
+    return conditionCopyNode;
   }
   /**
    * 创建网关对象
@@ -255,6 +390,63 @@ export class NodeUtils {
       groupRelation: false, //条件组关系 0：且 1：或
     };
     return conditionNode;
+  }
+
+  /**
+   * 克隆节点：深拷贝源节点属性，重置结构字段为新节点
+   * @param {Object} sourceNode - 要克隆的源节点
+   * @param {Object} childNode - 新节点的后续节点（即当前插入位置的 childNodeP）
+   * @returns {Object} 克隆后的新节点
+   */
+  static cloneNode(sourceNode, childNode) {
+    const cloned = JSON.parse(JSON.stringify(sourceNode));
+    cloned.nodeId = this.idGenerator();
+    cloned.nodeFrom = "";
+    cloned.nodeTo = [];
+    cloned.childNode = childNode;
+    // 使用默认名称，用户可自行修改
+    if (cloned.nodeType === 4) {
+      cloned.nodeName = "审核人";
+      cloned.nodeDisplayName = "审核人";
+    } else if (cloned.nodeType === 8) {
+      cloned.nodeName = "抄送人v2";
+      cloned.nodeDisplayName = "抄送人v2";
+    }
+    return cloned;
+  }
+
+  /**
+   * 遍历整棵节点树，收集所有指定 nodeType 的节点
+   * @param {Object} rootNode - 根节点
+   * @param {Array} targetTypes - 目标 nodeType 列表，如 [4, 8]
+   * @returns {Array} 符合条件的节点列表
+   */
+  static collectNodesByType(rootNode, targetTypes) {
+    const result = [];
+    function traverse(node) {
+      if (!node) return;
+      if (targetTypes.includes(node.nodeType)) {
+        result.push(node);
+      }
+      // 条件网关/动态网关/条件并行的 conditionNodes
+      if (node.conditionNodes && node.conditionNodes.length) {
+        for (const cond of node.conditionNodes) {
+          traverse(cond);
+        }
+      }
+      // 并行审批的 parallelNodes
+      if (node.parallelNodes && node.parallelNodes.length) {
+        for (const par of node.parallelNodes) {
+          traverse(par);
+        }
+      }
+      // 链式子节点
+      if (node.childNode) {
+        traverse(node.childNode);
+      }
+    }
+    traverse(rootNode);
+    return result;
   }
 
   /**
@@ -411,9 +603,9 @@ export class NodeUtils {
         additionalSignInfoList: [],
       },
       buttons: {
-        startPage: [1],
-        approvalPage: [3, 4, 18, 19, 21],
-        viewPage: [0],
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
       },
       error: true,
       childNode: childNode,

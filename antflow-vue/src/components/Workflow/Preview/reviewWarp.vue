@@ -83,6 +83,13 @@ function zoomOut() {
 function zoomReset() {
     resetImage()
 }
+/** 刷新流程图 */
+const refresh = () => {
+    getFlowPreviewList(viewConfig.value);
+}
+defineExpose({
+    refresh
+})
 </script>
 <style lang="scss" scoped>
 @use "@/assets/styles/antflow/workflow.scss";

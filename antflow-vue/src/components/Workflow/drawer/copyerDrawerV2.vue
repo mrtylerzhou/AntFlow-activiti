@@ -88,6 +88,14 @@
                     </div>
                 </div>
             </el-tab-pane>
+            <el-tab-pane lazy v-if="copyerConfig.nodeType === 13" label="条件设置" name="conditionStep">
+                <ConditionGroupEditor
+                    :conditionList="copyerConfig.conditionList"
+                    v-model:groupRelation="copyerConfig.groupRelation"
+                    v-model:nodeApproveList="copyerConfig.nodeApproveList">
+                    <template #tip>当满足以下条件时, 将执行抄送; 条件不满足时跳过抄送</template>
+                </ConditionGroupEditor>
+            </el-tab-pane>
             <el-tab-pane lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
                     <form-perm-conf v-if="formStepShow" default-perm="R" :show-e="false" v-model:formItems="formItems"
@@ -113,6 +121,7 @@ import selectUserDialog from '../dialog/selectUserDialog.vue'
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import FormPermConf from "./permConfig/FormPermConf.vue"
 import noticeConf from "./noticeConfig/index.vue";
+import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
 import $func from '@/utils/antflow/index'
 import { setCopyerTypes } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow'

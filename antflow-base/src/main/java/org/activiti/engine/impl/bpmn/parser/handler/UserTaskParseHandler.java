@@ -37,19 +37,35 @@ import org.apache.commons.lang3.StringUtils;
  * @author Joram Barrez
  */
 public class UserTaskParseHandler extends AbstractActivityBpmnParseHandler<UserTask> {
-  
+
   public static final String PROPERTY_TASK_DEFINITION = "taskDefinition";
-  
+
+  /** antflow extension: activity property name holding the design-time node id */
+  public static final String PROPERTY_NODE_ID = "nodeId";
+
+  /** antflow extension: custom namespace of the node id extension attribute on the user task */
+  public static final String ANTFLOW_NAMESPACE = "http://antflow.org";
+
+  /** antflow extension: name of the node id extension attribute on the user task */
+  public static final String ATTRIBUTE_NODE_ID = "nodeId";
+
   public Class< ? extends BaseElement> getHandledType() {
     return UserTask.class;
   }
-  
+
   protected void executeParse(BpmnParse bpmnParse, UserTask userTask) {
     ActivityImpl activity = createActivityOnCurrentScope(bpmnParse, userTask, BpmnXMLConstants.ELEMENT_TASK_USER);
-    
+
     activity.setAsync(userTask.isAsynchronous());
-    activity.setExclusive(!userTask.isNotExclusive()); 
-    
+    activity.setExclusive(!userTask.isNotExclusive());
+
+    // antflow extension: propagate the design-time node id (custom namespace attribute
+    // written by BpmnBuildUtils) to the activity, so that runtime tasks and history can read it
+    String nodeId = userTask.getAttributeValue(ANTFLOW_NAMESPACE, ATTRIBUTE_NODE_ID);
+    if (StringUtils.isNotEmpty(nodeId)) {
+      activity.setProperty(PROPERTY_NODE_ID, nodeId);
+    }
+
     TaskDefinition taskDefinition = parseTaskDefinition(bpmnParse, userTask, userTask.getId(), (ProcessDefinitionEntity) bpmnParse.getCurrentScope().getProcessDefinition());
     activity.setProperty(PROPERTY_TASK_DEFINITION, taskDefinition);
     activity.setActivityBehavior(bpmnParse.getActivityBehaviorFactory().createUserTaskActivityBehavior(userTask, taskDefinition));

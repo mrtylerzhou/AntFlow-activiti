@@ -69,6 +69,7 @@ CREATE TABLE `AF_HI_ACTINST`
     `END_TIME_`          datetime(3)   DEFAULT NULL,
     `DURATION_`          bigint        DEFAULT NULL,
     `TENANT_ID_`         varchar(255)  DEFAULT '',
+    `NODE_ID_`           varchar(64)   DEFAULT NULL,
     PRIMARY KEY (`ID_`),
     KEY `AF_IDX_HI_ACT_INST_START` (`START_TIME_`),
     KEY `AF_IDX_HI_ACT_INST_END` (`END_TIME_`),
@@ -124,6 +125,7 @@ CREATE TABLE `AF_HI_TASKINST`
     `FORM_KEY_`       varchar(255)   DEFAULT NULL,
     `CATEGORY_`       varchar(255)   DEFAULT NULL,
     `TENANT_ID_`      varchar(255)   DEFAULT '',
+    `NODE_ID_`        varchar(64)    DEFAULT NULL,
     PRIMARY KEY (`ID_`),
     KEY `AF_IDX_HI_TASK_INST_PROCINST` (`PROC_INST_ID_`),
     KEY `idx_assignee_name` (`ASSIGNEE_NAME`)
@@ -239,6 +241,7 @@ CREATE TABLE `AF_RU_TASK`
     `SUSPENSION_STATE_` int               DEFAULT NULL,
     `TENANT_ID_`        varchar(255)      DEFAULT '',
     `FORM_KEY_`         varchar(255)      DEFAULT NULL,
+    `NODE_ID_`          varchar(64)       DEFAULT NULL,
     PRIMARY KEY (`ID_`),
     KEY `AF_IDX_TASK_CREATE` (`CREATE_TIME_`),
     KEY `AF_FK_TASK_EXE` (`EXECUTION_ID_`),

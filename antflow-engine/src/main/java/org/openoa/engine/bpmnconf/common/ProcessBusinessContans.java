@@ -120,6 +120,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 viewNodeIds=list.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
             }
             processInfoVo.setTaskId(list.get(0).getId());
+            processInfoVo.setFormKey(list.get(0).getFormKey());
             processInfoVo.setViewNodeIds(viewNodeIds);
             processInfoVo.setNodeId(taskDefKey);
 

@@ -105,6 +105,8 @@ All.prototype = {
     } else if (nodeConfig.setType == 17) {
       const name = nodeConfig.property?.udrAssigneeProperty?.name;
       return name ? "自定义：" + name : "自定义";
+    } else if (nodeConfig.setType == 2) {
+      return "层层审批";
     } else if (nodeConfig.setType == 18) {
       const info = formPrevNodeApproverOptionSet.find(
         (item) => item.value == nodeConfig.property?.formAssigneeProperty,
@@ -371,6 +373,9 @@ All.prototype = {
         } else if (optType >= 6 && zdy1 && zdy2) {
           str += `${zdy1} ${opt1} ${showName} ${opt2} ${zdy2} ${relationTip} `;
         }
+      } else if (fieldTypeName == "expression") {
+        const engineName = columnId == "20000" ? "JUEL" : "SpEL";
+        str += `表达式(${engineName})${relationTip}`;
       } else {
         str += null;
       }
@@ -410,6 +415,83 @@ All.prototype = {
       str = str.slice(0, lastIndexOfOR) + str.slice(lastIndexOfOR + 1);
     }
     return str;
+  },
+
+  /**
+   * 格式化条件控件值 (从 autoNodeDrawer 抽出, 供 autoNodeDrawer / approverDrawer / formatcommit_data 复用)
+   * @param {Array} data - conditionList 二维数组
+   * @param {Boolean} isPreview - true: 后端→前端显示; false: 前端显示→后端存储
+   */
+  convertConditionNodeValue(data, isPreview = true) {
+    if (!data || isEmptyArray(data)) return;
+    for (let itemArray of data) {
+      let condRelationItem = itemArray[0]?.condRelation || false;
+      for (let item of itemArray) {
+        if (isEmpty(item.fieldTypeName)) {
+          continue;
+        }
+        item.condRelation = condRelationItem;
+        if (item.fieldTypeName == "radio") {
+          item.zdy1 = parseInt(item.zdy1);
+        }
+        if (item.fieldTypeName == "select" && item.multiple) {
+          if (!Array.isArray(item.zdy1) && item.zdy1.includes("[")) {
+            if (isPreview) {
+              item.zdy1 = JSON.parse(item.zdy1);
+            }
+          } else {
+            if (!isPreview) {
+              item.zdy1 = JSON.stringify(item.zdy1);
+            }
+          }
+        }
+        if (item.fieldTypeName == "select" && !item.multiple) {
+          item.zdy1 = parseInt(item.zdy1);
+        }
+        if (item.fieldTypeName == "date") {
+          item.zdy1 = parseTime(item.zdy1, "{y}-{m}-{d} {h}:{i}:{s}");
+        }
+        if (item.fieldTypeName == "time") {
+          item.zdy1 = parseTime(item.zdy1, "{y}-{m}-{d} {h}:{i}:{s}");
+        }
+        if (item.optType == "6") {
+          if (item.opt1 == "≤" && item.opt2 == "<") {
+            item.optType = "7";
+          } else if (item.opt1 == "<" && item.opt2 == "≤") {
+            item.optType = "8";
+          } else if (item.opt1 == "≤" && item.opt2 == "≤") {
+            item.optType = "9";
+          } else {
+            item.optType = "6";
+          }
+        } else if (item.optType == "7" || item.optType == "8" || item.optType == "9") {
+          item.optType = "6";
+        }
+      }
+    }
+  },
+
+  /**
+   * 构建条件显示文本 (从 autoNodeDrawer 抽出)
+   * @param {Array} conditionList - 条件组数组
+   * @param {Boolean} groupRelation - 组间关系 false:且 true:或
+   * @returns {String}
+   */
+  buildConditionDisplayText(conditionList, groupRelation) {
+    if (!conditionList || conditionList.length === 0) return "";
+    let texts = [];
+    for (let group of conditionList) {
+      let groupTexts = [];
+      for (let item of group) {
+        if (item.showName && item.zdy1) {
+          groupTexts.push(item.showName + ":" + item.zdy1);
+        }
+      }
+      if (groupTexts.length > 0) {
+        texts.push(groupTexts.join(" 且 "));
+      }
+    }
+    return texts.length > 0 ? texts.join(groupRelation ? " 或 " : " 且 ") : "";
   },
 };
 

@@ -13,7 +13,7 @@
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
                 <template v-else>
                     <svg-icon icon-class="copy-user" class="iconfont" v-if="nodeConfig.nodeType == 6" />
-                    <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8" />
+                    <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8 || nodeConfig.nodeType == 13" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -208,6 +208,8 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 9) return $func.autoNodeConditionStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 13) return $func.setCopyStrV2(props.nodeConfig);
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -450,7 +452,7 @@ const setNodeInfo = (index) => {
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4) {
+    } else if (nodeType == 4 || nodeType == 12) {
         setApprover(true);
         setApproverConfig({
             value: {
@@ -478,7 +480,7 @@ const setNodeInfo = (index) => {
             id: _uid,
         });
     }
-    else if (nodeType == 8) {
+    else if (nodeType == 8 || nodeType == 13) {
         setCopyerV2(true);
         setCopyerConfigV2({
             value: JSON.parse(JSON.stringify(props.nodeConfig)),

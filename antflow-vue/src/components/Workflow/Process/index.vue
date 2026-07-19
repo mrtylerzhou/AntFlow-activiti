@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import { useStore } from '@/store/modules/workflow'
 import { nodeTypeList } from '@/utils/antflow/const'
 import errorDialog from "@/components/Workflow/dialog/errorDialog.vue";
@@ -53,6 +53,7 @@ let tipVisible = ref(false);
 let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
+provide('rootNode', nodeConfig);
 onMounted(async () => {
     zoomInit(antflowDesignRef, boxScaleRef, (val) => {
         nowVal.value = val

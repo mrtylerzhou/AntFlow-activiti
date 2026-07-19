@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openoa.BaseTest;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.BpmnConfCommonButtonPropertyVo;
 import org.openoa.base.vo.BpmnNodeButtonConfBaseVo;
 import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BpmnNodePropertysVo;
@@ -300,9 +301,13 @@ class BpmnNodeConfigHolderTest extends BaseTest {
         void withButtons() {
             BpmnNodeVo vo = createBasicVo();
             BpmnNodeButtonConfBaseVo btns = BpmnNodeButtonConfBaseVo.builder()
-                    .startPage(Arrays.asList(1, 3))
-                    .approvalPage(Arrays.asList(4))
-                    .viewPage(Arrays.asList(0))
+                    .startPage(Arrays.asList(
+                            BpmnConfCommonButtonPropertyVo.builder().buttonType(1).build(),
+                            BpmnConfCommonButtonPropertyVo.builder().buttonType(3).build()))
+                    .approvalPage(Arrays.asList(
+                            BpmnConfCommonButtonPropertyVo.builder().buttonType(4).build()))
+                    .viewPage(Arrays.asList(
+                            BpmnConfCommonButtonPropertyVo.builder().buttonType(0).build()))
                     .build();
             vo.setButtons(btns);
             BpmnNodeConfigHolder.setButtonSignConf(vo);

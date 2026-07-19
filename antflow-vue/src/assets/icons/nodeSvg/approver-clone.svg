@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: currentColor; }
+            .white-bg { fill: #FFFFFF; }
+            .stroke-main { 
+                fill: none; 
+                stroke: currentColor; 
+                stroke-width: 2.5; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            .stroke-dash { 
+                fill: none; 
+                stroke: currentColor; 
+                stroke-width: 2; 
+                stroke-linecap: round; 
+                stroke-dasharray: 4 4; 
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 右侧虚线人物 (目标/占位) -->
+    <g id="person-dashed" transform="translate(16, 4)">
+        <circle class="stroke-dash" cx="28" cy="16" r="9"/>
+        <path class="stroke-dash" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            L10 50
+            Z"/>
+    </g>
+
+    <!-- 2. 左侧实心人物 (当前) -->
+    <g id="person-solid" transform="translate(-8, 4)">
+        <!-- 头部 -->
+        <circle class="main" cx="28" cy="16" r="10"/>
+        <!-- 身体 (加了一层白色描边，用来切开后面的虚线人物) -->
+        <path class="white-bg" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z" stroke="#FFFFFF" stroke-width="3"/>
+        <path class="main" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z"/>
+    </g>
+
+    <!-- 3. 加号按钮 (位于两者交汇处) -->
+    <g transform="translate(32, 48)">
+        <!-- 核心隔离层 -->
+        <circle class="white-bg" cx="0" cy="0" r="12" />
+        
+        <!-- 按钮边框 -->
+        <circle class="stroke-main" cx="0" cy="0" r="9" />
+        
+        <!-- 加号符号 -->
+        <line class="stroke-main" x1="-4" y1="0" x2="4" y2="0" />
+        <line class="stroke-main" x1="0" y1="-4" x2="0" y2="4" />
+    </g>
+
+</svg>

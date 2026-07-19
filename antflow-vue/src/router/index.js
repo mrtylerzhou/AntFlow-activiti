@@ -338,6 +338,21 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/instance/fastForward",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "processNumber/:processNumber",
+        component: () =>
+          import("@/views/workflow/flowTask/instance/flowFastForward"),
+        name: "fastForward",
+        meta: { title: "流程推进", activeMenu: "/workflow/instance" },
+      },
+    ],
+  },
+  {
     path: "/workflow/instance/removeNode",
     component: Layout,
     hidden: true,

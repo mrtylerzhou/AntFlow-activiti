@@ -185,7 +185,7 @@ export class FormatDisplayUtils {
       }
       node.formAssigneeProperty = node?.property?.formAssigneeProperty;
       node.formInfos = node?.property?.formInfos ?? [];
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13) {
         let empList = [];
         if (node.nodeProperty == 6) {
           let approveObj = {
@@ -222,6 +222,21 @@ export class FormatDisplayUtils {
           }
         } else if (node.nodeProperty == 3) {
           node.directorLevel = node.property.assignLevelGrade;
+        } else if (node.nodeProperty == 2) {
+          // 层层审批: 回填 loop 字段和人员对象到 property 供 drawer 使用
+          const prop = node.property || {};
+          node.property = {
+            ...prop,
+            loopEndType: prop.loopEndType || 1,
+            loopNumberPlies: prop.loopNumberPlies || 10,
+            loopEndGrade: prop.loopEndGrade,
+            loopEndPersonList: prop.loopEndPersonList || [],
+            loopEndPersonObjList: (prop.loopEndPersonObjList || []).map(
+              item => ({ id: item.id, name: item.name })),
+            noparticipatingStaffIds: prop.noparticipatingStaffIds || [],
+            noparticipatingStaffs: (prop.noparticipatingStaffs || []).map(
+              item => ({ id: item.id, name: item.name })),
+          };
         }
         Object.assign(node, { signType: node.property?.signType });
         node.setType = node.nodeProperty;
@@ -236,6 +251,36 @@ export class FormatDisplayUtils {
         node.nodeType = 9;
         node.nodeName = node.nodeName || "自动节点";
         node.nodeDisplayName = node.nodeDisplayName || "自动节点";
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
+      // 条件审批节点反显: nodeType=4 或 12 (后端可能已转) + condition_approve_node标签
+      // 与 auto node 类似, 但保留真实审批人 (不替换为虚拟人)
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_approve_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件审批";
+        node.nodeDisplayName = node.nodeDisplayName || "条件审批";
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
+      // 条件抄送节点反显: nodeType=4 或 8 或 13 (后端可能已转) + condition_copy_node标签
+      // 与抄送V2 类似, 但带条件; 保留真实抄送人 (运行期由后端设 CC_NODE)
+      if ((node.nodeType == 4 || node.nodeType == 8 || node.nodeType == 13) && node.labelList && node.labelList.some(l => l.labelValue === "condition_copy_node")) {
+        node.nodeType = 13;
+        node.nodeName = node.nodeName || "条件抄送";
+        node.nodeDisplayName = node.nodeDisplayName || "条件抄送";
         // 从 autoNodeConf 中恢复条件数据
         node.conditionList = [[]];
         node.groupRelation = false;

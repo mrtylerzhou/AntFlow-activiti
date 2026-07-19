@@ -9,7 +9,6 @@ import java.util.Map;
 @Data
 public class UDLFApplyVo extends BusinessDataVo {
    private String remark;
-   private Map<String,Object> lfFields;
    private String lfFormData;
    /**
     * 多表单模式: 按表单版本id分组的字段值

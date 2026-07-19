@@ -78,6 +78,12 @@ public interface TaskInfo {
 	String getTaskDefinitionKey();
 
 	/**
+	 * The design-time node id of the user task (antflow extension attribute on
+	 * the bpmn element) or null if not set
+	 */
+	String getNodeId();
+
+	/**
 	 * Due date of the task.
 	 */
 	Date getDueDate();

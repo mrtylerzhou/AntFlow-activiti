@@ -16,7 +16,11 @@ export let bgColors = [
   "",
   "4, 96, 187",
   "155, 89, 182",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色'
+  "",
+  "",
+  "46, 167, 167",
+  "70, 130, 180",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送)'
 export let placeholderList = [
   "",
   "发起人",
@@ -28,6 +32,10 @@ export let placeholderList = [
   "审核人",
   "抄送人v2",
   "自动节点",
+  "办理人",
+  "自动办理",
+  "条件审批",
+  "条件抄送",
 ];
 export let nodeTypeList = [
   "未知",
@@ -40,6 +48,10 @@ export let nodeTypeList = [
   "并行审批",
   "抄送人V2",
   "自动节点",
+  "办理节点",
+  "自动办理",
+  "条件审批",
+  "条件抄送",
 ];
 export let signTypeObj = {
   1: "会签",
@@ -51,7 +63,7 @@ export let setTypes = [
   { value: 4, label: "指定角色" },
   { value: 6, label: "HRBP" },
   { value: 13, label: "直属领导" },
-  // { value: 2, label: '层层审批' },
+  { value: 2, label: "层层审批" },
   { value: 3, label: "指定层级审批" },
   // { value: 8, label: '关联业务表' },
   { value: 12, label: "发起人自己" },
@@ -60,6 +72,7 @@ export let setTypes = [
   { value: 16, label: "表单中选择" },
   { value: 17, label: "自定义" },
   { value: 18, label: "上一节点审批人的" },
+  { value: 19, label: "上一节点指定" },
 ];
 export let setCopyerTypes = [
   { value: 5, label: "指定人员" },
@@ -152,6 +165,8 @@ export class approvalButtonConf {
   static futureNodeReduceSign = 27; //未来节点减签
   static futureNodeAddSign = 28; //未来节点加签
   static withdraw = 29; //流程撤回
+  static drawBackAgree = 32; //撤销同意
+  static appointNextNodeApprover = 38; //指定下一节点审批人
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -180,8 +195,17 @@ export class approvalButtonConf {
     27: "未来节点减签",
     28: "未来节点加签",
     29: "流程撤回",
+    32: "撤销同意",
+    38: "指定下一节点审批人",
   };
 }
+
+/**上一节点指定审批人:前端使用的常量*/
+export const PREV_NODE_APPOINTED_SET_TYPE = 19; //radio显示值(映射到nodeProperty=5)
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_ID = "-4"; //AFSpecialAssigneeEnum.PREV_NODE_APPOINTED
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_NAME = "上一节点指定审批人";
+export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
+export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
 /**
  * 流程设计审批按钮显示
  */
@@ -228,6 +252,16 @@ export let viewPageButtons = [
   { value: approvalButtonConf.forward, label: "转发" },
 ];
 /**
+ * 流程设计节点查看页按钮配置（节点级，区别于流程级 viewPageButtons）
+ */
+export let nodeViewPageButtons = [
+  {
+    value: approvalButtonConf.drawBackAgree,
+    label: "撤销同意",
+    description: "撤销当前节点的同意操作，撤销后需重新审批",
+  },
+];
+/**
  * 自定义表单路径与FormCode映射
  */
 export const bizFormMaps = new Map([
@@ -255,6 +289,7 @@ export let approveButtonColor = {
   19: "success", //加批
   21: "primary", //转办
   23: "warning", //驳回
+  32: "danger", //撤销同意
   99: "success", //处理中
   100: "info",
 };

@@ -92,6 +92,11 @@
                                     <Minus />
                                  </el-icon>删除节点
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowFastForward(scope.row)">
+                                 <el-icon>
+                                    <DArrowRight />
+                                 </el-icon>推进流程
+                              </el-dropdown-item>
                               <el-dropdown-item @click="handleFlowChange(scope.row)">
                                  <el-icon>
                                     <Switch />
@@ -245,6 +250,15 @@ function handleFlowAddNode(row) {
    const processNumber = row.processNumber
    router.push({
       path: "/workflow/instance/addNode/processNumber/" + processNumber,
+      query: row
+   });
+}
+
+/** 推进流程 */
+function handleFlowFastForward(row) {
+   const processNumber = row.processNumber
+   router.push({
+      path: "/workflow/instance/fastForward/processNumber/" + processNumber,
       query: row
    });
 }

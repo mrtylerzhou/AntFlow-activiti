@@ -156,6 +156,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                     config.getButtons().add(ButtonItem.builder()
                             .elementId(elementId)
                             .buttonPageType(ButtonPageTypeEnum.TO_VIEW.getCode())
+                            .viewType(ViewPageTypeEnum.VIEW_PAGE_TYPE_OTHER.getCode())
                             .buttonType(o.getButtonType())
                             .buttonName(o.getButtonName())
                             .build()));

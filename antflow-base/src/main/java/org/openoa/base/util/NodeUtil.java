@@ -59,6 +59,16 @@ public class NodeUtil {
         }
        return true;
     }
+    /**
+     * 判断指定节点是否包含给定的标签值
+     */
+    public static boolean hasLabel(String nodeId, String labelValue) {
+        if (StringUtils.isEmpty(nodeId) || StringUtils.isEmpty(labelValue)) {
+            return false;
+        }
+        List<BpmnNodeLabelVO> labelVOs = getLabelsFromNodeJson(nodeId);
+        return nodeLabelContainsAny(labelVOs, labelValue);
+    }
 
     private static List<BpmnNodeLabelVO> getLabelsFromNodeJson(String nodeId) {
         try {
@@ -148,6 +158,10 @@ public class NodeUtil {
         if(!CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
             bpmnNodeVo.setLabelList(null);
         }
+        //上一节点指定审批人:根据前端传入的 isPrevNodeAppointed 标识,自动贴标签
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsPrevNodeAppointed())){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.prevNodeAppointed);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;
@@ -178,6 +192,18 @@ public class NodeUtil {
                 prop.setEmplList(Lists.newArrayList(virtualUser));
             }
         }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode().equals(nodeType)){
+            //条件审批节点: 设计期 nodeType=12, 运行期统一为审批人节点 4
+            //与 auto node 不同: 不强制 nodeProperty, 不塞虚拟审批人, 保留用户配置的真实 nodeApproveList
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionApproveNode(true);
+        }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode().equals(nodeType)){
+            //条件抄送节点: 设计期 nodeType=13, 运行期统一为审批人节点 4
+            //与 copyNodeV2 类似, 但不在这里塞虚拟审批人; 运行期由 processConditionCopyNode 设 CC_NODE
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionCopyNode(true);
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -190,6 +216,15 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.automaticNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode());
+            }
+            if(NodeLabelConstants.conditionApproveNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+            }
+            if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
+            }
+            if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setIsPrevNodeAppointed(true);
             }
         }
     }

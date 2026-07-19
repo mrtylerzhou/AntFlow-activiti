@@ -101,6 +101,7 @@ const clickApproveSubmit = async (btnType) => {
     switch (btnType) {
         case approvalButtonConf.addApproval:
         case approvalButtonConf.transfer:
+        case approvalButtonConf.appointNextNodeApprover:
             dialogTitle.value = `设置${approvalButtonConf.buttonsObj[btnType]}人员`;
             addUserDialog();
             break;
@@ -221,7 +222,9 @@ const preview = async (viewData) => {
             let auditButtons = response.data.processRecordInfo?.pcButtons?.audit;
             if (Array.isArray(auditButtons) && auditButtons.length > 0) {
                 approvalButtons.value = auditButtons.map(c => {
-                    return { value: c.buttonType, label: c.name };
+                    //兜底:后端返回的 name 为空时使用按钮类型对应的默认名称
+                    let label = c.name || approvalButtonConf.buttonsObj[c.buttonType] || '';
+                    return { value: c.buttonType, label };
                 }).sort(function (a, b) {
                     return a.value - b.value
                 });
@@ -276,6 +279,13 @@ const preview = async (viewData) => {
  * 确定Dialog 弹框
  */
 const sureDialogBtn = async (data) => {
+    if (handleClickType.value == approvalButtonConf.appointNextNodeApprover) {
+        //指定下一节点审批人:仅允许1人,不预置当前用户,暂存到 nextNodeApprovers,不提交
+        const selectList = (data.selectList || []).filter(item => item.id);
+        approveSubData.value.nextNodeApprovers = selectList.map(u => ({ id: u.id, name: u.name }));
+        dialogVisible.value = false;
+        return;
+    }
     approveSubData.value.operationType = handleClickType.value;
     approveSubData.value.approvalComment = data.remark;
     if (!isMultiple.value) {
@@ -287,7 +297,7 @@ const sureDialogBtn = async (data) => {
     } else {
         approveSubData.value.signUpUsers = data.selectList.filter(item => item.id);
     }
-    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));
     await approveProcess(approveSubData.value);
 }
 /**
