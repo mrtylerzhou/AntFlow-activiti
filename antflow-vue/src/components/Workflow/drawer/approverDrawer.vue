@@ -8,12 +8,12 @@
                 <div v-if="approverStepShow">
                     <div class="approver_content">
                         <div>
-                            <el-radio-group v-model="approverConfig.setType" class="clear" @change="changeType">
+                            <el-radio-group v-model="displaySetType" class="clear" @change="changeType">
                                 <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label
                                 }}</el-radio>
                             </el-radio-group>
                         </div>
-                        <div v-show="approverConfig.setType == 5">
+                        <div v-show="approverConfig.setType == 5 && displaySetType != 19">
                             <el-button type="primary" plain icon="Plus" @click="addApprover">添加/修改人员</el-button>
                             <div class="gap-2">
                                 <el-tag v-for="(item, index) in approverConfig.nodeApproveList" :key="item.targetId"
@@ -22,6 +22,9 @@
                                     {{ item.name }}
                                 </el-tag>
                             </div>
+                        </div>
+                        <div v-if="displaySetType == 19" class="approver_text">
+                            <p class="tip">该节点设置"上一节点指定"后，审批人由上一节点审批人在审批时通过[指定下一节点审批人]按钮指定。</p>
                         </div>
 
                         <div v-show="approverConfig.setType == 4">
@@ -292,7 +295,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, LABEL_PREV_NODE_APPOINTED } from '@/utils/antflow/const';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
@@ -339,6 +342,51 @@ let noticeStepShow = ref(false);
 let advancedStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
+
+/**
+ * 上一节点指定审批人: radio 显示值映射
+ * - get: 当 setType==5 且 labelList 含 LABEL_PREV_NODE_APPOINTED 且 nodeApproveList 含虚拟用户 "-4" 时, 返回 19
+ * - set: val==19 时, 切换为 setType=5 + 虚拟用户 + signType=1 + 添加 LABEL_PREV_NODE_APPOINTED 标签
+ *        val!=19 时, 移除 LABEL_PREV_NODE_APPOINTED 标签, 设置 setType=val
+ */
+const displaySetType = computed({
+    get() {
+        if (!approverConfig.value) return null;
+        const setType = approverConfig.value.setType;
+        if (setType === 5) {
+            const labels = approverConfig.value.labelList || [];
+            const hasLabel = labels.some(l => l.labelValue === LABEL_PREV_NODE_APPOINTED);
+            if (hasLabel) {
+                const approveList = approverConfig.value.nodeApproveList || [];
+                const hasVirtualUser = approveList.some(u => u.targetId === PREV_NODE_APPOINTED_VIRTUAL_USER_ID);
+                if (hasVirtualUser) {
+                    return PREV_NODE_APPOINTED_SET_TYPE;
+                }
+            }
+        }
+        return setType;
+    },
+    set(val) {
+        if (val === PREV_NODE_APPOINTED_SET_TYPE) {
+            approverConfig.value.setType = 5;
+            approverConfig.value.signType = 1;
+            approverConfig.value.noHeaderAction = 0;
+            approverConfig.value.nodeApproveList = [{
+                type: 1,
+                targetId: PREV_NODE_APPOINTED_VIRTUAL_USER_ID,
+                name: PREV_NODE_APPOINTED_VIRTUAL_USER_NAME
+            }];
+            if (!selectedLabelValues.value.includes(LABEL_PREV_NODE_APPOINTED)) {
+                selectedLabelValues.value = [...selectedLabelValues.value, LABEL_PREV_NODE_APPOINTED];
+            }
+        } else {
+            if (selectedLabelValues.value.includes(LABEL_PREV_NODE_APPOINTED)) {
+                selectedLabelValues.value = selectedLabelValues.value.filter(v => v !== LABEL_PREV_NODE_APPOINTED);
+            }
+            approverConfig.value.setType = val;
+        }
+    }
+});
 
 const formInfoSelected = ref(null);
 const formInfoOptions = ref([]);
@@ -482,6 +530,10 @@ watch(checkedHRBP, (val) => {
 
 /**选择审批人类型更改事件 */
 const changeType = (val) => {
+    //上一节点指定: displaySetType 的 setter 已完成 setType/虚拟用户/标签设置, 此处跳过清空逻辑
+    if (val == PREV_NODE_APPOINTED_SET_TYPE) {
+        return;
+    }
     formInfoOptions.value = [];
     approverConfig.value.nodeApproveList = [];
     approverConfig.value.signType = 1;

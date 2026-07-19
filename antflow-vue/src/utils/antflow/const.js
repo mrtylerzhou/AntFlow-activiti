@@ -72,6 +72,7 @@ export let setTypes = [
   { value: 16, label: "表单中选择" },
   { value: 17, label: "自定义" },
   { value: 18, label: "上一节点审批人的" },
+  { value: 19, label: "上一节点指定" },
 ];
 export let setCopyerTypes = [
   { value: 5, label: "指定人员" },
@@ -165,6 +166,7 @@ export class approvalButtonConf {
   static futureNodeAddSign = 28; //未来节点加签
   static withdraw = 29; //流程撤回
   static drawBackAgree = 32; //撤销同意
+  static appointNextNodeApprover = 38; //指定下一节点审批人
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -194,8 +196,16 @@ export class approvalButtonConf {
     28: "未来节点加签",
     29: "流程撤回",
     32: "撤销同意",
+    38: "指定下一节点审批人",
   };
 }
+
+/**上一节点指定审批人:前端使用的常量*/
+export const PREV_NODE_APPOINTED_SET_TYPE = 19; //radio显示值(映射到nodeProperty=5)
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_ID = "-4"; //AFSpecialAssigneeEnum.PREV_NODE_APPOINTED
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_NAME = "上一节点指定审批人";
+export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
+export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
 /**
  * 流程设计审批按钮显示
  */

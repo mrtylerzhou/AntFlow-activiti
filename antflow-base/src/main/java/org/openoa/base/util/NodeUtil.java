@@ -59,6 +59,16 @@ public class NodeUtil {
         }
        return true;
     }
+    /**
+     * 判断指定节点是否包含给定的标签值
+     */
+    public static boolean hasLabel(String nodeId, String labelValue) {
+        if (StringUtils.isEmpty(nodeId) || StringUtils.isEmpty(labelValue)) {
+            return false;
+        }
+        List<BpmnNodeLabelVO> labelVOs = getLabelsFromNodeJson(nodeId);
+        return nodeLabelContainsAny(labelVOs, labelValue);
+    }
 
     private static List<BpmnNodeLabelVO> getLabelsFromNodeJson(String nodeId) {
         try {

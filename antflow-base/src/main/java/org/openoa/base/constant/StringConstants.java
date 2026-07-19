@@ -51,6 +51,10 @@ public class StringConstants {
     public static final String CONDITION_APPROVE_NODE="condition_approve_node";
     public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
+    /**当前节点为"上一节点指定"审批人类型时贴此标签,触发运行时替换虚拟审批人*/
+    public static final String AF_SYSLABEL_PREV_NODE_APPOINTED="af_syslabel_prev_node_appointed";
+    /**上一节点贴此标签,审批页渲染[指定下一节点审批人]按钮*/
+    public static final String AF_SYSLABEL_APPOINT_NEXT_NODE_APPROVER="af_syslabel_appoint_next_node_approver";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";

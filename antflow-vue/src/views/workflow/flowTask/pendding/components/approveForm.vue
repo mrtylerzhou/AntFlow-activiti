@@ -94,6 +94,7 @@ const clickApproveSubmit = async (btnType) => {
     switch (btnType) {
         case approvalButtonConf.addApproval:
         case approvalButtonConf.transfer:
+        case approvalButtonConf.appointNextNodeApprover:
             dialogTitle.value = `设置${approvalButtonConf.buttonsObj[btnType]}人员`;
             addUserDialog();
             break;
@@ -245,7 +246,13 @@ const preview = async (viewData) => {
 const sureDialogBtn = async (data) => {
     approveSubData.value.operationType = handleClickType.value;
     approveSubData.value.approvalComment = data.remark;
-    if (!isMultiple.value) {
+    if (handleClickType.value == approvalButtonConf.appointNextNodeApprover) {
+        //指定下一节点审批人:仅允许1人,不预置当前用户,写入 nextNodeApprovers
+        const selectList = (data.selectList || []).filter(item => item.id);
+        approveSubData.value.nextNodeApprovers = selectList.map(u => ({ id: u.id, name: u.name }));
+        //走同意流程提交
+        approveSubData.value.operationType = approvalButtonConf.agree;
+    } else if (!isMultiple.value) {
         data.selectList.unshift({
             id: Cookies.get('userId'),
             name: decodeURIComponent(Cookies.get('userName')),
@@ -254,7 +261,7 @@ const sureDialogBtn = async (data) => {
     } else {
         approveSubData.value.signUpUsers = data.selectList.filter(item => item.id);
     }
-    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));  
+    //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));
     await approveProcess(approveSubData.value);
 }
 /**
