@@ -748,6 +748,7 @@ const changeLoopEndType = (val) => {
         // 切到按层级数，清空结束人
         loopEndPersonList.value = [];
         approverConfig.value.property.loopEndPersonList = [];
+        approverConfig.value.property.loopEndPersonObjList = [];
     } else {
         // 切到按结束人，重置层数为默认值
         loopNumberPlies.value = 10;
@@ -767,7 +768,10 @@ const confirmLoopEndPerson = (data) => {
     if (!approverConfig.value.property) {
         approverConfig.value.property = {};
     }
-    approverConfig.value.property.loopEndPersonList = data.map(item => item.targetId ?? item.id);
+    const ids = data.map(item => item.targetId ?? item.id);
+    const objs = data.map(item => ({ id: item.targetId ?? item.id, name: item.name }));
+    approverConfig.value.property.loopEndPersonList = ids;
+    approverConfig.value.property.loopEndPersonObjList = objs;
     loopEndPersonVisible.value = false;
 }
 
@@ -776,6 +780,7 @@ const removeLoopEndPerson = (index) => {
     loopEndPersonList.value.splice(index, 1);
     if (approverConfig.value.property) {
         approverConfig.value.property.loopEndPersonList = loopEndPersonList.value.map(item => item.targetId ?? item.id);
+        approverConfig.value.property.loopEndPersonObjList = loopEndPersonList.value.map(item => ({ id: item.targetId ?? item.id, name: item.name }));
     }
 }
 

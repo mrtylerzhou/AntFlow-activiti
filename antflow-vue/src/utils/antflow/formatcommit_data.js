@@ -184,6 +184,7 @@ export class FormatCommitUtils {
           approveObj.loopEndType = node.property?.loopEndType || 1;
           approveObj.loopNumberPlies = node.property?.loopNumberPlies || 10;
           approveObj.loopEndPersonList = node.property?.loopEndPersonList || [];
+          approveObj.loopEndPersonObjList = node.property?.loopEndPersonObjList || [];
           approveObj.loopEndGrade = node.property?.loopEndGrade || 0;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
