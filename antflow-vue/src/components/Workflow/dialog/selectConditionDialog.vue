@@ -27,6 +27,7 @@ const store = useStore()
 let tableId = computed(() => store.tableId)
 let lowCodeFormFields = computed(() => store.lowCodeFormField)
 let useExternalForm = computed(() => store.useExternalForm)
+let useAuxiliaryForm = computed(() => store.useAuxiliaryForm)
 let storeConfigData = ref(null);
 let configData = computed(() => props.nodeConfig || storeConfigData.value);
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
@@ -69,7 +70,9 @@ watch(() => props.visible, (val) => {
 /**加载条件 */
 const getCondition = async () => {
   conditionList.value = [];
-  conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
+  //DIY流程启用辅助表单时,按低代码表单方式加载条件(辅助表单字段作为契约)
+  const isDIY = routePath.indexOf('diy-design') > 0;
+  conditions.value = (isDIY && !useAuxiliaryForm.value) ? await loadDIYFormCondition() : await loadLFFormCondition();
   if (configData.value?.conditionList) {
     for (var i = 0; i < configData.value.conditionList[props.activeGroupIdx].length; i++) {
       var { formId, columnId } = configData.value.conditionList[props.activeGroupIdx][i];

@@ -96,7 +96,7 @@
                     <template #tip>当满足以下条件时, 将执行抄送; 条件不满足时跳过抄送</template>
                 </ConditionGroupEditor>
             </el-tab-pane>
-            <el-tab-pane lazy label="表单权限设置" name="formStep">
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
                 <div class="drawer_content">
                     <form-perm-conf v-if="formStepShow" default-perm="R" :show-e="false" v-model:formItems="formItems"
                         :formHidden="formHiddenMap"
@@ -151,6 +151,12 @@ let formStepShow = ref(false)
 //let testObj = JSON.parse("{\"lfFieldControlVOs\":[{\"fieldId\":\"input12931\",\"fieldName\":\"发件人姓名\",\"perm\":\"R\"},{\"fieldId\":\"switch96070\",\"fieldName\":\"是否保密\",\"perm\":\"E\"},{\"fieldId\":\"input23031\",\"fieldName\":\"发件人号码\",\"perm\":\"H\"}]}");
 
 let store = useStore()
+const route = useRoute()
+//字段权限tab可见性:DIY流程仅在启用辅助表单时显示;LF流程始终显示
+let formPermTabVisible = computed(() => {
+    const isDIYRoute = (route.path || '').indexOf('diy-design') > 0;
+    return isDIYRoute ? !!store.useAuxiliaryForm : true;
+})
 let { setCopyerConfigV2, setCopyerV2 } = store
 let copyerDrawerV2 = computed(() => store.copyerDrawerV2)
 let copyerConfigV2 = computed(() => store.copyerConfigV2)

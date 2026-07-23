@@ -41,21 +41,28 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         }
         Integer isLowCodeFlow = confVo.getIsLowCodeFlow();
         boolean lowCodeFlowFlag=isLowCodeFlow!=null&&isLowCodeFlow==1;
-        if(!lowCodeFlowFlag){
+        //DIY辅助表单:启用 USE_AUXILIARY_FORM 时同样需要持久化表单JSON与字段契约
+        boolean auxiliaryFormFlag=BpmnConfFlagsEnum.USE_AUXILIARY_FORM.flagsContainsCurrent(confVo.getExtraFlags());
+        if(!lowCodeFlowFlag && !auxiliaryFormFlag){
             return;
         }
-        // 外部表单模式: 表单由独立表单管理模块维护,此处不保存内联表单数据
-        if(BpmnConfFlagsEnum.USE_EXTERNAL_FORM.flagsContainsCurrent(confVo.getExtraFlags())){
+        // 外部表单模式: 表单由独立表单管理模块维护,此处不保存内联表单数据(仅LF有此模式)
+        if(lowCodeFlowFlag && BpmnConfFlagsEnum.USE_EXTERNAL_FORM.flagsContainsCurrent(confVo.getExtraFlags())){
             return;
         }
         Long confId = confVo.getId();
         String lfForm = confVo.getLfFormData();
+        //DIY辅助表单未启用或表单为空时不落库,避免空表单污染字段契约
+        if(auxiliaryFormFlag && !lowCodeFlowFlag && Strings.isNullOrEmpty(lfForm)){
+            return;
+        }
         BpmnConfLfFormdata lfFormdata=new BpmnConfLfFormdata();
         lfFormdata.setBpmnConfId(confId);
         lfFormdata.setFormdata(lfForm);
         lfFormdata.setCreateUser(SecurityUtils.getLogInEmpName());
         lfFormdataService.save(lfFormdata);
         confVo.setLfFormDataId(lfFormdata.getId());
+        //DIY辅助表单与LF流程一致: 表单至少需要一个控件,否则 parseFields 抛异常
         List<BpmnConfLfFormdataField> formdataFields = LfFormWidgetParser.parseFields(lfForm, confId, lfFormdata.getId());
         lfFormdataFieldService.saveBatch(formdataFields);
     }
@@ -67,11 +74,12 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
         }
         Integer isLowCodeFlow = confVo.getIsLowCodeFlow();
         boolean lowCodeFlowFlag=isLowCodeFlow!=null&&isLowCodeFlow==1;
-        if(!lowCodeFlowFlag){
+        boolean auxiliaryFormFlag=BpmnConfFlagsEnum.USE_AUXILIARY_FORM.flagsContainsCurrent(confVo.getExtraFlags());
+        if(!lowCodeFlowFlag && !auxiliaryFormFlag){
             return;
         }
-        // 外部表单模式: 按 CSV 加载引用的表单版本(含已软删,保证运行中流程可读)
-        if(BpmnConfFlagsEnum.USE_EXTERNAL_FORM.flagsContainsCurrent(confVo.getExtraFlags())){
+        // 外部表单模式: 按 CSV 加载引用的表单版本(含已软删,保证运行中流程可读),仅LF有此模式
+        if(lowCodeFlowFlag && BpmnConfFlagsEnum.USE_EXTERNAL_FORM.flagsContainsCurrent(confVo.getExtraFlags())){
             String lfFormdataIds = confVo.getLfFormdataIds();
             if(Strings.isNullOrEmpty(lfFormdataIds)){
                 throw new AFBizException(Strings.lenientFormat("external form mode but lf_formdata_ids is empty, confId:%s", confVo.getId()));
@@ -88,17 +96,23 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
             confVo.setLfFormdataList(forms);
             return;
         }
-        // 内联表单模式: 兼容旧逻辑,加载单个表单
+        // 内联表单模式: LF内联 或 DIY辅助表单,加载单个表单(供设计期回显)
         Long confId = confVo.getId();
         List<BpmnConfLfFormdata> bpmnConfLfFormdataList = lfFormdataService.list(Wrappers.<BpmnConfLfFormdata>lambdaQuery().eq(BpmnConfLfFormdata::getBpmnConfId, confId));
         if(CollectionUtils.isEmpty(bpmnConfLfFormdataList)){
+            //DIY辅助表单: 允许未设计表单(空表单),不抛异常,前端显示空设计器
+            if (auxiliaryFormFlag && !lowCodeFlowFlag) {
+                return;
+            }
             throw  new AFBizException(Strings.lenientFormat("can not get lowcode flow formdata by confId:%s",confId));
         }
         BpmnConfLfFormdata lfFormdata = bpmnConfLfFormdataList.get(0);
         confVo.setLfFormData(lfFormdata.getFormdata());
         confVo.setLfFormDataId(lfFormdata.getId());
-        // 同时填充 lfFormdataList,供前端统一渲染多tab表单视图
-        confVo.setLfFormdataList(bpmnConfLfFormdataList);
+        // 同时填充 lfFormdataList,供LF前端统一渲染多tab表单视图;DIY辅助表单不参与审批渲染,无需填充
+        if(lowCodeFlowFlag){
+            confVo.setLfFormdataList(bpmnConfLfFormdataList);
+        }
     }
     private void parseWidgetListRecursively(List<FormConfigWrapper.LFWidget> widgetList, Long confId, Long formDataId, List<BpmnConfLfFormdataField> result){
         for (FormConfigWrapper.LFWidget lfWidget : widgetList) {

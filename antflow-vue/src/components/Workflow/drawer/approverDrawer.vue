@@ -287,7 +287,7 @@
                     </div>
                 </el-checkbox-group>
             </el-tab-pane>
-            <el-tab-pane lazy label="表单权限设置" name="formStep">
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
                     :formHidden="formHiddenMap"
                     @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
@@ -334,6 +334,7 @@ import noticeConf from "./noticeConfig/index.vue";
 import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
 const { proxy } = getCurrentInstance();
 const store = useStore()
+const route = useRoute()
 const props = defineProps({
     directorMaxLevel: {
         type: Number,
@@ -341,6 +342,11 @@ const props = defineProps({
     }
 });
 const lowCodeFormFields = computed(() => store.lowCodeFormField)
+//字段权限tab可见性:DIY流程仅在启用辅助表单时显示;LF流程始终显示
+const formPermTabVisible = computed(() => {
+    const isDIYRoute = (route.path || '').indexOf('diy-design') > 0;
+    return isDIYRoute ? !!store.useAuxiliaryForm : true;
+})
 let approverConfig = ref({});
 let approverUserVisible = ref(false);
 let approverRoleVisible = ref(false);

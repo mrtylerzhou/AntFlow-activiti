@@ -61,6 +61,25 @@
                 </el-select>
                 <div class="ext-form-tip">启用后,本流程将引用独立表单管理中已生效的表单版本;表单设计步骤将被禁用。</div>
             </el-form-item>
+            <!-- 辅助表单(仅DIY流程可用) -->
+            <el-form-item v-if="flowType === 'DIY'" label="辅助表单">
+                <template #label>
+                    <span>
+                        <el-tooltip placement="top" popper-class="aux-form-tip-popper">
+                            <template #content>
+                                <div style="max-width: 320px; line-height: 1.5;">
+                                    辅助表单仅用于声明本流程条件/取人所依赖的字段名,不会在审批时渲染或填写。<br />
+                                    运行期这些字段的实际值,需由流程发起方按辅助表单字段名提供;若未提供,相关条件分支将不生效。
+                                </div>
+                            </template>
+                            <el-icon><question-filled /></el-icon>
+                        </el-tooltip>
+                        辅助表单
+                    </span>
+                </template>
+                <el-checkbox v-model="form.useAuxiliaryForm" :disabled="readonly">使用辅助表单</el-checkbox>
+                <div class="ext-form-tip">启用后,第二屏"表单设计"可用;条件与表单取人将像低代码流程一样从辅助表单字段获取。</div>
+            </el-form-item>
             <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :disabled="readonly" :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
@@ -76,11 +95,13 @@ import { getDIYFromCodeData } from "@/api/workflow/index";
 import { getLowCodeFlowFormCodes, listEffectiveForSelect } from "@/api/workflow/lowcodeApi";
 const { query } = useRoute();
 const { proxy } = getCurrentInstance()
-const emit = defineEmits(['nextChange', 'externalFormChange'])
+const emit = defineEmits(['nextChange', 'externalFormChange', 'auxiliaryFormChange'])
 let loading = ref(false);
 const copyOpt = query?.copy ?? 0 > 0 ? true : false;
 // 外部表单模式常量: BpmnConfFlagsEnum.USE_EXTERNAL_FORM = 0b1000000 = 64
 const USE_EXTERNAL_FORM_FLAG = 64;
+// 辅助表单模式常量(DIY专用): BpmnConfFlagsEnum.USE_AUXILIARY_FORM = 0b10000000 = 128
+const USE_AUXILIARY_FORM_FLAG = 128;
 // 外部表单可选项(独立表单管理中已生效的版本)
 let externalFormOptions = ref([]);
 let externalFormLoaded = ref(false);
@@ -113,6 +134,7 @@ const form = reactive({
     //外部表单模式相关字段
     extraFlags: 0,
     useExternalForm: false,         //由 extraFlags & USE_EXTERNAL_FORM 派生
+    useAuxiliaryForm: false,        //由 extraFlags & USE_AUXILIARY_FORM 派生(DIY专用)
     lfFormdataIds: '',              //CSV 字符串,提交后端
     lfFormdataIdsArr: [],           //Number 数组,前端编辑用
     viewPageButtons: {
@@ -138,6 +160,10 @@ watch(() => form.useExternalForm, (val) => {
 watch(() => form.lfFormdataIdsArr, () => {
     emitExternalFormState();
 }, { deep: true });
+// 监听辅助表单勾选变化,通知父组件(用于启用/禁用第二屏表单设计)
+watch(() => form.useAuxiliaryForm, (val) => {
+    emit('auxiliaryFormChange', { useAuxiliaryForm: val });
+});
 
 /**向父组件发射外部表单模式当前状态(含选中的表单定义列表) */
 const emitExternalFormState = () => {
@@ -174,6 +200,12 @@ onMounted(async () => {
         //选项已就绪,手动发射一次同步给父组件
         if (isExternal) {
             emitExternalFormState();
+        }
+        //回显辅助表单模式(DIY专用)
+        const isAuxiliary = (flags & USE_AUXILIARY_FORM_FLAG) === USE_AUXILIARY_FORM_FLAG;
+        form.useAuxiliaryForm = isAuxiliary;
+        if (isAuxiliary) {
+            emit('auxiliaryFormChange', { useAuxiliaryForm: true });
         }
     }
     else {
@@ -276,6 +308,12 @@ const getData = () => {
                 flags = flags & ~USE_EXTERNAL_FORM_FLAG;
                 form.lfFormdataIds = '';
                 form.lfFormdataIdsArr = [];
+            }
+            //序列化辅助表单字段(DIY专用)
+            if (form.useAuxiliaryForm) {
+                flags = flags | USE_AUXILIARY_FORM_FLAG;
+            } else {
+                flags = flags & ~USE_AUXILIARY_FORM_FLAG;
             }
             form.extraFlags = flags;
             resolve({ formData: form })  // TODO 提交表单

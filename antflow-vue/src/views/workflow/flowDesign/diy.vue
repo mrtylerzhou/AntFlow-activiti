@@ -12,7 +12,7 @@
             <div class="fd-nav-center">
                 <div class="step-tab">
                     <div v-for="(item, index) in steps" :key="index" class="step"
-                        :class="[activeStep == item.key ? 'active' : '']" @click="changeSteps(item)">
+                        :class="[activeStep == item.key ? 'active' : '', item.disabled ? 'disabled' : '']" @click="changeSteps(item)">
                         <span class="step-index">{{ index + 1 }}</span>
                         {{ item.label }}
                     </div>
@@ -28,7 +28,10 @@
             </div>
         </div>
         <div v-if="processConfig" v-show="activeStep === 'basicSetting'">
-            <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps" :flowType="'DIY'" />
+            <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps" :flowType="'DIY'" @auxiliaryFormChange="onAuxiliaryFormChange" />
+        </div>
+        <div v-if="processConfig && useAuxiliaryForm" v-show="activeStep === 'formDesign'">
+            <DynamicForm ref="formDesign" :lfFormData="lfFormDataConfig" />
         </div>
         <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
             <Process ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
@@ -50,24 +53,58 @@ import { NodeUtils } from '@/utils/antflow/nodeUtils';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import AdvancedSetting from "@/components/Workflow/AdvancedSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
+import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
+import { useStore } from '@/store/modules/workflow';
 //import { getWorkFlowData } from '@/api/workflow/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
+const store = useStore();
 const basicSetting = ref(null);
 const advancedSetting = ref(null);
 const processDesign = ref(null);
+const formDesign = ref(null);
 let activeStep = ref("basicSetting"); // 激活的步骤面板
+// 辅助表单模式标记(DIY专用): BpmnConfFlagsEnum.USE_AUXILIARY_FORM = 0b10000000 = 128
+const USE_AUXILIARY_FORM_FLAG = 128;
+let useAuxiliaryForm = ref(false);
+let lfFormDataConfig = ref(null);
 
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
+    { label: "表单设计", key: "formDesign", disabled: true },
     { label: "流程设计", key: "processDesign" },
     { label: "高级设置", key: "advancedSetting" },
 ]);
 
 const changeSteps = (item) => {
+    //辅助表单未启用时,表单设计步骤禁用,点击给出引导提示
+    if (item.key === 'formDesign' && !useAuxiliaryForm.value) {
+        proxy.$modal.msgWarning('请先在【基础设置】中勾选"使用辅助表单"后再进行表单设计。');
+        return;
+    }
     activeStep.value = item.key;
 };
+
+/**根据 useAuxiliaryForm 同步 steps 的 disabled 状态 */
+const updateStepsDisabled = () => {
+    steps.value.forEach(s => {
+        if (s.key === 'formDesign') {
+            s.disabled = !useAuxiliaryForm.value;
+        }
+    });
+}
+
+/**BasicSetting 中辅助表单勾选变化时调用 */
+const onAuxiliaryFormChange = (payload) => {
+    useAuxiliaryForm.value = !!payload?.useAuxiliaryForm;
+    updateStepsDisabled();
+    store.setUseAuxiliaryForm(useAuxiliaryForm.value);
+    //取消勾选时清空 store 中的辅助表单字段,避免条件/取人残留旧字段
+    if (!useAuxiliaryForm.value) {
+        store.setLowCodeFormField({});
+    }
+}
 
 let processConfig = ref(null);
 let nodeConfig = ref(null);
@@ -94,22 +131,36 @@ onMounted(async () => {
     processConfig.value = data;
     title.value = proxy.isEmpty(data?.bpmnName) ? decodeURIComponent(route.query.fcname ?? '') : data?.bpmnName;
     nodeConfig.value = data?.nodeConfig;
+    //回显辅助表单模式
+    lfFormDataConfig.value = data?.lfFormData;
+    const flags = Number(data?.extraFlags || 0);
+    useAuxiliaryForm.value = (flags & USE_AUXILIARY_FORM_FLAG) === USE_AUXILIARY_FORM_FLAG;
+    updateStepsDisabled();
+    store.setUseAuxiliaryForm(useAuxiliaryForm.value);
 });
 
 
 const publish = () => {
     const step1 = basicSetting.value.getData();
-    const step2 = processDesign.value.getData();
-    const step3 = advancedSetting.value.getData();
+    //辅助表单未启用时,跳过表单设计步骤
+    const step2 = useAuxiliaryForm.value
+        ? formDesign.value.getData()
+        : Promise.resolve({ formData: { widgetList: [], formConfig: {} } });
+    const step3 = processDesign.value.getData();
+    const step4 = advancedSetting.value.getData();
     proxy.$modal.loading();
-    Promise.all([step1, step2, step3])
+    Promise.all([step1, step2, step3, step4])
         .then((res) => {
-            //proxy.$modal.msgSuccess("设置成功,F12控制台查看数据");
             let basicData = res[0].formData;
-            var nodes = FormatCommitUtils.formatSettings(res[1].formData);
+            //同步辅助表单模式标记(用户在 basicSetting 中可能切换了勾选)
+            useAuxiliaryForm.value = !!basicData.useAuxiliaryForm;
+            //辅助表单设计数据;未启用时提交空串,后端据此清空旧辅助表单
+            const lfFormData = useAuxiliaryForm.value ? JSON.stringify(res[1].formData) : '';
+            Object.assign(basicData, { lfFormData: lfFormData });
+            var nodes = FormatCommitUtils.formatSettings(res[2].formData);
             Object.assign(basicData, { nodes: nodes });
             // 高级设置覆盖 deduplicationType 和 viewPageButtons
-            Object.assign(basicData, res[2].formData);
+            Object.assign(basicData, res[3].formData);
             console.log("New===Json==========", JSON.stringify(basicData));
             return basicData;
         })
@@ -177,6 +228,16 @@ const previewJson = () => {
     background: #1583f2
 }
 
+.fd-nav .step.disabled {
+    color: #c0c4cc !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+.fd-nav .step.disabled:hover {
+    background: transparent !important;
+}
+
 .fd-nav .active {
     background: #5af;
 }
@@ -190,5 +251,13 @@ const previewJson = () => {
     line-height: 18px;
     text-align: center;
     box-sizing: border-box;
+}
+
+.aux-form-placeholder {
+    background: white;
+    padding: 40px;
+    max-width: 750px;
+    margin: 20px auto;
+    border-radius: 4px;
 }
 </style>
