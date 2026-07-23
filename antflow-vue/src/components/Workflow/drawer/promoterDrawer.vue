@@ -16,7 +16,7 @@
                     <p>发起人在流程发起时自动获取，无需设置</p>
                 </div>
             </el-tab-pane>
-            <el-tab-pane lazy label="表单权限设置" name="formStep">
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="E" v-model:formItems="formItems"
                     :formHidden="formHiddenMap"
                     @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
@@ -42,6 +42,12 @@ let activeName = ref('promoterStep')
 let formStepShow = ref(false)
 
 let store = useStore()
+const route = useRoute()
+//字段权限tab可见性:DIY流程仅在启用辅助表单时显示;LF流程始终显示
+let formPermTabVisible = computed(() => {
+    const isDIYRoute = (route.path || '').indexOf('diy-design') > 0;
+    return isDIYRoute ? !!store.useAuxiliaryForm : true;
+})
 let { setPromoter, setPromoterConfig, setFlowPermission } = store
 let promoterDrawerVisible = computed(() => store.promoterDrawer)
 let promoterConfig1 = computed(() => store.promoterConfig)

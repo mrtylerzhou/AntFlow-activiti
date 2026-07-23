@@ -16,7 +16,9 @@ public enum BpmnConfFlagsEnum implements BinaryAfEnumBase<BpmnConfFlagsEnum>{
     HAS_COPY(0b1000,"是否包含抄送"),
     HAS_LAST_NODE_COPY(0b10000,"最后一个节点是否包含抄送"),
     HAS_FORM_RELATED_ASSIGNEES(0b100000,"包含表单中选取人员"),
-    USE_EXTERNAL_FORM(0b1000000,"使用外部表单模式")
+    USE_EXTERNAL_FORM(0b1000000,"使用外部表单模式"),
+    //DIY流程辅助表单:启用后第二屏可设计辅助表单,其字段名作为条件/取人/字段权限的契约;表单不参与审批渲染
+    USE_AUXILIARY_FORM(0b10000000,"使用辅助表单(DIY流程)")
     ;
     private final Integer code;
     private final String desc;
