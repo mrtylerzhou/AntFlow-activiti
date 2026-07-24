@@ -65,7 +65,8 @@ export default defineConfig({
             { text: '什么是 AntFlow', link: '/guide/introduction' },
             { text: '快速开始', link: '/guide/quick-start' },
             { text: '登录与用户切换', link: '/guide/login' },
-            { text: '系统总览', link: '/guide/overview' }
+            { text: '系统总览', link: '/guide/overview' },
+            { text: '5 分钟端到端上手', link: '/guide/user-walkthrough' }
           ]
         }
       ],
@@ -117,7 +118,13 @@ export default defineConfig({
             { text: '扩展审批人来源', link: '/dev-guide/extend-approver' },
             { text: '扩展条件规则', link: '/dev-guide/extend-condition' },
             { text: '扩展通知渠道', link: '/dev-guide/extend-notice' },
-            { text: '集成现有系统', link: '/dev-guide/integrate-existing' }
+            { text: '集成现有系统', link: '/dev-guide/integrate-existing' },
+            { text: 'DIY 回调与事件机制', link: '/dev-guide/diy-callback-events' },
+            { text: '适配器 SPI 体系全解', link: '/dev-guide/spi-architecture' },
+            { text: 'BPMN 模型构建管线', link: '/dev-guide/bpmn-pipeline' },
+            { text: '节点×审批人映射矩阵', link: '/dev-guide/node-mapping-matrix' },
+            { text: 'JSON-first 配置体系', link: '/dev-guide/json-config' },
+            { text: '四向扩展实战手册', link: '/dev-guide/extend-cookbook' }
           ]
         }
       ],
@@ -144,7 +151,8 @@ export default defineConfig({
             { text: '生产部署', link: '/ops/deploy' },
             { text: '多数据库支持', link: '/ops/db-multi' },
             { text: '常见问题排查', link: '/ops/troubleshooting' },
-            { text: '性能优化', link: '/ops/performance' }
+            { text: '性能优化', link: '/ops/performance' },
+            { text: '流程监控高级运维', link: '/ops/monitor-advanced' }
           ]
         }
       ],
