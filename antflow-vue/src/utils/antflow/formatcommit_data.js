@@ -189,6 +189,7 @@ export class FormatCommitUtils {
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
+        approveObj.arbitrationRatio = node.property?.arbitrationRatio ?? null;
         node.nodeProperty = node.setType;
         node.property = approveObj;
         delete node.nodeApproveList;

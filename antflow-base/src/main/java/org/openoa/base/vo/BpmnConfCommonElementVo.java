@@ -138,4 +138,9 @@ public class BpmnConfCommonElementVo {
      * @see org.openoa.base.constant.enums.SignTypeEnum
      */
     private Integer signType;
+
+    /**
+     * required count for arbitration sign to complete (N = ceil(size * ratio / 100))
+     */
+    private Integer requiredCount;
 }

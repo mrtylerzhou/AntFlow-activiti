@@ -73,11 +73,7 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 verifyUserId = SecurityUtils.getLogInEmpIdStr();
         }
 
-        String processInstanceId = bpmBusinessProcess.getProcInstId();
-        Integer processState = REJECT_STATE.getCode();
-        if (vo.getFlag()) {
-            processState = END_STATE.getCode();
-        }
+        Integer processState = vo.getFlag() ? END_STATE.getCode() : REJECT_STATE.getCode();
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(bpmBusinessProcess.getProcInstId()).list();
         if(CollectionUtils.isEmpty(taskList)){
             throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前流程实例不存在!");
@@ -89,11 +85,6 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
             taskData = taskList.stream().filter(task -> SecurityUtils.getLogInEmpId().equals(task.getAssignee()))
                     .findFirst().orElseThrow(() -> new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(), "当前流程已审批!"));
         }
-        //update process state
-        bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
-                .businessNumber(bpmBusinessProcess.getBusinessNumber())
-                .processState(processState)
-                .build());
         //save verify info
         bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
                 .businessId(bpmBusinessProcess.getBusinessId())
@@ -107,7 +98,25 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
                 .taskId(taskData.getId())
                 .runInfoId(bpmBusinessProcess.getProcInstId())
                 .build());
+        //terminate process (update state + delete process instance + cancellation)
+        endProcessWithoutVerify(vo);
+    }
 
+    /**
+     * terminate a process without recording verify info, so that other handlers
+     * (e.g. OpposeProcessImpl) can terminate the process while recording their own verify info.
+     *
+     * @param vo business data vo
+     */
+    public void endProcessWithoutVerify(BusinessDataVo vo) {
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
+        String processInstanceId = bpmBusinessProcess.getProcInstId();
+        Integer processState = vo.getFlag() ? END_STATE.getCode() : REJECT_STATE.getCode();
+        //update process state
+        bpmBusinessProcessService.updateBusinessProcess(BpmBusinessProcess.builder()
+                .businessNumber(bpmBusinessProcess.getBusinessNumber())
+                .processState(processState)
+                .build());
         //stop a process
         businessContans.deleteProcessInstance(processInstanceId);
         //call business adaptor method

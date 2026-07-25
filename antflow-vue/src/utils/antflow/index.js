@@ -63,6 +63,14 @@ All.prototype = {
             this.arrToStr(nodeConfig.nodeApproveList) +
             ")顺序会签"
           );
+        } else if (nodeConfig.signType == 4) {
+          const ratio = nodeConfig.property?.arbitrationRatio ?? 100;
+          return (
+            nodeConfig.nodeApproveList.length +
+            "人(" +
+            this.arrToStr(nodeConfig.nodeApproveList) +
+            ")仲裁签(" + ratio + "%)"
+          );
         }
       }
     } else if (nodeConfig.setType == 3) {

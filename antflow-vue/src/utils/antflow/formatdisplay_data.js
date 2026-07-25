@@ -235,6 +235,10 @@ export class FormatDisplayUtils {
           };
         }
         Object.assign(node, { signType: node.property?.signType });
+        // 仲裁签通过比例回填 (保留在 property, 不提顶层)
+        if (node.property) {
+          node.property.arbitrationRatio = node.property.arbitrationRatio ?? null;
+        }
         node.setType = node.nodeProperty;
         Object.assign(node, { nodeApproveList: [] });
 

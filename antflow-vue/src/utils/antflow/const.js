@@ -57,6 +57,7 @@ export let signTypeObj = {
   1: "会签",
   2: "或签", //
   3: "顺序会签", //拒绝
+  4: "仲裁签",
 };
 export let setTypes = [
   { value: 5, label: "指定人员" },
@@ -167,6 +168,7 @@ export class approvalButtonConf {
   static withdraw = 29; //流程撤回
   static drawBackAgree = 32; //撤销同意
   static appointNextNodeApprover = 38; //指定下一节点审批人
+  static oppose = 39; //反对(仲裁签)
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -197,6 +199,7 @@ export class approvalButtonConf {
     29: "流程撤回",
     32: "撤销同意",
     38: "指定下一节点审批人",
+    39: "反对", //仲裁签场景下反对
   };
 }
 
@@ -239,6 +242,12 @@ export let approvalPageButtons = [
     label: "加批",
     description:
       "在当前任务上额外添加新人员，以处理相关事项或提供必要的审批或意见",
+  },
+  {
+    value: approvalButtonConf.oppose,
+    label: "反对",
+    description: "仲裁签场景下反对，达阈值终止",
+    signTypeRestrict: 4,
   },
 ];
 export let startPageButtons = [
