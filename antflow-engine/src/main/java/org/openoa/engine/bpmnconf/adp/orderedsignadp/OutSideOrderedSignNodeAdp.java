@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,23 +25,35 @@ import java.util.Map;
 @Service
 public class OutSideOrderedSignNodeAdp extends AbstractOrderedSignNodeAdp {
     @Override
-    public List<BaseIdTranStruVo> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
+    public List<List<BaseIdTranStruVo>> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         String nodeMark = nodeVo.getProperty().getNodeMark();
         //outside embed node
         Map<String,BpmEmbedNodeVo> embedNodes = bpmnStartConditions.getEmbedNodes();
         if(ObjectUtils.isEmpty(nodeMark)|| CollectionUtils.isEmpty(embedNodes)){
-            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
+            return Lists.newArrayList(Collections.singleton(Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved())));
         }
         BpmEmbedNodeVo embedNodeVo = embedNodes.get(nodeMark);
         if(embedNodeVo==null){
-            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
+            return Lists.newArrayList(Collections.singleton(Lists.newArrayList()));
         }
-        List<BaseIdTranStruVo> assigneeList = embedNodeVo.getAssigneeList();
+        List<List<BaseIdTranStruVo>> assigneeList = embedNodeVo.getAssigneeList();
         if(CollectionUtils.isEmpty(assigneeList)){
-            return Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved());
+            return Lists.newArrayList(Collections.singleton(Lists.newArrayList(AFSpecialAssigneeEnum.buildToBeRemoved())));
         }
 
-        return assigneeList;
+        //包法 X:每个元素独立成一层(每层 1 人),保持链式语义
+        List<List<BaseIdTranStruVo>> result = new ArrayList<>();
+        for (List<BaseIdTranStruVo> layer : assigneeList) {
+            if (CollectionUtils.isEmpty(layer)) {
+                continue;
+            }
+            for (BaseIdTranStruVo vo : layer) {
+                List<BaseIdTranStruVo> singleLayer = new ArrayList<>();
+                singleLayer.add(vo);
+                result.add(singleLayer);
+            }
+        }
+        return result;
     }
 
     @Override

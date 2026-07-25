@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 public class BpmnUDFChainNodesAdp  extends AbstractOrderedSignNodeAdp {
     @Override
-    public List<BaseIdTranStruVo> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
+    public List<List<BaseIdTranStruVo>> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
         Map<String, BpmEmbedNodeVo> embedNodes = bpmnStartConditions.getEmbedNodes();
         if(CollectionUtils.isEmpty(embedNodes)){
             throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL,"current node is a chain sign node,but does not provide required parameters embedNodes");
@@ -26,7 +26,7 @@ public class BpmnUDFChainNodesAdp  extends AbstractOrderedSignNodeAdp {
         if(bpmEmbedNodeVo==null){
             throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL,"current node is a chain sign node,but can not get required parameters from map");
         }
-        List<BaseIdTranStruVo> assigneeList = bpmEmbedNodeVo.getAssigneeList();
+        List<List<BaseIdTranStruVo>> assigneeList = bpmEmbedNodeVo.getAssigneeList();
         if(CollectionUtils.isEmpty(assigneeList)){
             throw new AFBizException(BusinessErrorEnum.PARAMS_IS_NULL,"current node is a chain sign node,but can not get required parameters assigneeList");
         }
