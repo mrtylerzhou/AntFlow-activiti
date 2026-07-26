@@ -34,6 +34,7 @@ public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdapto
                 p.setConfigurationTableType(btc.getConfigurationTableType());
                 p.setTableFieldType(btc.getTableFieldType());
                 p.setSignType(btc.getSignType());
+                p.setArbitrationRatio(btc.getArbitrationRatio());
             });
         }
     throw new AFBizException("migration error,please contact the author");

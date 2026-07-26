@@ -19,7 +19,10 @@ public class NodePropertyCustomizeAdp extends AbstractAdditionSignNodeAdaptor{
         BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
         if (nodeConfig != null && nodeConfig.getApproverConf() != null
                 && nodeConfig.getApproverConf().getCustomizeConf() != null) {
-            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> p.setSignType(nodeConfig.getApproverConf().getCustomizeConf().getSignType()));
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> {
+                p.setSignType(nodeConfig.getApproverConf().getCustomizeConf().getSignType());
+                p.setArbitrationRatio(nodeConfig.getApproverConf().getCustomizeConf().getArbitrationRatio());
+            });
             return;
         }
         throw new AFBizException("migration error,please contact the author");

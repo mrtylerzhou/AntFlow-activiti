@@ -84,6 +84,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     @NoArgsConstructor
     public static class PersonnelConf implements Serializable {
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
         private List<EmployeeInfo> employees;
     }
 
@@ -104,6 +108,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
         private String roleId;
         private String roleName;
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
         private List<EmployeeInfo> outsideEmployees;
     }
 
@@ -142,6 +150,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     @NoArgsConstructor
     public static class CustomizeConf implements Serializable {
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
     }
 
     @Data
@@ -151,6 +163,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     public static class UDRConf implements Serializable {
         private String valueJson;
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
         private String udrProperty;
         private String udrPropertyName;
         private String ext1;
@@ -166,6 +182,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     public static class FormRelatedUserConf implements Serializable {
         private String valueJson;
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
         private Integer valueType;
         private String valueTypeName;
     }
@@ -176,6 +196,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     @NoArgsConstructor
     public static class PrevNodeRelatedUserConf implements Serializable {
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
         private Integer valueType;
         private String valueTypeName;
     }
@@ -187,6 +211,10 @@ public class BpmnNodeApproverConfJson implements Serializable {
     public static class OutSideAccessConf implements Serializable {
         private String nodeMark;
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
     }
 
     @Data
@@ -197,5 +225,9 @@ public class BpmnNodeApproverConfJson implements Serializable {
         private Integer configurationTableType;
         private Integer tableFieldType;
         private Integer signType;
+        /**
+         * arbitration sign pass ratio(1-100), only used when signType=4
+         */
+        private Integer arbitrationRatio;
     }
 }

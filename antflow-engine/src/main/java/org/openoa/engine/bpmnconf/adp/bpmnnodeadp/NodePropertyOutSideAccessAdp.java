@@ -31,6 +31,7 @@ public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
             BpmnNodeApproverConfJson.OutSideAccessConf osac = nodeConfig.getApproverConf().getOutSideAccessConf();
             bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
                     .signType(osac.getSignType())
+                    .arbitrationRatio(osac.getArbitrationRatio())
                     .nodeMark(osac.getNodeMark())
                     .build());
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.OUT_SIDE_NODE.getCode());
