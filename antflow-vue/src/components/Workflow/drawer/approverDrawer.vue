@@ -179,7 +179,14 @@
                             <el-radio :value="2">或签（只需一名审批人同意或拒绝即可）</el-radio>
                             <br />
                             <el-radio :value="3" v-if="approverConfig.setType == 5">顺序会签（需要所有审批人同意，根据前端传入的顺序）</el-radio>
+                            <br />
+                            <el-radio :value="4">仲裁签(按通过比例完成)</el-radio>
                         </el-radio-group>
+                        <div v-if="approverConfig.signType == 4" style="margin-top: 10px;">
+                            <span>通过比例:</span>
+                            <el-input-number v-model="approverConfig.property.arbitrationRatio" :min="1" :max="100" />
+                            <span>%</span>
+                        </div>
                     </div>
                     <div class="approver_block">
                         <p>✍审批人为空时</p>
@@ -323,7 +330,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, approvalButtonConf } from '@/utils/antflow/const';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
@@ -582,7 +589,35 @@ watch(checkedHRBP, (val) => {
     }
 });
 
-
+/**仲裁签 signType 切换处理: 调整按钮配置和通过比例 */
+watch(() => approverConfig.value?.signType, (newVal, oldVal) => {
+    if (!approverConfig.value) return;
+    if (newVal == 4) {
+        // 切到仲裁签: 初始化通过比例(默认100)
+        if (!approverConfig.value.property) {
+            approverConfig.value.property = {};
+        }
+        if (!approverConfig.value.property.arbitrationRatio) {
+            approverConfig.value.property.arbitrationRatio = 100;
+        }
+        // 取消勾选不同意(4)
+        const noAgreeIdx = checkApprovalPageBtns.value.indexOf(approvalButtonConf.noAgree);
+        if (noAgreeIdx >= 0) {
+            checkApprovalPageBtns.value.splice(noAgreeIdx, 1);
+        }
+        // 勾选反对(39)
+        if (!checkApprovalPageBtns.value.includes(approvalButtonConf.oppose)) {
+            checkApprovalPageBtns.value.push(approvalButtonConf.oppose);
+        }
+        // 同意(3)自定义名设为"赞成"
+        buttonCustomNames.value[approvalButtonConf.agree] = '赞成';
+        syncApprovalPageButtons();
+    } else if (oldVal == 4) {
+        // 切离仲裁签: 清空"赞成"自定义名
+        buttonCustomNames.value[approvalButtonConf.agree] = '';
+        syncApprovalPageButtons();
+    }
+});
 
 /**选择审批人类型更改事件 */
 const changeType = (val) => {
@@ -889,6 +924,14 @@ const handleApprovalBtnSubOption = (val) => {
 
 /**条件抽屉的确认 */
 const saveApprover = () => {
+    // 仲裁签通过比例校验
+    if (approverConfig.value.signType == 4) {
+        const r = approverConfig.value.property?.arbitrationRatio;
+        if (!r || r < 1 || r > 100) {
+            proxy.$modal.msgError('请填写仲裁签通过比例(1-100)');
+            return;
+        }
+    }
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
     console.log('保存审批人配置==', JSON.stringify(approverConfig1.value));

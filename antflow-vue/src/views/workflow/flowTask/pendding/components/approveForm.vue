@@ -108,6 +108,7 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.agree:
         case approvalButtonConf.noAgree:
         case approvalButtonConf.resubmit:
+        case approvalButtonConf.oppose:
             openApproveDialog.value = true;
             approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
             break;
