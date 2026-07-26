@@ -26,6 +26,7 @@ public class NodePropertyFormRelatedAdp implements BpmnNodeAdaptor {
             List<BaseIdTranStruVo> formNameAndValues = JSON.parseArray(fr.getValueJson(), BaseIdTranStruVo.class);
             bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
                     .signType(fr.getSignType())
+                    .arbitrationRatio(fr.getArbitrationRatio())
                     .formAssigneeProperty(fr.getValueType())
                     .formInfos(formNameAndValues)
                     .build());

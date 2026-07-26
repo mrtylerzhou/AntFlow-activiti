@@ -20,6 +20,7 @@ public class NodePropertyPrevNodeAdp implements BpmnNodeAdaptor {
             BpmnNodeApproverConfJson.PrevNodeRelatedUserConf conf = nodeConfig.getApproverConf().getPrevNodeRelatedUserConfList().get(0);
             bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
                     .signType(conf.getSignType())
+                    .arbitrationRatio(conf.getArbitrationRatio())
                     .formAssigneeProperty(conf.getValueType())
                     .build());
         }

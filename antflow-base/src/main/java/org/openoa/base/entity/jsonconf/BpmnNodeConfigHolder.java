@@ -43,6 +43,7 @@ public class BpmnNodeConfigHolder {
         }
         approverConf.setPersonnelConf(BpmnNodeApproverConfJson.PersonnelConf.builder()
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .employees(employees)
                 .build());
     }
@@ -60,6 +61,7 @@ public class BpmnNodeConfigHolder {
                     .roleId(role.getId())
                     .roleName(role.getName())
                     .signType(prop.getSignType())
+                    .arbitrationRatio(prop.getArbitrationRatio())
                     .build();
             if (vo.getIsOutSideProcess() != null && vo.getIsOutSideProcess() == 1
                     && !CollectionUtils.isEmpty(prop.getEmplList())) {
@@ -123,6 +125,7 @@ public class BpmnNodeConfigHolder {
         BpmnNodeApproverConfJson approverConf = getOrCreateApproverConf(vo);
         approverConf.setCustomizeConf(BpmnNodeApproverConfJson.CustomizeConf.builder()
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .build());
     }
 
@@ -137,6 +140,7 @@ public class BpmnNodeConfigHolder {
         BpmnNodeApproverConfJson.UDRConf udr = BpmnNodeApproverConfJson.UDRConf.builder()
                 .valueJson(prop.getUdrValueJson())
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .udrProperty(udrProp != null ? udrProp.getId() : null)
                 .udrPropertyName(udrProp != null ? udrProp.getName() : null)
                 .ext1(prop.getExt1())
@@ -162,6 +166,7 @@ public class BpmnNodeConfigHolder {
         BpmnNodeApproverConfJson.FormRelatedUserConf fr = BpmnNodeApproverConfJson.FormRelatedUserConf.builder()
                 .valueJson(com.alibaba.fastjson2.JSON.toJSONString(prop.getFormInfos()))
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .valueType(prop.getFormAssigneeProperty())
                 .valueTypeName(org.openoa.base.constant.enums.NodeFormAssigneePropertyEnum
                         .getDescByCode(prop.getFormAssigneeProperty()))
@@ -183,6 +188,7 @@ public class BpmnNodeConfigHolder {
         BpmnNodeApproverConfJson approverConf = getOrCreateApproverConf(vo);
         BpmnNodeApproverConfJson.PrevNodeRelatedUserConf conf = BpmnNodeApproverConfJson.PrevNodeRelatedUserConf.builder()
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .valueType(prop.getFormAssigneeProperty())
                 .valueTypeName(org.openoa.base.constant.enums.NodePrevNodeAssigneePropertyEnum
                         .getDescByCode(prop.getFormAssigneeProperty()))
@@ -205,6 +211,7 @@ public class BpmnNodeConfigHolder {
         approverConf.setOutSideAccessConf(BpmnNodeApproverConfJson.OutSideAccessConf.builder()
                 .nodeMark(prop.getNodeMark())
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .build());
     }
 
@@ -219,6 +226,7 @@ public class BpmnNodeConfigHolder {
                 .configurationTableType(prop.getConfigurationTableType())
                 .tableFieldType(prop.getTableFieldType())
                 .signType(prop.getSignType())
+                .arbitrationRatio(prop.getArbitrationRatio())
                 .build());
     }
 

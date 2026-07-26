@@ -54,6 +54,7 @@ public class NodePropertyPersonnelAdp extends AbstractAdditionSignNodeAdaptor{
             List<String> finalEmplNames = emplNames;
             AfNodeUtils.addOrEditProperty(bpmnNodeVo, a -> {
                 a.setSignType(pc.getSignType());
+                a.setArbitrationRatio(pc.getArbitrationRatio());
                 a.setEmplIds(finalEmplIds);
                 a.setEmplList(getEmplList(finalEmplIds, finalEmplNames));
             });

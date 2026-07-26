@@ -27,6 +27,7 @@ public class NodePropertyUDRAdp implements BpmnNodeAdaptor {
             BpmnNodeApproverConfJson.UDRConf udr = nodeConfig.getApproverConf().getUdrConfList().get(0);
             bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
                     .signType(udr.getSignType())
+                    .arbitrationRatio(udr.getArbitrationRatio())
                     .udrAssigneeProperty(BaseIdTranStruVo.builder().id(udr.getUdrProperty()).name(udr.getUdrPropertyName()).build())
                     .udrValueJson(udr.getValueJson())
                     .ext1(udr.getExt1())

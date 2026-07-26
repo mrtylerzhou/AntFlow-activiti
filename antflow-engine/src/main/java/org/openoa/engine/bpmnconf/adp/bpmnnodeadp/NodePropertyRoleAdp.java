@@ -47,6 +47,7 @@ public class NodePropertyRoleAdp extends AbstractAdditionSignNodeAdaptor {
                 a.setRoleIds(roles.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList()));
                 a.setRoleList(roles);
                 a.setSignType(roleConfs.get(0).getSignType());
+                a.setArbitrationRatio(roleConfs.get(0).getArbitrationRatio());
             });
             // outside employees for role
             if (bpmnNodeVo.getIsOutSideProcess() != null && bpmnNodeVo.getIsOutSideProcess().equals(1)) {
