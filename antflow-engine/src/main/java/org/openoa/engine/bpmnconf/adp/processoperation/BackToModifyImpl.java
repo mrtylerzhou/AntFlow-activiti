@@ -262,7 +262,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     //单节点或签节点
                     boolean isOneNodeSingleOrSign=moreNodes.size()==1&&SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(moreNodes.get(0).getSignType());
                     //单人节点
-                    boolean isSingleSign=CollectionUtils.isEmpty(moreNodes);
+                    boolean isSingleSign=moreNodes.size()==1;
                     for (Task task : tasks) {
                         if((isOneNodeSingleOrSign||isSingleSign)&&!task.getId().equals(firstTask.getId())){
                             otherNewTaskIds.add(task.getId());
@@ -291,7 +291,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                             try {
                                 taskService.complete(otherNewTask.getId(),varMap);
                             }catch (Exception e){
-
+                                log.warn("BackToModify complete task failed: taskId={}, err={}", otherNewTask.getId(), e.getMessage());
                             }
                         }
                     }
