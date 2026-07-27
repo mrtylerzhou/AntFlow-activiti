@@ -158,6 +158,15 @@ export function processOperation(data) {
 }
 
 /**
+ * 批量同意
+ * @param {object} data - { taskIds: [], batchApprovalComment: '审批意见' }
+ * @returns
+ */
+export function batchAgree(data) {
+  return http.post(`${baseUrl}/bpmnBusiness/batchAgree`, data, { headers });
+}
+
+/**
  * 获取审批进度数据
  * @param { object } param
  * @returns

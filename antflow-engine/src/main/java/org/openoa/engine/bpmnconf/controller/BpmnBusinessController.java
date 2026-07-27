@@ -12,6 +12,7 @@ import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
+import org.openoa.engine.bpmnconf.service.biz.BatchApprovalBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBizService;
@@ -43,6 +44,8 @@ public class BpmnBusinessController {
     private LowCodeFlowBizService lowCodeFlowBizService;
     @Autowired
     private OutSideBpmAccessBusinessBizService outSideBpmAccessBusinessBizService;
+    @Autowired
+    private BatchApprovalBizService batchApprovalBizService;
 
     /**
      * 获取自定义表单DIY FormCode List
@@ -156,6 +159,18 @@ public class BpmnBusinessController {
             return bpmnNodeVo;
         }).collect(Collectors.toList());
         return Result.newSuccessResult(nodeVos);
+    }
+
+    /**
+     * 批量同意
+     */
+    @PostMapping("/batchAgree")
+    public Result batchAgree(@RequestBody BatchAgreeVo vo) {
+        if (vo == null || CollectionUtils.isEmpty(vo.getTaskIds())) {
+            throw new AFBizException("请选择要审批的任务");
+        }
+        BatchAgreeResultVo result = batchApprovalBizService.batchAgree(vo);
+        return Result.newSuccessResult(result);
     }
 
 }

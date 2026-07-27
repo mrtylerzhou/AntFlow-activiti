@@ -312,6 +312,11 @@
                         </el-select>
                         <p class="tip">为当前节点设置流程标签，用于后续分类和统计</p>
                     </div>
+                    <div class="setting-group" v-if="approverConfig.nodeType == 4">
+                        <p class="setting-group-title">批量审批</p>
+                        <el-switch v-model="batchProhibited" active-text="禁止批量审批" />
+                        <p class="tip">开启后，该节点的待办任务不允许被批量同意</p>
+                    </div>
                 </div>
             </el-tab-pane>
         </el-tabs>
@@ -376,6 +381,16 @@ let noticeStepShow = ref(false);
 let advancedStepShow = ref(false);
 let approverConfig1 = computed(() => store.approverConfig1);
 let approverDrawer = computed(() => store.approverDrawer);
+
+/** 禁止批量审批开关: batchStatus==0 表示禁止 */
+const batchProhibited = computed({
+    get() {
+        return approverConfig.value?.batchStatus === 0;
+    },
+    set(val) {
+        approverConfig.value.batchStatus = val ? 0 : 1;
+    }
+});
 
 /**
  * 上一节点指定审批人: radio 显示值映射

@@ -16,9 +16,6 @@ import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.BpmnNode;
-import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
-import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
-import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -209,8 +206,7 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                     // to check whether the forwarded record can process in batch
                     record.setIsForward(processForwardBizService.isForward(record.getProcessInstanceId()));
                     if (!ObjectUtils.isEmpty(record.getTaskName())) {
-                        record.setIsBatchSubmit(this.isOperatable(TaskMgmtVO.builder().processKey(record.getProcessKey())
-                                .taskName(record.getTaskName()).type(ProcessButtonEnum.VIEW_TYPE.getCode()).build(),bpmnConf));
+                        record.setIsBatchAgree(this.isBatchOperatable(record.getProcessKey(), record.getTaskName(), bpmnConf));
                         record.setNodeType(ProcessNodeEnum.getCodeByDesc(record.getTaskName()));
                     }
                 }
@@ -382,34 +378,28 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     }
 
     /**
-     * check whether current node is operatable
-     * Reads operationTypes from node_config_json instead of bpm_process_operation table.
+     * check whether current node allows batch approval
+     * Reads batchStatus from t_bpmn_node: 0=prohibited, null/1=allowed(default)
      *
-     * @param vo
-     * @return
+     * @param processKey form code
+     * @param taskName   current task definition key (element id)
+     * @param bpmnConf   bpmn conf (nullable, will query if null)
+     * @return true if batch approval is allowed
      */
-    private Boolean isOperatable(TaskMgmtVO vo,BpmnConf bpmnConf) {
+    private Boolean isBatchOperatable(String processKey, String taskName, BpmnConf bpmnConf) {
         if (bpmnConf == null) {
-            bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(vo.getProcessKey());
+            bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(processKey);
             if (bpmnConf == null || bpmnConf.getBpmnCode() == null) {
                 return true;
             }
         }
-        List<BpmnNode> nodes=bpmVariableMultiplayerMapper.getNodeByElementId(bpmnConf.getBpmnCode(),vo.getTaskName());
-
+        List<BpmnNode> nodes = bpmVariableMultiplayerMapper.getNodeByElementId(bpmnConf.getBpmnCode(), taskName);
         if (nodes.isEmpty()) {
             return true;
         }
         BpmnNode node = nodes.get(0);
-        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
-        if (nodeConfig == null || nodeConfig.getButtonSignConf() == null) {
-            return true;
-        }
-        List<Integer> operationTypes = nodeConfig.getButtonSignConf().getOperationTypes();
-        if (CollectionUtils.isEmpty(operationTypes)) {
-            return true;
-        }
-        return !operationTypes.contains(vo.getType());
+        // batchStatus: 0=prohibited, null or 1=allowed
+        return !Integer.valueOf(0).equals(node.getBatchStatus());
     }
     //todo some process approval access right check
 }
