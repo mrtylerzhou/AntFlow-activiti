@@ -208,6 +208,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/flowEfficiency",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowEfficiency",
+        component: () => import("@/views/workflow/flowEfficiency/index"),
+        name: "flowEfficiency",
+        meta: {
+          title: "流程效能",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,

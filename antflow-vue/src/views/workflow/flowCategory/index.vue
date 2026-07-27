@@ -72,6 +72,10 @@
                                     <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                 </el-tooltip>
+                                <el-tooltip content="查看效能" placement="top">
+                                    <el-button link type="primary" icon="DataAnalysis"
+                                        @click="handleEfficiency(scope.row)"></el-button>
+                                </el-tooltip>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -131,6 +135,10 @@
                                         @click="handleFlowMsg(scope.row)"></el-button>
                                     <el-button v-else link icon="BellFilled" type="info"
                                         @click="handleFlowMsg(scope.row)"></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="查看效能" placement="top">
+                                    <el-button link type="primary" icon="DataAnalysis"
+                                        @click="handleEfficiency(scope.row)"></el-button>
                                 </el-tooltip>
 
                             </template>
@@ -353,6 +361,12 @@ const handleVersion = async (row) => {
     proxy.$tab.closePage(versionPage).then(() => {
         proxy.$tab.openPage(obj);
     })
+}
+
+/** 查看效能 */
+const handleEfficiency = (row) => {
+    const obj = { path: "/workflow/flowEfficiency", query: { formCode: row.key } };
+    proxy.$tab.openPage(obj);
 }
 
 /** 搜索按钮操作 */
