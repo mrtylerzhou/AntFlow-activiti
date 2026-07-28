@@ -38,6 +38,17 @@ export default defineConfig({
         ]
       },
       {
+        text: '专题文章',
+        items: [
+          { text: '多人审批与会签', link: '/topics/multi-person-approval' },
+          { text: '驳回与退回机制', link: '/topics/reject-and-return' },
+          { text: '加签转办与委托', link: '/topics/addsign-transfer-delegate' },
+          { text: '条件分支与路由', link: '/topics/condition-routing' },
+          { text: '流程运维与监控', link: '/topics/ops-monitor' },
+          { text: '从零设计完整流程', link: '/topics/design-complete-flow' }
+        ]
+      },
+      {
         text: '更多',
         items: [
           { text: '低代码专题', link: '/lowcode/lowcode-overview' },
@@ -153,6 +164,22 @@ export default defineConfig({
             { text: '常见问题排查', link: '/ops/troubleshooting' },
             { text: '性能优化', link: '/ops/performance' },
             { text: '流程监控高级运维', link: '/ops/monitor-advanced' }
+          ]
+        }
+      ],
+
+      '/topics/': [
+        {
+          text: '专题文章',
+          collapsible: true,
+          collapsed: false,
+          items: [
+            { text: '多人审批与会签模式详解', link: '/topics/multi-person-approval' },
+            { text: '驳回与退回机制全解', link: '/topics/reject-and-return' },
+            { text: '加签、转办与委托实战', link: '/topics/addsign-transfer-delegate' },
+            { text: '条件分支与动态路由', link: '/topics/condition-routing' },
+            { text: '流程运维与监控实战', link: '/topics/ops-monitor' },
+            { text: '从零设计一个完整流程', link: '/topics/design-complete-flow' }
           ]
         }
       ],
