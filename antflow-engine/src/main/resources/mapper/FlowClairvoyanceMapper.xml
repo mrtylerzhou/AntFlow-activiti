@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openoa.engine.bpmnconf.mapper.FlowClairvoyanceMapper">
+
+    <!-- 分页查询审批中的流程 -->
+    <select id="selectProcessBatch" resultType="java.util.Map">
+        SELECT bbp.BUSINESS_NUMBER AS processNumber,
+               bbp.PROCESSINESS_KEY AS processKey,
+               bbp.user_name AS userName,
+               bbp.CREATE_TIME AS createTime,
+               bbp.process_state AS processState,
+               bbp.PROC_INST_ID_ AS procInstId
+        FROM bpm_business_process bbp
+        WHERE bbp.process_state = 1
+          AND bbp.is_del = 0
+          AND bbp.CREATE_TIME >= #{timeLowerBound}
+        ORDER BY bbp.CREATE_TIME DESC
+        LIMIT #{batchSize} OFFSET #{offset}
+    </select>
+
+    <!-- 仅当前节点: 直接查AF_RU_TASK -->
+    <select id="selectCurrentNodeMatches" resultType="java.util.Map">
+        SELECT t.PROC_INST_ID_ AS procInstId,
+               t.TASK_DEF_KEY_ AS elementId,
+               t.NAME_ AS elementName,
+               t.ASSIGNEE_ AS assignee,
+               t.ASSIGNEE_NAME AS assigneeName
+        FROM AF_RU_TASK t
+        WHERE t.PROC_INST_ID_ IN
+        <foreach collection="procInstIds" item="pid" open="(" separator="," close=")">
+            #{pid}
+        </foreach>
+          AND t.ASSIGNEE_ IN
+        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+    </select>
+
+    <!-- CURRENT_FUTURE / FUTURE / ALL: 关联multiplayer表 -->
+    <select id="selectMultiplayerMatches" resultType="java.util.Map">
+        SELECT bv.process_num AS processNumber,
+               bvm.element_id AS elementId,
+               bvm.element_name AS elementName,
+               bvmp.assignee AS assignee,
+               bvmp.assignee_name AS assigneeName
+        FROM t_bpm_variable bv
+        INNER JOIN t_bpm_variable_multiplayer bvm
+            ON bvm.variable_id = bv.id AND bvm.is_del = 0
+        INNER JOIN t_bpm_variable_multiplayer_personnel bvmp
+            ON bvmp.variable_multiplayer_id = bvm.id AND bvmp.is_del = 0
+        WHERE bv.process_num IN
+        <foreach collection="processNumbers" item="pn" open="(" separator="," close=")">
+            #{pn}
+        </foreach>
+          AND bvmp.assignee IN
+        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+        <if test="nodeScope == 'CURRENT_FUTURE'">
+          AND CAST(REPLACE(bvm.element_id, 'task', '') AS UNSIGNED) >= (
+              SELECT MIN(CAST(REPLACE(t.TASK_DEF_KEY_, 'task', '') AS UNSIGNED))
+              FROM AF_RU_TASK t
+              INNER JOIN bpm_business_process bbp2 ON bbp2.PROC_INST_ID_ = t.PROC_INST_ID_
+              WHERE bbp2.BUSINESS_NUMBER = bv.process_num AND bbp2.process_state = 1
+          )
+        </if>
+        <if test="nodeScope == 'FUTURE'">
+          AND CAST(REPLACE(bvm.element_id, 'task', '') AS UNSIGNED) > (
+              SELECT MIN(CAST(REPLACE(t.TASK_DEF_KEY_, 'task', '') AS UNSIGNED))
+              FROM AF_RU_TASK t
+              INNER JOIN bpm_business_process bbp2 ON bbp2.PROC_INST_ID_ = t.PROC_INST_ID_
+              WHERE bbp2.BUSINESS_NUMBER = bv.process_num AND bbp2.process_state = 1
+          )
+        </if>
+    </select>
+
+</mapper>

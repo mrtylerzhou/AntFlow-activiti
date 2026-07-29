@@ -259,6 +259,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/flowClairvoyance",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowClairvoyance",
+        component: () => import("@/views/workflow/flowClairvoyance/index"),
+        name: "flowClairvoyance",
+        meta: {
+          title: "流程千里眼",
+          activeMenu: "/flowTask/instance",
+        },
+      },
+    ],
+  },
+  {
     path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,

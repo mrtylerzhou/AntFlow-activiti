@@ -19,6 +19,7 @@
                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
                <el-button type="warning" icon="View" @click="openPerspective">流程透视</el-button>
+               <el-button type="success" icon="Aim" @click="openClairvoyance">流程千里眼</el-button>
             </el-form-item>
          </el-form>
       </div>
@@ -213,6 +214,12 @@ function resetQuery() {
 /** 打开流程透视页面 */
 function openPerspective() {
    const obj = { path: "/workflow/flowPerspective" };
+   proxy.$tab.openPage(obj);
+}
+
+/** 打开流程千里眼页面 */
+function openClairvoyance() {
+   const obj = { path: "/workflow/flowClairvoyance" };
    proxy.$tab.openPage(obj);
 }
 
