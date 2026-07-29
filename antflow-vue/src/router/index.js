@@ -242,6 +242,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/flowPerspective",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/flowPerspective",
+        component: () => import("@/views/workflow/flowPerspective/index"),
+        name: "flowPerspective",
+        meta: {
+          title: "流程透视",
+          activeMenu: "/flowTask/instance",
+        },
+      },
+    ],
+  },
+  {
     path: "/outsideMgt/preview",
     component: Layout,
     hidden: true,
