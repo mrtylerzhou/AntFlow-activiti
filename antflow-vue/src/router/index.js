@@ -208,6 +208,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/dopeSheet",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/dopeSheet",
+        component: () => import("@/views/workflow/dopeSheet/index"),
+        name: "dopeSheet",
+        meta: {
+          title: "Dope Sheet",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/workflow/flowEfficiency",
     component: Layout,
     hidden: true,

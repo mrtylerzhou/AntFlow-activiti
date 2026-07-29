@@ -22,8 +22,11 @@
                 <button type="button" class="fd-btn button-publish" @click="previewJson">
                     <span>预览json</span>
                 </button>
-                <button type="button" class="fd-btn button-publish" @click="publish">
+                <button v-if="!isDopeSheetMode" type="button" class="fd-btn button-publish" @click="publish">
                     <span>发 布</span>
+                </button>
+                <button v-else type="button" class="fd-btn button-publish" @click="handleBackToDopeSheet">
+                    <span>返 回</span>
                 </button>
             </div>
         </div>
@@ -44,8 +47,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from 'vue-router';
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
 import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
@@ -56,10 +59,15 @@ import Process from "@/components/Workflow/Process/index.vue";
 import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 import { useStore } from '@/store/modules/workflow';
+import { useDopeSheetStore } from '@/store/modules/dopeSheet';
 //import { getWorkFlowData } from '@/api/workflow/mock.js';
 const { proxy } = getCurrentInstance()
 const route = useRoute();
+const router = useRouter();
 const store = useStore();
+const dopeSheetStore = useDopeSheetStore();
+// Dope Sheet 模式：从 store 读数据，发布替换为返回
+const isDopeSheetMode = computed(() => route.query.mode === 'store' && dopeSheetStore.fullEditMode);
 const basicSetting = ref(null);
 const advancedSetting = ref(null);
 const processDesign = ref(null);
@@ -116,6 +124,20 @@ let jsonTitle = ref('');
 onMounted(async () => {
     let mockjson = {};
     proxy.$modal.loading();
+    // Dope Sheet 模式：从 store 读取数据
+    if (route.query.mode === 'store' && dopeSheetStore.processConfig) {
+        let data = JSON.parse(JSON.stringify(dopeSheetStore.processConfig));
+        proxy.$modal.closeLoading();
+        processConfig.value = data;
+        title.value = data?.bpmnName || dopeSheetStore.formCodeName || '';
+        nodeConfig.value = data?.nodeConfig;
+        lfFormDataConfig.value = data?.lfFormData;
+        const flags = Number(data?.extraFlags || 0);
+        useAuxiliaryForm.value = (flags & USE_AUXILIARY_FORM_FLAG) === USE_AUXILIARY_FORM_FLAG;
+        updateStepsDisabled();
+        store.setUseAuxiliaryForm(useAuxiliaryForm.value);
+        return;
+    }
     if (route.query.id) {
         mockjson = await getApiWorkFlowData({ id: route.query.id });
         if (!mockjson.code || mockjson.code != 200) {
@@ -186,6 +208,34 @@ const publish = () => {
 const previewJson = () => {
     viewJson.value = true;
     jsonTitle.value = "预览JSON";
+}
+
+/** Dope Sheet 模式：返回按钮，将当前数据同步回 store 并跳转回 Dope Sheet */
+const handleBackToDopeSheet = () => {
+    const step1 = basicSetting.value.getData();
+    const step2 = useAuxiliaryForm.value
+        ? formDesign.value.getData()
+        : Promise.resolve({ formData: { widgetList: [], formConfig: {} } });
+    const step3 = processDesign.value.getData();
+    const step4 = advancedSetting.value.getData();
+    Promise.all([step1, step2, step3, step4]).then((res) => {
+        let basicData = res[0].formData;
+        const lfFormData = useAuxiliaryForm.value ? JSON.stringify(res[1].formData) : '';
+        Object.assign(basicData, { lfFormData: lfFormData });
+        // 保留 nodeConfig 树结构（不序列化）供 Dope Sheet 使用
+        basicData.nodeConfig = res[2].formData;
+        Object.assign(basicData, res[3].formData);
+        // 保留额外字段
+        basicData.formCode = processConfig.value.formCode;
+        basicData.bpmnCode = processConfig.value.bpmnCode;
+        basicData.extraFlags = processConfig.value.extraFlags;
+        basicData.templateVos = processConfig.value.templateVos;
+        dopeSheetStore.setProcessConfig(basicData);
+        dopeSheetStore.markDirty();
+        dopeSheetStore.exitFullEdit();
+        // 跳转回 Dope Sheet
+        router.push({ path: '/workflow/dopeSheet', query: { formCode: dopeSheetStore.formCode } });
+    });
 } 
 </script>
 <style scoped lang="scss">

@@ -42,9 +42,11 @@ import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
+import { useDopeSheetStore } from '@/store/modules/dopeSheet';
 
 const { proxy } = getCurrentInstance();
 const route = useRoute();
+const dopeSheetStore = useDopeSheetStore();
 const activeTab = ref('flowForm')
 let processConfig = ref(null)
 let lfFormDataConfig = ref(null)
@@ -65,9 +67,49 @@ function close() {
 };
 onMounted(async () => {
   proxy.$modal.loading();
-  await init();
+  // Dope Sheet 模式：从 store 读取数据
+  if (route.query.mode === 'store' && dopeSheetStore.processConfig) {
+    await initFromStore();
+  } else {
+    await init();
+  }
   proxy.$modal.closeLoading();
 });
+
+/** 从 Dope Sheet store 初始化 */
+const initFromStore = async () => {
+  let data = dopeSheetStore.processConfig;
+  processConfig.value = data;
+  flowType.value = data?.isLowCodeFlow == '1' ? 'LF' : 'DIY';
+  title.value = data?.bpmnName;
+  nodeConfig.value = data?.nodeConfig;
+  if (data.isLowCodeFlow == '1') {
+    const USE_EXTERNAL_FORM_FLAG = 64;
+    const flags = Number(data?.extraFlags || 0);
+    const isExternal = (flags & USE_EXTERNAL_FORM_FLAG) === USE_EXTERNAL_FORM_FLAG;
+    if (isExternal) {
+      lfFormdataListConfig.value = data?.lfFormdataList || [];
+      lfFieldsMultiConfig.value = {};
+      formHiddenConfig.value = {};
+      lfFormDataConfig.value = null;
+      lfFieldControlVOs.value = '[]';
+      loadedComponent.value = await loadLFMultiFormComponent();
+    } else {
+      lfFormDataConfig.value = data?.lfFormData;
+      lfFieldControlVOs.value = '[]';
+      lfFormdataListConfig.value = [];
+      lfFieldsMultiConfig.value = {};
+      formHiddenConfig.value = {};
+      loadedComponent.value = await loadLFComponent();
+    }
+    componentLoaded.value = true;
+  } else {
+    loadedComponent.value = await loadDIYComponent(data.formCode).catch((err) => {
+      proxy.$modal.msgError(err);
+    });
+    componentLoaded.value = true;
+  }
+}
 const init = async () => {
   let mockjson = await getApiWorkFlowData({ id });
   if (mockjson.code != 200) {

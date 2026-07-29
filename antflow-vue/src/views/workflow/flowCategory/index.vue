@@ -76,6 +76,16 @@
                                     <el-button link type="primary" icon="DataAnalysis"
                                         @click="handleEfficiency(scope.row)"></el-button>
                                 </el-tooltip>
+                                <el-dropdown trigger="click" @command="(cmd) => handleMoreCommand(cmd, scope.row)">
+                                    <el-button link type="primary" size="small">
+                                        更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                                    </el-button>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item command="dopeSheet">Dope Sheet</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -140,7 +150,16 @@
                                     <el-button link type="primary" icon="DataAnalysis"
                                         @click="handleEfficiency(scope.row)"></el-button>
                                 </el-tooltip>
-
+                                <el-dropdown trigger="click" @command="(cmd) => handleMoreCommand(cmd, scope.row)">
+                                    <el-button link type="primary" size="small">
+                                        更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                                    </el-button>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item command="dopeSheet">Dope Sheet</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -188,10 +207,12 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { ArrowDown } from '@element-plus/icons-vue';
 import SetMsgDrawer from './setMsgDrawer.vue';
 import ViewFormDrawer from './viewFormDrawer.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
 import { createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
+import { useDopeSheetStore } from '@/store/modules/dopeSheet';
 const { proxy } = getCurrentInstance();
 const DIYList = ref([]);
 const LFPageList = ref([]);
@@ -367,6 +388,20 @@ const handleVersion = async (row) => {
 const handleEfficiency = (row) => {
     const obj = { path: "/workflow/flowEfficiency", query: { formCode: row.key } };
     proxy.$tab.openPage(obj);
+}
+
+/** 更多下拉菜单命令处理 */
+const dopeSheetStore = useDopeSheetStore();
+const handleMoreCommand = (command, row) => {
+    if (command === 'dopeSheet') {
+        dopeSheetStore.init({
+            formCode: row.key,
+            formCodeName: row.value,
+            flowType: row.type
+        });
+        const obj = { path: "/workflow/dopeSheet", query: { formCode: row.key } };
+        proxy.$tab.openPage(obj);
+    }
 }
 
 /** 搜索按钮操作 */
