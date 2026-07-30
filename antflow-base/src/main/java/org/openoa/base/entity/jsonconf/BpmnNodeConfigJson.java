@@ -51,4 +51,10 @@ public class BpmnNodeConfigJson implements Serializable {
      * Back type for disagree action (migrated from bpm_process_node_back)
      */
     private Integer backType;
+
+    /**
+     * Target node ID (design-time UUID) for disagree-back behavior.
+     * Used when backType is 4 or 5 to specify which node to return to.
+     */
+    private String backToNodeId;
 }
