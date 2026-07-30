@@ -9,7 +9,7 @@
     <div class="node-wrap" v-if="nodeConfig.nodeType != 2 && nodeConfig.nodeType != 7">
         <div class="node-wrap-box"
             :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '') + (isTried && nodeConfig.error ? 'active error' : '')">
-            <div class="title" :style="`background: rgb(${bgColors[nodeConfig.nodeType]});`">
+            <div class="title" :style="`background: rgb(${titleBgColor});`">
                 <span v-if="nodeConfig.nodeType == 1">{{ nodeConfig.nodeName }}</span>
                 <template v-else>
                     <svg-icon icon-class="copy-user" class="iconfont" v-if="nodeConfig.nodeType == 6" />
@@ -145,7 +145,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList } from '@/utils/antflow/const'
+import { bgColors, placeholderList, PICK_CONDITION_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
@@ -198,6 +198,14 @@ let noticeIconShow = computed(() => {
 
 let labelIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.labelList);
+});
+
+/**节点标题背景色:选择条件节点使用专属树莓红,其余按nodeType取色 */
+let titleBgColor = computed(() => {
+    if (props.nodeConfig.isPickCondition) {
+        return PICK_CONDITION_COLOR;
+    }
+    return bgColors[props.nodeConfig.nodeType];
 });
 
 /**节点名称展示 */

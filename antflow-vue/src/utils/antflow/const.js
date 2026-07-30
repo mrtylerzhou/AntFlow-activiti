@@ -21,6 +21,8 @@ export let bgColors = [
   "46, 167, 167",
   "70, 130, 180",
 ]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送)'
+// 选择条件节点专属颜色(覆写审批人节点的橙色,使其一眼可辨)
+export const PICK_CONDITION_COLOR = "219, 54, 124"; // 树莓红
 export let placeholderList = [
   "",
   "发起人",
