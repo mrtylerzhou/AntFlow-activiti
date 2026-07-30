@@ -10,6 +10,8 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.util.NodeUtil;
 import org.openoa.base.constant.enums.*;
 import org.openoa.base.dto.PageDto;
@@ -421,9 +423,19 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         //查询可选分支
         try {
-            String currentNodeId = businessDataVo.getProcessRecordInfo().getNodeId();
+            String elementId = businessDataVo.getProcessRecordInfo().getNodeId();
             BpmnConf bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(businessDataVo.getFormCode());
-            if (bpmnConf == null || currentNodeId == null) return;
+            if (bpmnConf == null || elementId == null) return;
+            //elementId(taskDefKey)转换为bpmn_node表的node_id(UUID):先通过BpmVariableMultiplayer拿到主键id,再查bpmn_node获取node_id
+            String currentNodeId = null;
+            List<org.openoa.common.entity.BpmVariableMultiplayer> multiplayers = bpmVariableMultiplayerMapper.isMoreNode(businessDataVo.getProcessNumber(), elementId);
+            if (!CollectionUtils.isEmpty(multiplayers) && multiplayers.get(0).getNodeId() != null) {
+                BpmnNode currentNode = bpmnNodeService.getById(Long.valueOf(multiplayers.get(0).getNodeId()));
+                if (currentNode != null) {
+                    currentNodeId = currentNode.getNodeId();
+                }
+            }
+            if (currentNodeId == null) return;
             Long confId = bpmnConf.getId();
             //找到当前审批人节点下级的动态条件网关
             List<BpmnNode> gateways = bpmnNodeService.lambdaQuery()
