@@ -445,7 +445,12 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
                     .eq(BpmnNode::getIsDel, 0)
                     .list();
             if (CollectionUtils.isEmpty(gateways)) return;
-            String gatewayNodeId = gateways.get(0).getNodeId();
+            BpmnNode gateway = gateways.get(0);
+            String gatewayNodeId = gateway.getNodeId();
+            //动态条件并行网关:设置多选标识
+            if (Boolean.TRUE.equals(gateway.getIsParallel())) {
+                businessDataVo.setPickConditionMultiSelect(true);
+            }
             //找到网关下的条件节点(nodeType=3)
             List<BpmnNode> conditionNodes = bpmnNodeService.lambdaQuery()
                     .eq(BpmnNode::getConfId, confId)

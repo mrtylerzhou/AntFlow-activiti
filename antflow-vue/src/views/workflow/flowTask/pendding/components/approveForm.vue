@@ -25,14 +25,14 @@
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
         <!-- 选择条件:选择分支弹窗 -->
-        <el-dialog v-model="pickConditionDialogVisible" title="选择条件分支" width="400px" append-to-body>
-            <el-select v-model="selectedPickConditionBranch" placeholder="请选择条件分支" style="width: 100%;">
+        <el-dialog v-model="pickConditionDialogVisible" :title="pickConditionMultiSelect ? '选择条件分支（可多选）' : '选择条件分支'" width="400px" append-to-body>
+            <el-select v-model="selectedPickConditionBranch" :multiple="pickConditionMultiSelect" placeholder="请选择条件分支" style="width: 100%;">
                 <el-option v-for="branch in pickConditionBranches" :key="branch.id" :label="branch.name"
                     :value="branch.id" />
             </el-select>
             <template #footer>
                 <el-button @click="pickConditionDialogVisible = false">取消</el-button>
-                <el-button type="primary" :disabled="!selectedPickConditionBranch" @click="confirmPickCondition">确定</el-button>
+                <el-button type="primary" :disabled="!selectedPickConditionBranch || (Array.isArray(selectedPickConditionBranch) && selectedPickConditionBranch.length === 0)" @click="confirmPickCondition">确定</el-button>
             </template>
         </el-dialog>
         <ToBackStateImg v-if="hasResubmit" />
@@ -83,6 +83,7 @@ let approveSubData = ref(null);
 let pickConditionDialogVisible = ref(false);
 let selectedPickConditionBranch = ref(null);
 let pickConditionBranches = ref([]);
+let pickConditionMultiSelect = ref(false);
 
 let props = defineProps({
     approveFormData: {
@@ -123,7 +124,8 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.pickCondition:
             //选择条件:打开分支选择弹窗
             pickConditionBranches.value = approveSubData.value.pickConditionBranches || [];
-            selectedPickConditionBranch.value = null;
+            pickConditionMultiSelect.value = approveSubData.value.pickConditionMultiSelect === true;
+            selectedPickConditionBranch.value = pickConditionMultiSelect.value ? [] : null;
             pickConditionDialogVisible.value = true;
             break;
         case approvalButtonConf.agree:
@@ -338,11 +340,20 @@ const sureDialogBtn = async (data) => {
  */
 const confirmPickCondition = () => {
     if (!selectedPickConditionBranch.value) return;
-    //存储用户选择的分支
-    approveSubData.value.pickConditionNodeIds = [selectedPickConditionBranch.value];
-    //审批记录带上分支选择信息
-    const branchName = (pickConditionBranches.value.find(b => b.id === selectedPickConditionBranch.value) || {}).name || selectedPickConditionBranch.value;
-    approveSubData.value.approvalComment = `选择条件分支: ${branchName}`;
+    if (pickConditionMultiSelect.value) {
+        //多选模式(动态条件并行)
+        if (!Array.isArray(selectedPickConditionBranch.value) || selectedPickConditionBranch.value.length === 0) return;
+        approveSubData.value.pickConditionNodeIds = selectedPickConditionBranch.value;
+        const branchNames = selectedPickConditionBranch.value.map(id => {
+            return (pickConditionBranches.value.find(b => b.id === id) || {}).name || id;
+        });
+        approveSubData.value.approvalComment = `选择条件分支: ${branchNames.join('、')}`;
+    } else {
+        //单选模式(动态条件)
+        approveSubData.value.pickConditionNodeIds = [selectedPickConditionBranch.value];
+        const branchName = (pickConditionBranches.value.find(b => b.id === selectedPickConditionBranch.value) || {}).name || selectedPickConditionBranch.value;
+        approveSubData.value.approvalComment = `选择条件分支: ${branchName}`;
+    }
     pickConditionDialogVisible.value = false;
     //自动触发同意流程
     handleClickType.value = approvalButtonConf.agree;

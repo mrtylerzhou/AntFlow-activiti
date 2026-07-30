@@ -140,6 +140,10 @@ public class BusinessDataVo extends PageDto implements Serializable {
      * 选择条件:可选分支列表(getBusinessInfo时返回,id=nodeId,name=nodeName)
      */
     private List<BaseIdTranStruVo> pickConditionBranches;
+    /**
+     * 选择条件:是否多选模式(动态条件并行时为true,前端据此切换下拉为多选)
+     */
+    private Boolean pickConditionMultiSelect;
     private String paramStr;
 
     private String empId;

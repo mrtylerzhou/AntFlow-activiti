@@ -48,6 +48,14 @@ public class BpmnProcessMigrationServiceImpl {
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
 
     public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer){
+        migrateAndJumpToCurrent(currentTask, bpmBusinessProcess, vo, tripleConsumer, false);
+    }
+
+    /**
+     * 迁移并跳转到当前节点
+     * @param stopAtParallelFork 如果为true,表示动态条件并行场景:重启后自动完成到网关分叉点,让并行分支自然生成待办
+     */
+    public void migrateAndJumpToCurrent(Task currentTask, BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer, boolean stopAtParallelFork){
         String  currentTaskDefKey = currentTask.getTaskDefinitionKey();
         String currentComment=vo.getApprovalComment();
         BusinessDataVo submitVo= JSON.to(BusinessDataVo.class,vo);
@@ -57,6 +65,13 @@ public class BpmnProcessMigrationServiceImpl {
         submitVo.setOperationType(PROCESS_SUBMIT.getCode());
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
+
+        if (stopAtParallelFork) {
+            //动态条件并行:自动完成到网关分叉点,让并行分支自然生成
+            autoCompleteToParallelFork(bpmBusinessProcess, vo, tripleConsumer);
+            return;
+        }
+
         String procDefIdByInstId = taskMgmtMapper.findProcDefIdByInstId(bpmBusinessProcess.getProcInstId());
         if(StringUtils.isBlank(procDefIdByInstId)){
             throw new AFBizException("未能根据流程实例id查找到流程定义id,请检查逻辑!");
@@ -124,6 +139,33 @@ public class BpmnProcessMigrationServiceImpl {
             if (currentTaskDefKey.equals(id)) {
                 currentExecuted = true;
             }
+        }
+    }
+
+    /**
+     * 动态条件并行迁移:自动完成到网关分叉点,让并行分支自然生成待办
+     * 逻辑:重启后如果已有多个任务(网关已分叉)则停止;否则逐个完成单任务直到网关评估产生多分支
+     */
+    private void autoCompleteToParallelFork(BpmBusinessProcess bpmBusinessProcess, BusinessDataVo vo, TripleConsumer<BusinessDataVo,Task,BpmBusinessProcess> tripleConsumer) {
+        int maxIterations = 50;
+        for (int i = 0; i < maxIterations; i++) {
+            List<Task> tasks = taskService.createTaskQuery()
+                    .processInstanceId(bpmBusinessProcess.getProcInstId())
+                    .taskTenantId(MultiTenantUtil.getCurrentTenantId())
+                    .list();
+            if (CollectionUtils.isEmpty(tasks)) {
+                break;
+            }
+            //多个任务存在 → 网关已分叉,并行分支待办已生成,停止
+            if (tasks.size() > 1) {
+                break;
+            }
+            //单任务:自动完成它,然后检查网关是否分叉
+            Task task = tasks.get(0);
+            vo.setStartUserId(task.getAssignee());
+            vo.setStartUserName(task.getAssigneeName());
+            vo.setApprovalComment(StringConstants.CURRENT_USER_ALREADY_PROCESSED);
+            tripleConsumer.accept(vo, task, bpmBusinessProcess);
         }
     }
 }

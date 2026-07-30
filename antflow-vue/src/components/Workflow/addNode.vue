@@ -93,6 +93,18 @@
                             <p>选择条件</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item dynamic-parallel-node" @click="addType(15)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="dynamic-condition" class="iconfont" />
+                            <p>动态条件并行</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item select-dynamic-parallel-node" @click="addType(16)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="select-dynamic-parallel" class="iconfont" />
+                            <p>选择动态条件并行</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -171,6 +183,14 @@ const createConditionCopyNode = (childNode) => {
 const createPickConditionNode = (childNode) => {
     return NodeUtils.createPickConditionNode(childNode);
 }
+/**创建动态条件并行网关 */
+const createDynamicConditionParallelNode = (childNode) => {
+    return NodeUtils.createDynamicConditionParallelNode(childNode);
+}
+/**创建选择动态条件并行组合节点（审批人 + 动态条件并行网关） */
+const createSelectDynamicParallelNode = (childNode) => {
+    return NodeUtils.createSelectDynamicParallelNode(childNode);
+}
 /**创建办理节点（一次性生成两个审批人节点） */
 const createProcessNode = (childNode) => {
     return NodeUtils.createProcessNode(childNode);
@@ -210,6 +230,8 @@ const createNodeMap = new Map([
     [12, createConditionApproveNode],
     [13, createConditionCopyNode],
     [14, createPickConditionNode],
+    [15, createDynamicConditionParallelNode],
+    [16, createSelectDynamicParallelNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -406,6 +428,18 @@ const confirmClone = () => {
         &.condition {
             .item-wrapper {
                 color: #15bc83
+            }
+        }
+
+        &.dynamic-parallel-node {
+            .item-wrapper {
+                color: #e74c3c
+            }
+        }
+
+        &.select-dynamic-parallel-node {
+            .item-wrapper {
+                color: #8e44ad
             }
         }
 

@@ -10,7 +10,7 @@
             .main { fill: #FF850A; }
             .white { fill: #FFFFFF; }
             
-            /* 实线样式：中间和右侧 */
+            /* 实线样式：仅用于右侧 */
             .line-solid { 
                 fill: none; 
                 stroke: #FF850A; 
@@ -19,7 +19,7 @@
                 stroke-linejoin: round; 
             }
             
-            /* 虚线样式：仅最左侧 */
+            /* 虚线样式：用于左侧和中间竖线 */
             .line-dashed { 
                 fill: none; 
                 stroke: #FF850A; 
@@ -35,9 +35,9 @@
     <!-- 1. 节点主体结构 -->
     <g id="complex-structure">
         <!-- 连线部分 -->
-        <path class="line-dashed" d="M32 22 H10 V40" /> <!-- 最左侧虚线 -->
-        <path class="line-solid" d="M32 12 V40" />       <!-- 中间实线 -->
-        <path class="line-solid" d="M32 22 H54 V40" />  <!-- 右侧实线 -->
+        <path class="line-dashed" d="M32 22 H10 V40" /> <!-- 左侧虚线 -->
+        <path class="line-dashed" d="M32 12 V40" />       <!-- 中间改为虚线 -->
+        <path class="line-solid" d="M32 22 H54 V40" />  <!-- 右侧保持实线 -->
 
         <!-- 节点方块 -->
         <rect class="main" x="24" y="4" width="16" height="10" rx="2" />
@@ -46,7 +46,7 @@
         <rect class="main" x="46" y="40" width="16" height="10" rx="2" /> <!-- 右子 -->
     </g>
 
-    <!-- 2. 左下角：四叶风扇标识 (新增加以区分) -->
+    <!-- 2. 左下角：四叶风扇标识 -->
     <g transform="translate(10, 50)">
         <circle class="mask-bg" cx="0" cy="0" r="14" />
         <circle class="main" cx="0" cy="0" r="11" />
@@ -59,7 +59,7 @@
         </g>
     </g>
 
-    <!-- 3. 右下角：动态螺旋标识 (保持不变) -->
+    <!-- 3. 右下角：动态螺旋标识 -->
     <g transform="translate(54, 50)">
         <circle class="mask-bg" cx="0" cy="0" r="14" />
         <circle class="main" cx="0" cy="0" r="11" />

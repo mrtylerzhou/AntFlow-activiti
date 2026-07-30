@@ -13,6 +13,7 @@ import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
@@ -28,6 +29,8 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNodeSubmitBizServ
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -71,6 +74,10 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
 
     @Autowired
     private BpmnConfBizService bpmnConfBizService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
+    @Autowired
+    private BpmnConfService bpmnConfService;
 
     private static final LoadingCache<Long, BpmnConfVo> cache = CacheBuilder.newBuilder()
             .maximumSize(1000) // 最大缓存数量
@@ -136,7 +143,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                     //选择条件:用户选定了分支则无条件触发迁移,强制走选定分支(不检测条件是否变化)
                     if (StringConstants.AF_SYSLABEL_PICK_CONDITION.equals(nodeLabelVO.getLabelValue())) {
                         if (!CollectionUtils.isEmpty(vo.getPickConditionNodeIds())) {
-                            bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion);
+                            boolean isParallel = isDownstreamGatewayParallel(bpmBusinessProcess);
+                            bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion, isParallel);
                             bpmVerifyInfoSupplement(vo, task, bpmBusinessProcess);
                             return;
                         }
@@ -145,7 +153,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                         if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
                             boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);
                             if(conditionsChanged){
-                                bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion);
+                                boolean isParallel = isDownstreamGatewayParallel(bpmBusinessProcess);
+                                bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion, isParallel);
                                 bpmVerifyInfoSupplement(vo, task, bpmBusinessProcess);
                                 return;
                             }
@@ -163,7 +172,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
                             if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
                                 boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);
                                 if(conditionsChanged){
-                                    bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion);
+                                    boolean isParallel = Boolean.TRUE.equals(nodeVo.getIsParallel());
+                                    bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion, isParallel);
                                     bpmVerifyInfoSupplement(vo, task, bpmBusinessProcess);
                                     return;
                                 }
@@ -265,6 +275,29 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
         }
         //submit process
         processNodeSubmitBizService.processComplete(task);
+    }
+
+    /**
+     * 判断当前流程的下游网关是否为动态条件并行网关(isDynamicCondition=true + isParallel=true)
+     */
+    private boolean isDownstreamGatewayParallel(BpmBusinessProcess bpmBusinessProcess) {
+        try {
+            String version = bpmBusinessProcess.getVersion();
+            if (StringUtils.isEmpty(version)) return false;
+            org.openoa.base.entity.BpmnConf bpmnConf = bpmnConfService.getOne(
+                    new QueryWrapper<org.openoa.base.entity.BpmnConf>().eq("bpmn_code", version));
+            if (bpmnConf == null) return false;
+            List<BpmnNode> gateways = bpmnNodeService.lambdaQuery()
+                    .eq(BpmnNode::getConfId, bpmnConf.getId())
+                    .eq(BpmnNode::getNodeType, 2)
+                    .eq(BpmnNode::getIsDynamicCondition, true)
+                    .eq(BpmnNode::getIsParallel, true)
+                    .eq(BpmnNode::getIsDel, 0)
+                    .list();
+            return !CollectionUtils.isEmpty(gateways);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

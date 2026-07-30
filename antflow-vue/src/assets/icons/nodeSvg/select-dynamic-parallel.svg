@@ -10,52 +10,73 @@
             .main { fill: #FF850A; }
             .white { fill: #FFFFFF; }
             
-            /* 并行连线样式：全部使用加粗实线 */
-            .line-parallel { 
+            /* 实线样式 */
+            .line-solid { 
                 fill: none; 
                 stroke: #FF850A; 
-                stroke-width: 3; 
+                stroke-width: 2.5; 
                 stroke-linecap: round; 
                 stroke-linejoin: round; 
             }
             
-            /* 隔离层样式 */
+            /* 虚线样式：最左侧使用 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 2.5; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 4 4;
+            }
+            
             .mask-bg { fill: #FFFFFF; }
         </style>
     </defs>
 
-    <!-- 1. 并行节点主体结构 -->
-    <g id="parallel-structure">
-        <!-- 连线：全部为实线，体现同时并行的含义 -->
-        <!-- 主分叉桥梁 -->
-        <path class="line-parallel" d="M32 12 V22 H10 V40 M32 22 V40 M32 22 H54 V40" />
-
-        <!-- 节点方块 -->
-        <!-- 顶部父节点 -->
-        <rect class="main" x="24" y="4" width="16" height="10" rx="2" />
-        
-        <!-- 底部三个并行子节点 -->
-        <rect class="main" x="2" y="40" width="16" height="10" rx="2" />  <!-- 左 -->
-        <rect class="main" x="24" y="40" width="16" height="10" rx="2" /> <!-- 中 -->
-        <rect class="main" x="46" y="40" width="16" height="10" rx="2" /> <!-- 右 -->
+    <!-- 1. 连接线部分 -->
+    <g id="connectors">
+        <!-- 最左侧虚线 -->
+        <path class="line-dashed" d="M32 30 H12 V44" /> 
+        <!-- 中间实线 -->
+        <path class="line-solid" d="M32 25 V44" />       
+        <!-- 右侧实线 -->
+        <path class="line-solid" d="M32 30 H52 V44" />  
     </g>
 
-    <!-- 2. 左下角：四叶风扇标识 -->
-    <g transform="translate(10, 50)">
-        <!-- 隔离层：白色遮罩，巧妙切开底层的分支线与方块 -->
+    <!-- 2. 审批人 (顶层父节点) -->
+    <g id="approver-node" transform="translate(4, -2) scale(0.85)">
+        <circle class="main" cx="32" cy="12" r="9"/>
+        <path class="main" d="
+            M18 40
+            C18 30 24 24 32 24
+            C40 24 46 30 46 40
+            L46 42
+            C46 44 44 45 42 45
+            L22 45
+            C20 45 18 44 18 42
+            Z"/>
+    </g>
+
+    <!-- 3. 子节点方块 -->
+    <g id="child-nodes">
+        <rect class="main" x="6" y="44" width="12" height="8" rx="1.5" /> 
+        <rect class="main" x="26" y="44" width="12" height="8" rx="1.5" /> 
+        <rect class="main" x="46" y="44" width="12" height="8" rx="1.5" /> 
+    </g>
+
+    <!-- 4. 左下角：四叶风扇标识 (隔离层 + 圆底 + 反白风扇) -->
+    <g transform="translate(12, 52)">
         <circle class="mask-bg" cx="0" cy="0" r="14" />
         <circle class="main" cx="0" cy="0" r="11" />
-        <!-- 四叶风扇叶片 -->
         <g transform="rotate(45)">
-            <path class="white" d="M0,0 L-3,-5 A3.5,3.5 0 0,1 3,-5 Z" transform="rotate(0)"/>
-            <path class="white" d="M0,0 L-3,-5 A3.5,3.5 0 0,1 3,-5 Z" transform="rotate(90)"/>
-            <path class="white" d="M0,0 L-3,-5 A3.5,3.5 0 0,1 3,-5 Z" transform="rotate(180)"/>
-            <path class="white" d="M0,0 L-3,-5 A3.5,3.5 0 0,1 3,-5 Z" transform="rotate(270)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(0)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(90)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(180)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(270)"/>
         </g>
     </g>
 
-    <!-- 3. 右下角：动态螺旋标识 (调整至对称比例与坐标) -->
-    <g transform="translate(54, 50)">
+    <!-- 5. 右下角：动态螺旋标识 (隔离层 + 圆底 + 反白路径) -->
+    <g transform="translate(52, 52)">
         <circle class="mask-bg" cx="0" cy="0" r="14" />
         <circle class="main" cx="0" cy="0" r="11" />
         <g transform="scale(0.016) translate(-512, -512)">
