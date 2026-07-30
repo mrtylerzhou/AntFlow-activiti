@@ -36,6 +36,18 @@ public class ConditionServiceImpl implements ConditionService {
     public boolean checkMatchCondition(BpmnNodeVo bpmnNodeVo, BpmnNodeConditionsConfBaseVo conditionsConf
             , BpmnStartConditionsVo bpmnStartConditionsVo,boolean isDynamicConditionGateway) {
         String nodeId=bpmnNodeVo.getNodeId();
+        //选择条件:用户强制指定分支,跳过自然评估,匹配则true,不匹配则false
+        if(isDynamicConditionGateway && !CollectionUtils.isEmpty(bpmnStartConditionsVo.getForcedConditionNodeIds())){
+            boolean forced = bpmnStartConditionsVo.getForcedConditionNodeIds().contains(nodeId);
+            if(forced && !Boolean.TRUE.equals(bpmnStartConditionsVo.isPreview())){
+                BpmDynamicConditionChoosen dynamicConditionChoosen=new BpmDynamicConditionChoosen();
+                dynamicConditionChoosen.setProcessNumber(bpmnStartConditionsVo.getProcessNum());
+                dynamicConditionChoosen.setNodeId(nodeId);
+                dynamicConditionChoosen.setNodeFrom(bpmnNodeVo.getNodeFrom());
+                dynamicConditionChoosenMapper.insert(dynamicConditionChoosen);
+            }
+            return forced;
+        }
         Map<Integer, List<Integer>> groupedConditionParamTypes = conditionsConf.getGroupedConditionParamTypes();
         if(CollectionUtils.isEmpty(groupedConditionParamTypes)){
             return false;

@@ -132,6 +132,14 @@ public class BusinessDataVo extends PageDto implements Serializable {
      */
     private List<BaseIdTranStruVo> approvalEmpls;
     private List<BaseIdTranStruVo> nextNodeApprovers;
+    /**
+     * 选择条件:用户选定的动态条件分支nodeId列表(当前取第一个元素,后续扩展条件并行)
+     */
+    private List<String> pickConditionNodeIds;
+    /**
+     * 选择条件:可选分支列表(getBusinessInfo时返回,id=nodeId,name=nodeName)
+     */
+    private List<BaseIdTranStruVo> pickConditionBranches;
     private String paramStr;
 
     private String empId;

@@ -151,6 +151,10 @@ public class BpmnStartConditionsVo {
     private Map<String,Object> lfConditions;
     private  Boolean isMigration;
     private boolean isPreview;
+    /**
+     * 选择条件:用户强制指定的动态条件分支nodeId列表,条件评估时匹配则返回true,不匹配返回false
+     */
+    private List<String> forcedConditionNodeIds;
     private BusinessDataVo businessDataVo;
     private boolean isLowCodeFlow;
     private Integer deduplicationType;

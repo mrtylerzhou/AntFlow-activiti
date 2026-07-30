@@ -169,6 +169,7 @@ export class approvalButtonConf {
   static drawBackAgree = 32; //撤销同意
   static appointNextNodeApprover = 38; //指定下一节点审批人
   static oppose = 39; //反对(仲裁签)
+  static pickCondition = 40; //选择分支(选择条件)
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -200,6 +201,7 @@ export class approvalButtonConf {
     32: "撤销同意",
     38: "指定下一节点审批人",
     39: "反对", //仲裁签场景下反对
+    40: "选择分支", //选择条件
   };
 }
 
@@ -209,6 +211,7 @@ export const PREV_NODE_APPOINTED_VIRTUAL_USER_ID = "-4"; //AFSpecialAssigneeEnum
 export const PREV_NODE_APPOINTED_VIRTUAL_USER_NAME = "上一节点指定审批人";
 export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
 export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
+export const LABEL_PICK_CONDITION = "af_syslabel_pick_condition";
 /**
  * 流程设计审批按钮显示
  */
@@ -299,6 +302,7 @@ export let approveButtonColor = {
   21: "primary", //转办
   23: "warning", //驳回
   32: "danger", //撤销同意
+  40: "warning", //选择分支
   99: "success", //处理中
   100: "info",
 };

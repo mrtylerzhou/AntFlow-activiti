@@ -11,6 +11,7 @@
             <el-tag size="small" :type="nodeTypeTagType(row.nodeType)" style="margin-left: 4px;">
               {{ nodeTypeLabel(row.nodeType) }}
             </el-tag>
+            <el-tag v-if="row.isPickCondition" size="small" type="warning" style="margin-left: 4px;">选择条件</el-tag>
           </div>
         </template>
       </el-table-column>

@@ -18,6 +18,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO prevNodeAppointed=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PREV_NODE_APPOINTED,"上一节点指定审批人");
     /**上一节点具有指定下一节点审批人的能力,审批页渲染[指定下一节点审批人]按钮*/
     BpmnNodeLabelVO appointNextNodeApprover=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_APPOINT_NEXT_NODE_APPROVER,"指定下一节点审批人");
+    /**选择条件:审批人节点贴此标签,运行时渲染[选择分支]下拉框,审批时强制走用户选定的动态条件分支*/
+    BpmnNodeLabelVO pickCondition=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PICK_CONDITION,"选择条件节点");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
       copyNodeV2,automaticNode,conditionCopyNode
     );

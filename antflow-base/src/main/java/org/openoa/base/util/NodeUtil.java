@@ -226,6 +226,9 @@ public class NodeUtil {
             if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setIsPrevNodeAppointed(true);
             }
+            if(NodeLabelConstants.pickCondition.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setIsPickCondition(true);
+            }
         }
     }
 }

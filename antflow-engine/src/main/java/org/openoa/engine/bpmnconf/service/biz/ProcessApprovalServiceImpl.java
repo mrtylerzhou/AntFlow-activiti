@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_JP;
 import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER;
+import static org.openoa.base.constant.enums.ProcessOperationEnum.BUTTON_TYPE_PICK_CONDITION;
 import static org.openoa.base.constant.enums.ProcessStateEnum.END_STATE;
 import static org.openoa.base.constant.enums.ProcessStateEnum.REJECT_STATE;
 
@@ -84,6 +85,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
     private TaskService taskService;
     @Autowired
     private BpmVariableMultiplayerMapper bpmVariableMultiplayerMapper;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
     /**
      * button operation
@@ -285,6 +288,10 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if (hasAppointNextNodeApproverLabel(vo)) {
             addAppointNextNodeApproverButton(vo);
         }
+        //选择条件:当前节点贴有 pick_condition 标签时,渲染[选择分支]按钮并返回可选分支列表
+        if (hasPickConditionLabel(vo)) {
+            addPickConditionButtonAndBranches(vo);
+        }
         if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
             return vo;
         }
@@ -378,6 +385,90 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         List<ProcessActionButtonVo> pcProcButtons = pcButtons.get(ButtonPageTypeEnum.AUDIT.getName());
         if (pcProcButtons != null && !pcProcButtons.stream().anyMatch(a -> BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER.getCode().equals(a.getButtonType()))) {
             pcProcButtons.add(button);
+        }
+    }
+
+    /**
+     * 检查当前节点是否贴有选择条件标签
+     */
+    private boolean hasPickConditionLabel(BusinessDataVo businessDataVo) {
+        try {
+            if (businessDataVo == null || businessDataVo.getProcessRecordInfo() == null) {
+                return false;
+            }
+            String formKey = businessDataVo.getProcessRecordInfo().getFormKey();
+            if (org.apache.commons.lang3.StringUtils.isEmpty(formKey)) {
+                return false;
+            }
+            NodeExtraInfoDTO extraInfoDTO = com.alibaba.fastjson2.JSON.parseObject(formKey, NodeExtraInfoDTO.class);
+            return NodeUtil.nodeLabelContainsAny(extraInfoDTO, StringConstants.AF_SYSLABEL_PICK_CONDITION);
+        } catch (Exception e) {
+            log.warn("hasPickConditionLabel check failed", e);
+            return false;
+        }
+    }
+
+    /**
+     * 选择条件:添加[选择分支]按钮并查询可选分支列表(排除默认条件分支)
+     */
+    private void addPickConditionButtonAndBranches(BusinessDataVo businessDataVo) {
+        //添加按钮
+        ProcessActionButtonVo button = ProcessActionButtonVo
+                .builder()
+                .buttonType(BUTTON_TYPE_PICK_CONDITION.getCode())
+                .name(BUTTON_TYPE_PICK_CONDITION.getDesc())
+                .build();
+        Map<String, List<ProcessActionButtonVo>> pcButtons = businessDataVo.getProcessRecordInfo().getPcButtons();
+        List<ProcessActionButtonVo> pcProcButtons = pcButtons.get(ButtonPageTypeEnum.AUDIT.getName());
+        if (pcProcButtons != null && pcProcButtons.stream().noneMatch(a -> BUTTON_TYPE_PICK_CONDITION.getCode().equals(a.getButtonType()))) {
+            pcProcButtons.add(button);
+        }
+        //查询可选分支
+        try {
+            String currentNodeId = businessDataVo.getProcessRecordInfo().getNodeId();
+            BpmnConf bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(businessDataVo.getFormCode());
+            if (bpmnConf == null || currentNodeId == null) return;
+            Long confId = bpmnConf.getId();
+            //找到当前审批人节点下级的动态条件网关
+            List<BpmnNode> gateways = bpmnNodeService.lambdaQuery()
+                    .eq(BpmnNode::getConfId, confId)
+                    .eq(BpmnNode::getNodeFrom, currentNodeId)
+                    .eq(BpmnNode::getIsDynamicCondition, true)
+                    .eq(BpmnNode::getIsDel, 0)
+                    .list();
+            if (CollectionUtils.isEmpty(gateways)) return;
+            String gatewayNodeId = gateways.get(0).getNodeId();
+            //找到网关下的条件节点(nodeType=3)
+            List<BpmnNode> conditionNodes = bpmnNodeService.lambdaQuery()
+                    .eq(BpmnNode::getConfId, confId)
+                    .eq(BpmnNode::getNodeFrom, gatewayNodeId)
+                    .eq(BpmnNode::getNodeType, NodeTypeEnum.NODE_TYPE_CONDITIONS.getCode())
+                    .eq(BpmnNode::getIsDel, 0)
+                    .list();
+            //过滤默认条件分支,构建可选分支列表
+            List<BaseIdTranStruVo> branches = conditionNodes.stream()
+                    .filter(node -> !isDefaultConditionNode(node))
+                    .map(node -> BaseIdTranStruVo.builder().id(node.getNodeId()).name(node.getNodeName()).build())
+                    .collect(Collectors.toList());
+            businessDataVo.setPickConditionBranches(branches);
+        } catch (Exception e) {
+            log.warn("addPickConditionButtonAndBranches query branches failed", e);
+        }
+    }
+
+    /**
+     * 判断条件节点是否为默认条件(解析nodeConfigJson中的conditionsConf)
+     */
+    private boolean isDefaultConditionNode(BpmnNode node) {
+        try {
+            if (org.apache.commons.lang3.StringUtils.isEmpty(node.getNodeConfigJson())) return false;
+            BpmnNodeConfigJson configJson = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+            if (configJson == null || configJson.getConditionsConf() == null) return false;
+            List<org.openoa.base.entity.jsonconf.BpmnNodeConditionsConfJson.ConditionGroup> groups = configJson.getConditionsConf().getConditionGroups();
+            if (CollectionUtils.isEmpty(groups)) return false;
+            return Integer.valueOf(1).equals(groups.get(0).getIsDefault());
+        } catch (Exception e) {
+            return false;
         }
     }
 

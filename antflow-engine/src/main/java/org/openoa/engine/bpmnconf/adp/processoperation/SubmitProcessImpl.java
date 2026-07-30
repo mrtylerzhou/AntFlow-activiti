@@ -74,6 +74,10 @@ public class SubmitProcessImpl implements ProcessOperationAdaptor {
                 throw new AFBizException("the process has already been submitted！");
             }
         }
+        //选择条件:将用户选定的分支传递到条件评估层,强制走选定分支
+        if(!org.springframework.util.CollectionUtils.isEmpty(businessDataVo.getPickConditionNodeIds())){
+            bpmnStartConditionsVo.setForcedConditionNodeIds(businessDataVo.getPickConditionNodeIds());
+        }
 
         //process's name
         BpmProcessVo bpmProcessVo = bpmnConfMapper.getBpmProcessVoByFormCode(businessDataVo.getFormCode());

@@ -212,6 +212,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isPrevNodeAppointed;
     /**
+     * 标识当前节点为"选择条件"审批人类型
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴 af_syslabel_pick_condition 标签
+     */
+    private Boolean isPickCondition;
+    /**
      * Auto node condition configuration (received from frontend during edit,
      * sent to frontend during display). Stored in node_config_json.autoNodeConf.
      */

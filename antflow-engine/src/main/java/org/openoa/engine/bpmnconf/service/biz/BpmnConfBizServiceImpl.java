@@ -164,6 +164,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         ProcessorFactory.executePreWriteProcessors(bpmnConfVo);
         List<BpmnNodeVo> confNodes = bpmnConfVo.getNodes();
+        //选择条件:构建nodeId→NodeVo映射,用于验证isPickCondition节点的子节点是否包含动态条件网关
+        Map<String, BpmnNodeVo> nodeIdMap = confNodes.stream()
+                .filter(n -> n.getNodeId() != null)
+                .collect(Collectors.toMap(BpmnNodeVo::getNodeId, n -> n, (a, b) -> a));
         int hasStartUserChooseModules=0;
         int hasCopy=0;
         int hasLastNodeCopy=0;
@@ -198,6 +202,17 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 }
                if(nodeLabelVO!=null){
                    bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
+               }
+               //选择条件:验证下游存在动态条件网关(nodeType=2)才贴标签,否则退化为普通审批人
+               if(Boolean.TRUE.equals(bpmnNodeVo.getIsPickCondition())){
+                   boolean hasDynamicGatewayChild = !CollectionUtils.isEmpty(bpmnNodeVo.getNodeTo())
+                           && bpmnNodeVo.getNodeTo().stream().anyMatch(childId -> {
+                               BpmnNodeVo child = nodeIdMap.get(childId);
+                               return child != null && NodeTypeEnum.NODE_TYPE_GATEWAY.getCode().equals(child.getNodeType());
+                           });
+                   if(hasDynamicGatewayChild){
+                       bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.pickCondition);
+                   }
                }
             }
             bpmnNodeVo.setIsOutSideProcess(isOutSideProcess);

@@ -133,6 +133,14 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
             List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
             if (!CollectionUtils.isEmpty(nodeLabelVOS)) {
                 for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
+                    //选择条件:用户选定了分支则无条件触发迁移,强制走选定分支(不检测条件是否变化)
+                    if (StringConstants.AF_SYSLABEL_PICK_CONDITION.equals(nodeLabelVO.getLabelValue())) {
+                        if (!CollectionUtils.isEmpty(vo.getPickConditionNodeIds())) {
+                            bpmnProcessMigrationService.migrateAndJumpToCurrent(task, bpmBusinessProcess, vo, this::executeTaskCompletion);
+                            bpmVerifyInfoSupplement(vo, task, bpmBusinessProcess);
+                            return;
+                        }
+                    }
                     if (StringConstants.DYNAMIC_CONDITION_NODE.equals(nodeLabelVO.getLabelValue())) {
                         if (tasks.size() == 1) {//只有当前节点到最后一个审批人了才执行迁移
                             boolean conditionsChanged = bpmnConfCommonService.migrationCheckConditionsChange(vo);

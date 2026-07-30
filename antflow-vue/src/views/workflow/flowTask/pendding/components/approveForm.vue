@@ -24,6 +24,17 @@
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
+        <!-- 选择条件:选择分支弹窗 -->
+        <el-dialog v-model="pickConditionDialogVisible" title="选择条件分支" width="400px" append-to-body>
+            <el-select v-model="selectedPickConditionBranch" placeholder="请选择条件分支" style="width: 100%;">
+                <el-option v-for="branch in pickConditionBranches" :key="branch.id" :label="branch.name"
+                    :value="branch.id" />
+            </el-select>
+            <template #footer>
+                <el-button @click="pickConditionDialogVisible = false">取消</el-button>
+                <el-button type="primary" :disabled="!selectedPickConditionBranch" @click="confirmPickCondition">确定</el-button>
+            </template>
+        </el-dialog>
         <ToBackStateImg v-if="hasResubmit" />
     </div>
 </template>
@@ -39,7 +50,7 @@ import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
-import { isTrue } from '@/utils/antflow/ObjectUtils';
+import { isTrue, isEmptyArray } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
 const { width, height } = useWindowSize()
@@ -68,6 +79,10 @@ let useExternalForm = ref(false);
 const componentFormRef = ref(null);
 const handleClickType = ref(null);
 let approveSubData = ref(null);
+//选择条件相关状态
+let pickConditionDialogVisible = ref(false);
+let selectedPickConditionBranch = ref(null);
+let pickConditionBranches = ref([]);
 
 let props = defineProps({
     approveFormData: {
@@ -105,10 +120,23 @@ const clickApproveSubmit = async (btnType) => {
             dialogTitle.value = `设置${approvalButtonConf.buttonsObj[btnType]}人员`;
             addUserDialog();
             break;
+        case approvalButtonConf.pickCondition:
+            //选择条件:打开分支选择弹窗
+            pickConditionBranches.value = approveSubData.value.pickConditionBranches || [];
+            selectedPickConditionBranch.value = null;
+            pickConditionDialogVisible.value = true;
+            break;
         case approvalButtonConf.agree:
         case approvalButtonConf.noAgree:
         case approvalButtonConf.resubmit:
         case approvalButtonConf.oppose:
+            //选择条件校验:同意时如果存在可选分支但未选择,则拦截
+            if (btnType == approvalButtonConf.agree
+                && !isEmptyArray(approveSubData.value.pickConditionBranches)
+                && isEmptyArray(approveSubData.value.pickConditionNodeIds)) {
+                proxy.$modal.msgWarning("请先点击[选择分支]按钮选择条件分支");
+                return;
+            }
             openApproveDialog.value = true;
             approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
             break;
@@ -233,6 +261,10 @@ const preview = async (viewData) => {
                 //判断是否包含 重新提交 按钮
                 hasResubmit.value = approvalButtons.value.some(c => c.value == approvalButtonConf.resubmit);
             }
+            //选择条件:同步可选分支列表到提交数据
+            if (response.data.pickConditionBranches) {
+                approveSubData.value.pickConditionBranches = response.data.pickConditionBranches;
+            }
             try {
                 if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接
                     const responseData = response.data;
@@ -300,6 +332,22 @@ const sureDialogBtn = async (data) => {
     }
     //console.log('sureDialogBtn==========approveSubData=============', JSON.stringify(approveSubData));
     await approveProcess(approveSubData.value);
+}
+/**
+ * 选择条件:确认分支选择后自动触发同意流程
+ */
+const confirmPickCondition = () => {
+    if (!selectedPickConditionBranch.value) return;
+    //存储用户选择的分支
+    approveSubData.value.pickConditionNodeIds = [selectedPickConditionBranch.value];
+    //审批记录带上分支选择信息
+    const branchName = (pickConditionBranches.value.find(b => b.id === selectedPickConditionBranch.value) || {}).name || selectedPickConditionBranch.value;
+    approveSubData.value.approvalComment = `选择条件分支: ${branchName}`;
+    pickConditionDialogVisible.value = false;
+    //自动触发同意流程
+    handleClickType.value = approvalButtonConf.agree;
+    openApproveDialog.value = true;
+    approveDialogTitle.value = approvalButtonConf.buttonsObj[approvalButtonConf.agree];
 }
 /**
  * 选人员Dialog 弹框

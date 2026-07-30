@@ -347,6 +347,22 @@ export class NodeUtils {
     return gatewayNode;
   }
   /**
+   * 创建选择条件组合节点（审批人节点 + 动态条件网关）
+   * 上方是审批人节点(isPickCondition=true)，下方是动态条件网关作为其childNode
+   * @param {Object} child - 原后续节点
+   * @returns {Object} 审批人节点（其childNode指向动态条件网关）
+   */
+  static createPickConditionNode(child) {
+    // 先创建动态条件网关（下方）
+    let gatewayNode = this.createDynamicConditionWayNode(child);
+    // 再创建审批人节点（上方），childNode指向网关
+    let approveNode = this.createApproveNode(gatewayNode);
+    approveNode.nodeName = "选择条件审批人";
+    approveNode.nodeDisplayName = "选择条件审批人";
+    approveNode.isPickCondition = true;
+    return approveNode;
+  }
+  /**
    * 创建条件并行网关对象
    * @returns object
    */

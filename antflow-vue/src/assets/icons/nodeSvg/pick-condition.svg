@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 实线样式：用于主轴 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 2; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            /* 虚线样式：用于分支 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 2; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 3 2; 
+            }
+            /* 隔离遮罩 */
+            .mask-bg { fill: #FFFFFF; }
+        </style>
+    </defs>
+
+    <!-- 1. 审批人主体部分 -->
+    <g id="character">
+        <circle class="main" cx="28" cy="16" r="10"/>
+        <path class="main" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z"/>
+    </g>
+
+    <!-- 2. 右下角条件选择角标 -->
+    <g transform="translate(46, 46)">
+        <!-- 核心隔离层：切开人物肩膀，保证视觉清爽 -->
+        <circle class="mask-bg" cx="0" cy="0" r="17" />
+        
+        <!-- 缩小版的条件节点结构 -->
+        <g transform="translate(-1, -2)">
+            <!-- 连线：一实两虚 -->
+            <path class="line-solid" d="M0 -8 V6" /> <!-- 中间实线 -->
+            <path class="line-dashed" d="M0 -2 H-8 V6" /> <!-- 左虚线 -->
+            <path class="line-dashed" d="M0 -2 H8 V6" />  <!-- 右虚线 -->
+
+            <!-- 节点方块 -->
+            <rect class="main" x="-4" y="-12" width="8" height="5" rx="1" /> <!-- 顶 -->
+            <rect class="main" x="-11" y="6" width="6" height="4" rx="1" />  <!-- 左 -->
+            <rect class="main" x="-3" y="6" width="6" height="4" rx="1" />   <!-- 中 -->
+            <rect class="main" x="5" y="6" width="6" height="4" rx="1" />    <!-- 右 -->
+        </g>
+    </g>
+
+</svg>

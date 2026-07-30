@@ -87,6 +87,12 @@
                             <p>条件抄送</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item pick-condition-node" @click="addType(14)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="pick-condition" class="iconfont" />
+                            <p>选择条件</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -161,6 +167,10 @@ const createConditionApproveNode = (childNode) => {
 const createConditionCopyNode = (childNode) => {
     return NodeUtils.createConditionCopyNode(childNode);
 }
+/**创建选择条件组合节点（审批人 + 动态条件网关） */
+const createPickConditionNode = (childNode) => {
+    return NodeUtils.createPickConditionNode(childNode);
+}
 /**创建办理节点（一次性生成两个审批人节点） */
 const createProcessNode = (childNode) => {
     return NodeUtils.createProcessNode(childNode);
@@ -199,6 +209,7 @@ const createNodeMap = new Map([
     [11, createAutoProcessNode],
     [12, createConditionApproveNode],
     [13, createConditionCopyNode],
+    [14, createPickConditionNode],
 ]);
 const addType = (type) => {
     visible.value = false;

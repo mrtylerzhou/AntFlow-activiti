@@ -55,6 +55,13 @@ export class FormatCommitUtils {
         node.childNode.nodeFrom = node.nodeId;
         traverse(node.childNode);
       }
+      //选择条件:如果isPickCondition节点的子节点不是动态条件网关,清除标记(前端兆底)
+      if (node.isPickCondition) {
+        let child = node.childNode;
+        if (!child || child.nodeType != 2 || !child.isDynamicCondition) {
+          delete node.isPickCondition;
+        }
+      }
       delete node.childNode;
       nodeData.push(node);
     }
