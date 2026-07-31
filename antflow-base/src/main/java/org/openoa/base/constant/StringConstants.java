@@ -58,6 +58,8 @@ public class StringConstants {
     public static final String AF_SYSLABEL_APPOINT_NEXT_NODE_APPROVER="af_syslabel_appoint_next_node_approver";
     /**选择条件:审批人节点贴此标签,运行时渲染[选择分支]按钮,审批时强制走用户选定的动态条件分支*/
     public static final String AF_SYSLABEL_PICK_CONDITION="af_syslabel_pick_condition";
+    /**不同意按钮配置了退回行为时贴此标签,运行时EndProcessImpl据此转发BackToModifyImpl*/
+    public static final String AF_SYSLABEL_DISAGREE_BACK="af_syslabel_disagree_back";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";

@@ -221,6 +221,14 @@ public class BpmnNodeVo  implements Serializable {
      * sent to frontend during display). Stored in node_config_json.autoNodeConf.
      */
     private Object autoNodeConf;
+    /**
+     * 不同意按钮退回行为类型(4=退回指定节点重新开始, 5=退回指定节点回到当前节点)
+     */
+    private Integer disagreeBackType;
+    /**
+     * 不同意退回目标节点ID(设计态nodeId UUID)
+     */
+    private String disagreeBackToNodeId;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

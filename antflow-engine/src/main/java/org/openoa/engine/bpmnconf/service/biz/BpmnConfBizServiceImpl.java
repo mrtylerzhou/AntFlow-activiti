@@ -265,6 +265,18 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 nodeCfgJson.setAutoNodeConf(autoConf);
             }
 
+            // Transfer disagree-back config from VO to node config JSON
+            Integer disagreeBackType = bpmnNodeVo.getDisagreeBackType();
+            if (disagreeBackType != null && (disagreeBackType == 4 || disagreeBackType == 5)) {
+                String disagreeBackToNodeId = bpmnNodeVo.getDisagreeBackToNodeId();
+                if (org.apache.commons.lang3.StringUtils.isEmpty(disagreeBackToNodeId)) {
+                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]配置了不同意退回但未指定目标节点!");
+                }
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                nodeCfgJson.setBackType(disagreeBackType);
+                nodeCfgJson.setBackToNodeId(disagreeBackToNodeId);
+            }
+
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
@@ -2092,6 +2104,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         // set autoNodeConf from node config JSON (for auto node display)
         if (nodeConfig.getAutoNodeConf() != null) {
             bpmnNodeVo.setAutoNodeConf(nodeConfig.getAutoNodeConf());
+        }
+
+        // set disagree-back config from node config JSON (for display)
+        if (nodeConfig.getBackType() != null && (nodeConfig.getBackType() == 4 || nodeConfig.getBackType() == 5)) {
+            bpmnNodeVo.setDisagreeBackType(nodeConfig.getBackType());
+            bpmnNodeVo.setDisagreeBackToNodeId(nodeConfig.getBackToNodeId());
         }
 
         return bpmnNodeVo;

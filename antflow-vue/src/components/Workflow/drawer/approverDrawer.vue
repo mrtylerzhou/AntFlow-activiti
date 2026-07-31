@@ -274,6 +274,23 @@
                     </el-radio-group>
                 </div>
 
+                <!-- 不同意按钮行为配置 -->
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.noAgree)" class="disagree-back-conf">
+                    <p class="setting-group-title">不同意按钮行为</p>
+                    <el-radio-group v-model="disagreeBackType" @change="onDisagreeBackTypeChange">
+                        <el-radio :value="0">结束流程</el-radio>
+                        <el-radio :value="4">退回指定节点（重新开始）</el-radio>
+                        <el-radio :value="5">退回指定节点（回到当前节点）</el-radio>
+                    </el-radio-group>
+                    <div v-if="disagreeBackType === 4 || disagreeBackType === 5" style="margin-top: 8px;">
+                        <span>退回目标节点：</span>
+                        <el-select v-model="disagreeBackToNodeId" placeholder="请选择目标节点" style="width: 260px;">
+                            <el-option v-for="item in availableBackNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                    </div>
+                </div>
+
                 <p style="margin-top: 16px;">【查看页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkViewPageBtns">
                     <div class="btn-row" v-for="opt in nodeViewPageButtons" :key="opt.value">
@@ -333,12 +350,13 @@
     </el-drawer>
 </template>
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, inject } from 'vue';
 import $func from '@/utils/antflow/index';
 import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USER_FIELD_WIDGETS, formUserOptionSet,formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, approvalButtonConf } from '@/utils/antflow/const';
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
+import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
@@ -378,6 +396,65 @@ let labelOptions = ref([]);
 let selectedLabelValues = ref([]);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
+
+// ========== 不同意退回配置 ==========
+const rootNode = inject('rootNode', ref({}));
+let disagreeBackType = ref(0);
+let disagreeBackToNodeId = ref(null);
+/** 可选退回目标节点: 从当前节点向上遍历流程树, 只保留发起人(1)和审批人(4)节点 */
+const availableBackNodes = computed(() => {
+    const root = rootNode.value;
+    if (!root || !root.nodeId) return [];
+    const currentNodeId = approverConfig.value?.nodeId;
+    if (!currentNodeId) return [];
+    // 深拷贝避免污染原始树
+    const cloned = JSON.parse(JSON.stringify(root));
+    const flatList = flattenMapTreeToList(cloned);
+    const nodeMap = {};
+    flatList.forEach(n => { nodeMap[n.nodeId] = n; });
+    // BFS向上遍历
+    const result = [];
+    const visited = new Set();
+    const queue = [currentNodeId];
+    while (queue.length > 0) {
+        const nid = queue.shift();
+        if (visited.has(nid)) continue;
+        visited.add(nid);
+        const node = nodeMap[nid];
+        if (!node) continue;
+        if (node.nodeFrom) {
+            const fromNode = nodeMap[node.nodeFrom];
+            if (fromNode && !visited.has(fromNode.nodeId)) {
+                // 发起人(1)或审批人(4)收集为可选目标
+                if (fromNode.nodeType === 1 || fromNode.nodeType === 4) {
+                    result.push({ nodeId: fromNode.nodeId, nodeName: fromNode.nodeName });
+                }
+                queue.push(fromNode.nodeId);
+            }
+        }
+    }
+    return result;
+});
+const onDisagreeBackTypeChange = (val) => {
+    if (val !== 4 && val !== 5) {
+        disagreeBackToNodeId.value = null;
+        approverConfig.value.disagreeBackType = null;
+        approverConfig.value.disagreeBackToNodeId = null;
+    } else {
+        approverConfig.value.disagreeBackType = val;
+    }
+};
+const syncDisagreeBackToConfig = () => {
+    if (!approverConfig.value) return;
+    if (disagreeBackType.value === 4 || disagreeBackType.value === 5) {
+        approverConfig.value.disagreeBackType = disagreeBackType.value;
+        approverConfig.value.disagreeBackToNodeId = disagreeBackToNodeId.value;
+    } else {
+        approverConfig.value.disagreeBackType = null;
+        approverConfig.value.disagreeBackToNodeId = null;
+    }
+};
+watch(disagreeBackToNodeId, () => { syncDisagreeBackToConfig(); });
 
 let formItems = ref([]);
 let formHiddenMap = ref({});
@@ -477,6 +554,7 @@ watch(approverConfig1, (val) => {
         loadApprovalPageButtons(currParallel.buttons?.approvalPage);
         loadViewPageButtons(currParallel.buttons?.viewPage);
         selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
+        loadDisagreeBackConfig(currParallel);
     }
     else {
         approverConfig.value = val.value;
@@ -486,6 +564,7 @@ watch(approverConfig1, (val) => {
         loadApprovalPageButtons(val.value.buttons?.approvalPage);
         loadViewPageButtons(val.value.buttons?.viewPage);
         selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
+        loadDisagreeBackConfig(val.value);
     }
 });
 
@@ -890,6 +969,18 @@ const loadApprovalPageButtons = (approvalPageList) => {
     syncApprovalPageButtons();
 }
 
+/**加载不同意退回配置(反显) */
+const loadDisagreeBackConfig = (nodeData) => {
+    const bt = nodeData?.disagreeBackType;
+    if (bt === 4 || bt === 5) {
+        disagreeBackType.value = bt;
+        disagreeBackToNodeId.value = nodeData.disagreeBackToNodeId || null;
+    } else {
+        disagreeBackType.value = 0;
+        disagreeBackToNodeId.value = null;
+    }
+}
+
 /**将勾选状态与自定义名称同步到 approverConfig.buttons.approvalPage(对象数组) */
 const syncApprovalPageButtons = () => {
     if (!approverConfig.value) return;
@@ -1105,5 +1196,12 @@ const handleTabClick = (tab, event) => {
     margin: 0 0 10px 0;
     font-size: 14px;
     font-weight: 600;
+}
+
+.disagree-back-conf {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
 }
 </style>

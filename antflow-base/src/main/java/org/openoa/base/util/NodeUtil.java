@@ -162,6 +162,11 @@ public class NodeUtil {
         if(Boolean.TRUE.equals(bpmnNodeVo.getIsPrevNodeAppointed())){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.prevNodeAppointed);
         }
+        //不同意退回:根据前端传入的 disagreeBackType(4/5),自动贴标签
+        Integer disagreeBackType = bpmnNodeVo.getDisagreeBackType();
+        if(disagreeBackType!=null && (disagreeBackType==4 || disagreeBackType==5)){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.disagreeBack);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;
