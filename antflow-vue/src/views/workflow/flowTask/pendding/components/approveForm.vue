@@ -132,6 +132,7 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.noAgree:
         case approvalButtonConf.resubmit:
         case approvalButtonConf.oppose:
+        case approvalButtonConf.assist:
             //选择条件校验:同意时如果存在可选分支但未选择,则拦截
             if (btnType == approvalButtonConf.agree
                 && !isEmptyArray(approveSubData.value.pickConditionBranches)

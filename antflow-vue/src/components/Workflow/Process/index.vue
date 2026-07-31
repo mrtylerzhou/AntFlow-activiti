@@ -71,7 +71,7 @@ const validateIsExistApproveNode = (treeNode) => {
     if (!treeNode) return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" };
     const nodeArray = flattenMapTreeToList(treeNode);
     const isExist = nodeArray.some(node => {
-        return node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 7;
+        return node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 7 || node.nodeType == 17;
     });
     if (!isExist) {
         return { isSuccess: false, msg: "至少配置一个有效节点，实际项目中不需要可以去掉" };
@@ -143,7 +143,7 @@ const reErr = ({ childNode }) => {
         else if (nodeType == 3) {
             reErr(childNode);
         }
-        else if (nodeType == 4 || nodeType == 6) {
+        else if (nodeType == 4 || nodeType == 6 || nodeType == 17) {
             if (error) {
                 tipList.value.push({
                     name: nodeName,

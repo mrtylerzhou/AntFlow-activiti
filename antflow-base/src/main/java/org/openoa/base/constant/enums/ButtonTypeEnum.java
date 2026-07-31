@@ -34,6 +34,7 @@ public enum ButtonTypeEnum implements AfEnumBase{
     BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER(38,"指定下一节点审批人"),
     BUTTON_TYPE_OPPOSE(39,"反对"),
     BUTTON_TYPE_PICK_CONDITION(40,"选择分支"),
+    BUTTON_TYPE_ASSIST(41,"协助"),
     ;
 
     @Getter

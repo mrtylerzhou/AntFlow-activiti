@@ -96,6 +96,10 @@ public class AntFlowButtonsOperationPostProcessor implements AntFlowOrderPostPro
             case BUTTON_TYPE_OPPOSE:
                 workflowButtonHandler.onOppose(vo);
                 break;
+            case BUTTON_TYPE_ASSIST:
+                //协助节点办理,委托同意逻辑,事件监听同同意
+                workflowButtonHandler.onAgree(vo);
+                break;
             default:
                 throw new UnsupportedOperationException("不支持的操作类型: " + poEnum);
         }

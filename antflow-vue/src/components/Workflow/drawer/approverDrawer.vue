@@ -214,7 +214,7 @@
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                     <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
-                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default'"
+                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (approverConfig.nodeType === 17 && opt.value === 41)"
                             @change="handleCheckedButtonsChange(opt.value)">
                             【{{ opt.label }}】
                         </el-checkbox>
@@ -330,7 +330,7 @@
                         </el-select>
                         <p class="tip">为当前节点设置流程标签，用于后续分类和统计</p>
                     </div>
-                    <div class="setting-group" v-if="approverConfig.nodeType == 4">
+                    <div class="setting-group" v-if="approverConfig.nodeType == 4 || approverConfig.nodeType == 17">
                         <p class="setting-group-title">批量审批</p>
                         <el-switch v-model="batchProhibited" active-text="禁止批量审批" />
                         <p class="tip">开启后，该节点的待办任务不允许被批量同意</p>
@@ -959,6 +959,10 @@ const loadApprovalPageButtons = (approvalPageList) => {
     const list = approvalPageList || [];
     //兼容老数据:元素可能是数字或对象
     checkApprovalPageBtns.value = list.map(item => typeof item === 'number' ? item : item.buttonType);
+    //协助节点(nodeType=17):强制包含协助按钮(41)
+    if (approverConfig.value && approverConfig.value.nodeType === 17 && !checkApprovalPageBtns.value.includes(41)) {
+        checkApprovalPageBtns.value.push(41);
+    }
     const names = {};
     approvalPageButtons.forEach(opt => {
         const item = list.find(i => typeof i === 'object' && i.buttonType === opt.value);
@@ -966,6 +970,10 @@ const loadApprovalPageButtons = (approvalPageList) => {
         names[opt.value] = (item && item.buttonName && item.buttonName !== opt.label) ? item.buttonName : '';
     });
     buttonCustomNames.value = names;
+    //同步isSignUp状态:加批按钮(19)未勾选时确保isSignUp=0,防止选项区异常显示
+    if (approverConfig.value && !checkApprovalPageBtns.value.includes(approvalButtonConf.addApproval)) {
+        approverConfig.value.isSignUp = 0;
+    }
     syncApprovalPageButtons();
 }
 

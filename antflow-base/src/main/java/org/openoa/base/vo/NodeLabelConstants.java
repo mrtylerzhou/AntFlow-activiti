@@ -13,6 +13,7 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO automaticNode=new BpmnNodeLabelVO(StringConstants.AUTOMATIC_NODE,"自动节点");
     BpmnNodeLabelVO conditionApproveNode=new BpmnNodeLabelVO(StringConstants.CONDITION_APPROVE_NODE,"条件审批节点");
     BpmnNodeLabelVO conditionCopyNode=new BpmnNodeLabelVO(StringConstants.CONDITION_COPY_NODE,"条件抄送节点");
+    BpmnNodeLabelVO assistNode=new BpmnNodeLabelVO(StringConstants.ASSIST_NODE,"协助节点");
     BpmnNodeLabelVO skippedAssignees=new BpmnNodeLabelVO(StringConstants.SKIPPED_ASSIGNEE,"跳过的审批人");
     /**当前节点为"上一节点指定"审批人类型,运行时由NextNodeLabelsProcessor替换虚拟审批人为实际审批人*/
     BpmnNodeLabelVO prevNodeAppointed=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PREV_NODE_APPOINTED,"上一节点指定审批人");

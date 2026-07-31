@@ -20,7 +20,11 @@ export let bgColors = [
   "",
   "46, 167, 167",
   "70, 130, 180",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送)'
+  "",
+  "",
+  "",
+  "92, 107, 192",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送), , , , 靖蓝色(协助)'
 // 选择条件节点专属颜色(覆写审批人节点的橙色,使其一眼可辨)
 export const PICK_CONDITION_COLOR = "219, 54, 124"; // 树莓红
 export let placeholderList = [
@@ -38,6 +42,10 @@ export let placeholderList = [
   "自动办理",
   "条件审批",
   "条件抄送",
+  "",
+  "",
+  "",
+  "协助",
 ];
 export let nodeTypeList = [
   "未知",
@@ -54,6 +62,10 @@ export let nodeTypeList = [
   "自动办理",
   "条件审批",
   "条件抄送",
+  "未知",
+  "未知",
+  "未知",
+  "协助",
 ];
 export let signTypeObj = {
   1: "会签",
@@ -172,6 +184,7 @@ export class approvalButtonConf {
   static appointNextNodeApprover = 38; //指定下一节点审批人
   static oppose = 39; //反对(仲裁签)
   static pickCondition = 40; //选择分支(选择条件)
+  static assist = 41; //协助(协助节点办理)
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -204,6 +217,7 @@ export class approvalButtonConf {
     38: "指定下一节点审批人",
     39: "反对", //仲裁签场景下反对
     40: "选择分支", //选择条件
+    41: "协助", //协助节点办理
   };
 }
 
@@ -253,6 +267,11 @@ export let approvalPageButtons = [
     label: "反对",
     description: "仲裁签场景下反对，达阈值终止",
     signTypeRestrict: 4,
+  },
+  {
+    value: approvalButtonConf.assist,
+    label: "协助",
+    description: "协助节点办理任务，流程继续向下流转",
   },
 ];
 export let startPageButtons = [
@@ -305,6 +324,7 @@ export let approveButtonColor = {
   23: "warning", //驳回
   32: "danger", //撤销同意
   40: "warning", //选择分支
+  41: "success", //协助
   99: "success", //处理中
   100: "info",
 };

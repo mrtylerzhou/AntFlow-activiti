@@ -301,6 +301,48 @@ export class NodeUtils {
     return conditionCopyNode;
   }
   /**
+   * 创建协助节点对象
+   * 本质是审批人节点(nodeType=4) + assist_node 标签
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 复用审批人任务链路
+   * 语义为"办理"而非"审批", 按钮权限默认仅包含协助按钮(41)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 协助节点
+   */
+  static createAssistNode(child) {
+    let assistNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "协助",
+      nodeDisplayName: "协助",
+      nodeType: 17, //节点类型 17、协助节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 0, //协助节点默认不开启加批
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须配置办理人
+      property: {
+        afterSignUpWay: 2,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(41), //仅协助按钮
+        viewPage: btns(0),
+      },
+      nodeApproveList: [],
+      templateVos: [],
+      labelList: [
+        { labelValue: "assist_node", labelName: "协助节点" },
+      ],
+    };
+    return assistNode;
+  }
+  /**
    * 创建网关对象
    * @returns object
    */

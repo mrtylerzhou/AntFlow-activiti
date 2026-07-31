@@ -62,6 +62,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isConditionCopyNode;
     /**
+     * 协助节点标记: 设计期 nodeType=17, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与审批人节点一致, 但语义为"办理"而非"审批"
+     */
+    private Boolean isAssistNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

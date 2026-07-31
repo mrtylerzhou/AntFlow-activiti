@@ -293,6 +293,14 @@ export class FormatDisplayUtils {
           node.groupRelation = node.autoNodeConf.groupRelation || false;
         }
       }
+
+      // 协助节点反显: nodeType=4 或 17 (后端可能已转) + assist_node标签
+      // 与审批人节点一致, 但语义为"办理"而非"审批"
+      if ((node.nodeType == 4 || node.nodeType == 17) && node.labelList && node.labelList.some(l => l.labelValue === "assist_node")) {
+        node.nodeType = 17;
+        node.nodeName = node.nodeName || "协助";
+        node.nodeDisplayName = node.nodeDisplayName || "协助";
+      }
     }
     return nodeList;
   }

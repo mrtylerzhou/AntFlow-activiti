@@ -199,6 +199,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     nodeLabelVO=NodeLabelConstants.conditionApproveNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionCopyNode())){
                     nodeLabelVO=NodeLabelConstants.conditionCopyNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAssistNode())){
+                    nodeLabelVO=NodeLabelConstants.assistNode;
                 }
                if(nodeLabelVO!=null){
                    bpmnNodeVo.setOrAddLabelList(nodeLabelVO);

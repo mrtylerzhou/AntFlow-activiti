@@ -35,6 +35,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER(38,"指定下一节点审批人"),//上一节点审批人在审批时指定下一节点的实际审批人
     BUTTON_TYPE_OPPOSE(39,"反对"),//仲裁签场景下反对,反对达阈值时终止流程
     BUTTON_TYPE_PICK_CONDITION(40,"选择分支"),//选择条件:审批时选择后续动态条件分支
+    BUTTON_TYPE_ASSIST(41,"协助"),//协助节点:办理任务,委托同意逻辑推进流程
     ;
 
     @Getter

@@ -19,6 +19,7 @@ public enum NodeTypeEnum implements AfEnumBase{
     NODE_TYPE_AUTO_NODE(9,"自动节点",0),
     NODE_TYPE_CONDITION_APPROVE(12,"条件审批节点",0),
     NODE_TYPE_CONDITION_COPY(13,"条件抄送节点",0),
+    NODE_TYPE_ASSIST(17,"协助节点",0),
     ;
 
     @Getter

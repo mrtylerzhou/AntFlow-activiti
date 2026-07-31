@@ -36,6 +36,7 @@ public enum ConfigFlowButtonSortEnum implements AfEnumBase {
     RECOVER_TO_HIS(31,"恢复已结束流程",31),
     DRAW_BACK_AGREE(32,"撤销同意",32),
     PROCESS_MOVE_AHEAD(33,"流程推进",33),
+    ASSIST(41,"协助",41),
             ;
     @Getter
     private final Integer code;

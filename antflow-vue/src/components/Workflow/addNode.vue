@@ -106,6 +106,14 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item assist-node" @click="addType(17)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="assist" class="iconfont" />
+                            <p>协助</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -215,6 +223,10 @@ const createDynamicConditionWayNode = (childNode) => {
 const createParallelConditionWayNode = (childNode) => {
     return NodeUtils.createParallelConditionWayNode(childNode);
 }
+/**创建协助节点 */
+const createAssistNode = (childNode) => {
+    return NodeUtils.createAssistNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -232,6 +244,7 @@ const createNodeMap = new Map([
     [14, createPickConditionNode],
     [15, createDynamicConditionParallelNode],
     [16, createSelectDynamicParallelNode],
+    [17, createAssistNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -440,6 +453,12 @@ const confirmClone = () => {
         &.select-dynamic-parallel-node {
             .item-wrapper {
                 color: #8e44ad
+            }
+        }
+
+        &.assist-node {
+            .item-wrapper {
+                color: #5c6bc0
             }
         }
 
