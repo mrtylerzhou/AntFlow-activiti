@@ -188,6 +188,16 @@ public class BusinessDataVo extends PageDto implements Serializable {
      */
     private Integer backToModifyType;
     private String backToNodeId;
+    /**
+     * 退回按钮行为配置(运行时返回给前端)
+     * 0=无限制, 1=上一节点, 2=发起人(不回), 3=发起人(回), 4=指定节点(不回), 5=指定节点(回)
+     */
+    private Integer drawBackType;
+    /**
+     * 退回按钮允许退回的节点列表(id=nodeId UUID, name=节点名称)
+     * 仅 drawBackType=4/5 时有值
+     */
+    private List<BaseIdTranStruVo> drawBackNodes;
     //===============>>third party process<<===================
 
     /**

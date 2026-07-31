@@ -24,6 +24,24 @@
             @change="sureDialogBtn" />
         <repulse-dialog v-model:visible="repulseDialogVisible" @clickConfirm="approveSubmit" />
         <approve-dialog v-model:visible="openApproveDialog" :title="approveDialogTitle" @clickConfirm="approveSubmit" />
+        <!-- 退回按钮行为配置:受限退回对话框 -->
+        <el-dialog v-model="drawBackDialogVisible" title="退回" width="460px" append-to-body>
+            <el-form label-position="top" style="margin: 0 20px;">
+                <el-form-item v-if="drawBackType === 4 || drawBackType === 5" label="退回目标节点" required>
+                    <el-select v-model="drawBackSelectedNodeId" placeholder="请选择退回节点" style="width: 100%;">
+                        <el-option v-for="node in drawBackNodes" :key="node.id" :label="node.name" :value="node.id" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="备注/说明" required>
+                    <el-input v-model="drawBackRemark" type="textarea" placeholder="请输入退回原因" :maxlength="100"
+                        show-word-limit :autosize="{ minRows: 3, maxRows: 4 }" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="drawBackDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="confirmDrawBack">确 定</el-button>
+            </template>
+        </el-dialog>
         <!-- 选择条件:选择分支弹窗 -->
         <el-dialog v-model="pickConditionDialogVisible" :title="pickConditionMultiSelect ? '选择条件分支（可多选）' : '选择条件分支'" width="400px" append-to-body>
             <el-select v-model="selectedPickConditionBranch" :multiple="pickConditionMultiSelect" placeholder="请选择条件分支" style="width: 100%;">
@@ -84,6 +102,12 @@ let pickConditionDialogVisible = ref(false);
 let selectedPickConditionBranch = ref(null);
 let pickConditionBranches = ref([]);
 let pickConditionMultiSelect = ref(false);
+//退回按钮行为配置相关状态
+let drawBackDialogVisible = ref(false);
+let drawBackType = ref(null);
+let drawBackNodes = ref([]);
+let drawBackSelectedNodeId = ref(null);
+let drawBackRemark = ref('');
 
 let props = defineProps({
     approveFormData: {
@@ -144,13 +168,60 @@ const clickApproveSubmit = async (btnType) => {
             approveDialogTitle.value = approvalButtonConf.buttonsObj[btnType];
             break;
         case approvalButtonConf.repulse:
-            repulseDialogVisible.value = true;
+            handleRepulseClick();
             break;
         case approvalButtonConf.undertake:
             approveUndertakeSubmit();
             break;
     }
 }
+/**
+ * 退回按钮点击:根据 drawBackType 配置分流交互
+ */
+const handleRepulseClick = () => {
+    const dbType = approveSubData.value.drawBackType;
+    if (!dbType || dbType === 0) {
+        // 无限制:打开完整退回对话框
+        repulseDialogVisible.value = true;
+    } else if (dbType === 1 || dbType === 2 || dbType === 3) {
+        // 退回上一节点/发起人:轻量确认框(带备注)
+        drawBackType.value = dbType;
+        drawBackNodes.value = [];
+        drawBackSelectedNodeId.value = null;
+        drawBackRemark.value = '';
+        drawBackDialogVisible.value = true;
+    } else if (dbType === 4 || dbType === 5) {
+        // 退回指定节点:受限下拉选择
+        drawBackType.value = dbType;
+        drawBackNodes.value = approveSubData.value.drawBackNodes || [];
+        drawBackSelectedNodeId.value = null;
+        drawBackRemark.value = '';
+        drawBackDialogVisible.value = true;
+    } else {
+        repulseDialogVisible.value = true;
+    }
+};
+/**
+ * 受限退回对话框确认
+ */
+const confirmDrawBack = () => {
+    if (!drawBackRemark.value || !drawBackRemark.value.trim()) {
+        proxy.$modal.msgWarning('请输入退回原因');
+        return;
+    }
+    if ((drawBackType.value === 4 || drawBackType.value === 5) && !drawBackSelectedNodeId.value) {
+        proxy.$modal.msgWarning('请选择退回目标节点');
+        return;
+    }
+    drawBackDialogVisible.value = false;
+    const param = {
+        backToModifyType: String(drawBackType.value),
+        backToNodeId: drawBackSelectedNodeId.value || '',
+        remark: drawBackRemark.value
+    };
+    handleClickType.value = approvalButtonConf.repulse;
+    approveSubmit(param);
+};
 /**
  * 审批操作确定
  * @param param 
@@ -267,6 +338,11 @@ const preview = async (viewData) => {
             //选择条件:同步可选分支列表到提交数据
             if (response.data.pickConditionBranches) {
                 approveSubData.value.pickConditionBranches = response.data.pickConditionBranches;
+            }
+            //退回按钮行为配置:同步到提交数据
+            if (response.data.drawBackType) {
+                approveSubData.value.drawBackType = response.data.drawBackType;
+                approveSubData.value.drawBackNodes = response.data.drawBackNodes || [];
             }
             try {
                 if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接

@@ -291,6 +291,30 @@
                     </div>
                 </div>
 
+                <!-- 退回按钮行为配置 -->
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.repulse)" class="disagree-back-conf">
+                    <p class="setting-group-title">退回按钮行为</p>
+                    <el-radio-group v-model="drawBackBehavior" @change="onDrawBackBehaviorChange">
+                        <el-radio :value="0">无限制（审批人自选）</el-radio>
+                        <el-radio :value="1">退回发起人</el-radio>
+                        <el-radio :value="2">退回上一节点</el-radio>
+                        <el-radio :value="3">退回指定节点</el-radio>
+                    </el-radio-group>
+                    <div v-if="drawBackBehavior === 1" style="margin-top: 8px;">
+                        <el-checkbox v-model="drawBackReturnToSender">退回后重新审批经过该节点时回到退回人</el-checkbox>
+                    </div>
+                    <div v-if="drawBackBehavior === 3" style="margin-top: 8px;">
+                        <span>退回目标节点：</span>
+                        <el-select v-model="drawBackNodeIds" multiple placeholder="请选择目标节点" style="width: 320px;">
+                            <el-option v-for="item in availableBackNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                        <div style="margin-top: 8px;">
+                            <el-checkbox v-model="drawBackReturnToSender">退回后重新审批经过该节点时回到退回人</el-checkbox>
+                        </div>
+                    </div>
+                </div>
+
                 <p style="margin-top: 16px;">【查看页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkViewPageBtns">
                     <div class="btn-row" v-for="opt in nodeViewPageButtons" :key="opt.value">
@@ -396,6 +420,55 @@ let labelOptions = ref([]);
 let selectedLabelValues = ref([]);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
+
+// ========== 退回按钮行为配置 ==========
+let drawBackBehavior = ref(0); // UI radio: 0=无限制, 1=退回发起人, 2=退回上一节点, 3=退回指定节点
+let drawBackReturnToSender = ref(false); // "回到退回人" checkbox
+let drawBackNodeIds = ref([]); // 退回指定节点时的多选目标
+
+const onDrawBackBehaviorChange = (val) => {
+    drawBackReturnToSender.value = false;
+    drawBackNodeIds.value = [];
+    syncDrawBackToConfig();
+};
+
+const syncDrawBackToConfig = () => {
+    if (!approverConfig.value) return;
+    let type = 0;
+    if (drawBackBehavior.value === 1) {
+        type = drawBackReturnToSender.value ? 3 : 2;
+    } else if (drawBackBehavior.value === 2) {
+        type = 1;
+    } else if (drawBackBehavior.value === 3) {
+        type = drawBackReturnToSender.value ? 5 : 4;
+    }
+    approverConfig.value.drawBackType = type || null;
+    approverConfig.value.drawBackNodeIds = (type === 4 || type === 5) ? drawBackNodeIds.value : null;
+};
+watch(drawBackReturnToSender, () => { syncDrawBackToConfig(); });
+watch(drawBackNodeIds, () => { syncDrawBackToConfig(); }, { deep: true });
+
+/**加载退回按钮行为配置(反显) */
+const loadDrawBackConfig = (nodeData) => {
+    const bt = nodeData?.drawBackType;
+    if (bt === 2 || bt === 3) {
+        drawBackBehavior.value = 1;
+        drawBackReturnToSender.value = (bt === 3);
+        drawBackNodeIds.value = [];
+    } else if (bt === 1) {
+        drawBackBehavior.value = 2;
+        drawBackReturnToSender.value = false;
+        drawBackNodeIds.value = [];
+    } else if (bt === 4 || bt === 5) {
+        drawBackBehavior.value = 3;
+        drawBackReturnToSender.value = (bt === 5);
+        drawBackNodeIds.value = nodeData.drawBackNodeIds || [];
+    } else {
+        drawBackBehavior.value = 0;
+        drawBackReturnToSender.value = false;
+        drawBackNodeIds.value = [];
+    }
+};
 
 // ========== 不同意退回配置 ==========
 const rootNode = inject('rootNode', ref({}));
@@ -555,6 +628,7 @@ watch(approverConfig1, (val) => {
         loadViewPageButtons(currParallel.buttons?.viewPage);
         selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
         loadDisagreeBackConfig(currParallel);
+        loadDrawBackConfig(currParallel);
     }
     else {
         approverConfig.value = val.value;
@@ -565,6 +639,7 @@ watch(approverConfig1, (val) => {
         loadViewPageButtons(val.value.buttons?.viewPage);
         selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
         loadDisagreeBackConfig(val.value);
+        loadDrawBackConfig(val.value);
     }
 });
 

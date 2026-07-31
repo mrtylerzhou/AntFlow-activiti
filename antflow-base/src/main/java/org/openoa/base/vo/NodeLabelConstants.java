@@ -23,6 +23,12 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO pickCondition=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PICK_CONDITION,"选择条件节点");
     /**不同意按钮配置了退回行为,运行时EndProcessImpl据此转发BackToModifyImpl*/
     BpmnNodeLabelVO disagreeBack=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_DISAGREE_BACK,"不同意退回");
+    /**退回按钮行为:退回发起人*/
+    BpmnNodeLabelVO backInitiator=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_BACK_INITIATOR,"退回发起人");
+    /**退回按钮行为:退回上一节点*/
+    BpmnNodeLabelVO backPrev=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_BACK_PREV,"退回上一节点");
+    /**退回按钮行为:退回指定节点*/
+    BpmnNodeLabelVO backSpecified=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_BACK_SPECIFIED,"退回指定节点");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
       copyNodeV2,automaticNode,conditionCopyNode
     );

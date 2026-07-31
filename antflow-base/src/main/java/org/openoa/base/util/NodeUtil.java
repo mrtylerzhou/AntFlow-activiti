@@ -167,6 +167,17 @@ public class NodeUtil {
         if(disagreeBackType!=null && (disagreeBackType==4 || disagreeBackType==5)){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.disagreeBack);
         }
+        //退回按钮行为:根据前端传入的 drawBackType 自动贴对应标签
+        Integer drawBackType = bpmnNodeVo.getDrawBackType();
+        if(drawBackType!=null && drawBackType!=0){
+            if(drawBackType==2 || drawBackType==3){
+                bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.backInitiator);
+            }else if(drawBackType==1){
+                bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.backPrev);
+            }else if(drawBackType==4 || drawBackType==5){
+                bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.backSpecified);
+            }
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;

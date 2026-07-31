@@ -279,6 +279,20 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 nodeCfgJson.setBackToNodeId(disagreeBackToNodeId);
             }
 
+            // Transfer draw-back button config from VO to node config JSON
+            Integer drawBackType = bpmnNodeVo.getDrawBackType();
+            if (drawBackType != null && drawBackType != 0) {
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                nodeCfgJson.setDrawBackType(drawBackType);
+                if (drawBackType == 4 || drawBackType == 5) {
+                    java.util.List<String> drawBackNodeIds = bpmnNodeVo.getDrawBackNodeIds();
+                    if (drawBackNodeIds == null || drawBackNodeIds.isEmpty()) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]配置了退回指定节点但未选择目标节点!");
+                    }
+                    nodeCfgJson.setDrawBackNodeIds(drawBackNodeIds);
+                }
+            }
+
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
@@ -2112,6 +2126,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (nodeConfig.getBackType() != null && (nodeConfig.getBackType() == 4 || nodeConfig.getBackType() == 5)) {
             bpmnNodeVo.setDisagreeBackType(nodeConfig.getBackType());
             bpmnNodeVo.setDisagreeBackToNodeId(nodeConfig.getBackToNodeId());
+        }
+
+        // set draw-back config from node config JSON (for display)
+        if (nodeConfig.getDrawBackType() != null && nodeConfig.getDrawBackType() != 0) {
+            bpmnNodeVo.setDrawBackType(nodeConfig.getDrawBackType());
+            bpmnNodeVo.setDrawBackNodeIds(nodeConfig.getDrawBackNodeIds());
         }
 
         return bpmnNodeVo;

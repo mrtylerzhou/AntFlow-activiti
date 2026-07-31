@@ -61,6 +61,12 @@ public class StringConstants {
     public static final String AF_SYSLABEL_PICK_CONDITION="af_syslabel_pick_condition";
     /**不同意按钮配置了退回行为时贴此标签,运行时EndProcessImpl据此转发BackToModifyImpl*/
     public static final String AF_SYSLABEL_DISAGREE_BACK="af_syslabel_disagree_back";
+    /**退回按钮行为:退回发起人*/
+    public static final String AF_SYSLABEL_BACK_INITIATOR="af_syslabel_back_initiator";
+    /**退回按钮行为:退回上一节点*/
+    public static final String AF_SYSLABEL_BACK_PREV="af_syslabel_back_prev";
+    /**退回按钮行为:退回指定节点*/
+    public static final String AF_SYSLABEL_BACK_SPECIFIED="af_syslabel_back_specified";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";

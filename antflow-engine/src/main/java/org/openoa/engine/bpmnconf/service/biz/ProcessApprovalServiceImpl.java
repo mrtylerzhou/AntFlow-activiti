@@ -290,6 +290,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         if (hasPickConditionLabel(vo)) {
             addPickConditionButtonAndBranches(vo);
         }
+        //退回按钮行为配置:当前节点贴有退回行为标签时,返回 drawBackType 和允许节点列表
+        populateDrawBackConf(vo);
         if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
             return vo;
         }
@@ -482,6 +484,56 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             return Integer.valueOf(1).equals(groups.get(0).getIsDefault());
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * 退回按钮行为配置:检查当前节点formKey中是否含有退回行为标签,
+     * 如有则从 nodeConfigJson 读取 drawBackType 和 drawBackNodeIds 并返回给前端
+     */
+    private void populateDrawBackConf(BusinessDataVo vo) {
+        try {
+            if (vo == null || vo.getProcessRecordInfo() == null) return;
+            String formKey = vo.getProcessRecordInfo().getFormKey();
+            if (org.apache.commons.lang3.StringUtils.isEmpty(formKey)) return;
+            NodeExtraInfoDTO extraInfoDTO = com.alibaba.fastjson2.JSON.parseObject(formKey, NodeExtraInfoDTO.class);
+            boolean hasDrawBackLabel = NodeUtil.nodeLabelContainsAny(extraInfoDTO,
+                    StringConstants.AF_SYSLABEL_BACK_INITIATOR,
+                    StringConstants.AF_SYSLABEL_BACK_PREV,
+                    StringConstants.AF_SYSLABEL_BACK_SPECIFIED);
+            if (!hasDrawBackLabel) return;
+            // 获取当前节点的BpmnNode记录
+            String elementId = vo.getProcessRecordInfo().getNodeId();
+            String nodeIdPk = bpmVariableMultiplayerMapper.getNodeIdByElementId(vo.getProcessNumber(), elementId);
+            if (org.apache.commons.lang3.StringUtils.isEmpty(nodeIdPk)) return;
+            BpmnNode bpmnNode = bpmnNodeService.getById(Long.valueOf(nodeIdPk));
+            if (bpmnNode == null || org.apache.commons.lang3.StringUtils.isEmpty(bpmnNode.getNodeConfigJson())) return;
+            BpmnNodeConfigJson configJson = JsonConfUtil.parseNodeConfig(bpmnNode.getNodeConfigJson());
+            if (configJson == null || configJson.getDrawBackType() == null || configJson.getDrawBackType() == 0) return;
+            vo.setDrawBackType(configJson.getDrawBackType());
+            // 对于指定节点(4/5),解析节点名称
+            if ((configJson.getDrawBackType() == 4 || configJson.getDrawBackType() == 5)
+                    && !CollectionUtils.isEmpty(configJson.getDrawBackNodeIds())) {
+                Long confId = bpmnNode.getConfId();
+                List<BaseIdTranStruVo> drawBackNodes = new java.util.ArrayList<>();
+                for (String nodeUuid : configJson.getDrawBackNodeIds()) {
+                    BpmnNode targetNode = bpmnNodeService.lambdaQuery()
+                            .eq(BpmnNode::getConfId, confId)
+                            .eq(BpmnNode::getNodeId, nodeUuid)
+                            .eq(BpmnNode::getIsDel, 0)
+                            .one();
+                    if (targetNode != null) {
+                        // 返回主键id(非 UUID),因为 BackToModifyImpl 通过 getElementIdsdByNodeId 需要主键
+                        drawBackNodes.add(BaseIdTranStruVo.builder()
+                                .id(String.valueOf(targetNode.getId()))
+                                .name(targetNode.getNodeName())
+                                .build());
+                    }
+                }
+                vo.setDrawBackNodes(drawBackNodes);
+            }
+        } catch (Exception e) {
+            log.warn("populateDrawBackConf failed", e);
         }
     }
 

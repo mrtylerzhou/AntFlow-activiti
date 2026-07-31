@@ -57,4 +57,18 @@ public class BpmnNodeConfigJson implements Serializable {
      * Used when backType is 4 or 5 to specify which node to return to.
      */
     private String backToNodeId;
+
+    /**
+     * Draw-back button behavior type.
+     * 0=unrestricted(default), 1=back to prev node, 2=back to initiator(no return),
+     * 3=back to initiator(return to sender), 4=back to specified nodes(no return),
+     * 5=back to specified nodes(return to sender)
+     */
+    private Integer drawBackType;
+
+    /**
+     * Allowed target node IDs (design-time UUIDs) for draw-back behavior.
+     * Only used when drawBackType is 4 or 5.
+     */
+    private java.util.List<String> drawBackNodeIds;
 }

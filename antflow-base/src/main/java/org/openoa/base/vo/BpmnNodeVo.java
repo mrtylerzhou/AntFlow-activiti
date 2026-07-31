@@ -234,6 +234,16 @@ public class BpmnNodeVo  implements Serializable {
      * 不同意退回目标节点ID(设计态nodeId UUID)
      */
     private String disagreeBackToNodeId;
+    /**
+     * 退回按钮行为类型(0=无限制, 1=上一节点, 2=发起人(不回), 3=发起人(回), 4=指定节点(不回), 5=指定节点(回))
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴退回行为标签
+     */
+    private Integer drawBackType;
+    /**
+     * 退回按钮允许退回的节点ID列表(设计态nodeId UUID)
+     * 仅 drawBackType=4/5 时有值
+     */
+    private java.util.List<String> drawBackNodeIds;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){
