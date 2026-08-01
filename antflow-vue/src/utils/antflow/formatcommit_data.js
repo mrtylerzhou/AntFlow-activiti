@@ -11,6 +11,8 @@ export class FormatCommitUtils {
     // 提交前: 重新计算完成审批节点的目标(最后一个审批人节点)
     // 防止用户加了节点但没打开完成审批抽屉导致目标过期
     this.refillFinishApproveNodes(param);
+    // 提交前: 重新计算自动完成节点的目标(最后一个审批人节点)
+    this.refillAutoCompleteNodes(param);
     let treeList = this.flattenMapTreeToList(param);
     let combinationList = this.getEndpointNodeId(treeList);
     let finalList = this.cleanNodeList(combinationList);
@@ -129,6 +131,33 @@ export class FormatCommitUtils {
       } else {
         fn.forwardNodeIds = [];
       }
+    }
+  };
+
+  /**
+   * 遍历流程树, 对所有自动完成节点(isAutoCompleteNode)重新计算目标(最后一个审批人节点)
+   * 提交前调用, 保证目标始终是最新流程树的最后一个 nodeType=4 节点
+   * 如果自动完成节点自己就是最后一个审批人(没有后续审批人), forwardNodeIds 留空,
+   * 后端发布校验会抛异常阻止发布
+   */
+  static refillAutoCompleteNodes = (rootNode) => {
+    if (!rootNode) return;
+    const autoCompleteNodes = [];
+    function collect(node) {
+      if (!node) return;
+      if (node.isAutoCompleteNode) autoCompleteNodes.push(node);
+      if (node.childNode) collect(node.childNode);
+      if (node.nodeType === 7 && node.parallelNodes) {
+        for (const branch of node.parallelNodes) collect(branch);
+      }
+      if (node.nodeType === 2 && node.conditionNodes) {
+        for (const cond of node.conditionNodes) collect(cond);
+      }
+    }
+    collect(rootNode);
+    for (const ac of autoCompleteNodes) {
+      const last = NodeUtils.findLastApproveNode(rootNode, ac.nodeId);
+      ac.forwardNodeIds = last ? [last.nodeId] : [];
     }
   };
 

@@ -1,7 +1,7 @@
 <template>
     <el-drawer :append-to-body="true" title="审批人设置" v-model="visible" :with-header="false" :size="680">
         <div class="el-drawer__header">
-            <span class="drawer-title">审批人</span>
+            <span class="drawer-title">{{ drawerTitle }}</span>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
             <el-tab-pane v-if="approverConfig.nodeType !== 18" label="审批人设置" name="approverStep">
@@ -204,14 +204,29 @@
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType === 18" lazy label="推进设置" name="forwardStep">
                 <div class="disagree-back-conf">
-                    <p class="setting-group-title">推进目标节点</p>
-                    <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
-                        满足条件时推进到此节点,不满足时自动完成(不跳跃)
-                    </p>
-                    <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
-                        <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
-                            :label="item.nodeName" :value="item.nodeId" />
-                    </el-select>
+                    <!-- 自动完成节点: 目标自动为最后一个审批人, 只读展示不可编辑 -->
+                    <template v-if="approverConfig?.isAutoCompleteNode">
+                        <p class="setting-group-title">推进目标节点</p>
+                        <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
+                            满足条件时自动推进到流程最后一个审批人节点(完成节点),不可编辑
+                        </p>
+                        <el-input :model-value="forwardFixedNodeName" placeholder="自动推进至完成节点" readonly disabled style="width: 320px;" />
+                        <p v-if="availableForwardNodes.length === 0"
+                            style="color: #f56c6c; margin-top: 4px;">
+                            自动完成节点不能是最后一个审批人节点，请在后面添加审批人节点或调整位置。
+                        </p>
+                    </template>
+                    <!-- 自动推进节点: 用户手动选择目标节点 -->
+                    <template v-else>
+                        <p class="setting-group-title">推进目标节点</p>
+                        <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
+                            满足条件时推进到此节点,不满足时自动完成(不跳跃)
+                        </p>
+                        <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
+                            <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                    </template>
                 </div>
             </el-tab-pane>
             <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18" label="条件设置" name="conditionStep">
@@ -444,6 +459,11 @@ const formPermTabVisible = computed(() => {
     return isDIYRoute ? !!store.useAuxiliaryForm : true;
 })
 let approverConfig = ref({});
+/**抽屉标题: 自动完成节点显示"自动完成", 其余保持默认 */
+let drawerTitle = computed(() => {
+    if (approverConfig.value?.isAutoCompleteNode) return "自动完成";
+    return "审批人";
+});
 let approverUserVisible = ref(false);
 let approverRoleVisible = ref(false);
 let checkedRoleList = ref([]);
@@ -517,6 +537,20 @@ watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
 
 /**加载推进按钮行为配置(反显) */
 const loadForwardConfig = (nodeData) => {
+    // 自动完成节点: 强制固定节点模式, 自动填充最后一个审批人节点(不可编辑, 同完成审批)
+    if (approverConfig.value?.isAutoCompleteNode) {
+        forwardBehavior.value = 2;
+        forwardNodeIds.value = [];
+        const lastNode = NodeUtils.findLastApproveNode(rootNode.value, approverConfig.value?.nodeId);
+        if (lastNode) {
+            forwardFixedNodeId.value = lastNode.nodeId;
+            approverConfig.value.forwardNodeIds = [lastNode.nodeId];
+        } else {
+            forwardFixedNodeId.value = null;
+            approverConfig.value.forwardNodeIds = [];
+        }
+        return;
+    }
     // 自动推进节点(nodeType=18)强制固定节点模式(forwardType=2)
     if (approverConfig.value?.nodeType === 18) {
         forwardBehavior.value = 2;
@@ -610,6 +644,34 @@ const availableForwardNodes = computed(() => {
         traverseDown(currentNode.childNode);
     }
     return result;
+});
+
+/** 自动完成节点: 固定目标节点名称(用于只读展示) */
+const forwardFixedNodeName = computed(() => {
+    const targetNodeId = forwardFixedNodeId.value;
+    if (!targetNodeId || !rootNode.value) return '';
+    const findName = (node) => {
+        if (!node) return null;
+        if (node.nodeId === targetNodeId) return node.nodeName;
+        if (node.childNode) {
+            const found = findName(node.childNode);
+            if (found) return found;
+        }
+        if (node.conditionNodes) {
+            for (const cond of node.conditionNodes) {
+                const found = findName(cond);
+                if (found) return found;
+            }
+        }
+        if (node.parallelNodes) {
+            for (const par of node.parallelNodes) {
+                const found = findName(par);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+    return findName(rootNode.value) || '';
 });
 
 /**加载退回按钮行为配置(反显) */

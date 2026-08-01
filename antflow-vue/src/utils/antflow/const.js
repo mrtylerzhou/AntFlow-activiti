@@ -32,6 +32,10 @@ export const PICK_CONDITION_COLOR = "219, 54, 124"; // 树莓红
 export const FORWARD_APPROVE_COLOR = "5, 150, 105"; // 翠绿色
 // 完成审批节点专属颜色(审批人节点 nodeType=4 + finish_approve_node 标签, 自动推进到最后一个审批人节点)
 export const FINISH_APPROVE_COLOR = "150, 40, 110"; // 深紫红(与推进审批翠绿色有明显色相差)
+// 自动完成节点专属颜色(nodeType=18 + auto_complete_node 标签, 自动推进到完成节点, 与自动推进翠绿色区分)
+export const AUTO_COMPLETE_COLOR = "63, 81, 181"; // 深靛蓝(与自动推进翠绿色 45,183,165 有明显色相差)
+// 自动完成节点标签(仅前端反显区分 + 颜色区分用, 运行时复用 auto_advance_node 处理器)
+export const AUTO_COMPLETE_NODE = "auto_complete_node";
 export let placeholderList = [
   "",
   "发起人",

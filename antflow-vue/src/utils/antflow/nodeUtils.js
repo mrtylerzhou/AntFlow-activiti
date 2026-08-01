@@ -274,6 +274,62 @@ export class NodeUtils {
     return node;
   }
   /**
+   * 创建自动完成节点对象
+   * 本质是自动推进节点(nodeType=18)的一个子类型, 结构完全参照 createAutoAdvanceNode
+   * 与自动推进的差异:
+   *   - 目标节点不可编辑, 自动选择为流程树中最后一个 nodeType=4 节点(findLastApproveNode)
+   *   - 贴 auto_complete_node 标签(仅前端反显区分 + 颜色区分用)
+   * 运行时复用 auto_advance_node 处理器(processAutoAdvanceNode), 双标签不会重复触发
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 自动完成节点(nodeType=18, 带 auto_advance_node + auto_complete_node 标签)
+   */
+  static createAutoCompleteNode(child) {
+    let autoCompleteNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "自动完成",
+      nodeDisplayName: "自动完成",
+      nodeType: 18, //节点类型 18、自动推进家族(子类型:自动完成)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (虚拟人员 AUTO_NODE_SKIP)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选推进目标节点(自动完成不能是最后一个审批人), 阻止发布
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      // 审批页无任何操作按钮(自动执行, 无人工交互)
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(0),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [
+        { targetId: "-3", name: "自动节点自动跳过", type: 5 },
+      ],
+      templateVos: [],
+      // 双标签: auto_advance_node 触发运行时处理器, auto_complete_node 仅前端反显/颜色区分
+      labelList: [
+        { labelValue: "auto_advance_node", labelName: "自动推进节点" },
+        { labelValue: "auto_complete_node", labelName: "自动完成节点" },
+      ],
+      conditionList: [[]], //条件可空, 空时等价无条件推进(每次必推进)
+      groupRelation: false,
+      // 自动完成标志位(前端用, 提交时后端据此贴 auto_complete_node 标签)
+      isAutoCompleteNode: true,
+      // 推进配置: 强制固定节点模式(forwardType=2), 目标由 findLastApproveNode 自动填充
+      forwardType: 2,
+      forwardNodeIds: [], //打开抽屉时/提交时自动填充为最后一个审批人
+    };
+    return autoCompleteNode;
+  }
+  /**
    * 遍历流程树, 找到最后一个 nodeType=4(审批人) 节点
    * 跨并行网关: 遍历 parallelNodes 分支 + childNode(聚合节点)
    * 跨条件网关: 遍历 conditionNodes 分支

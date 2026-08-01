@@ -132,6 +132,14 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item auto-complete-node" @click="addType(21)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="auto-finish" class="iconfont" />
+                            <p>自动完成</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -257,6 +265,10 @@ const createForwardApproveNode = (childNode) => {
 const createFinishApproveNode = (childNode) => {
     return NodeUtils.createFinishApproveNode(childNode);
 }
+/**创建自动完成节点 */
+const createAutoCompleteNode = (childNode) => {
+    return NodeUtils.createAutoCompleteNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -278,6 +290,7 @@ const createNodeMap = new Map([
     [18, createAutoAdvanceNode],
     [19, createForwardApproveNode],
     [20, createFinishApproveNode],
+    [21, createAutoCompleteNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -504,6 +517,12 @@ const confirmClone = () => {
         &.finish-approver-node {
             .item-wrapper {
                 color: #96286e
+            }
+        }
+
+        &.auto-complete-node {
+            .item-wrapper {
+                color: #3f51b5
             }
         }
 

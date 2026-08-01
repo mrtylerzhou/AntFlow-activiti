@@ -72,6 +72,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isAutoAdvanceNode;
     /**
+     * 自动完成节点标记: 自动推进(nodeType=18)子类型, 目标自动为最后一个审批人节点
+     * 仅前端反显区分+颜色区分用, 运行时复用 auto_advance_node 处理器
+     */
+    private Boolean isAutoCompleteNode;
+    /**
      * 完成审批节点标记: 审批人节点(nodeType=4) + 推进按钮(42) + finish_approve_node 标签
      * 目标自动填充为流程最后一个审批人节点, 用户不可改
      */

@@ -188,6 +188,12 @@ public class NodeUtil {
         if(Boolean.TRUE.equals(bpmnNodeVo.getIsFinishApproveNode())){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.finishApproveNode);
         }
+        //自动完成节点:根据前端传入的 isAutoCompleteNode 标识自动贴标签
+        //自动完成本质是自动推进(18)子类型, 目标自动为最后一个审批人, 运行时复用 auto_advance_node 处理器
+        //此标签仅用于前端反显区分+颜色区分
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutoCompleteNode())){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.autoCompleteNode);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;

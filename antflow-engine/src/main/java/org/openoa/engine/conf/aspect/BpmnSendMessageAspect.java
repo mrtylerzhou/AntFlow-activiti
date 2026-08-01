@@ -127,8 +127,17 @@ public class BpmnSendMessageAspect {
             if (businessDataVo.getOperationType().equals(ProcessOperationEnum.BUTTON_TYPE_SUBMIT.getCode())) {
 
 
-                //do execute aspect method
-                doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty,ProcessOperationEnum.BUTTON_TYPE_SUBMIT, joinPoint);
+                //提交/发起流程时, 也需将 businessDataVo 放入 ThreadLocal,
+                //否则流程发起后第一个业务节点(如自动推进/自动完成/自动节点)在 TaskListener 阶段
+                //读取 AF_RUNTIME_BUISINESS_INFO 会得到 null, 导致 NPE.
+                //此处与下方非提交分支(第151行)保持一致, 在 doMethod 前后 set/remove.
+                ThreadLocalContainer.set(StringConstants.AF_RUNTIME_BUISINESS_INFO,businessDataVo);
+                try {
+                    //do execute aspect method
+                    doMethod( bpmnConf,businessDataVo,outSideBpmBusinessParty,ProcessOperationEnum.BUTTON_TYPE_SUBMIT, joinPoint);
+                } finally {
+                    ThreadLocalContainer.remove(StringConstants.AF_RUNTIME_BUISINESS_INFO);
+                }
 
 
                 //get bpmn variable message vo

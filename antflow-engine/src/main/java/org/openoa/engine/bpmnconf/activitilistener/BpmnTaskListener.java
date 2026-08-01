@@ -15,10 +15,12 @@ import org.openoa.base.service.ProcessorFactory;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.*;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
+import org.openoa.base.util.FilterUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @ description: bpmn node execution listener
@@ -82,7 +84,15 @@ public class BpmnTaskListener implements TaskListener {
             String expressionText = extraInfo.getExpressionText();
             delegateTask.setFormKey(expressionText);
             NodeExtraInfoDTO extraInfoDTO = JSON.parseObject(expressionText, NodeExtraInfoDTO.class);
-            nextTaskDto.setNodeLabels(extraInfoDTO.getNodeLabelVOS());
+            List<BpmnNodeLabelVO> nodeLabelVOS = extraInfoDTO.getNodeLabelVOS();
+            // 防御性去重: 部署写入引擎时 label 可能出现重复(见 BpmnElementAdaptor 双合并),
+            // 按 labelValue 去重, 避免下游 NextNodeLabelsProcessor 等基于标签的处理器受影响.
+            if (nodeLabelVOS != null && !nodeLabelVOS.isEmpty()) {
+                nodeLabelVOS = nodeLabelVOS.stream()
+                        .filter(FilterUtil.distinctByKeys(BpmnNodeLabelVO::getLabelValue))
+                        .collect(Collectors.toList());
+            }
+            nextTaskDto.setNodeLabels(nodeLabelVOS);
         }
         BusinessDataVo businessDataVo= (BusinessDataVo)ThreadLocalContainer.get(StringConstants.AF_RUNTIME_BUISINESS_INFO);
         nextTaskDto.setBusinessDataVo(businessDataVo);

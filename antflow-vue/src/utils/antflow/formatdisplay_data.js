@@ -308,10 +308,24 @@ export class FormatDisplayUtils {
         node.isFinishApproveNode = true;
       }
 
+      // 自动完成节点反显: nodeType=4 或 18 + auto_complete_node 标签 (优先于自动推进判据)
+      // 自动完成本质是自动推进(18)子类型, 目标自动为最后一个审批人, 仅前端反显区分 + 颜色区分
+      if ((node.nodeType == 4 || node.nodeType == 18) && node.labelList && node.labelList.some(l => l.labelValue === "auto_complete_node")) {
+        node.nodeType = 18;
+        node.nodeName = node.nodeName || "自动完成";
+        node.nodeDisplayName = node.nodeDisplayName || "自动完成";
+        node.isAutoCompleteNode = true;
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
       // 自动推进节点反显: nodeType=4 或 18 (后端可能已转) + auto_advance_node标签
       // 与自动节点(9)同构(虚拟人 -3), 差异: 满足条件时推进到指定目标节点
       // 从 autoNodeConf 恢复 conditionList/groupRelation; forwardType/forwardNodeIds 由公共块处理
-      if ((node.nodeType == 4 || node.nodeType == 18) && node.labelList && node.labelList.some(l => l.labelValue === "auto_advance_node")) {
+      else if ((node.nodeType == 4 || node.nodeType == 18) && node.labelList && node.labelList.some(l => l.labelValue === "auto_advance_node")) {
         node.nodeType = 18;
         node.nodeName = node.nodeName || "自动推进";
         node.nodeDisplayName = node.nodeDisplayName || "自动推进";
