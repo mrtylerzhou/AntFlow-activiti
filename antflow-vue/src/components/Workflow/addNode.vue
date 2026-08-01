@@ -119,6 +119,12 @@
                             <p>自动推进</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item forward-approver-node" @click="addType(19)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approver-drive-ahead" class="iconfont" />
+                            <p>推进审批</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -237,6 +243,10 @@ const createAssistNode = (childNode) => {
 const createAutoAdvanceNode = (childNode) => {
     return NodeUtils.createAutoAdvanceNode(childNode);
 }
+/**创建推进审批节点 */
+const createForwardApproveNode = (childNode) => {
+    return NodeUtils.createForwardApproveNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -256,6 +266,7 @@ const createNodeMap = new Map([
     [16, createSelectDynamicParallelNode],
     [17, createAssistNode],
     [18, createAutoAdvanceNode],
+    [19, createForwardApproveNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -470,6 +481,12 @@ const confirmClone = () => {
         &.assist-node {
             .item-wrapper {
                 color: #5c6bc0
+            }
+        }
+
+        &.forward-approver-node {
+            .item-wrapper {
+                color: #059669
             }
         }
 

@@ -16,6 +16,7 @@
                     <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8 || nodeConfig.nodeType == 13" />
                     <svg-icon icon-class="assist" class="iconfont" v-else-if="nodeConfig.nodeType == 17" />
                     <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
+                    <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -147,7 +148,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList, PICK_CONDITION_COLOR } from '@/utils/antflow/const'
+import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
@@ -203,10 +204,17 @@ let labelIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.labelList);
 });
 
-/**节点标题背景色:选择条件节点使用专属树莓红,其余按nodeType取色 */
+/**节点标题背景色:选择条件节点使用专属树莓红,推进审批节点使用翠绿色,其余按nodeType取色 */
 let titleBgColor = computed(() => {
     if (props.nodeConfig.isPickCondition) {
         return PICK_CONDITION_COLOR;
+    }
+    // 推进审批节点着色: 审批人节点(nodeType=4)的审批页按钮配置包含推进按钮(42)
+    // 以按钮配置为判据, 避免后端 forwardType 默认值/反显回填导致的误判
+    if (props.nodeConfig.nodeType == 4
+        && Array.isArray(props.nodeConfig.buttons?.approvalPage)
+        && props.nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)) {
+        return FORWARD_APPROVE_COLOR;
     }
     return bgColors[props.nodeConfig.nodeType];
 });

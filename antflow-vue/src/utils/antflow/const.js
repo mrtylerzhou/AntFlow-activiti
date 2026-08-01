@@ -28,6 +28,8 @@ export let bgColors = [
 ]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送), , , , 靖蓝色(协助), 青色(自动推进)'
 // 选择条件节点专属颜色(覆写审批人节点的橙色,使其一眼可辨)
 export const PICK_CONDITION_COLOR = "219, 54, 124"; // 树莓红
+// 推进审批节点专属颜色(审批人节点 nodeType=4 配置了推进行为 forwardType!=null 时着色)
+export const FORWARD_APPROVE_COLOR = "5, 150, 105"; // 翠绿色
 export let placeholderList = [
   "",
   "发起人",

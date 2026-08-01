@@ -214,6 +214,33 @@ export class NodeUtils {
     return autoNode;
   }
   /**
+   * 创建推进审批节点对象
+   * 本质是审批人节点(nodeType=4) + 推进按钮(固定节点)的预置模板
+   * 不引入新 nodeType, 不贴标签; 着色判据为 nodeType==4 && forwardType!=null
+   * 默认按钮: 不同意(4) + 推进(42, 自定义名"同意"); 不含同意(3)
+   * 用户点"同意"(实为推进)即自动同意当前任务并推进到目标节点(复用 ForwardToNodeImpl)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 推进审批节点(nodeType=4, 带 forwardType=2)
+   */
+  static createForwardApproveNode(child) {
+    let node = this.createApproveNode(child);
+    node.nodeName = "推进审批";
+    node.nodeDisplayName = "推进审批";
+    // 默认按钮: 不同意 + 推进(改名"同意"); 不含同意(3)
+    node.buttons = {
+      startPage: btns(1),
+      approvalPage: [
+        { buttonType: 4 },
+        { buttonType: 42, buttonName: '同意' },
+      ],
+      viewPage: btns(0),
+    };
+    // 推进配置: 默认固定节点模式, 必须选择目标节点(后端发布校验保证)
+    node.forwardType = 2;
+    node.forwardNodeIds = []; // 空, 未选目标节点时后端发布校验抛异常
+    return node;
+  }
+  /**
    * 创建自动推进节点对象
    * 本质是自动节点(nodeType=9) + 推进按钮(固定节点)的组合
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 塞虚拟审批人 -3

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 隔离遮罩层 */
+            .mask-bg { fill: #FFFFFF; }
+            /* 推进箭头样式 */
+            .advance-style { 
+                fill: none; 
+                stroke: #FFFFFF; 
+                stroke-width: 3; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 审批人主体部分 (全系列保持一致) -->
+    <g id="approver">
+        <!-- 头部 -->
+        <circle class="main" cx="28" cy="16" r="10"/>
+        <!-- 身体 -->
+        <path class="main" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z"/>
+    </g>
+
+    <!-- 2. 右下角：推进角标 (向右进发的双箭头) -->
+    <g transform="translate(48, 48)">
+        <!-- 核心隔离层：白色圆圈，确保干净地切开人物身体 -->
+        <circle class="mask-bg" cx="0" cy="0" r="16" />
+        
+        <!-- 橙色底座圆 -->
+        <circle class="main" cx="0" cy="0" r="13" />
+        
+        <!-- 白色双箭头：代表流程推进 -->
+        <g transform="translate(-1, 0)">
+            <!-- 后箭头 -->
+            <path class="advance-style" d="M-4 -5 L1 0 L-4 5" opacity="0.6"/>
+            <!-- 前箭头 -->
+            <path class="advance-style" d="M1 -5 L6 0 L1 5" />
+        </g>
+    </g>
+
+</svg>
