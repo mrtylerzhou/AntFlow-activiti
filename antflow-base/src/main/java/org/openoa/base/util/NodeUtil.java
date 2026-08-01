@@ -178,6 +178,11 @@ public class NodeUtil {
                 bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.backSpecified);
             }
         }
+        //推进按钮:根据前端传入的 forwardType 自动贴推进标签
+        Integer forwardType = bpmnNodeVo.getForwardType();
+        if(forwardType!=null){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.forward);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;

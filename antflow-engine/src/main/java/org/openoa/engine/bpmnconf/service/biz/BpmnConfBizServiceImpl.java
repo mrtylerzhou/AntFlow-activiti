@@ -293,6 +293,26 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 }
             }
 
+            // Transfer forward button config from VO to node config JSON
+            Integer forwardType = bpmnNodeVo.getForwardType();
+            if (forwardType != null) {
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                nodeCfgJson.setForwardType(forwardType);
+                if (forwardType == 1) {
+                    java.util.List<String> forwardNodeIds = bpmnNodeVo.getForwardNodeIds();
+                    if (forwardNodeIds == null || forwardNodeIds.isEmpty()) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]配置了推进指定节点但未选择目标节点!");
+                    }
+                    nodeCfgJson.setForwardNodeIds(forwardNodeIds);
+                } else if (forwardType == 2) {
+                    java.util.List<String> forwardNodeIds = bpmnNodeVo.getForwardNodeIds();
+                    if (forwardNodeIds == null || forwardNodeIds.size() != 1) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]配置了推进固定节点但未选择恰好一个目标节点!");
+                    }
+                    nodeCfgJson.setForwardNodeIds(forwardNodeIds);
+                }
+            }
+
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
 
             //if it can not get the node's adapter,continue
@@ -2132,6 +2152,12 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (nodeConfig.getDrawBackType() != null && nodeConfig.getDrawBackType() != 0) {
             bpmnNodeVo.setDrawBackType(nodeConfig.getDrawBackType());
             bpmnNodeVo.setDrawBackNodeIds(nodeConfig.getDrawBackNodeIds());
+        }
+
+        // set forward config from node config JSON (for display)
+        if (nodeConfig.getForwardType() != null) {
+            bpmnNodeVo.setForwardType(nodeConfig.getForwardType());
+            bpmnNodeVo.setForwardNodeIds(nodeConfig.getForwardNodeIds());
         }
 
         return bpmnNodeVo;

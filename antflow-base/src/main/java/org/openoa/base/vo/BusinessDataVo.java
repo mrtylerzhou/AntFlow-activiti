@@ -198,6 +198,20 @@ public class BusinessDataVo extends PageDto implements Serializable {
      * 仅 drawBackType=4/5 时有值
      */
     private List<BaseIdTranStruVo> drawBackNodes;
+    /**
+     * 推进按钮行为配置(运行时返回给前端)
+     * 0=任意未来节点, 1=指定节点(多选), 2=固定节点(单选)
+     */
+    private Integer forwardType;
+    /**
+     * 推进按钮允许推进到的节点列表(id=nodeId UUID, name=节点名称)
+     * 仅 forwardType=1/2 时有值
+     */
+    private List<BaseIdTranStruVo> forwardNodes;
+    /**
+     * 推进目标节点nodeId(前端提交时传入)
+     */
+    private String forwardToNodeId;
     //===============>>third party process<<===================
 
     /**

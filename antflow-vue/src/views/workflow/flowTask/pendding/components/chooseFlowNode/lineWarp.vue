@@ -39,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <LineWarp v-if="item.childNode" v-model:nodeConfig="item.childNode" />
+                    <LineWarp v-if="item.childNode" v-model:nodeConfig="item.childNode" :selectMode="selectMode" />
                     <template v-if="index == 0">
                         <div class="top-left-cover-line"></div>
                         <div class="bottom-left-cover-line"></div>
@@ -54,7 +54,7 @@
         </div>
         <div class="pixel-line"></div>
     </div>
-    <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
+    <LineWarp v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" :selectMode="selectMode" />
 </template>
 <script setup>
 import { onMounted } from 'vue';
@@ -66,10 +66,24 @@ let props = defineProps({
     nodeConfig: {
         type: Object,
         default: () => ({}),
+    },
+    /** 选择模式: backward=退回(禁用未来节点), forward=推进(禁用历史节点) */
+    selectMode: {
+        type: String,
+        default: 'backward',
     }
 });
 
+/** 根据 selectMode 获取需要禁用的节点列表 */
+const getDisabledNodeIds = () => {
+    if (props.selectMode === 'forward') {
+        return props.nodeConfig.beforeNodeIds || [];
+    }
+    return props.nodeConfig.afterNodeIds || [];
+};
+
 onMounted(() => {
+    const disabledIds = getDisabledNodeIds();
     const elementList = document.getElementsByClassName("node-wrap-box");
     for (let element of elementList) {
         const customNodeKey = element.getAttribute('data-node-key');
@@ -81,7 +95,7 @@ onMounted(() => {
         element.classList.remove("not-allowed");
         element.classList.remove("current-node");
         element.classList.remove("checked-node");
-        if (props.nodeConfig.afterNodeIds.indexOf(customNodeKey) > -1) {
+        if (disabledIds.indexOf(customNodeKey) > -1) {
             element.classList.toggle("not-allowed");
             continue;
         }
@@ -94,8 +108,9 @@ onMounted(() => {
 });
 
 const handleChecked = (item) => {
+    const disabledIds = getDisabledNodeIds();
     const elementList = document.getElementsByClassName("node-wrap-box");
-    if (props.nodeConfig.afterNodeIds.indexOf(item.nodeId) > -1) {
+    if (disabledIds.indexOf(item.nodeId) > -1) {
         return;
     }
     if (props.nodeConfig.currentNodeId == item.nodeId) {

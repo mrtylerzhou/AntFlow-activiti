@@ -292,6 +292,8 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
         }
         //退回按钮行为配置:当前节点贴有退回行为标签时,返回 drawBackType 和允许节点列表
         populateDrawBackConf(vo);
+        //推进按钮行为配置:当前节点贴有推进标签时,返回 forwardType 和允许节点列表
+        populateForwardConf(vo);
         if(!vo.getIsOutSideAccessProc() && Objects.equals(vo.getIsLowCodeFlow(),0)){
             return vo;
         }
@@ -534,6 +536,48 @@ public class ProcessApprovalServiceImpl extends ServiceImpl<ProcessApprovalMappe
             }
         } catch (Exception e) {
             log.warn("populateDrawBackConf failed", e);
+        }
+    }
+
+    /**
+     * 推进按钮行为配置:直接从当前节点的 nodeConfigJson 读取 forwardType 和 forwardNodeIds 并返回给前端.
+     * 不依赖 formKey 标签,确保即使流程在配置保存前启动也能正确获取推进配置.
+     */
+    private void populateForwardConf(BusinessDataVo vo) {
+        try {
+            if (vo == null || vo.getProcessRecordInfo() == null) return;
+            // 获取当前节点的BpmnNode记录
+            String elementId = vo.getProcessRecordInfo().getNodeId();
+            if (org.apache.commons.lang3.StringUtils.isEmpty(elementId)) return;
+            String nodeIdPk = bpmVariableMultiplayerMapper.getNodeIdByElementId(vo.getProcessNumber(), elementId);
+            if (org.apache.commons.lang3.StringUtils.isEmpty(nodeIdPk)) return;
+            BpmnNode bpmnNode = bpmnNodeService.getById(Long.valueOf(nodeIdPk));
+            if (bpmnNode == null || org.apache.commons.lang3.StringUtils.isEmpty(bpmnNode.getNodeConfigJson())) return;
+            BpmnNodeConfigJson configJson = JsonConfUtil.parseNodeConfig(bpmnNode.getNodeConfigJson());
+            if (configJson == null || configJson.getForwardType() == null) return;
+            vo.setForwardType(configJson.getForwardType());
+            // 对于指定节点(1/2),解析节点名称
+            if ((configJson.getForwardType() == 1 || configJson.getForwardType() == 2)
+                    && !CollectionUtils.isEmpty(configJson.getForwardNodeIds())) {
+                Long confId = bpmnNode.getConfId();
+                List<BaseIdTranStruVo> forwardNodes = new java.util.ArrayList<>();
+                for (String nodeUuid : configJson.getForwardNodeIds()) {
+                    BpmnNode targetNode = bpmnNodeService.lambdaQuery()
+                            .eq(BpmnNode::getConfId, confId)
+                            .eq(BpmnNode::getNodeId, nodeUuid)
+                            .eq(BpmnNode::getIsDel, 0)
+                            .one();
+                    if (targetNode != null) {
+                        forwardNodes.add(BaseIdTranStruVo.builder()
+                                .id(String.valueOf(targetNode.getId()))
+                                .name(targetNode.getNodeName())
+                                .build());
+                    }
+                }
+                vo.setForwardNodes(forwardNodes);
+            }
+        } catch (Exception e) {
+            log.warn("populateForwardConf failed", e);
         }
     }
 

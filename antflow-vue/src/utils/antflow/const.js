@@ -185,6 +185,7 @@ export class approvalButtonConf {
   static oppose = 39; //反对(仲裁签)
   static pickCondition = 40; //选择分支(选择条件)
   static assist = 41; //协助(协助节点办理)
+  static forwardToNode = 42; //推进(审批人推进到未来节点)
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -218,6 +219,7 @@ export class approvalButtonConf {
     39: "反对", //仲裁签场景下反对
     40: "选择分支", //选择条件
     41: "协助", //协助节点办理
+    42: "推进", //审批人推进到未来节点
   };
 }
 
@@ -273,6 +275,11 @@ export let approvalPageButtons = [
     label: "协助",
     description: "协助节点办理任务，流程继续向下流转",
   },
+  {
+    value: approvalButtonConf.forwardToNode,
+    label: "推进",
+    description: "先同意当前任务，再跳转到未来节点，中间节点将被跳过",
+  },
 ];
 export let startPageButtons = [
   { value: approvalButtonConf.submit, label: "提交", type: "default" },
@@ -325,6 +332,7 @@ export let approveButtonColor = {
   32: "danger", //撤销同意
   40: "warning", //选择分支
   41: "success", //协助
+  42: "success", //推进
   99: "success", //处理中
   100: "info",
 };

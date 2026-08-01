@@ -29,6 +29,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO backPrev=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_BACK_PREV,"退回上一节点");
     /**退回按钮行为:退回指定节点*/
     BpmnNodeLabelVO backSpecified=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_BACK_SPECIFIED,"退回指定节点");
+    /**推进按钮:节点配置了推进行为,运行时渲染[推进]按钮*/
+    BpmnNodeLabelVO forward=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_FORWARD,"推进");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
       copyNodeV2,automaticNode,conditionCopyNode
     );

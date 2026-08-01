@@ -244,6 +244,16 @@ public class BpmnNodeVo  implements Serializable {
      * 仅 drawBackType=4/5 时有值
      */
     private java.util.List<String> drawBackNodeIds;
+    /**
+     * 推进按钮行为类型(0=任意未来节点, 1=指定节点多选, 2=固定节点单选)
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴推进标签
+     */
+    private Integer forwardType;
+    /**
+     * 推进按钮允许推进到的节点ID列表(设计态nodeId UUID)
+     * 仅 forwardType=1/2 时有值
+     */
+    private java.util.List<String> forwardNodeIds;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){

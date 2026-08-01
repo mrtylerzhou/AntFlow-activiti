@@ -71,4 +71,16 @@ public class BpmnNodeConfigJson implements Serializable {
      * Only used when drawBackType is 4 or 5.
      */
     private java.util.List<String> drawBackNodeIds;
+
+    /**
+     * Forward button behavior type.
+     * 0=any future node, 1=specified nodes(multi-select), 2=fixed node(single-select)
+     */
+    private Integer forwardType;
+
+    /**
+     * Allowed target node IDs (design-time UUIDs) for forward behavior.
+     * Only used when forwardType is 1 or 2.
+     */
+    private java.util.List<String> forwardNodeIds;
 }

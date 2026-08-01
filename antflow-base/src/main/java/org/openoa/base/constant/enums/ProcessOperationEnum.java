@@ -36,6 +36,7 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_OPPOSE(39,"反对"),//仲裁签场景下反对,反对达阈值时终止流程
     BUTTON_TYPE_PICK_CONDITION(40,"选择分支"),//选择条件:审批时选择后续动态条件分支
     BUTTON_TYPE_ASSIST(41,"协助"),//协助节点:办理任务,委托同意逻辑推进流程
+    BUTTON_TYPE_FORWARD_TO_NODE(42,"推进"),//审批人推进:先同意当前任务,再跳转到未来节点
     ;
 
     @Getter

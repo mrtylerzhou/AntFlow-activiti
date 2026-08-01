@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .light { fill: #FF850A; opacity: 0.4; }
+            .medium { fill: #FF850A; opacity: 0.7; }
+            /* 核心隔离带：背景色，产生切口感 */
+            .bg-cut { 
+                fill: #FFFFFF; 
+                stroke: #FFFFFF; 
+                stroke-width: 2.5; 
+                stroke-linejoin: round; 
+            }
+        </style>
+    </defs>
+
+    <!-- 3. 最前端：核心尖端 (前进的核心动力) -->
+    <g id="front-arrow" transform="translate(32, 32)">
+        <!-- 隔离层：切开后方的模块 -->
+        <path class="bg-cut" d="M-10 -20 L18 0 L-10 20 L-4 0 Z" />
+        <!-- 主箭尖 -->
+        <path class="main" d="M-8 -16 L14 0 L-8 16 L-2 0 Z" />
+    </g>
+
+    <!-- 2. 中间段：推进动力 -->
+    <g id="middle-segment" transform="translate(20, 32)">
+        <!-- 隔离层 -->
+        <path class="bg-cut" d="M-10 -20 L18 0 L-10 20 L-4 0 Z" />
+        <!-- 中间模块 -->
+        <path class="medium" d="M-8 -16 L14 0 L-8 16 L-2 0 Z" />
+    </g>
+
+    <!-- 1. 后方段：起始积累 -->
+    <g id="back-segment" transform="translate(8, 32)">
+        <!-- 后方模块 -->
+        <path class="light" d="M-8 -16 L14 0 L-8 16 L-2 0 Z" />
+    </g>
+
+    <!-- 装饰元素：加速线 (可选，增加Logo的精致度) -->
+    <rect class="main" x="4" y="31" width="8" height="2" rx="1" opacity="0.3" />
+
+</svg>

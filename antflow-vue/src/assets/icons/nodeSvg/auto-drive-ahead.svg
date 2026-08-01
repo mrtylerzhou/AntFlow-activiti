@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 实线：推进路径 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3.5; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            /* 虚线：条件触发 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3.5; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 5 4; 
+            }
+            /* 隔离层 */
+            .mask-bg { fill: #FFFFFF; }
+        </style>
+    </defs>
+
+    <!-- 1. 推进路径逻辑：从左侧条件触发到右侧自动推进 -->
+    <g id="logic-path">
+        <!-- 上方分支：条件触发（虚线） -->
+        <path class="line-dashed" d="M12 20 H28 L36 32" />
+        <!-- 下方分支：推进执行（实线） -->
+        <path class="line-solid" d="M12 44 H28 L50 32" />
+    </g>
+
+    <!-- 2. 左侧核心：自动化驱动标识 (风扇) -->
+    <g transform="translate(14, 32)">
+        <!-- 隔离层 -->
+        <circle class="mask-bg" cx="0" cy="0" r="14" />
+        <!-- 橙色圆底 -->
+        <circle class="main" cx="0" cy="0" r="11" />
+        <!-- 白色风扇 -->
+        <g transform="rotate(45)">
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(0)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(90)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(180)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(270)"/>
+        </g>
+    </g>
+
+    <!-- 3. 右侧核心：推进箭头 (前进) -->
+    <g transform="translate(50, 32)">
+        <!-- 隔离层：切开后方的路径线 -->
+        <path class="mask-bg" d="M-10 -15 L10 0 L-10 15 L-4 0 Z" />
+        <!-- 推进箭头 -->
+        <path class="main" d="M-8 -12 L8 0 L-8 12 L-2 0 Z" />
+    </g>
+
+</svg>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            
+            /* 实线样式：用于主轴和右侧 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            
+            /* 虚线样式：用于最左侧 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 6 5;
+            }
+            
+            /* 隔离层样式 */
+            .mask-bg { fill: #FFFFFF; }
+
+            /* 对勾线条样式 */
+            .check-style { 
+                fill: none; 
+                stroke: #FFFFFF; 
+                stroke-width: 3.5; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 条件节点主体结构 -->
+    <g id="condition-structure">
+        <!-- 连线：中实，右实，左虚 -->
+        <path class="line-solid" d="M32 12 V40" />       <!-- 中间实线 -->
+        <path class="line-solid" d="M32 24 H52 V40" />  <!-- 右侧实线 -->
+        <path class="line-dashed" d="M32 24 H12 V40" /> <!-- 左侧虚线 -->
+
+        <!-- 节点方块 -->
+        <rect class="main" x="24" y="4" width="16" height="10" rx="2" /> <!-- 顶 -->
+        <rect class="main" x="4" y="40" width="16" height="10" rx="2" />  <!-- 左子 -->
+        <rect class="main" x="24" y="40" width="16" height="10" rx="2" /> <!-- 中子 -->
+        <rect class="main" x="44" y="40" width="16" height="10" rx="2" /> <!-- 右子 -->
+    </g>
+
+    <!-- 2. 右下角：完成/成功状态角标 -->
+    <g transform="translate(48, 48)">
+        <!-- 核心隔离层：白色圆圈，确保不与背景方块/线条粘连 -->
+        <circle class="mask-bg" cx="0" cy="0" r="16" />
+        
+        <!-- 橙色底座圆 -->
+        <circle class="main" cx="0" cy="0" r="13" />
+        
+        <!-- 白色对勾 -->
+        <path class="check-style" d="M-6 0 L-1.5 4.5 L6 -4.5" />
+    </g>
+
+</svg>

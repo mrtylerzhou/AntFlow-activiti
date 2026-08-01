@@ -15,7 +15,7 @@
                 <div class="zoom-reset" @click="zoomReset" title="还原缩放比例">&#10227</div>
             </div>
             <div class="box-scale" ref="boxScaleRef">
-                <LineWarp v-if="nodeConfig" v-model:nodeConfig="nodeConfig" />
+                <LineWarp v-if="nodeConfig" v-model:nodeConfig="nodeConfig" :selectMode="selectMode" />
                 <div class="end-node">
                     <div class="end-node-circle"></div>
                     <div class="end-node-text">流程结束</div>
@@ -40,6 +40,11 @@ let props = defineProps({
     previewConf: {
         type: Object,
         default: () => (null)
+    },
+    /** 选择模式: backward=退回(禁用未来节点), forward=推进(禁用历史节点) */
+    selectMode: {
+        type: String,
+        default: 'backward',
     }
 });
 const nodeConfig = ref(null);

@@ -315,6 +315,30 @@
                     </div>
                 </div>
 
+                <!-- 推进按钮行为配置 -->
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.forwardToNode)" class="disagree-back-conf">
+                    <p class="setting-group-title">推进按钮行为</p>
+                    <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange">
+                        <el-radio :value="0">任意未来节点</el-radio>
+                        <el-radio :value="1">指定节点（多选）</el-radio>
+                        <el-radio :value="2">固定节点（单选）</el-radio>
+                    </el-radio-group>
+                    <div v-if="forwardBehavior === 1" style="margin-top: 8px;">
+                        <span>推进目标节点：</span>
+                        <el-select v-model="forwardNodeIds" multiple placeholder="请选择目标节点" style="width: 320px;">
+                            <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                    </div>
+                    <div v-if="forwardBehavior === 2" style="margin-top: 8px;">
+                        <span>推进目标节点：</span>
+                        <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
+                            <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                    </div>
+                </div>
+
                 <p style="margin-top: 16px;">【查看页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkViewPageBtns">
                     <div class="btn-row" v-for="opt in nodeViewPageButtons" :key="opt.value">
@@ -447,6 +471,96 @@ const syncDrawBackToConfig = () => {
 };
 watch(drawBackReturnToSender, () => { syncDrawBackToConfig(); });
 watch(drawBackNodeIds, () => { syncDrawBackToConfig(); }, { deep: true });
+
+// ========== 推进按钮行为配置 ==========
+let forwardBehavior = ref(0); // UI radio: 0=任意未来节点, 1=指定节点(多选), 2=固定节点(单选)
+let forwardNodeIds = ref([]); // 指定节点多选
+let forwardFixedNodeId = ref(null); // 固定节点单选
+
+const onForwardBehaviorChange = (val) => {
+    forwardNodeIds.value = [];
+    forwardFixedNodeId.value = null;
+    syncForwardToConfig();
+};
+
+const syncForwardToConfig = () => {
+    if (!approverConfig.value) return;
+    approverConfig.value.forwardType = forwardBehavior.value;
+    if (forwardBehavior.value === 1) {
+        approverConfig.value.forwardNodeIds = forwardNodeIds.value;
+    } else if (forwardBehavior.value === 2) {
+        approverConfig.value.forwardNodeIds = forwardFixedNodeId.value ? [forwardFixedNodeId.value] : [];
+    } else {
+        approverConfig.value.forwardNodeIds = null;
+    }
+};
+watch(forwardNodeIds, () => { syncForwardToConfig(); }, { deep: true });
+watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
+
+/**加载推进按钮行为配置(反显) */
+const loadForwardConfig = (nodeData) => {
+    const ft = nodeData?.forwardType;
+    if (ft === 0) {
+        forwardBehavior.value = 0;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = null;
+    } else if (ft === 1) {
+        forwardBehavior.value = 1;
+        forwardNodeIds.value = nodeData.forwardNodeIds || [];
+        forwardFixedNodeId.value = null;
+    } else if (ft === 2) {
+        forwardBehavior.value = 2;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = (nodeData.forwardNodeIds && nodeData.forwardNodeIds.length > 0) ? nodeData.forwardNodeIds[0] : null;
+    } else {
+        forwardBehavior.value = 0;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = null;
+    }
+};
+
+/** 可选推进目标节点: 从当前节点向下遍历流程树, 只保留审批人(4)节点, 遇并行网关停止 */
+const availableForwardNodes = computed(() => {
+    const root = rootNode.value;
+    if (!root || !root.nodeId) return [];
+    const currentNodeId = approverConfig.value?.nodeId;
+    if (!currentNodeId) return [];
+    const cloned = JSON.parse(JSON.stringify(root));
+    const flatList = flattenMapTreeToList(cloned);
+    const nodeMap = {};
+    flatList.forEach(n => { nodeMap[n.nodeId] = n; });
+    // 找到当前节点
+    const currentNode = nodeMap[currentNodeId];
+    if (!currentNode) return [];
+    // BFS向下遍历
+    const result = [];
+    const visited = new Set();
+    function traverseDown(node) {
+        if (!node || visited.has(node.nodeId)) return;
+        visited.add(node.nodeId);
+        // 并行网关(nodeType=7)停止深入
+        if (node.nodeType === 7) return;
+        // 收集审批人节点(nodeType=4)
+        if (node.nodeType === 4 && node.nodeId !== currentNodeId) {
+            result.push({ nodeId: node.nodeId, nodeName: node.nodeName });
+        }
+        // 条件网关(nodeType=2): 遍历所有分支
+        if (node.nodeType === 2 && node.conditionNodes) {
+            for (const cond of node.conditionNodes) {
+                traverseDown(cond);
+            }
+        }
+        // 继续向下
+        if (node.childNode) {
+            traverseDown(node.childNode);
+        }
+    }
+    // 从当前节点的childNode开始遍历
+    if (currentNode.childNode) {
+        traverseDown(currentNode.childNode);
+    }
+    return result;
+});
 
 /**加载退回按钮行为配置(反显) */
 const loadDrawBackConfig = (nodeData) => {
@@ -629,6 +743,7 @@ watch(approverConfig1, (val) => {
         selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
         loadDisagreeBackConfig(currParallel);
         loadDrawBackConfig(currParallel);
+        loadForwardConfig(currParallel);
     }
     else {
         approverConfig.value = val.value;
@@ -640,6 +755,7 @@ watch(approverConfig1, (val) => {
         selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
         loadDisagreeBackConfig(val.value);
         loadDrawBackConfig(val.value);
+        loadForwardConfig(val.value);
     }
 });
 

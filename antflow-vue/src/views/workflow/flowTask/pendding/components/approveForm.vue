@@ -42,6 +42,48 @@
                 <el-button type="primary" @click="confirmDrawBack">确 定</el-button>
             </template>
         </el-dialog>
+        <!-- 推进按钮行为配置:推进对话框(type=1/2) -->
+        <el-dialog v-model="forwardDialogVisible" title="推进" width="460px" append-to-body>
+            <el-form label-position="top" style="margin: 0 20px;">
+                <el-form-item v-if="forwardType === 1" label="推进目标节点" required>
+                    <el-select v-model="forwardSelectedNodeId" placeholder="请选择推进节点" style="width: 100%;">
+                        <el-option v-for="node in forwardNodes" :key="node.id" :label="node.name" :value="node.id" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="推进原因" required>
+                    <el-input v-model="forwardRemark" type="textarea" placeholder="请输入推进原因" :maxlength="100"
+                        show-word-limit :autosize="{ minRows: 3, maxRows: 4 }" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="forwardDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="confirmForward">确 定</el-button>
+            </template>
+        </el-dialog>
+        <!-- 推进按钮行为配置:任意节点对话框(type=0) -->
+        <el-dialog v-model="forwardAnyNodeDialogVisible" title="推进" width="460px" append-to-body>
+            <el-form label-position="top" style="margin: 0 20px;">
+                <el-form-item label="推进目标节点" required>
+                    <TagFlowNodeSelect v-model:value="forwardAnyNodeId" :flowNode="forwardAnyCheckedNode">
+                        <template #append>
+                            <el-button class="append-add" type="default" icon="Search" @click="openForwardFlowChart" />
+                        </template>
+                    </TagFlowNodeSelect>
+                </el-form-item>
+                <el-form-item label="推进原因" required>
+                    <el-input v-model="forwardAnyRemark" type="textarea" placeholder="请输入推进原因" :maxlength="100"
+                        show-word-limit :autosize="{ minRows: 3, maxRows: 4 }" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="forwardAnyNodeDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="confirmForwardAnyNode">确 定</el-button>
+            </template>
+        </el-dialog>
+        <!-- 推进:选择审批流程(mini流程图) -->
+        <el-dialog title="选择推进目标节点" v-model="forwardFlowChartVisible" :before-close="handleForwardFlowNodeClose" append-to-body>
+            <ReviewWarp selectMode="forward" />
+        </el-dialog>
         <!-- 选择条件:选择分支弹窗 -->
         <el-dialog v-model="pickConditionDialogVisible" :title="pickConditionMultiSelect ? '选择条件分支（可多选）' : '选择条件分支'" width="400px" append-to-body>
             <el-select v-model="selectedPickConditionBranch" :multiple="pickConditionMultiSelect" placeholder="请选择条件分支" style="width: 100%;">
@@ -64,6 +106,8 @@ import Cookies from "js-cookie";
 import transferDialog from './transferDialog.vue';
 import approveDialog from './approveDialog.vue';
 import repulseDialog from './repulseDialog.vue';
+import ReviewWarp from './chooseFlowNode/reviewWarp.vue';
+import TagFlowNodeSelect from './TagFlowNodeSelect/index.vue';
 import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
@@ -108,6 +152,27 @@ let drawBackType = ref(null);
 let drawBackNodes = ref([]);
 let drawBackSelectedNodeId = ref(null);
 let drawBackRemark = ref('');
+//推进按钮行为配置相关状态
+let forwardDialogVisible = ref(false);
+let forwardType = ref(null);
+let forwardNodes = ref([]);
+let forwardSelectedNodeId = ref(null);
+let forwardRemark = ref('');
+//推进任意节点(type=0)相关状态
+let forwardAnyNodeDialogVisible = ref(false);
+let forwardAnyNodeId = ref(null);
+let forwardAnyRemark = ref('');
+let forwardAnyCheckedNode = ref(null);
+let forwardFlowChartVisible = ref(false);
+let { setApproveChooseFlowNodeConfig } = store;
+//监听流程图节点选择结果
+watch(() => store.approveChooseFlowNode, (newVal) => {
+    if (newVal && newVal.nodeId && forwardFlowChartVisible.value) {
+        forwardAnyNodeId.value = newVal.nodeId;
+        forwardAnyCheckedNode.value = { ...newVal };
+        forwardFlowChartVisible.value = false;
+    }
+}, { deep: true });
 
 let props = defineProps({
     approveFormData: {
@@ -170,6 +235,9 @@ const clickApproveSubmit = async (btnType) => {
         case approvalButtonConf.repulse:
             handleRepulseClick();
             break;
+        case approvalButtonConf.forwardToNode:
+            handleForwardClick();
+            break;
         case approvalButtonConf.undertake:
             approveUndertakeSubmit();
             break;
@@ -223,6 +291,84 @@ const confirmDrawBack = () => {
     approveSubmit(param);
 };
 /**
+ * 推进按钮点击:根据 forwardType 配置分流交互
+ */
+const handleForwardClick = () => {
+    const fType = approveSubData.value.forwardType;
+    if (fType === 0 || fType === null || fType === undefined) {
+        // 任意未来节点:弹出mini流程图选择
+        forwardAnyNodeId.value = null;
+        forwardAnyRemark.value = '';
+        forwardAnyCheckedNode.value = null;
+        forwardAnyNodeDialogVisible.value = true;
+    } else if (fType === 1) {
+        // 指定节点(多选):弹窗下拉选择
+        forwardType.value = fType;
+        forwardNodes.value = approveSubData.value.forwardNodes || [];
+        forwardSelectedNodeId.value = null;
+        forwardRemark.value = '';
+        forwardDialogVisible.value = true;
+    } else if (fType === 2) {
+        // 固定节点(单选):轻量确认框(仅意见)
+        forwardType.value = fType;
+        forwardNodes.value = approveSubData.value.forwardNodes || [];
+        forwardSelectedNodeId.value = forwardNodes.value.length > 0 ? forwardNodes.value[0].id : null;
+        forwardRemark.value = '';
+        forwardDialogVisible.value = true;
+    } else {
+        // 默认走mini流程图
+        forwardAnyNodeId.value = null;
+        forwardAnyRemark.value = '';
+        forwardAnyCheckedNode.value = null;
+        forwardAnyNodeDialogVisible.value = true;
+    }
+};
+/** 推进任意节点:打开mini流程图 */
+const openForwardFlowChart = () => {
+    forwardFlowChartVisible.value = true;
+};
+const handleForwardFlowNodeClose = () => {
+    forwardFlowChartVisible.value = false;
+};
+/** 推进任意节点:确认 */
+const confirmForwardAnyNode = () => {
+    if (!forwardAnyNodeId.value) {
+        proxy.$modal.msgWarning('请选择推进目标节点');
+        return;
+    }
+    if (!forwardAnyRemark.value || !forwardAnyRemark.value.trim()) {
+        proxy.$modal.msgWarning('请输入推进原因');
+        return;
+    }
+    forwardAnyNodeDialogVisible.value = false;
+    const param = {
+        forwardToNodeId: forwardAnyNodeId.value,
+        remark: forwardAnyRemark.value
+    };
+    handleClickType.value = approvalButtonConf.forwardToNode;
+    approveSubmit(param);
+};
+/**
+ * 推进对话框确认
+ */
+const confirmForward = () => {
+    if (!forwardRemark.value || !forwardRemark.value.trim()) {
+        proxy.$modal.msgWarning('请输入推进原因');
+        return;
+    }
+    if (forwardType.value === 1 && !forwardSelectedNodeId.value) {
+        proxy.$modal.msgWarning('请选择推进目标节点');
+        return;
+    }
+    forwardDialogVisible.value = false;
+    const param = {
+        forwardToNodeId: forwardSelectedNodeId.value || '',
+        remark: forwardRemark.value
+    };
+    handleClickType.value = approvalButtonConf.forwardToNode;
+    approveSubmit(param);
+};
+/**
  * 审批操作确定
  * @param param 
  * @param type 
@@ -256,6 +402,9 @@ const approveSubmit = async (param) => {
     if (handleClickType.value == approvalButtonConf.repulse) {//退回操作
         approveSubData.value.backToModifyType = Number(param.backToModifyType);
         approveSubData.value.backToNodeId = Number(param.backToNodeId);
+    }
+    if (handleClickType.value == approvalButtonConf.forwardToNode) {//推进操作
+        approveSubData.value.forwardToNodeId = param.forwardToNodeId;
     }
     await approveProcess(approveSubData.value);//业务处理
 }
