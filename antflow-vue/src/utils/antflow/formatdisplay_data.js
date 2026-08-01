@@ -302,6 +302,12 @@ export class FormatDisplayUtils {
         node.nodeDisplayName = node.nodeDisplayName || "协助";
       }
 
+      // 完成审批节点反显: nodeType=4 + finish_approve_node 标签
+      // 不转 nodeType(本质是审批人节点), 只设标志位供抽屉识别(自动填充+只读)
+      if (node.nodeType == 4 && node.labelList && node.labelList.some(l => l.labelValue === "finish_approve_node")) {
+        node.isFinishApproveNode = true;
+      }
+
       // 自动推进节点反显: nodeType=4 或 18 (后端可能已转) + auto_advance_node标签
       // 与自动节点(9)同构(虚拟人 -3), 差异: 满足条件时推进到指定目标节点
       // 从 autoNodeConf 恢复 conditionList/groupRelation; forwardType/forwardNodeIds 由公共块处理

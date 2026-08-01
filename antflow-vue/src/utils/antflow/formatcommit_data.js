@@ -1,12 +1,16 @@
 // import { FormatUtils } from '@/utils/antflowformatcommit_data'
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
 import $func from "@/utils/antflow/index";
+import { NodeUtils } from "@/utils/antflow/nodeUtils";
 export class FormatCommitUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
    * @param params
    */
   static formatSettings = (param) => {
+    // 提交前: 重新计算完成审批节点的目标(最后一个审批人节点)
+    // 防止用户加了节点但没打开完成审批抽屉导致目标过期
+    this.refillFinishApproveNodes(param);
     let treeList = this.flattenMapTreeToList(param);
     let combinationList = this.getEndpointNodeId(treeList);
     let finalList = this.cleanNodeList(combinationList);
@@ -97,6 +101,37 @@ export class FormatCommitUtils {
    * @param { Array } arr -节点数组
    * @returns
    */
+  /**
+   * 遍历流程树, 对所有完成审批节点(isFinishApproveNode)重新计算目标(最后一个审批人节点)
+   * 提交前调用, 保证目标始终是最新流程树的最后一个 nodeType=4 节点
+   * 如果完成审批节点自己就是最后一个审批人(没有后续审批人), forwardNodeIds 留空,
+   * 后端发布校验会抛异常阻止发布
+   */
+  static refillFinishApproveNodes = (rootNode) => {
+    if (!rootNode) return;
+    const finishNodes = [];
+    function collect(node) {
+      if (!node) return;
+      if (node.isFinishApproveNode) finishNodes.push(node);
+      if (node.childNode) collect(node.childNode);
+      if (node.nodeType === 7 && node.parallelNodes) {
+        for (const branch of node.parallelNodes) collect(branch);
+      }
+      if (node.nodeType === 2 && node.conditionNodes) {
+        for (const cond of node.conditionNodes) collect(cond);
+      }
+    }
+    collect(rootNode);
+    for (const fn of finishNodes) {
+      const last = NodeUtils.findLastApproveNode(rootNode, fn.nodeId);
+      if (last) {
+        fn.forwardNodeIds = [last.nodeId];
+      } else {
+        fn.forwardNodeIds = [];
+      }
+    }
+  };
+
   static cleanNodeList = (arr) => {
     let nodeIds = arr.map((c) => {
       return c.nodeId;

@@ -72,6 +72,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isAutoAdvanceNode;
     /**
+     * 完成审批节点标记: 审批人节点(nodeType=4) + 推进按钮(42) + finish_approve_node 标签
+     * 目标自动填充为流程最后一个审批人节点, 用户不可改
+     */
+    private Boolean isFinishApproveNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

@@ -16,6 +16,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO assistNode=new BpmnNodeLabelVO(StringConstants.ASSIST_NODE,"协助节点");
     /**自动推进节点: 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete*/
     BpmnNodeLabelVO autoAdvanceNode=new BpmnNodeLabelVO(StringConstants.AUTO_ADVANCE_NODE,"自动推进节点");
+    /**完成审批节点: 审批人节点+推进按钮, 目标自动填充为流程最后一个审批人节点. 前端着色判据, 后端零逻辑改动.*/
+    BpmnNodeLabelVO finishApproveNode=new BpmnNodeLabelVO(StringConstants.FINISH_APPROVE_NODE,"完成审批节点");
     BpmnNodeLabelVO skippedAssignees=new BpmnNodeLabelVO(StringConstants.SKIPPED_ASSIGNEE,"跳过的审批人");
     /**当前节点为"上一节点指定"审批人类型,运行时由NextNodeLabelsProcessor替换虚拟审批人为实际审批人*/
     BpmnNodeLabelVO prevNodeAppointed=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PREV_NODE_APPOINTED,"上一节点指定审批人");

@@ -241,6 +241,85 @@ export class NodeUtils {
     return node;
   }
   /**
+   * 创建完成审批节点对象
+   * 本质是审批人节点(nodeType=4) + 推进按钮(固定节点) + finish_approve_node 标签
+   * 目标节点自动填充为流程树中最后一个 nodeType=4 节点(跨并行网关遍历)
+   * 用户不可改目标节点(前端隐藏选择框, 只读展示)
+   * 着色判据: labelList 含 finish_approve_node
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 完成审批节点(nodeType=4, 带 forwardType=2 + finish_approve_node 标签)
+   */
+  static createFinishApproveNode(child) {
+    let node = this.createApproveNode(child);
+    node.nodeName = "完成审批";
+    node.nodeDisplayName = "完成审批";
+    // 默认按钮: 不同意 + 推进(改名"同意"); 不含同意(3)
+    node.buttons = {
+      startPage: btns(1),
+      approvalPage: [
+        { buttonType: 4 },
+        { buttonType: 42, buttonName: '同意' },
+      ],
+      viewPage: btns(0),
+    };
+    // 推进配置: 固定节点模式, 目标由 findLastApproveNode 自动计算填充
+    node.forwardType = 2;
+    node.forwardNodeIds = []; // 空, 提交时/打开抽屉时自动填充
+    // 完成审批标志位(前端用, 提交时贴 finish_approve_node 标签)
+    node.isFinishApproveNode = true;
+    // 预贴标签(提交时 labelList 已带此标签, 后端原样存储+反显)
+    node.labelList = [
+      { labelValue: 'finish_approve_node', labelName: '完成审批节点' },
+    ];
+    return node;
+  }
+  /**
+   * 遍历流程树, 找到最后一个 nodeType=4(审批人) 节点
+   * 跨并行网关: 遍历 parallelNodes 分支 + childNode(聚合节点)
+   * 跨条件网关: 遍历 conditionNodes 分支
+   * 排除当前节点(完成审批节点自己不能是目标)
+   * @param {Object} rootNode - 流程树根节点
+   * @param {String} excludeNodeId - 排除的节点ID(当前完成审批节点)
+   * @returns {Object|null} 最后一个审批人节点, 或 null(没有后续审批人)
+   */
+  static findLastApproveNode(rootNode, excludeNodeId) {
+    if (!rootNode) return null;
+    let lastApprove = null;
+    const visited = new Set();
+    function traverse(node) {
+      if (!node || visited.has(node.nodeId)) return;
+      visited.add(node.nodeId);
+      // 收集审批人节点(nodeType=4), 排除当前节点
+      if (node.nodeType === 4 && node.nodeId !== excludeNodeId) {
+        lastApprove = node;
+      }
+      // 并行网关(nodeType=7): 遍历所有分支(parallelNodes) + 聚合节点(childNode)
+      if (node.nodeType === 7) {
+        if (node.parallelNodes) {
+          for (const branch of node.parallelNodes) {
+            traverse(branch);
+          }
+        }
+        if (node.childNode) {
+          traverse(node.childNode);
+        }
+        return;
+      }
+      // 条件网关(nodeType=2): 遍历所有分支(conditionNodes)
+      if (node.nodeType === 2 && node.conditionNodes) {
+        for (const cond of node.conditionNodes) {
+          traverse(cond);
+        }
+      }
+      // 继续向下
+      if (node.childNode) {
+        traverse(node.childNode);
+      }
+    }
+    traverse(rootNode);
+    return lastApprove;
+  }
+  /**
    * 创建自动推进节点对象
    * 本质是自动节点(nodeType=9) + 推进按钮(固定节点)的组合
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 塞虚拟审批人 -3

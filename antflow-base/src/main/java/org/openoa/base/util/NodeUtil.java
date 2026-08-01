@@ -183,6 +183,11 @@ public class NodeUtil {
         if(forwardType!=null){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.forward);
         }
+        //完成审批节点:根据前端传入的 isFinishApproveNode 标识自动贴标签
+        //完成审批本质是审批人节点+推进按钮, 但目标自动填充为最后一个审批人节点
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsFinishApproveNode())){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.finishApproveNode);
+        }
         Integer nodeType = bpmnNodeVo.getNodeType();
         if(nodeType==null){
             return;

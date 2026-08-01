@@ -330,7 +330,8 @@
                 <!-- 推进按钮行为配置 -->
                 <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.forwardToNode)" class="disagree-back-conf">
                     <p class="setting-group-title">推进按钮行为</p>
-                    <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange">
+                    <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange"
+                        :disabled="approverConfig?.isFinishApproveNode">
                         <el-radio :value="0">任意未来节点</el-radio>
                         <el-radio :value="1">指定节点</el-radio>
                         <el-radio :value="2">固定节点</el-radio>
@@ -344,10 +345,15 @@
                     </div>
                     <div v-if="forwardBehavior === 2" style="margin-top: 8px;">
                         <span>推进目标节点：</span>
-                        <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
+                        <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;"
+                            :disabled="approverConfig?.isFinishApproveNode">
                             <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
                                 :label="item.nodeName" :value="item.nodeId" />
                         </el-select>
+                        <p v-if="approverConfig?.isFinishApproveNode && availableForwardNodes.length === 0"
+                            style="color: #f56c6c; margin-top: 4px;">
+                            完成审批节点不能是最后一个审批人节点，请在后面添加审批人节点或调整位置。
+                        </p>
                     </div>
                 </div>
 
@@ -416,7 +422,7 @@ import { setTypes, hrbpOptions, approvalPageButtons, nodeViewPageButtons, NO_USE
 import { QuestionFilled } from '@element-plus/icons-vue';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions, getDictDataByType } from '@/api/workflow/index';
-import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils';
+import { NodeUtils, flattenMapTreeToList } from '@/utils/antflow/nodeUtils';
 import selectUserDialog from '../dialog/selectUserDialog.vue';
 import selectRoleDialog from '../dialog/selectRoleDialog.vue';
 import formPermConf from "./permConfig/FormPermConf.vue";
@@ -519,6 +525,20 @@ const loadForwardConfig = (nodeData) => {
             ? nodeData.forwardNodeIds[0] : null;
         return;
     }
+    // 完成审批节点: 强制固定节点模式, 自动填充最后一个审批人节点
+    if (approverConfig.value?.isFinishApproveNode) {
+        forwardBehavior.value = 2;
+        forwardNodeIds.value = [];
+        const lastNode = NodeUtils.findLastApproveNode(rootNode.value, approverConfig.value?.nodeId);
+        if (lastNode) {
+            forwardFixedNodeId.value = lastNode.nodeId;
+            approverConfig.value.forwardNodeIds = [lastNode.nodeId];
+        } else {
+            forwardFixedNodeId.value = null;
+            approverConfig.value.forwardNodeIds = [];
+        }
+        return;
+    }
     const ft = nodeData?.forwardType;
     if (ft === 0) {
         forwardBehavior.value = 0;
@@ -539,7 +559,7 @@ const loadForwardConfig = (nodeData) => {
     }
 };
 
-/** 可选推进目标节点: 从当前节点向下遍历流程树, 只保留审批人(4)节点, 遇并行网关停止 */
+/** 可选推进目标节点: 从当前节点向下遍历流程树, 只保留审批人(4)节点, 跨并行网关继续遍历 */
 const availableForwardNodes = computed(() => {
     const root = rootNode.value;
     if (!root || !root.nodeId) return [];
@@ -552,17 +572,27 @@ const availableForwardNodes = computed(() => {
     // 找到当前节点
     const currentNode = nodeMap[currentNodeId];
     if (!currentNode) return [];
-    // BFS向下遍历
+    // DFS向下遍历
     const result = [];
     const visited = new Set();
     function traverseDown(node) {
         if (!node || visited.has(node.nodeId)) return;
         visited.add(node.nodeId);
-        // 并行网关(nodeType=7)停止深入
-        if (node.nodeType === 7) return;
         // 收集审批人节点(nodeType=4)
         if (node.nodeType === 4 && node.nodeId !== currentNodeId) {
             result.push({ nodeId: node.nodeId, nodeName: node.nodeName });
+        }
+        // 并行网关(nodeType=7): 遍历所有分支(parallelNodes) + 聚合节点(childNode)
+        if (node.nodeType === 7) {
+            if (node.parallelNodes) {
+                for (const branch of node.parallelNodes) {
+                    traverseDown(branch);
+                }
+            }
+            if (node.childNode) {
+                traverseDown(node.childNode);
+            }
+            return;
         }
         // 条件网关(nodeType=2): 遍历所有分支
         if (node.nodeType === 2 && node.conditionNodes) {
