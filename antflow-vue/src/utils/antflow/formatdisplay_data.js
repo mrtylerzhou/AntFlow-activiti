@@ -368,6 +368,20 @@ export class FormatDisplayUtils {
           node.groupRelation = node.autoNodeConf.groupRelation || false;
         }
       }
+      // 自动退回节点反显: nodeType=4 或 19 (后端可能已转) + auto_return_node标签
+      // 与自动推进(18)对称, 差异: 满足条件时退回到指定目标节点(FOUR_DISAGREE)
+      // 从 autoNodeConf 恢复 conditionList/groupRelation; drawBackType/drawBackNodeIds 由公共块处理
+      else if ((node.nodeType == 4 || node.nodeType == 19) && node.labelList && node.labelList.some(l => l.labelValue === "auto_return_node")) {
+        node.nodeType = 19;
+        node.nodeName = node.nodeName || "自动退回";
+        node.nodeDisplayName = node.nodeDisplayName || "自动退回";
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
     }
     return nodeList;
   }

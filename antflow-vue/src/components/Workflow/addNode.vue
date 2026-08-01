@@ -158,6 +158,20 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item back-starter-node" @click="addType(25)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="drive-tostarter" class="iconfont" />
+                            <p>退回发起人</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item auto-return-node" @click="addType(26)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="auto-drive-back" class="iconfont" />
+                            <p>自动退回</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -275,6 +289,10 @@ const createAssistNode = (childNode) => {
 const createAutoAdvanceNode = (childNode) => {
     return NodeUtils.createAutoAdvanceNode(childNode);
 }
+/**创建自动退回节点 */
+const createAutoReturnNode = (childNode) => {
+    return NodeUtils.createAutoReturnNode(childNode);
+}
 /**创建推进审批节点 */
 const createForwardApproveNode = (childNode) => {
     return NodeUtils.createForwardApproveNode(childNode);
@@ -298,6 +316,10 @@ const createConditionFinishNode = (childNode) => {
 /**创建退回审批节点 */
 const createBackApproveNode = (childNode) => {
     return NodeUtils.createBackApproveNode(childNode);
+}
+/**创建退回发起人节点 */
+const createBackStarterNode = (childNode) => {
+    return NodeUtils.createBackStarterNode(childNode);
 }
 // 创建节点 Map集合
 const createNodeMap = new Map([
@@ -324,6 +346,8 @@ const createNodeMap = new Map([
     [22, createConditionAdvanceNode],
     [23, createConditionFinishNode],
     [24, createBackApproveNode],
+    [25, createBackStarterNode],
+    [26, createAutoReturnNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -470,6 +494,12 @@ const confirmClone = () => {
         }
 
         &.back-approver-node {
+            .item-wrapper {
+                color: #e53935
+            }
+        }
+
+        &.auto-return-node {
             .item-wrapper {
                 color: #e53935
             }

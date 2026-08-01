@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
+import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
@@ -39,7 +40,11 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmit
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -85,6 +90,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private TaskMgmtMapper taskMgmtMapper;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -344,5 +351,192 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK);
+    }
+
+    /**
+     * 自动退回节点专用: 延迟到当前事务提交后, 在新事务里 complete + 退回到目标节点.
+     *
+     * 与 advanceToTargetNode 对称, 但方向相反(向后跳), 且需要额外写入:
+     * - BpmProcessNodeSubmit(restoreNodeKey, 控制目标节点完成后的跳转)
+     * - resetUnderStatusByProcessNumber(重置审批状态)
+     * - backToModifyData(表单回调)
+     *
+     * @param delegateTask      当前任务(自动退回节点任务)
+     * @param procInstId        流程实例ID
+     * @param processNumber     流程编号
+     * @param currentTaskDefKey 当前任务 taskDefinitionKey
+     * @param targetElementId   目标节点 elementId(taskDefKey)
+     * @param targetNodeName    目标节点名称(用于审批日志)
+     * @param verifyUserId      审批日志的 verifyUserId(自动退回用 -3)
+     * @param verifyUserName    审批日志的 verifyUserName(自动退回用 "自动退回节点自动退回")
+     * @param businessDataVo    业务数据(用于 backToModifyData 回调)
+     */
+    public void returnToTargetNode(DelegateTask delegateTask, String procInstId, String processNumber,
+                                   String currentTaskDefKey, String targetElementId,
+                                   String targetNodeName,
+                                   String verifyUserId, String verifyUserName,
+                                   BusinessDataVo businessDataVo) {
+        String taskId = delegateTask.getId();
+        String taskName = delegateTask.getName();
+        String processDefinitionId = delegateTask.getProcessDefinitionId();
+
+        log.info("自动退回 returnToTargetNode 注册 afterCommit 回调, procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
+                procInstId, currentTaskDefKey, targetElementId, targetNodeName);
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        new TransactionTemplate(transactionManager).execute(status -> {
+                            doReturnAfterCommit(procInstId, processNumber, currentTaskDefKey, targetElementId,
+                                    targetNodeName, verifyUserId, verifyUserName,
+                                    taskId, taskName, processDefinitionId, businessDataVo);
+                            return null;
+                        });
+                    } catch (Exception e) {
+                        log.error("自动退回 afterCommit 执行失败, 流程停在自动退回节点, 请人工处理. procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
+                                procInstId, currentTaskDefKey, targetElementId, targetNodeName, e);
+                    }
+                }
+            });
+        } else {
+            try {
+                new TransactionTemplate(transactionManager).execute(status -> {
+                    doReturnAfterCommit(procInstId, processNumber, currentTaskDefKey, targetElementId,
+                            targetNodeName, verifyUserId, verifyUserName,
+                            taskId, taskName, processDefinitionId, businessDataVo);
+                    return null;
+                });
+            } catch (Exception e) {
+                log.error("自动退回执行失败, procInstId={}, currentTaskDefKey={}, targetElementId={}",
+                        procInstId, currentTaskDefKey, targetElementId, e);
+                throw new AFBizException("自动退回失败", e);
+            }
+        }
+    }
+
+    /**
+     * 在新事务里执行 complete + 退回跳转 + 副作用.
+     */
+    private void doReturnAfterCommit(String procInstId, String processNumber, String currentTaskDefKey,
+                                     String targetElementId, String targetNodeName,
+                                     String verifyUserId, String verifyUserName,
+                                     String taskId, String taskName, String processDefinitionId,
+                                     BusinessDataVo businessDataVo) {
+        log.info("自动退回 doReturnAfterCommit 开始, procInstId={}, currentTaskDefKey={}, targetElementId={}",
+                procInstId, currentTaskDefKey, targetElementId);
+
+        // Step 1: 查询当前活动任务
+        List<Task> currentTasks = taskService.createTaskQuery().processInstanceId(procInstId).active().list();
+        if (CollectionUtils.isEmpty(currentTasks)) {
+            log.warn("自动退回: 未查到活动任务, 流程可能已结束. procInstId={}", procInstId);
+            return;
+        }
+
+        Task autoReturnTask = currentTasks.stream()
+                .filter(t -> currentTaskDefKey.equals(t.getTaskDefinitionKey()))
+                .findFirst()
+                .orElse(null);
+        if (autoReturnTask == null) {
+            log.warn("自动退回: 未查到自动退回节点任务, 可能已被处理. procInstId={}, currentTaskDefKey={}",
+                    procInstId, currentTaskDefKey);
+            return;
+        }
+
+        // Step 2: complete 自动退回节点任务
+        Map<String, Object> varMap = new HashMap<>();
+        varMap.put(StringConstants.TASK_ASSIGNEE_NAME, verifyUserName);
+        taskService.complete(autoReturnTask.getId(), varMap);
+
+        // Step 3: 记录审批日志
+        bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
+                .verifyDate(new Date())
+                .taskName(taskName)
+                .taskId(taskId)
+                .runInfoId(procInstId)
+                .verifyUserId(verifyUserId)
+                .verifyUserName(verifyUserName)
+                .taskDefKey(currentTaskDefKey)
+                .verifyStatus(ProcessSubmitStateEnum.PROCESS_UPDATE_TYPE.getCode())
+                .verifyDesc(String.format("自动退回至[%s]", targetNodeName))
+                .processCode(processDefinitionId)
+                .build());
+
+        // Step 4: 查询 complete 后的新任务
+        List<Task> newTasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
+        if (CollectionUtils.isEmpty(newTasks)) {
+            log.info("自动退回: complete 后流程已结束, 无需跳转. procInstId={}", procInstId);
+            return;
+        }
+
+        // Step 5: 执行退回跳转(双路径)
+        Task currentTask = newTasks.get(0);
+        if (ProcessDefinitionUtils.isUserTaskParallel(currentTask)) {
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
+            List<String> unMovedTasks = null;
+            try {
+                unMovedTasks = taskFlowControlService.moveTo(currentTask.getTaskDefinitionKey(), targetElementId);
+            } catch (Exception e) {
+                log.error("自动退回跳转失败!", e);
+                throw new RuntimeException(e);
+            }
+            List<String> distinctUnMoved = unMovedTasks.stream().distinct().collect(Collectors.toList());
+            if (!distinctUnMoved.isEmpty()) {
+                distinctUnMoved = distinctUnMoved.stream()
+                        .filter(a -> !a.equals(currentTask.getTaskDefinitionKey()))
+                        .collect(Collectors.toList());
+                if (!distinctUnMoved.isEmpty()) {
+                    taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(procInstId, distinctUnMoved);
+                }
+            }
+        } else {
+            try {
+                processNodeJump.commitProcess(currentTask.getId(), null, targetElementId, procInstId);
+            } catch (Exception e) {
+                log.error("自动退回跳转失败!", e);
+                throw new AFBizException("自动退回跳转失败!");
+            }
+        }
+
+        // Step 6: 写 BpmProcessNodeSubmit(控制目标节点完成后的跳转)
+        PvmActivity nextElement = additionalInfoService.getNextElement(targetElementId, procInstId);
+        if (nextElement != null) {
+            String restoreNodeKey;
+            String type = (String) nextElement.getProperty("type");
+            if ("parallelGateway".equals(type)) {
+                if (nextElement.getOutgoingTransitions().size() > 1) {
+                    restoreNodeKey = "";
+                } else {
+                    restoreNodeKey = nextElement.getOutgoingTransitions().get(0).getDestination().getId();
+                }
+            } else {
+                restoreNodeKey = nextElement.getId();
+            }
+            if (!StringUtils.isEmpty(restoreNodeKey)) {
+                processNodeSubmitService.addProcessNode(BpmProcessNodeSubmit.builder()
+                        .state(1)
+                        .nodeKey(restoreNodeKey)
+                        .processInstanceId(procInstId)
+                        .backType(ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode())
+                        .createUser(verifyUserId)
+                        .build());
+            }
+        }
+
+        // Step 7: 重置审批状态
+        variableMapper.resetUnderStatusByProcessNumber(processNumber);
+
+        // Step 8: 表单回调
+        if (businessDataVo != null && !Boolean.TRUE.equals(businessDataVo.getIsOutSideAccessProc())) {
+            try {
+                formFactory.getFormAdaptor(businessDataVo).backToModifyData(businessDataVo);
+            } catch (Exception e) {
+                log.warn("自动退回 backToModifyData 回调失败, 不影响主流程", e);
+            }
+        }
+
+        log.info("自动退回 doReturnAfterCommit 完成, procInstId={}, targetElementId={}, targetNodeName={}",
+                procInstId, targetElementId, targetNodeName);
     }
 }

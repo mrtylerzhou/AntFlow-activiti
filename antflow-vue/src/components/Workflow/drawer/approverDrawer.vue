@@ -4,7 +4,7 @@
             <span class="drawer-title">{{ drawerTitle }}</span>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
-            <el-tab-pane v-if="approverConfig.nodeType !== 18" label="审批人设置" name="approverStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" label="审批人设置" name="approverStep">
                 <div v-if="approverStepShow">
                     <div class="approver_content">
                         <div>
@@ -252,15 +252,27 @@
                     </template>
                 </div>
             </el-tab-pane>
-            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18" label="条件设置" name="conditionStep">
+            <el-tab-pane v-if="approverConfig.nodeType === 19" lazy label="退回设置" name="returnStep">
+                <div class="disagree-back-conf">
+                    <p class="setting-group-title">退回目标节点</p>
+                    <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
+                        满足条件时自动退回到此节点;不满足时自动完成(不跳跃)
+                    </p>
+                    <el-select v-model="autoReturnTargetNodeId" placeholder="请选择退回目标节点" style="width: 320px;">
+                        <el-option v-for="item in availableBackNodes" :key="item.nodeId"
+                            :label="item.nodeName" :value="item.nodeId" />
+                    </el-select>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18 || approverConfig.nodeType === 19" label="条件设置" name="conditionStep">
                 <ConditionGroupEditor
                     :conditionList="approverConfig.conditionList"
                     v-model:groupRelation="approverConfig.groupRelation"
                     v-model:nodeApproveList="approverConfig.nodeApproveList">
-                    <template #tip>当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理</template>
+                    <template #tip>{{ approverConfig.nodeType === 19 ? '当满足以下条件时, 当前节点将自动退回到指定节点; 条件不满足时自动完成(不跳跃)' : '当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理' }}</template>
                 </ConditionGroupEditor>
             </el-tab-pane>
-            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="按钮权限设置" name="buttonStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                     <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
@@ -329,6 +341,7 @@
                     <p class="setting-group-title">不同意按钮行为</p>
                     <el-radio-group v-model="disagreeBackType" @change="onDisagreeBackTypeChange">
                         <el-radio :value="0">结束流程</el-radio>
+                        <el-radio :value="2">退回发起人</el-radio>
                         <el-radio :value="4">退回指定节点（重新开始）</el-radio>
                         <el-radio :value="5">退回指定节点（回到当前节点）</el-radio>
                     </el-radio-group>
@@ -415,15 +428,15 @@
                     </div>
                 </el-checkbox-group>
             </el-tab-pane>
-            <el-tab-pane v-if="formPermTabVisible && approverConfig.nodeType !== 18" lazy label="表单权限设置" name="formStep">
+            <el-tab-pane v-if="formPermTabVisible && approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
                     :formHidden="formHiddenMap"
                     @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
             </el-tab-pane>
-            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="通知设置" name="noticeStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="通知设置" name="noticeStep">
                 <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
-            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="高级设置" name="advancedStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="高级设置" name="advancedStep">
                 <div v-if="advancedStepShow" class="advanced-setting-content">
                     <div class="setting-group">
                         <p class="setting-group-title">流程标签</p>
@@ -559,6 +572,21 @@ const syncForwardToConfig = () => {
 };
 watch(forwardNodeIds, () => { syncForwardToConfig(); }, { deep: true });
 watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
+
+// ========== 自动退回节点配置 ==========
+let autoReturnTargetNodeId = ref(null); // 自动退回目标节点(单选)
+const syncAutoReturnToConfig = () => {
+    if (!approverConfig.value) return;
+    approverConfig.value.drawBackType = 4;
+    approverConfig.value.drawBackNodeIds = autoReturnTargetNodeId.value ? [autoReturnTargetNodeId.value] : [];
+};
+watch(autoReturnTargetNodeId, () => { syncAutoReturnToConfig(); });
+/**加载自动退回配置(反显) */
+const loadAutoReturnConfig = (nodeData) => {
+    if (approverConfig.value?.nodeType !== 19) return;
+    autoReturnTargetNodeId.value = (nodeData?.drawBackNodeIds && nodeData.drawBackNodeIds.length > 0)
+        ? nodeData.drawBackNodeIds[0] : null;
+};
 
 /**加载推进按钮行为配置(反显) */
 const loadForwardConfig = (nodeData) => {
@@ -782,11 +810,17 @@ const availableBackNodes = computed(() => {
     return result;
 });
 const onDisagreeBackTypeChange = (val) => {
-    if (val !== 4 && val !== 5) {
+    if (val === 0) {
         disagreeBackToNodeId.value = null;
         approverConfig.value.disagreeBackType = null;
         approverConfig.value.disagreeBackToNodeId = null;
+    } else if (val === 2) {
+        // 退回发起人: 无需目标节点, 运行时自动退回发起人
+        disagreeBackToNodeId.value = null;
+        approverConfig.value.disagreeBackType = val;
+        approverConfig.value.disagreeBackToNodeId = null;
     } else {
+        // 4/5 退回指定节点: 需选目标
         approverConfig.value.disagreeBackType = val;
     }
 };
@@ -795,6 +829,9 @@ const syncDisagreeBackToConfig = () => {
     if (disagreeBackType.value === 4 || disagreeBackType.value === 5) {
         approverConfig.value.disagreeBackType = disagreeBackType.value;
         approverConfig.value.disagreeBackToNodeId = disagreeBackToNodeId.value;
+    } else if (disagreeBackType.value === 2) {
+        approverConfig.value.disagreeBackType = 2;
+        approverConfig.value.disagreeBackToNodeId = null;
     } else {
         approverConfig.value.disagreeBackType = null;
         approverConfig.value.disagreeBackToNodeId = null;
@@ -882,7 +919,7 @@ const additionalSignInfoExcludeList = computed(() => {
 });
 let visible = computed({
     get() {
-        const defaultTab = approverConfig.value?.nodeType === 18 ? 'forwardStep' : 'approverStep';
+        const defaultTab = approverConfig.value?.nodeType === 18 ? 'forwardStep' : (approverConfig.value?.nodeType === 19 ? 'returnStep' : 'approverStep');
         handleTabClick({ paneName: defaultTab })
         return approverDrawer.value
     },
@@ -904,6 +941,7 @@ watch(approverConfig1, (val) => {
         loadDisagreeBackConfig(currParallel);
         loadDrawBackConfig(currParallel);
         loadForwardConfig(currParallel);
+        loadAutoReturnConfig(currParallel);
     }
     else {
         approverConfig.value = val.value;
@@ -916,6 +954,7 @@ watch(approverConfig1, (val) => {
         loadDisagreeBackConfig(val.value);
         loadDrawBackConfig(val.value);
         loadForwardConfig(val.value);
+        loadAutoReturnConfig(val.value);
     }
 });
 
@@ -1331,9 +1370,9 @@ const loadApprovalPageButtons = (approvalPageList) => {
 /**加载不同意退回配置(反显) */
 const loadDisagreeBackConfig = (nodeData) => {
     const bt = nodeData?.disagreeBackType;
-    if (bt === 4 || bt === 5) {
+    if (bt === 2 || bt === 4 || bt === 5) {
         disagreeBackType.value = bt;
-        disagreeBackToNodeId.value = nodeData.disagreeBackToNodeId || null;
+        disagreeBackToNodeId.value = (bt === 4 || bt === 5) ? (nodeData.disagreeBackToNodeId || null) : null;
     } else {
         disagreeBackType.value = 0;
         disagreeBackToNodeId.value = null;

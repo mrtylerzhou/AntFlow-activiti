@@ -17,6 +17,7 @@
                     <svg-icon icon-class="assist" class="iconfont" v-else-if="nodeConfig.nodeType == 17" />
                     <svg-icon icon-class="auto-finish" class="iconfont" v-else-if="nodeConfig.nodeType == 18 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'auto_complete_node')" />
                     <svg-icon icon-class="auto-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
+                    <svg-icon icon-class="auto-drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 19" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
                     <svg-icon icon-class="drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')" />
@@ -252,6 +253,10 @@ let titleBgColor = computed(() => {
         && props.nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')) {
         return BACK_APPROVE_COLOR;
     }
+    // 自动退回节点着色: nodeType=19 (亮红, 与退回审批同类色)
+    if (props.nodeConfig.nodeType == 19) {
+        return BACK_APPROVE_COLOR;
+    }
     return bgColors[props.nodeConfig.nodeType];
 });
 
@@ -376,6 +381,35 @@ let showText = computed(() => {
             return targetName ? `推进至:${targetName}` : '推进至:已配置';
         }
         return '请配置推进目标节点';
+    }
+    if (props.nodeConfig.nodeType == 19) {
+        if (props.nodeConfig.drawBackNodeIds && props.nodeConfig.drawBackNodeIds.length > 0) {
+            const targetNodeId = props.nodeConfig.drawBackNodeIds[0];
+            const findNodeName = (node) => {
+                if (!node) return null;
+                if (node.nodeId === targetNodeId) return node.nodeName;
+                if (node.childNode) {
+                    const found = findNodeName(node.childNode);
+                    if (found) return found;
+                }
+                if (node.conditionNodes) {
+                    for (const cond of node.conditionNodes) {
+                        const found = findNodeName(cond);
+                        if (found) return found;
+                    }
+                }
+                if (node.parallelNodes) {
+                    for (const par of node.parallelNodes) {
+                        const found = findNodeName(par);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            const targetName = rootNode.value ? findNodeName(rootNode.value) : null;
+            return targetName ? `条件满足退回至:${targetName}` : '条件满足退回至:已配置';
+        }
+        return '请配置退回目标节点';
     }
 });
 /**
@@ -619,7 +653,7 @@ const setNodeInfo = (index) => {
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17 || nodeType == 18) {
+    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17 || nodeType == 18 || nodeType == 19) {
         setApprover(true);
         setApproverConfig({
             value: {

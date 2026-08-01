@@ -87,6 +87,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isAutoCompleteNode;
     /**
+     * 自动退回节点标记: 设计期 nodeType=19, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与自动节点(9)同构(虚拟人 -3), 满足条件时退回到指定目标节点(FOUR_DISAGREE), 不满足时自动 complete
+     */
+    private Boolean isAutoReturnNode;
+    /**
      * 完成审批节点标记: 审批人节点(nodeType=4) + 推进按钮(42) + finish_approve_node 标签
      * 目标自动填充为流程最后一个审批人节点, 用户不可改
      */

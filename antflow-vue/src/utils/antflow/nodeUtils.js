@@ -103,6 +103,52 @@ export class NodeUtils {
     return backApproveNode;
   }
   /**
+   * 创建退回发起人节点对象
+   * 本质是审批人节点(nodeType=4), 与退回审批(createBackApproveNode)的差异:
+   *   - 不同意按钮行为默认为"退回发起人"(disagreeBackType=2), 运行时由 BackToModifyImpl
+   *     硬编码定位发起人节点, 无需目标节点(disagreeBackToNodeId 恒为空)
+   *   - 用户可在抽屉里把"不同意行为"切换为"退回指定节点·重新开始(4)/回到当前节点(5)"
+   * 颜色/图标由 af_syslabel_disagree_back 标签驱动(disagreeBackType=2/4/5 时后端自动贴)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 退回发起人节点
+   */
+  static createBackStarterNode(child) {
+    let backStarterNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "退回发起人",
+      nodeDisplayName: "退回发起人",
+      nodeType: 4, //节点类型 4、审批人
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4), //只同意+不同意(不含退回/加批/转办)
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置
+      templateVos: [],
+      labelList: [
+        { labelValue: "af_syslabel_disagree_back", labelName: "不同意退回" },
+      ],
+      disagreeBackType: 2, //不同意按钮行为: 2=退回发起人(默认, 用户可改为4/5=退回指定节点)
+      disagreeBackToNodeId: null, //退回目标节点: 仅选4/5时需配置, 选2时恒为空(运行时自动退回发起人)
+    };
+    return backStarterNode;
+  }
+  /**
    * 创建抄送人对象
    * @returns object
    */
@@ -470,6 +516,56 @@ export class NodeUtils {
       forwardNodeIds: [], //待用户选择, 空时 error=true 阻止发布
     };
     return autoAdvanceNode;
+  }
+  /**
+   * 创建自动退回节点对象
+   * 本质是自动节点 + 退回按钮(固定节点)的组合
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 塞虚拟审批人 -3
+   * 满足条件时退回到指定目标节点(FOUR_DISAGREE), 不满足时自动 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 自动退回节点
+   */
+  static createAutoReturnNode(child) {
+    let autoReturnNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "自动退回",
+      nodeDisplayName: "自动退回",
+      nodeType: 19, //节点类型 19、自动退回节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (虚拟人员 AUTO_NODE_SKIP)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选退回目标节点, 阻止发布
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      // 审批页无任何操作按钮(自动执行, 无人工交互)
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(0),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [
+        { targetId: "-3", name: "自动退回节点自动退回", type: 5 },
+      ],
+      templateVos: [],
+      labelList: [
+        { labelValue: "auto_return_node", labelName: "自动退回节点" },
+      ],
+      conditionList: [[]], //条件可空, 空时等价无条件退回(每次必退回)
+      groupRelation: false,
+      // 退回配置: 强制 drawBackType=4(指定节点不回到退回人), 用户选择目标节点
+      drawBackType: 4,
+      drawBackNodeIds: [], //待用户选择, 空时 error=true 阻止发布
+    };
+    return autoReturnNode;
   }
   /**
    * 创建条件审批节点对象

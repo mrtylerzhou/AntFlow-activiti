@@ -26,6 +26,12 @@ public enum NodeTypeEnum implements AfEnumBase{
      * 满足条件时推进到指定目标节点, 不满足条件时和自动节点一样 complete
      */
     NODE_TYPE_AUTO_ADVANCE(18,"自动推进节点",0),
+    /**
+     * 自动退回节点: 本质是自动节点 + 退回按钮(固定节点)的组合
+     * 运行期由 NodeUtil.nodeSpecialProcess 转为 4, 塞虚拟审批人 -3
+     * 满足条件时退回到指定目标节点(FOUR_DISAGREE), 不满足条件时和自动节点一样 complete
+     */
+    NODE_TYPE_AUTO_RETURN(19,"自动退回节点",0),
     ;
 
     @Getter

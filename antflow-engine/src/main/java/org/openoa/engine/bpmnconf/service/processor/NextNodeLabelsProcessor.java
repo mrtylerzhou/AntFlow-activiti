@@ -27,6 +27,7 @@ import org.openoa.base.vo.BpmnNodeLabelVO;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.UDLFApplyVo;
 import org.openoa.engine.bpmnconf.adp.processoperation.ForwardToNodeImpl;
+import org.openoa.engine.bpmnconf.adp.processoperation.BackToModifyImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
@@ -59,6 +60,8 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     @Autowired
     private ForwardToNodeImpl forwardToNodeImpl;
     @Autowired
+    private BackToModifyImpl backToModifyImpl;
+    @Autowired
     private BpmnNodeService bpmnNodeService;
 
     @Override
@@ -82,6 +85,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
             processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
             processAutoAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
+            processAutoReturnNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
             processConditionApproveNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
             processConditionAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
@@ -289,6 +293,120 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         } else {
             // === 跳过路径: 和自动节点一样 complete (不跳跃) ===
             log.info("自动推进: 条件不满足, 执行自动跳过, processNumber={}, elementId={}", processNumber, elementId);
+            Map<String, Object> varMap = new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+            ((TaskEntity) delegateTask).complete(varMap, false);
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(assigneeId)
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+        }
+    }
+
+    /**
+     * 自动退回节点处理:
+     * 与 processAutoAdvanceNode 对称, 但方向相反(向后退回).
+     * 满足条件 → 退回到 drawBackNodeIds 指定的目标节点(FOUR_DISAGREE)
+     * 不满足条件 → 和自动节点一样 complete
+     * UUID → 主键 → elementId 转换链路与自动推进一致
+     */
+    private void processAutoReturnNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId,
+                                       String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,
+                                       String procInstId, DelegateTask delegateTask) {
+        if (!StringConstants.AUTO_RETURN_NODE.equals(nodeLabelVO.getLabelValue())) {
+            return;
+        }
+        log.info("自动退回节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
+
+        // === 条件评估 (复用 auto node 逻辑) ===
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if (formAdaptor == null) {
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
+        }
+        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
+            businessDataVo.setLfConditions(businessDataVo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+            log.info("自动退回条件评估结果, processNumber={}, elementId={}, conditionResult={}", processNumber, elementId, conditionResult);
+            formAdaptor.automaticAction(businessDataVo, conditionResult);
+        } catch (Exception e) {
+            log.error("自动退回条件评估或动作执行异常, 视为条件不满足, processNumber={}, elementId={}", processNumber, elementId, e);
+            conditionResult = false;
+        }
+
+        String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+        String assigneeId = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId();
+
+        if (Boolean.TRUE.equals(conditionResult)) {
+            // === 退回路径: 退回到指定目标节点 ===
+            BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
+            if (configJson == null) {
+                throw new AFBizException("自动退回节点配置读取失败, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            Integer drawBackType = configJson.getDrawBackType();
+            List<String> drawBackNodeIds = configJson.getDrawBackNodeIds();
+            if (drawBackType == null || drawBackType != 4 || CollectionUtils.isEmpty(drawBackNodeIds)) {
+                throw new AFBizException("自动退回节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            String targetNodeUuid = drawBackNodeIds.get(0);
+
+            // UUID → 主键 (t_bpmn_node.node_id → t_bpmn_node.id)
+            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
+            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
+                throw new AFBizException("自动退回: businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            Long confId = bpmnConfVo.getId();
+            BpmnNode targetNode = bpmnNodeService.getOne(
+                    Wrappers.<BpmnNode>lambdaQuery()
+                            .eq(BpmnNode::getConfId, confId)
+                            .eq(BpmnNode::getNodeId, targetNodeUuid)
+                            .eq(BpmnNode::getIsDel, 0),
+                    false
+            );
+            if (targetNode == null) {
+                throw new AFBizException("自动退回目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
+            }
+            String targetNodeName = targetNode.getNodeName();
+            String targetPrimaryKey = String.valueOf(targetNode.getId());
+
+            // 主键 → elementId (taskDefKey)
+            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
+            if (CollectionUtils.isEmpty(targetElementIds)) {
+                throw new AFBizException(String.format("自动退回: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
+            }
+            String targetElementId = targetElementIds.get(0);
+
+            log.info("自动退回: 条件满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                    processNumber, elementId, targetElementId, targetNodeName);
+            try {
+                backToModifyImpl.returnToTargetNode(delegateTask, procInstId, processNumber,
+                        delegateTask.getTaskDefinitionKey(), targetElementId, targetNodeName,
+                        assigneeId, "自动退回节点自动退回", businessDataVo);
+            } catch (Exception e) {
+                log.error("自动退回失败, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                        processNumber, elementId, targetElementId, targetNodeName, e);
+                throw new AFBizException(String.format("自动退回失败, processNumber=%s, elementId=%s, targetNodeId=%s, targetNodeName=%s",
+                        processNumber, elementId, targetElementId, targetNodeName), e);
+            }
+        } else {
+            // === 跳过路径: 和自动节点一样 complete (不跳跃) ===
+            log.info("自动退回: 条件不满足, 执行自动跳过, processNumber={}, elementId={}", processNumber, elementId);
             Map<String, Object> varMap = new HashMap<>();
             varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
             ((TaskEntity) delegateTask).complete(varMap, false);

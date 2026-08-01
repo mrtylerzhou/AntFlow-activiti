@@ -22,6 +22,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO autoAdvanceNode=new BpmnNodeLabelVO(StringConstants.AUTO_ADVANCE_NODE,"自动推进节点");
     /**自动完成节点: 自动推进(18)子类型, 目标自动为最后一个审批人. 仅前端反显区分+颜色区分, 运行时复用 auto_advance_node 处理器.*/
     BpmnNodeLabelVO autoCompleteNode=new BpmnNodeLabelVO(StringConstants.AUTO_COMPLETE_NODE,"自动完成节点");
+    /**自动退回节点: 满足条件时退回到指定目标节点(FOUR_DISAGREE), 不满足时和自动节点一样 complete*/
+    BpmnNodeLabelVO autoReturnNode=new BpmnNodeLabelVO(StringConstants.AUTO_RETURN_NODE,"自动退回节点");
     /**完成审批节点: 审批人节点+推进按钮, 目标自动填充为流程最后一个审批人节点. 前端着色判据, 后端零逻辑改动.*/
     BpmnNodeLabelVO finishApproveNode=new BpmnNodeLabelVO(StringConstants.FINISH_APPROVE_NODE,"完成审批节点");
     BpmnNodeLabelVO skippedAssignees=new BpmnNodeLabelVO(StringConstants.SKIPPED_ASSIGNEE,"跳过的审批人");
@@ -42,6 +44,6 @@ public interface NodeLabelConstants {
     /**推进按钮:节点配置了推进行为,运行时渲染[推进]按钮*/
     BpmnNodeLabelVO forward=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_FORWARD,"推进");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
-      copyNodeV2,automaticNode,conditionCopyNode,autoAdvanceNode
+      copyNodeV2,automaticNode,conditionCopyNode,autoAdvanceNode,autoReturnNode
     );
 }

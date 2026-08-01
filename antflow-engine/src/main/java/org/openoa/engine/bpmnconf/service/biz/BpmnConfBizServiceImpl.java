@@ -303,6 +303,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 }
             }
 
+            // 自动退回节点(nodeType=19)发布校验: 必须配置恰好1个退回目标节点
+            if (NodeTypeEnum.NODE_TYPE_AUTO_RETURN.getCode().equals(bpmnNodeVo.getNodeType())) {
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                java.util.List<String> drawBackNodeIds = nodeCfgJson.getDrawBackNodeIds();
+                if (nodeCfgJson.getDrawBackType() == null || nodeCfgJson.getDrawBackType() != 4
+                        || drawBackNodeIds == null || drawBackNodeIds.size() != 1) {
+                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为自动退回节点,必须配置恰好1个退回目标节点!");
+                }
+            }
+
             // Transfer forward button config from VO to node config JSON
             Integer forwardType = bpmnNodeVo.getForwardType();
             if (forwardType != null) {

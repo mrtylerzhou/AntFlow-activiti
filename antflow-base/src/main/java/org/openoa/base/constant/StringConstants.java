@@ -60,6 +60,8 @@ public class StringConstants {
     public static final String AUTO_ADVANCE_NODE="auto_advance_node";
     /**自动完成节点标签: 自动推进(nodeType=18)子类型, 目标自动为最后一个审批人. 仅前端反显区分+颜色区分, 运行时复用 AUTO_ADVANCE_NODE 处理器.*/
     public static final String AUTO_COMPLETE_NODE="auto_complete_node";
+    /**自动退回节点标签: 运行期由 NextNodeLabelsProcessor.processAutoReturnNode 处理*/
+    public static final String AUTO_RETURN_NODE="auto_return_node";
     /**完成审批节点标签: 审批人节点(nodeType=4)+推进按钮(42), 目标自动填充为流程最后一个审批人节点. 前端着色判据.*/
     public static final String FINISH_APPROVE_NODE="finish_approve_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
