@@ -119,6 +119,11 @@
                                     <Promotion />
                                  </el-icon>转发
                               </el-dropdown-item>
+                              <el-dropdown-item @click="handleFlowEfficiency(scope.row)">
+                                 <el-icon>
+                                    <DataAnalysis />
+                                 </el-icon>效能
+                              </el-dropdown-item>
                            </el-dropdown-menu>
                         </template>
                      </el-dropdown>
@@ -130,6 +135,7 @@
             @pagination="getList" />
       </div>
       <previewDrawer v-if="visible" />
+      <efficiencyDrawer v-model:visible="efficiencyVisible" :processNumber="efficiencyProcessNumber" />
       <selectUserDialog v-model:visible="forwardDialogVisible" :data="[]" @change="handleForwardUserSelected" />
    </div>
 </template>
@@ -138,6 +144,7 @@
 import { getAllProcesslistPage, processOperation } from "@/api/workflow/index";
 import { useStore } from '@/store/modules/workflow';
 import previewDrawer from "@/views/workflow/components/previewDrawer.vue";
+import efficiencyDrawer from "@/views/workflow/components/efficiencyDrawer.vue";
 import selectUserDialog from "@/components/Workflow/dialog/selectUserDialog.vue";
 import { onMounted } from "vue";
 const router = useRouter();
@@ -151,6 +158,8 @@ const showSearch = ref(true);
 const total = ref(0);
 const forwardDialogVisible = ref(false);
 const currentForwardRow = ref(null);
+const efficiencyVisible = ref(false);
+const efficiencyProcessNumber = ref("");
 
 let visible = computed({
    get() {
@@ -346,6 +355,12 @@ function handleFlowRepeal(row) {
 function handleFlowForward(row) {
    currentForwardRow.value = row;
    forwardDialogVisible.value = true;
+}
+
+/** 效能 */
+function handleFlowEfficiency(row) {
+   efficiencyProcessNumber.value = row.processNumber;
+   efficiencyVisible.value = true;
 }
 
 /** 转发选人确认回调 */
