@@ -283,6 +283,11 @@ public class NodeUtil {
             if(NodeLabelConstants.conditionApproveNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
             }
+            if(NodeLabelConstants.conditionAdvanceNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               //条件推进节点: 条件审批(nodeType=12)子类型, 还原 nodeType=12 并置标记位(前端据此显示推进设置tab/图标/颜色)
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+               bpmnNodeVo.setIsConditionAdvanceNode(true);
+            }
             if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
             }

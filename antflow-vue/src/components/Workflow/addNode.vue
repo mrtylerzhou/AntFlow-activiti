@@ -115,7 +115,7 @@
                     </a>
                     <a class="add-node-popover-item auto-advance-node" @click="addType(18)">
                         <div class="item-wrapper">
-                            <svg-icon icon-class="conditional-drive-ahead" class="iconfont" />
+                            <svg-icon icon-class="auto-drive-ahead" class="iconfont" />
                             <p>自动推进</p>
                         </div>
                     </a>
@@ -137,6 +137,12 @@
                         <div class="item-wrapper">
                             <svg-icon icon-class="auto-finish" class="iconfont" />
                             <p>自动完成</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item condition-advance-node" @click="addType(22)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="conditional-drive-ahead" class="iconfont" />
+                            <p>条件推进</p>
                         </div>
                     </a>
                 </div>
@@ -269,6 +275,10 @@ const createFinishApproveNode = (childNode) => {
 const createAutoCompleteNode = (childNode) => {
     return NodeUtils.createAutoCompleteNode(childNode);
 }
+/**创建条件推进节点 */
+const createConditionAdvanceNode = (childNode) => {
+    return NodeUtils.createConditionAdvanceNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -291,6 +301,7 @@ const createNodeMap = new Map([
     [19, createForwardApproveNode],
     [20, createFinishApproveNode],
     [21, createAutoCompleteNode],
+    [22, createConditionAdvanceNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -457,6 +468,12 @@ const confirmClone = () => {
         &.condition-approver-node {
             .item-wrapper {
                 color: #2ea7a7
+            }
+        }
+
+        &.condition-advance-node {
+            .item-wrapper {
+                color: #e6a23c
             }
         }
 

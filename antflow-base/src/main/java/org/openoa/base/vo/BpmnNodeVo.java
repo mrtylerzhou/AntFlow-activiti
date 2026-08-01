@@ -57,6 +57,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isConditionApproveNode;
     /**
+     * 条件推进节点标记: 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名同意)
+     * 满足条件时自动推进到固定目标节点(虚拟人-3), 不满足时留给真实审批人(可手动推进), 强制 forwardType=2
+     */
+    private Boolean isConditionAdvanceNode;
+    /**
      * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
      * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
      */

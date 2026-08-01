@@ -470,6 +470,58 @@ export class NodeUtils {
     return conditionApproveNode;
   }
   /**
+   * 创建条件推进节点对象
+   * 本质是条件审批节点(nodeType=12) + 自动勾选推进按钮(42,别名"同意"), 不含"同意"按钮
+   * 与条件审批的差异:
+   *   - 按钮: 只勾选不同意(4) + 推进(42, 显示"同意"), 不含同意(3) (与推进审批相同)
+   *   - 强制 forwardType=2(固定目标节点), 满足条件时自动推进到该目标
+   * 运行期: 满足条件 → 后端自动推进到固定目标(虚拟人-3); 不满足 → 留给真实审批人(点"同意"=推进按钮)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件推进节点
+   */
+  static createConditionAdvanceNode(child) {
+    let conditionAdvanceNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件推进",
+      nodeDisplayName: "条件推进",
+      nodeType: 12, //节点类型 12、条件审批家族(条件推进为其子类型)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人(同条件审批)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: [
+          { buttonType: 4 }, //不同意
+          { buttonType: 42, buttonName: "同意" }, //推进按钮(显示为"同意")
+        ],
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置(不塞虚拟人)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_advance_node", labelName: "条件推进节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件审批相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+      isConditionAdvanceNode: true, //条件推进标记(前端用, 提交时后端据此贴 condition_advance_node 标签)
+      forwardType: 2, //强制固定节点(满足条件时自动推进到固定目标)
+      forwardNodeIds: [], //推进目标节点(设计时在抽屉里配置, 恰好1个)
+    };
+    return conditionAdvanceNode;
+  }
+  /**
    * 创建条件抄送节点对象
    * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理

@@ -84,6 +84,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processAutoAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
             processConditionApproveNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
+            processConditionAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processConditionCopyNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processPrevNodeAppointed(nodeLabelVO, businessDataVo, delegateTask, formCode, processNumber);
         }
@@ -314,6 +315,99 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
      *   conditionResult==false 或 null 时, 不 complete, 留给真实审批人人工处理
      * - 不调用 formAdaptor.automaticAction (那是 auto node 专属副作用)
      */
+    /**
+     * 条件推进节点处理: 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名"同意"), 强制 forwardType=2(固定目标).
+     * - 满足条件: 自动推进到固定目标节点(用虚拟人-3标识系统自动推进), 复用自动推进的推进逻辑(advanceToTargetNode)
+     * - 不满足: 不 complete, 留给真实审批人人工处理(审批人点"同意"=推进按钮, 推进到配置的固定目标)
+     */
+    private void processConditionAdvanceNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId,
+                                             String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,
+                                             String procInstId, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_ADVANCE_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+        log.info("条件推进节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
+
+        // === 条件评估 (复用条件审批/自动推进逻辑) ===
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if (formAdaptor == null) {
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
+        }
+        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
+            UDLFApplyVo vo = (UDLFApplyVo) businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+            log.info("条件推进条件评估结果, processNumber={}, elementId={}, conditionResult={}", processNumber, elementId, conditionResult);
+        } catch (Exception e) {
+            log.error("条件推进节点条件判断异常, 视为条件不满足, processNumber={}, elementId={}", processNumber, elementId, e);
+            conditionResult = false;
+        }
+
+        // 满足条件: 自动推进到固定目标节点 (用虚拟人-3标识系统自动推进)
+        if (Boolean.TRUE.equals(conditionResult)) {
+            String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+            String assigneeId = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId();
+
+            BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
+            if (configJson == null) {
+                throw new AFBizException("条件推进节点配置读取失败, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            Integer forwardType = configJson.getForwardType();
+            List<String> forwardNodeIds = configJson.getForwardNodeIds();
+            if (forwardType == null || forwardType != 2 || CollectionUtils.isEmpty(forwardNodeIds)) {
+                throw new AFBizException("条件推进节点配置异常: 未配置固定目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            String targetNodeUuid = forwardNodeIds.get(0);
+
+            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
+            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
+                throw new AFBizException("条件推进: businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            Long confId = bpmnConfVo.getId();
+            BpmnNode targetNode = bpmnNodeService.getOne(
+                    Wrappers.<BpmnNode>lambdaQuery()
+                            .eq(BpmnNode::getConfId, confId)
+                            .eq(BpmnNode::getNodeId, targetNodeUuid)
+                            .eq(BpmnNode::getIsDel, 0),
+                    false
+            );
+            if (targetNode == null) {
+                throw new AFBizException("条件推进目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
+            }
+            String targetNodeName = targetNode.getNodeName();
+            String targetPrimaryKey = String.valueOf(targetNode.getId());
+
+            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
+            if (CollectionUtils.isEmpty(targetElementIds)) {
+                throw new AFBizException(String.format("条件推进: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
+            }
+            String targetElementId = targetElementIds.get(0);
+
+            log.info("条件推进: 条件满足, 开始推进, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                    processNumber, elementId, targetElementId, targetNodeName);
+            try {
+                forwardToNodeImpl.advanceToTargetNode(delegateTask, procInstId,
+                        delegateTask.getTaskDefinitionKey(), targetElementId, targetNodeName,
+                        assigneeId, assigneeName);
+            } catch (Exception e) {
+                log.error("条件推进失败, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                        processNumber, elementId, targetElementId, targetNodeName, e);
+                throw new AFBizException(String.format("条件推进失败, processNumber=%s, elementId=%s, targetNodeId=%s, targetNodeName=%s",
+                        processNumber, elementId, targetElementId, targetNodeName), e);
+            }
+        }
+        // conditionResult == false 或 null: 不 complete, 留给真实审批人人工处理(点"同意"=推进按钮, 推进到配置的固定目标)
+    }
+
     private void processConditionApproveNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, DelegateTask delegateTask) {
 
         if (!StringConstants.CONDITION_APPROVE_NODE.equals(nodeLabelVO.getLabelValue())){

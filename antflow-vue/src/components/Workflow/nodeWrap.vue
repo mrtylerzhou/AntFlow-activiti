@@ -16,9 +16,10 @@
                     <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8 || nodeConfig.nodeType == 13" />
                     <svg-icon icon-class="assist" class="iconfont" v-else-if="nodeConfig.nodeType == 17" />
                     <svg-icon icon-class="auto-finish" class="iconfont" v-else-if="nodeConfig.nodeType == 18 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'auto_complete_node')" />
-                    <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
+                    <svg-icon icon-class="auto-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
+                    <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -150,7 +151,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR } from '@/utils/antflow/const'
+import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
@@ -230,6 +231,12 @@ let titleBgColor = computed(() => {
         && props.nodeConfig.labelList.some(l => l.labelValue === 'auto_complete_node')) {
         return AUTO_COMPLETE_COLOR;
     }
+    // 条件推进节点着色: nodeType=12 + condition_advance_node 标签 (琥珀橙, 与条件审批青绿色区分)
+    if (props.nodeConfig.nodeType == 12
+        && Array.isArray(props.nodeConfig.labelList)
+        && props.nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')) {
+        return CONDITION_ADVANCE_COLOR;
+    }
     return bgColors[props.nodeConfig.nodeType];
 });
 
@@ -241,6 +248,33 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 6) return $func.copyerStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 8) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 9) return $func.autoNodeConditionStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 12 && Array.isArray(props.nodeConfig.labelList) && props.nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')) {
+        const targetNodeId = props.nodeConfig.forwardNodeIds && props.nodeConfig.forwardNodeIds[0];
+        const findNodeName = (node) => {
+            if (!node) return null;
+            if (targetNodeId && node.nodeId === targetNodeId) return node.nodeName;
+            if (node.childNode) {
+                const found = findNodeName(node.childNode);
+                if (found) return found;
+            }
+            if (node.conditionNodes) {
+                for (const cond of node.conditionNodes) {
+                    const found = findNodeName(cond);
+                    if (found) return found;
+                }
+            }
+            if (node.parallelNodes) {
+                for (const par of node.parallelNodes) {
+                    const found = findNodeName(par);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const targetName = rootNode.value ? findNodeName(rootNode.value) : null;
+        const approverStr = $func.setApproverStr(props.nodeConfig);
+        return targetName ? `${approverStr}，条件满足推进至:${targetName}` : approverStr;
+    }
     if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 13) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 17) return $func.setApproverStr(props.nodeConfig);
