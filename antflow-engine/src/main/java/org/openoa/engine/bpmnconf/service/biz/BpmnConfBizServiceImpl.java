@@ -211,6 +211,8 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     nodeLabelVO=NodeLabelConstants.assistNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutoAdvanceNode())){
                     nodeLabelVO=NodeLabelConstants.autoAdvanceNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutoReturnNode())){
+                    nodeLabelVO=NodeLabelConstants.autoReturnNode;
                 }
                if(nodeLabelVO!=null){
                    bpmnNodeVo.setOrAddLabelList(nodeLabelVO);
