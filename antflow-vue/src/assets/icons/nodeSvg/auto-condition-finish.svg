@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            
+            /* 实线样式 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            
+            /* 虚线样式 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 6 5;
+            }
+            
+            .mask-bg { fill: #FFFFFF; }
+
+            /* 对勾线条样式 */
+            .check-style { 
+                fill: none; 
+                stroke: #FFFFFF; 
+                stroke-width: 3.5; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 条件节点主体结构 -->
+    <g id="condition-structure">
+        <!-- 连线：一虚二实 -->
+        <path class="line-solid" d="M32 12 V40" />       <!-- 中间实线 -->
+        <path class="line-solid" d="M32 24 H52 V40" />  <!-- 右侧实线 -->
+        <path class="line-dashed" d="M32 24 H12 V40" /> <!-- 左侧虚线 -->
+
+        <!-- 节点方块 -->
+        <rect class="main" x="24" y="4" width="16" height="10" rx="2" /> <!-- 顶 -->
+        <rect class="main" x="4" y="40" width="16" height="10" rx="2" />  <!-- 左子(自动路) -->
+        <rect class="main" x="24" y="40" width="16" height="10" rx="2" /> <!-- 中子 -->
+        <rect class="main" x="44" y="40" width="16" height="10" rx="2" /> <!-- 右子 -->
+    </g>
+
+    <!-- 2. 自动化标识：嵌入左侧方块中 -->
+    <g transform="translate(12, 45)">
+        <g transform="rotate(45)">
+            <path class="white" d="M0,0 L-2,-3 A2,2 0 0,1 2,-3 Z" transform="rotate(0)"/>
+            <path class="white" d="M0,0 L-2,-3 A2,2 0 0,1 2,-3 Z" transform="rotate(90)"/>
+            <path class="white" d="M0,0 L-2,-3 A2,2 0 0,1 2,-3 Z" transform="rotate(180)"/>
+            <path class="white" d="M0,0 L-2,-3 A2,2 0 0,1 2,-3 Z" transform="rotate(270)"/>
+        </g>
+    </g>
+
+    <!-- 3. 右下角：完成状态角标 -->
+    <g transform="translate(50, 48)">
+        <!-- 隔离层：确保不与右侧子节点方块粘连 -->
+        <circle class="mask-bg" cx="0" cy="0" r="15" />
+        
+        <!-- 橙色底座 -->
+        <circle class="main" cx="0" cy="0" r="12" />
+        
+        <!-- 白色对勾 -->
+        <path class="check-style" d="M-5 0 L-1 4 L5 -4" />
+    </g>
+
+</svg>

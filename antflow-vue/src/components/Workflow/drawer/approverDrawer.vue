@@ -320,8 +320,8 @@
                     <p class="setting-group-title">推进按钮行为</p>
                     <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange">
                         <el-radio :value="0">任意未来节点</el-radio>
-                        <el-radio :value="1">指定节点（多选）</el-radio>
-                        <el-radio :value="2">固定节点（单选）</el-radio>
+                        <el-radio :value="1">指定节点</el-radio>
+                        <el-radio :value="2">固定节点</el-radio>
                     </el-radio-group>
                     <div v-if="forwardBehavior === 1" style="margin-top: 8px;">
                         <span>推进目标节点：</span>

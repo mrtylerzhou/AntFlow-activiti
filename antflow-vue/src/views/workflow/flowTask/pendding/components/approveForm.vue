@@ -493,6 +493,11 @@ const preview = async (viewData) => {
                 approveSubData.value.drawBackType = response.data.drawBackType;
                 approveSubData.value.drawBackNodes = response.data.drawBackNodes || [];
             }
+            //推进按钮行为配置:同步到提交数据
+            if (response.data.forwardType != null) {
+                approveSubData.value.forwardType = response.data.forwardType;
+                approveSubData.value.forwardNodes = response.data.forwardNodes || [];
+            }
             try {
                 if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接
                     const responseData = response.data;
