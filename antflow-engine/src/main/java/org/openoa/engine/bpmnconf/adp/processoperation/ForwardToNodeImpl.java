@@ -26,6 +26,10 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -63,6 +67,8 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
     private BpmVariableMapper bpmVariableMapper;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -225,14 +231,26 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
     }
 
     /**
-     * 自动推进节点专用: complete 当前 delegateTask 后, 推进到指定目标 elementId.
-     * 与人工推进 {@link #doProcessButton} 的差异:
-     * - 入参为 delegateTask(由 NextNodeLabelsProcessor.postProcess 直接提供), 无需再查当前任务列表
-     * - 目标节点已转换为 elementId(taskDefKey), 由调用方负责 UUID→主键→elementId 两步转换
-     * - verifyUserId/verifyUserName 由调用方传入(自动推进用虚拟人 -3, 人工推进用登录用户)
-     * - 推进实现方式: complete 后直接 moveTo(方式3), 不依赖新任务过滤
+     * 自动推进节点专用: 延迟到当前事务提交后, 在新事务里 complete + moveTo 推进到目标节点.
      *
-     * 推进失败抛异常, 由外层事务回滚(问题8方案A).
+     * 为什么不能在 TaskListener create 事件阶段直接执行?
+     * TaskListener create 事件在 Activiti CommandContext 内触发, 整个链路
+     * (张三 complete → 自动推进节点任务创建 → TaskListener → advanceToTargetNode)
+     * 都在同一个 CommandContext 里, 数据库操作都是缓冲未提交的.
+     * 此时调 delegateTask.complete() + taskService 查询会看到不一致的中间状态
+     * (例如查到已 complete 但删除未落库的上一节点任务, 而非新创建的下一节点任务).
+     *
+     * 为什么自动节点(nodeType=9)没这个问题?
+     * 自动节点 complete 后不需要查询新任务做 moveTo, 纯 complete 让引擎自然流转,
+     * CommandContext 关闭时引擎会正确处理. 而自动推进需要在 complete 后查询 + moveTo,
+     * 这个组合在嵌套上下文里不可靠.
+     *
+     * 解决方案: 注册 Spring TransactionSynchronization, 在 afterCommit 阶段
+     * (原事务提交, Activiti CommandContext 关闭, 所有操作落库) 用 TransactionTemplate
+     * 开启新事务, 在新事务里 taskService.complete(taskId) + moveTo.
+     *
+     * 代价: 推进失败无法回滚原事务(张三的 complete 已提交), 流程停在自动推进节点, 人工可介入.
+     * 这比"状态混乱(李四和王五任务并存)"好得多.
      *
      * @param delegateTask      当前任务(自动推进节点任务)
      * @param procInstId        流程实例ID
@@ -246,36 +264,108 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
                                     String currentTaskDefKey, String targetElementId,
                                     String targetNodeName,
                                     String verifyUserId, String verifyUserName) {
-        log.info("自动推进 advanceToTargetNode 开始, procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
+        // 提取 delegateTask 信息(事务提交后 delegateTask 不可用, 必须提前取出)
+        String taskId = delegateTask.getId();
+        String taskName = delegateTask.getName();
+        String processDefinitionId = delegateTask.getProcessDefinitionId();
+
+        log.info("自动推进 advanceToTargetNode 注册 afterCommit 回调, procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
                 procInstId, currentTaskDefKey, targetElementId, targetNodeName);
 
-        // Step 1: complete 当前任务(同意语义) + 记录审批日志
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            // 正常路径: 注册 afterCommit 回调, 延迟到当前事务提交后执行
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        new TransactionTemplate(transactionManager).execute(status -> {
+                            doAdvanceAfterCommit(procInstId, currentTaskDefKey, targetElementId,
+                                    targetNodeName, verifyUserId, verifyUserName,
+                                    taskId, taskName, processDefinitionId);
+                            return null;
+                        });
+                    } catch (Exception e) {
+                        // afterCommit 阶段原事务已提交, 异常无法回滚原事务.
+                        // 新事务已回滚(TransactionTemplate 内部处理), 流程停在自动推进节点.
+                        // 记录错误日志供人工排查和介入.
+                        log.error("自动推进 afterCommit 执行失败, 流程停在自动推进节点, 请人工处理. procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
+                                procInstId, currentTaskDefKey, targetElementId, targetNodeName, e);
+                    }
+                }
+            });
+        } else {
+            // 降级路径: 无事务上下文, 直接在新事务执行
+            try {
+                new TransactionTemplate(transactionManager).execute(status -> {
+                    doAdvanceAfterCommit(procInstId, currentTaskDefKey, targetElementId,
+                            targetNodeName, verifyUserId, verifyUserName,
+                            taskId, taskName, processDefinitionId);
+                    return null;
+                });
+            } catch (Exception e) {
+                log.error("自动推进执行失败, procInstId={}, currentTaskDefKey={}, targetElementId={}",
+                        procInstId, currentTaskDefKey, targetElementId, e);
+                throw new AFBizException("自动推进失败", e);
+            }
+        }
+    }
+
+    /**
+     * 在新事务里执行 complete + moveTo.
+     * 此时原事务已提交, 张三 complete 和自动推进节点任务创建都已落库, 查询状态一致.
+     */
+    private void doAdvanceAfterCommit(String procInstId, String currentTaskDefKey, String targetElementId,
+                                      String targetNodeName, String verifyUserId, String verifyUserName,
+                                      String taskId, String taskName, String processDefinitionId) {
+        log.info("自动推进 doAdvanceAfterCommit 开始, procInstId={}, currentTaskDefKey={}, targetElementId={}",
+                procInstId, currentTaskDefKey, targetElementId);
+
+        // Step 1: 查询当前活动任务(此时应为自动推进节点任务, 已落库)
+        List<Task> currentTasks = taskService.createTaskQuery().processInstanceId(procInstId).active().list();
+        if (CollectionUtils.isEmpty(currentTasks)) {
+            log.warn("自动推进: 未查到活动任务, 流程可能已结束. procInstId={}", procInstId);
+            return;
+        }
+
+        // 找到自动推进节点任务(by taskDefKey)
+        Task autoAdvanceTask = currentTasks.stream()
+                .filter(t -> currentTaskDefKey.equals(t.getTaskDefinitionKey()))
+                .findFirst()
+                .orElse(null);
+        if (autoAdvanceTask == null) {
+            log.warn("自动推进: 未查到自动推进节点任务, 可能已被处理. procInstId={}, currentTaskDefKey={}",
+                    procInstId, currentTaskDefKey);
+            return;
+        }
+
+        // Step 2: complete 自动推进节点任务
+        // 用 taskService.complete(taskId) 而非 delegateTask.complete(): 在新事务里不嵌套, 引擎正常流转
         Map<String, Object> varMap = new HashMap<>();
         varMap.put(StringConstants.TASK_ASSIGNEE_NAME, verifyUserName);
-        ((TaskEntity) delegateTask).complete(varMap, false);
+        taskService.complete(autoAdvanceTask.getId(), varMap);
 
+        // 记录审批日志
         bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
                 .verifyDate(new Date())
-                .taskName(delegateTask.getName())
-                .taskId(delegateTask.getId())
+                .taskName(taskName)
+                .taskId(taskId)
                 .runInfoId(procInstId)
                 .verifyUserId(verifyUserId)
                 .verifyUserName(verifyUserName)
                 .taskDefKey(currentTaskDefKey)
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
                 .verifyDesc(String.format("自动推进:条件满足,推进至节点[%s]", targetNodeName))
-                .processCode(delegateTask.getProcessDefinitionId())
+                .processCode(processDefinitionId)
                 .build());
 
-        // Step 2: 查 complete 后的新任务
+        // Step 3: 查询 complete 后的新任务
         List<Task> newTasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
         if (CollectionUtils.isEmpty(newTasks)) {
-            // 流程已结束(complete 后没有新任务), 无需推进
             log.info("自动推进: complete 后流程已结束, 无需跳转. procInstId={}", procInstId);
             return;
         }
 
-        // 检查新任务是否已经是目标节点(目标恰好是下一节点)
+        // 检查新任务是否已经是目标节点
         List<String> newTaskDefKeys = newTasks.stream()
                 .map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
         if (newTaskDefKeys.size() == 1 && newTaskDefKeys.get(0).equals(targetElementId)) {
@@ -283,17 +373,14 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
             return;
         }
 
-        // Step 3: 判断是否跨并行网关
+        // Step 4: moveTo 到目标节点
         if (newTaskDefKeys.size() == 1) {
-            // 顺序流: moveTo 跳转
             String newCurrentTaskDefKey = newTaskDefKeys.get(0);
             moveToTarget(procInstId, newCurrentTaskDefKey, targetElementId);
         } else {
-            // 并行流(多个 taskDefKey): 递归 complete 推进
-            // 注意: 自动推进场景下 verifyComment 为空, processKey 从 delegateTask 取
+            // 并行流: 递归 complete
             recursiveCompleteToTarget(newTasks, procInstId, targetElementId,
-                    delegateTask.getProcessDefinitionId(), null,
-                    delegateTask.getProcessDefinitionId());
+                    processDefinitionId, null, processDefinitionId);
         }
     }
 }
