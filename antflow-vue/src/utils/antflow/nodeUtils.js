@@ -57,6 +57,52 @@ export class NodeUtils {
     return approveNode;
   }
   /**
+   * 创建退回审批节点对象
+   * 本质是审批人节点(nodeType=4), 与普通审批人的差异:
+   *   - 按钮默认只选"同意(3)"和"不同意(4)"(不含退回18/加批19/转办21)
+   *   - 不同意按钮行为默认为"退回指定节点·重新开始"(disagreeBackType=4), 用户可改为5(回到当前节点)
+   * 颜色/图标由 af_syslabel_disagree_back 标签驱动(disagreeBackType=4/5 时后端自动贴),
+   * 因此"用户自配的退回指定节点审批人"与"退回审批节点"显示相同颜色, 无需独立标签.
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 退回审批节点
+   */
+  static createBackApproveNode(child) {
+    let backApproveNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "退回审批",
+      nodeDisplayName: "退回审批",
+      nodeType: 4, //节点类型 4、审批人
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4), //只同意+不同意(不含退回/加批/转办)
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置
+      templateVos: [],
+      labelList: [
+        { labelValue: "af_syslabel_disagree_back", labelName: "不同意退回指定节点" },
+      ],
+      disagreeBackType: 4, //不同意按钮行为: 4=退回指定节点·重新开始 (用户可改为5=回到当前节点)
+      disagreeBackToNodeId: null, //退回目标节点(设计时在抽屉里配置, 必填, 后端校验)
+    };
+    return backApproveNode;
+  }
+  /**
    * 创建抄送人对象
    * @returns object
    */

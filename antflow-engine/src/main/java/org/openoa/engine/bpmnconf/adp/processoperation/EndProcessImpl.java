@@ -7,6 +7,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.exception.BusinessErrorEnum;
@@ -190,13 +191,29 @@ public class EndProcessImpl implements ProcessOperationAdaptor {
         }
         BpmnNodeConfigJson configJson = JSON.parseObject(bpmnNode.getNodeConfigJson(), BpmnNodeConfigJson.class);
         Integer backType = configJson.getBackType();
-        String backToNodeId = configJson.getBackToNodeId();
+        // backToNodeId 是设计时节点的 node_id(UUID), 而 BackToModifyImpl 通过 getElementIdsdByNodeId 需要 bpmn_node 表的主键 id
+        // 故先根据 confId + nodeId(UUID) 查出目标节点的主键 id
+        String backToNodeUuid = configJson.getBackToNodeId();
         if (backType == null || (backType != 4 && backType != 5)) {
             return false;
         }
-        if (StringUtils.isEmpty(backToNodeId)) {
+        if (StringUtils.isEmpty(backToNodeUuid)) {
             log.error("不同意退回配置缺少目标节点! nodeId={}, backType={}", nodeId, backType);
             throw new AFBizException("不同意退回配置缺少目标节点,请联系流程管理员!");
+        }
+        // 根据 confId + nodeId(UUID) 查目标节点主键 id (若已是主键 id 则直接用)
+        String backToNodeId;
+        BpmnNode backToNode = bpmnNodeService.getOne(
+                Wrappers.<BpmnNode>lambdaQuery()
+                        .eq(BpmnNode::getConfId, bpmnNode.getConfId())
+                        .eq(BpmnNode::getNodeId, backToNodeUuid)
+                        .eq(BpmnNode::getIsDel, 0),
+                false);
+        if (backToNode == null) {
+            // 兼容配置直接存主键 id 的情况
+            backToNodeId = backToNodeUuid;
+        } else {
+            backToNodeId = String.valueOf(backToNode.getId());
         }
         // 转发给BackToModifyImpl
         vo.setBackToModifyType(backType);

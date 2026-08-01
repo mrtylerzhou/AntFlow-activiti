@@ -179,8 +179,11 @@ public class NodeUtil {
             }
         }
         //推进按钮:根据前端传入的 forwardType 自动贴推进标签
+        //推进标签(af_syslabel_forward): 仅当真正配置了推进(forwardType=1指定节点/2固定节点)时才贴
+        //forwardType=0(任意未来节点)是普通审批人节点的默认值, 并非配置了推进, 不应贴标签.
+        //否则普通审批人节点(如退回审批的目标节点)会被贴上推进标签, 导致 isCurrentNodeNoneOperational 判为"有标签"而不可退回.
         Integer forwardType = bpmnNodeVo.getForwardType();
-        if(forwardType!=null){
+        if(forwardType!=null && forwardType!=0){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.forward);
         }
         //完成审批节点:根据前端传入的 isFinishApproveNode 标识自动贴标签

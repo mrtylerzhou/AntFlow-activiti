@@ -44,6 +44,11 @@ export const CONDITION_ADVANCE_NODE = "condition_advance_node";
 export const CONDITION_FINISH_COLOR = "150, 40, 110"; // 深紫红(与条件推进琥珀橙 230,162,60 有明显色相差, 与完成审批同色系)
 // 条件完成节点标签(条件审批 nodeType=12 子类型, 目标设计时自动算最后一个审批人, 不可编辑, 运行时复用条件推进处理器)
 export const CONDITION_FINISH_NODE = "condition_finish_node";
+// 退回审批/退回指定节点专属颜色(审批人 nodeType=4 + af_syslabel_disagree_back 标签, 不同意行为=退回指定节点)
+// 任何配置了不同意退回指定节点的审批人节点(含退回审批节点)都显示此色
+export const BACK_APPROVE_COLOR = "229, 57, 53"; // 亮红(与完成审批深紫红 150,40,110、普通审批人默认色有明显区分)
+// 不同意退回标签(disagreeBackType=4/5 时后端自动贴, 用于颜色/图标判据)
+export const DISAGREE_BACK_LABEL = "af_syslabel_disagree_back";
 export let placeholderList = [
   "",
   "发起人",

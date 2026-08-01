@@ -19,6 +19,7 @@
                     <svg-icon icon-class="auto-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
+                    <svg-icon icon-class="drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')" />
                     <svg-icon icon-class="condition-finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_finish_node')" />
                     <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
@@ -152,7 +153,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR } from '@/utils/antflow/const'
+import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
@@ -243,6 +244,13 @@ let titleBgColor = computed(() => {
         && Array.isArray(props.nodeConfig.labelList)
         && props.nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')) {
         return CONDITION_ADVANCE_COLOR;
+    }
+    // 退回审批/退回指定节点着色: nodeType=4 + af_syslabel_disagree_back 标签 (亮红, 不同意行为=退回指定节点)
+    // 任何配置了不同意退回指定节点的审批人节点(含退回审批节点)都显示此色
+    if (props.nodeConfig.nodeType == 4
+        && Array.isArray(props.nodeConfig.labelList)
+        && props.nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')) {
+        return BACK_APPROVE_COLOR;
     }
     return bgColors[props.nodeConfig.nodeType];
 });

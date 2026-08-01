@@ -151,6 +151,12 @@
                             <p>条件完成</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item back-approver-node" @click="addType(24)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="drive-back" class="iconfont" />
+                            <p>退回审批</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -289,6 +295,10 @@ const createConditionAdvanceNode = (childNode) => {
 const createConditionFinishNode = (childNode) => {
     return NodeUtils.createConditionFinishNode(childNode);
 }
+/**创建退回审批节点 */
+const createBackApproveNode = (childNode) => {
+    return NodeUtils.createBackApproveNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -313,6 +323,7 @@ const createNodeMap = new Map([
     [21, createAutoCompleteNode],
     [22, createConditionAdvanceNode],
     [23, createConditionFinishNode],
+    [24, createBackApproveNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -455,6 +466,12 @@ const confirmClone = () => {
         &.approver {
             .item-wrapper {
                 color: #ff943e
+            }
+        }
+
+        &.back-approver-node {
+            .item-wrapper {
+                color: #e53935
             }
         }
 
