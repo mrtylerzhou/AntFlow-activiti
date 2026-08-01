@@ -91,9 +91,7 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
             return b;
         }
         // DIY/regular flows: users must override this method
-        if (!(vo instanceof UDLFApplyVo)) {
-            return false;
-        }
+
         try {
             BpmnNodeAutoNodeConfJson autoNodeConf = loadAutoNodeConf(vo);
             if (autoNodeConf == null || CollectionUtils.isEmpty(autoNodeConf.getConditionList())) {
@@ -116,7 +114,17 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
      * Load auto node condition config from DB.
      */
     private BpmnNodeAutoNodeConfJson loadAutoNodeConf(BusinessDataVo vo) {
+        BpmnNodeConfigJson configJson = loadNodeConfigJson(vo);
+        return configJson == null ? null : configJson.getAutoNodeConf();
+    }
 
+    /**
+     * 加载节点的完整配置 JSON (BpmnNodeConfigJson).
+     * 通过 processNumber + taskDefKey 定位 t_bpmn_node, 读取 node_config_json 字段.
+     * 供自动推进节点运行时读取 forwardType/forwardNodeIds 等配置使用.
+     */
+    @Override
+    public BpmnNodeConfigJson loadNodeConfigJson(BusinessDataVo vo) {
         String processNumber = vo.getProcessNumber();
         String taskDefKey = vo.getTaskDefKey();
         if (!StringUtils.hasText(processNumber) || !StringUtils.hasText(taskDefKey)) {
@@ -140,11 +148,7 @@ public abstract class AbstractFormOperationAdaptor<T extends BusinessDataVo>  im
         if (bpmnNode == null || !StringUtils.hasText(bpmnNode.getNodeConfigJson())) {
             return null;
         }
-        BpmnNodeConfigJson configJson = JsonConfUtil.parseNodeConfig(bpmnNode.getNodeConfigJson());
-        if (configJson == null) {
-           return null;
-        }
-        return configJson.getAutoNodeConf();
+        return JsonConfUtil.parseNodeConfig(bpmnNode.getNodeConfigJson());
     }
 
     /**

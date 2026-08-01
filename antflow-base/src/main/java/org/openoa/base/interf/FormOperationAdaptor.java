@@ -1,5 +1,6 @@
 package org.openoa.base.interf;
 
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
@@ -49,6 +50,17 @@ public interface FormOperationAdaptor< T extends BusinessDataVo> extends Process
      * @param conditionResult 结果来自于 automaticCondition,如果需要无条件执行一个动作,automaticCondition返回null即可
      */
     void  automaticAction(final T businessDataVo,Boolean conditionResult);
+
+    /**
+     * 加载节点的完整配置 JSON (BpmnNodeConfigJson).
+     * 默认返回 null, 由 AbstractFormOperationAdaptor 实现具体查询逻辑.
+     * 自动推进节点运行时通过此方法读取 forwardType/forwardNodeIds 等配置.
+     * @param businessDataVo 业务数据(需含 processNumber/taskDefKey/formCode)
+     * @return 节点配置 JSON, 查询失败或无配置时返回 null
+     */
+    default BpmnNodeConfigJson loadNodeConfigJson(final T businessDataVo) {
+        return null;
+    }
     /**
      * query business data,most of the times,it is a must method,it is used to query business data for a process for approvers reference
      *

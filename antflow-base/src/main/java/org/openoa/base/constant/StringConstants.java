@@ -52,6 +52,8 @@ public class StringConstants {
     public static final String CONDITION_APPROVE_NODE="condition_approve_node";
     public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String ASSIST_NODE="assist_node";
+    /**自动推进节点标签: 运行期由 NextNodeLabelsProcessor.processAutoAdvanceNode 处理*/
+    public static final String AUTO_ADVANCE_NODE="auto_advance_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";
     /**当前节点为"上一节点指定"审批人类型时贴此标签,触发运行时替换虚拟审批人*/
     public static final String AF_SYSLABEL_PREV_NODE_APPOINTED="af_syslabel_prev_node_appointed";

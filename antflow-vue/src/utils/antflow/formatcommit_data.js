@@ -238,6 +238,19 @@ export class FormatCommitUtils {
         delete node.conditionList;
         delete node.groupRelation;
       }
+
+      // 自动推进节点: 与自动节点(9)类似, 把 conditionList 塞进 autoNodeConf
+      // 但不删 nodeApproveList (保留预设虚拟人 -3); 不删 forwardType/forwardNodeIds (后端写入 BpmnNodeConfigJson)
+      // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
+      if (node.nodeType == 18) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+      }
     }
     return nodeList;
   };

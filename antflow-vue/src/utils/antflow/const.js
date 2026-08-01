@@ -24,7 +24,8 @@ export let bgColors = [
   "",
   "",
   "92, 107, 192",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送), , , , 靖蓝色(协助)'
+  "45, 183, 165",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送), , , , 靖蓝色(协助), 青色(自动推进)'
 // 选择条件节点专属颜色(覆写审批人节点的橙色,使其一眼可辨)
 export const PICK_CONDITION_COLOR = "219, 54, 124"; // 树莓红
 export let placeholderList = [
@@ -46,6 +47,7 @@ export let placeholderList = [
   "",
   "",
   "协助",
+  "自动推进节点",
 ];
 export let nodeTypeList = [
   "未知",
@@ -66,6 +68,7 @@ export let nodeTypeList = [
   "未知",
   "未知",
   "协助",
+  "自动推进",
 ];
 export let signTypeObj = {
   1: "会签",

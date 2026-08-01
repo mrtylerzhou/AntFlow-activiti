@@ -2,6 +2,8 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.openoa.base.constant.StringConstants;
@@ -220,5 +222,78 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
     @Override
     public void setSupportBusinessObjects() {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_FORWARD_TO_NODE);
+    }
+
+    /**
+     * 自动推进节点专用: complete 当前 delegateTask 后, 推进到指定目标 elementId.
+     * 与人工推进 {@link #doProcessButton} 的差异:
+     * - 入参为 delegateTask(由 NextNodeLabelsProcessor.postProcess 直接提供), 无需再查当前任务列表
+     * - 目标节点已转换为 elementId(taskDefKey), 由调用方负责 UUID→主键→elementId 两步转换
+     * - verifyUserId/verifyUserName 由调用方传入(自动推进用虚拟人 -3, 人工推进用登录用户)
+     * - 推进实现方式: complete 后直接 moveTo(方式3), 不依赖新任务过滤
+     *
+     * 推进失败抛异常, 由外层事务回滚(问题8方案A).
+     *
+     * @param delegateTask      当前任务(自动推进节点任务)
+     * @param procInstId        流程实例ID
+     * @param currentTaskDefKey 当前任务 taskDefinitionKey(= delegateTask.getTaskDefinitionKey())
+     * @param targetElementId   目标节点 elementId(taskDefKey)
+     * @param targetNodeName    目标节点名称(用于审批日志)
+     * @param verifyUserId      审批日志的 verifyUserId(自动推进用 -3)
+     * @param verifyUserName    审批日志的 verifyUserName(自动推进用 "自动推进节点自动跳过")
+     */
+    public void advanceToTargetNode(DelegateTask delegateTask, String procInstId,
+                                    String currentTaskDefKey, String targetElementId,
+                                    String targetNodeName,
+                                    String verifyUserId, String verifyUserName) {
+        log.info("自动推进 advanceToTargetNode 开始, procInstId={}, currentTaskDefKey={}, targetElementId={}, targetNodeName={}",
+                procInstId, currentTaskDefKey, targetElementId, targetNodeName);
+
+        // Step 1: complete 当前任务(同意语义) + 记录审批日志
+        Map<String, Object> varMap = new HashMap<>();
+        varMap.put(StringConstants.TASK_ASSIGNEE_NAME, verifyUserName);
+        ((TaskEntity) delegateTask).complete(varMap, false);
+
+        bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
+                .verifyDate(new Date())
+                .taskName(delegateTask.getName())
+                .taskId(delegateTask.getId())
+                .runInfoId(procInstId)
+                .verifyUserId(verifyUserId)
+                .verifyUserName(verifyUserName)
+                .taskDefKey(currentTaskDefKey)
+                .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                .verifyDesc(String.format("自动推进:条件满足,推进至节点[%s]", targetNodeName))
+                .processCode(delegateTask.getProcessDefinitionId())
+                .build());
+
+        // Step 2: 查 complete 后的新任务
+        List<Task> newTasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
+        if (CollectionUtils.isEmpty(newTasks)) {
+            // 流程已结束(complete 后没有新任务), 无需推进
+            log.info("自动推进: complete 后流程已结束, 无需跳转. procInstId={}", procInstId);
+            return;
+        }
+
+        // 检查新任务是否已经是目标节点(目标恰好是下一节点)
+        List<String> newTaskDefKeys = newTasks.stream()
+                .map(TaskInfo::getTaskDefinitionKey).distinct().collect(Collectors.toList());
+        if (newTaskDefKeys.size() == 1 && newTaskDefKeys.get(0).equals(targetElementId)) {
+            log.info("自动推进: 目标即为下一节点, 无需跳转. procInstId={}", procInstId);
+            return;
+        }
+
+        // Step 3: 判断是否跨并行网关
+        if (newTaskDefKeys.size() == 1) {
+            // 顺序流: moveTo 跳转
+            String newCurrentTaskDefKey = newTaskDefKeys.get(0);
+            moveToTarget(procInstId, newCurrentTaskDefKey, targetElementId);
+        } else {
+            // 并行流(多个 taskDefKey): 递归 complete 推进
+            // 注意: 自动推进场景下 verifyComment 为空, processKey 从 delegateTask 取
+            recursiveCompleteToTarget(newTasks, procInstId, targetElementId,
+                    delegateTask.getProcessDefinitionId(), null,
+                    delegateTask.getProcessDefinitionId());
+        }
     }
 }

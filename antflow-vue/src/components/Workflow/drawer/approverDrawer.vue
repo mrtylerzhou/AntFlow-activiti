@@ -4,7 +4,7 @@
             <span class="drawer-title">审批人</span>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleTabClick">
-            <el-tab-pane label="审批人设置" name="approverStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18" label="审批人设置" name="approverStep">
                 <div v-if="approverStepShow">
                     <div class="approver_content">
                         <div>
@@ -202,7 +202,19 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane lazy v-if="approverConfig.nodeType === 12" label="条件设置" name="conditionStep">
+            <el-tab-pane v-if="approverConfig.nodeType === 18" lazy label="推进设置" name="forwardStep">
+                <div class="disagree-back-conf">
+                    <p class="setting-group-title">推进目标节点</p>
+                    <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
+                        满足条件时推进到此节点,不满足时自动完成(不跳跃)
+                    </p>
+                    <el-select v-model="forwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
+                        <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
+                            :label="item.nodeName" :value="item.nodeId" />
+                    </el-select>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18" label="条件设置" name="conditionStep">
                 <ConditionGroupEditor
                     :conditionList="approverConfig.conditionList"
                     v-model:groupRelation="approverConfig.groupRelation"
@@ -210,7 +222,7 @@
                     <template #tip>当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理</template>
                 </ConditionGroupEditor>
             </el-tab-pane>
-            <el-tab-pane lazy label="按钮权限设置" name="buttonStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="按钮权限设置" name="buttonStep">
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                     <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
@@ -359,15 +371,15 @@
                     </div>
                 </el-checkbox-group>
             </el-tab-pane>
-            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
+            <el-tab-pane v-if="formPermTabVisible && approverConfig.nodeType !== 18" lazy label="表单权限设置" name="formStep">
                 <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
                     :formHidden="formHiddenMap"
                     @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
             </el-tab-pane>
-            <el-tab-pane lazy label="通知设置" name="noticeStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="通知设置" name="noticeStep">
                 <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
             </el-tab-pane>
-            <el-tab-pane lazy label="高级设置" name="advancedStep">
+            <el-tab-pane v-if="approverConfig.nodeType !== 18" lazy label="高级设置" name="advancedStep">
                 <div v-if="advancedStepShow" class="advanced-setting-content">
                     <div class="setting-group">
                         <p class="setting-group-title">流程标签</p>
@@ -499,6 +511,14 @@ watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
 
 /**加载推进按钮行为配置(反显) */
 const loadForwardConfig = (nodeData) => {
+    // 自动推进节点(nodeType=18)强制固定节点模式(forwardType=2)
+    if (approverConfig.value?.nodeType === 18) {
+        forwardBehavior.value = 2;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = (nodeData?.forwardNodeIds && nodeData.forwardNodeIds.length > 0)
+            ? nodeData.forwardNodeIds[0] : null;
+        return;
+    }
     const ft = nodeData?.forwardType;
     if (ft === 0) {
         forwardBehavior.value = 0;
@@ -723,7 +743,8 @@ const additionalSignInfoExcludeList = computed(() => {
 });
 let visible = computed({
     get() {
-        handleTabClick({ paneName: "approverStep" })
+        const defaultTab = approverConfig.value?.nodeType === 18 ? 'forwardStep' : 'approverStep';
+        handleTabClick({ paneName: defaultTab })
         return approverDrawer.value
     },
     set() {

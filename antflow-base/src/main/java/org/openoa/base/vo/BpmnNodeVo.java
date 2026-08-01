@@ -67,6 +67,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isAssistNode;
     /**
+     * 自动推进节点标记: 设计期 nodeType=18, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与自动节点(9)同构(虚拟人 -3), 满足条件时推进到指定目标节点, 不满足时自动 complete
+     */
+    private Boolean isAutoAdvanceNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

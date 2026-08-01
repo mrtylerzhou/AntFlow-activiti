@@ -20,6 +20,12 @@ public enum NodeTypeEnum implements AfEnumBase{
     NODE_TYPE_CONDITION_APPROVE(12,"条件审批节点",0),
     NODE_TYPE_CONDITION_COPY(13,"条件抄送节点",0),
     NODE_TYPE_ASSIST(17,"协助节点",0),
+    /**
+     * 自动推进节点: 本质是自动节点 + 推进按钮(固定节点)的组合
+     * 运行期由 NodeUtil.nodeSpecialProcess 转为 4, 塞虚拟审批人 -3
+     * 满足条件时推进到指定目标节点, 不满足条件时和自动节点一样 complete
+     */
+    NODE_TYPE_AUTO_ADVANCE(18,"自动推进节点",0),
     ;
 
     @Getter

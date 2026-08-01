@@ -15,6 +15,7 @@
                     <svg-icon icon-class="copy-user" class="iconfont" v-if="nodeConfig.nodeType == 6" />
                     <svg-icon icon-class="copy-user" class="iconfont" v-else-if="nodeConfig.nodeType == 8 || nodeConfig.nodeType == 13" />
                     <svg-icon icon-class="assist" class="iconfont" v-else-if="nodeConfig.nodeType == 17" />
+                    <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -143,7 +144,7 @@
     <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
 <script setup>
-import { onMounted, ref, watch, getCurrentInstance, computed } from "vue";
+import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
 import { bgColors, placeholderList, PICK_CONDITION_COLOR } from '@/utils/antflow/const'
@@ -181,6 +182,7 @@ let {
     setAutoNode,
     setAutoNodeConfig,
 } = store;
+const rootNode = inject('rootNode', ref({}));
 let isTried = computed(() => store.isTried)
 let flowPermission1 = computed(() => store.flowPermission1)
 let promoterConfig1 = computed(() => store.promoterConfig)
@@ -220,6 +222,35 @@ let showText = computed(() => {
     if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 13) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 17) return $func.setApproverStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 18) {
+        if (props.nodeConfig.forwardNodeIds && props.nodeConfig.forwardNodeIds.length > 0) {
+            const targetNodeId = props.nodeConfig.forwardNodeIds[0];
+            const findNodeName = (node) => {
+                if (!node) return null;
+                if (node.nodeId === targetNodeId) return node.nodeName;
+                if (node.childNode) {
+                    const found = findNodeName(node.childNode);
+                    if (found) return found;
+                }
+                if (node.conditionNodes) {
+                    for (const cond of node.conditionNodes) {
+                        const found = findNodeName(cond);
+                        if (found) return found;
+                    }
+                }
+                if (node.parallelNodes) {
+                    for (const par of node.parallelNodes) {
+                        const found = findNodeName(par);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            const targetName = rootNode.value ? findNodeName(rootNode.value) : null;
+            return targetName ? `推进至:${targetName}` : '推进至:已配置';
+        }
+        return '请配置推进目标节点';
+    }
 });
 /**
 * 重置条件节点错误状态和展示名称
@@ -462,7 +493,7 @@ const setNodeInfo = (index) => {
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17) {
+    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17 || nodeType == 18) {
         setApprover(true);
         setApproverConfig({
             value: {

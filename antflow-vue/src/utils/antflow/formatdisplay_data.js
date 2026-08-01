@@ -301,6 +301,21 @@ export class FormatDisplayUtils {
         node.nodeName = node.nodeName || "协助";
         node.nodeDisplayName = node.nodeDisplayName || "协助";
       }
+
+      // 自动推进节点反显: nodeType=4 或 18 (后端可能已转) + auto_advance_node标签
+      // 与自动节点(9)同构(虚拟人 -3), 差异: 满足条件时推进到指定目标节点
+      // 从 autoNodeConf 恢复 conditionList/groupRelation; forwardType/forwardNodeIds 由公共块处理
+      if ((node.nodeType == 4 || node.nodeType == 18) && node.labelList && node.labelList.some(l => l.labelValue === "auto_advance_node")) {
+        node.nodeType = 18;
+        node.nodeName = node.nodeName || "自动推进";
+        node.nodeDisplayName = node.nodeDisplayName || "自动推进";
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
     }
     return nodeList;
   }

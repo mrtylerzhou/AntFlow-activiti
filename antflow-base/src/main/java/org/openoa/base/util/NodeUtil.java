@@ -231,6 +231,31 @@ public class NodeUtil {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
             bpmnNodeVo.setIsAssistNode(true);
         }
+        if(NodeTypeEnum.NODE_TYPE_AUTO_ADVANCE.getCode().equals(nodeType)){
+            //自动推进节点: 设计期 nodeType=18, 运行期统一为审批人节点 4
+            //与自动节点(9)同构: 强制指定人员 + 塞虚拟审批人 -3
+            //差异: 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsAutoAdvanceNode(true);
+            bpmnNodeVo.setNodeProperty(NodePropertyEnum.NODE_PROPERTY_PERSONNEL.getCode());
+            BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
+            if (prop == null) {
+                prop = new BpmnNodePropertysVo();
+                bpmnNodeVo.setProperty(prop);
+            }
+            if (prop.getSignType() == null) {
+                prop.setSignType(1);
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplIds())) {
+                prop.setEmplIds(Lists.newArrayList(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId()));
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplList())) {
+                BaseIdTranStruVo virtualUser = new BaseIdTranStruVo(
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId(),
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc());
+                prop.setEmplList(Lists.newArrayList(virtualUser));
+            }
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -252,6 +277,9 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.assistNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_ASSIST.getCode());
+            }
+            if(NodeLabelConstants.autoAdvanceNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_AUTO_ADVANCE.getCode());
             }
             if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setIsPrevNodeAppointed(true);

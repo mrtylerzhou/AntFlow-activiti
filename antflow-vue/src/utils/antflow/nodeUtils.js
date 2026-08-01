@@ -214,6 +214,56 @@ export class NodeUtils {
     return autoNode;
   }
   /**
+   * 创建自动推进节点对象
+   * 本质是自动节点(nodeType=9) + 推进按钮(固定节点)的组合
+   * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 塞虚拟审批人 -3
+   * 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 自动推进节点
+   */
+  static createAutoAdvanceNode(child) {
+    let autoAdvanceNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "自动推进",
+      nodeDisplayName: "自动推进",
+      nodeType: 18, //节点类型 18、自动推进节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (虚拟人员 AUTO_NODE_SKIP)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选推进目标节点, 阻止发布
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      // 审批页无任何操作按钮(自动执行, 无人工交互)
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(0),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [
+        { targetId: "-3", name: "自动节点自动跳过", type: 5 },
+      ],
+      templateVos: [],
+      labelList: [
+        { labelValue: "auto_advance_node", labelName: "自动推进节点" },
+      ],
+      conditionList: [[]], //条件可空, 空时等价无条件推进(每次必推进)
+      groupRelation: false,
+      // 推进配置: 强制固定节点模式(forwardType=2), 用户选择目标节点
+      forwardType: 2,
+      forwardNodeIds: [], //待用户选择, 空时 error=true 阻止发布
+    };
+    return autoAdvanceNode;
+  }
+  /**
    * 创建条件审批节点对象
    * 本质是审批人节点(nodeType=4) + 条件配置 + condition_approve_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 保留真实审批人

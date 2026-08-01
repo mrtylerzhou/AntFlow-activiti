@@ -113,6 +113,12 @@
                             <p>协助</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item auto-advance-node" @click="addType(18)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="conditional-drive-ahead" class="iconfont" />
+                            <p>自动推进</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -227,6 +233,10 @@ const createParallelConditionWayNode = (childNode) => {
 const createAssistNode = (childNode) => {
     return NodeUtils.createAssistNode(childNode);
 }
+/**创建自动推进节点 */
+const createAutoAdvanceNode = (childNode) => {
+    return NodeUtils.createAutoAdvanceNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -245,6 +255,7 @@ const createNodeMap = new Map([
     [15, createDynamicConditionParallelNode],
     [16, createSelectDynamicParallelNode],
     [17, createAssistNode],
+    [18, createAutoAdvanceNode],
 ]);
 const addType = (type) => {
     visible.value = false;

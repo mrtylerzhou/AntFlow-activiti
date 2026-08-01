@@ -14,6 +14,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO conditionApproveNode=new BpmnNodeLabelVO(StringConstants.CONDITION_APPROVE_NODE,"条件审批节点");
     BpmnNodeLabelVO conditionCopyNode=new BpmnNodeLabelVO(StringConstants.CONDITION_COPY_NODE,"条件抄送节点");
     BpmnNodeLabelVO assistNode=new BpmnNodeLabelVO(StringConstants.ASSIST_NODE,"协助节点");
+    /**自动推进节点: 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete*/
+    BpmnNodeLabelVO autoAdvanceNode=new BpmnNodeLabelVO(StringConstants.AUTO_ADVANCE_NODE,"自动推进节点");
     BpmnNodeLabelVO skippedAssignees=new BpmnNodeLabelVO(StringConstants.SKIPPED_ASSIGNEE,"跳过的审批人");
     /**当前节点为"上一节点指定"审批人类型,运行时由NextNodeLabelsProcessor替换虚拟审批人为实际审批人*/
     BpmnNodeLabelVO prevNodeAppointed=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_PREV_NODE_APPOINTED,"上一节点指定审批人");
@@ -32,6 +34,6 @@ public interface NodeLabelConstants {
     /**推进按钮:节点配置了推进行为,运行时渲染[推进]按钮*/
     BpmnNodeLabelVO forward=new BpmnNodeLabelVO(StringConstants.AF_SYSLABEL_FORWARD,"推进");
     public static final List<BpmnNodeLabelVO> NONE_OPERATIONAL_NODES= Lists.newArrayList(//不可操作节点,存在于activiti中,但是不可退回到的节点,动态条件和抄送节v1版本点虽然也不可退回到,但是他们本身不会进入activiti引擎
-      copyNodeV2,automaticNode,conditionCopyNode
+      copyNodeV2,automaticNode,conditionCopyNode,autoAdvanceNode
     );
 }
