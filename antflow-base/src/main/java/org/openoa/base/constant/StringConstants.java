@@ -52,6 +52,8 @@ public class StringConstants {
     public static final String CONDITION_APPROVE_NODE="condition_approve_node";
     /**条件推进节点: 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名同意). 满足条件自动推进到固定目标, 不满足留给真实审批人(可手动推进). 强制 forwardType=2.*/
     public static final String CONDITION_ADVANCE_NODE="condition_advance_node";
+    /**条件完成节点: 条件推进(nodeType=12)子类型, 目标设计时自动算最后一个审批人节点, 不可编辑. 运行时复用条件推进处理器(processConditionAdvanceNode). 强制 forwardType=2.*/
+    public static final String CONDITION_FINISH_NODE="condition_finish_node";
     public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String ASSIST_NODE="assist_node";
     /**自动推进节点标签: 运行期由 NextNodeLabelsProcessor.processAutoAdvanceNode 处理*/

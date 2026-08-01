@@ -202,7 +202,7 @@
                     </div>
                 </div>
             </el-tab-pane>
-            <el-tab-pane v-if="approverConfig.nodeType === 18 || (approverConfig.nodeType === 12 && approverConfig.isConditionAdvanceNode)" lazy label="推进设置" name="forwardStep">
+            <el-tab-pane v-if="approverConfig.nodeType === 18 || (approverConfig.nodeType === 12 && (approverConfig.isConditionAdvanceNode || approverConfig.isConditionFinishNode))" lazy label="推进设置" name="forwardStep">
                 <div class="disagree-back-conf">
                     <!-- 自动完成节点: 目标自动为最后一个审批人, 只读展示不可编辑 -->
                     <template v-if="approverConfig?.isAutoCompleteNode">
@@ -214,6 +214,18 @@
                         <p v-if="availableForwardNodes.length === 0"
                             style="color: #f56c6c; margin-top: 4px;">
                             自动完成节点不能是最后一个审批人节点，请在后面添加审批人节点或调整位置。
+                        </p>
+                    </template>
+                    <!-- 条件完成节点: 目标自动为最后一个审批人, 只读展示不可编辑 -->
+                    <template v-else-if="approverConfig?.isConditionFinishNode">
+                        <p class="setting-group-title">推进目标节点</p>
+                        <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
+                            满足条件时自动推进到流程最后一个审批人节点(完成节点),不可编辑
+                        </p>
+                        <el-input :model-value="forwardFixedNodeName" placeholder="自动推进至完成节点" readonly disabled style="width: 320px;" />
+                        <p v-if="availableForwardNodes.length === 0"
+                            style="color: #f56c6c; margin-top: 4px;">
+                            条件完成节点不能是最后一个审批人节点，请在后面添加审批人节点或调整位置。
                         </p>
                     </template>
                     <!-- 条件推进节点: 固定目标节点(满足条件时自动推进到该目标) -->
@@ -357,7 +369,7 @@
                 <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.forwardToNode)" class="disagree-back-conf">
                     <p class="setting-group-title">推进按钮行为</p>
                     <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange"
-                        :disabled="approverConfig?.isFinishApproveNode || approverConfig?.isConditionAdvanceNode">
+                        :disabled="approverConfig?.isFinishApproveNode || approverConfig?.isConditionAdvanceNode || approverConfig?.isConditionFinishNode">
                         <el-radio :value="0">任意未来节点</el-radio>
                         <el-radio :value="1">指定节点</el-radio>
                         <el-radio :value="2">固定节点</el-radio>
@@ -474,6 +486,7 @@ let approverConfig = ref({});
 let drawerTitle = computed(() => {
     if (approverConfig.value?.isAutoCompleteNode) return "自动完成";
     if (approverConfig.value?.isConditionAdvanceNode) return "条件推进";
+    if (approverConfig.value?.isConditionFinishNode) return "条件完成";
     return "审批人";
 });
 let approverUserVisible = ref(false);
@@ -551,6 +564,20 @@ watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
 const loadForwardConfig = (nodeData) => {
     // 自动完成节点: 强制固定节点模式, 自动填充最后一个审批人节点(不可编辑, 同完成审批)
     if (approverConfig.value?.isAutoCompleteNode) {
+        forwardBehavior.value = 2;
+        forwardNodeIds.value = [];
+        const lastNode = NodeUtils.findLastApproveNode(rootNode.value, approverConfig.value?.nodeId);
+        if (lastNode) {
+            forwardFixedNodeId.value = lastNode.nodeId;
+            approverConfig.value.forwardNodeIds = [lastNode.nodeId];
+        } else {
+            forwardFixedNodeId.value = null;
+            approverConfig.value.forwardNodeIds = [];
+        }
+        return;
+    }
+    // 条件完成节点: 强制固定节点模式, 目标自动为最后一个审批人节点(不可编辑, 同完成审批/自动完成)
+    if (approverConfig.value?.isConditionFinishNode) {
         forwardBehavior.value = 2;
         forwardNodeIds.value = [];
         const lastNode = NodeUtils.findLastApproveNode(rootNode.value, approverConfig.value?.nodeId);

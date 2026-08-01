@@ -40,6 +40,10 @@ export const AUTO_COMPLETE_NODE = "auto_complete_node";
 export const CONDITION_ADVANCE_COLOR = "230, 162, 60"; // 琥珀橙(与条件审批青绿色 46,167,167 有明显色相差)
 // 条件推进节点标签(条件审批 nodeType=12 子类型, 自动勾选推进按钮42别名同意, 强制 forwardType=2)
 export const CONDITION_ADVANCE_NODE = "condition_advance_node";
+// 条件完成节点专属颜色(nodeType=12 + condition_finish_node 标签, 目标自动为最后一个审批人, 与条件推进琥珀橙区分)
+export const CONDITION_FINISH_COLOR = "150, 40, 110"; // 深紫红(与条件推进琥珀橙 230,162,60 有明显色相差, 与完成审批同色系)
+// 条件完成节点标签(条件审批 nodeType=12 子类型, 目标设计时自动算最后一个审批人, 不可编辑, 运行时复用条件推进处理器)
+export const CONDITION_FINISH_NODE = "condition_finish_node";
 export let placeholderList = [
   "",
   "发起人",

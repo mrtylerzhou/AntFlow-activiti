@@ -14,6 +14,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO conditionApproveNode=new BpmnNodeLabelVO(StringConstants.CONDITION_APPROVE_NODE,"条件审批节点");
     /**条件推进节点: 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名同意). 满足条件自动推进到固定目标, 不满足留给真实审批人.*/
     BpmnNodeLabelVO conditionAdvanceNode=new BpmnNodeLabelVO(StringConstants.CONDITION_ADVANCE_NODE,"条件推进节点");
+    /**条件完成节点: 条件推进(nodeType=12)子类型, 目标设计时自动算最后一个审批人节点, 不可编辑. 运行时复用条件推进处理器.*/
+    BpmnNodeLabelVO conditionFinishNode=new BpmnNodeLabelVO(StringConstants.CONDITION_FINISH_NODE,"条件完成节点");
     BpmnNodeLabelVO conditionCopyNode=new BpmnNodeLabelVO(StringConstants.CONDITION_COPY_NODE,"条件抄送节点");
     BpmnNodeLabelVO assistNode=new BpmnNodeLabelVO(StringConstants.ASSIST_NODE,"协助节点");
     /**自动推进节点: 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete*/

@@ -264,6 +264,22 @@ export class FormatDisplayUtils {
         }
       }
 
+      // 条件完成节点反显: nodeType=4 或 12 (后端可能已转) + condition_finish_node 标签
+      // 条件推进(nodeType=12)子类型, 目标自动为最后一个审批人节点, 不可编辑, 运行时复用条件推进处理器
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_finish_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件完成";
+        node.nodeDisplayName = node.nodeDisplayName || "条件完成";
+        node.isConditionFinishNode = true;
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
       // 条件推进节点反显: nodeType=4 或 12 (后端可能已转) + condition_advance_node 标签
       // 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名同意), 强制 forwardType=2
       if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_advance_node")) {

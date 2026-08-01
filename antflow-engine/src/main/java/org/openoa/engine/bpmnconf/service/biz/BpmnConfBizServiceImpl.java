@@ -195,6 +195,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                    nodeLabelVO = NodeLabelConstants.copyNodeV2;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsAutomaticNode())){
                     nodeLabelVO=NodeLabelConstants.automaticNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionFinishNode())){
+                    //条件完成节点:条件推进(nodeType=12)子类型,目标自动算最后一个审批人,运行时复用条件推进处理器
+                    //必须先于 isConditionApproveNode / isConditionAdvanceNode 判断(条件完成节点三者都可能为 true)
+                    nodeLabelVO=NodeLabelConstants.conditionFinishNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAdvanceNode())){
                     //条件推进节点:条件审批(nodeType=12)子类型,自动勾选推进按钮(42,别名同意),满足条件自动推进到固定目标
                     //必须先于 isConditionApproveNode 判断(条件推进节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批

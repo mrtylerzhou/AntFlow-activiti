@@ -288,6 +288,11 @@ public class NodeUtil {
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
                bpmnNodeVo.setIsConditionAdvanceNode(true);
             }
+            if(NodeLabelConstants.conditionFinishNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               //条件完成节点: 条件推进(nodeType=12)子类型, 目标自动算最后一个审批人. 还原 nodeType=12 并置标记位
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+               bpmnNodeVo.setIsConditionFinishNode(true);
+            }
             if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
             }

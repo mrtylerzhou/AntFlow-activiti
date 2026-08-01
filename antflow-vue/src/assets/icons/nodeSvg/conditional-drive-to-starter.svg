@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 实线：退回执行路径 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            /* 虚线：条件触发分支 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 4 3; 
+            }
+            /* 隔离层 */
+            .mask-bg { fill: #FFFFFF; }
+        </style>
+    </defs>
+
+    <!-- 1. 条件退回路径逻辑 (由右向左) -->
+    <g id="conditional-return-path">
+        <!-- 这里的连线模拟了条件判断后转向左侧的动态 -->
+        <path class="line-dashed" d="M50 20 V30 H36" /> <!-- 条件分支虚线 -->
+        <path class="line-solid" d="M50 44 V30 H22" />  <!-- 执行退回实线 -->
+    </g>
+
+    <!-- 2. 右侧核心：微型条件节点 (代表"有条件") -->
+    <g transform="translate(50, 32)">
+        <!-- 隔离层：切开背后的连线 -->
+        <circle class="mask-bg" cx="0" cy="0" r="14" />
+        
+        <!-- 顶节点 -->
+        <rect class="main" x="-6" y="-18" width="12" height="8" rx="1.5" />
+        <!-- 底节点 -->
+        <rect class="main" x="-6" y="10" width="12" height="8" rx="1.5" />
+        
+        <!-- 节点中心枢纽 (实心圆点) -->
+        <circle class="main" cx="0" cy="0" r="3.5" />
+    </g>
+
+    <!-- 3. 左侧核心：发起人 (代表退回至"起点") -->
+    <g transform="translate(14, 32)">
+        <!-- 隔离层：切开指向人像的实线 -->
+        <circle class="mask-bg" cx="0" cy="0" r="16" />
+        
+        <!-- 发起人小人像 -->
+        <g transform="translate(-10, -18) scale(0.65)">
+            <circle class="main" cx="15" cy="10" r="8"/>
+            <path class="main" d="
+                M2 35
+                C2 25 8 20 15 20
+                C22 20 28 25 28 35
+                L28 37
+                C28 39 26 40 24 40
+                L6 40
+                C4 40 2 39 2 37
+                Z"/>
+        </g>
+        
+        <!-- 退回箭头尖端 (指向发起人) -->
+        <path class="main" d="M10 -6 L2 0 L10 6 L8 0 Z" />
+    </g>
+
+</svg>

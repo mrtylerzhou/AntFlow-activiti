@@ -324,10 +324,12 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                                              String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,
                                              String procInstId, DelegateTask delegateTask) {
 
-        if (!StringConstants.CONDITION_ADVANCE_NODE.equals(nodeLabelVO.getLabelValue())){
+        //条件完成节点复用此处理器(与条件推进运行时逻辑完全一致, 仅设计时目标来源不同)
+        if (!StringConstants.CONDITION_ADVANCE_NODE.equals(nodeLabelVO.getLabelValue())
+                && !StringConstants.CONDITION_FINISH_NODE.equals(nodeLabelVO.getLabelValue())){
             return;
         }
-        log.info("条件推进节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
+        log.info("条件推进/条件完成节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
 
         // === 条件评估 (复用条件审批/自动推进逻辑) ===
         businessDataVo.setProcessNumber(processNumber);

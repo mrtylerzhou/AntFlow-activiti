@@ -522,6 +522,57 @@ export class NodeUtils {
     return conditionAdvanceNode;
   }
   /**
+   * 创建条件完成节点对象
+   * 本质是条件推进节点(nodeType=12)的子类型, 与条件推进的惟一差别: 目标节点来源
+   *   - 条件推进: 目标由用户在设计时手动选择(抽屉里选)
+   *   - 条件完成: 目标自动为流程最后一个 nodeType=4 审批人节点(设计时 findLastApproveNode 计算), 不可编辑
+   * 结构/按钮/条件/运行时与条件推进完全一致(运行时复用条件推进处理器 processConditionAdvanceNode)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件完成节点
+   */
+  static createConditionFinishNode(child) {
+    let conditionFinishNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件完成",
+      nodeDisplayName: "条件完成",
+      nodeType: 12, //节点类型 12、条件审批家族(条件完成为其子类型)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1,
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: [
+          { buttonType: 4 }, //不同意
+          { buttonType: 42, buttonName: "同意" }, //推进按钮(显示为"同意")
+        ],
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_finish_node", labelName: "条件完成节点" },
+      ],
+      conditionList: [[]],
+      groupRelation: false,
+      isConditionFinishNode: true, //条件完成标记(前端用, 提交时后端据此贴 condition_finish_node 标签)
+      forwardType: 2, //强制固定节点
+      forwardNodeIds: [], //目标自动填充(设计时开抽屉/提交时 refill 计算为最后一个审批人)
+    };
+    return conditionFinishNode;
+  }
+  /**
    * 创建条件抄送节点对象
    * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理

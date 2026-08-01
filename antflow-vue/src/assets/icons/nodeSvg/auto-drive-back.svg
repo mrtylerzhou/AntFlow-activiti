@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 实线：退回执行路径 */
+            .line-solid { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3.5; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+            /* 虚线：退回条件触发 */
+            .line-dashed { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 3.5; 
+                stroke-linecap: butt; 
+                stroke-dasharray: 5 4; 
+            }
+            /* 隔离层 */
+            .mask-bg { fill: #FFFFFF; }
+        </style>
+    </defs>
+
+    <!-- 1. 退回路径逻辑：从右侧条件触发到左侧自动退回 -->
+    <g id="logic-path-return">
+        <!-- 上方分支：退回条件触发（虚线） -->
+        <path class="line-dashed" d="M52 20 H36 L28 32" />
+        <!-- 下方分支：退回执行路径（实线） -->
+        <path class="line-solid" d="M52 44 H36 L14 32" />
+    </g>
+
+    <!-- 2. 右侧核心：自动化驱动标识 (风扇) - 此时作为退回的起点/触发源 -->
+    <g transform="translate(50, 32)">
+        <!-- 隔离层 -->
+        <circle class="mask-bg" cx="0" cy="0" r="14" />
+        <!-- 橙色圆底 -->
+        <circle class="main" cx="0" cy="0" r="11" />
+        <!-- 白色风扇 -->
+        <g transform="rotate(45)">
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(0)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(90)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(180)"/>
+            <path class="white" d="M0,0 L-2.5,-4.5 A3,3 0 0,1 2.5,-4.5 Z" transform="rotate(270)"/>
+        </g>
+    </g>
+
+    <!-- 3. 左侧核心：退回箭头 (指向左侧) -->
+    <g transform="translate(14, 32)">
+        <!-- 隔离层：切开后方的路径线 -->
+        <path class="mask-bg" d="M10 -15 L-10 0 L10 15 L4 0 Z" />
+        <!-- 退回箭头 (镜像翻转) -->
+        <path class="main" d="M8 -12 L-8 0 L8 12 L2 0 Z" />
+    </g>
+
+</svg>

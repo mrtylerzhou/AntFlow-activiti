@@ -145,6 +145,12 @@
                             <p>条件推进</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item condition-finish-node" @click="addType(23)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="condition-finish-process" class="iconfont" />
+                            <p>条件完成</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -279,6 +285,10 @@ const createAutoCompleteNode = (childNode) => {
 const createConditionAdvanceNode = (childNode) => {
     return NodeUtils.createConditionAdvanceNode(childNode);
 }
+/**创建条件完成节点 */
+const createConditionFinishNode = (childNode) => {
+    return NodeUtils.createConditionFinishNode(childNode);
+}
 // 创建节点 Map集合
 const createNodeMap = new Map([
     [1, createApproveNode],
@@ -302,6 +312,7 @@ const createNodeMap = new Map([
     [20, createFinishApproveNode],
     [21, createAutoCompleteNode],
     [22, createConditionAdvanceNode],
+    [23, createConditionFinishNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -474,6 +485,12 @@ const confirmClone = () => {
         &.condition-advance-node {
             .item-wrapper {
                 color: #e6a23c
+            }
+        }
+
+        &.condition-finish-node {
+            .item-wrapper {
+                color: #96286e
             }
         }
 
