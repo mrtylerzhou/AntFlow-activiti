@@ -417,7 +417,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     }
 
     /**
-     * 在新事务里执行 complete + 退回跳转 + 副作用.
+     * 在新事务里执行 退回跳转 + 副作用.
+     * 注意: 不能先 complete 再跳转! 因为自动退回可能是最后一个节点,
+     * complete 后 Activiti 正常流转到 EndEvent 导致流程结束, 无法再跳转.
+     * 正确做法: 直接用 moveTo/commitProcess 操作当前任务(内部会处理任务结束+执行跳转).
      */
     private void doReturnAfterCommit(String procInstId, String processNumber, String currentTaskDefKey,
                                      String targetElementId, String targetNodeName,
@@ -444,12 +447,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             return;
         }
 
-        // Step 2: complete 自动退回节点任务
-        Map<String, Object> varMap = new HashMap<>();
-        varMap.put(StringConstants.TASK_ASSIGNEE_NAME, verifyUserName);
-        taskService.complete(autoReturnTask.getId(), varMap);
-
-        // Step 3: 记录审批日志
+        // Step 2: 记录审批日志
         bpmVerifyInfoBizService.addVerifyInfo(BpmVerifyInfo.builder()
                 .verifyDate(new Date())
                 .taskName(taskName)
@@ -460,23 +458,15 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 .taskDefKey(currentTaskDefKey)
                 .verifyStatus(ProcessSubmitStateEnum.PROCESS_UPDATE_TYPE.getCode())
                 .verifyDesc(String.format("自动退回至[%s]", targetNodeName))
-                .processCode(processDefinitionId)
+                .processCode(processNumber)
                 .build());
 
-        // Step 4: 查询 complete 后的新任务
-        List<Task> newTasks = taskService.createTaskQuery().processInstanceId(procInstId).list();
-        if (CollectionUtils.isEmpty(newTasks)) {
-            log.info("自动退回: complete 后流程已结束, 无需跳转. procInstId={}", procInstId);
-            return;
-        }
-
-        // Step 5: 执行退回跳转(双路径)
-        Task currentTask = newTasks.get(0);
-        if (ProcessDefinitionUtils.isUserTaskParallel(currentTask)) {
+        // Step 3: 执行退回跳转(双路径) - 直接操作当前任务, 不先 complete
+        if (ProcessDefinitionUtils.isUserTaskParallel(autoReturnTask)) {
             TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
             List<String> unMovedTasks = null;
             try {
-                unMovedTasks = taskFlowControlService.moveTo(currentTask.getTaskDefinitionKey(), targetElementId);
+                unMovedTasks = taskFlowControlService.moveTo(autoReturnTask.getTaskDefinitionKey(), targetElementId);
             } catch (Exception e) {
                 log.error("自动退回跳转失败!", e);
                 throw new RuntimeException(e);
@@ -484,7 +474,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             List<String> distinctUnMoved = unMovedTasks.stream().distinct().collect(Collectors.toList());
             if (!distinctUnMoved.isEmpty()) {
                 distinctUnMoved = distinctUnMoved.stream()
-                        .filter(a -> !a.equals(currentTask.getTaskDefinitionKey()))
+                        .filter(a -> !a.equals(autoReturnTask.getTaskDefinitionKey()))
                         .collect(Collectors.toList());
                 if (!distinctUnMoved.isEmpty()) {
                     taskMgmtMapper.deleteExecutionsByProcinstIdAndTaskDefKeys(procInstId, distinctUnMoved);
@@ -492,7 +482,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             }
         } else {
             try {
-                processNodeJump.commitProcess(currentTask.getId(), null, targetElementId, procInstId);
+                processNodeJump.commitProcess(autoReturnTask.getId(), null, targetElementId, procInstId);
             } catch (Exception e) {
                 log.error("自动退回跳转失败!", e);
                 throw new AFBizException("自动退回跳转失败!");
