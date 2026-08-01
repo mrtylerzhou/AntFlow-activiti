@@ -568,6 +568,21 @@ export class NodeUtils {
     return autoReturnNode;
   }
   /**
+   * 创建自动退回发起人节点对象
+   * 与 createAutoReturnNode 完全一致, 区别: drawBackType=2(退回发起人), drawBackNodeIds 在创建时即填充
+   * @param {Object} child - 子节点信息
+   * @param {string} starterNodeId - 发起人节点的 nodeId(UUID)
+   */
+  static createAutoReturnStarterNode(child, starterNodeId) {
+    let node = this.createAutoReturnNode(child);
+    node.nodeName = "自动退回发起人";
+    node.nodeDisplayName = "自动退回发起人";
+    node.drawBackType = 2; // TWO_DISAGREE: 退回发起人, 不回到退回人
+    node.drawBackNodeIds = starterNodeId ? [starterNodeId] : [];
+    node.error = !starterNodeId; // 有发起人ID则不阻止发布
+    return node;
+  }
+  /**
    * 创建条件审批节点对象
    * 本质是审批人节点(nodeType=4) + 条件配置 + condition_approve_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 保留真实审批人

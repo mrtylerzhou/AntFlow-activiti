@@ -361,7 +361,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             }
             Integer drawBackType = configJson.getDrawBackType();
             List<String> drawBackNodeIds = configJson.getDrawBackNodeIds();
-            if (drawBackType == null || drawBackType != 4 || CollectionUtils.isEmpty(drawBackNodeIds)) {
+            if (drawBackType == null || (drawBackType != 4 && drawBackType != 2) || CollectionUtils.isEmpty(drawBackNodeIds)) {
                 throw new AFBizException("自动退回节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
             String targetNodeUuid = drawBackNodeIds.get(0);

@@ -296,7 +296,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if (drawBackType != null && drawBackType != 0) {
                 BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
                 nodeCfgJson.setDrawBackType(drawBackType);
-                if (drawBackType == 4 || drawBackType == 5) {
+                if (drawBackType == 4 || drawBackType == 5 || drawBackType == 2) {
                     java.util.List<String> drawBackNodeIds = bpmnNodeVo.getDrawBackNodeIds();
                     if (drawBackNodeIds == null || drawBackNodeIds.isEmpty()) {
                         throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]配置了退回指定节点但未选择目标节点!");
@@ -309,7 +309,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             if (NodeTypeEnum.NODE_TYPE_AUTO_RETURN.getCode().equals(bpmnNodeVo.getNodeType())) {
                 BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
                 java.util.List<String> drawBackNodeIds = nodeCfgJson.getDrawBackNodeIds();
-                if (nodeCfgJson.getDrawBackType() == null || nodeCfgJson.getDrawBackType() != 4
+                if (nodeCfgJson.getDrawBackType() == null || (nodeCfgJson.getDrawBackType() != 4 && nodeCfgJson.getDrawBackType() != 2)
                         || drawBackNodeIds == null || drawBackNodeIds.size() != 1) {
                     throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为自动退回节点,必须配置恰好1个退回目标节点!");
                 }

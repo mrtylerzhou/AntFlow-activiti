@@ -171,6 +171,12 @@
                             <p>自动退回</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item auto-return-starter-node" @click="addType(27)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="auto-drive-to-starter" class="iconfont" />
+                            <p>自动退回发起人</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -293,6 +299,15 @@ const createAutoAdvanceNode = (childNode) => {
 const createAutoReturnNode = (childNode) => {
     return NodeUtils.createAutoReturnNode(childNode);
 }
+/**创建自动退回发起人节点 */
+const createAutoReturnStarterNode = (childNode) => {
+    let starterNodeId = null;
+    if (rootNode && rootNode.value) {
+        const starters = NodeUtils.collectNodesByType(rootNode.value, [1]);
+        if (starters.length > 0) starterNodeId = starters[0].nodeId;
+    }
+    return NodeUtils.createAutoReturnStarterNode(childNode, starterNodeId);
+}
 /**创建推进审批节点 */
 const createForwardApproveNode = (childNode) => {
     return NodeUtils.createForwardApproveNode(childNode);
@@ -348,6 +363,7 @@ const createNodeMap = new Map([
     [24, createBackApproveNode],
     [25, createBackStarterNode],
     [26, createAutoReturnNode],
+    [27, createAutoReturnStarterNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -500,6 +516,12 @@ const confirmClone = () => {
         }
 
         &.auto-return-node {
+            .item-wrapper {
+                color: #e53935
+            }
+        }
+
+        &.auto-return-starter-node {
             .item-wrapper {
                 color: #e53935
             }

@@ -17,6 +17,7 @@
                     <svg-icon icon-class="assist" class="iconfont" v-else-if="nodeConfig.nodeType == 17" />
                     <svg-icon icon-class="auto-finish" class="iconfont" v-else-if="nodeConfig.nodeType == 18 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'auto_complete_node')" />
                     <svg-icon icon-class="auto-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
+                    <svg-icon icon-class="auto-drive-to-starter" class="iconfont" v-else-if="nodeConfig.nodeType == 19 && nodeConfig.drawBackType == 2" />
                     <svg-icon icon-class="auto-drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 19" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />

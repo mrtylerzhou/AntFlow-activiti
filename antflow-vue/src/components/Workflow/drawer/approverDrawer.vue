@@ -256,9 +256,10 @@
                 <div class="disagree-back-conf">
                     <p class="setting-group-title">退回目标节点</p>
                     <p style="color: #909399; font-size: 12px; margin-bottom: 12px;">
-                        满足条件时自动退回到此节点;不满足时自动完成(不跳跃)
+                        {{ approverConfig.drawBackType === 2 ? '固定退回至发起人节点;不满足条件时自动完成(不跳跃)' : '满足条件时自动退回到此节点;不满足时自动完成(不跳跃)' }}
                     </p>
-                    <el-select v-model="autoReturnTargetNodeId" placeholder="请选择退回目标节点" style="width: 320px;">
+                    <el-select v-model="autoReturnTargetNodeId" placeholder="请选择退回目标节点" style="width: 320px;"
+                        :disabled="approverConfig.drawBackType === 2">
                         <el-option v-for="item in availableBackNodes" :key="item.nodeId"
                             :label="item.nodeName" :value="item.nodeId" />
                     </el-select>
@@ -534,6 +535,8 @@ const onDrawBackBehaviorChange = (val) => {
 
 const syncDrawBackToConfig = () => {
     if (!approverConfig.value) return;
+    // 自动退回节点(nodeType=19)的 drawBack 配置由 syncAutoReturnToConfig 管理, 此处跳过
+    if (approverConfig.value.nodeType === 19) return;
     let type = 0;
     if (drawBackBehavior.value === 1) {
         type = drawBackReturnToSender.value ? 3 : 2;
@@ -577,7 +580,10 @@ watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
 let autoReturnTargetNodeId = ref(null); // 自动退回目标节点(单选)
 const syncAutoReturnToConfig = () => {
     if (!approverConfig.value) return;
-    approverConfig.value.drawBackType = 4;
+    // drawBackType=2(退回发起人)时不覆盖, 保持创建时的值
+    if (approverConfig.value.drawBackType !== 2) {
+        approverConfig.value.drawBackType = 4;
+    }
     approverConfig.value.drawBackNodeIds = autoReturnTargetNodeId.value ? [autoReturnTargetNodeId.value] : [];
 };
 watch(autoReturnTargetNodeId, () => { syncAutoReturnToConfig(); });
