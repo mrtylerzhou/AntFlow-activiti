@@ -265,12 +265,12 @@
                     </el-select>
                 </div>
             </el-tab-pane>
-            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18 || approverConfig.nodeType === 19 || approverConfig.nodeType === 20" label="条件设置" name="conditionStep">
+            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18 || approverConfig.nodeType === 19 || approverConfig.nodeType === 20 || approverConfig.nodeType === 21" label="条件设置" name="conditionStep">
                 <ConditionGroupEditor
                     :conditionList="approverConfig.conditionList"
                     v-model:groupRelation="approverConfig.groupRelation"
                     v-model:nodeApproveList="approverConfig.nodeApproveList">
-                    <template #tip>{{ approverConfig.nodeType === 19 ? '当满足以下条件时, 当前节点将自动退回到指定节点; 条件不满足时自动完成(不跳跃)' : approverConfig.nodeType === 20 ? '当满足以下条件时, 当前节点将自动退回到不同意按钮配置的目标节点; 条件不满足时由审批人人工处理' : '当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理' }}</template>
+                    <template #tip>{{ approverConfig.nodeType === 19 ? '当满足以下条件时, 当前节点将自动退回到指定节点; 条件不满足时自动完成(不跳跃)' : approverConfig.nodeType === 20 ? '当满足以下条件时, 当前节点将自动退回到不同意按钮配置的目标节点; 条件不满足时由审批人人工处理' : approverConfig.nodeType === 21 ? '当满足以下条件时, 当前节点将自动退回发起人节点; 条件不满足时由审批人人工处理' : '当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理' }}</template>
                 </ConditionGroupEditor>
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
@@ -341,22 +341,25 @@
                 <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.noAgree)" class="disagree-back-conf">
                     <p class="setting-group-title">不同意按钮行为</p>
                     <el-radio-group v-model="disagreeBackType" @change="onDisagreeBackTypeChange">
-                        <el-radio :value="0" :disabled="approverConfig.nodeType === 20">结束流程</el-radio>
+                        <el-radio :value="0" :disabled="approverConfig.nodeType === 20 || approverConfig.nodeType === 21">结束流程</el-radio>
                         <el-radio :value="2" :disabled="approverConfig.nodeType === 20">退回发起人</el-radio>
-                        <el-radio :value="4">退回指定节点（重新开始）</el-radio>
-                        <el-radio :value="5">退回指定节点（回到当前节点）</el-radio>
+                        <el-radio :value="4" :disabled="approverConfig.nodeType === 21">退回指定节点（重新开始）</el-radio>
+                        <el-radio :value="5" :disabled="approverConfig.nodeType === 21">退回指定节点（回到当前节点）</el-radio>
                     </el-radio-group>
-                    <div v-if="disagreeBackType === 4 || disagreeBackType === 5" style="margin-top: 8px;">
+                    <div v-if="(disagreeBackType === 4 || disagreeBackType === 5) && approverConfig.nodeType !== 21" style="margin-top: 8px;">
                         <span>退回目标节点：</span>
                         <el-select v-model="disagreeBackToNodeId" placeholder="请选择目标节点" style="width: 260px;">
                             <el-option v-for="item in availableBackNodes" :key="item.nodeId"
                                 :label="item.nodeName" :value="item.nodeId" />
                         </el-select>
                     </div>
+                    <div v-if="approverConfig.nodeType === 21" style="margin-top: 8px;">
+                        <el-checkbox v-model="conditionReturnStarterBackToCurrent">退回后重新审批经过该节点时回到退回人</el-checkbox>
+                    </div>
                 </div>
 
                 <!-- 退回按钮行为配置 -->
-                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.repulse) && approverConfig.nodeType !== 20" class="disagree-back-conf">
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.repulse) && approverConfig.nodeType !== 20 && approverConfig.nodeType !== 21" class="disagree-back-conf">
                     <p class="setting-group-title">退回按钮行为</p>
                     <el-radio-group v-model="drawBackBehavior" @change="onDrawBackBehaviorChange">
                         <el-radio :value="0">无限制（审批人自选）</el-radio>
@@ -536,7 +539,7 @@ const onDrawBackBehaviorChange = (val) => {
 const syncDrawBackToConfig = () => {
     if (!approverConfig.value) return;
     // 自动退回节点(nodeType=19)/条件退回节点(nodeType=20)的 drawBack 配置由其他机制管理, 此处跳过
-    if (approverConfig.value.nodeType === 19 || approverConfig.value.nodeType === 20) return;
+    if (approverConfig.value.nodeType === 19 || approverConfig.value.nodeType === 20 || approverConfig.value.nodeType === 21) return;
     let type = 0;
     if (drawBackBehavior.value === 1) {
         type = drawBackReturnToSender.value ? 3 : 2;
@@ -592,6 +595,22 @@ const loadAutoReturnConfig = (nodeData) => {
     if (approverConfig.value?.nodeType !== 19) return;
     autoReturnTargetNodeId.value = (nodeData?.drawBackNodeIds && nodeData.drawBackNodeIds.length > 0)
         ? nodeData.drawBackNodeIds[0] : null;
+};
+
+// ========== 条件退回发起人节点配置 ==========
+let conditionReturnStarterBackToCurrent = ref(false); // drawBackType: false=4(重新开始) true=5(回到当前节点)
+const syncConditionReturnStarterToConfig = () => {
+    if (!approverConfig.value || approverConfig.value.nodeType !== 21) return;
+    approverConfig.value.drawBackType = conditionReturnStarterBackToCurrent.value ? 5 : 4;
+};
+watch(conditionReturnStarterBackToCurrent, () => { syncConditionReturnStarterToConfig(); });
+/**加载条件退回发起人配置(反显) */
+const loadConditionReturnStarterConfig = (nodeData) => {
+    if (approverConfig.value?.nodeType !== 21) return;
+    conditionReturnStarterBackToCurrent.value = (nodeData?.drawBackType === 5);
+    // 强制不同意按钮行为锁定为"退回发起人"(2)
+    disagreeBackType.value = 2;
+    disagreeBackToNodeId.value = null;
 };
 
 /**加载推进按钮行为配置(反显) */
@@ -948,6 +967,7 @@ watch(approverConfig1, (val) => {
         loadDrawBackConfig(currParallel);
         loadForwardConfig(currParallel);
         loadAutoReturnConfig(currParallel);
+        loadConditionReturnStarterConfig(currParallel);
     }
     else {
         approverConfig.value = val.value;
@@ -961,6 +981,7 @@ watch(approverConfig1, (val) => {
         loadDrawBackConfig(val.value);
         loadForwardConfig(val.value);
         loadAutoReturnConfig(val.value);
+        loadConditionReturnStarterConfig(val.value);
     }
 });
 

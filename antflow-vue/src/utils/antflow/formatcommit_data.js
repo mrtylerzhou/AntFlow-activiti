@@ -229,7 +229,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17 || node.nodeType == 20) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17 || node.nodeType == 20 || node.nodeType == 21) {
         let approveObj = {
           formAssigneeProperty: 0,
           formInfos: [],
@@ -357,6 +357,17 @@ export class FormatCommitUtils {
 
       // 条件退回节点: 与条件审批(12)类似, 把 conditionList 塞进 autoNodeConf
       if (node.nodeType == 20) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+      }
+
+      // 条件退回发起人节点: 同条件退回, 把 conditionList 塞进 autoNodeConf; drawBackType/drawBackNodeIds 保留供后端写入 NodeConfigJson
+      if (node.nodeType == 21) {
         $func.convertConditionNodeValue(node.conditionList, false);
         node.autoNodeConf = {
           conditionList: node.conditionList || [[]],

@@ -184,6 +184,14 @@
                         </div>
                     </a>
                 </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item condition-return-starter-node" @click="addType(29)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="conditional-drive-to-starter" class="iconfont" />
+                            <p>条件退回发起人</p>
+                        </div>
+                    </a>
+                </div>
                 <template #reference>
                     <button class="btn" type="button">
                         <svg-icon icon-class="addbtn" class="iconfont" />
@@ -318,6 +326,10 @@ const createAutoReturnStarterNode = (childNode) => {
 const createConditionReturnNode = (childNode) => {
     return NodeUtils.createConditionReturnNode(childNode);
 }
+/**创建条件退回发起人节点 */
+const createConditionReturnStarterNode = (childNode) => {
+    return NodeUtils.createConditionReturnStarterNode(childNode, rootNode ? rootNode.value : null);
+}
 /**创建推进审批节点 */
 const createForwardApproveNode = (childNode) => {
     return NodeUtils.createForwardApproveNode(childNode);
@@ -375,6 +387,7 @@ const createNodeMap = new Map([
     [26, createAutoReturnNode],
     [27, createAutoReturnStarterNode],
     [28, createConditionReturnNode],
+    [29, createConditionReturnStarterNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -539,6 +552,12 @@ const confirmClone = () => {
         }
 
         &.condition-return-node {
+            .item-wrapper {
+                color: #e53935
+            }
+        }
+
+        &.condition-return-starter-node {
             .item-wrapper {
                 color: #e53935
             }

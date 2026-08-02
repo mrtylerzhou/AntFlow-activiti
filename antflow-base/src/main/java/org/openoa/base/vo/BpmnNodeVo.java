@@ -97,6 +97,11 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isConditionReturnNode;
     /**
+     * 条件退回发起人节点标记: 设计期 nodeType=21, nodeSpecialProcess 转为 4 后置 true
+     * 运行期保留真实审批人, 满足条件时自动退回发起人节点, 不满足时留给审批人
+     */
+    private Boolean isConditionReturnStarterNode;
+    /**
      * 完成审批节点标记: 审批人节点(nodeType=4) + 推进按钮(42) + finish_approve_node 标签
      * 目标自动填充为流程最后一个审批人节点, 用户不可改
      */

@@ -37,6 +37,11 @@ public enum NodeTypeEnum implements AfEnumBase{
      * 满足条件时自动退回到不同意按钮配置的目标节点, 不满足时留给审批人人工处理
      */
     NODE_TYPE_CONDITION_RETURN(20,"条件退回节点",0),
+    /**
+     * 条件退回发起人节点: 设计期 nodeType=21, 运行期转为 4
+     * 满足条件时自动退回发起人节点, 不满足时留给审批人人工处理
+     */
+    NODE_TYPE_CONDITION_RETURN_STARTER(21,"条件退回发起人节点",0),
     ;
 
     @Getter

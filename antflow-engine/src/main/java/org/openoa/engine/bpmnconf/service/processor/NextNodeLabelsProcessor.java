@@ -437,10 +437,13 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     private void processConditionReturnNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId,
                                             String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,
                                             String procInstId, DelegateTask delegateTask) {
-        if (!StringConstants.CONDITION_RETURN_NODE.equals(nodeLabelVO.getLabelValue())) {
+        boolean isConditionReturn = StringConstants.CONDITION_RETURN_NODE.equals(nodeLabelVO.getLabelValue());
+        boolean isConditionReturnStarter = StringConstants.CONDITION_RETURN_STARTER_NODE.equals(nodeLabelVO.getLabelValue());
+        if (!isConditionReturn && !isConditionReturnStarter) {
             return;
         }
-        log.info("条件退回节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
+        String logPrefix = isConditionReturnStarter ? "条件退回发起人" : "条件退回";
+        log.info("{}节点处理开始, processNumber={}, elementId={}", logPrefix, processNumber, elementId);
 
         // === 条件评估 ===
         businessDataVo.setProcessNumber(processNumber);
@@ -458,22 +461,33 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         Boolean conditionResult = null;
         try {
             conditionResult = formAdaptor.automaticCondition(businessDataVo);
-            log.info("条件退回条件评估结果, processNumber={}, elementId={}, conditionResult={}", processNumber, elementId, conditionResult);
+            log.info("{}条件评估结果, processNumber={}, elementId={}, conditionResult={}", logPrefix, processNumber, elementId, conditionResult);
         } catch (Exception e) {
-            log.error("条件退回条件评估异常, 视为条件不满足, processNumber={}, elementId={}", processNumber, elementId, e);
+            log.error("{}条件评估异常, 视为条件不满足, processNumber={}, elementId={}", logPrefix, processNumber, elementId, e);
             conditionResult = false;
         }
 
         if (Boolean.TRUE.equals(conditionResult)) {
-            // === 退回路径: 读取不同意按钮配置的目标节点 ===
+            // === 退回路径: 按标签分支读取目标节点 ===
             BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
             if (configJson == null) {
-                throw new AFBizException("条件退回节点配置读取失败, processNumber=" + processNumber + ", elementId=" + elementId);
+                throw new AFBizException(logPrefix + "节点配置读取失败, processNumber=" + processNumber + ", elementId=" + elementId);
             }
-            Integer backType = configJson.getBackType();
-            String backToNodeId = configJson.getBackToNodeId();
-            if (backType == null || (backType != 4 && backType != 5) || org.apache.commons.lang3.StringUtils.isEmpty(backToNodeId)) {
-                throw new AFBizException("条件退回节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
+
+            Integer backType;
+            String targetNodeUuid;
+            if (isConditionReturnStarter) {
+                // 条件退回发起人: 从 DrawBackType + DrawBackNodeIds[0] 读取
+                backType = configJson.getDrawBackType();
+                java.util.List<String> drawBackNodeIds = configJson.getDrawBackNodeIds();
+                targetNodeUuid = (drawBackNodeIds != null && !drawBackNodeIds.isEmpty()) ? drawBackNodeIds.get(0) : null;
+            } else {
+                // 条件退回: 从 BackType + BackToNodeId 读取
+                backType = configJson.getBackType();
+                targetNodeUuid = configJson.getBackToNodeId();
+            }
+            if (backType == null || (backType != 4 && backType != 5) || org.apache.commons.lang3.StringUtils.isEmpty(targetNodeUuid)) {
+                throw new AFBizException(logPrefix + "节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
 
             // UUID → 主键 (t_bpmn_node.node_id → t_bpmn_node.id)
@@ -485,12 +499,12 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             BpmnNode targetNode = bpmnNodeService.getOne(
                     Wrappers.<BpmnNode>lambdaQuery()
                             .eq(BpmnNode::getConfId, confId)
-                            .eq(BpmnNode::getNodeId, backToNodeId)
+                            .eq(BpmnNode::getNodeId, targetNodeUuid)
                             .eq(BpmnNode::getIsDel, 0),
                     false
             );
             if (targetNode == null) {
-                throw new AFBizException("条件退回目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + backToNodeId);
+                throw new AFBizException(logPrefix + "目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
             }
             String targetNodeName = targetNode.getNodeName();
             String targetPrimaryKey = String.valueOf(targetNode.getId());
@@ -498,22 +512,22 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             // 主键 → elementId (taskDefKey)
             List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
             if (CollectionUtils.isEmpty(targetElementIds)) {
-                throw new AFBizException(String.format("条件退回: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
+                throw new AFBizException(String.format("%s: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", logPrefix, processNumber, targetPrimaryKey));
             }
             String targetElementId = targetElementIds.get(0);
 
-            log.info("条件退回: 条件满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}, backType={}",
-                    processNumber, elementId, targetElementId, targetNodeName, backType);
+            log.info("{}: 条件满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}, backType={}",
+                    logPrefix, processNumber, elementId, targetElementId, targetNodeName, backType);
             String assigneeId = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId();
             try {
                 backToModifyImpl.returnToTargetNode(delegateTask, procInstId, processNumber,
                         delegateTask.getTaskDefinitionKey(), targetElementId, targetNodeName,
-                        assigneeId, "条件退回节点自动退回", businessDataVo, backType);
+                        assigneeId, logPrefix + "节点自动退回", businessDataVo, backType);
             } catch (Exception e) {
-                log.error("条件退回失败, processNumber={}, elementId={}, targetElementId={}",
-                        processNumber, elementId, targetElementId, e);
-                throw new AFBizException(String.format("条件退回失败, processNumber=%s, elementId=%s, targetNodeId=%s",
-                        processNumber, elementId, targetElementId), e);
+                log.error("{}失败, processNumber={}, elementId={}, targetElementId={}",
+                        logPrefix, processNumber, elementId, targetElementId, e);
+                throw new AFBizException(String.format("%s失败, processNumber=%s, elementId=%s, targetNodeId=%s",
+                        logPrefix, processNumber, elementId, targetElementId), e);
             }
         }
         // conditionResult == false 或 null: 不操作, 留给真实审批人人工处理

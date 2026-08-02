@@ -185,7 +185,7 @@ export class FormatDisplayUtils {
       }
       node.formAssigneeProperty = node?.property?.formAssigneeProperty;
       node.formInfos = node?.property?.formInfos ?? [];
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17 || node.nodeType == 20) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17 || node.nodeType == 20 || node.nodeType == 21) {
         let empList = [];
         if (node.nodeProperty == 6) {
           let approveObj = {
@@ -317,6 +317,20 @@ export class FormatDisplayUtils {
         node.nodeType = 20;
         node.nodeName = node.nodeName || "条件退回";
         node.nodeDisplayName = node.nodeDisplayName || "条件退回";
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
+      // 条件退回发起人节点反显: nodeType=4 或 21 (后端可能已转) + condition_return_starter_node标签
+      // 与条件退回类似, 保留真实审批人, 从 autoNodeConf 恢复条件数据; drawBackType/drawBackNodeIds 保留在节点上
+      if ((node.nodeType == 4 || node.nodeType == 21) && node.labelList && node.labelList.some(l => l.labelValue === "condition_return_starter_node")) {
+        node.nodeType = 21;
+        node.nodeName = node.nodeName || "条件退回发起人";
+        node.nodeDisplayName = node.nodeDisplayName || "条件退回发起人";
         node.conditionList = [[]];
         node.groupRelation = false;
         if (node.autoNodeConf) {

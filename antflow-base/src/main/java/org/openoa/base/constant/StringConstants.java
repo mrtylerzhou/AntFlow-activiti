@@ -64,6 +64,8 @@ public class StringConstants {
     public static final String AUTO_RETURN_NODE="auto_return_node";
     /**条件退回节点标签: 满足条件时自动退回到不同意按钮配置的目标节点, 不满足时留给真实审批人*/
     public static final String CONDITION_RETURN_NODE="condition_return_node";
+    /**条件退回发起人节点标签: 满足条件时自动退回发起人节点, 不满足时留给真实审批人*/
+    public static final String CONDITION_RETURN_STARTER_NODE="condition_return_starter_node";
     /**完成审批节点标签: 审批人节点(nodeType=4)+推进按钮(42), 目标自动填充为流程最后一个审批人节点. 前端着色判据.*/
     public static final String FINISH_APPROVE_NODE="finish_approve_node";
     public static final String SKIPPED_ASSIGNEE="lbl_skipped_assignee";

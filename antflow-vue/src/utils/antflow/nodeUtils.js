@@ -672,6 +672,64 @@ export class NodeUtils {
     return conditionReturnNode;
   }
   /**
+   * 创建条件退回发起人节点对象
+   * 本质是审批人节点(nodeType=21) + 条件配置 + 退回目标固定为发起人
+   * 满足条件时自动退回发起人节点; 不满足时留给真实审批人人工处理
+   * 与条件退回(20)的差异: 目标锁死为发起人, 不需要用户选择; 走 drawBackType+drawBackNodeIds 路径
+   * @param {Object} child - 子节点信息
+   * @param {Object} rootNode - 流程树根节点(用于遍历找发起人)
+   * @returns {Object} 条件退回发起人节点
+   */
+  static createConditionReturnStarterNode(child, rootNode) {
+    // 遍历流程树找发起人节点(nodeType=1)的UUID
+    let starterNodeId = null;
+    const findStarter = (node) => {
+      if (!node) return;
+      if (node.nodeType === 1) { starterNodeId = node.nodeId; return; }
+      if (node.childNode) findStarter(node.childNode);
+      if (node.conditionNodes) node.conditionNodes.forEach(n => findStarter(n));
+      if (node.parallelNodes) node.parallelNodes.forEach(n => findStarter(n));
+    };
+    if (rootNode) findStarter(rootNode);
+
+    let conditionReturnStarterNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件退回发起人",
+      nodeDisplayName: "条件退回发起人",
+      nodeType: 21, //节点类型 21、条件退回发起人节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_return_starter_node", labelName: "条件退回发起人节点" },
+      ],
+      conditionList: [[]], //条件关系
+      groupRelation: false, //条件组关系 false:且 true:或
+      drawBackType: 4, //默认重新开始
+      drawBackNodeIds: starterNodeId ? [starterNodeId] : [], //固定为发起人节点
+    };
+    return conditionReturnStarterNode;
+  }
+  /**
    * 创建条件推进节点对象
    * 本质是条件审批节点(nodeType=12) + 自动勾选推进按钮(42,别名"同意"), 不含"同意"按钮
    * 与条件审批的差异:

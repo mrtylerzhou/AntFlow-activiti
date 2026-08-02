@@ -302,6 +302,12 @@ public class NodeUtil {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
             bpmnNodeVo.setIsConditionReturnNode(true);
         }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_RETURN_STARTER.getCode().equals(nodeType)){
+            //条件退回发起人节点: 设计期 nodeType=21, 运行期统一为审批人节点 4
+            //与条件退回(20)类似: 保留真实审批人, 满足条件时自动退回发起人节点
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionReturnStarterNode(true);
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
@@ -342,6 +348,9 @@ public class NodeUtil {
             }
             if(NodeLabelConstants.conditionReturnNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_RETURN.getCode());
+            }
+            if(NodeLabelConstants.conditionReturnStarterNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_RETURN_STARTER.getCode());
             }
             if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setIsPrevNodeAppointed(true);
