@@ -229,7 +229,7 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13 || node.nodeType == 17 || node.nodeType == 20) {
         let approveObj = {
           formAssigneeProperty: 0,
           formInfos: [],
@@ -346,6 +346,17 @@ export class FormatCommitUtils {
       // 自动退回节点: 与自动推进(18)对称, 把 conditionList 塞进 autoNodeConf
       // 不删 nodeApproveList (保留预设虚拟人 -3); 不删 drawBackType/drawBackNodeIds (后端写入 BpmnNodeConfigJson)
       if (node.nodeType == 19) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+      }
+
+      // 条件退回节点: 与条件审批(12)类似, 把 conditionList 塞进 autoNodeConf
+      if (node.nodeType == 20) {
         $func.convertConditionNodeValue(node.conditionList, false);
         node.autoNodeConf = {
           conditionList: node.conditionList || [[]],

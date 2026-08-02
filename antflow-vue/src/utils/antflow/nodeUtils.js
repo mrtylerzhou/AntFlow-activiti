@@ -627,6 +627,51 @@ export class NodeUtils {
     return conditionApproveNode;
   }
   /**
+   * 创建条件退回节点对象
+   * 本质是审批人节点(nodeType=20) + 条件配置 + 不同意按钮退回行为
+   * 满足条件时自动退回到不同意按钮配置的目标节点; 不满足时留给真实审批人人工处理
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件退回节点
+   */
+  static createConditionReturnNode(child) {
+    let conditionReturnNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件退回",
+      nodeDisplayName: "条件退回",
+      nodeType: 20, //节点类型 20、条件退回节点
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: btns(3, 4, 18, 19, 21),
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_return_node", labelName: "条件退回节点" },
+      ],
+      conditionList: [[]], //条件关系
+      groupRelation: false, //条件组关系 false:且 true:或
+      disagreeBackType: 5, //默认退回指定节点(回到当前节点)
+      disagreeBackToNodeId: null, //用户需选择目标节点
+    };
+    return conditionReturnNode;
+  }
+  /**
    * 创建条件推进节点对象
    * 本质是条件审批节点(nodeType=12) + 自动勾选推进按钮(42,别名"同意"), 不含"同意"按钮
    * 与条件审批的差异:

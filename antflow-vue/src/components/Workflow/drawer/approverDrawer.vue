@@ -265,12 +265,12 @@
                     </el-select>
                 </div>
             </el-tab-pane>
-            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18 || approverConfig.nodeType === 19" label="条件设置" name="conditionStep">
+            <el-tab-pane lazy v-if="approverConfig.nodeType === 12 || approverConfig.nodeType === 18 || approverConfig.nodeType === 19 || approverConfig.nodeType === 20" label="条件设置" name="conditionStep">
                 <ConditionGroupEditor
                     :conditionList="approverConfig.conditionList"
                     v-model:groupRelation="approverConfig.groupRelation"
                     v-model:nodeApproveList="approverConfig.nodeApproveList">
-                    <template #tip>{{ approverConfig.nodeType === 19 ? '当满足以下条件时, 当前节点将自动退回到指定节点; 条件不满足时自动完成(不跳跃)' : '当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理' }}</template>
+                    <template #tip>{{ approverConfig.nodeType === 19 ? '当满足以下条件时, 当前节点将自动退回到指定节点; 条件不满足时自动完成(不跳跃)' : approverConfig.nodeType === 20 ? '当满足以下条件时, 当前节点将自动退回到不同意按钮配置的目标节点; 条件不满足时由审批人人工处理' : '当满足以下条件时, 当前节点将自动审批通过; 条件不满足时由审批人人工处理' }}</template>
                 </ConditionGroupEditor>
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
@@ -341,8 +341,8 @@
                 <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.noAgree)" class="disagree-back-conf">
                     <p class="setting-group-title">不同意按钮行为</p>
                     <el-radio-group v-model="disagreeBackType" @change="onDisagreeBackTypeChange">
-                        <el-radio :value="0">结束流程</el-radio>
-                        <el-radio :value="2">退回发起人</el-radio>
+                        <el-radio :value="0" :disabled="approverConfig.nodeType === 20">结束流程</el-radio>
+                        <el-radio :value="2" :disabled="approverConfig.nodeType === 20">退回发起人</el-radio>
                         <el-radio :value="4">退回指定节点（重新开始）</el-radio>
                         <el-radio :value="5">退回指定节点（回到当前节点）</el-radio>
                     </el-radio-group>
@@ -356,7 +356,7 @@
                 </div>
 
                 <!-- 退回按钮行为配置 -->
-                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.repulse)" class="disagree-back-conf">
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.repulse) && approverConfig.nodeType !== 20" class="disagree-back-conf">
                     <p class="setting-group-title">退回按钮行为</p>
                     <el-radio-group v-model="drawBackBehavior" @change="onDrawBackBehaviorChange">
                         <el-radio :value="0">无限制（审批人自选）</el-radio>
@@ -535,8 +535,8 @@ const onDrawBackBehaviorChange = (val) => {
 
 const syncDrawBackToConfig = () => {
     if (!approverConfig.value) return;
-    // 自动退回节点(nodeType=19)的 drawBack 配置由 syncAutoReturnToConfig 管理, 此处跳过
-    if (approverConfig.value.nodeType === 19) return;
+    // 自动退回节点(nodeType=19)/条件退回节点(nodeType=20)的 drawBack 配置由其他机制管理, 此处跳过
+    if (approverConfig.value.nodeType === 19 || approverConfig.value.nodeType === 20) return;
     let type = 0;
     if (drawBackBehavior.value === 1) {
         type = drawBackReturnToSender.value ? 3 : 2;

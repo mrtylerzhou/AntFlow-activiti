@@ -19,6 +19,7 @@
                     <svg-icon icon-class="auto-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 18" />
                     <svg-icon icon-class="auto-drive-to-starter" class="iconfont" v-else-if="nodeConfig.nodeType == 19 && nodeConfig.drawBackType == 2" />
                     <svg-icon icon-class="auto-drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 19" />
+                    <svg-icon icon-class="conditional-drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 20" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
                     <svg-icon icon-class="drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')" />
@@ -258,6 +259,10 @@ let titleBgColor = computed(() => {
     if (props.nodeConfig.nodeType == 19) {
         return BACK_APPROVE_COLOR;
     }
+    // 条件退回节点着色: nodeType=20 (亮红, 退回类统一色)
+    if (props.nodeConfig.nodeType == 20) {
+        return BACK_APPROVE_COLOR;
+    }
     return bgColors[props.nodeConfig.nodeType];
 });
 
@@ -324,6 +329,7 @@ let showText = computed(() => {
         return targetName ? `${approverStr}，条件满足推进至:${targetName}` : approverStr;
     }
     if (props.nodeConfig.nodeType == 12) return $func.setApproverStr(props.nodeConfig);
+    if (props.nodeConfig.nodeType == 20) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 13) return $func.setCopyStrV2(props.nodeConfig);
     if (props.nodeConfig.nodeType == 17) return $func.setApproverStr(props.nodeConfig);
     if (props.nodeConfig.nodeType == 18) {
@@ -654,7 +660,7 @@ const setNodeInfo = (index) => {
             flag: false,
             id: _uid,
         });
-    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17 || nodeType == 18 || nodeType == 19) {
+    } else if (nodeType == 4 || nodeType == 12 || nodeType == 17 || nodeType == 18 || nodeType == 19 || nodeType == 20) {
         setApprover(true);
         setApproverConfig({
             value: {

@@ -376,6 +376,19 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                                    String targetNodeName,
                                    String verifyUserId, String verifyUserName,
                                    BusinessDataVo businessDataVo) {
+        returnToTargetNode(delegateTask, procInstId, processNumber, currentTaskDefKey, targetElementId,
+                targetNodeName, verifyUserId, verifyUserName, businessDataVo, ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode());
+    }
+
+    /**
+     * 自动退回/条件退回 统一跳转方法(带 backType 参数).
+     * @param backType 退回类型: 4=重新开始, 5=回到当前节点
+     */
+    public void returnToTargetNode(DelegateTask delegateTask, String procInstId, String processNumber,
+                                   String currentTaskDefKey, String targetElementId,
+                                   String targetNodeName,
+                                   String verifyUserId, String verifyUserName,
+                                   BusinessDataVo businessDataVo, Integer backType) {
         String taskId = delegateTask.getId();
         String taskName = delegateTask.getName();
         String processDefinitionId = delegateTask.getProcessDefinitionId();
@@ -391,7 +404,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                         new TransactionTemplate(transactionManager).execute(status -> {
                             doReturnAfterCommit(procInstId, processNumber, currentTaskDefKey, targetElementId,
                                     targetNodeName, verifyUserId, verifyUserName,
-                                    taskId, taskName, processDefinitionId, businessDataVo);
+                                    taskId, taskName, processDefinitionId, businessDataVo, backType);
                             return null;
                         });
                     } catch (Exception e) {
@@ -405,7 +418,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 new TransactionTemplate(transactionManager).execute(status -> {
                     doReturnAfterCommit(procInstId, processNumber, currentTaskDefKey, targetElementId,
                             targetNodeName, verifyUserId, verifyUserName,
-                            taskId, taskName, processDefinitionId, businessDataVo);
+                            taskId, taskName, processDefinitionId, businessDataVo, backType);
                     return null;
                 });
             } catch (Exception e) {
@@ -426,7 +439,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                                      String targetElementId, String targetNodeName,
                                      String verifyUserId, String verifyUserName,
                                      String taskId, String taskName, String processDefinitionId,
-                                     BusinessDataVo businessDataVo) {
+                                     BusinessDataVo businessDataVo, Integer backType) {
         log.info("自动退回 doReturnAfterCommit 开始, procInstId={}, currentTaskDefKey={}, targetElementId={}",
                 procInstId, currentTaskDefKey, targetElementId);
 
@@ -508,7 +521,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                         .state(1)
                         .nodeKey(restoreNodeKey)
                         .processInstanceId(procInstId)
-                        .backType(ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode())
+                        .backType(backType != null ? backType : ProcessDisagreeTypeEnum.FOUR_DISAGREE.getCode())
                         .createUser(verifyUserId)
                         .build());
             }
