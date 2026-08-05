@@ -252,6 +252,18 @@ public class LowFlowApprovalService extends AbstractFormOperationAdaptor<UDLFApp
         if(CollectionUtils.isEmpty(fieldConfMap)){
             throw  new AFBizException(Strings.lenientFormat("confId %s,formCode:%s does not has a field config",confId,vo.getFormCode()));
         }
+        // page-added DIY 字段契约校验: lfFields 的 key 必须在辅助 vform 字段配置中声明,否则抛错。
+        // 仅对 USE_AUXILIARY_FORM 命中且 lfFields 非空时校验; 纯 LF 静默跳过; 外部表单模式 lfFields 为 null 跳过(用 lfFieldsMulti)。
+        if (bpmnConfVo.getExtraFlags() != null
+                && BpmnConfFlagsEnum.USE_AUXILIARY_FORM.flagsContainsCurrent(bpmnConfVo.getExtraFlags())
+                && lfFields != null) {
+            Set<String> undeclared = new HashSet<>(lfFields.keySet());
+            undeclared.removeAll(fieldConfMap.keySet());
+            if (!undeclared.isEmpty()) {
+                throw new AFBizException(Strings.lenientFormat(
+                        "表单字段 %s 未在辅助表单中定义,请在辅助 vform 中声明这些字段", undeclared));
+            }
+        }
         List<LFMainField> mainFields = LFMainField.parseFromMap(lfFields, fieldConfMap, mainId,formCode);
         mainFieldService.saveBatch(mainFields);
         vo.setBusinessId(mainId.toString());

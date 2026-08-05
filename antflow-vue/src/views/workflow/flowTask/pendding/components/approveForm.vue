@@ -112,6 +112,7 @@ import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
+import { useCustomForm, flattenLfFieldsForCustomForm } from '@/views/workflow/components/formDispatchHelper.js';
 import { isTrue, isEmptyArray } from '@/utils/antflow/ObjectUtils';
 const { proxy } = getCurrentInstance();
 import { useStore } from '@/store/modules/workflow';
@@ -382,7 +383,10 @@ const approveSubmit = async (param) => {
         await componentFormRef.value.handleValidate().then(async (isValid) => {
             if (isValid) {
                 await componentFormRef.value.getFromData().then((data) => {
-                    if (isTrue(approveSubData.value.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                    if (useCustomForm(approveSubData.value.isLowCodeFlow, approveSubData.value.formCode)) {//自定义表单(coded DIY + page-added DIY): 扁平字段 spread 到顶层
+                        let componentFormData = JSON.parse(data);
+                        approveSubData.value = { ...approveSubData.value, ...componentFormData };
+                    } else {//低代码表单 和 外部表单接
                         if (useExternalForm.value) {
                             // 外部表单模式: getFromData 返回 { [formdataId]: fieldMap } 结构
                             approveSubData.value.lfFieldsMulti = JSON.parse(data);
@@ -391,9 +395,6 @@ const approveSubmit = async (param) => {
                             approveSubData.value.lfFields = JSON.parse(data); //低代码表单字段
                             approveSubData.value.lfFieldsMulti = null;
                         }
-                    } else {
-                        let componentFormData = JSON.parse(data);
-                        approveSubData.value = { ...approveSubData.value, ...componentFormData };
                     }
                 });
             }
@@ -499,7 +500,12 @@ const preview = async (viewData) => {
                 approveSubData.value.forwardNodes = response.data.forwardNodes || [];
             }
             try {
-                if (isTrue(viewData.isLowCodeFlow)) {//低代码表单 和 外部表单接
+                if (useCustomForm(viewData.isLowCodeFlow, viewData.formCode)) {//自定义表单(coded DIY + page-added DIY)
+                    // page-added DIY(isLowCodeFlow && bizFormMaps 命中)回填时把 lfFields 摊平到顶层; coded DIY 原样
+                    componentData.value = flattenLfFieldsForCustomForm(response.data, viewData.isLowCodeFlow, viewData.formCode);
+                    loadedComponent.value = await loadDIYComponent(viewData.formCode);
+                    componentLoaded.value = true;
+                } else {//低代码表单 和 外部表单接
                     const responseData = response.data;
                     const formdataList = responseData.lfFormdataList;
                     const isExternal = Array.isArray(formdataList) && formdataList.length > 0;
@@ -525,10 +531,6 @@ const preview = async (viewData) => {
                         formHiddenConfig.value = {};
                         loadedComponent.value = await loadLFComponent();
                     }
-                    componentLoaded.value = true;
-                } else {//自定义表单
-                    componentData.value = response.data;
-                    loadedComponent.value = await loadDIYComponent(viewData.formCode);
                     componentLoaded.value = true;
                 }
             } catch (error) {

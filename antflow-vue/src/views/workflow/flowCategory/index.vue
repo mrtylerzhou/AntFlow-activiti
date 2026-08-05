@@ -211,7 +211,7 @@ import { ArrowDown } from '@element-plus/icons-vue';
 import SetMsgDrawer from './setMsgDrawer.vue';
 import ViewFormDrawer from './viewFormDrawer.vue';
 import { getDIYFromCodeData } from "@/api/workflow/index";
-import { createLFFormCode, getLFFormCodePageList } from '@/api/workflow/lowcodeApi';
+import { createLFFormCode, getLFFormCodePageList, createDIYFormCode, getDIYFormCodePageList } from '@/api/workflow/lowcodeApi';
 import { useDopeSheetStore } from '@/store/modules/dopeSheet';
 const { proxy } = getCurrentInstance();
 const DIYList = ref([]);
@@ -220,6 +220,8 @@ const loading = ref(false);
 const showSearch = ref(true);
 const open = ref(false);
 const openForm = ref(false);
+// 新增对话框模式: 'LF' 低代码 / 'DIY' page-added DIY(LF 后端+自定义 Vue)
+const dialogMode = ref('LF');
 
 const openFlowMsgDialog = ref(false);
 const formMsgData = ref(null);
@@ -268,11 +270,17 @@ onMounted(async () => {
     getLFPageList();
 })
 
-/** 查询接入业务方列表 */
+/** 查询 DIY 列表 = coded DIY(扫描 @ActivitiServiceAnno) ∪ page-added DIY(DB, dict_type=diylowcodeflow) */
 function getDIYList() {
     loading.value = true;
-    getDIYFromCodeData().then(response => {
-        DIYList.value = response.data;
+    // coded DIY: 后端扫描
+    const scanP = getDIYFromCodeData().then(r => (r.data || [])).catch(() => []);
+    // page-added DIY: DB 分页(DIY Tab 非分页,取较大页一次性加载),标记 isPageAddedDiy 供设计路由判断
+    const dbP = getDIYFormCodePageList({ page: 1, pageSize: 1000 }, taskMgmtVO.value)
+        .then(r => (r.data || []).map(item => ({ ...item, isPageAddedDiy: true })))
+        .catch(() => []);
+    Promise.all([scanP, dbP]).then(([scanList, dbList]) => {
+        DIYList.value = [...dbList, ...scanList];
         loading.value = false;
     }).catch((err) => {
         loading.value = false;
@@ -293,29 +301,35 @@ function getLFPageList() {
     });
 }
 
-/** 添加自定义业务表单FromCode */
+/** 添加 page-added DIY FormCode(LF 后端 + 自定义 Vue 前端) */
 function handleDIYTemp() {
-    proxy.$modal.msgSuccess("后端添加流程适配以后自动查询出来");
+    reset();
+    dialogMode.value = 'DIY';
+    title.value = "添加DIY类型";
+    openForm.value = true;
 }
 /** 添加低代码业务表单FromCode */
 function createLFTemp() {
     reset();
+    dialogMode.value = 'LF';
     title.value = "添加类型";
     openForm.value = true;
 
 }
-/** 提交表单 */
+/** 提交表单(按 dialogMode 调用 LF 或 DIY 新增接口) */
 function submitForm() {
     proxy.$refs["formRef"].validate(valid => {
         if (valid) {
-            createLFFormCode(form.value).then(response => {
+            const isDIY = dialogMode.value === 'DIY';
+            const apiFn = isDIY ? createDIYFormCode : createLFFormCode;
+            apiFn(form.value).then(response => {
                 if (response.code != 200) {
                     proxy.$modal.msgError("新增失败");
                     return;
                 }
                 proxy.$modal.msgSuccess("新增成功");
                 openForm.value = false;
-                getLFPageList();
+                isDIY ? getDIYList() : getLFPageList();
             });
         }
     });
@@ -335,7 +349,11 @@ async function handleDIYDesign(row) {
         fc: row.key
     };
     proxy.$modal.closeLoading();
-    const obj = { path: "/workflow/diy-design", query: param };
+    // page-added DIY(LF 后端+自定义 Vue): 走 lf-design 并带 auxForm 标记,lf.vue 发布时置 USE_AUXILIARY_FORM 位
+    // coded DIY: 走 diy-design
+    const path = row.isPageAddedDiy ? "/workflow/lf-design" : "/workflow/diy-design";
+    if (row.isPageAddedDiy) param.auxForm = '1';
+    const obj = { path, query: param };
     proxy.$tab.openPage(obj);
 }
 

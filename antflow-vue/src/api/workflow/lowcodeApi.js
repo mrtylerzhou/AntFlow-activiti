@@ -84,6 +84,24 @@ export function createLFFormCode(data) {
   });
 }
 
+/**
+ * 新增 page-added DIY FormCode(LF 后端 + 自定义 Vue 前端)
+ * @param {*} data
+ * @returns
+ */
+export function createDIYFormCode(data) {
+  return http.post(`${baseUrl}/lowcode/createDIYFormCode`, data, { headers });
+}
+
+/**
+ * 获取 page-added DIY FormCode Page List 模板列表使用
+ * @returns
+ */
+export function getDIYFormCodePageList(pageDto, taskMgmtVO) {
+  let paramDto = { pageDto: pageDto, taskMgmtVO: taskMgmtVO };
+  return http.post(`${baseUrl}/lowcode/getDIYFormCodePageList`, paramDto, { headers });
+}
+
 // ===================== 独立表单管理 =====================
 
 /**

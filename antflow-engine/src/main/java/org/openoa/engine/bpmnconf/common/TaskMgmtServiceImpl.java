@@ -36,6 +36,7 @@ import org.openoa.engine.bpmnconf.mapper.BpmBusinessProcessMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
 import org.openoa.base.interf.LFFormOperationAdaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -71,6 +72,9 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
     private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    @Lazy
+    private LowCodeFlowBizService lowCodeFlowBizService;
 
 
 
@@ -166,6 +170,16 @@ public class TaskMgmtServiceImpl extends ServiceImpl<TaskMgmtMapper, TaskMgmtVO>
 
     public List<DIYProcessInfoDTO> viewProcessInfo(String desc){
         List<DIYProcessInfoDTO> diyProcessInfoDTOS = baseFormInfo(desc);
+        // 合并 page-added DIY(DB, dict_type=diylowcodeflow, 有效版本): 无 @ActivitiServiceAnno bean,扫描不到
+        List<DIYProcessInfoDTO> pageAdded = lowCodeFlowBizService.getDIYActiveFormCodes();
+        if (!CollectionUtils.isEmpty(pageAdded)) {
+            Set<String> existKeys = diyProcessInfoDTOS.stream().map(DIYProcessInfoDTO::getKey).collect(Collectors.toSet());
+            for (DIYProcessInfoDTO dto : pageAdded) {
+                if (!existKeys.contains(dto.getKey())) {
+                    diyProcessInfoDTOS.add(dto);
+                }
+            }
+        }
         if(CollectionUtils.isEmpty(diyProcessInfoDTOS)){
             return diyProcessInfoDTOS;
         }

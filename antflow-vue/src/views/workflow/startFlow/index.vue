@@ -36,6 +36,7 @@ import ReviewWarp from '@/components/Workflow/Preview/reviewWarp.vue'
 import { processOperation } from '@/api/workflow/index'
 import { getStartFormData } from '@/api/workflow/lowcodeApi'
 import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js'
+import { useCustomForm } from '@/views/workflow/components/formDispatchHelper.js'
 
 const { proxy } = getCurrentInstance()
 const route = useRoute();
@@ -58,7 +59,11 @@ onMounted(async () => {
     await adapFlowType();
 })
 const adapFlowType = async () => {
-    if (isLFFlow && isLFFlow == true) {
+    if (useCustomForm(isLFFlow, flowCode)) {//自定义表单(coded DIY + page-added DIY)
+        loadedComponent.value = await loadDIYComponent(flowCode)
+            .catch((err) => { console.log('err=======', err); proxy.$modal.msgError(err); componentLoaded.value = false; });
+        componentLoaded.value = true;
+    } else {//低代码表单 和 外部表单接
         await getStartFormData(flowCode).then(async (res) => {
             if (res.code == 200) {
                 const data = res.data;
@@ -84,10 +89,6 @@ const adapFlowType = async () => {
                 componentLoaded.value = true;
             }
         });
-    } else {
-        loadedComponent.value = await loadDIYComponent(flowCode)
-            .catch((err) => { console.log('err=======', err); proxy.$modal.msgError(err); componentLoaded.value = false; });
-        componentLoaded.value = true;
     }
 }
 const handleSubmit = (param) => {
@@ -114,7 +115,9 @@ const handleClick = async (tab, event) => {
             activeName.value = "createFrom";
         } else {
             const _formData = await formRef.value.getFromData();
-            if (isLFFlow && isLFFlow == true) {
+            if (useCustomForm(isLFFlow, flowCode)) {//自定义表单(coded DIY + page-added DIY): 扁平
+                previewConf.value = JSON.parse(_formData);
+            } else {//低代码表单 和 外部表单接
                 if (useExternalForm.value) {
                     // 外部表单模式: _formData 是 { [formdataId]: fieldMap } 结构
                     previewConf.value.lfFieldsMulti = JSON.parse(_formData);
@@ -125,8 +128,6 @@ const handleClick = async (tab, event) => {
                     previewConf.value.approversValid = lfFormdata.approversValid;
                     previewConf.value.lfFields = lfFormdata;
                 }
-            } else {
-                previewConf.value = JSON.parse(_formData);
             }
             previewConf.value.formCode = flowCode || '';
             previewConf.value.isStartPreview = true;
@@ -148,17 +149,22 @@ const startTest = async (param) => {
             activeName.value = "createFrom";
         }
         else {
-            let bizFrom = JSON.parse(param);
-            if (isLFFlow && isLFFlow == true) {
+            const custom = useCustomForm(isLFFlow, flowCode);
+            let bizFrom;
+            if (custom) {//自定义表单(coded DIY + page-added DIY): 扁平字段在顶层
+                bizFrom = JSON.parse(param);
+                bizFrom.formCode = flowCode || '';
+                bizFrom.operationType = 1;//operationType 1发起 3 审批
+                bizFrom.isLowCodeFlow = isLFFlow;//page-added DIY=true(后端 fold 进 lfFields), coded DIY=false
+                bizFrom.lfFields = null;
+                bizFrom.lfFieldsMulti = null;
+            } else {//纯 LF: vform, 数据进 lfFields 嵌套
                 bizFrom = {};
-            }
-            bizFrom.formCode = flowCode || '';
-            bizFrom.operationType = 1;//operationType 1发起 3 审批
-            bizFrom.isLowCodeFlow = false;
-            bizFrom.lfFields = null;
-            bizFrom.lfFieldsMulti = null;
-            if (isLFFlow && isLFFlow == true) {
+                bizFrom.formCode = flowCode || '';
+                bizFrom.operationType = 1;
                 bizFrom.isLowCodeFlow = true;
+                bizFrom.lfFields = null;
+                bizFrom.lfFieldsMulti = null;
                 const _formData = await formRef.value.getFromData();
                 if (useExternalForm.value) {
                     // 外部表单模式: _formData 是 { [formdataId]: fieldMap } 结构

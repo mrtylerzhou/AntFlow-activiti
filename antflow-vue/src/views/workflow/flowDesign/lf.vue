@@ -202,6 +202,11 @@ const publish = () => {
             Object.assign(basicData, { nodes: nodes });
             // 高级设置覆盖 deduplicationType 和 viewPageButtons
             Object.assign(basicData, res[3].formData);
+            // page-added DIY: 路由带 auxForm 时, 在 extraFlags 置 USE_AUXILIARY_FORM 位(0b10000000=128),
+            // 标记"LF 后端 + 自定义 Vue 渲染"。运行期前端按 bizFormMaps.has 渲染自定义组件,后端按 is_lowcode_flow=1 走 LowFlowApprovalService。
+            if (route.query.auxForm === '1') {
+                basicData.extraFlags = Number(basicData.extraFlags || 0) | 128;
+            }
             return basicData;
         })
         .then((data) => {

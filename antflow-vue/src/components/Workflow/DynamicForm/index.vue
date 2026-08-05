@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted, onMounted, computed, watch } from 'vue'
+import { ref, onUnmounted, onMounted, computed, watch, nextTick } from 'vue'
 import { isObjectChanged } from '@/utils/antflow/ObjectUtils'
 import { useStore } from '@/store/modules/workflow'
 let store = useStore()
@@ -30,18 +30,26 @@ const observer = new MutationObserver(() => {
     store.setLowCodeFormField(formField);
   }
 });
+/** 加载 lfFormData 到 v-form-designer。需 formDesign.value 已绑定(挂载后),否则跳过。 */
+const loadLfFormData = (val) => {
+  if (val && formDesign.value) {
+    formDesign.value.clearDesigner();
+    formDesign.value.designer.loadFormJson(JSON.parse(val));
+  }
+};
+
 onMounted(() => {
   const targetNode = document.querySelector('#designer-id');
   const config = { childList: true, subtree: true };
   observer.observe(targetNode, config);
+  // 挂载后加载初始 lfFormData(处理组件 remount 时 lfFormData 已存在、但 ref 在 setup 期未绑定的场景)
+  nextTick(() => loadLfFormData(props.lfFormData));
 });
 
+// 非 immediate: 避免组件(重新)挂载时 setup 期 ref 未绑定就触发,导致 formDesign.value 为 null 报错
 watch(lfFormDataConf, (val) => {
-  if (val) {
-    formDesign.value.clearDesigner();
-    formDesign.value.designer.loadFormJson(JSON.parse(val));
-  }
-}, { deep: true, immediate: true })
+  loadLfFormData(val);
+}, { deep: true })
 
 onUnmounted(() => {
   observer.disconnect();

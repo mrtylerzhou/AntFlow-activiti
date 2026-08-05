@@ -128,6 +128,24 @@ public class LowCodeFlowController {
         return Result.newSuccessResult(lowCodeFlowBizService.addFormCode(vo));
     }
 
+    /**
+     * 新增 page-added DIY FormCode(dict_type='diylowcodeflow': LF 后端 + 自定义 Vue 前端)
+     */
+    @PostMapping("/createDIYFormCode")
+    public Result createDIYFormCode(@RequestBody BaseKeyValueStruVo vo) {
+        return Result.newSuccessResult(lowCodeFlowBizService.addDIYFormCode(vo));
+    }
+
+    /**
+     * 获取 page-added DIY FormCode Page List 模板列表使用
+     */
+    @PostMapping("/getDIYFormCodePageList")
+    public ResultAndPage<BaseKeyValueStruVo> getDIYFormCodePageList(@RequestBody DetailRequestDto requestDto) {
+        PageDto pageDto = requestDto.getPageDto();
+        TaskMgmtVO taskMgmtVO = requestDto.getTaskMgmtVO();
+        return lowCodeFlowBizService.selectDIYFormCodePageList(pageDto, taskMgmtVO);
+    }
+
     // ===================== 独立表单管理 =====================
 
     /**

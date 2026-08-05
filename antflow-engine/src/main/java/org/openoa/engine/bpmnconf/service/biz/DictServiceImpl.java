@@ -28,9 +28,12 @@ import java.util.stream.Collectors;
  * 字典表为demo表,一般用户系统都有自己的字典表,可以替换为自己的字典表
  * 目前用途:
  * 1.配置低代码流程
+ * 2.配置 page-added DIY 流程(dict_type='diylowcodeflow': LF 后端 + 自定义 Vue 前端)
  */
 @Service
 public class DictServiceImpl implements LowCodeFlowBizService {
+    /** page-added DIY FormCode 的 dict_type */
+    public static final String DIY_LOW_CODE_DICT_TYPE = "diylowcodeflow";
     @Autowired
     private DicDataMapper dicDataMapper;
     @Autowired
@@ -67,7 +70,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     public ResultAndPage<BaseKeyValueStruVo> selectLFFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
         List<DictData> dictDataList = dicDataMapper.selectLFFormCodePageList(page,taskMgmtVO);
-        return handleLFFormCodePageList(page,dictDataList);
+        return handleFormCodePageList(page,dictDataList,"LF");
     }
     /**
      * 获取 已设计流程并且启用的 LF FormCode Page List 发起页面使用
@@ -79,7 +82,20 @@ public class DictServiceImpl implements LowCodeFlowBizService {
     public ResultAndPage<BaseKeyValueStruVo> selectLFActiveFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
         Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
         List<DictData> dictDataList = dicDataMapper.selectLFActiveFormCodePageList(page,taskMgmtVO);
-        return handleLFFormCodePageList(page,dictDataList);
+        return handleFormCodePageList(page,dictDataList,"LF");
+    }
+
+    /**
+     * 获取 page-added DIY FormCode Page List 模板列表使用
+     * @param pageDto
+     * @param taskMgmtVO
+     * @return
+     */
+    @Override
+    public ResultAndPage<BaseKeyValueStruVo> selectDIYFormCodePageList(PageDto pageDto, TaskMgmtVO taskMgmtVO) {
+        Page<BaseKeyValueStruVo> page = PageUtils.getPageByPageDto(pageDto);
+        List<DictData> dictDataList = dicDataMapper.selectDIYFormCodePageList(page,taskMgmtVO);
+        return handleFormCodePageList(page,dictDataList,"DIY");
     }
 
     /**
@@ -107,6 +123,57 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         }
         return  result;
     }
+
+    /**
+     * 新增 page-added DIY FormCode(dict_type='diylowcodeflow')
+     * 该类流程后端走 LowFlowApprovalService(is_lowcode_flow=1),前端渲染自定义 Vue 组件(bizFormMaps)。
+     * @param vo
+     * @return
+     */
+    @Override
+    public Integer addDIYFormCode(BaseKeyValueStruVo vo) {
+        Integer result = 0;
+        // formCode 全局唯一(路由键),按 value 校验,与 LF/coded DIY 不冲突
+        LambdaQueryWrapper<DictData> qryByValue = Wrappers.<DictData>lambdaQuery()
+                .eq(DictData::getValue, vo.getKey());
+        List<DictData> dictData = dicDataMapper.selectList(qryByValue);
+        if (dictData.isEmpty()) {
+            DictData entity = new DictData();
+            entity.setDictType(DIY_LOW_CODE_DICT_TYPE);
+            entity.setValue(vo.getKey());
+            entity.setLabel(vo.getValue());
+            entity.setRemark(vo.getRemark());
+            entity.setIsDefault("N");
+            entity.setIsDel(0);
+            entity.setCreateUser(SecurityUtils.getLogInEmpName());
+            entity.setCreateTime(new Date());
+            result = dicDataMapper.insert(entity);
+        }
+        return result;
+    }
+
+    /**
+     * page-added DIY(有效版本): 供"流程中心-可用流程(DIY)"合并展示。
+     * 返回 dict_type='diylowcodeflow' 且有有效 BpmnConf(effective_status=1) 的 FormCode。
+     */
+    @Override
+    public List<DIYProcessInfoDTO> getDIYActiveFormCodes() {
+        List<DictData> list = dicDataMapper.selectDIYActiveFormCodeList(new TaskMgmtVO());
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        List<DIYProcessInfoDTO> results = new ArrayList<>();
+        for (DictData item : list) {
+            results.add(DIYProcessInfoDTO.builder()
+                    .key(item.getValue())
+                    .value(item.getLabel())
+                    .type("DIY")
+                    .remark(item.getRemark())
+                    .createTime(item.getCreateTime())
+                    .build());
+        }
+        return results;
+    }
     /** 私有方法 */
     private List<DictData> getDictItemsByType(String dictType){
         LambdaQueryWrapper<DictData> qryByDictType = Wrappers.<DictData>lambdaQuery()
@@ -115,8 +182,8 @@ public class DictServiceImpl implements LowCodeFlowBizService {
         dictData.sort(Comparator.comparing(DictData::getCreateTime).reversed());
         return dictData;
     }
-    /** 私有方法 */
-    private ResultAndPage<BaseKeyValueStruVo> handleLFFormCodePageList(Page page, List<DictData> dictlist) {
+    /** 私有方法: type 传入 "LF" 或 "DIY" */
+    private ResultAndPage<BaseKeyValueStruVo> handleFormCodePageList(Page page, List<DictData> dictlist, String type) {
         if (dictlist ==null) {
             return PageUtils.getResultAndPage(page);
         }
@@ -128,7 +195,7 @@ public class DictServiceImpl implements LowCodeFlowBizService {
                             .key(item.getValue())
                             .value(item.getLabel())
                             .createTime(item.getCreateTime())
-                            .type("LF")
+                            .type(type)
                             .remark(item.getRemark())
                             .build()
             );
