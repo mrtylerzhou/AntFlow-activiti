@@ -1,7 +1,7 @@
 <template>
     <el-container class="layout-setup" style="height: calc(100vh - 84px);">
         <!-- 左侧列表区域 -->
-        <el-aside class="layout-aside" :style="{ width: batchMode ? '100%' : '300px' }">
+        <el-aside class="layout-aside" :style="{ width: batchMode ? '100%' : '315px' }">
             <el-container>
                 <el-header>
                     <div class="toolbar">
@@ -21,6 +21,7 @@
                             <el-button :type="batchMode ? 'warning' : 'info'" :icon="batchMode ? 'Close' : 'Grid'" circle
                                 @click="toggleBatchMode" style="margin-left: 10px;" />
                         </el-tooltip>
+                        
                         <el-button v-if="batchMode && selectedRows.length > 0" type="success" icon="Check"
                             @click="openBatchAgreeDialog" style="margin-left: 8px; padding: 8px 15px;">
                             批量同意 ({{ selectedRows.length }})
