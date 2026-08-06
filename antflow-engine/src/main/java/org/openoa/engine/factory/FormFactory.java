@@ -90,7 +90,7 @@ public class FormFactory implements ApplicationContextAware {
      * 覆盖调用点: 发起/重提/审批(DoButtonOperationAspect)、查看(getBusinessInfo)、草稿加载、conf 编辑。
      */
     @SuppressWarnings("unchecked")
-    private String foldFlatFieldsIntoLfFields(String params) {
+    private JSONObject foldFlatFieldsIntoLfFields(String params) {
         JSONObject jsonObj = JSON.parseObject(params);
         Map<String, Object> extra = new LinkedHashMap<>();
         for (String key : jsonObj.keySet()) {
@@ -99,7 +99,7 @@ public class FormFactory implements ApplicationContextAware {
             }
         }
         if (extra.isEmpty()) {
-            return params; // 纯 LF: 无扁平业务字段,原样返回
+            return null; // 纯 LF: 无扁平业务字段,返回 null 表示无需折叠
         }
         Map<String, Object> merged = new LinkedHashMap<>();
         Object existing = jsonObj.get("lfFields");
@@ -110,7 +110,7 @@ public class FormFactory implements ApplicationContextAware {
         }
         merged.putAll(extra); // 扁平覆盖嵌套
         jsonObj.put("lfFields", merged);
-        return jsonObj.toJSONString();
+        return jsonObj; // 返回 JSONObject,不再序列化回 String,由调用方 toJavaObject 直转目标类型
     }
 
     public FormOperationAdaptor getFormAdaptor(String formCode){
@@ -148,17 +148,25 @@ public class FormFactory implements ApplicationContextAware {
             }
 
         }
+        JSONObject foldedObj = null;
         if(vo.getIsLowCodeFlow()!=null&&vo.getIsLowCodeFlow()==1){
             formCode=StringConstants.LOWFLOW_FORM_CODE;
             // page-added DIY: 自定义表单发扁平顶层字段,这里折进 lfFields 供 LowFlowApprovalService 存储。
-            // 纯 LF 无扁平字段时 no-op。仅 String 重载需要(4 个调用点都走此重载)。
-            params = foldFlatFieldsIntoLfFields(params);
+            // 方案C: 纯 LF 前端必有嵌套 lfFields → 跳过 JSONObject 解析(零额外成本);
+            //        page-added DIY 前端发扁平顶层(无 lfFields) → 才折叠(方案A: 返回 JSONObject,由 toJavaObject 直转目标,不再序列化回 String)。
+            if (vo.getLfFields() == null) {
+                foldedObj = foldFlatFieldsIntoLfFields(params);
+            }
         }
         Object bean = applicationContext.getBean(formCode);
         if (ObjectUtils.isEmpty(bean)) {
             throw new AFBizException("can not get the processing bean by form code:{}!"+formCode);
         }
-        return JSON.parseObject(params, (Type) getFormTClass(formCode));
+        Class<?> targetClass = getFormTClass(formCode);
+        if (foldedObj != null) {
+            return (BusinessDataVo) foldedObj.toJavaObject(targetClass);
+        }
+        return JSON.parseObject(params, (Type) targetClass);
     }
     public BusinessDataVo dataFormConversion(BusinessDataVo vo) {
         String formCode=vo.getFormCode();
