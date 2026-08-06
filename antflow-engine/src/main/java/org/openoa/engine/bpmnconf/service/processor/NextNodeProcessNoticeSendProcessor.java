@@ -1,9 +1,11 @@
 package org.openoa.engine.bpmnconf.service.processor;
 
 import org.activiti.engine.delegate.DelegateTask;
+import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.EventTypeEnum;
 import org.openoa.base.constant.enums.ProcessNoticeEnum;
 import org.openoa.base.dto.BpmNextTaskDto;
+import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
 import org.openoa.base.vo.BpmVariableMessageVo;
 import org.openoa.engine.bpmnconf.common.ProcessBusinessContans;
@@ -23,6 +25,11 @@ public class NextNodeProcessNoticeSendProcessor implements AntFlowNextNodeBefore
 
     @Override
     public void postProcess(BpmNextTaskDto bpmNextTaskDto) {
+
+        //迁移期间自动complete中间节点时,任务创建后马上又会被complete掉,发通知无意义且同步消息发送是性能瓶颈,直接跳过
+        if (Boolean.TRUE.equals(ThreadLocalContainer.get(StringConstants.MIGRATION_AUTO_COMPLETING))) {
+            return;
+        }
 
         DelegateTask delegateTask = bpmNextTaskDto.getDelegateTask();
         String formCode = bpmNextTaskDto.getFormCode();

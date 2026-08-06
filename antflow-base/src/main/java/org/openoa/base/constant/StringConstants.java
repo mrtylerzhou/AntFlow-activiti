@@ -87,6 +87,8 @@ public class StringConstants {
     public static final String AF_SYSLABEL_FORWARD="af_syslabel_forward";
     public static final String AF_RUNTIME_BUISINESS_INFO ="af_runtime_business_info";
     public static final String AF_RUNTIME_BPMN_CONF ="af_runtime_bpmn_conf";
+    /**迁移期间自动complete中间节点标志:NextNodeProcessNoticeSendProcessor据此跳过消息发送,避免给马上被complete掉的中间节点发无意义通知*/
+    public static final String MIGRATION_AUTO_COMPLETING ="af_migration_auto_completing";
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
     public static final String AF_AUTO_EVALUATE_SKIP_COMMENT ="自动节点自动跳过,条件评估结果:%s";
     public static final String AF_CONDITION_APPROVE_AUTO_PASS_COMMENT ="条件审批自动通过,条件评估结果:%s";

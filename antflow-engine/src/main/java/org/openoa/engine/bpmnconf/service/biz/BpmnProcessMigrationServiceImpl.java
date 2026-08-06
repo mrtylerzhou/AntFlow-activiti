@@ -8,6 +8,7 @@ import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.entity.BpmBusinessProcess;
+import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.interf.BpmBusinessProcessService;
@@ -63,11 +64,24 @@ public class BpmnProcessMigrationServiceImpl {
         submitVo.setStartUserId(bpmBusinessProcess.getCreateUser());
         submitVo.setBpmnCode(bpmBusinessProcess.getVersion());
         submitVo.setOperationType(PROCESS_SUBMIT.getCode());
+        //迁移递归提交必须走普通提交路径(SubmitProcessImpl,它处理isMigration:跳过建流程/复用processNumber)。
+        //若继承isOutSideAccessProc=true,FormOperationTagParser会按outSideType走外部分支:
+        // outSideType=0时用"outSide"marker(无adaptor注册→getProcessOperation返回null→NPE);
+        // outSideType=1时匹配OutSideAccessSubmitProcessImpl(不处理isMigration→抛"流程已发起")。
+        //BpmnSendMessageAspect在doProcessButton时会按bpmnConf.isOutSideProcess重新置true,下游不受影响。
+        submitVo.setIsOutSideAccessProc(false);
+        //设标志:迁移期间自动complete的中间节点任务创建后马上又会被complete掉,
+        //NextNodeProcessNoticeSendProcessor据此跳过同步消息发送(查DB+发通知),这是迁移慢的主要瓶颈.
+        //遇到当前审批节点(currentTaskDefKey)时清除,让其complete后创建的最终停留节点任务正常发通知.
+        ThreadLocalContainer.set(StringConstants.MIGRATION_AUTO_COMPLETING, Boolean.TRUE);
+        try {
         processApprovalService.buttonsOperation(JSON.toJSONString(submitVo),submitVo.getFormCode());
         bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(vo.getProcessNumber());
 
         if (stopAtParallelFork) {
-            //动态条件并行:自动完成到网关分叉点,让并行分支自然生成
+            //动态条件并行:自动完成到网关分叉点,让并行分支自然生成.
+            //此场景分叉后的并行任务需要发通知,清除标志.
+            ThreadLocalContainer.remove(StringConstants.MIGRATION_AUTO_COMPLETING);
             autoCompleteToParallelFork(bpmBusinessProcess, vo, tripleConsumer);
             return;
         }
@@ -83,6 +97,11 @@ public class BpmnProcessMigrationServiceImpl {
                 break;
             }
             String id = activity.getId();
+
+            //遇到当前审批节点时清除标志,允许其complete后创建的下一节点(最终停留节点)正常发通知
+            if (currentTaskDefKey.equals(id)) {
+                ThreadLocalContainer.remove(StringConstants.MIGRATION_AUTO_COMPLETING);
+            }
 
             // 查找当前流程实例的任务
             List<Task> tsks = taskService.createTaskQuery()
@@ -139,6 +158,9 @@ public class BpmnProcessMigrationServiceImpl {
             if (currentTaskDefKey.equals(id)) {
                 currentExecuted = true;
             }
+        }
+        } finally {
+            ThreadLocalContainer.remove(StringConstants.MIGRATION_AUTO_COMPLETING);
         }
     }
 
