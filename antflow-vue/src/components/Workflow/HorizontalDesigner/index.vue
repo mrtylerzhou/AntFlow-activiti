@@ -106,12 +106,53 @@
                     <path d="M -3 -4 L 3 0 L -3 4" fill="#fff" />
                   </g>
                 </template>
-                <!-- 展开态: 菱形 + 分支泳道 -->
+                <!-- 展开态: 网关图标(菱形外框+内部符号, 按类型三套图标) -->
                 <template v-else>
-                  <polygon :points="gwPoints(gw)" :fill="gw.meta.fill" :stroke="gw.meta.stroke" stroke-width="1.5" />
-                  <path v-if="gw.meta.symbol === 'cross'" :d="crossPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
-                  <path v-else-if="gw.meta.symbol === 'plus'" :d="plusPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
-                  <circle v-else :cx="gw.x" :cy="gw.y" r="9" fill="none" :stroke="gw.meta.stroke" stroke-width="1.4" />
+                  <g :transform="`translate(${gw.x}, ${gw.y}) scale(${gw.w / 48}) translate(-24, -24)`"
+                    class="hd-gw-icon" :class="selected && selected.key === gw.key ? 'hd-gw-icon-sel' : ''">
+                    <!-- 并行网关(并行审批): 浅紫底+紫色分流箭头 -->
+                    <template v-if="gw.meta.kind === 'parallel'">
+                      <rect x="11.5" y="11.5" width="25" height="25" rx="5" transform="rotate(45 24 24)"
+                        fill="#F3E8FF" stroke="#8B5CF6" stroke-width="2.5" stroke-linejoin="round" class="hd-gw-icon-frame" />
+                      <path d="M24 32V25" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M24 25L17 18" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M24 25L31 18" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M17 22V18H21" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M31 22V18H27" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </template>
+                    <!-- 包容网关(条件并行): 浅绿底+多路分支 -->
+                    <template v-else-if="gw.meta.kind === 'inclusive'">
+                      <rect x="11.5" y="11.5" width="25" height="25" rx="5" transform="rotate(45 24 24)"
+                        fill="#ECFDF5" stroke="#10B981" stroke-width="2.5" stroke-linejoin="round" class="hd-gw-icon-frame" />
+                      <path d="M16 24C20 24 21 18 28 18" stroke="#059669" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M16 24H28" stroke="#059669" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M16 24C20 24 21 30 28 30" stroke="#059669" stroke-width="2.5" stroke-linecap="round" />
+                      <circle cx="16" cy="24" r="2" fill="#059669" />
+                      <circle cx="28" cy="18" r="2" fill="#059669" />
+                      <circle cx="28" cy="24" r="2" fill="#059669" />
+                      <circle cx="28" cy="30" r="2" fill="#059669" />
+                    </template>
+                    <!-- 排它网关-动态条件(紫色系, 与条件分支颜色区分) -->
+                    <template v-else-if="gw.meta.kind === 'exclusive-dynamic'">
+                      <rect x="11.5" y="11.5" width="25" height="25" rx="5" transform="rotate(45 24 24)"
+                        fill="#EEEDFE" stroke="#534AB7" stroke-width="2.5" stroke-linejoin="round" class="hd-gw-icon-frame" />
+                      <path d="M18 31V25C18 22.2386 20.2386 20 23 20" stroke="#534AB7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M18 25V17" stroke="#534AB7" stroke-width="2.5" stroke-linecap="round" />
+                      <circle cx="18" cy="31" r="2" fill="#534AB7" />
+                      <circle cx="18" cy="17" r="2" fill="#534AB7" />
+                    </template>
+                    <!-- 排它网关(条件分支): 浅紫底+上下发散弧线箭头(用户指定新版) -->
+                    <template v-else>
+                      <rect x="11.5" y="11.5" width="25" height="25" rx="5" transform="rotate(45 24 24)"
+                        fill="#F3E8FF" stroke="#8B5CF6" stroke-width="2.5" stroke-linejoin="round" class="hd-gw-icon-frame" />
+                      <!-- 上发散弧线箭头 -->
+                      <path d="M16 24C21 24 22 18 29 18" stroke="#6D28D9" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M26 15L29 18L26 21" stroke="#6D28D9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <!-- 下发散弧线箭头 -->
+                      <path d="M16 24C21 24 22 30 29 30" stroke="#6D28D9" stroke-width="2.5" stroke-linecap="round" />
+                      <path d="M26 27L29 30L26 33" stroke="#6D28D9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </template>
+                  </g>
                   <text :x="gw.x" :y="gw.y + gw.h / 2 + 14" text-anchor="middle" class="hd-gw-title">{{ gw.meta.title }}</text>
                   <!-- 折叠按钮(选中网关时才显示, 与加号一致) -->
                   <g v-if="selected && selected.key === gw.key" class="hd-fold-btn"
@@ -1051,18 +1092,6 @@ onBeforeUnmount(() => { resizeObserver?.disconnect(); if (dragCleanup) window.re
 
 // ---------- SVG 辅助 ----------
 const hoverKey = ref(null)
-function gwPoints(gw) {
-  const r = gw.w / 2
-  return `${gw.x + r},${gw.y} ${gw.x},${gw.y + r} ${gw.x - r},${gw.y} ${gw.x},${gw.y - r}`
-}
-function crossPath(gw) {
-  const r = gw.w / 2 - 6
-  return `M ${gw.x - r} ${gw.y - r} L ${gw.x + r} ${gw.y + r} M ${gw.x + r} ${gw.y - r} L ${gw.x - r} ${gw.y + r}`
-}
-function plusPath(gw) {
-  const r = gw.w / 2 - 6
-  return `M ${gw.x - r} ${gw.y} H ${gw.x + r} M ${gw.x} ${gw.y - r} V ${gw.y + r}`
-}
 function titlePath(n) {
   return `M ${n.x + 8} ${n.y} H ${n.x + n.w - 8} V ${n.y + 30} H ${n.x + 8} Z`
 }
@@ -1277,6 +1306,9 @@ function titleColor(n) {
 .hd-selected .hd-node-body,
 .hd-selected polygon { stroke: #3296fa; stroke-width: 2.5; }
 .hd-gateway { cursor: pointer; }
+/* 网关图标: 选中时外框描边高亮 */
+.hd-gw-icon-sel .hd-gw-icon-frame { stroke: #3296fa !important; stroke-width: 3; }
+.hd-gw-icon-sel { filter: drop-shadow(0 0 4px rgba(50, 150, 250, 0.5)); }
 .hd-gw-add { cursor: pointer; }
 .hd-gw-add:hover circle { fill: #1e83e9; }
 .hd-folded-body { fill: #fff; stroke-width: 1.5; }
