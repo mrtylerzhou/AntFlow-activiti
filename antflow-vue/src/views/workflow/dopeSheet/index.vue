@@ -1,5 +1,7 @@
 <template>
   <div class="dope-sheet-container">
+    <!-- 节点必填校验错误弹窗 -->
+    <errorDialog v-model:visible="tipVisible" :list="tipList" />
     <!-- 顶部工具栏 -->
     <div class="ds-toolbar">
       <div class="ds-toolbar-left">
@@ -16,6 +18,7 @@
         <el-tag v-if="currentVersionEffective" type="success" size="small" style="margin-right: 12px;">生效中</el-tag>
         <el-tag v-else type="info" size="small" style="margin-right: 12px;">未生效</el-tag>
         <el-button type="primary" @click="handlePublish" :loading="publishing">发布</el-button>
+        <el-button type="primary" plain @click="handleZenMode">Zen模式</el-button>
         <el-button @click="handlePreview">查看完整信息</el-button>
         <el-button @click="handleFullEdit">完整编辑</el-button>
       </div>
@@ -46,6 +49,8 @@ import { getBpmnConflistPage, getApiWorkFlowData, setApiWorkFlowData } from '@/a
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data';
 import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
 import { useDopeSheetStore } from '@/store/modules/dopeSheet';
+import { validateBeforeReturn } from '@/utils/antflow/zenValidate';
+import errorDialog from '@/components/Workflow/dialog/errorDialog.vue';
 import ProcessLevelConfig from './components/ProcessLevelConfig.vue';
 import NodeTable from './components/NodeTable.vue';
 
@@ -59,6 +64,9 @@ const publishing = ref(false);
 const versionList = ref([]);
 const selectedVersionId = ref(null);
 const processConfig = ref(null);
+// 节点必填校验错误弹窗
+const tipVisible = ref(false);
+const tipList = ref([]);
 
 const isEmpty = computed(() => versionList.value.length === 0);
 
@@ -171,10 +179,22 @@ const onDirty = () => {
 /** 发布 */
 const handlePublish = async () => {
   if (!processConfig.value) return;
-  // 校验按钮权限
-  const emptyBtnNodes = validateButtonPerms(processConfig.value.nodeConfig);
-  if (emptyBtnNodes.length > 0) {
-    proxy.$modal.msgError("以下节点未配置任何审批按钮：" + emptyBtnNodes.join("、"));
+  // 完整校验（节点必填 + 结构 + 按钮权限）
+  const result = validateBeforeReturn(processConfig.value.nodeConfig);
+  if (!result.isSuccess) {
+    if (result.tipList && result.tipList.length > 0) {
+      tipList.value = result.tipList;
+      tipVisible.value = true;
+      return;
+    }
+    if (result.emptyBtnNodes && result.emptyBtnNodes.length > 0) {
+      proxy.$modal.msgError("以下节点未配置任何审批按钮：" + result.emptyBtnNodes.join("、"));
+      return;
+    }
+    if (result.msg) {
+      proxy.$modal.msgError(result.msg);
+      return;
+    }
     return;
   }
   publishing.value = true;
@@ -229,36 +249,16 @@ const buildPublishData = () => {
   return data;
 };
 
-/** 校验按钮权限：审批节点(nodeType=4/7/10/12)必须有按钮 */
-const validateButtonPerms = (nodeConfig) => {
-  const emptyNodes = [];
-  const traverse = (node) => {
-    if (!node) return;
-    // 审批人节点、办理节点、条件审批节点需要按钮
-    if ([4, 10, 12].includes(node.nodeType)) {
-      const btns = node.buttons?.approvalPage || [];
-      if (btns.length === 0) {
-        emptyNodes.push(node.nodeName || '未命名节点');
-      }
-    }
-    // 并行审批的子节点
-    if (node.nodeType === 7 && node.parallelNodes) {
-      node.parallelNodes.forEach(pn => {
-        const btns = pn.buttons?.approvalPage || [];
-        if (btns.length === 0) {
-          emptyNodes.push(pn.nodeName || '未命名节点');
-        }
-      });
-    }
-    if (node.childNode) traverse(node.childNode);
-    if (node.conditionNodes) {
-      node.conditionNodes.forEach(cn => {
-        if (cn.childNode) traverse(cn.childNode);
-      });
-    }
-  };
-  traverse(nodeConfig);
-  return emptyNodes;
+/** Zen模式：深拷贝配置进入全屏工作区 */
+const handleZenMode = () => {
+  if (!processConfig.value) {
+    proxy.$modal.msgWarning("暂无版本数据，请先进行流程设计");
+    return;
+  }
+  dopeStore.setProcessConfig(processConfig.value);
+  dopeStore.enterZen();
+  const obj = { path: "/workflow/zen" };
+  proxy.$tab.openPage(obj);
 };
 
 /** 查看完整信息（预览） */

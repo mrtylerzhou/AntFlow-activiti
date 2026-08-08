@@ -5,7 +5,7 @@
  * @FilePath: /src/components/Workflow/Preview/lineWarp.vue
 -->
 <template>
-    <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && nodeConfig.parallelChildNode == 0">
+    <div class="node-wrap" v-if="nodeConfig.nodeType != 7 && (nodeConfig.parallelChildNode ?? 0) == 0">
         <div class="node-wrap-box" :class="(nodeConfig.nodeType == 1 ? 'start-node ' : '')"
             :data-node-key="nodeConfig.nodeId" @click="clickNodeBtn(nodeConfig)">
             <div class="title"
@@ -15,6 +15,38 @@
             <div class="content">
                 <div v-html="nodeConfig.nodeDisplayName" class="text"></div>
             </div>
+        </div>
+        <div class="pixel-line"></div>
+    </div>
+    <!--条件分支（设计态树专用，预览树无 conditionNodes 字段，不受影响）-->
+    <div class="branch-wrap" v-if="nodeConfig.nodeType == 2 && nodeConfig.conditionNodes && nodeConfig.conditionNodes.length">
+        <div class="branch-box-wrap">
+            <div class="branch-box">
+                <div class="col-box" v-for="(item, index) in nodeConfig.conditionNodes" :key="index">
+                    <div class="condition-node">
+                        <div class="condition-node-box">
+                            <div class="auto-judge" @click="clickNodeBtn(item)">
+                                <div class="title-wrapper">
+                                    <svg-icon icon-class="condition" class="iconfont" />
+                                    <span class="editable-title">{{ item.nodeName }}</span>
+                                    <span class="priority-title">优先级{{ item.priorityLevel }}</span>
+                                </div>
+                                <div class="content">{{ item.nodeDisplayName || '未配置条件' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <LineWarp v-if="item.childNode" :nodeConfig="item.childNode" />
+                    <template v-if="index == 0">
+                        <div class="top-left-cover-line"></div>
+                        <div class="bottom-left-cover-line"></div>
+                    </template>
+                    <template v-if="index == nodeConfig.conditionNodes.length - 1">
+                        <div class="top-right-cover-line"></div>
+                        <div class="bottom-right-cover-line"></div>
+                    </template>
+                </div>
+            </div>
+            <div class="pixel-line"></div>
         </div>
         <div class="pixel-line"></div>
     </div>

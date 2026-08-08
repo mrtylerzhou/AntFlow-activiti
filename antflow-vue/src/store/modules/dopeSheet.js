@@ -22,6 +22,8 @@ export const useDopeSheetStore = defineStore('dopeSheet', {
     processConfig: null,
     // 标记是否有未保存修改
     dirty: false,
+    // Zen 模式工作副本（进入时深拷贝 processConfig，返回时覆盖回 processConfig）
+    zenConfig: null,
   }),
   actions: {
     /**
@@ -74,6 +76,28 @@ export const useDopeSheetStore = defineStore('dopeSheet', {
       this.fullEditMode = false;
     },
     /**
+     * 进入 Zen 模式：深拷贝当前 processConfig 作为工作副本
+     */
+    enterZen() {
+      this.zenConfig = JSON.parse(JSON.stringify(this.processConfig));
+    },
+    /**
+     * 退出 Zen 模式（返回 Dope Sheet）
+     */
+    exitZen() {
+      this.zenConfig = null;
+    },
+    /**
+     * Zen 模式返回：校验通过后，用 Zen 工作副本覆盖 processConfig 并标记 dirty
+     */
+    commitZen() {
+      if (this.zenConfig) {
+        this.processConfig = this.zenConfig;
+        this.dirty = true;
+      }
+      this.zenConfig = null;
+    },
+    /**
      * 重置整个 store
      */
     reset() {
@@ -85,6 +109,7 @@ export const useDopeSheetStore = defineStore('dopeSheet', {
       this.currentVersionId = null;
       this.processConfig = null;
       this.dirty = false;
+      this.zenConfig = null;
     },
   },
 });

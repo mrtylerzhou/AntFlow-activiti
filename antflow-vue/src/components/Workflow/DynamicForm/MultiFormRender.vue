@@ -13,6 +13,9 @@
           :isPreview="isPreview"
           :showSubmit="false"
           :ignoreReadonly="ignoreReadonly"
+          :showFieldPermLabel="showFieldPermLabel"
+          :fieldPermEditable="fieldPermEditable"
+          @updateFieldPerm="handleFieldPermChange"
         />
       </el-tab-pane>
     </el-tabs>
@@ -26,6 +29,9 @@
         :isPreview="isPreview"
         :showSubmit="false"
         :ignoreReadonly="ignoreReadonly"
+        :showFieldPermLabel="showFieldPermLabel"
+        :fieldPermEditable="fieldPermEditable"
+        @updateFieldPerm="handleFieldPermChange"
       />
     </template>
     <div class="multi-form-footer" v-if="!isPreview && showSubmit">
@@ -72,10 +78,18 @@ const props = defineProps({
   ignoreReadonly: {//管理员预览：忽略只读权限控制（隐藏仍生效），让只读字段可编辑
     type: Boolean,
     default: false
+  },
+  showFieldPermLabel: {//Zen预览：在字段label后追加三态标识
+    type: Boolean,
+    default: false
+  },
+  fieldPermEditable: {//Zen预览：字段label后追加可点击R/W/H徽标
+    type: Boolean,
+    default: false
   }
 });
 
-const emit = defineEmits(['handleBizBtn']);
+const emit = defineEmits(['handleBizBtn', 'updateFieldPerm']);
 
 const activeTab = ref('');
 const formRefs = {};
@@ -109,6 +123,11 @@ const ensureActiveTab = () => {
   if (visibleForms.value.length > 0 && !activeTab.value) {
     activeTab.value = String(visibleForms.value[0].id);
   }
+};
+
+/** 字段权限徽标点击：转发给父级（携带 formdataId 便于写回对应表单版本） */
+const handleFieldPermChange = (payload) => {
+  emit('updateFieldPerm', payload);
 };
 
 const handleValidate = () => {

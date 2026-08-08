@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <el-col :span="hasChooseApprove == 'true' ? 16 : 24">
         <div class="form-container" :style="hasChooseApprove == 'true' ? {} : { maxWidth: '80vw', margin: '0 auto' }">
-          <div class="el-main">
+          <div class="el-main" ref="formMainRef">
             <v-form-render ref="vFormRef" :form-json="formJson" :form-data="formData" :option-data="optionData">
             </v-form-render>
           </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
+import { ref, reactive, getCurrentInstance, onBeforeMount, onMounted, nextTick } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
 import { processOperation, loadDraft } from '@/api/workflow/index';
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
@@ -59,20 +59,32 @@ let props = defineProps({
   ignoreReadonly: {//管理员预览：忽略只读权限控制（隐藏仍生效），让只读字段可编辑
     type: Boolean,
     default: false,
+  },
+  showFieldPermLabel: {//Zen预览：在字段label后追加可编辑/只读/隐藏三态标识（不改变字段行为）
+    type: Boolean,
+    default: false,
+  },
+  fieldPermEditable: {//Zen预览：字段label后追加可点击的R/W/H三态徽标，点击循环切换并emit(updateFieldPerm)
+    type: Boolean,
+    default: false,
   }
 });
+const emit = defineEmits(['updateFieldPerm']);
 /* 注意：formJson是指表单设计器导出的json，此处演示的formJson只是一个空白表单json！！ */
 const formJson = reactive(JSON.parse(props.lfFormData || "{}"));//表单字段渲染
 const formData = reactive(JSON.parse(props.lfFieldsData || "{}"));//表单字段输入值渲染 
 const lfFieldPermData = reactive(JSON.parse(props.lfFieldPerm || "{}"));//表单字段权限控制 
 const optionData = reactive({});
 const vFormRef = ref(null);
+const formMainRef = ref(null);
 /**表单渲染预处理 */
 const advanceHandleFormData = () => {
-  if (!isEmpty(props.lfFieldsData) || props.showSubmit) {
+  if (!isEmpty(props.lfFieldsData) || props.showSubmit || props.showFieldPermLabel) {
     traverseFieldWidgetsList(formJson.widgetList, handlerFn);
   }
 }
+/**字段权限三态标识文本映射（区域有限，用缩写） */
+const permLabelMap = { 'R': 'R', 'H': 'H', 'E': 'W' };
 /**表单字段权限控制 */
 const handlerFn = (w) => {
   w.options.hidden = false;//字段都隐藏，隐藏后表单字段不会自动补位
@@ -81,6 +93,19 @@ const handlerFn = (w) => {
     if (!w.options.multiple) {
       formData[w.options.name] = Number(formData[w.options.name]);
     }
+  }
+  // Zen预览：表单整体只读 + 字段label后追加三态标识（R只读/W可编辑/H隐藏）
+  if (props.showFieldPermLabel) {
+    w.options.disabled = true;
+    w.options.readonly = true;
+    // fieldPermEditable 模式下由 DOM 注入可点击徽标，label 不追加文本
+    if (!props.fieldPermEditable) {
+      const info = lfFieldPermData.find(ele => ele.fieldId == w.options.name);
+      const perm = info ? info.perm : 'E';
+      const labelText = permLabelMap[perm] || 'W';
+      w.options.label = `${w.options.label || w.options.name}（${labelText}）`;
+    }
+    return;
   }
   if (props.showSubmit) {
     // 发起模式：优先检查发起人节点的字段权限配置
@@ -198,8 +223,129 @@ onMounted(() => {
     vFormRef.value.setFormJson(formJson)
   }).then(() => {
     vFormRef.value.setFormData(formData)
+    if (props.fieldPermEditable) {
+      injectPermBadges();
+    }
   })
 })
+
+/** 权限徽标颜色映射 */
+const permColorMap = { 'R': '#f56c6c', 'W': '#67c23a', 'H': '#909399' };
+const permTextMap = { 'R': 'R', 'W': 'W', 'H': 'H' };
+
+/**
+ * 在字段 label 后追加可点击的 R/W/H 三态徽标（Zen 右侧编辑字段权限）
+ * vform 渲染的 el-form-item 有 prop 属性（字段名）或 label 文本，轮询等待渲染完成后注入
+ */
+const injectPermBadges = (retry = 0) => {
+  const rootEl = formMainRef.value;
+  if (!rootEl || !rootEl.querySelectorAll) return;
+  const formItems = rootEl.querySelectorAll('.el-form-item');
+  // 调试日志
+  if (retry === 0) {
+    console.log('[injectPermBadges] formItems.length=', formItems.length, 'fieldPermEditable=', props.fieldPermEditable, 'showFieldPermLabel=', props.showFieldPermLabel);
+  }
+  // 尚未渲染出表单字段则重试
+  if (formItems.length === 0) {
+    if (retry < 10) {
+      setTimeout(() => injectPermBadges(retry + 1), 200);
+    }
+    return;
+  }
+  const fieldNameToEl = {};
+  const labelToField = {};
+  // 先收集字段名 -> label 文本映射（遍历 widget 树）
+  traverseFieldWidgetsList(formJson.widgetList, (w) => {
+    if (!w.formItemFlag) return;
+    const fieldId = w.options?.name;
+    if (!fieldId) return;
+    labelToField[w.options?.label || fieldId] = fieldId;
+  });
+  formItems.forEach(itemEl => {
+    // 优先 el-form-item 的 prop 属性（含字段名）
+    let fieldId = itemEl.getAttribute('prop') || itemEl.getAttribute('data-field') || itemEl.getAttribute('data-name');
+    if (fieldId && fieldId.includes('.')) {
+      fieldId = fieldId.split('.').pop();
+    }
+    // 无 prop 时用 label 文本反查字段名
+    if (!fieldId) {
+      const labelEl = itemEl.querySelector('.el-form-item__label');
+      const labelText = labelEl?.textContent?.trim?.() || '';
+      fieldId = labelToField[labelText];
+    }
+    if (fieldId) {
+      fieldNameToEl[fieldId] = itemEl;
+    }
+  });
+  // 遍历表单字段，找到对应 el-form-item 注入徽标
+  let injected = 0;
+  traverseFieldWidgetsList(formJson.widgetList, (w) => {
+    if (!w.formItemFlag) return;
+    const fieldId = w.options?.name;
+    if (!fieldId) return;
+    let itemEl = fieldNameToEl[fieldId];
+    // 兜底：按顺序匹配未占用的 el-form-item（DOM 渲染顺序与 widgetList 一致）
+    if (!itemEl) {
+      for (const el of formItems) {
+        if (el._zenBadged) continue;
+        const labelEl = el.querySelector('.el-form-item__label');
+        const labelText = labelEl?.textContent?.trim?.() || '';
+        if (labelText === (w.options?.label || '')) {
+          itemEl = el;
+          break;
+        }
+      }
+    }
+    if (!itemEl) return;
+    itemEl._zenBadged = true;
+    const labelEl = itemEl.querySelector('.el-form-item__label');
+    if (!labelEl) return;
+    // 已注入则跳过
+    if (labelEl.querySelector('.zen-perm-badge')) return;
+    injected++;
+    const info = lfFieldPermData.find(ele => ele.fieldId == fieldId);
+    const perm = info ? info.perm : 'E';
+    const badge = document.createElement('span');
+    badge.className = 'zen-perm-badge';
+    badge.style.color = permColorMap[perm] || permColorMap.W;
+    badge.style.cursor = 'pointer';
+    badge.style.fontSize = '12px';
+    badge.style.fontWeight = '600';
+    badge.style.marginLeft = '6px';
+    badge.style.border = '1px solid currentColor';
+    badge.style.borderRadius = '3px';
+    badge.style.padding = '0 3px';
+    badge.style.lineHeight = '16px';
+    badge.textContent = permTextMap[perm] || 'W';
+    badge.title = perm === 'R' ? '只读' : perm === 'H' ? '隐藏' : '可编辑';
+    badge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cyclePerm(fieldId, badge);
+    });
+    labelEl.appendChild(badge);
+  });
+  if (retry === 0) {
+    console.log('[injectPermBadges] injected=', injected, 'formItems=', formItems.length);
+  }
+}
+
+/** 循环切换字段权限 E(可编辑)->R(只读)->H(隐藏)->E */
+const cyclePerm = (fieldId, badgeEl) => {
+  const order = ['E', 'R', 'H'];
+  const info = lfFieldPermData.find(ele => ele.fieldId == fieldId);
+  const current = info ? info.perm : 'E';
+  const nextIdx = (order.indexOf(current) + 1) % order.length;
+  const nextPerm = order[nextIdx];
+  if (info) {
+    info.perm = nextPerm;
+  } else {
+    lfFieldPermData.push({ fieldId, perm: nextPerm });
+  }
+  badgeEl.style.color = permColorMap[nextPerm] || permColorMap.W;
+  badgeEl.textContent = permTextMap[nextPerm] || 'W';
+  badgeEl.title = nextPerm === 'R' ? '只读' : nextPerm === 'H' ? '隐藏' : '可编辑';
+  emit('updateFieldPerm', { fieldId, perm: nextPerm });
+}
 onBeforeUnmount(() => {
   // 清除数据
   Object.keys(formJson).forEach(key => delete formJson[key]);

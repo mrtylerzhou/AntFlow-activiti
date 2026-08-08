@@ -225,6 +225,23 @@ export const dynamicRoutes = [
     ],
   },
   {
+    path: "/workflow/zen",
+    component: Layout,
+    hidden: true,
+    permissions: ["system"],
+    children: [
+      {
+        path: "/workflow/zen",
+        component: () => import("@/views/workflow/zen/index"),
+        name: "zen",
+        meta: {
+          title: "Zen模式",
+          activeMenu: "/workflow/flowList",
+        },
+      },
+    ],
+  },
+  {
     path: "/workflow/flowEfficiency",
     component: Layout,
     hidden: true,
