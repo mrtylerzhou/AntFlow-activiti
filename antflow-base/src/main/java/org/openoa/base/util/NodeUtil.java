@@ -191,6 +191,30 @@ public class NodeUtil {
         if(Boolean.TRUE.equals(bpmnNodeVo.getIsFinishApproveNode())){
             bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.finishApproveNode);
         }
+        //同意推进节点:根据前端传入的 isApproveForwardNode 标识自动贴标签
+        //同意推进本质是审批人节点+同意按钮(固定节点行为), complete 后推进到 forwardNodeIds 指定节点
+        //与推进按钮(42)互斥: isApproveForwardNode=true 时 buttons.approvalPage 不能含 42
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsApproveForwardNode())){
+            //字段校验: forwardType 必须为 2(固定节点), forwardNodeIds 必须恰好 1 个
+            Integer aft = bpmnNodeVo.getForwardType();
+            if(aft==null || aft!=2){
+                throw new IllegalArgumentException("同意推进节点的 forwardType 必须为 2(固定节点)");
+            }
+            List<String> afIds = bpmnNodeVo.getForwardNodeIds();
+            if(afIds==null || afIds.size()!=1){
+                throw new IllegalArgumentException("同意推进节点必须配置恰好 1 个固定目标节点");
+            }
+            //互斥校验: buttons.approvalPage 不能含推进按钮(buttonType=42)
+            BpmnNodeButtonConfBaseVo btns = bpmnNodeVo.getButtons();
+            if(btns!=null && !CollectionUtils.isEmpty(btns.getApprovalPage())){
+                boolean hasForwardBtn = btns.getApprovalPage().stream()
+                        .anyMatch(b -> b!=null && Integer.valueOf(42).equals(b.getButtonType()));
+                if(hasForwardBtn){
+                    throw new IllegalArgumentException("同意推进与推进按钮(42)互斥, 不能同时配置");
+                }
+            }
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.approveForwardNode);
+        }
         //自动完成节点:根据前端传入的 isAutoCompleteNode 标识自动贴标签
         //自动完成本质是自动推进(18)子类型, 目标自动为最后一个审批人, 运行时复用 auto_advance_node 处理器
         //此标签仅用于前端反显区分+颜色区分

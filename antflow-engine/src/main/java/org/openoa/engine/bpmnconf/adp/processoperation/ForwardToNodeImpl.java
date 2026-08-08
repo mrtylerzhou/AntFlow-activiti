@@ -155,8 +155,9 @@ public class ForwardToNodeImpl implements ProcessOperationAdaptor {
 
     /**
      * 不跨并行网关: 使用moveTo跳转
+     * public 暴露给同意推进节点等场景复用, 职责单一: 给定 procInstId + 当前 taskDefKey + 目标 taskDefKey, 执行 moveTo 跳转
      */
-    private void moveToTarget(String procInstId, String currentTaskDefKey, String targetTaskDefKey) {
+    public void moveToTarget(String procInstId, String currentTaskDefKey, String targetTaskDefKey) {
         TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
         try {
             List<String> unMovedTasks = taskFlowControlService.moveTo(currentTaskDefKey, targetTaskDefKey);

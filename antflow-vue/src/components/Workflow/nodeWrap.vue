@@ -22,6 +22,7 @@
                     <svg-icon icon-class="conditional-drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 20" />
                                         <svg-icon icon-class="conditional-drive-to-starter" class="iconfont" v-else-if="nodeConfig.nodeType == 21" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
+                    <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'approve_forward_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
                     <svg-icon icon-class="drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')" />
                     <svg-icon icon-class="condition-finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_finish_node')" />
@@ -223,6 +224,13 @@ let titleBgColor = computed(() => {
         && Array.isArray(props.nodeConfig.labelList)
         && props.nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')) {
         return FINISH_APPROVE_COLOR;
+    }
+    // 同意推进节点着色: labelList 含 approve_forward_node (与推进按钮 42 互斥, 优先于 42 的判据)
+    // 与推进审批节点(FORWARD_APPROVE_COLOR)同色, 语义都是"推进"
+    if (props.nodeConfig.nodeType == 4
+        && Array.isArray(props.nodeConfig.labelList)
+        && props.nodeConfig.labelList.some(l => l.labelValue === 'approve_forward_node')) {
+        return FORWARD_APPROVE_COLOR;
     }
     // 推进审批节点着色: 审批人节点(nodeType=4)的审批页按钮配置包含推进按钮(42)
     // 以按钮配置为判据, 避免后端 forwardType 默认值/反显回填导致的误判

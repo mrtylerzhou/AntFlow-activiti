@@ -107,6 +107,12 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isFinishApproveNode;
     /**
+     * 同意推进节点标记: 审批人节点(nodeType=4) + 同意按钮(固定节点行为) + approve_forward_node 标签
+     * 同意按钮配置为"固定节点"行为时为 true, complete 后推进到 forwardNodeIds 指定的固定节点.
+     * 与推进按钮(42)互斥: isApproveForwardNode=true 时 buttons.approvalPage 不能含 42.
+     */
+    private Boolean isApproveForwardNode;
+    /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
      */

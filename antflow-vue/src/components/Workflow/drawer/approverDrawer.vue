@@ -277,7 +277,7 @@
                 <p>【审批页面】按钮权限显示控制</p>
                 <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
                     <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
-                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (approverConfig.nodeType === 17 && opt.value === 41)"
+                        <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (approverConfig.nodeType === 17 && opt.value === 41) || (opt.value === approvalButtonConf.forwardToNode && approveForwardBehavior === 2)"
                             @change="handleCheckedButtonsChange(opt.value)">
                             【{{ opt.label }}】
                         </el-checkbox>
@@ -386,10 +386,10 @@
                 <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.forwardToNode)" class="disagree-back-conf">
                     <p class="setting-group-title">推进按钮行为</p>
                     <el-radio-group v-model="forwardBehavior" @change="onForwardBehaviorChange"
-                        :disabled="approverConfig?.isFinishApproveNode || approverConfig?.isConditionAdvanceNode || approverConfig?.isConditionFinishNode">
+                        :disabled="approverConfig?.isFinishApproveNode || approverConfig?.isConditionAdvanceNode || approverConfig?.isConditionFinishNode || approveForwardBehavior === 2">
                         <el-radio :value="0">任意未来节点</el-radio>
                         <el-radio :value="1">指定节点</el-radio>
-                        <el-radio :value="2">固定节点</el-radio>
+                        <el-radio :value="2">跳转至固定节点</el-radio>
                     </el-radio-group>
                     <div v-if="forwardBehavior === 1" style="margin-top: 8px;">
                         <span>推进目标节点：</span>
@@ -408,6 +408,27 @@
                         <p v-if="approverConfig?.isFinishApproveNode && availableForwardNodes.length === 0"
                             style="color: #f56c6c; margin-top: 4px;">
                             完成审批节点不能是最后一个审批人节点，请在后面添加审批人节点或调整位置。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 同意按钮行为配置 -->
+                <div v-if="checkApprovalPageBtns.includes(approvalButtonConf.agree)" class="disagree-back-conf">
+                    <p class="setting-group-title">同意按钮行为</p>
+                    <el-radio-group v-model="approveForwardBehavior" @change="onApproveForwardBehaviorChange"
+                        :disabled="checkApprovalPageBtns.includes(approvalButtonConf.forwardToNode) || approverConfig?.isFinishApproveNode || approverConfig?.isConditionAdvanceNode || approverConfig?.isConditionFinishNode">
+                        <el-radio :value="0">默认</el-radio>
+                        <el-radio :value="2">跳转至固定节点</el-radio>
+                    </el-radio-group>
+                    <div v-if="approveForwardBehavior === 2" style="margin-top: 8px;">
+                        <span>同意推进目标节点：</span>
+                        <el-select v-model="approveForwardFixedNodeId" placeholder="请选择目标节点" style="width: 320px;">
+                            <el-option v-for="item in availableForwardNodes" :key="item.nodeId"
+                                :label="item.nodeName" :value="item.nodeId" />
+                        </el-select>
+                        <p v-if="availableForwardNodes.length === 0"
+                            style="color: #f56c6c; margin-top: 4px;">
+                            当前节点之后没有可选的审批人节点。
                         </p>
                     </div>
                 </div>
@@ -525,6 +546,12 @@ let selectedLabelValues = ref([]);
 let afterSignUpWayVisible = computed(() => approverConfig.value?.isSignUp == 1);
 let approvalBtnSubOption = ref(1);
 
+// 反显加载标志: load* 函数执行期间为 true, 禁用所有 sync* watch, 避免 ref 赋值反向覆盖 config 数据
+let isLoading = ref(false);
+// 同意推进同步标志: syncApproveForwardToConfig 执行期间为 true, 禁用 syncForwardToConfig,
+// 避免互斥重置推进 ref(forwardFixedNodeId=null)异步触发 syncForwardToConfig 覆盖 forwardType/forwardNodeIds
+let isApproveForwardSyncing = ref(false);
+
 // ========== 退回按钮行为配置 ==========
 let drawBackBehavior = ref(0); // UI radio: 0=无限制, 1=退回发起人, 2=退回上一节点, 3=退回指定节点
 let drawBackReturnToSender = ref(false); // "回到退回人" checkbox
@@ -538,6 +565,7 @@ const onDrawBackBehaviorChange = (val) => {
 
 const syncDrawBackToConfig = () => {
     if (!approverConfig.value) return;
+    if (isLoading.value) return;
     // 自动退回节点(nodeType=19)/条件退回节点(nodeType=20)的 drawBack 配置由其他机制管理, 此处跳过
     if (approverConfig.value.nodeType === 19 || approverConfig.value.nodeType === 20 || approverConfig.value.nodeType === 21) return;
     let type = 0;
@@ -567,6 +595,8 @@ const onForwardBehaviorChange = (val) => {
 
 const syncForwardToConfig = () => {
     if (!approverConfig.value) return;
+    if (isLoading.value) return;
+    if (isApproveForwardSyncing.value) return; // 同意推进同步期间跳过, 避免覆盖
     approverConfig.value.forwardType = forwardBehavior.value;
     if (forwardBehavior.value === 1) {
         approverConfig.value.forwardNodeIds = forwardNodeIds.value;
@@ -583,6 +613,7 @@ watch(forwardFixedNodeId, () => { syncForwardToConfig(); });
 let autoReturnTargetNodeId = ref(null); // 自动退回目标节点(单选)
 const syncAutoReturnToConfig = () => {
     if (!approverConfig.value) return;
+    if (isLoading.value) return;
     // drawBackType=2(退回发起人)时不覆盖, 保持创建时的值
     if (approverConfig.value.drawBackType !== 2) {
         approverConfig.value.drawBackType = 4;
@@ -601,6 +632,7 @@ const loadAutoReturnConfig = (nodeData) => {
 let conditionReturnStarterBackToCurrent = ref(false); // drawBackType: false=4(重新开始) true=5(回到当前节点)
 const syncConditionReturnStarterToConfig = () => {
     if (!approverConfig.value || approverConfig.value.nodeType !== 21) return;
+    if (isLoading.value) return;
     approverConfig.value.drawBackType = conditionReturnStarterBackToCurrent.value ? 5 : 4;
 };
 watch(conditionReturnStarterBackToCurrent, () => { syncConditionReturnStarterToConfig(); });
@@ -673,6 +705,18 @@ const loadForwardConfig = (nodeData) => {
         }
         return;
     }
+    // 同意推进节点: 推进按钮行为区显示为默认, 不反显 forwardType
+    // 必须在 ft 分支之前 return, 否则 ft===2 会先把 forwardFixedNodeId 设为选中节点,
+    // 再被此处重置为 null, 触发 watch(forwardFixedNodeId)->syncForwardToConfig,
+    // 把同意推进的 forwardType/forwardNodeIds 覆盖为 0/null, 导致选中节点丢失
+    const hasApproveForwardLabel = approverConfig.value?.labelList
+        && approverConfig.value.labelList.some(l => l && l.labelValue === 'approve_forward_node');
+    if (hasApproveForwardLabel) {
+        forwardBehavior.value = 0;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = null;
+        return;
+    }
     const ft = nodeData?.forwardType;
     if (ft === 0) {
         forwardBehavior.value = 0;
@@ -690,6 +734,83 @@ const loadForwardConfig = (nodeData) => {
         forwardBehavior.value = 0;
         forwardNodeIds.value = [];
         forwardFixedNodeId.value = null;
+    }
+};
+
+// ========== 同意按钮行为配置 ==========
+// 与推进按钮互斥: approveForwardBehavior=2(固定节点) 时, 推进按钮勾选会被禁用
+// forwardBehavior 与 approveForwardBehavior 共享 forwardType/forwardNodeIds 字段, 切换时需主动清对方
+let approveForwardBehavior = ref(0); // UI radio: 0=默认, 2=固定节点(单选)
+let approveForwardFixedNodeId = ref(null); // 固定节点单选
+
+const onApproveForwardBehaviorChange = (val) => {
+    approveForwardFixedNodeId.value = null;
+    syncApproveForwardToConfig();
+};
+
+const syncApproveForwardToConfig = () => {
+    if (!approverConfig.value) return;
+    if (isLoading.value) return;
+    if (!approverConfig.value.labelList) {
+        approverConfig.value.labelList = [];
+    }
+    // 辅助: 从 labelList 增删 approve_forward_node 标签
+    const ensureLabel = (labelValue, labelName) => {
+        const exists = approverConfig.value.labelList.some(l => l && l.labelValue === labelValue);
+        if (!exists) {
+            approverConfig.value.labelList.push({ labelValue, labelName });
+        }
+    };
+    const removeLabel = (labelValue) => {
+        approverConfig.value.labelList = approverConfig.value.labelList.filter(l => !(l && l.labelValue === labelValue));
+    };
+
+    if (approveForwardBehavior.value === 2) {
+        // 选"跳转至固定节点": 设置 isApproveForwardNode=true, forwardType=2, forwardNodeIds=[选中]
+        approverConfig.value.isApproveForwardNode = true;
+        approverConfig.value.forwardType = 2;
+        approverConfig.value.forwardNodeIds = approveForwardFixedNodeId.value ? [approveForwardFixedNodeId.value] : [];
+        // 同步给 labelList 贴 approve_forward_node 标签, 作为反显判据(不依赖 isApproveForwardNode 字段, 避免 JSON 序列化丢失)
+        ensureLabel('approve_forward_node', '同意推进节点');
+        // 互斥: 同步清空推进按钮行为(forwardBehavior 重置, 避免残留)
+        // 设标志位阻止重置推进 ref 异步触发的 syncForwardToConfig 覆盖刚设的 forwardType/forwardNodeIds
+        isApproveForwardSyncing.value = true;
+        forwardBehavior.value = 0;
+        forwardNodeIds.value = [];
+        forwardFixedNodeId.value = null;
+        // 互斥: 从勾选按钮列表移除推进按钮(42), 并禁用其勾选
+        const fwdIdx = checkApprovalPageBtns.value.indexOf(approvalButtonConf.forwardToNode);
+        if (fwdIdx !== -1) {
+            checkApprovalPageBtns.value.splice(fwdIdx, 1);
+        }
+        // Vue watch 是微任务, setTimeout 是宏任务, 确保 watch(syncForwardToConfig) 执行后再放开
+        setTimeout(() => { isApproveForwardSyncing.value = false; }, 0);
+    } else {
+        // 选"默认": 清空 isApproveForwardNode, forwardType/forwardNodeIds 不主动清(可能被推进按钮使用)
+        // 只有当原属同意推进时才清空, 避免误清推进按钮的配置
+        if (approverConfig.value.isApproveForwardNode) {
+            approverConfig.value.forwardType = null;
+            approverConfig.value.forwardNodeIds = null;
+        }
+        approverConfig.value.isApproveForwardNode = false;
+        // 移除 approve_forward_node 标签
+        removeLabel('approve_forward_node');
+    }
+};
+watch(approveForwardFixedNodeId, () => { syncApproveForwardToConfig(); });
+
+/**加载同意按钮行为配置(反显) */
+const loadApproveForwardConfig = (nodeData) => {
+    // 仅当后端贴了 approve_forward_node 标签时, 反显为"固定节点"
+    const hasLabel = approverConfig.value?.labelList
+        && approverConfig.value.labelList.some(l => l && l.labelValue === 'approve_forward_node');
+    if (hasLabel || approverConfig.value?.isApproveForwardNode) {
+        approveForwardBehavior.value = 2;
+        approveForwardFixedNodeId.value = (nodeData?.forwardNodeIds && nodeData.forwardNodeIds.length > 0)
+            ? nodeData.forwardNodeIds[0] : null;
+    } else {
+        approveForwardBehavior.value = 0;
+        approveForwardFixedNodeId.value = null;
     }
 };
 
@@ -954,34 +1075,43 @@ let visible = computed({
 });
 /**页面加载监听事件 */
 watch(approverConfig1, (val) => {
-    if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
-        let currParallel = val.value.parallelNodes[val.value.index]
-        approverConfig.value = currParallel;
-        formItems.value = currParallel.lfFieldControlVOs || [];
-        formHiddenMap.value = currParallel.formHidden || {};
-        templateVos.value = currParallel.templateVos || [];
-        loadApprovalPageButtons(currParallel.buttons?.approvalPage);
-        loadViewPageButtons(currParallel.buttons?.viewPage);
-        selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
-        loadDisagreeBackConfig(currParallel);
-        loadDrawBackConfig(currParallel);
-        loadForwardConfig(currParallel);
-        loadAutoReturnConfig(currParallel);
-        loadConditionReturnStarterConfig(currParallel);
-    }
-    else {
-        approverConfig.value = val.value;
-        formItems.value = val.value.lfFieldControlVOs || [];
-        formHiddenMap.value = val.value.formHidden || {};
-        templateVos.value = val.value.templateVos || [];
-        loadApprovalPageButtons(val.value.buttons?.approvalPage);
-        loadViewPageButtons(val.value.buttons?.viewPage);
-        selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
-        loadDisagreeBackConfig(val.value);
-        loadDrawBackConfig(val.value);
-        loadForwardConfig(val.value);
-        loadAutoReturnConfig(val.value);
-        loadConditionReturnStarterConfig(val.value);
+    // 反显期间禁用所有 sync* watch, 避免 load 函数设置 ref 时反向覆盖 config 数据
+    isLoading.value = true;
+    try {
+        if (val.value.nodeType == 7) {//nodeType == 7 是并行审批
+            let currParallel = val.value.parallelNodes[val.value.index]
+            approverConfig.value = currParallel;
+            formItems.value = currParallel.lfFieldControlVOs || [];
+            formHiddenMap.value = currParallel.formHidden || {};
+            templateVos.value = currParallel.templateVos || [];
+            loadApprovalPageButtons(currParallel.buttons?.approvalPage);
+            loadViewPageButtons(currParallel.buttons?.viewPage);
+            selectedLabelValues.value = (currParallel.labelList || []).map(l => l.labelValue);
+            loadDisagreeBackConfig(currParallel);
+            loadDrawBackConfig(currParallel);
+            loadForwardConfig(currParallel);
+            loadApproveForwardConfig(currParallel);
+            loadAutoReturnConfig(currParallel);
+            loadConditionReturnStarterConfig(currParallel);
+        }
+        else {
+            approverConfig.value = val.value;
+            formItems.value = val.value.lfFieldControlVOs || [];
+            formHiddenMap.value = val.value.formHidden || {};
+            templateVos.value = val.value.templateVos || [];
+            loadApprovalPageButtons(val.value.buttons?.approvalPage);
+            loadViewPageButtons(val.value.buttons?.viewPage);
+            selectedLabelValues.value = (val.value.labelList || []).map(l => l.labelValue);
+            loadDisagreeBackConfig(val.value);
+            loadDrawBackConfig(val.value);
+            loadForwardConfig(val.value);
+            loadApproveForwardConfig(val.value);
+            loadAutoReturnConfig(val.value);
+            loadConditionReturnStarterConfig(val.value);
+        }
+    } finally {
+        // 下一轮事件循环再放开, 确保 watch 回调都已执行并被拦截
+        setTimeout(() => { isLoading.value = false; }, 0);
     }
 });
 
