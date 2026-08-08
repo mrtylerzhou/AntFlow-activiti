@@ -6,7 +6,7 @@
 -->
 
 <template>
-    <el-drawer :append-to-body="true" title="条件设置" v-model="visible" class="set_condition" :with-header="false"
+    <el-drawer v-if="!embed" :append-to-body="true" title="条件设置" v-model="visible" class="set_condition" :with-header="false"
         :size="680">
         <span class="drawer-title">条件设置</span>
         <template #header="{ titleId, titleClass }">
@@ -22,7 +22,7 @@
                     <div class="condition_content drawer_content">
                         <p class="tip">当审批单满足以下条件时进入此流程
                             <el-text class="ml10" type="warning"
-                                v-if="originalConfigData.conditionList.length > 1">条件组关系：
+                                v-if="originalConfigData.conditionList && originalConfigData.conditionList.length > 1">条件组关系：
                                 且<el-switch v-model="originalConfigData.groupRelation" />或
                             </el-text>
                         </p>
@@ -49,7 +49,7 @@
                                         <div v-if="item && item.fieldTypeName">
                                             <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
                                             <div v-if="item.type == 1">
-                                                <p :class="originalConfigData.nodeApproveList.length > 0 ? 'selected_list' : ''"
+                                                <p :class="(originalConfigData.nodeApproveList || []).length > 0 ? 'selected_list' : ''"
                                                     @click.self="addConditionRole" style="cursor:text">
                                                     <span v-for="(item1, index1) in originalConfigData.nodeApproveList"
                                                         :key="index1">
@@ -58,7 +58,7 @@
                                                             @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
                                                     </span>
                                                     <input type="text" placeholder="请选择具体人员/角色/部门"
-                                                        v-if="originalConfigData.nodeApproveList.length == 0"
+                                                        v-if="(originalConfigData.nodeApproveList || []).length == 0"
                                                         @click="addConditionRole">
                                                 </p>
                                             </div>
@@ -191,7 +191,7 @@
                                 </ul>
                                 <el-button type="primary" @click="addCondition(conditionGroupIdx)">添加条件</el-button>
                             </el-card>
-                            <div v-if="originalConfigData.conditionList.length != conditionGroupIdx + 1">
+                            <div v-if="(originalConfigData.conditionList || []).length != conditionGroupIdx + 1">
                                 <el-text class="ml10" type="warning"
                                     v-if="originalConfigData.groupRelation == false">且满足</el-text>
                                 <el-text class="ml10" type="success"
@@ -211,6 +211,210 @@
             </el-main>
         </el-container>
     </el-drawer>
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
+    <div v-else class="hd-embed-panel" v-show="visible">
+        <div class="condition-priority-bar">
+            <span class="drawer-title">条件设置</span>
+            <select v-if="conditionsConfig && conditionsConfig.conditionNodes" v-model="originalConfigData.priorityLevel" class="priority_level">
+                <option v-for="item in conditionsConfig.conditionNodes.length" :value="item" :key="item">优先级{{ item }}
+                </option>
+            </select>
+        </div>
+        <el-container>
+            <el-main>
+                <div class="demo-drawer__content">
+                    <div class="condition_content drawer_content">
+                        <p class="tip">当审批单满足以下条件时进入此流程
+                            <el-text class="ml10" type="warning"
+                                v-if="originalConfigData.conditionList && originalConfigData.conditionList.length > 1">条件组关系：
+                                且<el-switch v-model="originalConfigData.groupRelation" />或
+                            </el-text>
+                        </p>
+                        <div v-for="(conditionGroupArray, conditionGroupIdx) in originalConfigData.conditionList">
+                            <el-card class="mb10" style="max-width: 680px">
+                                <template #header>
+                                    <div class="card-header">
+                                        <div class="l">
+                                            <span>条件组{{ conditionGroupIdx + 1 }}</span>
+                                        </div>
+                                        <div class="l pl10" v-if="conditionGroupArray.length > 1">
+                                            <el-text class="ml10" type="warning">组内条件关系：
+                                                且<el-switch
+                                                    v-model="conditionGroupArray[conditionGroupIdx].condRelation" />或
+                                            </el-text>
+                                        </div>
+                                        <div @click="deleteConditionGroup(conditionGroupIdx)" class="r clickable">
+                                            <el-icon class="branch-delete-icon"><el-icon-delete /></el-icon>
+                                        </div>
+                                    </div>
+                                </template>
+                                <ul>
+                                    <li v-for="(item, index) in conditionGroupArray" :key="index" class="l">
+                                        <div v-if="item && item.fieldTypeName">
+                                            <span class="ellipsis">{{ item.type == 1 ? '发起人' : item.showName }}：</span>
+                                            <div v-if="item.type == 1">
+                                                <p :class="(originalConfigData.nodeApproveList || []).length > 0 ? 'selected_list' : ''"
+                                                    @click.self="addConditionRole" style="cursor:text">
+                                                    <span v-for="(item1, index1) in originalConfigData.nodeApproveList"
+                                                        :key="index1">
+                                                        {{ item1.name }}<img
+                                                            src="@/assets/images/antflow/add-close1.png"
+                                                            @click="$func.removeEle(originalConfigData.nodeApproveList, item1, 'targetId')">
+                                                    </span>
+                                                    <input type="text" placeholder="请选择具体人员/角色/部门"
+                                                        v-if="(originalConfigData.nodeApproveList || []).length == 0"
+                                                        @click="addConditionRole">
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'input'">
+                                                <p class="check_box">
+                                                    <input v-model="item.optType" hidden>
+                                                    <input type="text" :placeholder="'请输入' + item.showName"
+                                                        v-model="item.zdy1">
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'date'">
+                                                <p>
+                                                    <el-select
+                                                        :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                                        @change="changeOptType(item)" v-model="item.optType">
+                                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                                    </el-select>
+                                                    <el-date-picker v-if="item.optType != 6" v-model="item.zdy1"
+                                                        type="date" :placeholder="'请选择' + item.showName"
+                                                        format="YYYY-MM-DD" />
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'time'">
+                                                <p>
+                                                    <el-select
+                                                        :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                                        @change="changeOptType(item)" v-model="item.optType">
+                                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                                    </el-select>
+                                                    <el-time-picker v-if="item.optType != 6" v-model="item.zdy1"
+                                                        :placeholder="'请选择' + item.showName" />
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'switch'">
+                                                <p class="check_box">
+                                                    <el-switch v-model="item.zdy1" />
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'radio'">
+                                                <p class="check_box">
+                                                    {{ item.fieldTypeName }}
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'checkbox'">
+                                                <p class="check_box">
+                                                    <a :class="$func.toggleStrClass(item, item1.key) && 'active'"
+                                                        @click="toStrChecked(item, item1.key)"
+                                                        v-for="(item1, index1) in JSON.parse(item.fixedDownBoxValue)"
+                                                        :key="index1">{{
+                                                            item1.value }}</a>
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'select' && item.multiple">
+                                                <p class="check_box" v-if="item.fixedDownBoxValue">
+                                                    <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1"
+                                                        multiple :multiple-limit="item.multipleLimit">
+                                                        <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
+                                                            :key="itemOpt.key" :label="itemOpt.value"
+                                                            :value="itemOpt.key" />
+                                                    </el-select>
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'select' && !item.multiple">
+                                                <p class="check_box" v-if="item.fixedDownBoxValue">
+                                                    <el-select :placeholder="'请选择' + item.showName" v-model="item.zdy1">
+                                                        <el-option v-for="itemOpt in JSON.parse(item.fixedDownBoxValue)"
+                                                            :key="itemOpt.key" :label="itemOpt.value"
+                                                            :value="itemOpt.key" />
+                                                    </el-select>
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'number'">
+                                                <p>
+                                                    <el-select
+                                                        :style="'width:' + (item.optType == 6 ? 350 : 105) + 'px'"
+                                                        @change="changeOptType(item)" v-model="item.optType">
+                                                        <el-option v-for="itemOpt in optTypes" :key="itemOpt.value"
+                                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                                    </el-select>
+                                                    <input v-if="item.optType != 6" style="width:220px;" type="text"
+                                                        :placeholder="'请输入' + item.showName" v-model="item.zdy1">
+                                                </p>
+                                                <p v-if="item.optType == 6">
+                                                    <input type="text" style="width:75px;" class="mr10"
+                                                        v-model="item.zdy1">
+                                                    <el-select style="width:60px;" v-model="item.opt1">
+                                                        <el-option v-for="itemOpt in opt1s" :key="itemOpt.value"
+                                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                                    </el-select>
+                                                    <span class="ellipsis"
+                                                        style="display:inline-block;width:60px;vertical-align: text-bottom;">{{
+                                                            item.showName }}</span>
+                                                    <el-select style="width:60px;" class="ml10" v-model="item.opt2">
+                                                        <el-option v-for="itemOpt in opt1s" :key="itemOpt.value"
+                                                            :label="itemOpt.label" :value="itemOpt.value" />
+                                                    </el-select>
+                                                    <input type="text" style="width:75px;" v-model="item.zdy2">
+                                                </p>
+                                            </div>
+                                            <div v-else-if="item.fieldTypeName == 'expression'">
+                                                <p class="check_box">
+                                                    <el-radio-group v-model="item.columnId">
+                                                        <el-radio label="20001">SpEL</el-radio>
+                                                        <el-radio label="20000">JUEL</el-radio>
+                                                    </el-radio-group>
+                                                </p>
+                                                <p>
+                                                    <input type="text" v-model="item.zdy1"
+                                                        :placeholder="'请输入' + item.showName" style="width: 350px;">
+                                                </p>
+                                                <p class="expression-tip">
+                                                    提示：表达式可引用流程启动表单变量，使用 it 表示整个表单对象，如 it.amount > 1000
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p class="check_box">
+                                                    <input v-model="item.optType" hidden>
+                                                    <input type="text" :placeholder="'请输入' + item.showName"
+                                                        v-model="item.zdy1">
+                                                </p>
+                                            </div>
+                                            <a v-if="item.type == 1"
+                                                @click="originalConfigData.nodeApproveList = []; $func.removeEle(originalConfigData.conditionList[conditionGroupIdx], item, 'formId')">删除</a>
+                                            <a v-if="item.type == 2"
+                                                @click="$func.removeEle(originalConfigData.conditionList[conditionGroupIdx], item, 'formId')">删除</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <el-button type="primary" @click="addCondition(conditionGroupIdx)">添加条件</el-button>
+                            </el-card>
+                            <div v-if="(originalConfigData.conditionList || []).length != conditionGroupIdx + 1">
+                                <el-text class="ml10" type="warning"
+                                    v-if="originalConfigData.groupRelation == false">且满足</el-text>
+                                <el-text class="ml10" type="success"
+                                    v-if="originalConfigData.groupRelation == true">或满足</el-text>
+                            </div>
+                        </div>
+                        <el-button style="width: 100%" type="info" icon="el-icon-plus" text bg
+                            @click="addConditionGroup">
+                            添加条件组
+                        </el-button>
+                    </div>
+                    <div class="demo-drawer__footer clear">
+                        <el-button type="primary" @click="saveCondition">确 定</el-button>
+                        <el-button @click="closeDrawer">取 消</el-button>
+                    </div>
+                </div>
+            </el-main>
+        </el-container>
+    </div>
     <ConditionDialog v-model:visible="conditionVisible" :activeGroupIdx="activeGroupIdx" />
 </template>
 <script setup>
@@ -219,6 +423,10 @@ import ConditionDialog from "../dialog/selectConditionDialog.vue";
 import { useStore } from '@/store/modules/workflow'
 import { optTypes, opt1s } from '@/utils/antflow/const'
 import $func from '@/utils/antflow/index'
+
+defineProps({
+    embed: { type: Boolean, default: false },
+})
 
 const { proxy } = getCurrentInstance()
 let store = useStore()
@@ -396,7 +604,18 @@ const convertConditionNodeValue = (data, isPreview = true) => {
         border: 1px solid rgba(217, 217, 217, 1);
         font-size: 12px;
     }
-
+    .condition-priority-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f2f2f2;
+        margin-bottom: 8px;
+        .priority_level {
+            position: static;
+            width: 110px;
+        }
+    }
     .condition_content {
         padding: 5px 5px 0;
 

@@ -80,6 +80,24 @@
                 <el-checkbox v-model="form.useAuxiliaryForm" :disabled="readonly">使用辅助表单</el-checkbox>
                 <div class="ext-form-tip">启用后,第二屏"表单设计"可用;条件与表单取人将像低代码流程一样从辅助表单字段获取。</div>
             </el-form-item>
+            <!-- 传统风格横向设计器 -->
+            <el-form-item label="设计器风格">
+                <template #label>
+                    <span>
+                        <el-tooltip placement="top" popper-class="aux-form-tip-popper">
+                            <template #content>
+                                <div style="max-width: 320px; line-height: 1.5;">
+                                    勾选后,流程设计 tab 使用从左到右的 BPMN 传统风格设计器(网关/条件标在线上/满宽换行)。<br />
+                                    数据结构与竖向设计器完全一致,可随时在画布工具栏切换两种风格。
+                                </div>
+                            </template>
+                            <el-icon><question-filled /></el-icon>
+                        </el-tooltip>
+                        设计器风格
+                    </span>
+                </template>
+                <el-checkbox v-model="form.useTraditionalDesigner" :disabled="readonly">传统风格设计器(横向)</el-checkbox>
+            </el-form-item>
             <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :disabled="readonly" :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
@@ -95,13 +113,15 @@ import { getDIYFromCodeData } from "@/api/workflow/index";
 import { getLowCodeFlowFormCodes, listEffectiveForSelect } from "@/api/workflow/lowcodeApi";
 const { query } = useRoute();
 const { proxy } = getCurrentInstance()
-const emit = defineEmits(['nextChange', 'externalFormChange', 'auxiliaryFormChange'])
+const emit = defineEmits(['nextChange', 'externalFormChange', 'auxiliaryFormChange', 'traditionalDesignerChange'])
 let loading = ref(false);
 const copyOpt = query?.copy ?? 0 > 0 ? true : false;
 // 外部表单模式常量: BpmnConfFlagsEnum.USE_EXTERNAL_FORM = 0b1000000 = 64
 const USE_EXTERNAL_FORM_FLAG = 64;
 // 辅助表单模式常量(DIY专用): BpmnConfFlagsEnum.USE_AUXILIARY_FORM = 0b10000000 = 128
 const USE_AUXILIARY_FORM_FLAG = 128;
+// 传统风格横向设计器常量: BpmnConfFlagsEnum.TRADITIONAL_DESIGNER = 0b100000000 = 256
+const TRADITIONAL_DESIGNER_FLAG = 256;
 // 外部表单可选项(独立表单管理中已生效的版本)
 let externalFormOptions = ref([]);
 let externalFormLoaded = ref(false);
@@ -135,6 +155,7 @@ const form = reactive({
     extraFlags: 0,
     useExternalForm: false,         //由 extraFlags & USE_EXTERNAL_FORM 派生
     useAuxiliaryForm: false,        //由 extraFlags & USE_AUXILIARY_FORM 派生(DIY专用)
+    useTraditionalDesigner: false,  //由 extraFlags & TRADITIONAL_DESIGNER 派生
     lfFormdataIds: '',              //CSV 字符串,提交后端
     lfFormdataIdsArr: [],           //Number 数组,前端编辑用
     viewPageButtons: {
@@ -163,6 +184,10 @@ watch(() => form.lfFormdataIdsArr, () => {
 // 监听辅助表单勾选变化,通知父组件(用于启用/禁用第二屏表单设计)
 watch(() => form.useAuxiliaryForm, (val) => {
     emit('auxiliaryFormChange', { useAuxiliaryForm: val });
+});
+// 监听传统风格设计器勾选变化,通知父组件(流程设计 tab 切换横向/竖向渲染)
+watch(() => form.useTraditionalDesigner, (val) => {
+    emit('traditionalDesignerChange', { useTraditionalDesigner: val });
 });
 
 /**向父组件发射外部表单模式当前状态(含选中的表单定义列表) */
@@ -207,6 +232,8 @@ onMounted(async () => {
         if (isAuxiliary) {
             emit('auxiliaryFormChange', { useAuxiliaryForm: true });
         }
+        //回显传统风格横向设计器
+        form.useTraditionalDesigner = (flags & TRADITIONAL_DESIGNER_FLAG) === TRADITIONAL_DESIGNER_FLAG;
     }
     else {
         form.bpmnCode = generatorID;
@@ -314,6 +341,12 @@ const getData = () => {
                 flags = flags | USE_AUXILIARY_FORM_FLAG;
             } else {
                 flags = flags & ~USE_AUXILIARY_FORM_FLAG;
+            }
+            //序列化传统风格横向设计器
+            if (form.useTraditionalDesigner) {
+                flags = flags | TRADITIONAL_DESIGNER_FLAG;
+            } else {
+                flags = flags & ~TRADITIONAL_DESIGNER_FLAG;
             }
             form.extraFlags = flags;
             resolve({ formData: form })  // TODO 提交表单

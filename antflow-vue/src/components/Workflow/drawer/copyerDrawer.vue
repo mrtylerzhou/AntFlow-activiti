@@ -5,7 +5,7 @@
  * @FilePath: /ant-flow/src/components/drawer/copyerDrawer.vue
 -->
 <template>
-    <el-drawer :append-to-body="true" title="抄送人设置" v-model="visible" class="set_copyer" :with-header="false"
+    <el-drawer v-if="!embed" :append-to-body="true" title="抄送人设置" v-model="visible" class="set_copyer" :with-header="false"
         destory-on-close :size="680">
         <div class="el-drawer__header">
             <span class="drawer-title">抄送人</span>
@@ -22,9 +22,6 @@
                         <a v-if="copyerConfig.nodeApproveList && copyerConfig.nodeApproveList.length != 0"
                             @click="copyerConfig.nodeApproveList = []">清除</a>
                     </p>
-                    <!-- <el-checkbox-group v-model="ccSelfSelectFlag" class="clear">
-                        <el-checkbox :value="1">允许发起人自选抄送人</el-checkbox>
-                    </el-checkbox-group> -->
                 </div>
             </el-tab-pane>
             <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
@@ -41,6 +38,39 @@
         </div>
         <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
     </el-drawer>
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
+    <div v-else class="hd-embed-panel" v-show="visible">
+        <div class="el-drawer__header">
+            <span class="drawer-title">抄送人</span>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleTabClick">
+            <el-tab-pane label="抄送人设置" name="copyStep">
+                <div class="copyer_content drawer_content" v-if="copyStepShow">
+                    <el-button type="primary" @click="addCopyer">添加成员</el-button>
+                    <p class="selected_list">
+                        <span v-for="(item, index) in copyerConfig.nodeApproveList" :key="index">{{ item.name }}
+                            <img src="@/assets/images/antflow/add-close1.png"
+                                @click="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
+                        </span>
+                        <a v-if="copyerConfig.nodeApproveList && copyerConfig.nodeApproveList.length != 0"
+                            @click="copyerConfig.nodeApproveList = []">清除</a>
+                    </p>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
+                <div class="drawer_content">
+                    <form-perm-conf v-if="formStepShow" default-perm="R" v-model:formItems="formItems"
+                        :formHidden="formHiddenMap"
+                        @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
+                </div>
+            </el-tab-pane>
+        </el-tabs>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="saveCopyer">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
+        </div>
+        <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
+    </div>
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
@@ -48,6 +78,9 @@ import selectUserDialog from '../dialog/selectUserDialog.vue'
 import FormPermConf from "./permConfig/FormPermConf.vue"
 import $func from '@/utils/antflow/index'
 import { useStore } from '@/store/modules/workflow'
+defineProps({
+    embed: { type: Boolean, default: false },
+})
 let copyerConfig = ref({})
 let ccSelfSelectFlag = ref([])
 let copyerVisible = ref(false)

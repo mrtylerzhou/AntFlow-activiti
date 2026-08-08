@@ -5,7 +5,7 @@
  * @FilePath: /ant-flow/src/components/drawer/promoterDrawer.vue
 -->
 <template>
-    <el-drawer :append-to-body="true" title="发起人" v-model="visible" class="set_promoter" :with-header="false"
+    <el-drawer v-if="!embed" :append-to-body="true" title="发起人" v-model="visible" class="set_promoter" :with-header="false"
         :size="680">
         <div class="el-drawer__header">
             <span class="drawer-title">发起人</span>
@@ -27,12 +27,38 @@
             <el-button @click="closeDrawer">取 消</el-button>
         </div>
     </el-drawer>
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
+    <div v-else class="hd-embed-panel" v-show="visible">
+        <div class="el-drawer__header">
+            <span class="drawer-title">发起人</span>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleTabClick">
+            <el-tab-pane label="发起人设置" name="promoterStep">
+                <div class="promoter_content drawer_content">
+                    <p>发起人在流程发起时自动获取，无需设置</p>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
+                <form-perm-conf v-if="formStepShow" default-perm="E" v-model:formItems="formItems"
+                    :formHidden="formHiddenMap"
+                    @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
+            </el-tab-pane>
+        </el-tabs>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="savePromoter">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
+        </div>
+    </div>
 </template>
 <script setup>
 import $func from '@/utils/antflow/index'
 import { useStore } from '@/store/modules/workflow'
 import { computed, ref, watch } from 'vue'
 import formPermConf from "./permConfig/FormPermConf.vue";
+
+defineProps({
+    embed: { type: Boolean, default: false },
+})
 
 let flowPermission = ref([])
 let checkedList = ref([])

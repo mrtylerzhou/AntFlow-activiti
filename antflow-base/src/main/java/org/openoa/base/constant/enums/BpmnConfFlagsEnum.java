@@ -18,7 +18,9 @@ public enum BpmnConfFlagsEnum implements BinaryAfEnumBase<BpmnConfFlagsEnum>{
     HAS_FORM_RELATED_ASSIGNEES(0b100000,"包含表单中选取人员"),
     USE_EXTERNAL_FORM(0b1000000,"使用外部表单模式"),
     //DIY流程辅助表单:启用后第二屏可设计辅助表单,其字段名作为条件/取人/字段权限的契约;表单不参与审批渲染
-    USE_AUXILIARY_FORM(0b10000000,"使用辅助表单(DIY流程)")
+    USE_AUXILIARY_FORM(0b10000000,"使用辅助表单(DIY流程)"),
+    //传统风格横向设计器:勾选后流程设计 tab 使用从左到右的 BPMN 风格设计器(数据结构与竖向完全一致,可随时切换)
+    TRADITIONAL_DESIGNER(0b100000000,"传统风格横向设计器")
     ;
     private final Integer code;
     private final String desc;

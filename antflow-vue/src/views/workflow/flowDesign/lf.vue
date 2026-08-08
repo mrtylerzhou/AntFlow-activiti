@@ -20,6 +20,9 @@
             </div>
         </div>
         <div class="fd-nav-right">
+            <button v-if="useTraditionalDesigner" type="button" class="fd-btn" @click="toggleView">
+                <span>{{ isHorizontal ? '切换到竖向设计器' : '切换到横向设计器' }}</span>
+            </button>
             <button type="button" class="fd-btn button-publish" @click="previewJson">
                 <span>预览json</span>
             </button>
@@ -33,7 +36,8 @@
     </div>
     <div v-if="processConfig" v-show="activeStep === 'basicSetting'">
         <BasicSetting ref="basicSetting" :basicData="processConfig" @nextChange="changeSteps"
-            @externalFormChange="onExternalFormChange" :flowType="'LF'" />
+            @externalFormChange="onExternalFormChange" @traditionalDesignerChange="onTraditionalDesignerChange"
+            :flowType="'LF'" />
     </div>
     <div v-show="activeStep === 'formDesign'" aria-hidden="true">
         <DynamicForm v-if="!useExternalForm" ref="formDesign" :lfFormData="lfFormDataConfig" />
@@ -45,8 +49,10 @@
             </el-alert>
         </div>
     </div>
-        <div v-if="nodeConfig" v-show="activeStep === 'processDesign'">
-            <Process ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
+        <div v-if="nodeConfig && activeStep === 'processDesign'" class="hd-switch-wrap">
+            <HorizontalDesigner v-if="isHorizontal" key="horizontal-designer" ref="processDesign"
+                :process-data="nodeConfig" @toggle-view="toggleView" />
+            <Process v-else key="vertical-process" ref="processDesign" :processData="nodeConfig" @nextChange="changeSteps" />
         </div>
         <div v-if="processConfig" v-show="activeStep === 'advancedSetting'">
             <AdvancedSetting ref="advancedSetting" :basicData="processConfig" @nextChange="changeSteps" />
@@ -56,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { getApiWorkFlowData, setApiWorkFlowData } from '@/api/workflow/index';
 import { FormatCommitUtils } from '@/utils/antflow/formatcommit_data';
@@ -68,6 +74,7 @@ import { extractFormFieldsMulti } from '@/utils/antflow/formFieldExtractor';
 import BasicSetting from "@/components/Workflow/basicSetting/index.vue";
 import AdvancedSetting from "@/components/Workflow/AdvancedSetting/index.vue";
 import Process from "@/components/Workflow/Process/index.vue";
+import HorizontalDesigner from "@/components/Workflow/HorizontalDesigner/index.vue";
 import DynamicForm from "@/components/Workflow/DynamicForm/index.vue";
 import jsonDialog from "@/components/Workflow/dialog/jsonDialog.vue";
 const { proxy } = getCurrentInstance()
@@ -84,7 +91,19 @@ const formDesign = ref(null);
 let activeStep = ref("basicSetting"); // 激活的步骤面板
 // 外部表单模式标记: BpmnConfFlagsEnum.USE_EXTERNAL_FORM = 0b1000000 = 64
 const USE_EXTERNAL_FORM_FLAG = 64;
+// 传统风格横向设计器标记: BpmnConfFlagsEnum.TRADITIONAL_DESIGNER = 0b100000000 = 256
+const TRADITIONAL_DESIGNER_FLAG = 256;
 let useExternalForm = ref(false);
+// 传统风格设计器: 勾选后流程设计 tab 默认横向; 可临时切换竖/横(数据结构同一套)
+let useTraditionalDesigner = ref(false);
+let viewMode = ref('auto'); // auto=按勾选, horizontal=强制横向, vertical=强制竖向
+const isHorizontal = computed(() =>
+  viewMode.value === 'horizontal' || (viewMode.value === 'auto' && useTraditionalDesigner.value)
+);
+const toggleView = () => {
+  const next = isHorizontal.value ? 'vertical' : 'horizontal';
+  nextTick(() => { viewMode.value = next; });
+};
 let steps = ref([
     { label: "基础设置", key: "basicSetting" },
     { label: "表单设计", key: "formDesign" },
@@ -119,6 +138,8 @@ onMounted(async () => {
         lfFormDataConfig.value = data?.lfFormData;
         const flags = Number(data?.extraFlags || 0);
         useExternalForm.value = (flags & USE_EXTERNAL_FORM_FLAG) === USE_EXTERNAL_FORM_FLAG;
+        useTraditionalDesigner.value = (flags & TRADITIONAL_DESIGNER_FLAG) === TRADITIONAL_DESIGNER_FLAG;
+        viewMode.value = 'auto';
         updateStepsDisabled();
         syncExternalFormToStore();
         return;
@@ -142,6 +163,9 @@ onMounted(async () => {
     //根据 extraFlags 判定是否启用外部表单模式
     const flags = Number(data?.extraFlags || 0);
     useExternalForm.value = (flags & USE_EXTERNAL_FORM_FLAG) === USE_EXTERNAL_FORM_FLAG;
+    //根据 extraFlags 判定是否启用传统风格横向设计器
+    useTraditionalDesigner.value = (flags & TRADITIONAL_DESIGNER_FLAG) === TRADITIONAL_DESIGNER_FLAG;
+    viewMode.value = 'auto';
     updateStepsDisabled();
     //同步到 store,供节点配置(条件/取人/表单权限)读取
     syncExternalFormToStore();
@@ -161,6 +185,16 @@ const onExternalFormChange = (payload) => {
     useExternalForm.value = !!payload?.useExternalForm;
     updateStepsDisabled();
     syncExternalFormToStore(payload?.lfFormdataList);
+}
+
+/**BasicSetting 中传统风格设计器勾选变化时调用(流程设计 tab 即时切换横向/竖向)
+ * 注意: 延迟到下一个 tick 提交, 避免在 el-checkbox 事件链中同步替换大组件树
+ * (Process 含大量 Teleport drawer, 同一 flush 内替换会触发 vnode.component is null) */
+const onTraditionalDesignerChange = (payload) => {
+    nextTick(() => {
+        useTraditionalDesigner.value = !!payload?.useTraditionalDesigner;
+        viewMode.value = 'auto';
+    });
 }
 
 /**
@@ -249,10 +283,9 @@ const handleBackToDopeSheet = () => {
         // 保留 nodeConfig 树结构（不序列化）供 Dope Sheet 使用
         basicData.nodeConfig = res[2].formData;
         Object.assign(basicData, res[3].formData);
-        // 保留额外字段
+        // 保留额外字段 (extraFlags 以 basicSetting 序列化后的为准, 避免覆盖丢失新勾选)
         basicData.formCode = processConfig.value.formCode;
         basicData.bpmnCode = processConfig.value.bpmnCode;
-        basicData.extraFlags = processConfig.value.extraFlags;
         basicData.lfFormDataId = processConfig.value.lfFormDataId;
         basicData.lfFormdataIds = processConfig.value.lfFormdataIds;
         basicData.lfFormdataList = processConfig.value.lfFormdataList;

@@ -3,7 +3,7 @@
  * 条件编辑逻辑已抽出到 ConditionGroupEditor 组件
 -->
 <template>
-    <el-drawer :append-to-body="true" title="自动节点设置" v-model="visible" class="set_auto_node" :with-header="false"
+    <el-drawer v-if="!embed" :append-to-body="true" title="自动节点设置" v-model="visible" class="set_auto_node" :with-header="false"
         :size="680">
         <span class="drawer-title">自动节点设置</span>
         <template #header="{ titleId, titleClass }">
@@ -26,12 +26,30 @@
             </el-main>
         </el-container>
     </el-drawer>
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
+    <div v-else class="hd-embed-panel" v-show="visible">
+        <span class="drawer-title">自动节点设置</span>
+        <ConditionGroupEditor
+            :conditionList="originalConfigData.conditionList"
+            v-model:groupRelation="originalConfigData.groupRelation"
+            v-model:nodeApproveList="originalConfigData.nodeApproveList">
+            <template #tip>当满足以下条件时，自动节点将执行自定义动作</template>
+        </ConditionGroupEditor>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="saveAutoNode">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
+        </div>
+    </div>
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
 import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
 import { useStore } from '@/store/modules/workflow'
 import $func from '@/utils/antflow/index'
+
+defineProps({
+    embed: { type: Boolean, default: false },
+})
 
 let store = useStore()
 let { setAutoNode, setAutoNodeConfig } = store

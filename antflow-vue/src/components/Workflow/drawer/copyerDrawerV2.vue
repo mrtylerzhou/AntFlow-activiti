@@ -5,7 +5,7 @@
  * @FilePath: /ant-flow/src/components/drawer/copyerDrawer.vue
 -->
 <template>
-    <el-drawer :append-to-body="true" title="抄送人设置" v-model="visible" class="set_copyer" :with-header="false"
+    <el-drawer v-if="!embed" :append-to-body="true" title="抄送人设置" v-model="visible" class="set_copyer" :with-header="false"
         destory-on-close :size="680">
         <div class="el-drawer__header">
             <span class="drawer-title">抄送人V2</span>
@@ -114,6 +114,113 @@
         <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
         <select-role-dialog v-model:visible="approverRoleVisible" :data="checkedRoleList" @change="sureRoleApprover" />
     </el-drawer>
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
+    <div v-else class="hd-embed-panel" v-show="visible">
+        <div class="el-drawer__header">
+            <span class="drawer-title">抄送人V2</span>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleTabClick">
+            <el-tab-pane label="抄送人设置" name="copyStep">
+                <div v-if="copyStepShow">
+                    <div class="approver_content">
+                        <div>
+                            <el-radio-group v-model="copyerConfig.setType" class="clear" @change="changeType">
+                                <el-radio v-for="({ value, label }) in setCopyerTypes" :value="value">{{ label
+                                    }}</el-radio>
+                            </el-radio-group>
+                        </div>
+                        <div v-show="copyerConfig.setType == 5">
+                            <el-button type="primary" plain icon="Plus" @click="addCopyer">添加/修改人员</el-button>
+                            <div class="gap-2">
+                                <el-tag class="gap-tag" v-for="(item, index) in copyerConfig.nodeApproveList"
+                                    :key="item.targetId" size="large" closable
+                                    @close="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
+                                    {{ item.name }}
+                                </el-tag>
+                            </div>
+                        </div>
+
+                        <div v-show="copyerConfig.setType == 4">
+                            <el-button type="primary" plain icon="Plus" @click="addRoleApprover">添加/修改角色</el-button>
+                            <div class="gap-2">
+                                <el-tag class="gap-tag" v-for="(item, index) in copyerConfig.nodeApproveList"
+                                    :key="item.targetId" size="large" closable
+                                    @close="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
+                                    {{ item.name }}
+                                </el-tag>
+                            </div>
+                        </div>
+
+                        <div v-show="copyerConfig.setType == 14">
+                            <el-button type="primary" @click="addRoleApprover">添加/修改部门</el-button>
+                            <div class="gap-2">
+                                <el-tag class="gap-tag" v-for="(item, index) in copyerConfig.nodeApproveList"
+                                    :key="item.targetId" size="large" closable
+                                    @close="$func.removeEle(copyerConfig.nodeApproveList, item, 'targetId')">
+                                    {{ item.name }}
+                                </el-tag>
+                            </div>
+                        </div>
+
+                        <div v-if="copyerConfig.setType == 3">
+                            <div>
+                                <span>发起人的：</span>
+                                <el-select v-model="copyerConfig.directorLevel" placeholder="请选择" style="width: 300px">
+                                    <el-option v-for="item in directorMaxLevel" :key="item" :value="item"
+                                        :label="item == 1 ? '直接主管' : '第' + item + '级' + '主管'" />
+                                </el-select>
+                            </div>
+                            <p class="tip">找不到主管时，由上级主管代收</p>
+                        </div>
+
+                        <div class="approver_text" v-if="copyerConfig.setType == 12">
+                            <p class="tip">该节点设置“发起人自己”后，抄送人默认为发起人</p>
+                        </div>
+                        <div class="approver_text" v-if="copyerConfig.setType == 13">
+                            <p class="tip">该节点设置“直属领导”后，抄送人默认为发起人的直属领导</p>
+                        </div>
+                        <div class="approver_text" v-if="copyerConfig.setType == 7">
+                            <p class="tip">该节点设置“发起人自选抄送人”后，抄送人在发起业务表单时由发起人选择</p>
+                        </div>
+                    </div>
+                    <div class="approver_block">
+                        <p>✍抄送人为空时</p>
+                        <el-radio-group v-model="copyerConfig.noHeaderAction" class="clear">
+                            <el-radio :value="0">不允许发起</el-radio>
+                            <br />
+                            <el-radio :value="1">跳过</el-radio>
+                            <br />
+                            <el-radio :value="2">转交给审核管理员</el-radio>
+                        </el-radio-group>
+                    </div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane lazy v-if="copyerConfig.nodeType === 13" label="条件设置" name="conditionStep">
+                <ConditionGroupEditor
+                    :conditionList="copyerConfig.conditionList"
+                    v-model:groupRelation="copyerConfig.groupRelation"
+                    v-model:nodeApproveList="copyerConfig.nodeApproveList">
+                    <template #tip>当满足以下条件时, 将执行抄送; 条件不满足时跳过抄送</template>
+                </ConditionGroupEditor>
+            </el-tab-pane>
+            <el-tab-pane v-if="formPermTabVisible" lazy label="表单权限设置" name="formStep">
+                <div class="drawer_content">
+                    <form-perm-conf v-if="formStepShow" default-perm="R" :show-e="false" v-model:formItems="formItems"
+                        :formHidden="formHiddenMap"
+                        @changePermVal="changePermVal" @changeFormHidden="changeFormHidden" />
+                </div>
+            </el-tab-pane>
+            <el-tab-pane lazy label="通知设置" name="noticeStep">
+                <notice-conf v-if="noticeStepShow" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
+            </el-tab-pane>
+        </el-tabs>
+        <div class="demo-drawer__footer clear">
+            <el-button type="primary" @click="saveCopyer">确 定</el-button>
+            <el-button @click="closeDrawer">取 消</el-button>
+        </div>
+        <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
+        <select-role-dialog v-model:visible="approverRoleVisible" :data="checkedRoleList" @change="sureRoleApprover" />
+    </div>
 </template>
 <script setup>
 import { ref, watch, computed, getCurrentInstance } from 'vue'
@@ -130,6 +237,10 @@ const props = defineProps({
     directorMaxLevel: {
         type: Number,
         default: 3
+    },
+    embed: {
+        type: Boolean,
+        default: false
     }
 });
 let copyerConfig = ref({})
