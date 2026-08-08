@@ -98,8 +98,9 @@
                     dominant-baseline="central" :fill="gw.meta.stroke">{{ gw.meta.title }}</text>
                   <text :x="gw.x + 14" :y="gw.y + 38" text-anchor="start" class="hd-node-desc"
                     dominant-baseline="central">已折叠 · {{ gw.branchCount }} 个分支</text>
-                  <!-- 展开按钮 -->
-                  <g class="hd-fold-btn" :transform="`translate(${gw.x + gw.w - 20}, ${gw.y + 28})`"
+                  <!-- 展开按钮(选中网关时才显示, 与加号一致) -->
+                  <g v-if="selected && selected.key === gw.key" class="hd-fold-btn"
+                    :transform="`translate(${gw.x + gw.w - 20}, ${gw.y + 28})`"
                     @click.stop="toggleFold(gw)">
                     <circle r="10" :fill="gw.meta.stroke" />
                     <path d="M -3 -4 L 3 0 L -3 4" fill="#fff" />
@@ -112,8 +113,9 @@
                   <path v-else-if="gw.meta.symbol === 'plus'" :d="plusPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
                   <circle v-else :cx="gw.x" :cy="gw.y" r="9" fill="none" :stroke="gw.meta.stroke" stroke-width="1.4" />
                   <text :x="gw.x" :y="gw.y + gw.h / 2 + 14" text-anchor="middle" class="hd-gw-title">{{ gw.meta.title }}</text>
-                  <!-- 折叠按钮(菱形下方常显): 分支过多时可折叠节省上下空间 -->
-                  <g class="hd-fold-btn" :transform="`translate(${gw.x}, ${gw.y + gw.h / 2 + 24})`"
+                  <!-- 折叠按钮(选中网关时才显示, 与加号一致) -->
+                  <g v-if="selected && selected.key === gw.key" class="hd-fold-btn"
+                    :transform="`translate(${gw.x}, ${gw.y + gw.h / 2 + 24})`"
                     @click.stop="toggleFold(gw)">
                     <circle r="10" :fill="gw.meta.stroke" />
                     <path d="M -3 -4 L 3 0 L -3 4 M 3 -4 L -3 0 L 3 4" fill="none" stroke="#fff" stroke-width="1.5" />
@@ -140,11 +142,16 @@
                 <rect :x="n.x" :y="n.y" :width="n.w" :height="n.h" rx="8" class="hd-node-body"
                   :class="isTried && nodeHasError(n.node) ? 'hd-node-error' : ''" />
                 <path :d="titlePath(n)" :fill="titleColor(n.node)" class="hd-node-title-bar" />
-                <!-- 标题条左侧类型图标(与竖向 nodeWrap 一致, 顶端对齐) -->
+                <!-- 标题条左侧类型图标(与竖向 nodeWrap 一致, 顶端对齐); 条件节点白底时图标用绿色 -->
                 <use v-if="nodeIcon(n.node)" :href="'#icon-' + nodeIcon(n.node)" :x="n.x + 12" :y="n.y + 7"
-                  width="14" height="14" fill="#fff" />
-                <text :x="n.x + (nodeIcon(n.node) ? 32 : 14)" :y="n.y + 15" text-anchor="start" class="hd-node-title"
-                  dominant-baseline="central" @dblclick.stop="startRename(n)">{{ clip(n.node.nodeName, n.w - 24) }}</text>
+                  width="14" height="14" :fill="condNodeStyle(n.node) ? '#15bc83' : '#fff'" />
+                <text :x="n.x + (nodeIcon(n.node) ? 32 : 14)" :y="n.y + 15" text-anchor="start"
+                  :class="['hd-node-title', condNodeStyle(n.node) ? 'hd-node-title-cond' : '']"
+                  dominant-baseline="central" @dblclick.stop="startRename(n)">{{
+                    clip(n.node.nodeName, n.w - (condNodeStyle(n.node) ? 76 : 24)) }}</text>
+                <!-- 条件节点右上角优先级角标(与竖向 priority-title 一致); 反显缺 priorityLevel 时用分支索引兜底 -->
+                <text v-if="condNodeStyle(n.node)" :x="n.x + n.w - 10" :y="n.y + 15" text-anchor="end"
+                  class="hd-cond-priority" dominant-baseline="central">优先级{{ condPriority(n.node) }}</text>
                 <text :x="n.x + 14" :y="n.y + 38" text-anchor="start" class="hd-node-desc"
                   dominant-baseline="central">{{ clip(desc(n.node), n.w - 36) }}</text>
                 <!-- 内容区右侧箭头(与竖向设计器一致) -->
@@ -913,7 +920,7 @@ function addBranch(gw) {
   const g = gw.node
   if (g.nodeType === 2) {
     const len = g.conditionNodes.length
-    const nc = NodeUtils.createConditionNode(condTitle(g, len), null, len, 0)
+    const nc = NodeUtils.createConditionNode(condTitle(g, len), null, len + 1, 0)
     g.conditionNodes.push(nc)
   } else if (g.nodeType === 7) {
     const len = g.parallelNodes.length + 1
@@ -1170,11 +1177,24 @@ function commitRename() {
   editing.value = null
 }
 function labelW(label) { return String(label).length * 12 }
+/** 条件分支节点(白底标题, 与竖向 auto-judge 一致) */
+function condNodeStyle(node) { return !!node && node.nodeType === 3 }
+/** 条件优先级(与竖向 priority-title 一致, 从1开始; 反显缺 priorityLevel 时用分支索引兜底) */
+function condPriority(node) {
+  if (!node) return ''
+  const p = node.priorityLevel
+  if (p != null && p > 0) return p
+  const info = nodeMap.get(node.nodeId)
+  const idx = info && info.slot.startsWith('conditionNodes:') ? Number(info.slot.split(':')[1]) : -1
+  return idx >= 0 ? idx + 1 : ''
+}
 function titleColor(n) {
   if (!n) return 'rgb(192,192,192)'
   const norm = (c) => String(c).replace(/，/g, ',')
   const has = (lv) => Array.isArray(n.labelList) && n.labelList.some((l) => l.labelValue === lv)
   if (n.isPickCondition) return `rgb(${norm(PICK_CONDITION_COLOR)})`
+  // 条件分支节点: 白底标题(与竖向 auto-judge 一致)
+  if (n.nodeType === 3) return 'rgb(255,255,255)'
   if (n.nodeType === 4 && has('finish_approve_node')) return `rgb(${norm(FINISH_APPROVE_COLOR)})`
   if (n.nodeType === 4 && has('approve_forward_node')) return `rgb(${norm(FORWARD_APPROVE_COLOR)})`
   if (n.nodeType === 4 && Array.isArray(n.buttons?.approvalPage) && n.buttons.approvalPage.some((b) => b.buttonType === 42)) return `rgb(${norm(FORWARD_APPROVE_COLOR)})`
@@ -1250,6 +1270,8 @@ function titleColor(n) {
 .hd-node-error { stroke: #e53935; stroke-width: 2; }
 .hd-node-title-bar { stroke: none; }
 .hd-node-title { fill: #fff; font-size: 13px; font-weight: 500; }
+.hd-node-title-cond { fill: #15bc83; } /* 条件节点: 白底绿字(与竖向一致) */
+.hd-cond-priority { fill: rgba(25, 31, 37, 0.56); font-size: 11px; } /* 条件节点右上角优先级(与竖向 priority-title 一致) */
 .hd-node-desc { fill: #8c8c8c; font-size: 12px; }
 .hd-node-arrow { fill: #c0c4cc; font-size: 12px; }
 .hd-selected .hd-node-body,
