@@ -42,9 +42,15 @@ export function gatewayBranches(gw) {
 }
 
 /** 条件标签文本(条件节点 nodeDisplayName 由 resetConditionNodesErr 刷新为表达式) */
+/** 条件是否已配置表达式 */
+export function condConfigured(node) {
+  return !!node && Array.isArray(node.conditionList) &&
+    node.conditionList.some((g) => (g || []).some((it) => it && it.columnId && it.columnId !== 0));
+}
+/** 条件标签文本: 仅已配置时显示(nodeDisplayName 由面板/refreshCondDisplays 刷新), 未配置留空避免与节点标题重影 */
 export function branchLabelText(node) {
-  if (!node) return "";
-  return node.nodeDisplayName || node.nodeName || "";
+  if (!node || !condConfigured(node)) return "";
+  return node.nodeDisplayName || "";
 }
 
 /**
@@ -146,11 +152,16 @@ export function layoutFlowTree(root, width) {
     u.gx = gcx; u.gy = gcy;
     u.entryTop = { x: gcx, y: sy };           // 跨排折线进入点(菱形顶)
     u.entry = { x: gcx - GW / 2, y: gcy };    // 同排进入点(菱形左顶点)
-    nodes.push({ key: gw.nodeId, node: gw, kind: "gateway", x: gcx, y: gcy, w: GW, h: GW, meta });
+    const gwEntry = { key: gw.nodeId, node: gw, kind: "gateway", x: gcx, y: gcy, w: GW, h: GW, meta };
+    nodes.push(gwEntry);
     const n = u.lanes.length;
     const laneStartX = gcx + BRANCH_IN;
     const mergeX = laneStartX + u.laneW + MERGE;
     u.mergeX = mergeX;
+    // 聚合加号: 分支汇合后继续添加节点(点击弹菜单, 新节点插入为汇合后第一节点 = 网关.childNode)
+    if (n > 0) {
+      gwEntry.addBtn = { x: mergeX + EXIT, y: sy + sectH / 2 - 24 };
+    }
     // 网关 → 泳道线(条件网关带条件标签, 并行网关不带)
     const isCondGw = gw.nodeType === 2;
     u.lanes.forEach((L, i) => {
@@ -235,6 +246,7 @@ export function layoutFlowTree(root, width) {
   const maxRowW = Math.max(...rows.map((row) => row.w));
   return {
     nodes, edges, units, rows,
-    size: { width: maxRowW + PAD * 2, height: y - ROW_GAP + PAD },
+    // width 额外预留结束圆点(距出口 34 + 半径 10 + 边距 12)空间, 避免圆被画布切掉
+    size: { width: maxRowW + PAD * 2 + 56, height: y - ROW_GAP + PAD },
   };
 }

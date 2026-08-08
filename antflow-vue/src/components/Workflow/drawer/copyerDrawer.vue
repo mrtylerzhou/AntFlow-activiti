@@ -39,7 +39,7 @@
         <select-user-dialog v-model:visible="copyerVisible" :data="checkedList" @change="sureCopyer" />
     </el-drawer>
     <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
-    <div v-else class="hd-embed-panel" v-show="visible">
+    <div v-else class="hd-embed-panel set_copyer" v-show="visible">
         <div class="el-drawer__header">
             <span class="drawer-title">抄送人</span>
         </div>

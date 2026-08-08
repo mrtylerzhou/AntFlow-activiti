@@ -27,7 +27,7 @@
         </el-container>
     </el-drawer>
     <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
-    <div v-else class="hd-embed-panel" v-show="visible">
+    <div v-else class="hd-embed-panel set_auto_node" v-show="visible">
         <span class="drawer-title">自动节点设置</span>
         <ConditionGroupEditor
             :conditionList="originalConfigData.conditionList"
@@ -76,6 +76,12 @@ watch(autoNodeConfig1, (val) => {
             nodeName: nodeData.nodeName,
         }
         // 加载时转为前端显示格式 (由 ConditionGroupEditor 内部 watch 处理)
+    }
+})
+// 条件组关系实时同步回 store 配置(横向设计器"切换节点自动保存"依赖 store 中的实时编辑对象)
+watch(() => originalConfigData.value.groupRelation, (v) => {
+    if (autoNodeConfig1.value && autoNodeConfig1.value.value) {
+        autoNodeConfig1.value.value.groupRelation = v
     }
 })
 

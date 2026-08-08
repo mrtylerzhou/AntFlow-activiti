@@ -212,13 +212,13 @@
         </el-container>
     </el-drawer>
     <!-- 横向设计器 embed 模式: 常驻面板内嵌 -->
-    <div v-else class="hd-embed-panel" v-show="visible">
+    <!-- 横向设计器 embed 模式: 常驻面板内嵌 (class=set_condition 继承竖版布局样式) -->
+    <div v-else class="hd-embed-panel set_condition" v-show="visible">
         <div class="condition-priority-bar">
             <span class="drawer-title">条件设置</span>
-            <select v-if="conditionsConfig && conditionsConfig.conditionNodes" v-model="originalConfigData.priorityLevel" class="priority_level">
-                <option v-for="item in conditionsConfig.conditionNodes.length" :value="item" :key="item">优先级{{ item }}
-                </option>
-            </select>
+            <span v-if="conditionsConfig && conditionsConfig.conditionNodes" class="condition-idx">
+                {{ conditionsConfig.conditionNodes[originalConfigData.priorityLevel - 1]?.nodeName || '' }}
+            </span>
         </div>
         <el-container>
             <el-main>
@@ -614,6 +614,56 @@ const convertConditionNodeValue = (data, isPreview = true) => {
         .priority_level {
             position: static;
             width: 110px;
+        }
+    }
+    .condition-idx {
+        font-size: 13px;
+        color: #606266;
+    }
+    /* embed 模式(横向设计器右侧面板较窄): flex 布局 + !important 强制 label 与输入框同一行
+       (竖版 float/inline-block 在窄容器 + scoped 覆盖下不可靠, 用 flex + !important 兜底) */
+    &.hd-embed-panel {
+        .condition_content {
+            ul li div {
+                display: flex !important;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+
+                &>span {
+                    float: none !important;
+                    width: 80px !important;
+                    line-height: 36px !important;
+                    text-align: left;
+                    margin-right: 0 !important;
+                }
+
+                &>div {
+                    display: block !important;
+                    width: auto !important;
+                    flex: 1;
+                    min-width: 0;
+
+                    &>p {
+                        display: flex !important;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        gap: 6px;
+                        margin-bottom: 0;
+                    }
+
+                    select, input[type="text"] {
+                        width: auto !important;
+                        flex: 1;
+                        min-width: 0;
+                        max-width: 100%;
+                    }
+
+                    select {
+                        max-width: 120px;
+                    }
+                }
+            }
         }
     }
     .condition_content {
