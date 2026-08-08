@@ -18,6 +18,7 @@ export const EXIT = 24;      // 汇合竖线到区段出口的水平距离
 export const LANE_GAP = 64;  // 泳道垂直间距(需容纳条件标签与泳道线)
 export const ROW_GAP = 64;   // 排间垂直间距
 export const PAD = 40;       // 画布内边距
+export const FOLDED_W = 210; // 折叠网关单元宽度
 
 export function isGateway(n) {
   return !!n && (n.nodeType === 2 || n.nodeType === 7);
@@ -57,9 +58,11 @@ export function branchLabelText(node) {
  * 布局整棵流程树
  * @param {Object} root 发起人节点(树根, nodeType=1)
  * @param {Number} width 画布可用宽度(触发满宽换行)
+ * @param {Set|Array} [foldedIds] 已折叠网关的 nodeId 集合(折叠态: 分支泳道隐藏, 网关渲染为特殊节点)
  * @returns {{nodes:Array, edges:Array, size:{width,height}, rows:Array, units:Array}}
  */
-export function layoutFlowTree(root, width) {
+export function layoutFlowTree(root, width, foldedIds) {
+  const folded = foldedIds instanceof Set ? foldedIds : new Set(foldedIds || []);
   const nodes = [];   // {key,node,kind:'node'|'gateway',x,y,w,h,meta?}
   const edges = [];   // {id,kind,d,arrow,noArrow?,label?,labelPos?}
   let ec = 0;
@@ -88,6 +91,12 @@ export function layoutFlowTree(root, width) {
   // ---------- 网关区段测量 ----------
   function measureGateway(u) {
     const gw = u.node;
+    if (folded.has(gw.nodeId)) {
+      u.folded = true;
+      u.w = FOLDED_W;
+      u.h = NODE_H;
+      return u;
+    }
     const lanes = gatewayBranches(gw).map((b) => ({ branch: b, w: chainWidth(b) }));
     const laneW = lanes.length ? Math.max(...lanes.map((l) => l.w)) : 0;
     u.lanes = lanes;
@@ -144,6 +153,18 @@ export function layoutFlowTree(root, width) {
   function placeGateway(u, x, y, rowH) {
     const gw = u.node;
     const meta = gatewayMeta(gw);
+    if (u.folded) {
+      // 折叠态: 渲染为特殊节点(矩形+网关色描边), 主链直接穿过(出口=右缘中点 → childNode)
+      u.x = x; u.y = y + (rowH - NODE_H) / 2; u.w = FOLDED_W; u.h = NODE_H;
+      nodes.push({
+        key: gw.nodeId, node: gw, kind: "gateway", x, y: u.y, w: FOLDED_W, h: NODE_H, meta,
+        folded: true, branchCount: gatewayBranches(gw).length,
+      });
+      u.entryTop = { x: x + FOLDED_W / 2, y: u.y };
+      u.entry = { x, y: u.y + NODE_H / 2 };
+      u.exit = { x: x + FOLDED_W, y: u.y + NODE_H / 2 };
+      return;
+    }
     const sectH = u.h;
     const sy = y + (rowH - sectH) / 2;
     u.x = x; u.y = sy; u.h = sectH;

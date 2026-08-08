@@ -11,6 +11,17 @@
       <div class="hd-toolbar">
         <span class="hd-toolbar-title">传统风格设计器</span>
         <el-button size="small" @click="$emit('toggleView')">切换到竖向设计器</el-button>
+        <el-button size="small" @click="toggleFoldAll" :title="hasFolded ? '展开全部网关分支' : '折叠全部网关分支'">
+          <svg v-if="!hasFolded" width="14" height="14" viewBox="0 0 16 16" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M4 5 L8 9 L12 5 M4 9 L8 13 L12 9" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <svg v-else width="14" height="14" viewBox="0 0 16 16" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M5 4 L9 8 L5 12 M9 4 L13 8 L9 12" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ hasFolded ? '展开全部' : '折叠全部' }}
+        </el-button>
         <span class="hd-spacer"></span>
         <span class="hd-zoom">
           <el-button size="small" @click="zoomOut">缩小</el-button>
@@ -44,26 +55,52 @@
                 </g>
               </g>
 
-              <!-- 网关(菱形) -->
+              <!-- 网关 -->
               <g v-for="gw in gateways" :key="'gw-' + gw.key" class="hd-gateway"
                 :class="selected && selected.key === gw.key ? 'hd-selected' : ''" @click.stop="selectGateway(gw)">
-                <polygon :points="gwPoints(gw)" :fill="gw.meta.fill" :stroke="gw.meta.stroke" stroke-width="1.5" />
-                <path v-if="gw.meta.symbol === 'cross'" :d="crossPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
-                <path v-else-if="gw.meta.symbol === 'plus'" :d="plusPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
-                <circle v-else :cx="gw.x" :cy="gw.y" r="9" fill="none" :stroke="gw.meta.stroke" stroke-width="1.4" />
-                <text :x="gw.x" :y="gw.y + gw.h / 2 + 14" text-anchor="middle" class="hd-gw-title">{{ gw.meta.title }}</text>
-                <!-- 选中网关: 下方加分支按钮 -->
-                <g v-if="selected && selected.key === gw.key" class="hd-add-branch"
-                  :transform="`translate(${gw.x}, ${gw.y + gw.h / 2 + 26})`" @click.stop="addBranch(gw)">
-                  <circle r="10" fill="#3296fa" />
-                  <path d="M -4 0 H 4 M 0 -4 V 4" stroke="#fff" stroke-width="2" fill="none" />
-                </g>
-                <!-- 聚合加号: 分支汇合后继续添加节点(点击弹节点菜单) -->
-                <g v-if="gw.addBtn" class="hd-gw-add" :transform="`translate(${gw.addBtn.x}, ${gw.addBtn.y})`"
-                  @click.stop="openGwAddMenu(gw)">
-                  <circle r="10" fill="#3296fa" />
-                  <path d="M -4 0 H 4 M 0 -4 V 4" stroke="#fff" stroke-width="2" fill="none" />
-                </g>
+                <!-- 折叠态: 特殊节点(矩形 + 网关色), 分支泳道隐藏, 主链直连 -->
+                <template v-if="gw.folded">
+                  <rect :x="gw.x" :y="gw.y" :width="gw.w" :height="gw.h" rx="8" class="hd-folded-body"
+                    :fill="gw.meta.fill" :stroke="gw.meta.stroke" />
+                  <use :href="'#icon-' + gwIcon(gw)" :x="gw.x + 12" :y="gw.y + 8" width="14" height="14"
+                    :fill="gw.meta.stroke" />
+                  <text :x="gw.x + 32" :y="gw.y + 15" text-anchor="start" class="hd-node-title"
+                    dominant-baseline="central" :fill="gw.meta.stroke">{{ gw.meta.title }}</text>
+                  <text :x="gw.x + 14" :y="gw.y + 38" text-anchor="start" class="hd-node-desc"
+                    dominant-baseline="central">已折叠 · {{ gw.branchCount }} 个分支</text>
+                  <!-- 展开按钮 -->
+                  <g class="hd-fold-btn" :transform="`translate(${gw.x + gw.w - 20}, ${gw.y + 28})`"
+                    @click.stop="toggleFold(gw)">
+                    <circle r="10" :fill="gw.meta.stroke" />
+                    <path d="M -3 -4 L 3 0 L -3 4" fill="#fff" />
+                  </g>
+                </template>
+                <!-- 展开态: 菱形 + 分支泳道 -->
+                <template v-else>
+                  <polygon :points="gwPoints(gw)" :fill="gw.meta.fill" :stroke="gw.meta.stroke" stroke-width="1.5" />
+                  <path v-if="gw.meta.symbol === 'cross'" :d="crossPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
+                  <path v-else-if="gw.meta.symbol === 'plus'" :d="plusPath(gw)" :stroke="gw.meta.stroke" stroke-width="1.4" fill="none" />
+                  <circle v-else :cx="gw.x" :cy="gw.y" r="9" fill="none" :stroke="gw.meta.stroke" stroke-width="1.4" />
+                  <text :x="gw.x" :y="gw.y + gw.h / 2 + 14" text-anchor="middle" class="hd-gw-title">{{ gw.meta.title }}</text>
+                  <!-- 折叠按钮(菱形下方常显): 分支过多时可折叠节省上下空间 -->
+                  <g class="hd-fold-btn" :transform="`translate(${gw.x}, ${gw.y + gw.h / 2 + 24})`"
+                    @click.stop="toggleFold(gw)">
+                    <circle r="10" :fill="gw.meta.stroke" />
+                    <path d="M -3 -4 L 3 0 L -3 4 M 3 -4 L -3 0 L 3 4" fill="none" stroke="#fff" stroke-width="1.5" />
+                  </g>
+                  <!-- 选中网关: 下方加分支按钮 -->
+                  <g v-if="selected && selected.key === gw.key" class="hd-add-branch"
+                    :transform="`translate(${gw.x}, ${gw.y + gw.h / 2 + 44})`" @click.stop="addBranch(gw)">
+                    <circle r="10" fill="#3296fa" />
+                    <path d="M -4 0 H 4 M 0 -4 V 4" stroke="#fff" stroke-width="2" fill="none" />
+                  </g>
+                  <!-- 聚合加号: 分支汇合后继续添加节点(点击弹节点菜单) -->
+                  <g v-if="gw.addBtn" class="hd-gw-add" :transform="`translate(${gw.addBtn.x}, ${gw.addBtn.y})`"
+                    @click.stop="openGwAddMenu(gw)">
+                    <circle r="10" fill="#3296fa" />
+                    <path d="M -4 0 H 4 M 0 -4 V 4" stroke="#fff" stroke-width="2" fill="none" />
+                  </g>
+                </template>
               </g>
 
               <!-- 普通节点 -->
@@ -148,7 +185,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch, provide, nextTick, getCurrentInstance } from 'vue'
 import { useStore } from '@/store/modules/workflow'
 import $func from '@/utils/antflow/index'
-import { layoutFlowTree } from './layout.js'
+import { layoutFlowTree, isGateway } from './layout.js'
 import { bgColors, PICK_CONDITION_COLOR, FINISH_APPROVE_COLOR, FORWARD_APPROVE_COLOR,
   AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
@@ -181,12 +218,76 @@ const layoutRef = ref({ nodes: [], edges: [], size: { width: 800, height: 600 },
 const canvasRef = ref(null)
 const canvasWidth = ref(1000)
 const panelCollapsed = ref(false)
+// 折叠的网关 nodeId 集合(视图状态, 不修改数据)
+const collapsedGwIds = ref(new Set())
 
 function relayout() {
   const w = canvasRef.value ? canvasRef.value.clientWidth - 8 : 1000
   canvasWidth.value = Math.max(w, 360)
-  layoutRef.value = layoutFlowTree(rootNode.value, canvasWidth.value)
+  layoutRef.value = layoutFlowTree(rootNode.value, canvasWidth.value, collapsedGwIds.value)
   rebuildNodeMap()
+}
+/** 折叠/展开网关(折叠=隐藏分支泳道, 渲染为特殊节点; 视图状态, 数据零改动) */
+function toggleFold(gw) {
+  const s = new Set(collapsedGwIds.value)
+  if (s.has(gw.node.nodeId)) s.delete(gw.node.nodeId)
+  else s.add(gw.node.nodeId)
+  collapsedGwIds.value = s
+  relayout()
+}
+/** 遍历树收集所有网关节点 */
+function collectGateways(node) {
+  const list = []
+  const walk = (n) => {
+    if (!n) return
+    if (isGateway(n)) list.push(n)
+    if (n.childNode) walk(n.childNode)
+    ;(n.conditionNodes || []).forEach((c) => walk(c))
+    ;(n.parallelNodes || []).forEach((p) => walk(p))
+  }
+  walk(node)
+  return list
+}
+/** 节点所属的祖先网关 id(分支内节点在 autoFold 时保护所在网关) */
+function ancestorGatewayId(nodeId) {
+  let p = nodeMap.get(nodeId)
+  let cur = p && p.parent
+  const seen = new Set()
+  while (cur && !seen.has(cur.nodeId)) {
+    seen.add(cur.nodeId)
+    if (isGateway(cur)) return cur.nodeId
+    cur = (nodeMap.get(cur.nodeId) || {}).parent
+  }
+  return null
+}
+const FOLD_THRESHOLD = 5
+/** 分支数超过阈值的网关在移开焦点时自动折叠(exceptId 所在网关除外, 保留正在编辑的网关) */
+function autoFoldBigGateways(exceptId) {
+  const s = new Set(collapsedGwIds.value)
+  let changed = false
+  collectGateways(rootNode.value).forEach((gw) => {
+    const cnt = (gw.nodeType === 2 ? (gw.conditionNodes || []) : (gw.parallelNodes || [])).length
+    if (cnt > FOLD_THRESHOLD && gw.nodeId !== exceptId && !s.has(gw.nodeId)) {
+      s.add(gw.nodeId)
+      changed = true
+    }
+  })
+  if (changed) {
+    collapsedGwIds.value = s
+    relayout()
+  }
+}
+/** 工具栏: 一键折叠/展开全部可折叠网关(有分支的网关) */
+const hasFolded = computed(() => collapsedGwIds.value.size > 0)
+function toggleFoldAll() {
+  const foldable = collectGateways(rootNode.value)
+    .filter((gw) => (gw.nodeType === 2 ? (gw.conditionNodes || []).length : (gw.parallelNodes || []).length) > 0)
+    .map((gw) => gw.nodeId)
+  const s = new Set(collapsedGwIds.value)
+  if (s.size > 0) s.clear()
+  else foldable.forEach((id) => s.add(id))
+  collapsedGwIds.value = s
+  relayout()
 }
 
 const nodeRects = computed(() => layoutRef.value.nodes.filter((n) => n.kind === 'node'))
@@ -252,11 +353,13 @@ function flushCurrent() {
 
 function selectNode(n) {
   flushCurrent()
+  autoFoldBigGateways(ancestorGatewayId(n.node.nodeId))
   selected.value = { key: n.key, node: n.node, uid: ++uidCounter, kind: 'node' }
   openConfig(n.node)
 }
 function selectGateway(gw) {
   flushCurrent()
+  autoFoldBigGateways(gw.node.nodeId)
   selected.value = { key: gw.key, node: gw.node, uid: ++uidCounter, kind: 'gateway', storeKey: 'condition' }
   closeAllDrawers()
   if (gw.node.nodeType === 2) {
@@ -266,6 +369,7 @@ function selectGateway(gw) {
 }
 function clearSelect() {
   flushCurrent()
+  autoFoldBigGateways(null)
   selected.value = null
   closeAllDrawers()
 }
@@ -682,6 +786,14 @@ function nodeIcon(node) {
   if (node.nodeType === 1) return ''
   return 'approve'
 }
+/** 网关折叠态图标(按网关类型) */
+function gwIcon(gw) {
+  const k = gw.meta && gw.meta.kind
+  if (k === 'parallel') return 'parallel-approve'
+  if (k === 'inclusive') return 'parallel-condition'
+  if (k === 'exclusive-dynamic') return 'dynamic-condition'
+  return 'condition'
+}
 
 // ---------- 双击节点标题重命名 ----------
 const editing = ref(null) // {node, x, y, w}
@@ -790,6 +902,10 @@ function titleColor(n) {
 .hd-gateway { cursor: pointer; }
 .hd-gw-add { cursor: pointer; }
 .hd-gw-add:hover circle { fill: #1e83e9; }
+.hd-folded-body { fill: #fff; stroke-width: 1.5; }
+.hd-selected .hd-folded-body { stroke: #3296fa; stroke-width: 2.5; }
+.hd-fold-btn { cursor: pointer; }
+.hd-fold-btn:hover circle { opacity: 0.85; }
 .hd-gw-title { font-size: 11px; fill: #8c8c8c; }
 .hd-connector { cursor: crosshair; }
 .hd-connector:hover { r: 9; }
