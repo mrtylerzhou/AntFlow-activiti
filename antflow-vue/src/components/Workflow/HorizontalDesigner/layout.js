@@ -143,10 +143,11 @@ export function layoutFlowTree(root, width, foldedIds) {
       c = c.childNode;
     }
     // 泳道末端 → 汇合竖线(箭头)
+    // 画在泳道节点底边下方 4px(cy+BR_H/2+4), 避开与该泳道 childNode 链节点(中心 y=cy)同 y 水平重叠
     const lastRight = x + BR_W;
     const mergeX = unit.mergeX;
     if (unit.lanes.length > 1 || unit.node.childNode) {
-      edges.push({ id: eid(), kind: "lane-out", d: `M ${lastRight} ${cy} H ${mergeX}`, arrow: true });
+      edges.push({ id: eid(), kind: "lane-out", d: `M ${lastRight} ${cy + BR_H / 2 + 4} H ${mergeX}`, arrow: true });
     }
   }
 
@@ -184,20 +185,20 @@ export function layoutFlowTree(root, width, foldedIds) {
       gwEntry.addBtn = { x: mergeX + EXIT, y: sy + sectH / 2 - 24 };
     }
     // 网关 → 泳道线(条件网关带条件标签, 并行网关不带)
+    // 改用斜线: M (sx) (gcy) L (laneStartX) (lcy+BR_H/2+4), 跳过泳道节点 y 范围(cy), 视觉上不穿过泳道 1-5 区域
     const isCondGw = gw.nodeType === 2;
     u.lanes.forEach((L, i) => {
       const lcy = sy + i * (BR_H + LANE_GAP) + BR_H / 2;
       L.cy = lcy;
       const sx = gcx + GW / 2;
-      const midX = sx + 6;
       const laneEdge = {
         id: eid(), kind: "lane-in", arrow: true,
-        d: `M ${sx} ${gcy} H ${midX} V ${lcy} H ${laneStartX}`,
+        d: `M ${sx} ${gcy} L ${laneStartX} ${lcy + BR_H / 2 + 4}`,
       };
       if (isCondGw) {
         const branches = gatewayBranches(gw);
         laneEdge.label = branchLabelText(branches[i]);
-        laneEdge.labelPos = { x: midX + 10, y: (gcy + lcy) / 2 };
+        laneEdge.labelPos = { x: (sx + laneStartX) / 2, y: (gcy + lcy) / 2 };
         laneEdge.condNode = branches[i];
         laneEdge.condIndex = i;
       }
@@ -205,10 +206,11 @@ export function layoutFlowTree(root, width, foldedIds) {
     });
     // 泳道摆放
     u.lanes.forEach((L) => placeBranchChain(L, laneStartX, L.cy, u));
-    // 汇合竖线 + 出口
+    // 汇合竖线 + 出口(汇合竖线底 = 最低泳道 lane-out 终点, 避免断点)
     if (n > 0) {
       const topY = sy + BR_H / 2;
-      const botY = sy + sectH - BR_H / 2;
+      const maxLcy = Math.max(...u.lanes.map((L) => L.cy));
+      const botY = maxLcy + BR_H / 2 + 4;
       edges.push({ id: eid(), kind: "merge", d: `M ${mergeX} ${topY} V ${botY}`, noArrow: true });
       u.exit = { x: mergeX + EXIT, y: sy + sectH / 2 };
       if (gw.childNode) {
