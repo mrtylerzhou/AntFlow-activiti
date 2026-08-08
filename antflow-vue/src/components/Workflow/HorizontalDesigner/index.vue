@@ -22,6 +22,16 @@
           </svg>
           {{ hasFolded ? '展开全部' : '折叠全部' }}
         </el-button>
+        <el-button size="small" @click="relLinesHidden = !relLinesHidden"
+          :title="relLinesHidden ? '显示退回/跳转连线' : '隐藏退回/跳转连线(仅隐藏虚线, 不影响主流程连线)'">
+          <svg width="14" height="14" viewBox="0 0 16 16" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M1 8 C 3.5 3.5, 12.5 3.5, 15 8 C 12.5 12.5, 3.5 12.5, 1 8 Z" fill="none"
+              stroke="currentColor" stroke-width="1.5" />
+            <path v-if="relLinesHidden" d="M2 2 L14 14" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" />
+          </svg>
+          {{ relLinesHidden ? '显示连线' : '隐藏连线' }}
+        </el-button>
         <span class="hd-spacer"></span>
         <span class="hd-zoom">
           <el-button size="small" @click="zoomOut">缩小</el-button>
@@ -52,6 +62,26 @@
                   :transform="`translate(${e.labelPos.x}, ${e.labelPos.y})`" @click.stop="openCondition(e)">
                   <rect x="-2" y="-10" :width="labelW(e.label) + 4" height="16" rx="3" class="hd-label-bg" />
                   <text x="0" y="0" dominant-baseline="central" class="hd-label-text">{{ e.label }}</text>
+                </g>
+              </g>
+
+              <!-- 退回/跳转关系线(虚线, 点击选中可删除; 可整体隐藏, 不影响主流程连线) -->
+              <g v-if="!relLinesHidden" v-for="rl in relationEdges" :key="rl.id" class="hd-rel"
+                :class="selectedRel && selectedRel.id === rl.id ? 'hd-rel-sel' : ''"
+                @click.stop="selectedRel = (selectedRel && selectedRel.id === rl.id) ? null : rl">
+                <path :d="rl.d" :class="rl.kind === 'back' ? 'hd-rel-back' : 'hd-rel-fwd'"
+                  marker-end="url(#hd-arrow)" />
+                <g :transform="`translate(${relLabelPos(rl).x}, ${relLabelPos(rl).y})`" class="hd-rel-label">
+                  <rect x="-4" y="-11" :width="labelW(rl.label) + 8" height="18" rx="9"
+                    :class="rl.kind === 'back' ? 'hd-rel-label-bg-back' : 'hd-rel-label-bg-fwd'" />
+                  <text x="0" y="0" dominant-baseline="central" class="hd-rel-label-text">{{ rl.label }}</text>
+                </g>
+                <!-- 选中时: 删除按钮(放标签右侧, 与标签同一水平线, 避免超出画布上下边界被截断) -->
+                <g v-if="selectedRel && selectedRel.id === rl.id" class="hd-del"
+                  :transform="`translate(${relLabelPos(rl).x + labelW(rl.label) / 2 + 16}, ${relLabelPos(rl).y})`"
+                  @click.stop="delRelation(rl)">
+                  <circle r="9" fill="#e53935" />
+                  <path d="M -3.5 -3.5 L 3.5 3.5 M 3.5 -3.5 L -3.5 3.5" stroke="#fff" stroke-width="1.6" fill="none" />
                 </g>
               </g>
 
@@ -105,7 +135,7 @@
 
               <!-- 普通节点 -->
               <g v-for="n in nodeRects" :key="'n-' + n.key" class="hd-node"
-                :class="selected && selected.key === n.key ? 'hd-selected' : ''"
+                :class="[selected && selected.key === n.key ? 'hd-selected' : '', relTargetKey === n.key ? 'hd-rel-target' : '']"
                 @mouseover="hoverKey = n.key" @mouseleave="hoverKey = null" @click.stop="selectNode(n)">
                 <rect :x="n.x" :y="n.y" :width="n.w" :height="n.h" rx="8" class="hd-node-body"
                   :class="isTried && nodeHasError(n.node) ? 'hd-node-error' : ''" />
@@ -120,6 +150,21 @@
                 <!-- 内容区右侧箭头(与竖向设计器一致) -->
                 <text :x="n.x + n.w - 16" :y="n.y + 38" text-anchor="middle" class="hd-node-arrow"
                   dominant-baseline="central">❯</text>
+                <!-- 6个退回/跳转交互点(仅审批类节点, 悬停节点/选中/正在拖线时显示; 连线隐藏时一并隐藏): 顶部/底部各3 -->
+                <template v-if="!relLinesHidden && isBtnNode(n.node) && (hoverKey === n.key || (selected && selected.key === n.key) || (relDrag && relDrag.fromNode === n))">
+                  <g v-for="(d, di) in relDots(n)" :key="'rel' + di" class="hd-rel-dot"
+                    :transform="`translate(${d.x}, ${d.y})`"
+                    @mousedown.stop="startRelDrag($event, n, d.mode)">
+                    <title>{{ relDotTip(d.mode) }}</title>
+                    <circle r="4.5" :class="relDotCls(d.mode)" stroke="#fff" stroke-width="1" />
+                  </g>
+                </template>
+                <!-- 目标连接点: 拖线将要落到该节点时显示 -->
+                <g v-if="relTargetKey === n.key" class="hd-rel-target-dot"
+                  :transform="`translate(${n.x + n.w / 2}, ${n.y + n.h / 2})`">
+                  <circle r="9" fill="none" stroke="#7c4dff" stroke-width="2" class="hd-rel-target-ring" />
+                  <circle r="3" fill="#7c4dff" />
+                </g>
                 <!-- 操作点(拖线新建) -->
                 <g v-if="hoverKey === n.key || (selected && selected.key === n.key)"
                   :transform="`translate(${n.x + n.w}, ${n.y + n.h / 2})`">
@@ -149,6 +194,7 @@
 
               <!-- 拖线临时线 -->
               <path v-if="dragging" :d="tempD" class="hd-temp" />
+              <path v-if="relDrag" :d="relTempD" class="hd-temp-rel" />
             </svg>
           </div>
         </div>
@@ -220,6 +266,8 @@ const canvasWidth = ref(1000)
 const panelCollapsed = ref(false)
 // 折叠的网关 nodeId 集合(视图状态, 不修改数据)
 const collapsedGwIds = ref(new Set())
+// 退回/跳转关系线(虚线)显隐: 仅隐藏关系线, 主流程固定连线不受影响
+const relLinesHidden = ref(false)
 
 function relayout() {
   const w = canvasRef.value ? canvasRef.value.clientWidth - 8 : 1000
@@ -334,6 +382,15 @@ const CFG_MAP = {
   condition: () => store.conditionsConfig1,
   autoNode: () => store.autoNodeConfig1,
 }
+/** store 配置 setter(整体替换 value 引用, 触发抽屉 watch 即时刷新面板) */
+const CFG_SET = {
+  approver: (p) => setApproverConfig(p),
+  promoter: (p) => setPromoterConfig(p),
+  copyer: (p) => setCopyerConfig(p),
+  copyerV2: (p) => setCopyerConfigV2(p),
+  condition: (p) => setConditionsConfig(p),
+  autoNode: (p) => setAutoNodeConfig(p),
+}
 
 /**
  * 切换选中前, 把上一节点正在面板中编辑的数据(实时变更, 无需点"确定")合并回树
@@ -354,12 +411,14 @@ function flushCurrent() {
 function selectNode(n) {
   flushCurrent()
   autoFoldBigGateways(ancestorGatewayId(n.node.nodeId))
+  selectedRel.value = null
   selected.value = { key: n.key, node: n.node, uid: ++uidCounter, kind: 'node' }
   openConfig(n.node)
 }
 function selectGateway(gw) {
   flushCurrent()
   autoFoldBigGateways(gw.node.nodeId)
+  selectedRel.value = null
   selected.value = { key: gw.key, node: gw.node, uid: ++uidCounter, kind: 'gateway', storeKey: 'condition' }
   closeAllDrawers()
   if (gw.node.nodeType === 2) {
@@ -371,6 +430,7 @@ function clearSelect() {
   flushCurrent()
   autoFoldBigGateways(null)
   selected.value = null
+  selectedRel.value = null
   closeAllDrawers()
 }
 function closeAllDrawers() {
@@ -528,11 +588,279 @@ function onNodeCreated() {
   relayout()
 }
 
+// ---------- 退回/跳转关系线(6个交互点拖线) ----------
+// 只有带按钮权限设置的审批类节点显示6个交互点(自动推进18/自动退回19无按钮面板, 不显示)
+const BTN_TYPES = [4, 12, 17, 20, 21]
+function isBtnNode(node) { return !!node && BTN_TYPES.includes(node.nodeType) }
+
+/** 6个交互点位置(顶3+底3): 左=不同意退回重新开始, 中=不同意退回回到当前, 右=同意跳转 */
+function relDots(n) {
+  const xs = [n.x + n.w * 0.25, n.x + n.w * 0.5, n.x + n.w * 0.75]
+  return [
+    { x: xs[0], y: n.y, mode: 'back4' },
+    { x: xs[1], y: n.y, mode: 'back5' },
+    { x: xs[2], y: n.y, mode: 'forward' },
+    { x: xs[0], y: n.y + n.h, mode: 'back4' },
+    { x: xs[1], y: n.y + n.h, mode: 'back5' },
+    { x: xs[2], y: n.y + n.h, mode: 'forward' },
+  ]
+}
+
+/** 当前节点之后的所有审批人节点(向后连的目标, 与 availableForwardNodes 同逻辑) */
+function afterNodeIds(nodeId) {
+  const result = new Set()
+  const visited = new Set()
+  const walk = (node) => {
+    if (!node || visited.has(node.nodeId)) return
+    visited.add(node.nodeId)
+    if (node.nodeType === 4 && node.nodeId !== nodeId) result.add(node.nodeId)
+    if (node.nodeType === 7) {
+      ;(node.parallelNodes || []).forEach((p) => walk(p))
+      walk(node.childNode)
+      return
+    }
+    if (node.nodeType === 2) (node.conditionNodes || []).forEach((c) => walk(c))
+    walk(node.childNode)
+  }
+  walk((nodeMap.get(nodeId) || {}).node?.childNode)
+  return result
+}
+
+/** 当前节点之前的所有发起人+审批人节点(向前连的目标, 与 availableBackNodes 同逻辑) */
+function beforeNodeIds(nodeId) {
+  const result = new Set()
+  const seen = new Set()
+  let info = nodeMap.get(nodeId)
+  let cur = info && info.parent
+  while (cur && !seen.has(cur.nodeId)) {
+    seen.add(cur.nodeId)
+    if (cur.nodeType === 1 || cur.nodeType === 4) result.add(cur.nodeId)
+    cur = (nodeMap.get(cur.nodeId) || {}).parent
+  }
+  return result
+}
+
+/** 某模式允许落点的目标 id 集合
+ * 方向语义(按业务直觉): 退回目标在流程前面(发起人方向), 跳转目标在流程后面(结束方向)
+ * - back4/back5(左/中点, 不同意退回): 连「前」= 前面的发起人+审批人(beforeNodeIds)
+ * - forward(右点, 同意跳转): 连「后」= 后面的审批人(afterNodeIds)
+ */
+function relTargetIds(mode, nodeId) {
+  return mode === 'forward' ? afterNodeIds(nodeId) : beforeNodeIds(nodeId)
+}
+
+const relDrag = ref(null) // {mode, from:{x,y}, x, y, fromNode}
+const relTempD = ref('')
+const relTargetKey = ref(null) // 当前鼠标下可落的目标节点 key(高亮)
+
+function startRelDrag(ev, n, mode) {
+  const p = svgPoint(ev.clientX, ev.clientY)
+  const dots = relDots(n)
+  let from = dots[0]
+  let best = 1e9
+  dots.forEach((d) => {
+    if (d.mode !== mode) return
+    const dist = Math.hypot(d.x - p.x, d.y - p.y)
+    if (dist < best) { best = dist; from = d }
+  })
+  relDrag.value = { mode, from: { x: from.x, y: from.y }, x: p.x, y: p.y, fromNode: n }
+  relTempD.value = `M ${from.x} ${from.y} C ${from.x} ${(from.y + p.y) / 2}, ${p.x} ${(from.y + p.y) / 2}, ${p.x} ${p.y}`
+  const onMove = (e) => {
+    const q = svgPoint(e.clientX, e.clientY)
+    relDrag.value = { ...relDrag.value, x: q.x, y: q.y }
+    relTempD.value = `M ${from.x} ${from.y} C ${from.x} ${(from.y + q.y) / 2}, ${q.x} ${(from.y + q.y) / 2}, ${q.x} ${q.y}`
+    // 命中节点 → 高亮可落目标
+    const ids = relTargetIds(mode, n.node.nodeId)
+    let hit = null
+    for (const nn of layoutRef.value.nodes) {
+      if (nn.kind !== 'node') continue
+      if (q.x >= nn.x && q.x <= nn.x + nn.w && q.y >= nn.y && q.y <= nn.y + nn.h) { hit = nn; break }
+    }
+    relTargetKey.value = hit && ids.has(hit.node.nodeId) ? hit.key : null
+  }
+  const onUp = (e) => {
+    const q = svgPoint(e.clientX, e.clientY)
+    const ids = relTargetIds(mode, n.node.nodeId)
+    let target = null
+    for (const nn of layoutRef.value.nodes) {
+      if (nn.kind !== 'node') continue
+      if (q.x >= nn.x && q.x <= nn.x + nn.w && q.y >= nn.y && q.y <= nn.y + nn.h) { target = nn; break }
+    }
+    relDrag.value = null
+    relTempD.value = ''
+    relTargetKey.value = null
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+    dragCleanup = null
+    if (target && ids.has(target.node.nodeId) && target.key !== n.key) {
+      applyRelation(mode, n.node, target.node)
+    }
+  }
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+  dragCleanup = onUp
+}
+
+/** 建立退回/跳转关系(写入节点字段 + 同步右侧面板 store 副本) */
+function applyRelation(mode, fromNode, targetNode) {
+  if (mode === 'back4' || mode === 'back5') {
+    fromNode.disagreeBackType = mode === 'back4' ? 4 : 5
+    fromNode.disagreeBackToNodeId = targetNode.nodeId
+  } else {
+    fromNode.isApproveForwardNode = true
+    fromNode.forwardType = 2
+    fromNode.forwardNodeIds = [targetNode.nodeId]
+    if (!Array.isArray(fromNode.labelList)) fromNode.labelList = []
+    if (!fromNode.labelList.some((l) => l && l.labelValue === 'approve_forward_node')) {
+      fromNode.labelList.push({ labelValue: 'approve_forward_node', labelName: '同意推进节点' })
+    }
+  }
+  syncRelationToPanel(fromNode)
+  relayout()
+}
+
+/** 若当前节点正被选中, 把退回/跳转字段同步到面板 store 副本(按钮权限下拉实时更新)
+ * 注意: 必须整体替换 cfg.value 引用 —— 抽屉 watch(store.xxxConfig) 无 deep, 只认引用变化;
+ * 原地 Object.assign 改字段引用不变, 面板不会刷新(要切走再切回才生效) */
+function syncRelationToPanel(node) {
+  const sel = selected.value
+  if (!sel || !sel.storeKey || sel.node !== node) return
+  const cfg = CFG_MAP[sel.storeKey]()
+  if (!cfg || !cfg.value || cfg.id !== sel.uid) return
+  const merged = {
+    ...cfg.value,
+    disagreeBackType: node.disagreeBackType ?? null,
+    disagreeBackToNodeId: node.disagreeBackToNodeId ?? null,
+    isApproveForwardNode: node.isApproveForwardNode ?? false,
+    forwardType: node.forwardType ?? null,
+    forwardNodeIds: node.forwardNodeIds ?? null,
+    labelList: node.labelList,
+  }
+  const setter = CFG_SET[sel.storeKey]
+  if (setter) setter({ value: merged, flag: cfg.flag, id: cfg.id })
+}
+
+/** 已配置的退回/跳转关系线(虚线): 退回从底部绕弧, 跳转从顶部绕弧, 避免与主链交叉 */
+const relationEdges = computed(() => {
+  const list = []
+  const byId = new Map()
+  layoutRef.value.nodes.forEach((n) => byId.set(n.node.nodeId, n))
+  layoutRef.value.nodes.forEach((n) => {
+    const node = n.node
+    if (!isBtnNode(node)) return
+    if (node.disagreeBackType === 4 || node.disagreeBackType === 5) {
+      if (node.disagreeBackToNodeId) {
+        const t = byId.get(node.disagreeBackToNodeId)
+        if (t) {
+          list.push({
+            id: 'relb-' + node.nodeId, kind: 'back', from: n, to: t,
+            label: node.disagreeBackType === 4 ? '不同意退回·重新开始' : '不同意退回·回到当前',
+            d: relPath(n, t, 'back'),
+          })
+        }
+      }
+    }
+    // 同意跳转: isApproveForwardNode 或 labelList 含 approve_forward_node(反显数据无 isApproveForwardNode 字段, 以后端返回的 label 标记为准, 与 ButtonStepPanel.loadApproveForwardConfig 判断一致)
+    const hasApproveFwdLabel = Array.isArray(node.labelList) && node.labelList.some((l) => l && l.labelValue === 'approve_forward_node')
+    if ((node.isApproveForwardNode || hasApproveFwdLabel) && node.forwardType === 2 && Array.isArray(node.forwardNodeIds) && node.forwardNodeIds.length) {
+      const t = byId.get(node.forwardNodeIds[0])
+      if (t) {
+        list.push({
+          id: 'relf-' + node.nodeId, kind: 'forward', from: n, to: t,
+          label: '同意跳转', d: relPath(n, t, 'forward'),
+        })
+      }
+    }
+  })
+  return list
+})
+function relPath(n, t, kind) {
+  const sx = n.x + n.w / 2
+  const tx = t.x + t.w / 2
+  if (kind === 'back') {
+    const sy = n.y + n.h, ty = t.y + t.h
+    const dy = Math.max(sy, ty) + 36
+    return `M ${sx} ${sy} C ${sx} ${dy}, ${tx} ${dy}, ${tx} ${ty}`
+  }
+  const sy = n.y, ty = t.y
+  const dy = Math.min(sy, ty) - 36
+  return `M ${sx} ${sy} C ${sx} ${dy}, ${tx} ${dy}, ${tx} ${ty}`
+}
+function relLabelPos(e) {
+  const cx = (e.from.x + e.from.w / 2 + e.to.x + e.to.w / 2) / 2
+  const p = { x: cx, y: e.kind === 'back'
+    ? Math.max(e.from.y + e.from.h, e.to.y + e.to.h) + 24
+    : Math.min(e.from.y, e.to.y) - 24 }
+  return p
+}
+/** 交互点提示文案 */
+function relDotTip(mode) {
+  if (mode === 'back4') return '不同意按钮：退回指定节点（重新开始）——向前(左侧)连线到目标节点'
+  if (mode === 'back5') return '不同意按钮：退回指定节点（回到当前节点）——向前(左侧)连线到目标节点'
+  return '同意按钮：跳至固定节点——向后(右侧)连线到目标节点'
+}
+/** 交互点颜色(左红/中橙/右蓝, 顶底对称) */
+function relDotCls(mode) {
+  if (mode === 'back4') return 'hd-rel-dot-red'
+  if (mode === 'back5') return 'hd-rel-dot-org'
+  return 'hd-rel-dot-blue'
+}
+
+/** 删除关系线(清空节点对应字段 + 同步面板) */
+const selectedRel = ref(null)
+function delRelation(rel) {
+  const node = rel.from.node
+  if (rel.kind === 'back') {
+    node.disagreeBackType = null
+    node.disagreeBackToNodeId = null
+  } else {
+    node.isApproveForwardNode = false
+    node.forwardType = null
+    node.forwardNodeIds = null
+    if (Array.isArray(node.labelList)) {
+      node.labelList = node.labelList.filter((l) => l && l.labelValue !== 'approve_forward_node')
+    }
+  }
+  syncRelationToPanel(node)
+  selectedRel.value = null
+  relayout()
+}
+
 // ---------- 删除 ----------
+/** 清理树中对已删除节点的退回/跳转引用(防止悬空目标) */
+function cleanupRelationRefs(removedIds) {
+  const isRemoved = (id) => removedIds.has(id)
+  const walk = (node) => {
+    if (!node) return
+    if (isRemoved(node.disagreeBackToNodeId)) { node.disagreeBackType = null; node.disagreeBackToNodeId = null }
+    if (node.isApproveForwardNode && Array.isArray(node.forwardNodeIds) && node.forwardNodeIds.some(isRemoved)) {
+      node.isApproveForwardNode = false
+      node.forwardType = null
+      node.forwardNodeIds = null
+      if (Array.isArray(node.labelList)) {
+        node.labelList = node.labelList.filter((l) => l && l.labelValue !== 'approve_forward_node')
+      }
+    }
+    walk(node.childNode)
+    ;(node.conditionNodes || []).forEach((c) => walk(c))
+    ;(node.parallelNodes || []).forEach((p) => walk(p))
+  }
+  walk(rootNode.value)
+}
 function delNode(n) {
   const info = nodeMap.get(n.node.nodeId)
   if (!info || !info.parent) return
+  const removed = new Set()
+  const collect = (node) => {
+    if (!node) return
+    removed.add(node.nodeId)
+    collect(node.childNode)
+    ;(node.conditionNodes || []).forEach((c) => collect(c))
+    ;(node.parallelNodes || []).forEach((p) => collect(p))
+  }
+  collect(n.node)
   info.parent[info.slot] = n.node.childNode
+  cleanupRelationRefs(removed)
   if (selected.value && selected.value.key === n.key) clearSelect()
   relayout()
 }
@@ -569,6 +897,7 @@ function delBranch(n) {
       if (gInfo && gInfo.parent) gInfo.parent[gInfo.slot] = only.childNode
     }
   }
+  cleanupRelationRefs(new Set([gw.nodeId, n.node.nodeId]))
   if (selected.value) clearSelect()
   relayout()
 }
@@ -698,7 +1027,10 @@ function onWheel(ev) {
   zoom.value = Math.min(Math.max(zoom.value + d, 40), 200)
 }
 function onSvgMove() { }
-function onSvgLeave() { hoverKey.value = null }
+function onSvgLeave() {
+  hoverKey.value = null
+  relTargetKey.value = null
+}
 
 // ---------- 尺寸与挂载 ----------
 let resizeObserver = null
@@ -890,6 +1222,29 @@ function titleColor(n) {
 .hd-edge { fill: none; stroke: #8a8a8a; stroke-width: 1.2; }
 .hd-arrow { }
 .hd-temp { fill: none; stroke: #3296fa; stroke-width: 1.5; stroke-dasharray: 6 4; }
+.hd-temp-rel { fill: none; stroke: #7c4dff; stroke-width: 1.8; stroke-dasharray: 6 4; }
+.hd-rel { cursor: pointer; }
+.hd-rel path { fill: none; stroke-width: 1.6; stroke-dasharray: 7 5; }
+.hd-rel-back { stroke: #e53935; }
+.hd-rel-fwd { stroke: #3296fa; }
+.hd-rel-sel path { stroke-width: 2.6; }
+.hd-rel-label { cursor: pointer; }
+.hd-rel-label-bg-back { fill: #fff; stroke: #e53935; stroke-width: 0.8; }
+.hd-rel-label-bg-fwd { fill: #fff; stroke: #3296fa; stroke-width: 0.8; }
+.hd-rel-label-text { fill: #606266; font-size: 12px; }
+.hd-rel-dot { cursor: crosshair; }
+.hd-rel-dot circle { r: 4.5; transition: r 0.15s; }
+.hd-rel-dot:hover circle { r: 6.5; }
+.hd-rel-dot-red { fill: #e53935; }
+.hd-rel-dot-org { fill: #fa8c16; }
+.hd-rel-dot-blue { fill: #3296fa; }
+.hd-rel-target .hd-node-body { stroke: #7c4dff; stroke-width: 2.5; }
+.hd-rel-target-dot { pointer-events: none; }
+.hd-rel-target-ring { animation: hd-rel-pulse 1s ease-in-out infinite; }
+@keyframes hd-rel-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
 .hd-node { cursor: pointer; }
 .hd-node-body { fill: #fff; stroke: #cacaca; stroke-width: 1; }
 .hd-node-error { stroke: #e53935; stroke-width: 2; }
