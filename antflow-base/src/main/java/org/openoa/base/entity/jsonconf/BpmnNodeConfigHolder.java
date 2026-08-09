@@ -340,6 +340,8 @@ public class BpmnNodeConfigHolder {
             tc.setApproveRemind(BpmnNodeTemplateConfJson.ApproveRemindConf.builder()
                     .templateId(remind.getTemplateId())
                     .days(remind.getDays())
+                    .standardMinutes(remind.getStandardMinutes())
+                    .noticeTypes(remind.getNoticeTypes())
                     .build());
         }
 

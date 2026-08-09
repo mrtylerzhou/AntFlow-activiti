@@ -499,7 +499,6 @@ class VoRound19CTest extends BaseTest {
             assertNull(vo.getTemplateId());
             assertNull(vo.getTemplateName());
             assertNull(vo.getDays());
-            assertNull(vo.getDayList());
             assertNull(vo.getIsDel());
             assertNull(vo.getCreateTime());
             assertNull(vo.getCreateUser());
@@ -517,8 +516,7 @@ class VoRound19CTest extends BaseTest {
                     .isInuse(true)
                     .templateId(30L)
                     .templateName("Tmpl")
-                    .days("1,2,3")
-                    .dayList(Arrays.asList(1, 2, 3))
+                    .days(Arrays.asList(1, 2, 3))
                     .isDel(0)
                     .build();
             assertEquals(1L, vo.getId());
@@ -527,8 +525,7 @@ class VoRound19CTest extends BaseTest {
             assertTrue(vo.getIsInuse());
             assertEquals(30L, vo.getTemplateId());
             assertEquals("Tmpl", vo.getTemplateName());
-            assertEquals("1,2,3", vo.getDays());
-            assertEquals(Arrays.asList(1, 2, 3), vo.getDayList());
+            assertEquals(Arrays.asList(1, 2, 3), vo.getDays());
             assertEquals(0, vo.getIsDel());
         }
     }

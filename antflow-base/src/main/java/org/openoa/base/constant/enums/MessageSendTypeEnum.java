@@ -7,6 +7,7 @@ public enum MessageSendTypeEnum implements AfEnumBase{
     MAIL(1, "邮件")
     , MESSAGE(2, "短信"),
     PUSH(3, "APP-PUSH"),
+    IN_SITE(4, "站内信"),
     WECHAT_PUSH(5,"企微消息"),
     DING_TALK_TYPE(6,"钉钉"),
     FEISHU_TYPE(7,"飞书"),

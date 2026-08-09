@@ -55,7 +55,19 @@ public class BpmnNodeTemplateConfJson implements Serializable {
     @NoArgsConstructor
     public static class ApproveRemindConf implements Serializable {
         private Long templateId;
-        private String days;
+        /**
+         * Reminder days after timeout (1~7), day 1 = first 24h after timeout
+         */
+        private List<Integer> days;
+        /**
+         * Node standard time limit in minutes
+         */
+        private Integer standardMinutes;
+        /**
+         * Notice channel codes ({@link org.openoa.base.constant.enums.MessageSendTypeEnum}, incl. IN_SITE=4);
+         * empty means in-site message only
+         */
+        private List<Integer> noticeTypes;
     }
 
     @Data

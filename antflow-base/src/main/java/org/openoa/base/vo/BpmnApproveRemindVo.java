@@ -39,10 +39,17 @@ public class BpmnApproveRemindVo implements Serializable {
     private Long templateId;
     private String templateName;
     /**
-     * days
+     * reminder days after timeout (1~7)
      */
-    private String days;
-    private List<Integer> dayList;
+    private List<Integer> days;
+    /**
+     * node standard time limit in minutes
+     */
+    private Integer standardMinutes;
+    /**
+     * notice channel codes (MessageSendTypeEnum, incl. IN_SITE=4); empty means in-site only
+     */
+    private List<Integer> noticeTypes;
 
     private Integer isDel;
     /**

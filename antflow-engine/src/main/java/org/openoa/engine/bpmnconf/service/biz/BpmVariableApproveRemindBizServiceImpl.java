@@ -9,6 +9,8 @@ import com.google.common.collect.Multimap;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.openoa.base.constant.enums.MessageSendTypeEnum;
+import org.openoa.base.constant.enums.MsgNoticeTypeEnum;
 import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.VariableConfigJson;
 import org.openoa.base.entity.jsonconf.VariableConfigJson.ApproveRemindItem;
@@ -31,6 +33,8 @@ import org.openoa.engine.utils.ReflectionUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -61,6 +65,7 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
 
     /**
      * 执行流程超时提醒
+     * 注意: 本任务必须由外部调度平台每天至多调度一次, 否则同一天会重复发送提醒
      */
     @Override
     public void doTimeoutReminder() {
@@ -122,14 +127,18 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
         //format message content
         InformationTemplateVo informationTemplateVo = getInformationTemplateVo(bpmnTimeoutReminderVariableVo, bpmnApproveRemindVo, detailedUser);
 
-        //send email
-        sendMail(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
+        //resolve channels: empty -> in-site message only
+        List<Integer> noticeTypes = bpmnApproveRemindVo.getNoticeTypes();
+        List<MessageSendTypeEnum> channels = ObjectUtils.isEmpty(noticeTypes)
+                ? Collections.singletonList(IN_SITE)
+                : noticeTypes.stream().map(MessageSendTypeEnum::getEnumByCode)
+                        .filter(Objects::nonNull).collect(Collectors.toList());
 
-        //send message and app push
-        sendMessageAndPush(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
-
-        //set inside message
-        insertUserMessage(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser, informationTemplateVo);
+        //unified dispatch: mail/sms/push/wechat/ding/feishu/in-site all go through adaptor dispatch,
+        //content uses mailTitle/mailContent same as the regular notice path
+        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
+                informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent());
+        UserMsgUtils.sendGeneralPurposeMessages(userMsgVo, channels.toArray(new MessageSendTypeEnum[0]));
     }
     /**
      * query remind variable to map
@@ -255,15 +264,6 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                 continue;
             }
 
-            //calculate days
-            Integer standbyDay = Optional.ofNullable(DateUtil.dateDiff(task.getCreateTime(), new Date(), 1))
-                    .orElse(0L).intValue();
-
-
-            if (standbyDay <= 0) {
-                continue;
-            }
-
             //put values to map
             bpmnTimeoutReminderTaskVoMultimap.put(task.getProcessInstanceId(), BpmnTimeoutReminderTaskVo
                     .builder()
@@ -272,7 +272,6 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                     .elementId(task.getTaskDefinitionKey())
                     .assignee(task.getAssignee())
                     .createTime(task.getCreateTime())
-                    .standbyDay(standbyDay)
                     .build());
         }
         return bpmnTimeoutReminderTaskVoMultimap;
@@ -287,6 +286,19 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
      */
     private InformationTemplateVo getInformationTemplateVo(BpmnTimeoutReminderVariableVo bpmnTimeoutReminderVariableVo,
                                                            BpmnApproveRemindVo bpmnApproveRemindVo, DetailedUser detailedUser) {
+        //no template configured: fall back to PROCESS_TIME_OUT default text
+        if (ObjectUtils.isEmpty(bpmnApproveRemindVo.getTemplateId())) {
+            String content = MsgNoticeTypeEnum.PROCESS_TIME_OUT.getDefaultValue()
+                    .replace("{流程类型}", "")
+                    .replace("{流程名称}", Optional.ofNullable(bpmnTimeoutReminderVariableVo.getProcessName()).orElse(""))
+                    .replace("{流程编号}", Optional.ofNullable(bpmnTimeoutReminderVariableVo.getProcessNumber()).orElse(""));
+            String title = MsgNoticeTypeEnum.PROCESS_TIME_OUT.getDesc();
+            return InformationTemplateVo.builder()
+                    .systemTitle(title).systemContent(content)
+                    .mailTitle(title).mailContent(content)
+                    .noteContent(content)
+                    .build();
+        }
         Map<Integer, String> wildcardCharacterMap = Maps.newHashMap();
         wildcardCharacterMap.put(ONE_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getProcessName());//process name
         wildcardCharacterMap.put(TWO_CHARACTER.getCode(), bpmnTimeoutReminderVariableVo.getProcessNum());//process number
@@ -301,23 +313,6 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                 .wildcardCharacterMap(wildcardCharacterMap)
                 .build());
     }
-    /**
-     * send email
-     *
-     * @param bpmnTimeoutReminderTaskVo
-     * @param emailUrl
-     * @param appUrl
-     * @param emplId
-     * @param detailedUser
-     * @param informationTemplateVo
-     */
-    private void sendMail(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                          DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
-                informationTemplateVo.getMailTitle(), informationTemplateVo.getMailContent());
-        UserMsgUtils.sendGeneralPurposeMessages(userMsgVo, MAIL);
-    }
-
     /**
      * get user's msg
      *
@@ -417,61 +412,30 @@ public class BpmVariableApproveRemindBizServiceImpl implements BpmVariableApprov
                 BpmnApproveRemindVo bpmnApproveRemindVo = JSON.parseObject(approveRemindItem.getContent(), BpmnApproveRemindVo.class);
 
 
-                //if the day list is empty then continue to loop
-                if (ObjectUtils.isEmpty(bpmnApproveRemindVo.getDayList())) {
+                //if the day list is empty or no standard time limit configured then continue to loop
+                if (ObjectUtils.isEmpty(bpmnApproveRemindVo.getDays())
+                        || bpmnApproveRemindVo.getStandardMinutes() == null) {
                     continue;
                 }
 
 
-                //sorted the daylist
-                List<Integer> confDays = bpmnApproveRemindVo.getDayList()
-                        .stream()
-                        .sorted()
-                        .collect(Collectors.toList());
+                //elapsed minutes since task creation
+                long elapsedMinutes = (System.currentTimeMillis() - bpmnTimeoutReminderTaskVo.getCreateTime().getTime()) / 60000;
 
+                //not timeout yet
+                if (elapsedMinutes < bpmnApproveRemindVo.getStandardMinutes()) {
+                    continue;
+                }
 
-                //task's standby days
-                Integer standbyDay = bpmnTimeoutReminderTaskVo.getStandbyDay();
+                //day N after timeout, first 24h after timeout = day 1
+                int overdueDay = (int) ((elapsedMinutes - bpmnApproveRemindVo.getStandardMinutes()) / (24 * 60)) + 1;
 
-                if (confDays.contains(standbyDay)) {
+                if (bpmnApproveRemindVo.getDays().contains(overdueDay)) {
                     //do send message
                     doSendMessage(bpmnTimeoutReminderVariableVo, bpmnTimeoutReminderTaskVo, bpmnApproveRemindVo);
                 }
             }
         }
-    }
-    /**
-     * send insite message
-     *
-     * @param bpmnTimeoutReminderTaskVo
-     * @param emailUrl
-     * @param appUrl
-     * @param emplId
-     * @param detailedUser
-     * @param informationTemplateVo
-     */
-    private void insertUserMessage(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                                   DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
-                informationTemplateVo.getSystemTitle(), informationTemplateVo.getSystemContent());
-        UserMsgUtils.insertUserMessage(userMsgVo);
-    }
-
-    /**
-     * send sms and app push
-     *
-     * @param bpmnTimeoutReminderTaskVo
-     * @param emailUrl
-     * @param appUrl
-     * @param emplId
-     * @param detailedUser
-     * @param informationTemplateVo
-     */
-    private void sendMessageAndPush(BpmnTimeoutReminderTaskVo bpmnTimeoutReminderTaskVo, String emailUrl, String appUrl, String emplId,
-                                    DetailedUser detailedUser, InformationTemplateVo informationTemplateVo) {
-        UserMsgVo userMsgVo = getUserMsgVo(bpmnTimeoutReminderTaskVo, emailUrl, appUrl, emplId, detailedUser,
-                StringUtils.EMPTY, informationTemplateVo.getNoteContent());
-        UserMsgUtils.sendGeneralPurposeMessages(userMsgVo, MESSAGE, PUSH);
     }
 
 }

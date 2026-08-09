@@ -13,7 +13,6 @@ import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.DefaultTemplateVo;
 import org.openoa.base.vo.InformationTemplateVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.InformationTemplateBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnApproveRemindService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.springframework.beans.BeanUtils;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class InformationTemplateBizServiceImpl implements InformationTemplateBizService {
 
-    @Autowired
-    private BpmnApproveRemindService bpmnApproveRemindService;
     @Autowired
     private BpmnConfService bpmnConfService;
     @Autowired

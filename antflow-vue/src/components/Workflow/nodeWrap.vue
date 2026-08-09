@@ -33,8 +33,11 @@
                         :placeholder="defaultText" />
                     <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
                     <i class="anticon anticon-close close" @click="delNode()"></i>
-                    <i v-if="noticeIconShow" class="anticon anticon-notice notice"></i>
-                    <i v-if="labelIconShow" class="anticon anticon-tag label-icon"></i>
+                    <span class="node-badges">
+                        <i v-if="noticeIconShow" class="anticon anticon-notice notice"></i>
+                        <svg-icon v-if="timeoutNoticeIconShow" icon-class="time" class="timeout-notice" />
+                        <i v-if="labelIconShow" class="anticon anticon-tag label-icon"></i>
+                    </span>
                 </template>
             </div>
             <div class="content" @click="setNodeInfo">
@@ -117,10 +120,13 @@
                                     <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName
                                     }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
-                                    <i v-if="item.templateVos && item.templateVos.length > 0"
-                                        class="anticon anticon-notice notice"></i>
-                                    <i v-if="item.labelList && item.labelList.length > 0"
-                                        class="anticon anticon-tag label-icon"></i>
+                                    <span class="node-badges">
+                                        <i v-if="item.templateVos && item.templateVos.length > 0"
+                                            class="anticon anticon-notice notice"></i>
+                                        <svg-icon v-if="hasTimeoutRemind(item)" icon-class="time" class="timeout-notice" />
+                                        <i v-if="item.labelList && item.labelList.length > 0"
+                                            class="anticon anticon-tag label-icon"></i>
+                                    </span>
                                 </div>
 
                                 <div class="content" @click="setNodeInfo(index)">
@@ -209,6 +215,13 @@ let defaultText = computed(() => {
 let noticeIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.templateVos);
 });
+
+/**是否配置了超时提醒: 标准时效非空且选择了提醒天数 */
+const hasTimeoutRemind = (n) => {
+    const vo = n && n.approveRemindVo;
+    return !!vo && vo.standardMinutes != null && !proxy.isEmptyArray(vo.days);
+};
+let timeoutNoticeIconShow = computed(() => hasTimeoutRemind(props.nodeConfig));
 
 let labelIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.labelList);

@@ -98,8 +98,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private InformationTemplateService informationTemplateService;
 
     @Autowired
-    private BpmnApproveRemindService bpmnApproveRemindService;
-    @Autowired
     private BpmnEmployeeInfoProviderService employeeInfoProvider;
     @Autowired
     @Lazy
@@ -355,9 +353,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             }
 
 
-
-            //edit in node approver remind conf
-            bpmnApproveRemindService.editBpmnApproveRemind(bpmnNodeVo);
 
             //get node adaptor
             BpmnNodeAdaptor bpmnNodeAdaptor = nodeAdditionalInfoService.getBpmnNodeAdaptor(bpmnNodeAdpConfEnum);
@@ -1770,7 +1765,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         Map<Long, List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap = null;
         Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap = null;
         Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap = null;
-        Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap = null;
         Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap = new HashMap<>();
         Map<Long, List<BpmnNodeLfFormdataFieldControl>> bpmnNodeFieldControlConfMap = null;
 
@@ -1778,7 +1772,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             bpmnNodeButtonConfMap = getBpmnNodeButtonConfMap(idList);
             bpmnNodeSignUpConfMap = getBpmnNodeSignUpConfMap(idList);
             bpmnTemplateVoMap = getBpmnTemplateVoMap(idList);
-            bpmnApproveRemindVoMap = getBpmnApproveRemindVoMap(idList);
 
             Integer isLowCodeFlow = bpmnNodeList.get(0).getIsLowCodeFlow();
             Integer extraFlags = bpmnNodeList.get(0).getConfExtraFlags();
@@ -1799,7 +1792,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 bpmnNodeVo = getBpmnNodeVoFromJson(bpmnNode, bpmnNodeToMap, conditionsUrl);
             } else {
                 bpmnNodeVo = getBpmnNodeVo(bpmnNode, bpmnNodeToMap, bpmnNodeButtonConfMap, bpmnNodeSignUpConfMap,
-                        bpmnTemplateVoMap, bpmnApproveRemindVoMap, bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap);
+                        bpmnTemplateVoMap, bpmnNodeFieldControlConfMap, conditionsUrl, finalBpmnNodeLabelsVoMap);
             }
             bpmnNodeVoList.add(bpmnNodeVo);
             //动态条件节点是网关节点,找到网关节点的上一级节点,然后打上标签,流程执行过程中如果有相应标签,则执行动态条件判断
@@ -1857,35 +1850,7 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     }
 
     private Map<Long, BpmnApproveRemindVo> getBpmnApproveRemindVoMap(List<Long> ids) {
-        if (ObjectUtils.isEmpty(ids)) {
-            return new HashMap<>();
-        }
-        return bpmnApproveRemindService.getBaseMapper().selectList(
-                        AFWrappers.<BpmnApproveRemind>lambdaTenantQuery()
-                                .in(BpmnApproveRemind::getNodeId, ids))
-                .stream()
-                .collect(Collectors.toMap(
-                        BpmnApproveRemind::getNodeId,
-                        o -> {
-                            BpmnApproveRemindVo vo = new BpmnApproveRemindVo();
-                            vo.setIsInuse(false);
-                            BeanUtils.copyProperties(o, vo);
-                            vo.setTemplateName(Optional
-                                    .ofNullable(informationTemplateService.getBaseMapper().selectById(vo.getTemplateId()))
-                                    .orElse(new InformationTemplate())
-                                    .getName());
-                            if (!ObjectUtils.isEmpty(vo.getDays())) {
-                                vo.setDayList(Arrays.stream(vo.getDays().split(","))
-                                        .map(Integer::parseInt)
-                                        .collect(Collectors.toList()));
-                            }
-                            if (!ObjectUtils.isEmpty(vo.getTemplateId())
-                                    && !ObjectUtils.isEmpty(vo.getDays())) {
-                                vo.setIsInuse(true);
-                            }
-                            return vo;
-                        },
-                        (a, b) -> a));
+        throw new AFBizException("migration error,please contact the author");
     }
     private Map<Long,List<BpmnNodeLabel>> getBpmnNodeLabelsVoMap(List<Long> ids){
        throw new AFBizException("migration error,please contact the author");
@@ -1925,7 +1890,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
     private BpmnNodeVo getBpmnNodeVo(BpmnNode bpmnNode, Map<Long, List<String>> bpmnNodeToMap, Map<Long,
             List<BpmnNodeButtonConf>> bpmnNodeButtonConfMap, Map<Long, BpmnNodeSignUpConf> bpmnNodeSignUpConfMap,
                                      Map<Long, List<BpmnTemplateVo>> bpmnTemplateVoMap,
-                                     Map<Long, BpmnApproveRemindVo> bpmnApproveRemindVoMap,
                                      Map<Long, List<BpmnNodeLfFormdataFieldControl>> lfFieldControlMap,
                                      String conditionsUrl, Map<Long, List<BpmnNodeLabel>> bpmnNodeLabelsVoMap) {
 
@@ -1945,10 +1909,6 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
 
         //set in node notice template
         bpmnNodeVo.setTemplateVos(bpmnTemplateVoMap.get(bpmnNode.getId()));
-
-
-        //set in node approvement remind
-        bpmnNodeVo.setApproveRemindVo(bpmnApproveRemindVoMap.get(bpmnNode.getId()));
 
 
         BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
@@ -2092,16 +2052,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             BpmnApproveRemindVo remindVo = new BpmnApproveRemindVo();
             remindVo.setTemplateId(remind.getTemplateId());
             remindVo.setDays(remind.getDays());
+            remindVo.setStandardMinutes(remind.getStandardMinutes());
+            remindVo.setNoticeTypes(remind.getNoticeTypes());
             remindVo.setIsInuse(false);
             remindVo.setTemplateName(Optional
                     .ofNullable(informationTemplateService.getBaseMapper().selectById(remind.getTemplateId()))
                     .orElse(new InformationTemplate())
                     .getName());
-            if (!ObjectUtils.isEmpty(remind.getDays())) {
-                remindVo.setDayList(Arrays.stream(remind.getDays().split(","))
-                        .map(Integer::parseInt).collect(Collectors.toList()));
-            }
-            if (!ObjectUtils.isEmpty(remind.getTemplateId()) && !ObjectUtils.isEmpty(remind.getDays())) {
+            if (remind.getStandardMinutes() != null && !CollectionUtils.isEmpty(remind.getDays())) {
                 remindVo.setIsInuse(true);
             }
             bpmnNodeVo.setApproveRemindVo(remindVo);

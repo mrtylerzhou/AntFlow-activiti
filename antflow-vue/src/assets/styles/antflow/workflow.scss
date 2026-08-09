@@ -839,18 +839,15 @@ html {
   display: block;
 }
 
+// hover 时隐藏铃铛/标签(visibility 保留占位, 避免 flex 内其余图标位移, 关闭按钮覆盖铃铛槽位)
 .node-wrap-box.active .notice,
 .node-wrap-box:active .notice,
-.node-wrap-box:hover .notice {
-  display: none;
-}
-
+.node-wrap-box:hover .notice,
 .node-wrap-box.active .label-icon,
 .node-wrap-box:active .label-icon,
 .node-wrap-box:hover .label-icon {
-  display: none;
+  visibility: hidden;
 }
-
 .node-wrap-box.error:after {
   border: 1px solid #f25643;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
@@ -895,33 +892,35 @@ html {
   text-align: center;
   line-height: 20px;
 }
-.node-wrap-box .notice {
-  display: block;
+// 节点角标容器: flex 紧凑排布, 后续新增小图标直接往容器里加即可
+.node-wrap-box .node-badges {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  color: #fff;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.node-wrap-box .notice {
+  display: block;
+  width: 16px;
+  height: 16px;
 }
 .node-wrap-box .label-icon {
   display: block;
-  position: absolute;
-  right: 35px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   font-size: 14px;
   color: #fff;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 20px;
+  font-weight: bold;
+  line-height: 16px;
+}
+// 超时提醒角标: 白色时钟图标, 区分普通通知铃铛
+.node-wrap-box .timeout-notice {
+  width: 16px;
+  height: 16px;
+  color: #fff;
 }
 
 .node-wrap-box .content {

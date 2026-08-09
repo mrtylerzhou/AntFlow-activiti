@@ -200,6 +200,7 @@ public class BpmnInsertVariablesImpl implements BpmnInsertVariables {
                 buildMessages(config, elementVo.getTemplateVos(), elementVo.getElementId(), 2);
 
                 if (!ObjectUtils.isEmpty(elementVo.getApproveRemindVo()) &&
+                        elementVo.getApproveRemindVo().getStandardMinutes() != null &&
                         !ObjectUtils.isEmpty(elementVo.getApproveRemindVo().getDays())) {
                     config.getApproveReminds().add(ApproveRemindItem.builder()
                             .elementId(elementVo.getElementId())

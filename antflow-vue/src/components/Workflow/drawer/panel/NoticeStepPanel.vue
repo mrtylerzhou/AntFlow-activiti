@@ -1,9 +1,13 @@
 <template>
-    <notice-conf v-if="props.approverConfig" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
+    <div>
+        <notice-conf v-if="props.approverConfig" :formData="templateVos" @changeFlowMsgSet="handleFlowMsgSet" />
+        <timeout-remind-conf v-if="props.approverConfig" :approverConfig="props.approverConfig" />
+    </div>
 </template>
 <script setup>
 import { ref, watch } from 'vue';
 import noticeConf from "../noticeConfig/index.vue";
+import timeoutRemindConf from "../noticeConfig/TimeoutRemindConf.vue";
 
 const props = defineProps({
     /** 当前节点数据（直接 mutate，drawer 传副本、Zen 传副本树节点） */
