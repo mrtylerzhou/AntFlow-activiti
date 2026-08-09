@@ -48,6 +48,8 @@ public class StringConstants {
     public static final String CONDITION_CHANGED="condition_changed";
     public static final String LASTNODE_COPY="af_syslabel_lastnode_copy";
     public static final String EXPRESSION_FIELD_NAME="expression";
+    /**退回次数变量名,存储在 Activiti act_ru_variable 中,每次退回(除撤回和仲裁反对外)+1*/
+    public static final String RETURN_COUNT_VARIABLE_NAME="returnCount";
     public static final String AUTOMATIC_NODE="auto_node";
     public static final String CONDITION_APPROVE_NODE="condition_approve_node";
     /**条件推进节点: 条件审批(nodeType=12)子类型, 自动勾选推进按钮(42,别名同意). 满足条件自动推进到固定目标, 不满足留给真实审批人(可手动推进). 强制 forwardType=2.*/

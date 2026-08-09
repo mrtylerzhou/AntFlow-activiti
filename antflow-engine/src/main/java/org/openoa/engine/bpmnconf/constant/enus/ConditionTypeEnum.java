@@ -64,6 +64,10 @@ public enum ConditionTypeEnum {
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, JuelExpressionConditionJudge.class),
     CONDITION_TYPE_SPEL_EXPRESSION(20001,"SpEL表达式",EXPRESSION_FIELD_NAME,2,String.class,
             BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,EXPRESSION_FIELD_NAME, SpelExpressionConditionJudge.class),
+
+    //全局系统变量条件(diy和lf通用)
+    CONDITION_TYPE_RETURN_COUNT(20002,"退回次数","returnCount",2,String.class,
+            BpmnNodeConditionsEmptyAdp.class, BpmnStartConditionsVo.class,"returnCount", ReturnCountConditionJudge.class),
     ;
 static{
     lowFlowCodes=  Lists.newArrayList(

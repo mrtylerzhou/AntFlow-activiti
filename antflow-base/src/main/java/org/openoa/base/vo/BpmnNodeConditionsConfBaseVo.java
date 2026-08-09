@@ -122,4 +122,10 @@ public class BpmnNodeConditionsConfBaseVo {
     Map<Integer, Map<String,Object>> groupedLfConditionsMap;
     private String expression;
     private String inRangeValue;
+
+    /**
+     * 退回次数阈值(单值如"3";区间如"1,5")
+     * 运行时由 ReturnCountConditionJudge 读取,与 act_ru_variable 中的 returnCount 变量比较
+     */
+    private String returnCount;
 }

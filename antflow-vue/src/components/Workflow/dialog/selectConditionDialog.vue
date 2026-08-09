@@ -115,12 +115,31 @@ const EXPRESSION_CONDITION = {
   fixedDownBoxValue: ''
 };
 
+/**
+ * 退回次数条件项
+ * columnId 对应后端 ConditionTypeEnum.CONDITION_TYPE_RETURN_COUNT(20002)
+ * fieldTypeName='number' 复用 number 控件的 UI(运算符下拉 + 数值输入 + 区间)
+ */
+const RETURN_COUNT_CONDITION = {
+  formId: '20002',
+  columnId: '20002',
+  showType: '4',
+  showName: '退回次数',
+  columnName: 'returnCount',
+  columnType: 'String',
+  fieldTypeName: 'number',
+  multiple: false,
+  multipleLimit: 0,
+  fixedDownBoxValue: ''
+};
+
 /**自定义表单条件加载 */
 const loadDIYFormCondition = () => {
   return new Promise(async (resolve, reject) => {
     let { data } = await getConditions({ tableId: tableId.value });
     if (Array.isArray(data)) {
       data.push(EXPRESSION_CONDITION);
+      data.push(RETURN_COUNT_CONDITION);
     }
     resolve(data);
     reject([]);
@@ -218,6 +237,7 @@ const loadLFFormCondition = () => {
     })
     conditionArr = conditionArr.filter(nullableFilter);
     conditionArr.push(EXPRESSION_CONDITION);
+    conditionArr.push(RETURN_COUNT_CONDITION);
     resolve(conditionArr);
     reject([]);
   });

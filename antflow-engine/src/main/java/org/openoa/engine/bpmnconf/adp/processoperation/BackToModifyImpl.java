@@ -339,6 +339,10 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         }
 
         variableMapper.resetUnderStatusByProcessNumber(bpmBusinessProcess.getBusinessNumber());
+        //退回计数+1(排除发起人撤回)
+        if (!isStartUserDrawBack) {
+            incrementReturnCount(vo.getProcessNumber());
+        }
         //parallel tasks reject
            /* for (Task task : taskList) {
                 Map<String,Object> varMap=new HashMap<>();
@@ -371,6 +375,28 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         addSupportBusinessObjects(ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_BACK_TO_MODIFY);
         addSupportBusinessObjects(ProcessOperationEnum.getOutSideAccessmarker(), ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK);
+    }
+
+    /**
+     * 递增流程实例的退回次数计数器(存储在 Activiti act_ru_variable 中).
+     * 每次退回(除发起人撤回和仲裁反对外)+1,供 nodeType=3 条件网关的退回次数条件读取.
+     *
+     * @param processNumber 流程编号
+     */
+    public void incrementReturnCount(String processNumber) {
+        try {
+            BpmBusinessProcess process = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+            if (process == null) {
+                log.warn("incrementReturnCount: BpmBusinessProcess not found, processNumber={}", processNumber);
+                return;
+            }
+            String procInstId = process.getProcInstId();
+            Object current = runtimeService.getVariable(procInstId, StringConstants.RETURN_COUNT_VARIABLE_NAME);
+            int count = (current instanceof Number) ? ((Number) current).intValue() : 0;
+            runtimeService.setVariable(procInstId, StringConstants.RETURN_COUNT_VARIABLE_NAME, count + 1);
+        } catch (Exception e) {
+            log.error("incrementReturnCount failed, processNumber={}", processNumber, e);
+        }
     }
 
     /**
@@ -549,6 +575,9 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
 
         // Step 7: 重置审批状态
         variableMapper.resetUnderStatusByProcessNumber(processNumber);
+
+        // Step 7.5: 退回计数+1
+        incrementReturnCount(processNumber);
 
         // Step 8: 表单回调
         if (businessDataVo != null && !Boolean.TRUE.equals(businessDataVo.getIsOutSideAccessProc())) {
