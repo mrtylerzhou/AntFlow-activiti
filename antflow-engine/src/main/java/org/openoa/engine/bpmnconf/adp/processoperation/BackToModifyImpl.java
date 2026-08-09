@@ -169,6 +169,15 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 if(ProcessNodeEnum.compare(backToNodeKey,restoreNodeKey)>0){
                     backToNodeKey=ProcessNodeEnum.getGeneralPrevNode(restoreNodeKey);
                 }
+                //运行时校验:退回上一节点时,若上一节点为自动类型节点(不可人工操作),阻止退回
+                //反查 elementId -> t_bpm_variable_multiplayer.node_id(主键),供 NodeUtil 读取节点 JSON 标签
+                List<String> prevNodeIds = variableMapper.getNodeIdsByeElementId(vo.getProcessNumber(), backToNodeKey);
+                if (!CollectionUtils.isEmpty(prevNodeIds)) {
+                    String prevNodeId = prevNodeIds.get(0);
+                    if (NodeUtil.isCurrentNodeNoneOperational(prevNodeId)) {
+                        throw new AFBizException("上一节点为自动类型节点,无法退回!");
+                    }
+                }
                 break;
             case TWO_DISAGREE:
                 restoreNodeKey = ProcessNodeEnum.TWO_TASK_KEY.getDesc();
@@ -178,10 +187,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 restoreNodeKey = taskData.getTaskDefinitionKey();
                 backToNodeKey = ProcessNodeEnum.START_TASK_KEY.getDesc();
                 break;
-            case FOUR_DISAGREE:
-                if (!NodeUtil.isCurrentNodeNoneOperational(backToNodeId)) {
-                    throw new AFBizException("不可退回到目标节点,请重试!");
-                }
+            case FOUR_DISAGREE: {
                 String elementId = null;
                 if(isOtherApproverDrawBack){
                     String logInEmpId = SecurityUtils.getLogInEmpId();
@@ -192,6 +198,14 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     elementId=lastProcessNodeByAssignee.getTaskDefKey();
                 }else {
                     elementId= variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
+                }
+                //运行时校验:退回指定节点时,若目标节点为自动类型节点(不可人工操作),阻止退回
+                //用 elementId 反查 t_bpm_variable_multiplayer.node_id(主键),规避 backToNodeId 可能是 UUID 的类型问题
+                List<String> fourTargetNodeIds = variableMapper.getNodeIdsByeElementId(vo.getProcessNumber(), elementId);
+                if (!CollectionUtils.isEmpty(fourTargetNodeIds)) {
+                    if (NodeUtil.isCurrentNodeNoneOperational(fourTargetNodeIds.get(0))) {
+                        throw new AFBizException("不可退回到自动类型节点,请重试!");
+                    }
                 }
                 backToNodeKey = elementId;
                 PvmActivity nextElement = additionalInfoService.getNextElement(elementId, bpmBusinessProcess.getProcInstId());
@@ -207,13 +221,19 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     restoreNodeKey = nextElement.getId();
                 }
                 break;
-            case FIVE_DISAGREE:
+            }
+            case FIVE_DISAGREE: {
                 restoreNodeKey = taskData.getTaskDefinitionKey();
-                if(!NodeUtil.isCurrentNodeNoneOperational(backToNodeId)){
-                    throw new AFBizException("不可退回到目标节点,请重试!");
-                }
                 backToNodeKey = variableMapper.getElementIdsdByNodeId(vo.getProcessNumber(), backToNodeId).get(0);
+                //运行时校验:退回指定节点(回到当前节点)时,若目标节点为自动类型节点,阻止退回
+                List<String> fiveTargetNodeIds = variableMapper.getNodeIdsByeElementId(vo.getProcessNumber(), backToNodeKey);
+                if (!CollectionUtils.isEmpty(fiveTargetNodeIds)) {
+                    if (NodeUtil.isCurrentNodeNoneOperational(fiveTargetNodeIds.get(0))) {
+                        throw new AFBizException("不可退回到自动类型节点,请重试!");
+                    }
+                }
                 break;
+            }
             default:
                 throw new AFBizException("未支持的退回类型!");
         }

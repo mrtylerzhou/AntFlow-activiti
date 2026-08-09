@@ -136,13 +136,20 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         String formCode = bpmnConfVo.getFormCode();
         BpmnConf bpmnConf = new BpmnConf();
         BeanUtils.copyProperties(bpmnConfVo, bpmnConf);
+        // 防御性置空: 新版本必须由 DB 自增主键, 拒绝客户端携带 id (前端 BasicSetting 不发, 但后端兜底)
+        bpmnConf.setId(null);
+        // 新版本默认未激活 (文档 version-management.md: 需手动"启动"才激活; 不接受客户端覆盖)
+        bpmnConf.setEffectiveStatus(0);
+        // 软删除标志位防御性置 0 (与 effectiveStatus 同类状态标志, 不接受客户端覆盖)
+        bpmnConf.setIsDel(0);
         bpmnConf.setBpmnCode(bpmnCode);
         bpmnConf.setFormCode(formCode);
         bpmnConf.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
         bpmnConf.setCreateTime(new Date());
+        // 审计字段由后端兜底: 之前只改了 VO, entity 的 updateTime 来自 copyProperties 的客户端原值 (常为 null)
         bpmnConf.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
+        bpmnConf.setUpdateTime(new Date());
         bpmnConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnConfVo.setUpdateTime(new Date());
 
         // Build conf-level JSON config
         BpmnConfConfigJson confConfigJson = BpmnConfConfigHolder.buildConfConfig(bpmnConfVo);
@@ -240,9 +247,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
             editNodeExtraFlags(bpmnNodeVo);
             BpmnNode bpmnNode = new BpmnNode();
             BeanUtils.copyProperties(bpmnNodeVo, bpmnNode);
+            // 防御性置空: 新节点必须由 DB 自增主键 (前端 formatcommit_data.js 会 delete node.id, 但后端兜底)
+            bpmnNode.setId(null);
+            // 软删除标志位防御性置 0 (与 conf 侧 isDel 同类)
+            bpmnNode.setIsDel(0);
             bpmnNode.setConfId(confId);
             bpmnNode.setCreateTime(new Date());
             bpmnNode.setCreateUser(SecurityUtils.getLogInEmpNameSafe());
+            // 审计字段由后端兜底: 之前缺失, 节点行的 update_time/update_user 落 NULL
+            bpmnNode.setUpdateTime(new Date());
+            bpmnNode.setUpdateUser(SecurityUtils.getLogInEmpNameSafe());
             bpmnNode.setTenantId(MultiTenantUtil.getCurrentTenantId());
 
             bpmnNodeService.getBaseMapper().insert(bpmnNode);

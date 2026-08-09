@@ -179,7 +179,15 @@ const publish = () => {
             //辅助表单设计数据;未启用时提交空串,后端据此清空旧辅助表单
             const lfFormData = useAuxiliaryForm.value ? JSON.stringify(res[1].formData) : '';
             Object.assign(basicData, { lfFormData: lfFormData });
-            var nodes = FormatCommitUtils.formatSettings(res[2].formData);
+            var nodes;
+            try {
+                // formatSettings 内部已并入 validateDrawBackPrev 校验, 失败时 throw
+                nodes = FormatCommitUtils.formatSettings(res[2].formData);
+            } catch (e) {
+                proxy.$modal.closeLoading();
+                proxy.$modal.msgError(e.message);
+                return Promise.reject();
+            }
             Object.assign(basicData, { nodes: nodes });
             // 高级设置覆盖 deduplicationType 和 viewPageButtons
             Object.assign(basicData, res[3].formData);

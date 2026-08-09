@@ -18,7 +18,16 @@ export class FormatCommitUtils {
     let treeList = this.flattenMapTreeToList(param);
     let combinationList = this.getEndpointNodeId(treeList);
     let finalList = this.cleanNodeList(combinationList);
+    // 基于最终 nodeTo 反向构建 prevId(覆盖 flattenMapTreeToList 中不准确的 nodeFrom 单值)
+    // 网关汇聚节点的 prevId 会包含所有分支末节点,后端发布校验和 t_bpmn_node.node_froms 依赖此值
+    this.buildPrevIds(finalList);
     let fomatList = this.adapterActivitiNodeList(finalList);
+    // 发布前校验: 退回上一节点的前驱不能全部为自动类型节点
+    // 并入 formatSettings 确保 lf/diy/dopeSheet 三入口一致覆盖, 校验失败 throw 由调用方 catch
+    const drawBackErr = this.validateDrawBackPrev(fomatList);
+    if (drawBackErr) {
+      throw new Error(drawBackErr);
+    }
     return fomatList;
   };
   /**
@@ -192,15 +201,104 @@ export class FormatCommitUtils {
     let nodeIds = arr.map((c) => {
       return c.nodeId;
     });
-    for (const node of arr) {
+    for (let node of arr) {
       node.nodeTo = Array.from(new Set(node.nodeTo));
       if (!isEmptyArray(node.nodeTo)) {
         node.nodeTo = node.nodeTo.filter((key) => {
           return nodeIds.indexOf(key) > -1;
         });
       }
+      // 清洗悬空引用: forwardNodeIds / drawBackNodeIds / disagreeBackToNodeId
+      // 只保留指向本流程内真实存在节点的引用, 避免发布后运行时推进/退回到不存在的节点
+      if (!isEmptyArray(node.forwardNodeIds)) {
+        node.forwardNodeIds = node.forwardNodeIds.filter((key) => nodeIds.indexOf(key) > -1);
+      }
+      if (!isEmptyArray(node.drawBackNodeIds)) {
+        node.drawBackNodeIds = node.drawBackNodeIds.filter((key) => nodeIds.indexOf(key) > -1);
+      }
+      // disagreeBackToNodeId 是单值; 悬空时整组重置 (disagreeBackType=0) 避免后端校验抛"未指定目标"
+      if (node.disagreeBackToNodeId && nodeIds.indexOf(node.disagreeBackToNodeId) === -1) {
+        node.disagreeBackToNodeId = null;
+        node.disagreeBackType = 0;
+      }
     }
     return arr;
+  };
+
+  /**
+   * 基于最终 nodeTo 反向构建 prevId(前驱节点ID列表)
+   * 在 cleanNodeList 之后调用,此时 nodeTo 已是最终值(含网关汇聚修复)
+   * 网关汇聚节点的 prevId 会包含所有分支末节点(多前驱)
+   * 后端 BpmnNodeVo.setPrevId 会同步写入 nodeFroms 字段(持久化到 t_bpmn_node.node_froms)
+   */
+  static buildPrevIds = (arr) => {
+    if (isEmptyArray(arr)) return arr;
+    const reverseMap = {};
+    for (const node of arr) {
+      if (isEmptyArray(node.nodeTo)) continue;
+      for (const targetId of node.nodeTo) {
+        if (!reverseMap[targetId]) {
+          reverseMap[targetId] = [];
+        }
+        if (!reverseMap[targetId].includes(node.nodeId)) {
+          reverseMap[targetId].push(node.nodeId);
+        }
+      }
+    }
+    for (const node of arr) {
+      node.prevId = reverseMap[node.nodeId] || [];
+    }
+    return arr;
+  };
+
+  /**
+   * 自动类型节点 nodeType 集合(对应后端 NONE_OPERATIONAL_NODES 5个标签)
+   * 8:抄送V2  9:自动节点  13:条件抄送  18:自动推进  19:自动退回
+   * 这些节点无需人工操作,不可作为退回目标
+   */
+  static AUTO_NODE_TYPES = [8, 9, 13, 18, 19];
+
+  /**
+   * 发布前校验: 配置了"退回修改"按钮(buttonType=18)且 drawBackType=1(退回上一节点)的节点,
+   * 其前驱不能全部为自动类型节点
+   * 注意: 取消"退回修改"按钮不会清除 drawBackType 残留值,故需同时检查按钮是否存在
+   * 网关汇聚多前驱: 有任一人工前驱则放行,全部为自动类型才阻止
+   * 网关/条件节点作为前驱时放行(非自动类型),运行时 ONE_DISAGREE 校验兜底
+   * @param {Array} nodes formatSettings 处理后的节点列表(含 prevId)
+   * @returns {string|null} 错误信息,null 表示校验通过
+   */
+  static validateDrawBackPrev = (nodes) => {
+    if (isEmptyArray(nodes)) return null;
+    const nodeIdMap = {};
+    for (const n of nodes) {
+      if (n.nodeId) nodeIdMap[n.nodeId] = n;
+    }
+    for (const node of nodes) {
+      if (node.drawBackType !== 1) continue;
+      //只有审批页配置了"退回修改"按钮(buttonType=18)时,drawBackType 才生效
+      //取消按钮不会清除 drawBackType 残留值,需以此判断是否真正配置了退回
+      const approvalBtns = node.buttons?.approvalPage;
+      if (isEmptyArray(approvalBtns)) continue;
+      const hasDrawBackBtn = approvalBtns.some(b => b && b.buttonType === 18);
+      if (!hasDrawBackBtn) continue;
+      const prevIds = node.prevId;
+      if (isEmptyArray(prevIds)) continue;
+      let allAutoType = true;
+      let autoPrevNode = null;
+      for (const prevId of prevIds) {
+        const prevNode = nodeIdMap[prevId];
+        if (!prevNode) continue;
+        if (!this.AUTO_NODE_TYPES.includes(prevNode.nodeType)) {
+          allAutoType = false;
+          break;
+        }
+        autoPrevNode = prevNode;
+      }
+      if (allAutoType && autoPrevNode) {
+        return `节点[${node.nodeName}]配置了退回上一节点,但上一节点[${autoPrevNode.nodeName}]为自动类型节点,无法退回!`;
+      }
+    }
+    return null;
   };
 
   /**

@@ -232,7 +232,15 @@ const publish = () => {
             basicData.isLowCodeFlow = 1; // 1代表低代码表单
             let lowcodeformData = res[1].formData;
             Object.assign(basicData, { lfFormData: JSON.stringify(lowcodeformData) });
-            var nodes = FormatCommitUtils.formatSettings(res[2].formData);
+            var nodes;
+            try {
+                // formatSettings 内部已并入 validateDrawBackPrev 校验, 失败时 throw
+                nodes = FormatCommitUtils.formatSettings(res[2].formData);
+            } catch (e) {
+                proxy.$modal.closeLoading();
+                proxy.$modal.msgError(e.message);
+                return Promise.reject();
+            }
             Object.assign(basicData, { nodes: nodes });
             // 高级设置覆盖 deduplicationType 和 viewPageButtons
             Object.assign(basicData, res[3].formData);

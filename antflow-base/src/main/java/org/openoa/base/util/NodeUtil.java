@@ -332,6 +332,19 @@ public class NodeUtil {
             bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
             bpmnNodeVo.setIsConditionReturnStarterNode(true);
         }
+        //仲裁签节点校验: signType=4 必须配置有效的 arbitrationRatio (0-100)
+        //项目记忆硬约束: deployment fails with IllegalArgumentException if ratio is null
+        //运行期 OpposeProcessImpl 虽默认 100% (任意反对即终止), 但部署期应拒绝以避免静默降级
+        //放在所有 nodeType 转换之后: 自动节点(9/18/19)的 signType 已被强制为 1, 不会误判
+        BpmnNodePropertysVo propForArbitration = bpmnNodeVo.getProperty();
+        if (propForArbitration != null && Integer.valueOf(4).equals(propForArbitration.getSignType())) {
+            Integer ratio = propForArbitration.getArbitrationRatio();
+            if (ratio == null || ratio < 0 || ratio > 100) {
+                throw new IllegalArgumentException(
+                        "仲裁签节点(signType=4)必须配置有效的 arbitrationRatio (0-100), 节点: "
+                                + bpmnNodeVo.getNodeName());
+            }
+        }
     }
     public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
         List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
