@@ -2,10 +2,12 @@ package org.openoa.base.interf;
 
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.util.SpringBeanUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BpmnStartConditionsVo;
 import org.openoa.base.vo.BusinessDataVo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,6 +61,25 @@ public interface FormOperationAdaptor< T extends BusinessDataVo> extends Process
      * @return 节点配置 JSON, 查询失败或无配置时返回 null
      */
     default BpmnNodeConfigJson loadNodeConfigJson(final T businessDataVo) {
+        return null;
+    }
+
+    /**
+     * 到达前设置(动态审批人): 节点运行期到达时, 由具体业务实现根据业务数据动态查询当前节点的真实审批人.
+     * <p>
+     * 触发条件: 节点审批人为虚拟人 {@code AFSpecialAssigneeEnum.ARRIVAL_DYNAMIC_ASSIGNEE(-5)}.
+     * 引擎在 {@code BpmnTaskListener} 检测到 assignee==-5 时, 通过 {@code FormFactory.getFormAdaptor} 拿到本适配器并调用本方法,
+     * 将虚拟人任务委托(setAssignee)给查到的真人; 多人时首个 setAssignee, 其余走加签.
+     * 返回 null/空列表时, 引擎视为"查不到人", 直接 complete 跳过当前虚拟人节点.
+     * <p>
+     * 默认返回 null, 表示该流程未实现"到达前设置", 由引擎按"查不到人"处理(跳过).
+     * DIY 流程在自身适配器里 override 提供真人; 低代码流程在 {@code LFFormOperationAdaptor} 实现类里 override,
+     * 由 {@code LowFlowApprovalServiceAspect} 后置分发并返回其结果.
+     *
+     * @param businessDataVo 业务数据(含 formCode/businessId/processNumber 等, 由引擎在运行期注入)
+     * @return 当前节点的真实审批人列表, 可为 null 或空(表示查不到)
+     */
+    default List<BaseIdTranStruVo> provideCurrentNodeAssignees(final T businessDataVo) {
         return null;
     }
     /**

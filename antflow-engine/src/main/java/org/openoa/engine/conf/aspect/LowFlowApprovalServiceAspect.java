@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.interf.LFFormOperationAdaptor;
 import org.openoa.base.vo.UDLFApplyVo;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -68,6 +70,52 @@ public class LowFlowApprovalServiceAspect implements ApplicationContextAware {
     @Around("execution(* org.openoa.engine.lowflow.service.LowFlowApprovalService.finishData(..))")
     public Object aroundFinishData(ProceedingJoinPoint joinPoint) throws Throwable {
         return logAndProceed(joinPoint, "finishData");
+    }
+
+    /**
+     * 到达前设置(动态审批人)专用后置切面.
+     * <p>
+     * 与其它方法(均为前置 + void)不同: {@code provideCurrentNodeAssignees} 有返回值,
+     * 且 {@code LowFlowApprovalService} 默认实现返回 emptyList(不含 per-flow 找人逻辑, 避免臃肿).
+     * 故这里 proceed(跑默认空实现, noop) 后, 按 beanName==formCode 匹配具体 {@link LFFormOperationAdaptor},
+     * 后置调用其 {@code provideCurrentNodeAssignees} 并返回其结果; 无匹配返回 emptyList(引擎按"查不到人"跳过).
+     */
+    @Around("execution(* org.openoa.engine.lowflow.service.LowFlowApprovalService.provideCurrentNodeAssignees(..))")
+    public Object aroundProvideCurrentNodeAssignees(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("[LowFlowAOP] >>> 调用方法: provideCurrentNodeAssignees");
+        long start = System.currentTimeMillis();
+        try {
+            // proceed 先跑(LowFlowApprovalService 默认返回 emptyList, noop); 结果不取
+            joinPoint.proceed();
+            // 后置: 按匹配的 LFFormOperationAdaptor 提供具体实现并返回其结果
+            Object[] args = joinPoint.getArgs();
+            if (args == null || args.length == 0 || !(args[0] instanceof UDLFApplyVo)) {
+                return Collections.emptyList();
+            }
+            UDLFApplyVo arg = (UDLFApplyVo) args[0];
+            String formCode = arg.getFormCode();
+            if (formCode == null || CollectionUtils.isEmpty(lfFormOperationAdaptors)) {
+                return Collections.emptyList();
+            }
+            for (LFFormOperationAdaptor lfFormOperationAdaptor : lfFormOperationAdaptors) {
+                String[] beanNamesForType = applicationContext.getBeanNamesForType(lfFormOperationAdaptor.getClass());
+                if (beanNamesForType.length == 0) {
+                    continue;
+                }
+                if (!formCode.equals(beanNamesForType[0])) {
+                    continue;
+                }
+                // 命中具体低代码实现: 后置调用并返回其结果(可能为 null/空, 引擎按"查不到人"跳过)
+                List<BaseIdTranStruVo> result = lfFormOperationAdaptor.provideCurrentNodeAssignees(arg);
+                log.info("[LowFlowAOP] <<< 方法 provideCurrentNodeAssignees 执行完成，耗时 {}ms", System.currentTimeMillis() - start);
+                return result;
+            }
+            log.info("[LowFlowAOP] <<< 方法 provideCurrentNodeAssignees 无匹配 LFFormOperationAdaptor, 返回空, 耗时 {}ms", System.currentTimeMillis() - start);
+            return Collections.emptyList();
+        } catch (Throwable t) {
+            log.error("[LowFlowAOP] !!! 方法 provideCurrentNodeAssignees 抛出异常: {}", t.getMessage(), t);
+            throw t;
+        }
     }
 
 

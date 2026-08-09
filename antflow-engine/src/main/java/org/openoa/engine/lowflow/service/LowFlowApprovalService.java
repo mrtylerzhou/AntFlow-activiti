@@ -515,6 +515,18 @@ public class LowFlowApprovalService extends AbstractFormOperationAdaptor<UDLFApp
     }
 
     /**
+     * 到达前设置(动态审批人)默认实现: 直接返回空列表.
+     * <p>
+     * 低代码流程具体找人逻辑写在对应的 {@code LFFormOperationAdaptor} 实现类里(按 formCode 匹配 bean),
+     * 由 {@code LowFlowApprovalServiceAspect} 后置分发: proceed(本方法,空) → 调具体 LFFormOperationAdaptor → 返回其结果.
+     * 这里不做任何 per-flow 找人逻辑, 避免本类臃肿; 也不做通用预处理, vo 准备由具体实现自负.
+     */
+    @Override
+    public List<BaseIdTranStruVo> provideCurrentNodeAssignees(UDLFApplyVo vo) {
+        return Collections.emptyList();
+    }
+
+    /**
      * 外部表单模式: 将 lfFieldsMulti 展平到 lfFields, 使既有的条件求值/表单取人逻辑无需改动
      */
     private void flattenLfFieldsMultiIfNeeded(UDLFApplyVo vo) {

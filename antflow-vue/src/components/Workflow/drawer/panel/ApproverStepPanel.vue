@@ -6,7 +6,7 @@
                     <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
                 </el-radio-group>
             </div>
-            <div v-show="node.setType == 5 && displaySetType != 19">
+            <div v-show="node.setType == 5 && displaySetType != 19 && displaySetType != 20">
                 <el-button type="primary" plain icon="Plus" @click="addApprover">添加/修改人员</el-button>
                 <div class="gap-2">
                     <el-tag v-for="(item, index) in node.nodeApproveList" :key="item.targetId"
@@ -18,6 +18,9 @@
             </div>
             <div v-if="displaySetType == 19" class="approver_text">
                 <p class="tip">该节点设置"上一节点指定"后，审批人由上一节点审批人在审批时通过[指定下一节点审批人]按钮指定。</p>
+            </div>
+            <div v-if="displaySetType == 20" class="approver_text">
+                <p class="tip">该节点设置"到达前设置"后，审批人在流程运行到该节点时由业务代码(FormOperationAdaptor.provideCurrentNodeAssignees)动态查询指定。</p>
             </div>
 
             <div v-show="node.setType == 4">
@@ -203,7 +206,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import $func from '@/utils/antflow/index';
-import { setTypes, hrbpOptions, NO_USER_FIELD_WIDGETS, formUserOptionSet, formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME } from '@/utils/antflow/const';
+import { setTypes, hrbpOptions, NO_USER_FIELD_WIDGETS, formUserOptionSet, formPrevNodeApproverOptionSet, PREV_NODE_APPOINTED_SET_TYPE, PREV_NODE_APPOINTED_VIRTUAL_USER_ID, PREV_NODE_APPOINTED_VIRTUAL_USER_NAME, ARRIVAL_DYNAMIC_SET_TYPE, ARRIVAL_DYNAMIC_VIRTUAL_USER_ID, ARRIVAL_DYNAMIC_VIRTUAL_USER_NAME } from '@/utils/antflow/const';
 import { useStore } from '@/store/modules/workflow';
 import { getUDROptions } from '@/api/workflow/index';
 import selectUserDialog from '../../dialog/selectUserDialog.vue';
@@ -261,18 +264,36 @@ const additionalSignInfoExcludeList = computed(() => {
 });
 
 /**
- * 上一节点指定审批人: radio 显示值映射
+ * 审批人类型 radio 显示值映射: "上一节点指定"(19) 与 "到达前设置"(20) 均映射到 setType=5 + 虚拟用户。
+ * 到达前设置的反显靠 nodeApproveList 含虚拟人 -5 检测(持久化数据, 可靠),
+ * 不依赖标志位(标志位在 save→load 往返中可能丢失)。
  */
 const displaySetType = computed({
     get() {
         if (!node.value) return null;
+        // 到达前设置: setType=5 且 nodeApproveList 含虚拟人 -5
+        if (node.value.setType == 5
+            && Array.isArray(node.value.nodeApproveList)
+            && node.value.nodeApproveList.some(p => p && p.targetId === ARRIVAL_DYNAMIC_VIRTUAL_USER_ID)) {
+            return ARRIVAL_DYNAMIC_SET_TYPE;
+        }
         if (node.value.isPrevNodeAppointed) {
             return PREV_NODE_APPOINTED_SET_TYPE;
         }
         return node.value.setType;
     },
     set(val) {
-        if (val === PREV_NODE_APPOINTED_SET_TYPE) {
+        if (val === ARRIVAL_DYNAMIC_SET_TYPE) {
+            node.value.isPrevNodeAppointed = false;
+            node.value.setType = 5;
+            node.value.signType = 1;
+            node.value.noHeaderAction = 0;
+            node.value.nodeApproveList = [{
+                type: 1,
+                targetId: ARRIVAL_DYNAMIC_VIRTUAL_USER_ID,
+                name: ARRIVAL_DYNAMIC_VIRTUAL_USER_NAME
+            }];
+        } else if (val === PREV_NODE_APPOINTED_SET_TYPE) {
             node.value.isPrevNodeAppointed = true;
             node.value.setType = 5;
             node.value.signType = 1;
@@ -387,8 +408,8 @@ watch(checkedHRBP, (val) => {
 
 /**选择审批人类型更改事件 */
 const changeType = (val) => {
-    //上一节点指定: displaySetType 的 setter 已完成 setType/虚拟用户/标签设置, 此处跳过清空逻辑
-    if (val == PREV_NODE_APPOINTED_SET_TYPE) {
+    //上一节点指定 / 到达前设置: displaySetType 的 setter 已完成 setType/虚拟用户设置, 此处跳过清空逻辑
+    if (val == PREV_NODE_APPOINTED_SET_TYPE || val == ARRIVAL_DYNAMIC_SET_TYPE) {
         return;
     }
     formInfoOptions.value = [];
