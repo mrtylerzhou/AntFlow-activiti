@@ -91,4 +91,8 @@ public class BpmVerifyInfoVo implements Serializable {
      * 审批附件
      */
     private List<BpmVerifyAttachmentVo> verifyAttachments;
+    /**
+     * attachments json
+     */
+    private String attachmentsJson;
 }

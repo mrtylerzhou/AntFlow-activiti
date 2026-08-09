@@ -9,6 +9,8 @@
           </div>
           <div class="el-footer" v-if="!isPreview && props.showSubmit">
             <el-button type="primary" @click="submitForm">提交</el-button>
+            <el-button @click="saveDraft">保存草稿</el-button>
+            <el-button @click="loadDraftData">加载草稿</el-button>
           </div>
         </div>
       </el-col>
@@ -22,6 +24,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, onBeforeMount } from 'vue';
 import TagApproveSelect from "@/components/BizSelects/TagApproveSelect/index.vue";
+import { processOperation, loadDraft } from '@/api/workflow/index';
 const isEmpty = data => data === null || data === undefined || data == '' || data == '{}' || data == '[]' || data == 'null';
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -52,6 +55,10 @@ let props = defineProps({
   isPreview: {//是否预览
     type: Boolean,
     default: true,
+  },
+  ignoreReadonly: {//管理员预览：忽略只读权限控制（隐藏仍生效），让只读字段可编辑
+    type: Boolean,
+    default: false,
   }
 });
 /* 注意：formJson是指表单设计器导出的json，此处演示的formJson只是一个空白表单json！！ */
@@ -78,6 +85,23 @@ const handlerFn = (w) => {
   if (props.showSubmit) {
     w.options.disabled = false;
     w.options.readonly = false;
+  }
+  else if (props.ignoreReadonly) {
+    // 管理员预览：忽略只读权限控制，仅隐藏字段仍保持隐藏
+    let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });
+    if (info && info.perm == 'H') {
+      if (w.type != 'textarea' && w.options.type != 'input') {
+        w.type = 'input';
+        w.options.type = 'text';
+      }
+      formData[w.options.name] = '******';
+      delete w.options.format;
+      delete w.options.valueFormat;
+      w.options.disabled = true;
+    } else {
+      w.options.disabled = false;
+      w.options.readonly = false;
+    }
   }
   else if (!isEmpty(props.lfFieldPerm)) {
     let info = lfFieldPermData.find(function (ele) { return ele.fieldId == w.options.name; });
@@ -226,6 +250,60 @@ const replaceEmptyStringWithNull = (obj) => {
     });
   }
   return obj;
+}
+/**保存草稿*/
+const saveDraft = async () => {
+  try {
+    const formDataStr = await getFromData();
+    const lfFields = JSON.parse(formDataStr);
+    const bizFrom = {
+      formCode: formCode,
+      operationType: 30,
+      isLowCodeFlow: true,
+      lfFields: lfFields
+    };
+    proxy.$modal.loading();
+    processOperation(bizFrom).then((res) => {
+      if (res.code == 200) {
+        proxy.$modal.msgSuccess("草稿保存成功");
+      } else {
+        proxy.$modal.msgError("草稿保存失败:" + res.errMsg);
+      }
+      proxy.$modal.closeLoading();
+    }).catch((err) => {
+      proxy.$modal.msgError("草稿保存失败");
+      proxy.$modal.closeLoading();
+    });
+  } catch (error) {
+    proxy.$modal.msgError("草稿保存失败:" + error);
+  }
+}
+/**加载草稿*/
+const loadDraftData = () => {
+  proxy.$modal.confirm('加载草稿将覆盖当前表单内容，是否继续？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    proxy.$modal.loading();
+    try {
+      const res = await loadDraft(formCode);
+      if (res.code == 200) {
+        if (res.data && res.data.lfFields) {
+          Object.assign(formData, res.data.lfFields);
+          vFormRef.value.setFormData(formData);
+          proxy.$modal.msgSuccess("草稿加载成功");
+        } else {
+          proxy.$modal.msgWarning("无可用草稿");
+        }
+      } else {
+        proxy.$modal.msgError("加载草稿失败:" + res.errMsg);
+      }
+    } catch (error) {
+      proxy.$modal.msgError("加载草稿失败:" + error);
+    }
+    proxy.$modal.closeLoading();
+  }).catch(() => { });
 }
 defineExpose({
   handleValidate,

@@ -1,6 +1,7 @@
 package org.openoa.engine.bpmnconf.common;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -20,10 +21,15 @@ import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVariable;
-import org.openoa.base.entity.BpmVariableSignUp;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.SignUpItem;
+import org.openoa.base.entity.BpmnNode;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeLowCodeConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.engine.bpmnconf.service.impl.*;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.vo.ProcessInforVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +38,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,8 +59,6 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private BpmnNodeLfFormdataFieldControlServiceImpl bpmnNodeLfFormdataFieldControlService;
-    @Autowired
     private BpmVariableServiceImpl bpmnVariableService;
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmnVariableMultiplayerService;
@@ -61,6 +66,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     private BpmVariableSignUpBizService bpmVariableSignUpBizService;
     @Autowired
     private BpmVerifyInfoBizService bpmVerifyInfoBizService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
 
 
@@ -112,6 +119,7 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 viewNodeIds=list.stream().map(Task::getTaskDefinitionKey).collect(Collectors.toList());
             }
             processInfoVo.setTaskId(list.get(0).getId());
+            processInfoVo.setFormKey(list.get(0).getFormKey());
             processInfoVo.setViewNodeIds(viewNodeIds);
             processInfoVo.setNodeId(taskDefKey);
 
@@ -149,16 +157,16 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 nodeId = bpmVariableMultiplayers.get(0).getNodeId();
             }
             if(StringUtils.isBlank(nodeId)){
-                List<BpmVariableSignUp> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
-                BpmVariableSignUp  signUpParent=null;
+                List<SignUpItem> signUpList = bpmVariableSignUpBizService.getSignUpList(bpmBusinessProcess.getBusinessNumber());
+                SignUpItem signUpParent=null;
                 if(!CollectionUtils.isEmpty(signUpList)){
-                    for (BpmVariableSignUp bpmVariableSignUp : signUpList) {
-                        String subElements = bpmVariableSignUp.getSubElements();
+                    for (SignUpItem signUpItem : signUpList) {
+                        String subElements = signUpItem.getSubElements();
                         List<BpmnConfCommonElementVo> subElementVos = JSON.parseArray(subElements, BpmnConfCommonElementVo.class);
                         if(!CollectionUtils.isEmpty(subElementVos)){
                             BpmnConfCommonElementVo bpmnConfCommonElementVo = subElementVos.get(0);
                             if(taskDefKey.equals(bpmnConfCommonElementVo.getElementId())){
-                                signUpParent=bpmVariableSignUp;
+                                signUpParent=signUpItem;
                                 break;
                             }
                         }
@@ -177,9 +185,8 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
                 }
             }
             if (StringUtils.isNotBlank(nodeId)) {
-                List<LFFieldControlVO> currentFieldControls = bpmnNodeLfFormdataFieldControlService
-                        .getBaseMapper()
-                        .getFieldControlByNodeId(Long.valueOf(nodeId));
+                List<LFFieldControlVO> currentFieldControls = getFieldControlsFromNodeJson(Long.valueOf(nodeId));
+
                 processInfoVo.setLfFieldControlVOs(currentFieldControls);
             }
         }
@@ -338,5 +345,31 @@ public class ProcessBusinessContans extends ProcessServiceFactory {
     public boolean checkAppVersionByCurrentUser() {
         //todo to be implemented
         return false;
+    }
+
+    private List<LFFieldControlVO> getFieldControlsFromNodeJson(Long nodeId) {
+        if (nodeId == null) {
+            return null;
+        }
+        BpmnNode node = bpmnNodeService.getById(nodeId);
+        if (node == null || StringUtils.isEmpty(node.getNodeConfigJson())) {
+            return null;
+        }
+        BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+        if (nodeConfig == null || nodeConfig.getLowCodeConf() == null
+                || CollectionUtils.isEmpty(nodeConfig.getLowCodeConf().getFieldControls())) {
+            return null;
+        }
+        List<LFFieldControlVO> result = new ArrayList<>();
+        for (BpmnNodeLowCodeConfJson.FieldControl fc : nodeConfig.getLowCodeConf().getFieldControls()) {
+            LFFieldControlVO vo = new LFFieldControlVO();
+            vo.setNodeId(nodeId);
+            vo.setFormdataId(fc.getFormdataId());
+            vo.setFieldId(fc.getFieldId());
+            vo.setFieldName(fc.getFieldName());
+            vo.setPerm(fc.getPerm());
+            result.add(vo);
+        }
+        return result;
     }
 }

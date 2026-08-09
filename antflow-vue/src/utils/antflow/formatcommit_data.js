@@ -1,5 +1,6 @@
 // import { FormatUtils } from '@/utils/antflowformatcommit_data'
 import { isEmpty, isEmptyArray } from "@/utils/antflow/ObjectUtils";
+import $func from "@/utils/antflow/index";
 export class FormatCommitUtils {
   /**
    * 对基础设置,高级设置等设置页内容进行格式化
@@ -130,8 +131,10 @@ export class FormatCommitUtils {
         delete node.groupRelation;
       }
 
-      if (node.nodeType == 4 || node.nodeType == 6) {
+      if (node.nodeType == 4 || node.nodeType == 6 || node.nodeType == 8 || node.nodeType == 12 || node.nodeType == 13) {
         let approveObj = {
+          formAssigneeProperty: 0,
+          formInfos: [],
           emplIds: [],
           emplList: [],
           roleIds: [],
@@ -141,8 +144,8 @@ export class FormatCommitUtils {
           signType: node.signType,
           signUpType: 1,
           afterSignUpWay: 2,
+          additionalSignInfoList: node.property?.additionalSignInfoList || [],
         };
-
         if (node.nodeApproveList && !isEmptyArray(node.nodeApproveList)) {
           if (node.setType == 4) {
             for (let approve of node.nodeApproveList) {
@@ -167,12 +170,66 @@ export class FormatCommitUtils {
           }
         } else if (node.setType == 3) {
           approveObj.assignLevelGrade = node.directorLevel;
+        } else if (node.setType == 16) {
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
+          approveObj.formInfos = node.property.formInfos ?? [];
+        } else if (node.setType == 17) {
+          approveObj.udrAssigneeProperty = node.property.udrAssigneeProperty ?? null;
+          approveObj.udrValueJson = node.property.udrValueJson ?? null;
+        } else if (node.setType == 18) {
+          approveObj.formAssigneeProperty = node.property.formAssigneeProperty;
+        } else if (node.setType == 2) {
+          // 层层审批: loop 字段必须显式写入 approveObj, 否则 node.property = approveObj 会丢失
+          approveObj.signType = 3;
+          approveObj.loopEndType = node.property?.loopEndType || 1;
+          approveObj.loopNumberPlies = node.property?.loopNumberPlies || 10;
+          approveObj.loopEndPersonList = node.property?.loopEndPersonList || [];
+          approveObj.loopEndPersonObjList = node.property?.loopEndPersonObjList || [];
+          approveObj.loopEndGrade = node.property?.loopEndGrade || 0;
         }
         approveObj.afterSignUpWay = node.property?.afterSignUpWay ?? 2;
         approveObj.signUpType = node.property?.signUpType ?? 1;
+        approveObj.arbitrationRatio = node.property?.arbitrationRatio ?? null;
         node.nodeProperty = node.setType;
         node.property = approveObj;
         delete node.nodeApproveList;
+      }
+
+      // 自动节点: 后端 NodeUtil#nodeSpecialProcess 处理 nodeType 9→4 转换和虚拟审批人
+      // 前端只需将条件数据放入 autoNodeConf, 后端存入 node_config_json
+      if (node.nodeType == 9) {
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+        delete node.nodeApproveList;
+      }
+
+      // 条件审批节点: 与 auto node 类似, 把 conditionList 塞进 autoNodeConf
+      // 但不删 nodeApproveList (L185 已删, 后端从 property 拿真实审批人)
+      // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
+      if (node.nodeType == 12) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
+      }
+
+      // 条件抄送节点: 与抄送V2 类似, 但带条件; 把 conditionList 塞进 autoNodeConf
+      // 提交前调 convertConditionNodeValue(false) 把前端显示格式转为后端存储格式
+      if (node.nodeType == 13) {
+        $func.convertConditionNodeValue(node.conditionList, false);
+        node.autoNodeConf = {
+          conditionList: node.conditionList || [[]],
+          groupRelation: node.groupRelation || false,
+        };
+        delete node.conditionList;
+        delete node.groupRelation;
       }
     }
     return nodeList;
@@ -273,7 +330,7 @@ const handleConditionGetway = (nodesGroup, parmData) => {
                 (c) => {
                   //并行聚合节点
                   return !info.nodeTo.includes(c.nodeId);
-                }
+                },
               );
               condition_parallelWayChild.nodeTo = [comNode.nodeId];
               return;

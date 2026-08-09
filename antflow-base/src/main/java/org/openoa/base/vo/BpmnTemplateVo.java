@@ -100,4 +100,10 @@ public class BpmnTemplateVo implements Serializable {
             this.roleIdList = roleList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
         }
     }
+    public void setFuncList(List<BaseIdTranStruVo> funcList) {
+        this.funcList = funcList;
+        if(!CollectionUtils.isEmpty(funcList)){
+            this.funcIdList = funcList.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+        }
+    }
 }

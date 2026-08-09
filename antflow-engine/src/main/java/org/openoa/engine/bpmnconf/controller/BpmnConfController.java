@@ -14,6 +14,7 @@ import org.openoa.base.exception.AFBizException;
 import org.openoa.engine.bpmnconf.service.biz.ProcessApprovalServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -156,6 +157,7 @@ public class BpmnConfController {
      * @return
      */
     @GetMapping("/effectiveBpmn/{id}")
+    @Transactional(rollbackFor = Exception.class)
     public Result effectiveBpmn(@PathVariable("id") Integer id) {
         bpmnConfBizService.effectiveBpmnConf(id);
         return Result.newSuccessResult(null);

@@ -42,11 +42,6 @@
         AND w.runtaskid= #{taskId}
         LIMIT 1
     </select>
-    <delete id="deleteBpmFlowruninfo">
-        delete
-        from bpm_flowruninfo
-        where entitykey = #{businessKey}
-    </delete>
     <update id="updateBpmFlowrunEntrust">
         update bpm_flowrun_entrust
         set is_read=1

@@ -5,10 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openoa.base.constant.enums.MissingAssigneeProcessStragtegyEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,6 +50,16 @@ public class BpmnNodeVo  implements Serializable {
     private Boolean isCarbonCopyNode;
     private boolean aggregationNode;
     private Boolean isAutomaticNode;
+    /**
+     * 条件审批节点标记: 设计期 nodeType=12, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 automaticNode 类似, 但保留真实审批人, 仅在条件满足时自动 complete
+     */
+    private Boolean isConditionApproveNode;
+    /**
+     * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
+     * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
+     */
+    private Boolean isConditionCopyNode;
     /**
      * node property 1 for no property 2 for layer approval 3 for specified layer approval 4 for specified role 5 for specified person 6 for HRBP
      * 7 for self-select module 8 for related configuration table
@@ -139,7 +153,7 @@ public class BpmnNodeVo  implements Serializable {
     /**
      * buttons
      */
-    private BpmnNodeButtonConfBaseVo buttons;
+    private BpmnNodeButtonConfBaseVo buttons=new BpmnNodeButtonConfBaseVo();
 
     /**
      * node notice template
@@ -174,12 +188,35 @@ public class BpmnNodeVo  implements Serializable {
      */
     private List<BpmnNodeVo> fromNodes;
     private List<BpmnNodeLabelVO> labelList;
+    /**
+     * Transient node config JSON - populated during edit flow
+     */
+    @JsonIgnore
+    private BpmnNodeConfigJson nodeConfigJsonObj;
     private String elementId;
     /**
      * 当前未找到审批人处理方式,如果为null时不进行默认处理
      * @see MissingAssigneeProcessStragtegyEnum
      */
     private Integer noHeaderAction;
+    /**
+     * 标识当前节点为"上一节点指定"审批人类型
+     * 前端传入,后端在 nodeSpecialProcess 中据此自动贴 af_syslabel_prev_node_appointed 标签
+     */
+    private Boolean isPrevNodeAppointed;
+    /**
+     * Auto node condition configuration (received from frontend during edit,
+     * sent to frontend during display). Stored in node_config_json.autoNodeConf.
+     */
+    private Object autoNodeConf;
+    /**
+     * 不同意按钮退回行为类型(4=退回指定节点重新开始, 5=退回指定节点回到当前节点)
+     */
+    private Integer disagreeBackType;
+    /**
+     * 不同意退回目标节点ID(设计态nodeId UUID)
+     */
+    private String disagreeBackToNodeId;
     public void setPrevId(List<String>prevId){
         this.prevId=prevId;
         if(!ObjectUtils.isEmpty(prevId)){
@@ -200,6 +237,33 @@ public class BpmnNodeVo  implements Serializable {
             this.labelList=new ArrayList<>();
             this.labelList.add(labelVO);
         }
+    }
+
+    /**
+     * Get or create the node config JSON object
+     */
+    @JsonIgnore
+    public BpmnNodeConfigJson getOrCreateNodeConfigJson() {
+        if (this.nodeConfigJsonObj == null) {
+            this.nodeConfigJsonObj = new BpmnNodeConfigJson();
+        }
+        return this.nodeConfigJsonObj;
+    }
+
+    /**
+     * Serialize nodeConfigJsonObj to JSON string for DB storage
+     */
+    public void setNodeConfigJson(String nodeConfigJson) {
+        if (nodeConfigJson != null && !nodeConfigJson.isEmpty()) {
+            this.nodeConfigJsonObj = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+        }
+    }
+
+    public String serializeNodeConfigJson() {
+        if (this.nodeConfigJsonObj == null) {
+            return null;
+        }
+        return JsonConfUtil.toNodeConfigJson(this.nodeConfigJsonObj);
     }
     @Override
     public String toString(){

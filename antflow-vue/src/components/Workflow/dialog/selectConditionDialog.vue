@@ -21,13 +21,13 @@ import { getConditions } from '@/api/workflow/mock'
 import { useStore } from '@/store/modules/workflow'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import $func from '@/utils/antflow/index'
-import { condition_filedTypeMap, condition_filedValueTypeMap, condition_columnTypeMap } from '@/utils/antflow/const'
 const route = useRoute()
 const routePath = route.path || ''
 const store = useStore()
 let tableId = computed(() => store.tableId)
 let lowCodeFormFields = computed(() => store.lowCodeFormField)
-let configData = ref(null);
+let storeConfigData = ref(null);
+let configData = computed(() => props.nodeConfig || storeConfigData.value);
 let conditionsConfig1 = computed(() => store.conditionsConfig1)
 
 const props = defineProps({
@@ -37,6 +37,10 @@ const props = defineProps({
   },
   activeGroupIdx: {
     type: Number,
+    default: null,
+  },
+  nodeConfig: {
+    type: Object,
     default: null,
   },
 });
@@ -54,7 +58,7 @@ let visibleDialog = computed({
 });
 
 watch(conditionsConfig1, (val) => {
-  configData.value = val.value?.conditionNodes[val.priorityLevel - 1];
+  storeConfigData.value = val.value?.conditionNodes[val.priorityLevel - 1];
 });
 watch(() => props.visible, (val) => {
   if (val) {
@@ -65,7 +69,7 @@ watch(() => props.visible, (val) => {
 const getCondition = async () => {
   conditionList.value = [];
   conditions.value = routePath.indexOf('diy-design') > 0 ? await loadDIYFormCondition() : await loadLFFormCondition();
-  if (configData.value.conditionList) {
+  if (configData.value?.conditionList) {
     for (var i = 0; i < configData.value.conditionList[props.activeGroupIdx].length; i++) {
       var { formId, columnId } = configData.value.conditionList[props.activeGroupIdx][i];
       if (columnId == 0) {
@@ -84,14 +88,91 @@ const sureCondition = () => {
   chooseCondition();
   handleClose();
 };
+/**
+ * 固定表达式条件项
+ * columnId 使用 ConditionTypeEnum 中表达式类型 code，默认 SpEL(20001)
+ */
+/**
+ * 默认表达式类型 code（SpEL）
+ * 同时作为前端弹窗中"表达式"项的 formId，减少魔法变量
+ */
+const DEFAULT_EXPRESSION_COLUMN_ID = '20001';
+
+const EXPRESSION_CONDITION = {
+  formId: DEFAULT_EXPRESSION_COLUMN_ID,
+  columnId: DEFAULT_EXPRESSION_COLUMN_ID,
+  showType: '1',
+  showName: '表达式',
+  columnName: 'expression',
+  columnType: 'String',
+  fieldTypeName: 'expression',
+  multiple: false,
+  multipleLimit: 0,
+  fixedDownBoxValue: ''
+};
+
 /**自定义表单条件加载 */
 const loadDIYFormCondition = () => {
   return new Promise(async (resolve, reject) => {
     let { data } = await getConditions({ tableId: tableId.value });
+    if (Array.isArray(data)) {
+      data.push(EXPRESSION_CONDITION);
+    }
     resolve(data);
     reject([]);
   });
 }
+
+/**
+ * 1、控件对应后端api的判断类型
+ * 2、用于条件节点 对接 流程引擎中 条件判断
+ * 3、与后端约定的值
+ */
+const widgetToColumnTypeCode = new Map([
+  ["input", "10000"], //"int/fload/double/string" input
+  ["number", "10001"], //"Double"
+  ["select", "10000"], //"string" select
+  ["checkbox", "10004"], //"string" checkbox
+  ["radio", "10001"],
+  ["switch", "10001"],
+  ["time", "10002"],
+  ["time-range", "10003"],
+  ["data-range", "10002"],
+  ["date", "10002"],
+]);
+
+/**
+ * 1、控件是在条件节点 选择条件时候否显示
+ * 2、对应后端数据解析 与后端约定的值
+ * Mapping: 1-string 2-int 3-date 4-time 5-text/长字符串 6-boolean 7-二进制/byte
+ */
+const widgetToFieldTypeCode = new Map([
+  ["input", "1"], //"String"
+  ["number", "4"], //"time"
+  ["select", "2"], //"int" select
+  ["checkbox", "1"], //"String" checkbox
+  //['radio', '2'], //  int radio
+  ["switch", "6"], // boolean switch
+  ["time", "1"],
+  // ['time-range', '1'],
+  // ['data-range', '1'],
+  ["date", "1"],
+]);
+/**
+ * 判断控件的值的类型 Number, String, Array, Date,DateTime
+ */
+const widgetToValueType = new Map([
+  ["input", "String"], //"Double"
+  ["number", "String"], //"Double"
+  ["select", "Int"], //"Int" select
+  ["checkbox", "String"], //checkbox 对应 VForm 是Array
+  ["radio", "Int"],
+  ["switch", "Boolean"],
+  ["time", "String"],
+  ["time-range", "String"],
+  ["data-range", "String"],
+  ["date", "String"],
+]);
 /**低代码表单条件加载 */
 const loadLFFormCondition = () => {
   return new Promise((resolve, reject) => {
@@ -99,11 +180,11 @@ const loadLFFormCondition = () => {
     if (!lowCodeFormFields.value.hasOwnProperty("formFields")) {
       resolve(conditionArr);
     }
-    conditionArr = lowCodeFormFields.value.formFields.filter(item => { return item.fieldTypeName; }).map((item, index) => {
-      if (item.fieldTypeName && condition_filedTypeMap.has(item.fieldTypeName)) {
+    conditionArr = lowCodeFormFields.value.formFields.filter(item => { return item.type; }).map((item, index) => {
+      if (widgetToFieldTypeCode.has(item.type)) {
         let optionGroup = [];
-        if (item.optionItems) {
-          optionGroup = item.optionItems.map(c => {
+        if (item.options.optionItems) {
+          optionGroup = item.options.optionItems.map(c => {
             let convertValue = parseInt(c.value);
             if (!isNaN(convertValue)) {
               return { key: convertValue, value: c.label }
@@ -113,19 +194,20 @@ const loadLFFormCondition = () => {
         }
         return {
           formId: index + 1,
-          columnId: condition_columnTypeMap.get(item.fieldTypeName),
-          showType: condition_filedTypeMap.get(item.fieldTypeName),
-          showName: item.label,
-          columnName: item.name,
-          columnType: condition_filedValueTypeMap.get(item.fieldTypeName),
-          fieldTypeName: item.fieldTypeName,
-          multiple: item.multiple,
-          multipleLimit: item.multipleLimit,
+          columnId: widgetToColumnTypeCode.get(item.type),
+          showType: widgetToFieldTypeCode.get(item.type),
+          showName: item.options.label,
+          columnName: item.options.name,
+          columnType: widgetToValueType.get(item.type),
+          fieldTypeName: item.type,
+          multiple: item.options.multiple,
+          multipleLimit: item.options.multipleLimit,
           fixedDownBoxValue: JSON.stringify(optionGroup)
         }
       }
     })
     conditionArr = conditionArr.filter(nullableFilter);
+    conditionArr.push(EXPRESSION_CONDITION);
     resolve(conditionArr);
     reject([]);
   });
@@ -139,6 +221,7 @@ const nullableFilter = (elm) => {
  * 选择条件
  */
 const chooseCondition = () => {
+  if (!configData.value?.conditionList) return;
   for (var i = 0; i < conditionList.value.length; i++) {
     var { formId, columnId, showName, columnName, showType, columnType, fieldTypeName, multiple, multipleLimit, fixedDownBoxValue } = conditionList.value[i];
     if ($func.toggleClass(configData.value.conditionList[props.activeGroupIdx], conditionList.value[i], "formId")) {

@@ -12,10 +12,8 @@ import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseInfoTranStructVo;
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
-import org.openoa.common.entity.BpmVariableSingle;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 import org.openoa.common.mapper.BpmVariableMultiplayerPersonnelMapper;
-import org.openoa.common.mapper.BpmVariableSingleMapper;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
@@ -38,8 +36,6 @@ public class ChangeFutureAssigneeProcessImpl implements ProcessOperationAdaptor 
     private TaskMgmtServiceImpl taskMgmtService;
     @Autowired
     private BpmFlowrunEntrustService flowrunEntrustService;
-    @Autowired
-    private BpmVariableSingleMapper variableSingleMapper;
     @Autowired
     private BpmVariableMultiplayerPersonnelMapper variableMultiplayerPersonnelMapper;
 

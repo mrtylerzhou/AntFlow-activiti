@@ -23,17 +23,15 @@ import org.activiti.engine.impl.cmd.ProcessNodeJump;
 public interface EngineServices {
 
   RepositoryService getRepositoryService();
-  
+
   RuntimeService getRuntimeService();
-  
+
   FormService getFormService();
-  
+
   TaskService getTaskService();
-  
+
   HistoryService getHistoryService();
-  
-  IdentityService getIdentityService();
-  
+
   ManagementService getManagementService();
   
   DynamicBpmnService getDynamicBpmnService();

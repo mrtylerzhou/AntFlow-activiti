@@ -28,6 +28,12 @@ public enum ProcessOperationEnum implements AfEnumBase{
     BUTTON_TYPE_RECOVER_TO_HIS(31,"恢复已结束流程"),
     BUTTON_TYPE_DRAW_BACK_AGREE(32,"撤销同意"),
     BUTTON_TYPE_PROCESS_MOVE_AHEAD(33,"流程推进"),
+    BUTTON_TYPE_REMOVE_CURRENT_NODE(34,"删除当前节点"),
+    BUTTON_TYPE_REMOVE_FUTURE_NODE(35,"删除未来节点"),
+    BUTTON_TYPE_INSERT_AFTER_CURRENT_NODE(36,"当前节点后添加节点"),//当前任务后面添加节点.不管当前任务是会签/或答,都会变成顺序会签
+    BUTTON_TYPE_INSERT_AFTER_FUTURE_NODE(37,"未来节点后添加节点"),//未来任务后面添加节点.不管当前任务是会签/或答,都会变成顺序会签
+    BUTTON_TYPE_APPOINT_NEXT_NODE_APPROVER(38,"指定下一节点审批人"),//上一节点审批人在审批时指定下一节点的实际审批人
+    BUTTON_TYPE_OPPOSE(39,"反对"),//仲裁签场景下反对,反对达阈值时终止流程
     ;
 
     @Getter

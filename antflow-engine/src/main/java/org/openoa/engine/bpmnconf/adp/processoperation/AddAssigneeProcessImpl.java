@@ -1,5 +1,6 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
@@ -12,6 +13,7 @@ import org.activiti.engine.task.Task;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.service.BpmVariableService;
@@ -20,6 +22,8 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceParallelSign;
 import org.openoa.engine.bpmnconf.service.cmd.MultiCharacterInstanceSequentialSign;
+import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
+import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmFlowrunEntrustService;
 import org.openoa.engine.utils.MultiInstanceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
     @Autowired
@@ -43,6 +48,8 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
     private BpmFlowrunEntrustService flowrunEntrustService;
     @Autowired
     private BpmVariableService bpmVariableService;
+    @Autowired
+    private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
 
     @Override
     public void doProcessButton(BusinessDataVo vo) {
@@ -76,7 +83,16 @@ public class AddAssigneeProcessImpl implements ProcessOperationAdaptor {
         ActivityImpl currentActiviti = currentActivities.get(0);
         ActivityBehavior activityBehavior = currentActiviti.getActivityBehavior();
         if(!(activityBehavior instanceof MultiInstanceActivityBehavior)){
-            throw new AFBizException("不支持非多实例节点!");
+            List<String> ass= userInfos.stream().map(BaseIdTranStruVo::getId).collect(Collectors.toList());
+            ass.add(0,task.getAssignee());
+            TaskFlowControlService taskFlowControlService = taskFlowControlServiceFactory.create(procInstId);
+            try {
+                taskFlowControlService.split(taskDefKey,  ass.toArray(new String[0]));
+                return;
+            }catch (Exception e){
+                log.error("插入节点失败:{}",e.getMessage());
+                throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"插入节点失败:"+e.getMessage());
+            }
         }
         String collectionName = MultiInstanceUtils.getCollectionNameByBehavior(activityBehavior);
         Object currentValue = taskService.getVariable(task.getId(), collectionName);

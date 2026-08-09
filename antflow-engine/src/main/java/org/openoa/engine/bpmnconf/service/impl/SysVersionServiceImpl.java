@@ -1,21 +1,36 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.openoa.base.constant.enums.APPTypeEnum;
+import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.constant.enums.VersionIsForceEnums;
+import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.util.PageUtils;
+import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppVersionVo;
 import org.openoa.engine.vo.SysVersionVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.openoa.base.vo.OperationResp.PARAM_ERROR;
 
 
 /**
@@ -25,13 +40,15 @@ import java.util.List;
 @Repository
 public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVersion> implements SysVersionService {
 
-    public static final String APP_TYPE_ANDROID = "android";
-    public static final String APP_TYPE_IOS = "ios";
+    @Autowired
+    private BpmProcessAppDataBizService bpmProcessAppDataBizService;
 
     @Value("${app.ios.skip_force_version:}")
     private String iosSkipForceVersion;
     @Value("${app.android.skip_force_version:}")
     private String androidSkipForceVersion;
+    @Value("${app.harmony.skip_force_version:}")
+    private String harmonySkipForceVersion;
 
     /**
      * get app version info
@@ -84,9 +101,10 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             return appVersionVo;
         }
         SysVersion sysVersion = listVersion(null, null, maxIndex, true).stream().findFirst().orElseGet(SysVersion::new);
-        boolean androidSkipFlag = application.equalsIgnoreCase(APP_TYPE_ANDROID) && androidSkipForceVersion.equals(sysVersion.getVersion());
-        boolean iosSkipFlag = application.equalsIgnoreCase(APP_TYPE_IOS) && iosSkipForceVersion.equals(sysVersion.getVersion());
-        if (androidSkipFlag || iosSkipFlag) {
+        boolean androidSkipFlag = application.equalsIgnoreCase(APPTypeEnum.ANDROID.getName()) && androidSkipForceVersion.equals(sysVersion.getVersion());
+        boolean iosSkipFlag = application.equalsIgnoreCase(APPTypeEnum.IOS.getName()) && iosSkipForceVersion.equals(sysVersion.getVersion());
+        boolean harmonySkipFlag = application.equalsIgnoreCase(APPTypeEnum.HARMONY_OS.getName()) && harmonySkipForceVersion.equals(sysVersion.getVersion());
+        if (androidSkipFlag || iosSkipFlag||harmonySkipFlag) {
             appVersionVo.setIsLatest(1);
             return appVersionVo;
         }
@@ -115,9 +133,9 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         }
 
         if (maxVersion!=null) {
-            if (application.equalsIgnoreCase(APP_TYPE_ANDROID)) {
+            if (application.equalsIgnoreCase(APPTypeEnum.ANDROID.getName())) {
                 appVersionVo.setDownloadUrl(maxVersion.getAndroidUrl());
-            } else if (application.equalsIgnoreCase(APP_TYPE_IOS)) {
+            } else if (application.equalsIgnoreCase(APPTypeEnum.IOS.getName())) {
                 appVersionVo.setDownloadUrl(maxVersion.getIosUrl());
             }
             appVersionVo.setDescription(maxVersion.getDescription());
@@ -170,10 +188,8 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         if (index!=null) {
             wrapper.eq("`index`", index);
         }
-        if (!isDel) {
-            if (isDel) {
-                wrapper.eq("is_del", 0);
-            }
+        if (isDel!=null) {
+            wrapper.eq("is_del", 0);
         }
         return getBaseMapper().selectList(wrapper);
     }
@@ -210,6 +226,78 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
         return getOne(new QueryWrapper<SysVersion>().eq("version", version));
     }
 
+
+    @Override
+    public ResultAndPage<SysVersionVo> listSysVersion(SysVersionVo vo) {
+        PageDto pageDto = PageUtils.getPageDtoByVo(vo);
+        Page<SysVersionVo> page = PageUtils.getPageByPageDto(pageDto);
+        Integer totalCount = getBaseMapper().selectPageListCount(vo);
+        page.setTotal(totalCount);
+        pageDto.setStartIndex((int)page.offset());
+        List<SysVersionVo> dtoList = totalCount > 0 ? getBaseMapper().selectPageList(vo, pageDto) : Collections.EMPTY_LIST;
+        page.setRecords(dtoList);
+        page.setRecords(dtoList
+                .stream()
+                .map(o -> {
+
+                    List<BaseIdTranStruVo> appList = bpmProcessAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP.getCode());
+                    if (!CollectionUtils.isEmpty(appList)) {
+                        o.setApplication(appList);
+                    }
+                    List<BaseIdTranStruVo> dataList = bpmProcessAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP_DATA.getCode());
+                    if (!CollectionUtils.isEmpty(dataList)) {
+                        o.setData(dataList);
+                    }
+                    List<BaseIdTranStruVo> quickEntryList = bpmProcessAppDataBizService.findAppDataByVersionId(o.getId(), AppApplicationType.APP_QUICK_ENTRY.getCode());
+                    if (!CollectionUtils.isEmpty(quickEntryList)) {
+                        o.setQuickEntryList(quickEntryList);
+                    }
+                    return o;
+                }).collect(Collectors.toList()));
+        return new ResultAndPage<>(dtoList, PageUtils.getPageDto(page));
+    }
+
+
+
+    @Transactional
+    @Override
+    public Boolean edit(SysVersionVo vo) {
+        if (vo==null) {
+            throw new AFBizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
+        }
+
+        if (vo.getId()!=null) {
+            SysVersion sysVersion = new SysVersion();
+            BeanUtils.copyProperties(vo, sysVersion);
+            if ((vo.getIsHide()!=null)) {
+                sysVersion.setEffectiveTime(new Date());
+            }
+            if (this.updateById(sysVersion)) {
+                if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
+                    bpmProcessAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), AppApplicationType.APP.getCode());
+                    bpmProcessAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), AppApplicationType.APP_DATA.getCode());
+                    bpmProcessAppDataBizService.addVersionData(vo.getQuickEntryIds(), sysVersion.getId(), AppApplicationType.APP_QUICK_ENTRY.getCode());
+                }
+                return true;
+            }
+        } else {
+            SysVersion sysVersion = new SysVersion();
+            BeanUtils.copyProperties(vo, sysVersion);
+            //索引值加1
+            Integer index = getBaseMapper().maxIndex() + 1;
+            //置为未发布状态
+            sysVersion.setIsHide(1);
+            sysVersion.setIndex(index);
+            if (this.save(sysVersion)) {
+                if (!CollectionUtils.isEmpty(vo.getAppIds()) && !CollectionUtils.isEmpty(vo.getDataIds())) {
+                    bpmProcessAppDataBizService.addAppVersionData(vo.getAppIds(), sysVersion.getId(), 1);
+                    bpmProcessAppDataBizService.addAppVersionData(vo.getDataIds(), sysVersion.getId(), 2);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * get download code

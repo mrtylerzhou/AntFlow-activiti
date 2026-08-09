@@ -58,14 +58,15 @@ public class ConditionServiceImpl implements ConditionService {
             conditionParamTypeList=conditionParamTypeList.stream().distinct().collect(Collectors.toList());
 
 
-            for (Integer integer : conditionParamTypeList) {
+            for (int i = 0; i < conditionParamTypeList.size(); i++) {
+                Integer integer = conditionParamTypeList.get(i);
                 ConditionTypeEnum conditionTypeEnum = ConditionTypeEnum.getEnumByCode(integer);
                 if (conditionTypeEnum == null) {
                     log.info("condition type is null,type:{}", integer);
                     throw new AFBizException("logic error,please contact the Administrator");
                 }
                 try {
-                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,currentGroup)) {
+                    if (!SpringBeanUtils.getBean(conditionTypeEnum.getConditionJudgeCls()).judge(nodeId, conditionsConf, bpmnStartConditionsVo,currentGroup,i)) {
                         currentGroupResult = false;
                         //如果是且关系,有一个条件判断为false则终止判断
                         if(condRelation.equals(ConditionRelationShipEnum.AND.getCode())){
@@ -88,6 +89,7 @@ public class ConditionServiceImpl implements ConditionService {
                     throw  e;
                 }
             }
+
             result = currentGroupResult;
             if(groupRelation==ConditionRelationShipEnum.AND.getCode()&&!result){//条件组之间如果为且关系,如果有一个条件组评估为false,则立刻返回false
                break;

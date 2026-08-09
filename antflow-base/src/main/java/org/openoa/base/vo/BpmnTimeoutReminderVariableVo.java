@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.openoa.base.entity.BpmVariableApproveRemind;
+import org.openoa.base.entity.jsonconf.VariableConfigJson.ApproveRemindItem;
 
 import java.io.Serializable;
 import java.util.List;
@@ -62,7 +62,7 @@ public class BpmnTimeoutReminderVariableVo implements Serializable {
     /**
      * a list of reminders
      */
-    private List<BpmVariableApproveRemind> bpmVariableApproveReminds;
+    private List<ApproveRemindItem> bpmVariableApproveReminds;
 
     /**
      * bpmn name

@@ -22,7 +22,6 @@ import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.DynamicBpmnConstants;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
-import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
@@ -1292,17 +1291,8 @@ public class HistoricTaskInstanceQueryImpl extends AbstractVariableQueryImpl<His
   }
   
   protected List<String> getGroupsForCandidateUser(String candidateUser) {
-    // TODO: Discuss about removing this feature? Or document it properly and maybe recommend to not use it
-    // and explain alternatives
-    List<Group> groups = Context
-      .getCommandContext()
-      .getGroupIdentityManager()
-      .findGroupsByUser(candidateUser);
-    List<String> groupIds = new ArrayList<String>();
-    for (Group group : groups) {
-      groupIds.add(group.getId());
-    }
-    return groupIds;
+    // Identity management has been removed, return empty list
+    return new ArrayList<String>();
   }
   
   // getters and setters //////////////////////////////////////////////////////

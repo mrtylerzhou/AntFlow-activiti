@@ -19,7 +19,7 @@ public class DepartmentLeaderPersonnelProvider extends AbstractDifferentStandard
 
 
     @Override
-    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
-        return userService.queryDepartmentLeaderByIds(users);
+    protected List<BaseIdTranStruVo> queryUsers(List<String> userIds) {
+        return userService.queryDepartmentLeaderByIds(userIds);
     }
 }

@@ -9,18 +9,22 @@ import org.openoa.base.constant.enums.MessageSendTypeEnum;
 import org.openoa.base.constant.enums.MsgNoticeTypeEnum;
 import org.openoa.base.constant.enums.NoticeReplaceEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmProcessNotice;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.BpmnConfNoticeTemplateDetail;
+import org.openoa.base.entity.BpmnNode;
+import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeTemplateConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.vo.ActivitiBpmMsgVo;
-import org.openoa.base.vo.BpmProcessNodeOvertimeVo;
 import org.openoa.base.vo.UserMsgBatchVo;
 import org.openoa.base.vo.UserMsgVo;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfNoticeTemplateBizService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeOvertimeService;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNoticeService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.utils.ReflectionUtils;
 import org.openoa.engine.utils.UserMsgUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +45,11 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     @Autowired
     private AfUserService employeeService;
     @Autowired
-    private BpmProcessNoticeService bpmProcessNoticeService;
+    private BpmnConfBizService bpmnConfBizService;
     @Autowired
     private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
-    private BpmProcessNodeOvertimeService processNodeOvertimeService;
+    private BpmnNodeService bpmnNodeService;
     @Autowired
     private BpmnConfNoticeTemplateBizService bpmnConfNoticeTemplateBizService;
 
@@ -514,19 +518,39 @@ public class ActivitiBpmMsgTemplateServiceImpl {
     }
     private MessageSendTypeEnum[] getMessageSendTypeEnums(String processId, String formCode, Integer selectMack) {
         if (selectMack == 1) {
-            List<BpmProcessNotice> bpmProcessNotices = bpmProcessNoticeService.processNoticeList(formCode);
-            if (!CollectionUtils.isEmpty(bpmProcessNotices)) {
-                return bpmProcessNotices
+            BpmnConf bpmnConf = bpmnConfBizService.getBpmnConfByFormCode(formCode);
+            BpmnConfConfigJson confConfig = JsonConfUtil.parseConfConfig(bpmnConf.getConfConfigJson());
+            List<Integer> noticeChannelTypes = confConfig != null ? confConfig.getNoticeChannelTypes() : null;
+            if (!CollectionUtils.isEmpty(noticeChannelTypes)) {
+                return noticeChannelTypes
                         .stream()
-                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getType())).toArray(MessageSendTypeEnum[]::new);
+                        .map(MessageSendTypeEnum::getEnumByCode).toArray(MessageSendTypeEnum[]::new);
             }
         } else if (selectMack == 2) {
             BpmBusinessProcess bpmBusinessProcess = Optional.ofNullable(bpmBusinessProcessService.getBpmBusinessProcess(processId)).orElse(new BpmBusinessProcess());
-            List<BpmProcessNodeOvertimeVo> bpmProcessNodeOvertimeVos = processNodeOvertimeService.selectNoticeNodeName(Optional.ofNullable(bpmBusinessProcess.getProcessinessKey()).orElse(processId));
-            if (!CollectionUtils.isEmpty(bpmProcessNodeOvertimeVos)) {
-                return bpmProcessNodeOvertimeVos
-                        .stream()
-                        .map(o -> MessageSendTypeEnum.getEnumByCode(o.getNoticeType())).toArray(MessageSendTypeEnum[]::new);
+            String processKey = Optional.ofNullable(bpmBusinessProcess.getProcessinessKey()).orElse(processId);
+            BpmnConf conf = bpmnConfBizService.getBpmnConfByFormCode(processKey);
+            if (conf != null && conf.getBpmnCode() != null) {
+                List<BpmnNode> nodes = bpmnNodeService.list(new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<BpmnNode>()
+                        .eq("bpmn_code", conf.getBpmnCode()));
+                List<Integer> overtimeNoticeTypes = new java.util.ArrayList<>();
+                for (BpmnNode node : nodes) {
+                    BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(node.getNodeConfigJson());
+                    if (nodeConfig != null && nodeConfig.getTemplateConf() != null) {
+                        BpmnNodeTemplateConfJson.OvertimeConf ot = nodeConfig.getTemplateConf().getOvertimeConf();
+                        if (ot != null && !CollectionUtils.isEmpty(ot.getNoticeTypes())) {
+                            for (Integer type : ot.getNoticeTypes()) {
+                                if (!overtimeNoticeTypes.contains(type)) {
+                                    overtimeNoticeTypes.add(type);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!overtimeNoticeTypes.isEmpty()) {
+                    return overtimeNoticeTypes.stream()
+                            .map(MessageSendTypeEnum::getEnumByCode).toArray(MessageSendTypeEnum[]::new);
+                }
             }
         }
         return new MessageSendTypeEnum[0];

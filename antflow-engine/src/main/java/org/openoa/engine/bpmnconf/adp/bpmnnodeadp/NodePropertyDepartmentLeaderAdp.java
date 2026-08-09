@@ -17,10 +17,6 @@ public class NodePropertyDepartmentLeaderAdp extends AbstractAdditionSignNodeAda
         return null;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

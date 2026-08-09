@@ -22,7 +22,7 @@ public class JuelEvaluator{
                 simpleContext.setVariable(keyValuePair.getKey(),expressionFactory.createValueExpression(keyValuePair.getValue(), keyValuePair.getValue().getClass()));
             }
         }else{
-            simpleContext=SpringBeanUtils.getBean(SimpleContext.class);
+            simpleContext=new SimpleContext();
             simpleContext.setVariable(AntFlowConstants.SCRIPT_CONTEXT, expressionFactory.createValueExpression(businessDataVo, BusinessDataVo.class));
         }
 

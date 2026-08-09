@@ -1,18 +1,15 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.util.AfNodeUtils;
-import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.*;
-import org.openoa.base.entity.BpmnNodeBusinessTableConf;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.engine.bpmnconf.constant.enus.BusinessConfTableFieldEnum;
 import org.openoa.engine.bpmnconf.constant.enus.ConfigurationTableEnum;
-import org.openoa.engine.bpmnconf.service.impl.BpmnNodeBusinessTableConfServiceImpl;
-import org.openoa.base.util.MultiTenantUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -22,25 +19,25 @@ import java.util.stream.Collectors;
 @Component
 public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdaptor {
 
-    @Autowired
-    private BpmnNodeBusinessTableConfServiceImpl bpmnNodeBusinessTableConfService;
+
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
         super.formatToBpmnNodeVo(bpmnNodeVo);
-        BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = bpmnNodeBusinessTableConfService.getOne(new QueryWrapper<BpmnNodeBusinessTableConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
 
-        if (bpmnNodeBusinessTableConf!=null) {
-            AfNodeUtils.addOrEditProperty(bpmnNodeVo,p->{
-                p.setConfigurationTableType(bpmnNodeBusinessTableConf.getConfigurationTableType());
-                p.setTableFieldType(bpmnNodeBusinessTableConf.getTableFieldType());
-                p.setSignType(bpmnNodeBusinessTableConf.getSignType());
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getBusinessTableConf() != null) {
+            BpmnNodeApproverConfJson.BusinessTableConf btc = nodeConfig.getApproverConf().getBusinessTableConf();
+            AfNodeUtils.addOrEditProperty(bpmnNodeVo, p -> {
+                p.setConfigurationTableType(btc.getConfigurationTableType());
+                p.setTableFieldType(btc.getTableFieldType());
+                p.setSignType(btc.getSignType());
+                p.setArbitrationRatio(btc.getArbitrationRatio());
             });
-
         }
-
-
+    throw new AFBizException("migration error,please contact the author");
     }
 
     @Override
@@ -81,24 +78,6 @@ public class NodePropertyBusinessTableAdp extends AbstractAdditionSignNodeAdapto
         return vo;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-        BpmnNodePropertysVo bpmnNodePropertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-
-        BpmnNodeBusinessTableConf bpmnNodeBusinessTableConf = new BpmnNodeBusinessTableConf();
-        bpmnNodeBusinessTableConf.setBpmnNodeId(bpmnNodeVo.getId());
-        bpmnNodeBusinessTableConf.setConfigurationTableType(bpmnNodePropertysVo.getConfigurationTableType());
-        bpmnNodeBusinessTableConf.setTableFieldType(bpmnNodePropertysVo.getTableFieldType());
-        bpmnNodeBusinessTableConf.setSignType(bpmnNodePropertysVo.getSignType());
-        bpmnNodeBusinessTableConf.setCreateTime(new Date());
-        bpmnNodeBusinessTableConf.setCreateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeBusinessTableConf.setUpdateTime(new Date());
-        bpmnNodeBusinessTableConf.setUpdateUser(SecurityUtils.getLogInEmpName());
-        bpmnNodeBusinessTableConf.setTenantId(MultiTenantUtil.getCurrentTenantId());
-        bpmnNodeBusinessTableConfService.save(bpmnNodeBusinessTableConf);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

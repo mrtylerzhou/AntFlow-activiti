@@ -60,23 +60,17 @@ public class BpmVariableServiceImpl extends ServiceImpl<BpmVariableMapper, BpmVa
     }
     @Override
     public void  updateAssignee(String processNumber,String elementId,String assignee,BaseIdTranStruVo newAssigneeInfo){
-        int updateSingle = this.baseMapper.updateSingle(processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
-        if(updateSingle<=0){
-            int updateMultiPlayer = this.baseMapper.updateMultiPlayer(processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
-            if(updateMultiPlayer<=0){
-                log.warn("单人节点和多人节点变量均更新失败!,请查看条件");
-            }
+        int updated = this.baseMapper.updateMultiPlayer(processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
+        if(updated<=0){
+            log.warn("变量更新失败!,请查看条件");
         }
     }
 
     @Override
     public void  updateAssigneeById(String id, String processNumber,String elementId,String assignee,BaseIdTranStruVo newAssigneeInfo){
-        int updateSingle = this.baseMapper.updateSingleById(id, processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
-        if(updateSingle<=0){
-            int updateMultiPlayer = this.baseMapper.updateMultiPlayerById(id, processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
-            if(updateMultiPlayer<=0){
-                log.warn("单人节点和多人节点变量均更新失败!,请查看条件");
-            }
+        int updated = this.baseMapper.updateMultiPlayerById(id, processNumber, elementId, assignee, newAssigneeInfo.getId(), newAssigneeInfo.getName());
+        if(updated<=0){
+            log.warn("变量更新失败!,请查看条件");
         }
     }
 

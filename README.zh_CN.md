@@ -1,6 +1,6 @@
 <p align="center" style="margin-bottom: 0 !important">
-	<img alt="logo" src="./doc/images/logo.png"  width = 20%;>
-</p>
+	<img alt="logo" src="https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/logo.png"  width = 20%;>
+</p> 
 
 <p align="center">
  <img src="https://img.shields.io/badge/SpringBoot-2.7.17-blue" alt="Downloads">
@@ -69,21 +69,21 @@ AntFlow 是一款基于activiti的、久经生产环境考验的、企业级低�
 
 ## Antflow架构图
 
-![系统架构图](./doc/images/AntFlow架构.png)
+![系统架构图](https://env-00jy6aujr8eq.normal.cloudstatic.cn/antflow/images/AntFlow架构.png)
 
 ## 项目截图
 
-![1.png](./doc/images/1.png)
+![1.png](https://antflow.top/file/preview/1.png)
 
-![](./doc/images/2.png)
+![](https://antflow.top/file/preview/2.png)
 
-![](./doc/images/3.png)
+![](https://antflow.top/file/preview/3.png)
 
-![](./doc/images/4.png)
+![](https://antflow.top/file/preview/4.png)
 
-![](./doc/images/5.png)
+![](https://antflow.top/file/preview/5.png)
 
-![](./doc/images/6.png)
+![](https://antflow.top/file/preview/6.png)
 
 ## 快速开始
 
@@ -200,7 +200,7 @@ AntFlow 基于 Activiti 引擎深度定制开发，通过架构级优化突破�
 ### 💕 捐赠列表（按时间排序,不区分java版还是.net版,两个仓库一并致谢）
 
 ```
-Tony Co 100元、*字 1元、*秦 9.9元、忆汐辰 1.66元、琉璃 100元、胡不归 66元、*敏 6.6元、w*g 20元、t*n8.88、*原8.8、*楠20元、U*m20元、渣渣辉6.66元、付*旗88元、幻20元、*成50元、*豪10元、X*u 5元、s*i20元、 *虫20元、 *风6.66元、
+*啊 10元、*q 6.6元、*覃 10元、A*r 10元、w*d 9.99元、*明 20元、Tony Co 100元、*字 1元、*秦 9.9元、忆汐辰 1.66元、琉璃 100元、胡不归 66元、*敏 6.6元、w*g 20元、t*n8.88、*原8.8、*楠20元、U*m20元、渣渣辉6.66元、付*旗88元、幻20元、*成50元、*豪10元、X*u 5元、s*i20元、 *虫20元、 *风6.66元、
 小郑 30元、高宇 20元、*门 88元、平安喜乐 1元、GxpCode 100元、*十 50元、
 不爱吃的白萝卜 10元、汪总 100元+3元、十三 100元(.net版首捐⭐️)、SZ1806 188元,
 ゞ低调℡华丽 100元,Dorian 8.88元,小桥流水 6.6元,杨章隐 88元 首捐⭐️，大虫子88元
@@ -208,8 +208,8 @@ Tony Co 100元、*字 1元、*秦 9.9元、忆汐辰 1.66元、琉璃 100元、�
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/wxpay.jpg"/></td>
-        <td><img src="https://gitee.com/ldhnet/AntFlow-Designer/raw/master/public/images/alipay.jpg"/></td>
+        <td><img src="https://antflow.top/file/pay/wxpay.jpg"/></td>
+        <td><img src="https://antflow.top/file/pay/alipay.jpg"/></td>
     </tr>  
 </table>
 

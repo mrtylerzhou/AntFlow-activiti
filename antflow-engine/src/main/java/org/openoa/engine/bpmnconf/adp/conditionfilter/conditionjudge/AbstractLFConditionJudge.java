@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
 
-    protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate, int currentGroup) {
+    protected boolean lfCommonJudge(BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, TriplePredict<Object,Object,Integer> predicate, int currentGroup,int currentIndex) {
         Map<Integer, Map<String, Object>> groupedLfConditionsMap = conditionsConf.getGroupedLfConditionsMap();
         Map<Integer, List<Integer>> groupedNumberOperatorListMap = conditionsConf.getGroupedNumberOperatorListMap();
         if(groupedLfConditionsMap==null){
@@ -35,19 +35,20 @@ public abstract class AbstractLFConditionJudge extends AbstractComparableJudge{
         List<Integer> numberOperatorList =groupedNumberOperatorListMap.get(currentGroup);
         //operator type
         for (Map.Entry<String, Object> stringObjectEntry : lfConditionsFromDb.entrySet()) {
-
-            String key = stringObjectEntry.getKey();
-            Integer numberOperator = numberOperatorList.get(iterIndex);
-            Object valueFromUser = lfConditionsFromUser.get(key);
-            if(valueFromUser==null){
-                log.error(Strings.lenientFormat("condition field from user %s can not be null",key));
-                return false;
+            if(iterIndex==currentIndex){
+                String key = stringObjectEntry.getKey();
+                Integer numberOperator = numberOperatorList.get(iterIndex);
+                Object valueFromUser = lfConditionsFromUser.get(key);
+                if(valueFromUser==null){
+                    log.error(Strings.lenientFormat("condition field from user %s can not be null",key));
+                    return false;
+                }
+                Object valueFromDb = stringObjectEntry.getValue();
+                if(valueFromDb==null){
+                    throw new AFBizException(Strings.lenientFormat("condition field from db %s can not be null",key));
+                }
+                isMatch = predicate.test(valueFromDb, valueFromUser,numberOperator);
             }
-            Object valueFromDb = stringObjectEntry.getValue();
-            if(valueFromDb==null){
-                throw new AFBizException(Strings.lenientFormat("condition field from db %s can not be null",key));
-            }
-            isMatch = predicate.test(valueFromDb, valueFromUser,numberOperator);
             iterIndex++;
             if(!isMatch){
                 return false;

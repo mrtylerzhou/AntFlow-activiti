@@ -37,7 +37,6 @@ import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.task.IdentityLinkType;
 
 
 /**
@@ -63,8 +62,6 @@ public class ProcessDefinitionEntity extends ProcessDefinitionImpl implements Pr
   protected Map<String, Object> variables;
   protected boolean hasStartFormKey;
   protected int suspensionState = SuspensionState.ACTIVE.getStateCode();
-  protected boolean isIdentityLinksInitialized = false;
-  protected List<IdentityLinkEntity> definitionIdentityLinkEntities = new ArrayList<IdentityLinkEntity>();
   protected Set<Expression> candidateStarterUserIdExpressions = new HashSet<Expression>();
   protected Set<Expression> candidateStarterGroupIdExpressions = new HashSet<Expression>();
   protected transient ActivitiEventSupport eventSupport;
@@ -117,10 +114,7 @@ public class ProcessDefinitionEntity extends ProcessDefinitionImpl implements Pr
     if (initiatorVariableName!=null) {
       processInstance.setVariable(initiatorVariableName, authenticatedUserId);
     }
-    if (authenticatedUserId != null) {
-      processInstance.addIdentityLink(authenticatedUserId, null, IdentityLinkType.STARTER);
-    }
-    
+
     Context.getCommandContext().getHistoryManager()
       .recordProcessInstanceStart(processInstance);
     
@@ -145,43 +139,6 @@ public class ProcessDefinitionEntity extends ProcessDefinitionImpl implements Pr
     ExecutionEntity processInstance = new ExecutionEntity(activityImpl);
     processInstance.insert();
     return processInstance;
-  }
-  
-  public IdentityLinkEntity addIdentityLink(String userId, String groupId) {
-    IdentityLinkEntity identityLinkEntity = new IdentityLinkEntity();
-    getIdentityLinks().add(identityLinkEntity);
-    identityLinkEntity.setProcessDef(this);
-    identityLinkEntity.setUserId(userId);
-    identityLinkEntity.setGroupId(groupId);
-    identityLinkEntity.setType(IdentityLinkType.CANDIDATE);
-    identityLinkEntity.insert();
-    return identityLinkEntity;
-  }
-  
-  public void deleteIdentityLink(String userId, String groupId) {
-    List<IdentityLinkEntity> identityLinks = Context
-      .getCommandContext()
-      .getIdentityLinkEntityManager()
-      .findIdentityLinkByProcessDefinitionUserAndGroup(id, userId, groupId);
-    
-    for (IdentityLinkEntity identityLink: identityLinks) {
-      Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .deleteIdentityLink(identityLink, false);
-    }
-  }
-  
-  public List<IdentityLinkEntity> getIdentityLinks() {
-    if (!isIdentityLinksInitialized) {
-      definitionIdentityLinkEntities = Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .findIdentityLinksByProcessDefinitionId(id);
-      isIdentityLinksInitialized = true;
-    }
-    
-    return definitionIdentityLinkEntities;
   }
 
   public String toString() {
@@ -367,5 +324,15 @@ public class ProcessDefinitionEntity extends ProcessDefinitionImpl implements Pr
   
   public ActivitiEventSupport getEventSupport() {
 	  return eventSupport;
+  }
+
+  // Identity link methods (no-op after removal of IdentityLinkEntity)
+
+  public void addIdentityLink(String userId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteIdentityLink(String userId, String groupId) {
+    // no-op: IdentityLinkEntity has been removed
   }
 }

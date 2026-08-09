@@ -70,6 +70,10 @@ public class BusinessDataVo extends PageDto implements Serializable {
     private String nodeId;
     private String elementId;
     /**
+     * 分裂/插入节点时指定的新节点名称
+     */
+    private String nodeName;
+    /**
      * variable object map
      */
     Map<String, Object> objectMap;
@@ -127,6 +131,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
      * approvalEmp Ids
      */
     private List<BaseIdTranStruVo> approvalEmpls;
+    private List<BaseIdTranStruVo> nextNodeApprovers;
     private String paramStr;
 
     private String empId;
@@ -195,6 +200,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
 
     private Boolean isOutSideChecked = false;
     private Integer isLowCodeFlow=0;
+    private Boolean isFreeRide=false;
     /**
      * flow call back url
      */
@@ -241,6 +247,7 @@ public class BusinessDataVo extends PageDto implements Serializable {
 
     private MsgProcessEventEnum msgProcessEventEnum;
 
+    private Map<String,Object> lfFields;
     private Map<String,Object> lfConditions;
     private  Boolean isMigration;
     /**

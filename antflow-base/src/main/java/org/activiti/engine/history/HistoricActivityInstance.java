@@ -54,6 +54,9 @@ public interface HistoricActivityInstance extends HistoricData {
   /** Assignee in case of user task activity */
   String getAssignee();
 
+  /** The design-time node id of the activity (antflow extension attribute on the bpmn element) or null if not set */
+  String getNodeId();
+
   /** Time when the activity instance started */
   Date getStartTime();
 

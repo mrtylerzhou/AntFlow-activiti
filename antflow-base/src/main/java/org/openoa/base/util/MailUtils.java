@@ -1,168 +1,123 @@
 package org.openoa.base.util;
 
-
-import jodd.mail.Email;
-import jodd.mail.EmailAttachment;
-import jodd.mail.MailServer;
-import jodd.mail.SendMailSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.vo.MailInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Component
 public class MailUtils {
-    @Value("${message.email.password:none}")
-    private String password;
+
     @Value("${message.email.account:none}")
-    private  String account;
-    @Value("${message.email.host:none}")
-    private  String host;
+    private String account;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     /**
      * 通过对象发送邮件
-     *
-     * @param mail
      */
-
     public void doSendMail(MailInfo mail) {
         sendMailMain(mail);
     }
 
     /**
      * 通过对象发送邮件
-     *
-     * @param mail
      */
-    public  void sendMail(MailInfo mail) {
+    public void sendMail(MailInfo mail) {
         sendMailMain(mail);
     }
 
     /**
-     * 发送邮件实现
-     *
-     * @param mail
-     */
-    private  void sendMailMain(MailInfo mail) {
-        SendMailSession session = createSendMailSession();
-        Email email = createEmail(mail);
-        session.open();
-        session.sendMail(email);
-        session.close();
-    }
-
-    /**
      * 批量发送邮件
-     *
-     * @param mailInfos
      */
-
     public void doSendMailBatch(List<MailInfo> mailInfos) {
         sendMailBatchMain(mailInfos);
     }
 
     /**
      * 批量发送邮件
-     *
-     * @param mailInfos
      */
-    public  void sendMailBatch(List<MailInfo> mailInfos) {
+    public void sendMailBatch(List<MailInfo> mailInfos) {
         sendMailBatchMain(mailInfos);
     }
 
     /**
      * 批量发送邮件实现
-     *
-     * @param mailInfos
      */
-    public  void sendMailBatchMain(List<MailInfo> mailInfos) {
-        SendMailSession session = createSendMailSession();
-        session.open();
-        mailInfos.forEach(o -> {
-            Email email = createEmail(o);
-            session.sendMail(email);
-        });
-        session.close();
+    public void sendMailBatchMain(List<MailInfo> mailInfos) {
+        mailInfos.forEach(this::sendMailMain);
     }
 
     /**
-     * 创建邮件服务
-     *
-     * @return
+     * 发送邮件实现
      */
-    private  SendMailSession createSendMailSession() {
-        return MailServer.create()
-                .host(host)
-                .auth(account, password)
-                .buildSmtpMailServer()
-                .createSession();
-    }
+    private void sendMailMain(MailInfo mail) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            // multipart=true 以支持附件
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-    /**
-     * 创建邮件对象
-     *
-     * @param mail
-     * @return
-     */
-    private  Email createEmail(MailInfo mail) {
+            helper.setFrom(account);
 
-        Integer titleLimit = 130;
-
-        String title = mail.getTitle();
-
-        if (title.length() >= titleLimit) {
-            title = StringUtils.join(title.substring(0, titleLimit), "...");
-        }
-
-        Email email = Email.create()
-                .from(account)
-                .subject(title);
-
-        if (!StringUtils.isEmpty(mail.getReceiver())) {
-            email.to(mail.getReceiver());
-        }
-
-        if (!ObjectUtils.isEmpty(mail.getReceivers())) {
-            email.to(mail.getReceivers().toArray(new String[mail.getReceivers().size()]));
-        }
-
-        String content = Optional.ofNullable(mail.getContent()).orElse(StringUtils.EMPTY);
-
-        email.textMessage(StringUtils.EMPTY);
-        email.htmlMessage(content);
-
-        if (!ObjectUtils.isEmpty(mail.getCc())) {
-            email.cc(mail.getCc());
-        }
-
-        if (mail.getFile()!=null) {
-            File file = mail.getFile();
-            email.attachment(EmailAttachment
-                    .with()
-                    .name(file.getName())
-                    .content(file));
-        }
-
-        if (mail.getFileInputStream()!=null) {
-            try {
-                email.attachment(EmailAttachment.with()
-                        .name(mail.getFileName())
-                        .content(mail.getFileInputStream(), null));
-            } catch (IOException e) {
-                log.error("邮件发送-附件流处理失败", e);
-                return email;
+            // 标题截断
+            String title = mail.getTitle();
+            int titleLimit = 130;
+            if (title != null && title.length() >= titleLimit) {
+                title = title.substring(0, titleLimit) + "...";
             }
+            helper.setSubject(StringUtils.defaultString(title));
+
+            // 收件人
+            if (StringUtils.isNotEmpty(mail.getReceiver())) {
+                helper.addTo(mail.getReceiver());
+            }
+            if (!ObjectUtils.isEmpty(mail.getReceivers())) {
+                for (String receiver : mail.getReceivers()) {
+                    helper.addTo(receiver);
+                }
+            }
+
+            // 正文（HTML）
+            String content = Optional.ofNullable(mail.getContent()).orElse(StringUtils.EMPTY);
+            helper.setText(StringUtils.EMPTY, content);
+
+            // 抄送
+            if (!ObjectUtils.isEmpty(mail.getCc())) {
+                helper.setCc(mail.getCc());
+            }
+
+            // 附件（File）
+            File file = mail.getFile();
+            if (file != null) {
+                helper.addAttachment(file.getName(), new FileSystemResource(file));
+            }
+
+            // 附件（InputStream）
+            if (mail.getFileInputStream() != null) {
+                helper.addAttachment(
+                        StringUtils.defaultString(mail.getFileName(), "attachment"),
+                        new InputStreamResource(mail.getFileInputStream())
+                );
+            }
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("邮件发送失败", e);
         }
-
-        return email;
     }
-
 }

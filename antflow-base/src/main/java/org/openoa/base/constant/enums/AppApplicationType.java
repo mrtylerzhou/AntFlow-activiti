@@ -2,9 +2,9 @@ package org.openoa.base.constant.enums;
 import lombok.Getter;
 
 public enum AppApplicationType implements AfEnumBase{
-    ONE_TYPE(1,"版本应用类型"),
-    TWO_TYPE(2,"版本应用数据"),
-    THREE_TYPE(3,"版本快捷入口数据"),
+    APP(1,"版本应用类型"),
+    APP_DATA(2,"版本应用数据"),
+    APP_QUICK_ENTRY(3,"版本快捷入口数据"),
     ;
     @Getter
     private Integer code;

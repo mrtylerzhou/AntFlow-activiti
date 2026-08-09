@@ -38,10 +38,6 @@ public class ActivitiServiceBean {
         return processEngine.getTaskService();
     }
 
-    @Bean
-    public IdentityService identityService(){
-        return processEngine.getIdentityService();
-    }
 
     @Bean
     public ManagementService managementService(){

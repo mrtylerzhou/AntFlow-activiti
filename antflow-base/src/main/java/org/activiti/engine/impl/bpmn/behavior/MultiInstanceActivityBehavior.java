@@ -111,7 +111,6 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   
   // required for supporting embedded subprocesses
   public void lastExecutionEnded(ActivityExecution execution) {
-    ScopeUtil.createEventScopeExecution((ExecutionEntity) execution);
     leave(execution);
   }
   

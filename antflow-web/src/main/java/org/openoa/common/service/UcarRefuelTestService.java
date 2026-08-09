@@ -50,6 +50,11 @@ public class UcarRefuelTestService extends AbstractFormOperationAdaptor<BizUcarR
     }
 
     @Override
+    public void automaticAction(BizUcarRefuelVo businessDataVo, Boolean conditionResult) {
+
+    }
+
+    @Override
     public void queryData(BizUcarRefuelVo vo) {
         BizUcarfuel ucarFuel = bizUcarfuelMapper.selectById(vo.getBusinessId());
         BeanUtils.copyProperties(ucarFuel,vo);
@@ -91,6 +96,11 @@ public class UcarRefuelTestService extends AbstractFormOperationAdaptor<BizUcarR
     @Override
     public void cancellationData(BizUcarRefuelVo vo) {
 
+    }
+
+    @Override
+    public Boolean autoCondition(BizUcarRefuelVo vo) {
+        return null;
     }
 
     @Override

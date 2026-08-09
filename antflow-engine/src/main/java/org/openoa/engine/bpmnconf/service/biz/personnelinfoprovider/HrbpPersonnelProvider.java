@@ -23,7 +23,7 @@ public class HrbpPersonnelProvider extends AbstractDifferentStandardAssignNodeAs
     private AfUserService userService;
 
     @Override
-    protected List<BaseIdTranStruVo> queryUsers(List<String> users) {
-        return userService.queryEmployeeHrpbByEmployeeIds(users);
+    protected List<BaseIdTranStruVo> queryUsers(List<String> userIds) {
+        return userService.queryEmployeeHrpbByEmployeeIds(userIds);
     }
 }

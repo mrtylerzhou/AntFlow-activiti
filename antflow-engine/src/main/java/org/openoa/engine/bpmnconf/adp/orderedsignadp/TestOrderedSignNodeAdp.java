@@ -20,14 +20,14 @@ import java.util.List;
 @Service
 public class TestOrderedSignNodeAdp extends AbstractOrderedSignNodeAdp {
     @Override
-    public List<BaseIdTranStruVo> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
+    public List<List<BaseIdTranStruVo>> getAssigneeIds(BpmnNodeVo nodeVo, BpmnStartConditionsVo bpmnStartConditions) {
 
-        ArrayList<BaseIdTranStruVo> baseIdTranStruVos = Lists.newArrayList(
-                new BaseIdTranStruVo("1", "张三"),
-                new BaseIdTranStruVo("2", "李四")
-                );
+        //包法 X:每个元素独立成一层(每层 1 人),保持链式语义
+        List<List<BaseIdTranStruVo>> result = new ArrayList<>();
+        result.add(Lists.newArrayList(new BaseIdTranStruVo("1", "张三")));
+        result.add(Lists.newArrayList(new BaseIdTranStruVo("2", "李四")));
 
-        return baseIdTranStruVos;
+        return result;
     }
 
     @Override

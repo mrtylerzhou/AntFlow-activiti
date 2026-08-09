@@ -1,6 +1,5 @@
 package org.openoa.engine.conf.async;
 
-import com.alibaba.ttl.threadpool.TtlExecutors;
 import org.openoa.engine.conf.confval.AsyncProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         executor.setTaskDecorator(new AsyncTaskDecorator());
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
-        return TtlExecutors.getTtlExecutor(executor);
+        return executor;
     }
 
     @Override

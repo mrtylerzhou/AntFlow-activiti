@@ -56,8 +56,6 @@ public class SubProcessActivityBehavior extends AbstractBpmnActivityBehavior imp
   }
   
   public void lastExecutionEnded(ActivityExecution execution) {
-    ScopeUtil.createEventScopeExecution((ExecutionEntity) execution);
-    
     // remove the template-defined data object variables
     Map<String, Object> dataObjectVars = ((ActivityImpl) execution.getActivity()).getVariables();
     if (dataObjectVars != null) {

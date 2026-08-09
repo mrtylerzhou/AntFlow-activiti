@@ -17,6 +17,7 @@ package org.activiti.engine.impl.calendar;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -25,8 +26,9 @@ import javax.xml.datatype.Duration;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.impl.util.TimeZoneUtil;
 import org.activiti.engine.runtime.ClockReader;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * helper class for parsing ISO8601 duration format (also recurring) and
@@ -178,7 +180,9 @@ public class DurationHelper {
   }
 
   private Calendar parseDate(String date) throws Exception {
-    return ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.forTimeZone(clockReader.getCurrentTimeZone())).parseDateTime(date).toCalendar(null);
+    ZonedDateTime zdt = ZonedDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME
+        .withZone(clockReader.getCurrentTimeZone().toZoneId()));
+    return GregorianCalendar.from(zdt);
   }
 
   private Duration parsePeriod(String period) throws Exception {

@@ -18,10 +18,6 @@ public class NodePropertyApprovedUsersAdp extends AbstractAdditionSignNodeAdapto
         return null;
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-        super.editBpmnNode(bpmnNodeVo);
-    }
 
     @Override
     public void setSupportBusinessObjects() {

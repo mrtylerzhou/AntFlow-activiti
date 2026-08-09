@@ -8,7 +8,7 @@
         <el-tabs v-model="activeName" class="set-tabs" @tab-click="handleTabClick">
           <el-tab-pane label="表单信息" name="baseTab">
             <div v-if="baseTabShow" aria-hidden="true">
-              <previewComponent :isPreview="true" />
+              <previewComponent :isPreview="true" :ignoreReadonly="ignoreReadonly" />
             </div>
           </el-tab-pane>
           <el-tab-pane label="审批记录" name="flowStep">
@@ -19,6 +19,12 @@
           <el-tab-pane label="流程预览" name="flowReview">
             <div v-if="flowReviewShow">
               <ReviewWarp />
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="流程模板" name="flowTemplate">
+            <div v-if="flowTemplateShow">
+              <Process v-if="nodeConfig" :processData="nodeConfig" />
+              <div v-else-if="templateLoadFail" style="text-align:center;color:#999;padding:20px;">未获取到流程模板</div>
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -32,22 +38,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, getCurrentInstance } from 'vue'
 import { useStore } from '@/store/modules/workflow'
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
 import ProcessStateImg from './ProcessStateImg.vue'
+import Process from "@/components/Workflow/Process/index.vue"
+import { getApiWorkFlowData } from "@/api/workflow/index"
+import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data'
 
 let store = useStore()
 let { setPreviewDrawer } = store
+const { proxy } = getCurrentInstance();
 let previewDrawer = computed(() => store.previewDrawer)
 let viewConfig = computed(() => store.instanceViewConfig1)
 let processState = computed(() => viewConfig.value.processState)
+let ignoreReadonly = computed(() => viewConfig.value.ignoreReadonly)
 const activeName = ref('baseTab')
 let baseTabShow = ref(true);
 let flowStepShow = ref(false);
 let flowReviewShow = ref(false);
+let flowTemplateShow = ref(false);
+let nodeConfig = ref(null);
+let templateLoadFail = ref(false);
 let visible = computed({
   get() {
     return previewDrawer.value
@@ -64,6 +78,38 @@ const handleTabClick = (tab, event) => {
     flowStepShow.value = true;
   } else if (tab.paneName == 'flowReview') {
     flowReviewShow.value = true;
+  } else if (tab.paneName == 'flowTemplate') {
+    flowTemplateShow.value = true;
+    loadFlowTemplate();
+  }
+}
+/** 加载流程模板（流程设计）预览 */
+const loadFlowTemplate = async () => {
+  if (nodeConfig.value || templateLoadFail.value) {
+    return;
+  }
+  const confId = viewConfig.value.confId;
+  if (!confId) {
+    templateLoadFail.value = true;
+    return;
+  }
+  proxy.$modal.loading();
+  try {
+    let mockjson = await getApiWorkFlowData({ id: confId });
+    if (mockjson.code != 200) {
+      templateLoadFail.value = true;
+      proxy.$modal.msgError(mockjson.errMsg);
+      return;
+    }
+    let data = FormatDisplayUtils.getToTree(mockjson.data);
+    nodeConfig.value = data?.nodeConfig;
+    if (!nodeConfig.value) {
+      templateLoadFail.value = true;
+    }
+  } catch (e) {
+    templateLoadFail.value = true;
+  } finally {
+    proxy.$modal.closeLoading();
   }
 }
 /**

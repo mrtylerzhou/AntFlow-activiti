@@ -2,6 +2,7 @@ package org.openoa.engine.bpmnconf.adp.processoperation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
@@ -82,6 +83,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private DefaultTaskFlowControlServiceFactory taskFlowControlServiceFactory;
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private BpmVariableMultiplayerServiceImpl bpmVariableMultiplayerService;
@@ -103,6 +106,9 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
         if (CollectionUtils.isEmpty(taskList)) {
             throw new AFBizException("未获取到当前流程信息!,流程编号:" + bpmBusinessProcess.getProcessinessKey());
         }
+        if(!Objects.equals(bpmBusinessProcess.getProcessState(), ProcessStateEnum.HANDLING_STATE.getCode())){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR.getCodeStr(),"当前流程非审批中状态,无法操作");
+        }
         Task taskData = taskList.stream().filter(a -> a.getId().equals(vo.getTaskId())).findFirst().orElse(null);
         boolean isStartUserDrawBack=ProcessOperationEnum.BUTTON_TYPE_PROCESS_DRAW_BACK.getCode().equals(vo.getOperationType());
         boolean isOtherApproverDrawBack=ProcessOperationEnum.BUTTON_TYPE_DRAW_BACK_AGREE.getCode().equals(vo.getOperationType());
@@ -119,12 +125,12 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
             if(!SecurityUtils.getLogInEmpIdSafe().equals(createUser)){
                 throw new AFBizException(BusinessErrorEnum.RIGHT_VIOLATE.getCodeStr(),"只有发起人可以操作撤回");
             }
-            if(taskList.size()>1){
-                throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"流程已审批,不允许操作!");
-            }
-            String taskDefinitionKey = taskList.get(0).getTaskDefinitionKey();
-            String twoTaskKeyDesc = ProcessNodeEnum.TWO_TASK_KEY.getDesc();
-            if (ProcessNodeEnum.compare(taskDefinitionKey,twoTaskKeyDesc)>0) {
+            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery().processInstanceId(procInstId).list();
+            List<HistoricTaskInstance> completedTasks = historicTaskInstanceList
+                    .stream()
+                    .filter(a -> a.getEndTime() != null&&!ProcessNodeEnum.START_TASK_KEY.getDesc().equals(a.getTaskDefinitionKey()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(completedTasks)){
                 throw new AFBizException(BusinessErrorEnum.RIGHT_INVALID.getCodeStr(),"已被审批的流程允许撤回!");
             }
             vo.setBackToModifyType(ProcessDisagreeTypeEnum.TWO_DISAGREE.getCode());
@@ -256,7 +262,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                     //单节点或签节点
                     boolean isOneNodeSingleOrSign=moreNodes.size()==1&&SignTypeEnum.SIGN_TYPE_OR_SIGN.getCode().equals(moreNodes.get(0).getSignType());
                     //单人节点
-                    boolean isSingleSign=CollectionUtils.isEmpty(moreNodes);
+                    boolean isSingleSign=moreNodes.size()==1;
                     for (Task task : tasks) {
                         if((isOneNodeSingleOrSign||isSingleSign)&&!task.getId().equals(firstTask.getId())){
                             otherNewTaskIds.add(task.getId());
@@ -285,7 +291,7 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                             try {
                                 taskService.complete(otherNewTask.getId(),varMap);
                             }catch (Exception e){
-
+                                log.warn("BackToModify complete task failed: taskId={}, err={}", otherNewTask.getId(), e.getMessage());
                             }
                         }
                     }

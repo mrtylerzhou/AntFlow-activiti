@@ -93,5 +93,10 @@ public class BpmVerifyInfo implements TenantField, Serializable {
     private Integer isDel;
     @TableField("tenant_id")
     private String tenantId;
+    /**
+     * attachments json
+     */
+    @TableField("attachments_json")
+    private String attachmentsJson;
 
 }

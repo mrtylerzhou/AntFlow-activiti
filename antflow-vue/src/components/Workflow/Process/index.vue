@@ -19,18 +19,22 @@
     <promoterDrawer />
     <approverDrawer :directorMaxLevel="directorMaxLevel" />
     <copyerDrawer />
+    <copyerV2Drawer />
     <conditionDrawer />
+    <autoNodeDrawer />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import { useStore } from '@/store/modules/workflow'
 import { nodeTypeList } from '@/utils/antflow/const'
 import errorDialog from "@/components/Workflow/dialog/errorDialog.vue";
 import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
 import approverDrawer from "@/components/Workflow/drawer/approverDrawer.vue";
 import copyerDrawer from "@/components/Workflow/drawer/copyerDrawer.vue";
+import copyerV2Drawer from "@/components/Workflow/drawer/copyerDrawerV2.vue";
 import conditionDrawer from "@/components/Workflow/drawer/conditionDrawer.vue";
+import autoNodeDrawer from "@/components/Workflow/drawer/autoNodeDrawer.vue";
 import { wheelZoomFunc, zoomInit, resetImage } from "@/utils/antflow/zoom.js";
 import { flattenMapTreeToList } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
@@ -49,6 +53,7 @@ let tipVisible = ref(false);
 let nowVal = ref(100);
 let nodeConfig = ref({});
 let directorMaxLevel = ref(3);
+provide('rootNode', nodeConfig);
 onMounted(async () => {
     zoomInit(antflowDesignRef, boxScaleRef, (val) => {
         nowVal.value = val
