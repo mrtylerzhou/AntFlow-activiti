@@ -6,7 +6,7 @@
  * 数据结构与竖向设计器共用同一棵树, 保存/反显走现有 FormatCommitUtils
 -->
 <template>
-  <div class="hd-root">
+  <div class="hd-root" @click="onRootClick">
     <div class="hd-main">
       <div class="hd-toolbar">
         <span class="hd-toolbar-title">传统风格设计器</span>
@@ -33,10 +33,24 @@
           {{ relLinesHidden ? '显示连线' : '隐藏连线' }}
         </el-button>
         <!-- 角标图例: 点击筛选同时含所选属性的节点(多选 AND), 悬停显示含义 -->
-        <span class="hd-legend" title="">
+        <span class="hd-legend" ref="legendRef" title="">
+          <!-- 审批人类型: 点击弹出具体类型下拉(指定人员/指定角色/直属领导等), 选中后图例显示对应数字 -->
+          <el-dropdown trigger="click" @command="onSetTypeLegendSelect">
+            <span class="hd-legend-item" :class="{ 'hd-legend-active': selectedSetTypeNum != null }"
+              title="审批人类型(点击选择具体类型)">
+              <span class="hd-legend-icon"><span class="hd-legend-num">{{ setTypeLegendNum }}</span></span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-for="t in setTypes" :key="t.value" :command="t.value">
+                  <span style="display:inline-block;min-width:26px;font-weight:500;">{{ t.value }}</span>{{ t.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           <span v-for="lg in BADGE_LEGENDS" :key="lg.key" class="hd-legend-item"
             :class="{ 'hd-legend-active': selectedBadgeKeys.includes(lg.key) }"
-            :title="lg.desc" @click="toggleBadgeFilter(lg.key)">
+            :title="lg.desc" @click="toggleBadgeFilter(lg.key, $event)">
             <span class="hd-legend-icon">
               <svg v-if="lg.render === 'svg'" width="14" height="14" class="hd-legend-svg">
                 <use :href="'#icon-' + lg.icon" width="14" height="14" fill="currentColor" color="currentColor" />
@@ -46,7 +60,7 @@
               <img v-else-if="lg.render === 'notice'" :src="noticeImg" class="hd-legend-notice" alt="" />
             </span>
           </span>
-          <el-button size="small" v-if="selectedBadgeKeys.length" @click="resetBadgeFilter" class="hd-legend-reset">重置</el-button>
+          <el-button size="small" v-if="selectedBadgeKeys.length || selectedSetTypeNum != null" @click="resetBadgeFilter" class="hd-legend-reset">重置</el-button>
         </span>
         <span class="hd-spacer"></span>
         <span class="hd-zoom">
@@ -319,7 +333,7 @@ import { useStore } from '@/store/modules/workflow'
 import $func from '@/utils/antflow/index'
 import { layoutFlowTree, isGateway } from './layout.js'
 import { bgColors, PICK_CONDITION_COLOR, FINISH_APPROVE_COLOR, FORWARD_APPROVE_COLOR,
-  AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
+  AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR, setTypes } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { getBadgeList } from '@/utils/antflow/nodeBadges'
 import noticeImg from '@/assets/images/antflow/notice-fill.png'
@@ -1147,7 +1161,7 @@ function hdBadgeOffset(len, bi, more) {
 
 /**角标图例: 与 nodeBadges.getBadgeList 的 key 一一对应, 渲染方式与节点角标一致(工具栏白底, 图标用深色) */
 const BADGE_LEGENDS = [
-  { key: 'set-type', desc: '审批人类型(如5=指定人员、13=直属领导)', render: 'num', num: '5' },
+  // set-type(审批人类型)不在此列表: 它在工具栏独立渲染为 el-dropdown, 点击弹出具体类型选项(见模板)
   { key: 'sign-mode', desc: '审批方式(会签/或签/顺序会签/仲裁签)', render: 'svg', icon: 'all-sign' },
   { key: 'extra-sign', desc: '额外增加/排除审批', render: 'svg', icon: 'extra-add-sign' },
   { key: 'notice', desc: '配置了消息通知', render: 'notice' },
@@ -1162,24 +1176,60 @@ const BADGE_LEGENDS = [
   { key: 'assist', desc: '允许协助', render: 'svg', icon: 'assist' },
 ]
 
-/**已选角标 key(多选, AND 过滤) */
+/**已选审批人类型(数字徽章图例子选项): 点击数字徽章下拉选择具体类型, null=未选 */
+const selectedSetTypeNum = ref(null)
+/**数字徽章图例显示值: 未选时默认 5(指定人员), 选中后显示所选类型数字 */
+const setTypeLegendNum = computed(() => selectedSetTypeNum.value ?? 5)
+/**下拉选择审批人类型: 单选语义, 清除其他图例选中 */
+const onSetTypeLegendSelect = (v) => {
+  expandAllForFilter()
+  selectedBadgeKeys.value = []
+  selectedSetTypeNum.value = v
+}
+
+/**已选角标 key(默认单选切换; Ctrl/⌘+点击加选, AND 过滤) */
 const selectedBadgeKeys = ref([])
-/**点击图例切换选中 */
-const toggleBadgeFilter = (key) => {
-  const i = selectedBadgeKeys.value.indexOf(key)
-  if (i >= 0) selectedBadgeKeys.value.splice(i, 1)
-  else selectedBadgeKeys.value.push(key)
+/**过滤前先展开全部网关分支(让折叠分支里的节点也参与过滤高亮), 若已在展开态则跳过 */
+const expandAllForFilter = () => {
+  if (collapsedGwIds.value.size > 0) {
+    collapsedGwIds.value = new Set()
+    relayout()
+  }
+}
+/**点击图例: 普通点击=单选切换(点已选中的唯一项则清空, 同时取消审批人类型子选项); Ctrl/⌘+点击=加选/减选 */
+const toggleBadgeFilter = (key, ev) => {
+  expandAllForFilter()
+  const ctrl = ev && (ev.ctrlKey || ev.metaKey)
+  if (ctrl) {
+    const i = selectedBadgeKeys.value.indexOf(key)
+    if (i >= 0) selectedBadgeKeys.value.splice(i, 1)
+    else selectedBadgeKeys.value.push(key)
+  } else {
+    selectedSetTypeNum.value = null
+    selectedBadgeKeys.value =
+      (selectedBadgeKeys.value.length === 1 && selectedBadgeKeys.value[0] === key) ? [] : [key]
+  }
 }
 /**重置过滤 */
-const resetBadgeFilter = () => { selectedBadgeKeys.value = [] }
+const resetBadgeFilter = () => { selectedBadgeKeys.value = []; selectedSetTypeNum.value = null }
+/**图例区引用: 点击图例以外任意区域(画布/节点/工具栏其他按钮/空白)时停止过滤闪烁 */
+const legendRef = ref(null)
+const onRootClick = (ev) => {
+  if (legendRef.value && legendRef.value.contains(ev.target)) return
+  resetBadgeFilter()
+}
 /**节点角标 key 集合 */
 const nodeBadgeKeys = (node) => getBadgeList(node).list.map(b => b.key)
 /**节点是否同时包含全部已选属性(AND); 无选中则不高亮 */
 const isBadgeMatched = (node) => {
   const sel = selectedBadgeKeys.value
-  if (!sel.length) return false
+  const hasSetType = selectedSetTypeNum.value != null
+  if (!sel.length && !hasSetType) return false
   const keys = nodeBadgeKeys(node)
-  return sel.every(k => keys.includes(k))
+  if (!sel.every(k => keys.includes(k))) return false
+  // 审批人类型子选项: 节点的 setType 必须等于所选值
+  if (hasSetType && node.setType != selectedSetTypeNum.value) return false
+  return true
 }
 
 function desc(node) {
@@ -1358,8 +1408,8 @@ function titleColor(n) {
 .hd-legend-hash { font-size: 12px; font-weight: 500; line-height: 1; }
 .hd-legend-notice { width: 14px; height: 14px; object-fit: contain; filter: grayscale(1) brightness(0.5); }
 .hd-legend-reset { margin-left: 2px; }
-/* 图例过滤命中的节点: 蓝色描边 + 闪烁3次 */
-.hd-badge-match { stroke: #1890ff; stroke-width: 2; animation: hd-badge-flash 0.55s ease-in-out 3; }
+/* 图例过滤命中的节点: 蓝色描边 + 持续闪烁(直到用户点击图例以外任意区域停止) */
+.hd-badge-match { stroke: #1890ff; stroke-width: 2; animation: hd-badge-flash 0.55s ease-in-out infinite; }
 @keyframes hd-badge-flash {
   0%, 100% { stroke: #1890ff; stroke-width: 2; }
   50% { stroke: #ffd666; stroke-width: 3; }
