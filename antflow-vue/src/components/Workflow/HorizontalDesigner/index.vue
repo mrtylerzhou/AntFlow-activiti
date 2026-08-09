@@ -190,6 +190,28 @@
                   :class="['hd-node-title', condNodeStyle(n.node) ? 'hd-node-title-cond' : '']"
                   dominant-baseline="central" @dblclick.stop="startRename(n)">{{
                     clip(n.node.nodeName, n.w - (condNodeStyle(n.node) ? 76 : 24)) }}</text>
+                <!-- 右上角角标(与竖向 node-badges 同一套判定, 见 utils/antflow/nodeBadges.js; hover 时隐藏让位删除按钮; 条件节点不显示) -->
+                <g v-if="!condNodeStyle(n.node) && hoverKey !== n.key" class="hd-badges"
+                  :transform="`translate(${n.x + n.w - 10}, ${n.y + 15})`">
+                  <g v-for="(b, bi) in getBadgeList(n.node).list" :key="'bd-' + b.key"
+                    :transform="`translate(${hdBadgeOffset(getBadgeList(n.node).list.length, bi, getBadgeList(n.node).more)}, 0)`">
+                    <title v-if="b.tip">{{ b.tip }}</title>
+                    <use v-if="b.type === 'svg'" :href="'#icon-' + b.icon" x="-8" y="-8" width="16" height="16" fill="#fff" color="#fff" />
+                    <g v-else-if="b.type === 'num'">
+                      <rect x="-9" y="-9" width="18" height="18" rx="4" class="hd-badge-num-bg" />
+                      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+                        :class="['hd-badge-num-text', (b.num + '').length > 1 ? 'hd-badge-num-wide' : '']">{{ b.num }}</text>
+                    </g>
+                    <text v-else-if="b.type === 'anticon' && b.kind === 'label'" x="0" y="0" text-anchor="middle"
+                      dominant-baseline="central" class="hd-badge-hash">#</text>
+                    <image v-else-if="b.type === 'anticon' && b.kind === 'notice'" :href="noticeImg" x="-8" y="-8"
+                      width="16" height="16" class="hd-badge-notice-img" />
+                  </g>
+                  <use v-if="getBadgeList(n.node).more" :href="'#icon-more-up'" x="-8" y="-8" width="16" height="16"
+                    fill="#fff" color="#fff">
+                    <title>更多设置</title>
+                  </use>
+                </g>
                 <!-- 条件节点右上角优先级角标(与竖向 priority-title 一致); 反显缺 priorityLevel 时用分支索引兜底 -->
                 <text v-if="condNodeStyle(n.node)" :x="n.x + n.w - 10" :y="n.y + 15" text-anchor="end"
                   class="hd-cond-priority" dominant-baseline="central">优先级{{ condPriority(n.node) }}</text>
@@ -283,6 +305,8 @@ import { layoutFlowTree, isGateway } from './layout.js'
 import { bgColors, PICK_CONDITION_COLOR, FINISH_APPROVE_COLOR, FORWARD_APPROVE_COLOR,
   AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
+import { getBadgeList } from '@/utils/antflow/nodeBadges'
+import noticeImg from '@/assets/images/antflow/notice-fill.png'
 import nodeMenu from './nodeMenu.vue'
 import errorDialog from "@/components/Workflow/dialog/errorDialog.vue";
 import promoterDrawer from "@/components/Workflow/drawer/promoterDrawer.vue";
@@ -1100,6 +1124,10 @@ function clip(text, maxW) {
   const chars = Math.max(4, Math.floor(maxW / 13))
   return s.length > chars ? s.slice(0, chars - 1) + '…' : s
 }
+/**横向角标横向偏移: 从右往左排, 最右元素(最后一个角标或 more 图标)中心距节点右边缘 10px, 每项占 20px(16 图标 + 4 间距) */
+function hdBadgeOffset(len, bi, more) {
+  return -10 - (len - bi) * 20 + (more ? 0 : 20)
+}
 function desc(node) {
   if (!node) return ''
   // 与竖向 nodeWrap 的 showText 一致: 内容实时计算, 面板编辑后无需点"确定"即可反馈到节点
@@ -1301,6 +1329,13 @@ function titleColor(n) {
 .hd-node-title { fill: #fff; font-size: 13px; font-weight: 500; }
 .hd-node-title-cond { fill: #15bc83; } /* 条件节点: 白底绿字(与竖向一致) */
 .hd-cond-priority { fill: rgba(25, 31, 37, 0.56); font-size: 11px; } /* 条件节点右上角优先级(与竖向 priority-title 一致) */
+/* 节点右上角角标(横向统一白色, 与竖向 node-badges 同视觉): 数字徽章变体B(圆角方半透明白), label #, svg 图标 fill+color=#fff */
+.hd-badge-num-bg { fill: rgba(255, 255, 255, 0.2); stroke: rgba(255, 255, 255, 0.6); stroke-width: 1; }
+.hd-badge-num-text { fill: #fff; font-size: 11px; font-weight: 500; }
+.hd-badge-num-wide { font-size: 10px; }
+.hd-badge-hash { fill: #fff; font-size: 12px; font-weight: 500; }
+/* 通知铃铛 PNG 原图红色, 用 grayscale+brightness 滤镜转为白色以统一角标颜色 */
+.hd-badge-notice-img { filter: grayscale(1) brightness(3); }
 .hd-node-desc { fill: #8c8c8c; font-size: 12px; }
 .hd-node-arrow { fill: #c0c4cc; font-size: 12px; }
 .hd-selected .hd-node-body,
