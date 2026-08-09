@@ -32,6 +32,22 @@
           </svg>
           {{ relLinesHidden ? '显示连线' : '隐藏连线' }}
         </el-button>
+        <!-- 角标图例: 点击筛选同时含所选属性的节点(多选 AND), 悬停显示含义 -->
+        <span class="hd-legend" title="">
+          <span v-for="lg in BADGE_LEGENDS" :key="lg.key" class="hd-legend-item"
+            :class="{ 'hd-legend-active': selectedBadgeKeys.includes(lg.key) }"
+            :title="lg.desc" @click="toggleBadgeFilter(lg.key)">
+            <span class="hd-legend-icon">
+              <svg v-if="lg.render === 'svg'" width="14" height="14" class="hd-legend-svg">
+                <use :href="'#icon-' + lg.icon" width="14" height="14" fill="currentColor" color="currentColor" />
+              </svg>
+              <span v-else-if="lg.render === 'num'" class="hd-legend-num">{{ lg.num }}</span>
+              <span v-else-if="lg.render === 'label'" class="hd-legend-hash">#</span>
+              <img v-else-if="lg.render === 'notice'" :src="noticeImg" class="hd-legend-notice" alt="" />
+            </span>
+          </span>
+          <el-button size="small" v-if="selectedBadgeKeys.length" @click="resetBadgeFilter" class="hd-legend-reset">重置</el-button>
+        </span>
         <span class="hd-spacer"></span>
         <span class="hd-zoom">
           <el-button size="small" @click="zoomOut">缩小</el-button>
@@ -181,7 +197,7 @@
                 :class="[selected && selected.key === n.key ? 'hd-selected' : '', relTargetKey === n.key ? 'hd-rel-target' : '']"
                 @mouseover="hoverKey = n.key" @mouseleave="hoverKey = null" @click.stop="selectNode(n)">
                 <rect :x="n.x" :y="n.y" :width="n.w" :height="n.h" rx="8" class="hd-node-body"
-                  :class="isTried && nodeHasError(n.node) ? 'hd-node-error' : ''" />
+                  :class="[isTried && nodeHasError(n.node) ? 'hd-node-error' : '', isBadgeMatched(n.node) ? 'hd-badge-match' : '']" />
                 <path :d="titlePath(n)" :fill="titleColor(n.node)" class="hd-node-title-bar" />
                 <!-- 标题条左侧类型图标(与竖向 nodeWrap 一致, 顶端对齐); 条件节点白底时图标用绿色 -->
                 <use v-if="nodeIcon(n.node)" :href="'#icon-' + nodeIcon(n.node)" :x="n.x + 12" :y="n.y + 7"
@@ -1128,6 +1144,44 @@ function clip(text, maxW) {
 function hdBadgeOffset(len, bi, more) {
   return -10 - (len - bi) * 20 + (more ? 0 : 20)
 }
+
+/**角标图例: 与 nodeBadges.getBadgeList 的 key 一一对应, 渲染方式与节点角标一致(工具栏白底, 图标用深色) */
+const BADGE_LEGENDS = [
+  { key: 'set-type', desc: '审批人类型(如5=指定人员、13=直属领导)', render: 'num', num: '5' },
+  { key: 'sign-mode', desc: '审批方式(会签/或签/顺序会签/仲裁签)', render: 'svg', icon: 'all-sign' },
+  { key: 'extra-sign', desc: '额外增加/排除审批', render: 'svg', icon: 'extra-add-sign' },
+  { key: 'notice', desc: '配置了消息通知', render: 'notice' },
+  { key: 'timeout', desc: '配置了超时提醒', render: 'svg', icon: 'time' },
+  { key: 'label', desc: '配置了标签', render: 'label' },
+  { key: 'edit', desc: '表单字段可编辑', render: 'svg', icon: 'edit' },
+  { key: 'eye', desc: '表单字段隐藏', render: 'svg', icon: 'eye' },
+  { key: 'add-sign', desc: '允许加批', render: 'svg', icon: 'add-sign' },
+  { key: 'transfer', desc: '允许转办', render: 'svg', icon: 'transfer-assignee' },
+  { key: 'back', desc: '退回按钮/不同意退回', render: 'svg', icon: 'process-back' },
+  { key: 'jump', desc: '推进按钮/同意后跳转', render: 'svg', icon: 'process-jump-ahead' },
+  { key: 'assist', desc: '允许协助', render: 'svg', icon: 'assist' },
+]
+
+/**已选角标 key(多选, AND 过滤) */
+const selectedBadgeKeys = ref([])
+/**点击图例切换选中 */
+const toggleBadgeFilter = (key) => {
+  const i = selectedBadgeKeys.value.indexOf(key)
+  if (i >= 0) selectedBadgeKeys.value.splice(i, 1)
+  else selectedBadgeKeys.value.push(key)
+}
+/**重置过滤 */
+const resetBadgeFilter = () => { selectedBadgeKeys.value = [] }
+/**节点角标 key 集合 */
+const nodeBadgeKeys = (node) => getBadgeList(node).list.map(b => b.key)
+/**节点是否同时包含全部已选属性(AND); 无选中则不高亮 */
+const isBadgeMatched = (node) => {
+  const sel = selectedBadgeKeys.value
+  if (!sel.length) return false
+  const keys = nodeBadgeKeys(node)
+  return sel.every(k => keys.includes(k))
+}
+
 function desc(node) {
   if (!node) return ''
   // 与竖向 nodeWrap 的 showText 一致: 内容实时计算, 面板编辑后无需点"确定"即可反馈到节点
@@ -1287,6 +1341,29 @@ function titleColor(n) {
 }
 .hd-toolbar-title { font-size: 14px; font-weight: 500; color: #191f25; }
 .hd-spacer { flex: 1; }
+/* 角标图例(工具栏白底, 深色图标; 选中蓝色描边) */
+.hd-legend { display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
+.hd-legend-item {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05); color: #576a95;
+  border: 1px solid transparent; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.hd-legend-item:hover { background: rgba(0, 0, 0, 0.1); }
+.hd-legend-active { border-color: #1890ff; background: rgba(24, 144, 255, 0.12); color: #1890ff; }
+.hd-legend-icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; }
+.hd-legend-svg { display: block; }
+.hd-legend-num { font-size: 11px; font-weight: 500; line-height: 1; }
+.hd-legend-hash { font-size: 12px; font-weight: 500; line-height: 1; }
+.hd-legend-notice { width: 14px; height: 14px; object-fit: contain; filter: grayscale(1) brightness(0.5); }
+.hd-legend-reset { margin-left: 2px; }
+/* 图例过滤命中的节点: 蓝色描边 + 闪烁3次 */
+.hd-badge-match { stroke: #1890ff; stroke-width: 2; animation: hd-badge-flash 0.55s ease-in-out 3; }
+@keyframes hd-badge-flash {
+  0%, 100% { stroke: #1890ff; stroke-width: 2; }
+  50% { stroke: #ffd666; stroke-width: 3; }
+}
 .hd-zoom { display: flex; align-items: center; gap: 6px; }
 .hd-zoom-val { font-size: 13px; color: #606266; min-width: 42px; text-align: center; }
 .hd-canvas {
