@@ -927,6 +927,26 @@ html {
   color: #fff;
   flex-shrink: 0;
 }
+// 审批人类型数字徽章(变体B: 圆角方半透明白, 值即 node.setType 对应数字)
+.node-wrap-box .node-badge-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  flex-shrink: 0;
+}
+// 双位数(11/13/14/16/18)降字号, 避免 16px 圆角方内拥挤
+.node-wrap-box .node-badge-num.wide {
+  font-size: 10px;
+}
 
 .node-wrap-box .content {
   position: relative;

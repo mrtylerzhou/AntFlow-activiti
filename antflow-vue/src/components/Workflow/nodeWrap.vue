@@ -36,6 +36,7 @@
                     <span class="node-badges">
                         <template v-for="(b, idx) in visibleBadges" :key="b.key">
                             <i v-if="b.type === 'anticon'" :class="b.cls"></i>
+                            <span v-else-if="b.type === 'num'" :class="[b.cls, (b.num + '').length > 1 ? 'wide' : '']" :title="b.tip">{{ b.num }}</span>
                             <svg-icon v-else :icon-class="b.icon" :class="b.cls" />
                         </template>
                         <svg-icon v-if="showMoreBadges" icon-class="more-up" class="node-badge-icon" />
@@ -125,6 +126,7 @@
                                     <span class="node-badges">
                                         <template v-for="(b, idx) in getBadgeList(item).list" :key="b.key">
                                             <i v-if="b.type === 'anticon'" :class="b.cls"></i>
+                                            <span v-else-if="b.type === 'num'" :class="[b.cls, (b.num + '').length > 1 ? 'wide' : '']" :title="b.tip">{{ b.num }}</span>
                                             <svg-icon v-else :icon-class="b.icon" :class="b.cls" />
                                         </template>
                                         <svg-icon v-if="getBadgeList(item).more" icon-class="more-up" class="node-badge-icon" />
@@ -166,7 +168,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
+import { bgColors, placeholderList, setTypes, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
 let _uid = getCurrentInstance().uid;
@@ -267,6 +269,17 @@ let signModeIcon = computed(() => {
     return '';
 });
 
+/**审批人类型数字徽章: node.setType 有值则显示对应数字(见 NodePropertyEnum/setTypes) */
+let setTypeNum = computed(() => {
+    const t = props.nodeConfig.setType;
+    return t ? t : '';
+});
+/**审批人类型名称(悬停提示) */
+let setTypeTip = computed(() => {
+    const t = setTypes.find(s => s.value === props.nodeConfig.setType);
+    return t ? t.label : '';
+});
+
 /**额外审批角标图标: 额外增加(propertyType=1)/额外排除(propertyType=2), 两者都有时显示合并图标 */
 let extraSignIcon = computed(() => {
     const list = props.nodeConfig.property && Array.isArray(props.nodeConfig.property.additionalSignInfoList)
@@ -282,6 +295,7 @@ let extraSignIcon = computed(() => {
 /**全部可见角标配置列表(供 node-badges v-for 渲染) */
 let badgeList = computed(() => {
     const items = [
+        { key: 'set-type', show: setTypeNum.value !== '', type: 'num', num: setTypeNum.value, tip: setTypeTip.value, cls: 'node-badge-num' },
         { key: 'sign-mode', show: !!signModeIcon.value, type: 'svg', icon: signModeIcon.value, cls: 'node-badge-icon' },
         { key: 'extra-sign', show: !!extraSignIcon.value, type: 'svg', icon: extraSignIcon.value, cls: 'node-badge-icon' },
         { key: 'notice', show: noticeIconShow.value, type: 'anticon', cls: 'anticon anticon-notice notice' },
@@ -355,9 +369,18 @@ const getExtraSignIcon = (n) => {
     return '';
 };
 
+/**并行分支子节点: 审批人类型数字徽章(有值返回数字) */
+const getSetTypeNum = (n) => (n && n.setType ? n.setType : '');
+/**并行分支子节点: 审批人类型名称(悬停提示) */
+const getSetTypeTip = (n) => {
+    const t = setTypes.find(s => s.value === (n && n.setType));
+    return t ? t.label : '';
+};
+
 /**并行分支子节点: 角标渲染列表(超过 6 个截断前 5 个 + more) */
 const getBadgeList = (n) => {
     const items = [
+        { key: 'set-type', show: getSetTypeNum(n) !== '', type: 'num', num: getSetTypeNum(n), tip: getSetTypeTip(n), cls: 'node-badge-num' },
         { key: 'sign-mode', show: !!getSignModeIcon(n), type: 'svg', icon: getSignModeIcon(n), cls: 'node-badge-icon' },
         { key: 'extra-sign', show: !!getExtraSignIcon(n), type: 'svg', icon: getExtraSignIcon(n), cls: 'node-badge-icon' },
         { key: 'notice', show: !!(n && n.templateVos && n.templateVos.length > 0), type: 'anticon', cls: 'anticon anticon-notice notice' },
