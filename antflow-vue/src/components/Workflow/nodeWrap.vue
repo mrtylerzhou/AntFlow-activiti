@@ -23,7 +23,7 @@
                                         <svg-icon icon-class="conditional-drive-to-starter" class="iconfont" v-else-if="nodeConfig.nodeType == 21" />
                     <svg-icon icon-class="finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'finish_approve_node')" />
                     <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'approve_forward_node')" />
-                    <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.buttons?.approvalPage) && nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)" />
+                    <svg-icon icon-class="approver-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && hasButtonType(nodeConfig.buttons?.approvalPage, 42)" />
                     <svg-icon icon-class="drive-back" class="iconfont" v-else-if="nodeConfig.nodeType == 4 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'af_syslabel_disagree_back')" />
                     <svg-icon icon-class="condition-finish-process" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_finish_node')" />
                     <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')" />
@@ -34,9 +34,11 @@
                     <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
                     <i class="anticon anticon-close close" @click="delNode()"></i>
                     <span class="node-badges">
-                        <i v-if="noticeIconShow" class="anticon anticon-notice notice"></i>
-                        <svg-icon v-if="timeoutNoticeIconShow" icon-class="time" class="timeout-notice" />
-                        <i v-if="labelIconShow" class="anticon anticon-tag label-icon"></i>
+                        <template v-for="(b, idx) in visibleBadges" :key="b.key">
+                            <i v-if="b.type === 'anticon'" :class="b.cls"></i>
+                            <svg-icon v-else :icon-class="b.icon" :class="b.cls" />
+                        </template>
+                        <svg-icon v-if="showMoreBadges" icon-class="more-up" class="node-badge-icon" />
                     </span>
                 </template>
             </div>
@@ -121,11 +123,11 @@
                                     }}</span>
                                     <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                                     <span class="node-badges">
-                                        <i v-if="item.templateVos && item.templateVos.length > 0"
-                                            class="anticon anticon-notice notice"></i>
-                                        <svg-icon v-if="hasTimeoutRemind(item)" icon-class="time" class="timeout-notice" />
-                                        <i v-if="item.labelList && item.labelList.length > 0"
-                                            class="anticon anticon-tag label-icon"></i>
+                                        <template v-for="(b, idx) in getBadgeList(item).list" :key="b.key">
+                                            <i v-if="b.type === 'anticon'" :class="b.cls"></i>
+                                            <svg-icon v-else :icon-class="b.icon" :class="b.cls" />
+                                        </template>
+                                        <svg-icon v-if="getBadgeList(item).more" icon-class="more-up" class="node-badge-icon" />
                                     </span>
                                 </div>
 
@@ -227,6 +229,151 @@ let labelIconShow = computed(() => {
     return !proxy.isEmptyArray(props.nodeConfig.labelList);
 });
 
+/**表单权限角标: 任一字段设置为可编辑(E) */
+let formPermEditableShow = computed(() =>
+    Array.isArray(props.nodeConfig.lfFieldControlVOs)
+    && props.nodeConfig.lfFieldControlVOs.some(v => v && v.perm === 'E')
+);
+/**表单权限角标: 任一字段设置为隐藏(H) */
+let formPermHiddenShow = computed(() =>
+    Array.isArray(props.nodeConfig.lfFieldControlVOs)
+    && props.nodeConfig.lfFieldControlVOs.some(v => v && v.perm === 'H')
+);
+/**加批角标: 审批页按钮权限选中了加批(buttonType=19) */
+let signUpShow = computed(() => hasButtonType(props.nodeConfig.buttons?.approvalPage, 19));
+/**转办角标: 审批页按钮权限选中了转办(buttonType=21) */
+let transferShow = computed(() => hasButtonType(props.nodeConfig.buttons?.approvalPage, 21));
+/**退回角标: 审批页选中退回按钮(18), 或不同意按钮行为非默认(结束流程), 即退回语义(disagreeBackType 为 2/4/5) */
+let backShow = computed(() =>
+    hasButtonType(props.nodeConfig.buttons?.approvalPage, 18)
+    || !!props.nodeConfig.disagreeBackType
+);
+/**推进角标: 选中推进按钮(42), 或同意按钮行为非默认(同意推进, label approve_forward_node / isApproveForwardNode) */
+let jumpAheadShow = computed(() =>
+    hasButtonType(props.nodeConfig.buttons?.approvalPage, 42)
+    || (Array.isArray(props.nodeConfig.labelList) && props.nodeConfig.labelList.some(l => l && l.labelValue === 'approve_forward_node'))
+    || props.nodeConfig.isApproveForwardNode === true
+);
+/**协助角标: 审批页按钮权限选中了协助(buttonType=41) */
+let assistShow = computed(() => hasButtonType(props.nodeConfig.buttons?.approvalPage, 41));
+
+/**审批方式角标图标: 1会签/2或签/3顺序会签/4仲裁签, 无则空 */
+let signModeIcon = computed(() => {
+    const st = props.nodeConfig.signType;
+    if (st == 1) return 'all-sign';
+    if (st == 2) return 'or-sign';
+    if (st == 3) return 'all-sign-in-order';
+    if (st == 4) return 'arb-sign';
+    return '';
+});
+
+/**额外审批角标图标: 额外增加(propertyType=1)/额外排除(propertyType=2), 两者都有时显示合并图标 */
+let extraSignIcon = computed(() => {
+    const list = props.nodeConfig.property && Array.isArray(props.nodeConfig.property.additionalSignInfoList)
+        ? props.nodeConfig.property.additionalSignInfoList : [];
+    const hasAdd = list.some(a => a && a.propertyType == 1 && a.signInfos && a.signInfos.length > 0);
+    const hasExclude = list.some(a => a && a.propertyType == 2 && a.signInfos && a.signInfos.length > 0);
+    if (hasAdd && hasExclude) return 'extra-add-and-minus';
+    if (hasAdd) return 'extra-add-sign';
+    if (hasExclude) return 'extra-minus-sign';
+    return '';
+});
+
+/**全部可见角标配置列表(供 node-badges v-for 渲染) */
+let badgeList = computed(() => {
+    const items = [
+        { key: 'sign-mode', show: !!signModeIcon.value, type: 'svg', icon: signModeIcon.value, cls: 'node-badge-icon' },
+        { key: 'extra-sign', show: !!extraSignIcon.value, type: 'svg', icon: extraSignIcon.value, cls: 'node-badge-icon' },
+        { key: 'notice', show: noticeIconShow.value, type: 'anticon', cls: 'anticon anticon-notice notice' },
+        { key: 'timeout', show: timeoutNoticeIconShow.value, type: 'svg', icon: 'time', cls: 'timeout-notice' },
+        { key: 'label', show: labelIconShow.value, type: 'anticon', cls: 'anticon anticon-tag label-icon' },
+        { key: 'edit', show: formPermEditableShow.value, type: 'svg', icon: 'edit', cls: 'node-badge-icon' },
+        { key: 'eye', show: formPermHiddenShow.value, type: 'svg', icon: 'eye', cls: 'node-badge-icon' },
+        { key: 'add-sign', show: signUpShow.value, type: 'svg', icon: 'add-sign', cls: 'node-badge-icon' },
+        { key: 'transfer', show: transferShow.value, type: 'svg', icon: 'transfer-assignee', cls: 'node-badge-icon' },
+        { key: 'back', show: backShow.value, type: 'svg', icon: 'process-back', cls: 'node-badge-icon' },
+        { key: 'jump', show: jumpAheadShow.value, type: 'svg', icon: 'process-jump-ahead', cls: 'node-badge-icon' },
+        { key: 'assist', show: assistShow.value, type: 'svg', icon: 'assist', cls: 'node-badge-icon' },
+    ].filter(i => i.show);
+    return items;
+});
+/**实际显示角标: 总数超过 6 个时只显示前 5 个, 多余部分折叠进 more 图标 */
+let visibleBadges = computed(() => {
+    const list = badgeList.value;
+    return list.length > 6 ? list.slice(0, 5) : list;
+});
+/**角标总数超过 6 个时显示 more-up 图标 */
+let showMoreBadges = computed(() => badgeList.value.length > 6);
+
+/**按钮数组是否包含指定 buttonType: 兼容后端数字数组 [3,4,19] 与前端对象数组 [{buttonType:19}] */
+const hasButtonType = (btnList, type) =>
+    Array.isArray(btnList) && btnList.some(b => b === type || (b && b.buttonType == type));
+
+/**并行分支子节点: 表单权限任一可编辑(E) */
+const hasFormPermEditable = (n) =>
+    Array.isArray(n && n.lfFieldControlVOs)
+    && n.lfFieldControlVOs.some(v => v && v.perm === 'E');
+/**并行分支子节点: 表单权限任一隐藏(H) */
+const hasFormPermHidden = (n) =>
+    Array.isArray(n && n.lfFieldControlVOs)
+    && n.lfFieldControlVOs.some(v => v && v.perm === 'H');
+/**并行分支子节点: 审批页按钮选中加批(buttonType=19) */
+const hasSignUpButton = (n) => hasButtonType(n && n.buttons?.approvalPage, 19);
+/**并行分支子节点: 审批页按钮选中转办(buttonType=21) */
+const hasTransferButton = (n) => hasButtonType(n && n.buttons?.approvalPage, 21);
+/**并行分支子节点: 退回语义(退回按钮 18 或不同意行为非默认) */
+const hasBackSemantics = (n) =>
+    hasButtonType(n && n.buttons?.approvalPage, 18)
+    || !!(n && n.disagreeBackType);
+/**并行分支子节点: 推进语义(推进按钮 42 或同意行为非默认) */
+const hasJumpAhead = (n) =>
+    hasButtonType(n && n.buttons?.approvalPage, 42)
+    || (Array.isArray(n && n.labelList) && n.labelList.some(l => l && l.labelValue === 'approve_forward_node'))
+    || (n && n.isApproveForwardNode === true);
+/**并行分支子节点: 审批页按钮选中协助(buttonType=41) */
+const hasAssistButton = (n) => hasButtonType(n && n.buttons?.approvalPage, 41);
+
+/**并行分支子节点: 审批方式图标(1会签/2或签/3顺序会签/4仲裁签, 无则空) */
+const getSignModeIcon = (n) => {
+    const st = n && n.signType;
+    if (st == 1) return 'all-sign';
+    if (st == 2) return 'or-sign';
+    if (st == 3) return 'all-sign-in-order';
+    if (st == 4) return 'arb-sign';
+    return '';
+};
+
+/**并行分支子节点: 额外审批图标(增加/排除, 双有合并) */
+const getExtraSignIcon = (n) => {
+    const list = n && n.property && Array.isArray(n.property.additionalSignInfoList)
+        ? n.property.additionalSignInfoList : [];
+    const hasAdd = list.some(a => a && a.propertyType == 1 && a.signInfos && a.signInfos.length > 0);
+    const hasExclude = list.some(a => a && a.propertyType == 2 && a.signInfos && a.signInfos.length > 0);
+    if (hasAdd && hasExclude) return 'extra-add-and-minus';
+    if (hasAdd) return 'extra-add-sign';
+    if (hasExclude) return 'extra-minus-sign';
+    return '';
+};
+
+/**并行分支子节点: 角标渲染列表(超过 6 个截断前 5 个 + more) */
+const getBadgeList = (n) => {
+    const items = [
+        { key: 'sign-mode', show: !!getSignModeIcon(n), type: 'svg', icon: getSignModeIcon(n), cls: 'node-badge-icon' },
+        { key: 'extra-sign', show: !!getExtraSignIcon(n), type: 'svg', icon: getExtraSignIcon(n), cls: 'node-badge-icon' },
+        { key: 'notice', show: !!(n && n.templateVos && n.templateVos.length > 0), type: 'anticon', cls: 'anticon anticon-notice notice' },
+        { key: 'timeout', show: hasTimeoutRemind(n), type: 'svg', icon: 'time', cls: 'timeout-notice' },
+        { key: 'label', show: !!(n && n.labelList && n.labelList.length > 0), type: 'anticon', cls: 'anticon anticon-tag label-icon' },
+        { key: 'edit', show: hasFormPermEditable(n), type: 'svg', icon: 'edit', cls: 'node-badge-icon' },
+        { key: 'eye', show: hasFormPermHidden(n), type: 'svg', icon: 'eye', cls: 'node-badge-icon' },
+        { key: 'add-sign', show: hasSignUpButton(n), type: 'svg', icon: 'add-sign', cls: 'node-badge-icon' },
+        { key: 'transfer', show: hasTransferButton(n), type: 'svg', icon: 'transfer-assignee', cls: 'node-badge-icon' },
+        { key: 'back', show: hasBackSemantics(n), type: 'svg', icon: 'process-back', cls: 'node-badge-icon' },
+        { key: 'jump', show: hasJumpAhead(n), type: 'svg', icon: 'process-jump-ahead', cls: 'node-badge-icon' },
+        { key: 'assist', show: hasAssistButton(n), type: 'svg', icon: 'assist', cls: 'node-badge-icon' },
+    ].filter(i => i.show);
+    return { list: items.length > 6 ? items.slice(0, 5) : items, more: items.length > 6 };
+};
+
 /**节点标题背景色:选择条件节点使用专属树莓红,完成审批深紫红,推进审批翠绿色,其余按nodeType取色 */
 let titleBgColor = computed(() => {
     if (props.nodeConfig.isPickCondition) {
@@ -248,8 +395,7 @@ let titleBgColor = computed(() => {
     // 推进审批节点着色: 审批人节点(nodeType=4)的审批页按钮配置包含推进按钮(42)
     // 以按钮配置为判据, 避免后端 forwardType 默认值/反显回填导致的误判
     if (props.nodeConfig.nodeType == 4
-        && Array.isArray(props.nodeConfig.buttons?.approvalPage)
-        && props.nodeConfig.buttons.approvalPage.some(b => b.buttonType == 42)) {
+        && hasButtonType(props.nodeConfig.buttons?.approvalPage, 42)) {
         return FORWARD_APPROVE_COLOR;
     }
     // 自动完成节点着色: nodeType=18 + auto_complete_node 标签 (深靛蓝, 与自动推进翠绿色区分)

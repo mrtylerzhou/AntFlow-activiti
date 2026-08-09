@@ -839,13 +839,11 @@ html {
   display: block;
 }
 
-// hover 时隐藏铃铛/标签(visibility 保留占位, 避免 flex 内其余图标位移, 关闭按钮覆盖铃铛槽位)
-.node-wrap-box.active .notice,
-.node-wrap-box:active .notice,
-.node-wrap-box:hover .notice,
-.node-wrap-box.active .label-icon,
-.node-wrap-box:active .label-icon,
-.node-wrap-box:hover .label-icon {
+// hover 时整体隐藏角标容器, 让关闭按钮独占 right:10px 位置且不被拦截点击
+// (visibility 保留容器占位, 避免非 hover 状态图标位移; 子图标本身无交互, 隐藏即让位)
+.node-wrap-box.active .node-badges,
+.node-wrap-box:active .node-badges,
+.node-wrap-box:hover .node-badges {
   visibility: hidden;
 }
 .node-wrap-box.error:after {
@@ -921,6 +919,13 @@ html {
   width: 16px;
   height: 16px;
   color: #fff;
+}
+// 表单权限/加批角标: 与超时提醒同尺寸同色, 单色 svg 统一白色
+.node-wrap-box .node-badge-icon {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+  flex-shrink: 0;
 }
 
 .node-wrap-box .content {

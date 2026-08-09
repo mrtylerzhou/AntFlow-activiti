@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+  <!-- 左侧缩小的小号审批人剪影 -->
+  <circle cx="6" cy="8" r="2.8" fill="currentColor"/>
+  <path d="M1.5 18.5C1.5 15.6 3.5 13.2 6 13.2C8.5 13.2 10.5 15.6 10.5 18.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- 右侧加粗突出的大加号 (粗度 3px) -->
+  <path d="M13.5 12H20.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M17 8.5V15.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+</svg>

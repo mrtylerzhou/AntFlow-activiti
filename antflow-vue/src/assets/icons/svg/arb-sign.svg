@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+  <!-- 立柱与底座 -->
+  <path d="M12 4V19.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M8 19.5H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 天平横梁 -->
+  <path d="M4 8.5H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 左秤盘 -->
+  <path d="M4 8.5L7 14.5H1L4 8.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 右秤盘 -->
+  <path d="M20 8.5L23 14.5H17L20 8.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

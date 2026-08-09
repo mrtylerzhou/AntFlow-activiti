@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+  <!-- 主办理人 (左侧实心) -->
+  <circle cx="8" cy="7" r="3.5" fill="currentColor"/>
+  <path d="M2.5 19.5C2.5 15.91 5.41 13 9 13C10.8 13 12.4 13.8 13.5 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 协办助手 (右侧稍小) -->
+  <circle cx="17.5" cy="10" r="2.5" fill="currentColor"/>
+  <path d="M14 20.5C14 17.8 15.8 15.5 18.5 15.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
