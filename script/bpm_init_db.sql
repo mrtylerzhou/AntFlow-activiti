@@ -426,6 +426,29 @@ CREATE TABLE if not exists `bpm_business_draft`
 ) ENGINE = InnoDB
    COMMENT ='process draft';
 
+create table t_bpm_process_audit
+(
+    id             bigint auto_increment
+        primary key,
+    process_number varchar(64)                         null comment '流程编号',
+    form_code      varchar(50)                         null,
+    field_name     varchar(64)                         null,
+    old_value      varchar(256)                        null,
+    new_value      varchar(256)                        null,
+    tenant_id      varchar(255)                        null,
+    task_name      varchar(64)                         null,
+    task_def_key   varchar(64)                         null,
+    create_user    varchar(50)                         null,
+    create_time    timestamp default CURRENT_TIMESTAMP not null
+)
+    comment '流程审计表';
+
+create index t_bpm_process_audit_idx1
+    on t_bpm_process_audit (process_number);
+
+create index t_bpm_process_audit_idx2
+    on t_bpm_process_audit (task_def_key);
+
 DROP TABLE IF EXISTS `bpm_flowrun_entrust`;
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (
