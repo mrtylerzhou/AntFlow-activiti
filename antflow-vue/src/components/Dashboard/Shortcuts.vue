@@ -76,15 +76,15 @@ const getTodo = () => {
 getTodo();
 const handleTodo = () => {
     const obj = { path: "/flowtask/pendding" };
-    proxy.$tab.closeOpenPage(obj);
+    proxy.$tab.openPage(obj);
 }
 const handleTodayDone = () => {
     const obj = { path: "/flowtask/approved" };
-    proxy.$tab.closeOpenPage(obj);
+    proxy.$tab.openPage(obj);
 }
 const handleTodayCreate = () => {
     const obj = { path: "/flowtask/mytask" };
-    proxy.$tab.closeOpenPage(obj);
+    proxy.$tab.openPage(obj);
 }
 const handleTodayDraft = () => {
     const obj = { path: "/flowtask/copyToMe" };

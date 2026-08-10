@@ -1,11 +1,14 @@
 package org.openoa.engine.bpmnconf.service.flowcontrol;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.delegate.Expression;
+import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.behavior.*;
 import org.activiti.engine.impl.cfg.IdGenerator;
@@ -19,17 +22,25 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.openoa.base.entity.RuntimeActivityDefinitionEntity;
 import org.openoa.base.service.RuntimeActivityDefinitionEntityIntepreter;
+import org.openoa.base.util.ExpressionUtils;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.base.util.SpringBeanUtils;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
 
 public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport implements RuntimeActivityCreator
 {
+	private final RuntimeActivityDefinitionEntityIntepreter radei;
+
+	public MultiInstanceActivityCreator(RuntimeActivityDefinitionEntityIntepreter radei)
+	{
+
+		this.radei = radei;
+	}
 	public ActivityImpl[] createActivities(ProcessEngine processEngine, ProcessDefinitionEntity processDefinition,
 			RuntimeActivityDefinitionEntity info)
 	{
 		info.setFactoryName(MultiInstanceActivityCreator.class.getName());
-		RuntimeActivityDefinitionEntityIntepreter radei = new RuntimeActivityDefinitionEntityIntepreter(info);
+
 
 		if (radei.getCloneActivityId() == null)
 		{
@@ -46,6 +57,20 @@ public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport 
 			ProcessDefinitionEntity processDefinition, String processInstanceId, String prototypeActivityId,
 			String cloneActivityId, boolean isSequential, List<String> assignees)
 	{
+		RuntimeService runtimeService = SpringBeanUtils.getBean(RuntimeService.class);
+		String processNumber = (String)runtimeService.getVariables(processInstanceId).get("processNumber");
+		String varNameByElementId = SpringBeanUtils.getBean(BpmVariableMultiplayerMapper.class).getVarNameByElementId(processNumber, prototypeActivityId);
+
+		int index = varNameByElementId.indexOf("List");
+		String newVarName="";
+		if(index!=-1){
+			newVarName="startUser".equals(varNameByElementId)?varNameByElementId:
+					varNameByElementId.substring(0,index)+varNameByElementId.substring(index).replace("List", "")+"s";
+		}else{
+			newVarName=varNameByElementId;
+		}
+
+
 		ActivityImpl prototypeActivity = ProcessDefinitionUtils.getActivity(processEngine, processDefinition.getId(),
 			prototypeActivityId);
 		UserTaskActivityBehavior prototypeInner;
@@ -94,11 +119,34 @@ public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport 
 
 		TaskActivityBehavior innerBehavior;
 		ActivityBehavior prototypeActivityActivityBehavior = prototypeActivity.getActivityBehavior();
-		if(prototypeActivityActivityBehavior instanceof MultiInstanceActivityBehavior){
-			innerBehavior =
-					(TaskActivityBehavior)
-							((MultiInstanceActivityBehavior) prototypeActivityActivityBehavior).getInnerActivityBehavior();
-			isSequential=prototypeActivityActivityBehavior instanceof SequentialMultiInstanceBehavior;
+		String cloneActivityName = radei.getCloneActivityName();
+		if (cloneActivityName != null && cloneActivityName.trim().length() > 0) {
+			//指定了自定义节点名称:始终克隆TaskDefinition,避免影响原型节点,并设置自定义名称表达式
+			TaskDefinition prototypeTaskDef = prototypeInner.getTaskDefinition();
+			TaskDefinition newTaskDef = cloneTaskDefinition(prototypeTaskDef);
+			ProcessEngineConfigurationImpl processEngineConfig = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
+			newTaskDef.setAssigneeExpression(ExpressionUtils.stringToExpression(processEngineConfig, "${" + newVarName + "}"));
+			String newExp = isSequential ? cloneActivityName + "-" + "${" + "(loopCounter + 1)}" : cloneActivityName;
+			newTaskDef.setNameExpression(ExpressionUtils.stringToExpression(processEngineConfig, newExp));
+			innerBehavior = new UserTaskActivityBehavior(prototypeActivity.getId(), newTaskDef);
+		} else if(prototypeActivityActivityBehavior instanceof MultiInstanceActivityBehavior){
+			if (prototypeActivityActivityBehavior instanceof SequentialMultiInstanceBehavior) {
+				TaskDefinition prototypeTaskDef = prototypeInner.getTaskDefinition();
+				TaskDefinition newTaskDef = cloneTaskDefinition(prototypeTaskDef);
+				ProcessEngineConfigurationImpl processEngineConfig = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
+				newTaskDef.setAssigneeExpression(ExpressionUtils.stringToExpression(processEngineConfig, "${" + newVarName + "}"));
+				Expression nameExpression = newTaskDef.getNameExpression();
+				String expressionText = nameExpression.getExpressionText();
+				String newExp =expressionText+"-"+ "${" + "(loopCounter + 1)}";
+				newTaskDef.setNameExpression(ExpressionUtils.stringToExpression(processEngineConfig, newExp));
+				innerBehavior = new UserTaskActivityBehavior(prototypeActivity.getId(), newTaskDef);
+			}else{
+				innerBehavior =
+						(TaskActivityBehavior)
+								((MultiInstanceActivityBehavior) prototypeActivityActivityBehavior).getInnerActivityBehavior();
+			}
+
+
 		}else{
 			innerBehavior = (TaskActivityBehavior) prototypeActivityActivityBehavior;
 		}
@@ -106,24 +154,64 @@ public class MultiInstanceActivityCreator extends RuntimeActivityCreatorSupport 
 				isSequential
 						? new SequentialMultiInstanceBehavior(clone, innerBehavior)
 						: new ParallelMultiInstanceBehavior(clone, innerBehavior);
-		clone.setActivityBehavior(multiInstanceBehavior);
-		clone.setScope(true);
-		clone.setProperty("multiInstance", isSequential ? "sequential" : "parallel");
 
 		//设置多实例节点属性
 		multiInstanceBehavior.setLoopCardinalityExpression(new FixedValue(assignees.size()));
 		multiInstanceBehavior.setCollectionExpression(new FixedValue(assignees));
-		String processNumber = (String)SpringBeanUtils.getBean(RuntimeService.class).getVariables(processInstanceId).get("processNumber");
-		String varNameByElementId = SpringBeanUtils.getBean(BpmVariableMultiplayerMapper.class).getVarNameByElementId(processNumber, prototypeActivityId);
-		int index = varNameByElementId.indexOf("List");
-		String newVarName="";
-		if(index!=-1){
-			newVarName="startUser".equals(varNameByElementId)?varNameByElementId:
-					varNameByElementId.substring(0,index)+varNameByElementId.substring(index).replace("List", "")+"s";
-		}else{
-			newVarName=varNameByElementId;
-		}
+		multiInstanceBehavior.setLoopCardinalityExpression(new FixedValue(assignees.size()));
+
+		clone.setActivityBehavior(multiInstanceBehavior);
+		clone.setScope(true);
+		clone.setProperty("multiInstance", isSequential ? "sequential" : "parallel");
+
+
+
 		multiInstanceBehavior.setCollectionElementVariable(newVarName);
+		return clone;
+	}
+
+	@Override
+	protected TaskDefinition cloneTaskDefinition(TaskDefinition prototype) {
+
+		TaskDefinition clone = new TaskDefinition(prototype.getTaskFormHandler());
+
+		// 基本属性
+		clone.setKey(prototype.getKey());
+		clone.setNameExpression(prototype.getNameExpression());
+		clone.setDescriptionExpression(prototype.getDescriptionExpression());
+		clone.setPriorityExpression(prototype.getPriorityExpression());
+		clone.setDueDateExpression(prototype.getDueDateExpression());
+		clone.setCategoryExpression(prototype.getCategoryExpression());
+		clone.setFormKeyExpression(prototype.getFormKeyExpression());
+
+		// assignee
+		clone.setAssigneeExpression(prototype.getAssigneeExpression());
+
+		// owner
+		clone.setOwnerExpression(prototype.getOwnerExpression());
+
+		// candidate users
+		if (prototype.getCandidateUserIdExpressions() != null) {
+			clone.getCandidateUserIdExpressions()
+					.addAll(prototype.getCandidateUserIdExpressions());
+		}
+
+		// candidate groups
+		if (prototype.getCandidateGroupIdExpressions() != null) {
+			clone.getCandidateGroupIdExpressions()
+					.addAll(prototype.getCandidateGroupIdExpressions());
+		}
+
+		// task listeners
+		if (prototype.getTaskListeners() != null) {
+			for (Map.Entry<String, List<TaskListener>> entry
+					: prototype.getTaskListeners().entrySet()) {
+
+				clone.getTaskListeners()
+						.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+			}
+		}
+
 		return clone;
 	}
 }

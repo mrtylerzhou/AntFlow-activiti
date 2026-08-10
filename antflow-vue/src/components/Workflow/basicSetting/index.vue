@@ -47,25 +47,7 @@
                 <el-input v-model="form.bpmnName" placeholder="请输入审批名称" :style="{ width: '100%' }" readonly />
             </el-form-item>
 
-            <el-form-item label=" 审批人去重" prop="deduplicationType">
-                <el-select v-model="form.deduplicationType" placeholder="请选择去重类型" :style="{ width: '100%' }">
-                    <el-option v-for="(item, index) in duplicateOptions" :key="index" :label="item.label"
-                        :value="item.value"></el-option>
-                </el-select>
-            </el-form-item>
-
-            <!-- <el-form-item label="启用流程" prop="effectiveStatus">
-                <el-switch v-model="form.effectiveStatus" />
-            </el-form-item> -->
-            <el-form-item label="发起人权限" prop="viewPageStart">
-                <el-checkbox-group v-model="form.viewPageButtons.viewPageStart">
-                    <el-checkbox v-for="item in viewPageButtons" :key="item.value" :label="item.label"
-                        :value="item.value">
-                        {{ item.label }}
-                    </el-checkbox>
-                </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label=" 流程说明" prop="remark">
+            <el-form-item label="流程说明" prop="remark">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入流程说明" :maxlength="100" show-word-limit
                     :autosize="{ minRows: 4, maxRows: 4 }" :style="{ width: '100%' }"></el-input>
             </el-form-item>
@@ -96,28 +78,6 @@ let props = defineProps({
 
 const generatorID = "PROJECT_" + NodeUtils.idGenerator();
 const ruleFormRef = ref(null);
-const duplicateOptions = [{
-    "label": "不去重",
-    "value": 1
-}, {
-    "label": "前去重",
-    "value": 2
-}, {
-    "label": "后去重",
-    "value": 3
-}, {
-    "label": "相邻节点去重",
-    "value": 4
-}];
-
-const viewPageButtons = [{
-    "label": "撤回",
-    "value": 29
-}, {
-    "label": "作废",
-    "value": 7
-}];
-
 let formCodeOptions = ref([]);
 const form = reactive({
     bpmnName: '',

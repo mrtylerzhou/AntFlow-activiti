@@ -6,11 +6,11 @@
     <groupId>io.github.mrtylerzhou</groupId>
     <artifactId>antflow-spring-boot-starter</artifactId>
     <name>antflow-spring-boot-starter</name>
-    <version>1.6.0</version>
+    <version>2.0.0-m8</version>
     <properties>
 
         <!-- 主版本        -->
-        <antflow.version>1.6.0</antflow.version>
+        <antflow.version>1.7.0</antflow.version>
 
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -27,17 +27,7 @@
         <jgroups.version>4.2.30.Final</jgroups.version>
         <pinyin4j.version>2.5.0</pinyin4j.version>
         <fastjson2.version>2.0.53</fastjson2.version>
-        <drools.version>6.5.0.Final</drools.version>
-        <jodd-core.version>5.3.0</jodd-core.version>
-        <joda-time.version>2.9.9</joda-time.version>
-        <jodd-servlet.version>4.1.2</jodd-servlet.version>
-        <jodd-mail.version>5.1.6</jodd-mail.version>
-        <jodd-bean.version>4.1.2</jodd-bean.version>
-        <jgraphx.version>4.2.2</jgraphx.version>
-        <javax.enterprise.concurrent.version>1.0</javax.enterprise.concurrent.version>
-        <transmittable-thread-local.version>2.12.6</transmittable-thread-local.version>
-        <geronimo-jta.version>1.1.1</geronimo-jta.version>
-        <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
+       <java-uuid-generator.version>3.1.4</java-uuid-generator.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>31.0.1-jre</guava.version>
 
@@ -125,35 +115,10 @@
         <artifactId>spring-aspects</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-core</artifactId>
-        <version>${jodd-core.version}</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
-    <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda-time.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-servlet</artifactId>
-        <version>${jodd-servlet.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-mail</artifactId>
-        <version>${jodd-mail.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.jodd</groupId>
-        <artifactId>jodd-bean</artifactId>
-        <version>${jodd-bean.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.github.vlsi.mxgraph</groupId>
-        <artifactId>jgraphx</artifactId>
-        <version>${jgraphx.version}</version>
-    </dependency>
+
     <dependency>
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-extension</artifactId>
@@ -164,37 +129,7 @@
         <artifactId>mysql-connector-java</artifactId>
         <version>${mysql.version}</version>
     </dependency>
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>transmittable-thread-local</artifactId>
-        <version>${transmittable-thread-local.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>javax.enterprise.concurrent</groupId>
-        <artifactId>javax.enterprise.concurrent-api</artifactId>
-        <version>${javax.enterprise.concurrent.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-core</artifactId>
-        <version>${drools.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-compiler</artifactId>
-        <version>${drools.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>knowledge-api</artifactId>
-        <version>${drools.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-jta_1.1_spec</artifactId>
-        <version>${geronimo-jta.version}</version>
-    </dependency>
-    <dependency>
+<dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -322,11 +257,10 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>0.11.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>zypqqgc</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
             <!--   source plugin -->

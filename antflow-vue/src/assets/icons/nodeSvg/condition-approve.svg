@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: currentColor; } /* 保持统一的橙色调，如需蓝色可改为 #00A3B4 */
+            .bg-mask { 
+                fill: #FFFFFF; 
+                stroke: #FFFFFF; 
+                stroke-width: 5; 
+                stroke-linejoin: round; 
+            }
+            .icon-style {
+                fill: currentColor;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 人物部分 -->
+    <g id="character">
+        <!-- 头像 -->
+        <circle class="main" cx="28" cy="16" r="10"/>
+        <!-- 身体 -->
+        <path class="main" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z"/>
+    </g>
+
+    <!-- 2. 漏斗部分 (带隔离层) -->
+    <g transform="translate(46, 46)">
+        
+        <!-- 隔离层：通过加粗的白色描边把人物背景切开 -->
+        <path class="bg-mask" d="
+            M -10, -10 
+            H 10 
+            L 3, 0 
+            V 8 
+            L -3, 10 
+            V 0 
+            Z" />
+
+        <!-- 漏斗本体 -->
+        <path class="icon-style" d="
+            M -10, -10 
+            H 10 
+            L 3, 0 
+            V 8 
+            L -3, 10 
+            V 0 
+            Z" />
+            
+        <!-- 漏斗顶部的横线加厚感 (可选) -->
+        <line x1="-10" y1="-10" x2="10" y2="-10" class="icon-style" stroke-width="3"/>
+    </g>
+
+</svg>

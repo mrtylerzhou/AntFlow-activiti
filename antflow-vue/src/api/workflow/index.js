@@ -88,6 +88,20 @@ export function getPenddinglistPage(pageDto, taskMgmtVO) {
 }
 
 /**
+ * 获取用户撤销/退回数据列表
+ * @param {*} pageDto
+ * @param {*} taskMgmtVO
+ * @returns
+ */
+export function getResubmitlistPage(pageDto, taskMgmtVO) {
+  let data = {
+    pageDto: pageDto,
+    taskMgmtVO: taskMgmtVO,
+  };
+  return http.post(`${baseUrl}/bpmnConf/process/listPage/7`, data, { headers });
+}
+
+/**
  * 获取用户已审批数据列表
  * @param {*} pageDto
  * @param {*} taskMgmtVO
@@ -139,8 +153,17 @@ export function processOperation(data) {
   return http.post(
     `${baseUrl}/bpmnConf/process/buttonsOperation?formCode=${data.formCode}`,
     data,
-    { headers }
+    { headers },
   );
+}
+
+/**
+ * 批量同意
+ * @param {object} data - { taskIds: [], batchApprovalComment: '审批意见' }
+ * @returns
+ */
+export function batchAgree(data) {
+  return http.post(`${baseUrl}/bpmnBusiness/batchAgree`, data, { headers });
 }
 
 /**
@@ -151,7 +174,7 @@ export function processOperation(data) {
 export function getBpmVerifyInfoVos(param) {
   return http.get(
     `${baseUrl}/bpmnConf/getBpmVerifyInfoVos?processNumber=${param.processNumber}`,
-    { headers }
+    { headers },
   );
 }
 
@@ -203,8 +226,17 @@ export function getViewBusinessProcess(data) {
   return http.post(
     `${baseUrl}/bpmnConf/process/viewBusinessProcess?formCode=${data.formCode}`,
     data,
-    { headers }
+    { headers },
   );
+}
+
+/**
+ * 加载流程草稿
+ * @param {string} formCode
+ * @returns
+ */
+export function loadDraft(formCode) {
+  return http.get(`${baseUrl}/processDraft/loadDraft?formCode=${formCode}`, { headers });
 }
 
 /**
@@ -265,6 +297,23 @@ export function setEntrust(data) {
 export function getStartUserChooseModules(formCode) {
   return http.get(
     `${baseUrl}/bpmnBusiness/getStartUserChooseModules?formCode=${formCode}`,
-    { headers }
+    { headers },
   );
+}
+
+/**
+ * 获取自定义审批规则选项
+ * @returns
+ */
+export function getUDROptions() {
+  return http.get(`${baseUrl}/taskMgmt/getUDROptions`, { headers });
+}
+
+/**
+ * 通用字典数据查询
+ * @param {string} dictType 字典类型
+ * @returns
+ */
+export function getDictDataByType(dictType) {
+  return http.get(`${baseUrl}/taskMgmt/getDictDataByType?dictType=${dictType}`, { headers });
 }

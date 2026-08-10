@@ -13,7 +13,14 @@ export let bgColors = [
   "255, 148, 62",
   "50, 150, 250",
   "50, 150, 250",
-]; // '灰色, 蓝色, 橙色, 黄色, 黄色'
+  "",
+  "4, 96, 187",
+  "155, 89, 182",
+  "",
+  "",
+  "46, 167, 167",
+  "70, 130, 180",
+]; // '灰色, 蓝色, 橙色, 黄色, 黄色, , , , 深蓝, 紫色, , , 青绿色(条件审批), 钢蓝色(条件抄送)'
 export let placeholderList = [
   "",
   "发起人",
@@ -23,6 +30,12 @@ export let placeholderList = [
   "",
   "抄送人",
   "审核人",
+  "抄送人v2",
+  "自动节点",
+  "办理人",
+  "自动办理",
+  "条件审批",
+  "条件抄送",
 ];
 export let nodeTypeList = [
   "未知",
@@ -33,16 +46,38 @@ export let nodeTypeList = [
   "未知",
   "抄送人",
   "并行审批",
+  "抄送人V2",
+  "自动节点",
+  "办理节点",
+  "自动办理",
+  "条件审批",
+  "条件抄送",
 ];
 export let signTypeObj = {
   1: "会签",
   2: "或签", //
   3: "顺序会签", //拒绝
+  4: "仲裁签",
 };
 export let setTypes = [
   { value: 5, label: "指定人员" },
   { value: 4, label: "指定角色" },
   { value: 6, label: "HRBP" },
+  { value: 13, label: "直属领导" },
+  { value: 2, label: "层层审批" },
+  { value: 3, label: "指定层级审批" },
+  // { value: 8, label: '关联业务表' },
+  { value: 12, label: "发起人自己" },
+  { value: 7, label: "发起人自选审批人" },
+  // { value: 14, label: '指定部门' },
+  { value: 16, label: "表单中选择" },
+  { value: 17, label: "自定义" },
+  { value: 18, label: "上一节点审批人的" },
+  { value: 19, label: "上一节点指定" },
+];
+export let setCopyerTypes = [
+  { value: 5, label: "指定人员" },
+  { value: 4, label: "指定角色" },
   { value: 13, label: "直属领导" },
   // { value: 2, label: '层层审批' },
   { value: 3, label: "指定层级审批" },
@@ -68,6 +103,44 @@ export let opt1s = [
   { value: "<", label: "<" },
   { value: "≤", label: "≤" },
 ];
+
+export const formUserOptionSet = [
+  { label: "表单中的人员", value: 1 },
+  { label: "表单中的角色", value: 2 },
+  { label: "表单中人员的HRBP", value: 3 },
+  { label: "表单中人员的直属领导", value: 4 },
+  { label: "表单中人员所在部门负责人", value: 5 },
+  { label: "表单中部门的负责人", value: 6 },
+  { label: "表单中人员多级领导", value: 7 },
+  { label: "表单中人员全部层级领导", value: 8 },
+];
+
+export const formPrevNodeApproverOptionSet = [
+  { label: "上一节点人员", value: 1 },
+  { label: "上一节点人员的HRBP", value: 3 },
+  { label: "上一节点人员的直属领导", value: 4 },
+  { label: "上一节点人员所在部门负责人", value: 5 },
+  { label: "上一节点部门的负责人", value: 6 },
+  { label: "上一节点人员多级领导", value: 7 },
+  { label: "上一节点人员全部层级领导", value: 8 },
+];
+
+export const NO_USER_FIELD_WIDGETS = new Set([
+  "textarea",
+  "number",
+  "switch",
+  "time",
+  "date",
+  "date-range",
+  "time-range",
+  "rate",
+  "slider",
+  "color",
+  "picture-upload",
+  "file-upload",
+  "rich-editor",
+]);
+
 /**审批按钮lable-value */
 export class approvalButtonConf {
   static preview = 0; //预览
@@ -75,7 +148,7 @@ export class approvalButtonConf {
   static resubmit = 2; //重新提交
   static agree = 3; //同意
   static noAgree = 4; //拒绝
-  static repulse = 6; //退回上节点修改
+  static repulsePrev = 6; //退回上节点修改
   static invalid = 7; //作废
   static print = 8; //打印
   static undertake = 10; //承办
@@ -93,6 +166,9 @@ export class approvalButtonConf {
   static futureNodeReduceSign = 27; //未来节点减签
   static futureNodeAddSign = 28; //未来节点加签
   static withdraw = 29; //流程撤回
+  static drawBackAgree = 32; //撤销同意
+  static appointNextNodeApprover = 38; //指定下一节点审批人
+  static oppose = 39; //反对(仲裁签)
   static inApproval = 99; //处理中
   static completed = 100; //已完成
 
@@ -121,8 +197,18 @@ export class approvalButtonConf {
     27: "未来节点减签",
     28: "未来节点加签",
     29: "流程撤回",
+    32: "撤销同意",
+    38: "指定下一节点审批人",
+    39: "反对", //仲裁签场景下反对
   };
 }
+
+/**上一节点指定审批人:前端使用的常量*/
+export const PREV_NODE_APPOINTED_SET_TYPE = 19; //radio显示值(映射到nodeProperty=5)
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_ID = "-4"; //AFSpecialAssigneeEnum.PREV_NODE_APPOINTED
+export const PREV_NODE_APPOINTED_VIRTUAL_USER_NAME = "上一节点指定审批人";
+export const LABEL_PREV_NODE_APPOINTED = "af_syslabel_prev_node_appointed";
+export const LABEL_APPOINT_NEXT_NODE_APPROVER = "af_syslabel_appoint_next_node_approver";
 /**
  * 流程设计审批按钮显示
  */
@@ -157,6 +243,12 @@ export let approvalPageButtons = [
     description:
       "在当前任务上额外添加新人员，以处理相关事项或提供必要的审批或意见",
   },
+  {
+    value: approvalButtonConf.oppose,
+    label: "反对",
+    description: "仲裁签场景下反对，达阈值终止",
+    signTypeRestrict: 4,
+  },
 ];
 export let startPageButtons = [
   { value: approvalButtonConf.submit, label: "提交", type: "default" },
@@ -167,6 +259,16 @@ export let viewPageButtons = [
   { value: approvalButtonConf.preview, label: "预览", type: "default" },
   { value: approvalButtonConf.print, label: "打印" },
   { value: approvalButtonConf.forward, label: "转发" },
+];
+/**
+ * 流程设计节点查看页按钮配置（节点级，区别于流程级 viewPageButtons）
+ */
+export let nodeViewPageButtons = [
+  {
+    value: approvalButtonConf.drawBackAgree,
+    label: "撤销同意",
+    description: "撤销当前节点的同意操作，撤销后需重新审批",
+  },
 ];
 /**
  * 自定义表单路径与FormCode映射
@@ -196,60 +298,10 @@ export let approveButtonColor = {
   19: "success", //加批
   21: "primary", //转办
   23: "warning", //驳回
+  32: "danger", //撤销同意
   99: "success", //处理中
   100: "info",
 };
-
-/**
- * 1、控件对应后端api的判断类型
- * 2、用于条件节点 对接 流程引擎中 条件判断
- * 3、与后端约定的值
- */
-export const condition_columnTypeMap = new Map([
-  ["input", "10000"], //"int/fload/double/string" input
-  ["input-number", "10001"], //"Double"
-  ["select", "10000"], //"string" select
-  ["checkbox", "10004"], //"string" checkbox
-  ["radio", "10001"],
-  ["switch", "10001"],
-  ["time", "10002"],
-  ["time-range", "10003"],
-  ["data-range", "10002"],
-  ["date", "10002"],
-]);
-
-/**
- * 1、控件是在条件节点 选择条件时候否显示
- * 2、对应后端数据解析 与后端约定的值
- * Mapping: 1-string 2-int 3-date 4-time 5-text/长字符串 6-boolean 7-二进制/byte
- */
-export const condition_filedTypeMap = new Map([
-  ["input", "1"], //"String"
-  ["input-number", "4"], //"time"
-  ["select", "2"], //"int" select
-  ["checkbox", "1"], //"String" checkbox
-  //['radio', '2'], //  int radio
-  ["switch", "6"], // boolean switch
-  ["time", "1"],
-  // ['time-range', '1'],
-  // ['data-range', '1'],
-  ["date", "1"],
-]);
-/**
- * 判断控件的值的类型
- */
-export const condition_filedValueTypeMap = new Map([
-  ["input", "String"], //"Double"
-  ["input-number", "String"], //"Double"
-  ["select", "Int"], //"Int" select
-  ["checkbox", "String"], //checkbox 对应 VForm 是Array
-  ["radio", "Int"],
-  ["switch", "Boolean"],
-  ["time", "String"],
-  ["time-range", "String"],
-  ["data-range", "String"],
-  ["date", "String"],
-]);
 
 export const noticeUserList = [
   {

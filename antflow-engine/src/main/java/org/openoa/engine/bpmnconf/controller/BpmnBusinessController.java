@@ -12,8 +12,12 @@ import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.UserEntrust;
 import org.openoa.engine.bpmnconf.mapper.BpmnNodeMapper;
+import org.openoa.engine.bpmnconf.service.biz.BatchApprovalBizService;
 import org.openoa.engine.bpmnconf.service.impl.UserEntrustServiceImpl;
+import org.openoa.engine.bpmnconf.service.interf.biz.LowCodeFlowBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.OutSideBpmAccessBusinessBizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -36,19 +40,66 @@ public class BpmnBusinessController {
     private UserEntrustServiceImpl userEntrustService;
     @Autowired
     private BpmnNodeMapper bpmnNodeMapper;
+    @Autowired
+    private LowCodeFlowBizService lowCodeFlowBizService;
+    @Autowired
+    private OutSideBpmAccessBusinessBizService outSideBpmAccessBusinessBizService;
+    @Autowired
+    private BatchApprovalBizService batchApprovalBizService;
 
     /**
      * 获取自定义表单DIY FormCode List
      *
-     * @param desc
+     * @param desc ,actually,it return all formCode list,although its name is getDIYFormCodeList
      * @return
      */
     @GetMapping("/getDIYFormCodeList")
     public Result getDIYFormCodeList(String desc) {
-        List<DIYProcessInfoDTO> diyProcessInfoDTOS = taskMgmtService.viewProcessInfo(desc);
-        return Result.newSuccessResult(diyProcessInfoDTOS);
+        // DIY流程
+        List<DIYProcessInfoDTO> diyList = taskMgmtService.viewProcessInfo(desc);
+
+        return Result.newSuccessResult(diyList);
     }
 
+    @PostMapping("/getAllFormCodeList")
+    public Result getAllFormCodeList(String desc) {
+        List<DIYProcessInfoDTO> result = new ArrayList<>();
+        // DIY流程
+        List<DIYProcessInfoDTO> diyList = taskMgmtService.viewProcessInfo(desc);
+        if (!CollectionUtils.isEmpty(diyList)) {
+            for (DIYProcessInfoDTO dto : diyList) {
+                dto.setValue("【DIY】" + dto.getValue());
+            }
+            result.addAll(diyList);
+        }
+
+        // 低代码流程(LF)
+        List<BaseKeyValueStruVo> lfList = lowCodeFlowBizService.getLowCodeFlowFormCodes();
+        if (!CollectionUtils.isEmpty(lfList)) {
+            for (BaseKeyValueStruVo vo : lfList) {
+                result.add(DIYProcessInfoDTO.builder()
+                        .key(vo.getKey())
+                        .value("【LF】" + vo.getValue())
+                        .type("LF")
+                        .build());
+            }
+        }
+        // 第三方流程(SaaS)
+        PageDto pageDto = new PageDto();
+        pageDto.setPage(1);
+        pageDto.setPageSize(1000);
+        ResultAndPage<BpmnConfVo> outsideResult = outSideBpmAccessBusinessBizService.selectOutSideFormCodePageList(pageDto, new BpmnConfVo());
+        if (outsideResult != null && !CollectionUtils.isEmpty(outsideResult.getData())) {
+            for (BpmnConfVo vo : outsideResult.getData()) {
+                result.add(DIYProcessInfoDTO.builder()
+                        .key(vo.getFormCode())
+                        .value("【SaaS】" + vo.getBpmnName())
+                        .type("OUTSIDE")
+                        .build());
+            }
+        }
+        return Result.newSuccessResult(result);
+    }
     /**
      * 获取委托列表
      *
@@ -108,6 +159,18 @@ public class BpmnBusinessController {
             return bpmnNodeVo;
         }).collect(Collectors.toList());
         return Result.newSuccessResult(nodeVos);
+    }
+
+    /**
+     * 批量同意
+     */
+    @PostMapping("/batchAgree")
+    public Result batchAgree(@RequestBody BatchAgreeVo vo) {
+        if (vo == null || CollectionUtils.isEmpty(vo.getTaskIds())) {
+            throw new AFBizException("请选择要审批的任务");
+        }
+        BatchAgreeResultVo result = batchApprovalBizService.batchAgree(vo);
+        return Result.newSuccessResult(result);
     }
 
 }

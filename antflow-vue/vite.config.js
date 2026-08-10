@@ -26,7 +26,7 @@ export default defineConfig(({ mode, command }) => {
       extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     },
     optimizeDeps: {
-      include: ["@/./lib/vForm/designer.umd.js"], //此处路径必须跟main.js中import路径完全一致！
+      include: ["@/./lib/vform/designer.umd.js"], //此处路径必须跟main.js中import路径完全一致！
     },
     // 打包配置
     build: {
@@ -42,8 +42,8 @@ export default defineConfig(({ mode, command }) => {
           assetFileNames: "static/[ext]/[name]-[hash].[ext]",
           manualChunks(id) {
             // 将 vForm 库单独打包
-            if (id.includes("lib/vForm")) {
-              return "lib-vForm";
+            if (id.includes("lib/vform")) {
+              return "lib-vform";
             }
             // 按一级目录拆分第三方依赖
             if (id.includes("node_modules")) {

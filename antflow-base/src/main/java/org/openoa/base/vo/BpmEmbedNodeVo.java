@@ -27,8 +27,10 @@ public class BpmEmbedNodeVo implements Serializable {
 
     /**
      * node assignee list
+     * 外层=层,内层=层内多人。每层至少 1 人;空层用 [zeroVo] 表示。
+     * 层内多人时走会签/或签(由节点 signType 决定)。
      */
-    private List<BaseIdTranStruVo> assigneeList;
+    private List<List<BaseIdTranStruVo>> assigneeList;
 
 
 }

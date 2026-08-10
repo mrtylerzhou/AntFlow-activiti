@@ -44,6 +44,7 @@ public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
      */
     List<TaskMgmtVO> viewPcToDoList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
 
+    List<TaskMgmtVO> backToModifyList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
     /**
      * get all process
      *
@@ -52,14 +53,6 @@ public interface ProcessApprovalMapper extends BaseMapper<TaskMgmtVO> {
      * @return
      */
     List<TaskMgmtVO> allProcessList(Page page, @Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
-
-    /**
-     * query whether current node is operable
-     *
-     * @param taskMgmtVO
-     * @return
-     */
-    Integer isOperational(@Param("taskMgmtVO") TaskMgmtVO taskMgmtVO);
 
     /**
      * get today's alread done count

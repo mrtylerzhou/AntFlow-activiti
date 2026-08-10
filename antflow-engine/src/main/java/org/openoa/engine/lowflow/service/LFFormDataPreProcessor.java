@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Strings;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.VariantFormContainerTypeEnum;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AntFlowOrderPreProcessor;
@@ -87,7 +88,7 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
                 BpmnConfLfFormdataField formdataField=new BpmnConfLfFormdataField();
                 formdataField.setBpmnConfId(confId);
                 formdataField.setFormDataId(formDataId);
-                formdataField.setFieldType(lfOption.getFieldType());
+                formdataField.setFieldType(getFieldTypeByTypeString(lfWidget.getType()));
                 formdataField.setFieldId(lfOption.getName());
                 formdataField.setFieldName(lfOption.getLabel());
                 result.add(formdataField);
@@ -136,7 +137,46 @@ public class LFFormDataPreProcessor implements AntFlowOrderPreProcessor<BpmnConf
             }
         }
     }
-
+    private int  getFieldTypeByTypeString(String typeString) {
+        switch (typeString) {
+            // NUMBER
+            case "number":
+            case "slider":
+                return LFFieldTypeEnum.NUMBER.getType();
+            // DATE
+            case "date":
+                return LFFieldTypeEnum.DATE.getType();
+            // DATE_TIME
+            case "date-range":
+            case "time":
+            case "time-range":
+                return LFFieldTypeEnum.DATE_TIME.getType();
+            // BOOLEAN
+            case "switch":
+                return LFFieldTypeEnum.BOOLEAN.getType();
+            // TEXT (long text)
+            case "textarea":
+            case "richtext-editor":
+                return LFFieldTypeEnum.TEXT.getType();
+            // STRING (short text) - default for most form fields
+            case "select":
+            case "radio":
+            case "checkbox":
+            case "cascader":
+            case "tree-select":
+            case "color-picker":
+            case "rate":
+            case "input":
+            case "number-range":
+            case "picture-upload":
+            case "file-upload":
+            case "icon-picker":
+            case "transfer":
+                return LFFieldTypeEnum.STRING.getType();
+            default:
+                return LFFieldTypeEnum.STRING.getType();
+        }
+    }
     @Override
     public int order() {
         return 0;

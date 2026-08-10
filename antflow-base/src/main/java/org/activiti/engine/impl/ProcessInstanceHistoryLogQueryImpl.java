@@ -5,7 +5,6 @@ import java.util.List;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricData;
 import org.activiti.engine.history.HistoricVariableInstance;
-import org.activiti.engine.history.HistoricVariableUpdate;
 import org.activiti.engine.history.ProcessInstanceHistoryLog;
 import org.activiti.engine.history.ProcessInstanceHistoryLogQuery;
 import org.activiti.engine.impl.interceptor.Command;
@@ -28,9 +27,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 	protected boolean includeTasks;
 	protected boolean includeActivities;
 	protected boolean includeVariables;
-	protected boolean includeComments;
-	protected boolean includeVariableUpdates;
-	protected boolean includeFormProperties;
 
 	public ProcessInstanceHistoryLogQueryImpl(CommandExecutor commandExecutor, String processInstanceId) {
     this.commandExecutor = commandExecutor;
@@ -44,12 +40,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
   }
 
 	@Override
-  public ProcessInstanceHistoryLogQuery includeComments() {
-		this.includeComments = true;
-	  return this;
-  }
-	
-	@Override
 	public ProcessInstanceHistoryLogQuery includeActivities() {
 		this.includeActivities = true;
 		return this;
@@ -61,18 +51,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 		return this;
 	}
 	
-	@Override
-	public ProcessInstanceHistoryLogQuery includeVariableUpdates() {
-		this.includeVariableUpdates = true;
-		return this;
-	}
-	
-	@Override
-	public ProcessInstanceHistoryLogQuery includeFormProperties() {
-	  this.includeFormProperties = true;
-	  return this;
-	}
-
 	@Override
   public ProcessInstanceHistoryLog singleResult() {
 		return commandExecutor.execute(this);
@@ -128,33 +106,6 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
 			}
 			
 			processInstanceHistoryLog.addHistoricData(variables);
-		}
-		
-		// Comment
-		if (includeComments) {
-			List<? extends HistoricData> comments = commandContext.getCommentEntityManager().findCommentsByProcessInstanceId(processInstanceId);
-			processInstanceHistoryLog.addHistoricData(comments);
-		}
-		
-		// Details: variables
-		if (includeVariableUpdates) {
-			List<? extends HistoricData> variableUpdates = commandContext.getHistoricDetailEntityManager()
-					.findHistoricDetailsByQueryCriteria(new HistoricDetailQueryImpl(commandExecutor).variableUpdates(), null);
-			
-			// Make sure all variables values are fetched (similar to the HistoricVariableInstance query)
-			for (HistoricData historicData : variableUpdates){
-			  HistoricVariableUpdate variableUpdate = (HistoricVariableUpdate) historicData;
-			  variableUpdate.getValue();
-			}
-			
-			processInstanceHistoryLog.addHistoricData(variableUpdates);
-		}
-		
-		// Details: form properties
-		if (includeFormProperties) {
-			List<? extends HistoricData> formProperties = commandContext.getHistoricDetailEntityManager()
-					.findHistoricDetailsByQueryCriteria(new HistoricDetailQueryImpl(commandExecutor).formProperties(), null);
-			processInstanceHistoryLog.addHistoricData(formProperties);
 		}
 		
 		// All events collected. Sort them by date.

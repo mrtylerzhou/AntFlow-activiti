@@ -1,19 +1,15 @@
 package org.openoa.engine.bpmnconf.adp.bpmnnodeadp;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.openoa.base.exception.AFBizException;
 import org.openoa.base.vo.BpmnNodePropertysVo;
 import org.openoa.base.vo.BpmnNodeVo;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
 import org.openoa.base.vo.PersonnelRuleVO;
-import org.openoa.base.entity.BpmnNodeOutSideAccessConf;
 import org.openoa.engine.bpmnconf.constant.enus.BpmnNodeAdpConfEnum;
 import org.openoa.base.constant.enums.OrderNodeTypeEnum;
-import org.openoa.base.util.MultiTenantUtil;
-import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeOutSideAccessConfService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 /**
  * @author AntFlow
@@ -24,41 +20,27 @@ import java.util.Optional;
 public class NodePropertyOutSideAccessAdp implements BpmnNodeAdaptor {
 
 
-    @Autowired
-    private BpmnNodeOutSideAccessConfService bpmnNodeOutSideAccessConfService;
 
     @Override
     public void formatToBpmnNodeVo(BpmnNodeVo bpmnNodeVo) {
 
-        BpmnNodeOutSideAccessConf nodeOutSideAccessConf = bpmnNodeOutSideAccessConfService.getOne(new QueryWrapper<BpmnNodeOutSideAccessConf>()
-                .eq("bpmn_node_id", bpmnNodeVo.getId()));
-
-        if (nodeOutSideAccessConf!=null) {
-            bpmnNodeVo.setProperty(BpmnNodePropertysVo
-                    .builder()
-                    .signType(nodeOutSideAccessConf.getSignType())
-                    .nodeMark(nodeOutSideAccessConf.getNodeMark())
+        // Prefer JSON config if available
+        BpmnNodeConfigJson nodeConfig = bpmnNodeVo.getNodeConfigJsonObj();
+        if (nodeConfig != null && nodeConfig.getApproverConf() != null
+                && nodeConfig.getApproverConf().getOutSideAccessConf() != null) {
+            BpmnNodeApproverConfJson.OutSideAccessConf osac = nodeConfig.getApproverConf().getOutSideAccessConf();
+            bpmnNodeVo.setProperty(BpmnNodePropertysVo.builder()
+                    .signType(osac.getSignType())
+                    .arbitrationRatio(osac.getArbitrationRatio())
+                    .nodeMark(osac.getNodeMark())
                     .build());
             bpmnNodeVo.setOrderedNodeType(OrderNodeTypeEnum.OUT_SIDE_NODE.getCode());
+            return;
         }
 
+        throw new AFBizException("migration error,please contact the author");
     }
 
-    @Override
-    public void editBpmnNode(BpmnNodeVo bpmnNodeVo) {
-
-        BpmnNodePropertysVo propertysVo = Optional.ofNullable(bpmnNodeVo.getProperty())
-                .orElse(new BpmnNodePropertysVo());
-
-        bpmnNodeOutSideAccessConfService.save(BpmnNodeOutSideAccessConf
-                .builder()
-                .bpmnNodeId(bpmnNodeVo.getId())
-                .signType(propertysVo.getSignType())
-                .nodeMark(propertysVo.getNodeMark())
-                .tenantId(MultiTenantUtil.getCurrentTenantId())
-                .build());
-
-    }
 
     @Override
     public PersonnelRuleVO formaFieldAttributeInfoVO() {

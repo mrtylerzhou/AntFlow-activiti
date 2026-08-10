@@ -348,7 +348,11 @@ const handleVersion = async (row) => {
         formCode: row.key
     };
     let obj = { path: "flow-version", query: params };
-    proxy.$tab.openPage(obj);
+    // 关闭指定页签
+    const versionPage = { path: "/workflow/flow-version", name: "version" };
+    proxy.$tab.closePage(versionPage).then(() => {
+        proxy.$tab.openPage(obj);
+    })
 }
 
 /** 搜索按钮操作 */

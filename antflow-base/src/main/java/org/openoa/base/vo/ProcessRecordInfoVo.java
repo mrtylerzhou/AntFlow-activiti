@@ -106,6 +106,11 @@ public class ProcessRecordInfoVo {
     private String processKey;
 
     /**
+     * 当前任务的 formKey (NodeExtraInfoDTO JSON), 用于运行时标签检查
+     */
+    private String formKey;
+
+    /**
      * start page init data
      */
     private Object initDatas;

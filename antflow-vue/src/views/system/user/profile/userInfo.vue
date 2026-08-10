@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { updateUserProfile } from "@/api/system/user";
+// import { updateUserProfile } from "@/api/system/user";
 import Cookies from "js-cookie";
 const props = defineProps({
   user: {
@@ -44,11 +44,12 @@ const rules = ref({
 function submit() {
   proxy.$refs.userRef.validate(valid => {
     if (valid) {
-      updateUserProfile(form.value).then(response => {
-        proxy.$modal.msgSuccess("修改成功");
-        props.user.phonenumber = form.value.phonenumber;
-        props.user.email = form.value.email;
-      });
+      // updateUserProfile(form.value).then(response => {
+      //   proxy.$modal.msgSuccess("修改成功");
+      //   props.user.phonenumber = form.value.phonenumber;
+      //   props.user.email = form.value.email;
+      // });
+      proxy.$modal.msgSuccess("修改成功");
     }
   });
 };

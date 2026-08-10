@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white-bg { fill: #FFFFFF; }
+            /* 隔离描边：用于大人遮挡小人的边缘 */
+            .mask-stroke {
+                fill: none;
+                stroke: #FFFFFF;
+                stroke-width: 4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 后方的小人 (协助者) -->
+    <g id="assistant-small" transform="translate(14, 8) scale(0.75)">
+        <!-- 小人的头 -->
+        <circle class="main" cx="42" cy="16" r="10"/>
+        <!-- 小人的身体 -->
+        <path class="main" d="
+            M24 47
+            C24 35 32 28 42 28
+            C52 28 60 35 60 47
+            L60 50
+            C60 52.5 58 54 55.5 54
+            L28.5 54
+            C26 54 24 52.5 24 50
+            Z"/>
+    </g>
+
+    <!-- 2. 前方的大人 (主审批人) -->
+    <g id="main-adult">
+        <!-- 核心隔离层：大人的白色背影，用来切开后方小人的身体 -->
+        <path class="white-bg" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z" transform="scale(1.05) translate(-1.5, -1)"/>
+            
+        <!-- 大人的头 -->
+        <circle class="main" cx="28" cy="16" r="10"/>
+        
+        <!-- 大人的身体 -->
+        <path class="main" d="
+            M10 47
+            C10 35 18 28 28 28
+            C38 28 46 35 46 47
+            L46 50
+            C46 52.5 44 54 41.5 54
+            L14.5 54
+            C12 54 10 52.5 10 50
+            Z"/>
+    </g>
+
+    <!-- 3. 装饰性标识：小加号 (可选，代表“增加”了一位协助者) -->
+    <g transform="translate(48, 48)">
+        <circle class="white-bg" cx="0" cy="0" r="8" />
+        <path d="M-3 0 H3 M0 -3 V3" fill="none" stroke="#FF850A" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+</svg>

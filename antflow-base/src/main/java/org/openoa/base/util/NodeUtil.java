@@ -3,18 +3,23 @@ package org.openoa.base.util;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
+import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ElementTypeEnum;
+import org.openoa.base.constant.enums.NodePropertyEnum;
+import org.openoa.base.constant.enums.NodeTypeEnum;
 import org.openoa.base.constant.enums.SignTypeEnum;
 import org.openoa.base.dto.NodeExtraInfoDTO;
+import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmnNodeLabel;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.service.BpmNodeLabelsService;
-import org.openoa.base.vo.BpmnConfCommonElementVo;
-import org.openoa.base.vo.BpmnNodeLabelVO;
-import org.openoa.base.vo.NodeLabelConstants;
-import org.openoa.base.vo.ProcessActionButtonVo;
+import org.openoa.base.vo.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,14 +51,49 @@ public class NodeUtil {
         return CollectionUtils.containsAny(providedLabelValues, Lists.newArrayList(labelValues));
     }
     public static boolean isCurrentNodeNoneOperational(String nodeId){
-        BpmNodeLabelsService bpmNodeLabelsService = SpringBeanUtils.getBean(BpmNodeLabelsService.class);
-        List<BpmnNodeLabel> nodeLabels = bpmNodeLabelsService.list(AFWrappers.<BpmnNodeLabel>lambdaTenantQuery().eq(BpmnNodeLabel::getNodeId,nodeId));
-        if(CollectionUtils.isEmpty(nodeLabels)){
-            return true;
+        List<BpmnNodeLabelVO> labelVOs = getLabelsFromNodeJson(nodeId);
+        if (!CollectionUtils.isEmpty(labelVOs)) {
+            List<String> collect = labelVOs.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
+            List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
+            return CollectionUtils.containsAny(collect, noneOperationalLables);
         }
-        List<String> collect = nodeLabels.stream().map(BpmnNodeLabel::getLabelValue).collect(Collectors.toList());
-        List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
-        return CollectionUtils.containsAny(collect,noneOperationalLables);
+       return true;
+    }
+    /**
+     * 判断指定节点是否包含给定的标签值
+     */
+    public static boolean hasLabel(String nodeId, String labelValue) {
+        if (StringUtils.isEmpty(nodeId) || StringUtils.isEmpty(labelValue)) {
+            return false;
+        }
+        List<BpmnNodeLabelVO> labelVOs = getLabelsFromNodeJson(nodeId);
+        return nodeLabelContainsAny(labelVOs, labelValue);
+    }
+
+    private static List<BpmnNodeLabelVO> getLabelsFromNodeJson(String nodeId) {
+        try {
+            Object bpmnNodeService = SpringBeanUtils.getBean(Class.forName("org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService"));
+            java.lang.reflect.Method getById = bpmnNodeService.getClass().getMethod("getById", Serializable.class);
+            Object node = getById.invoke(bpmnNodeService, Long.valueOf(nodeId));
+            if (node == null) {
+                return null;
+            }
+            java.lang.reflect.Method getNodeConfigJson = node.getClass().getMethod("getNodeConfigJson");
+            String nodeConfigJson = (String) getNodeConfigJson.invoke(node);
+            if (StringUtils.isEmpty(nodeConfigJson)) {
+                return null;
+            }
+            BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+            if (nodeConfig == null || nodeConfig.getButtonSignConf() == null
+                    || CollectionUtils.isEmpty(nodeConfig.getButtonSignConf().getLabels())) {
+                return null;
+            }
+            return nodeConfig.getButtonSignConf().getLabels().stream()
+                    .map(l -> new BpmnNodeLabelVO(l.getLabelValue(), l.getLabelName()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
     }
     public static void elementWithSpecialMarks( BpmnConfCommonElementVo elementVo){
         String elementName=elementVo.getElementName();
@@ -112,5 +152,85 @@ public class NodeUtil {
                 .filter(FilterUtil.distinctByKeys(ProcessActionButtonVo::getButtonType))
                 .collect(Collectors.toList());
         return lists;
+    }
+
+    public static void nodeSpecialProcess(BpmnNodeVo bpmnNodeVo){
+        if(!CollectionUtils.isEmpty(bpmnNodeVo.getLabelList())){
+            bpmnNodeVo.setLabelList(null);
+        }
+        //上一节点指定审批人:根据前端传入的 isPrevNodeAppointed 标识,自动贴标签
+        if(Boolean.TRUE.equals(bpmnNodeVo.getIsPrevNodeAppointed())){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.prevNodeAppointed);
+        }
+        //不同意退回:根据前端传入的 disagreeBackType(4/5),自动贴标签
+        Integer disagreeBackType = bpmnNodeVo.getDisagreeBackType();
+        if(disagreeBackType!=null && (disagreeBackType==4 || disagreeBackType==5)){
+            bpmnNodeVo.setOrAddLabelList(NodeLabelConstants.disagreeBack);
+        }
+        Integer nodeType = bpmnNodeVo.getNodeType();
+        if(nodeType==null){
+            return;
+        }
+        if(NodeTypeEnum.NODE_TYPE_COPY_V2.getCode().equals(nodeType)){
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsCarbonCopyNode(true);
+        }
+        if(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode().equals(nodeType)){
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsAutomaticNode(true);
+            bpmnNodeVo.setNodeProperty(NodePropertyEnum.NODE_PROPERTY_PERSONNEL.getCode());
+            BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
+            if (prop == null) {
+                prop = new BpmnNodePropertysVo();
+                bpmnNodeVo.setProperty(prop);
+            }
+            if (prop.getSignType() == null) {
+                prop.setSignType(1);
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplIds())) {
+                prop.setEmplIds(Lists.newArrayList(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId()));
+            }
+            if (CollectionUtils.isEmpty(prop.getEmplList())) {
+                BaseIdTranStruVo virtualUser = new BaseIdTranStruVo(
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId(),
+                        AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc());
+                prop.setEmplList(Lists.newArrayList(virtualUser));
+            }
+        }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode().equals(nodeType)){
+            //条件审批节点: 设计期 nodeType=12, 运行期统一为审批人节点 4
+            //与 auto node 不同: 不强制 nodeProperty, 不塞虚拟审批人, 保留用户配置的真实 nodeApproveList
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionApproveNode(true);
+        }
+        if(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode().equals(nodeType)){
+            //条件抄送节点: 设计期 nodeType=13, 运行期统一为审批人节点 4
+            //与 copyNodeV2 类似, 但不在这里塞虚拟审批人; 运行期由 processConditionCopyNode 设 CC_NODE
+            bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_APPROVER.getCode());
+            bpmnNodeVo.setIsConditionCopyNode(true);
+        }
+    }
+    public static void nodeLabelSpecialProcess(BpmnNodeVo bpmnNodeVo){
+        List<BpmnNodeLabelVO> labelList = bpmnNodeVo.getLabelList();
+        if(CollectionUtils.isEmpty(labelList)){
+            return;
+        }
+        for (BpmnNodeLabelVO nodeLabelVO : labelList) {
+            if(NodeLabelConstants.copyNodeV2.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_COPY_V2.getCode());
+            }
+            if(NodeLabelConstants.automaticNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode());
+            }
+            if(NodeLabelConstants.conditionApproveNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+            }
+            if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
+            }
+            if(NodeLabelConstants.prevNodeAppointed.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               bpmnNodeVo.setIsPrevNodeAppointed(true);
+            }
+        }
     }
 }

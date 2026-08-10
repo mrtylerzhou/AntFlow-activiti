@@ -23,7 +23,6 @@ import org.activiti.engine.impl.interceptor.CommandConfig;
 import org.activiti.engine.management.TableMetaData;
 import org.activiti.engine.management.TablePage;
 import org.activiti.engine.management.TablePageQuery;
-import org.activiti.engine.runtime.JobQuery;
 
 
 
@@ -66,7 +65,7 @@ public interface ManagementService {
    * Returns a new JobQuery implementation, that can be used
    * to dynamically query the jobs.
    */
-  JobQuery createJobQuery();
+  Object createJobQuery();
   
   /** 
    * Forced synchronous execution of a job (eg. for administation or testing)

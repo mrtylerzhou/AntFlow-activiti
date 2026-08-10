@@ -25,6 +25,11 @@ public interface WorkflowButtonOperationHandler {
     void onDisAgree(BusinessDataVo businessData);
 
     /**
+     * 反对(仲裁签场景)
+     */
+    void onOppose(BusinessDataVo businessData);
+
+    /**
      * 查看流程详情
      */
     void onViewBusinessProcess(BusinessDataVo businessData);

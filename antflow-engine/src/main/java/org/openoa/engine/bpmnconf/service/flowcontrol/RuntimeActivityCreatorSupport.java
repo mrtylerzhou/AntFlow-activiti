@@ -3,10 +3,12 @@ package org.openoa.engine.bpmnconf.service.flowcontrol;
 import java.util.List;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.el.FixedValue;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.openoa.base.util.ProcessDefinitionUtils;
@@ -40,7 +42,18 @@ public abstract class RuntimeActivityCreatorSupport
 			"properties");
 
 		//设置assignee
-		UserTaskActivityBehavior activityBehavior = (UserTaskActivityBehavior) (prototypeActivity.getActivityBehavior());
+		UserTaskActivityBehavior activityBehavior = null;
+		ActivityBehavior behavior = prototypeActivity.getActivityBehavior();
+		if (behavior instanceof UserTaskActivityBehavior) {
+			activityBehavior = (UserTaskActivityBehavior) behavior;
+		}
+		else if (behavior instanceof MultiInstanceActivityBehavior) {
+			MultiInstanceActivityBehavior mi =
+					(MultiInstanceActivityBehavior) behavior;
+
+			activityBehavior = (UserTaskActivityBehavior) mi.getInnerActivityBehavior();
+		}
+
 
 		TaskDefinition taskDefinition = cloneTaskDefinition(activityBehavior.getTaskDefinition());
 		taskDefinition.setKey(cloneActivityId);

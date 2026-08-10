@@ -75,5 +75,10 @@ public class QuickEntry implements TenantField, Serializable {
     @TableField("variable_url_flag")
     private Integer variableUrlFlag;
 
+    /**
+     * type config json
+     */
+    @TableField("type_config_json")
+    private String typeConfigJson;
 
 }

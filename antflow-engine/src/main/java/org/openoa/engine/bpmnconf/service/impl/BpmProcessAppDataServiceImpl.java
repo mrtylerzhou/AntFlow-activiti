@@ -1,6 +1,8 @@
 package org.openoa.engine.bpmnconf.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.openoa.base.entity.BpmProcessAppData;
 import org.openoa.engine.bpmnconf.mapper.BpmProcessAppDataMapper;
@@ -8,7 +10,9 @@ import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataSer
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,16 +32,16 @@ public class BpmProcessAppDataServiceImpl extends ServiceImpl<BpmProcessAppDataM
      * @return
      */
     @Override
-    public List<String> getBpmProcessAppDataVo(Long versionId, List<String> processKey) {
-        QueryWrapper<BpmProcessAppData> bpmProcessAppDataWrapper = new QueryWrapper<>();
-        bpmProcessAppDataWrapper.eq("version_id", versionId);
-        bpmProcessAppDataWrapper.eq("type", 1);
-        bpmProcessAppDataWrapper.in("process_key", processKey);
-        List<BpmProcessAppData> list = getBaseMapper().selectList(bpmProcessAppDataWrapper);
+    public List<String> getBpmProcessAppDataVo(Long versionId, List<String> processKeys) {
+        LambdaQueryWrapper<BpmProcessAppData> lqw = Wrappers.<BpmProcessAppData>lambdaQuery()
+                .eq(BpmProcessAppData::getVersionId, versionId)
+                .eq(BpmProcessAppData::getType, 1)
+                .in(BpmProcessAppData::getProcessKey, processKeys);
+        List<BpmProcessAppData> list = getBaseMapper().selectList(lqw);
         if (!CollectionUtils.isEmpty(list)) {
             return list.stream().map(BpmProcessAppData::getProcessKey).collect(Collectors.toList());
         } else {
-            return Arrays.asList();
+            return Collections.emptyList();
         }
     }
 

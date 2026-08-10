@@ -63,6 +63,14 @@ public class AntFlowOperationListener implements WorkflowButtonOperationHandler 
     }
 
     /**
+     * 反对(仲裁签场景),实际逻辑在 OpposeProcessImpl
+     */
+    @Override
+    public void onOppose(BusinessDataVo businessData) {
+
+    }
+
+    /**
      * 查看流程详情
      */
     @Override
@@ -195,7 +203,7 @@ public class AntFlowOperationListener implements WorkflowButtonOperationHandler 
      */
     @Override
     public void onFinishData(BusinessDataVo vo) {
-        //注意流程完成通知消息并不在这里,实际上已经有了,请勿要在这里写
+
     }
 
     @Override

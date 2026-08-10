@@ -40,12 +40,14 @@
         when w.verify_status =4 then '撤回'
         when w.verify_status =5 then '作废'
         when w.verify_status =6 then '终止'
+        when w.verify_status =7 then '反对'
         when w.verify_status =8 then '退回修改'
         when w.verify_status =9 then '加批'
         else '' end as verifyStatusName,
         w.verify_date as verifyDate,
         w.verify_desc as verifyDesc,
-        w.original_id originalId
+        w.original_id originalId,
+        w.attachments_json as attachmentsJson
         from bpm_verify_info w where 1=1
         <if test="processCode!=null and processCode!=''">
             and w.process_code=#{processCode}
@@ -74,7 +76,7 @@
                null            AS verifyDate,
                ''              AS verifyDesc,
                t.TASK_DEF_KEY_ AS elementId
-        from ACT_RU_TASK t
+        from AF_RU_TASK t
         where t.PROC_INST_ID_=#{procInstId}
 
     </select>

@@ -170,4 +170,5 @@ public class BpmVariableMessageVo implements Serializable {
     private Boolean isOutside = false;
 
     private DelegateTask delegateTask;
+    private boolean currentNodeInformed;
 }

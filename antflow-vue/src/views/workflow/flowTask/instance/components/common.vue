@@ -43,7 +43,7 @@
                 </el-col>
                 <el-col :span="14" style="background-color: #f5f5f5;">
                     <div class="p20">
-                        <el-alert title="加/减/变更都是针对当前正在审批的节点,每次都能只处理一个人.不允许多个人同时操作." type="warning" show-icon
+                        <el-alert :title="alertText" type="warning" show-icon
                             :closable="false" />
                         <slot name="userChoose" :clickNodeMethod="clickNode"></slot>
                     </div>
@@ -106,6 +106,14 @@ let props = defineProps({
         type: Number,
         required: true,
         default: 0,
+    },
+    requireUserInfos: {
+        type: Boolean,
+        default: true,
+    },
+    alertText: {
+        type: String,
+        default: "加/减/变更都是针对当前正在审批的节点,每次都能只处理一个人.不允许多个人同时操作.",
     }
 });
 
@@ -117,11 +125,17 @@ const clickNode = (data) => {
     }
     optFrom.value.nodeName = data.nodeName;
     optFrom.value.nodeId = data.Id;
-    optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX 
-    
-    loadNodeOperationUserList();
+    optFrom.value.operationType = data.currentNodeId == data.nodeId ? props.currentOptId : props.afterOptId; //当前节点XXX 未来节点XX
 
-    
+    if (props.requireUserInfos) {
+        loadNodeOperationUserList();
+    } else {
+        //不需要审批人信息的操作(如删除节点),直接回调空用户列表
+        optFrom.value.userInfos = [];
+        emits("clickNodeOpt", optFrom, []);
+    }
+
+
 }
 const loadNodeOperationUserList = (data) => {
     optFrom.value.userInfos =  [];
@@ -159,7 +173,7 @@ const handleCancel = () => {
     });
 }
 const handleSubmit = (data) => {
-    if (proxy.isEmptyArray(data.userInfos)) {
+    if (props.requireUserInfos && proxy.isEmptyArray(data.userInfos)) {
         proxy.$modal.msgWarning("没有任何改动");
         return;
     }

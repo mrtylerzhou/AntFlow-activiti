@@ -77,7 +77,7 @@
         select count(1) from t_user
         <where>
             <if test="employeeId != null">
-                id = ${employeeId}
+                id = #{employeeId}
             </if>
         </where>
     </select>

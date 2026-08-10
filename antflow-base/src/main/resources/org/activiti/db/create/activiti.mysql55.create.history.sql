@@ -32,6 +32,7 @@ create table ACT_HI_ACTINST (
     END_TIME_ datetime,
     DURATION_ bigint,
     TENANT_ID_ varchar(255) default '',
+    NODE_ID_ varchar(64),
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 
@@ -56,6 +57,7 @@ create table ACT_HI_TASKINST (
     FORM_KEY_ varchar(255),
     CATEGORY_ varchar(255),
     TENANT_ID_ varchar(255) default '',
+    NODE_ID_ varchar(64),
     primary key (ID_)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_bin;
 

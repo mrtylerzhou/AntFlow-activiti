@@ -18,13 +18,11 @@ import java.util.List;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
-import org.activiti.engine.history.HistoricDetailQuery;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.history.HistoricVariableInstanceQuery;
 import org.activiti.engine.history.NativeHistoricActivityInstanceQuery;
-import org.activiti.engine.history.NativeHistoricDetailQuery;
 import org.activiti.engine.history.NativeHistoricProcessInstanceQuery;
 import org.activiti.engine.history.NativeHistoricTaskInstanceQuery;
 import org.activiti.engine.history.NativeHistoricVariableInstanceQuery;
@@ -32,7 +30,6 @@ import org.activiti.engine.history.ProcessInstanceHistoryLogQuery;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cmd.DeleteHistoricProcessInstanceCmd;
 import org.activiti.engine.impl.cmd.DeleteHistoricTaskInstanceCmd;
-import org.activiti.engine.impl.cmd.GetHistoricIdentityLinksForTaskCmd;
 
 /**
  * @author Tom Baeyens
@@ -59,15 +56,6 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
 
   public HistoricTaskInstanceQuery createHistoricTaskInstanceQuery() {
     return new HistoricTaskInstanceQueryImpl(commandExecutor, processEngineConfiguration.getDatabaseType());
-  }
-
-  public HistoricDetailQuery createHistoricDetailQuery() {
-    return new HistoricDetailQueryImpl(commandExecutor);
-  }
-
-  @Override
-  public NativeHistoricDetailQuery createNativeHistoricDetailQuery() {
-    return new NativeHistoricDetailQueryImpl(commandExecutor);
   }
 
   public HistoricVariableInstanceQuery createHistoricVariableInstanceQuery() {
@@ -100,18 +88,18 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
   }
   
   @Override
-  public List<HistoricIdentityLink> getHistoricIdentityLinksForProcessInstance(String processInstanceId) {
-    return commandExecutor.execute(new GetHistoricIdentityLinksForTaskCmd(null, processInstanceId));
-  }
-  
-  @Override
-  public List<HistoricIdentityLink> getHistoricIdentityLinksForTask(String taskId) {
-    return commandExecutor.execute(new GetHistoricIdentityLinksForTaskCmd(taskId, null));
-  }
-  
-  @Override
   public ProcessInstanceHistoryLogQuery createProcessInstanceHistoryLogQuery(String processInstanceId) {
   	return new ProcessInstanceHistoryLogQueryImpl(commandExecutor, processInstanceId);
   }
-  
+
+  public List<HistoricIdentityLink> getHistoricIdentityLinksForTask(String taskId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
+  }
+
+  public List<HistoricIdentityLink> getHistoricIdentityLinksForProcessInstance(String processInstanceId) {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
+  }
+
 }

@@ -19,18 +19,14 @@ import java.util.Map;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.event.EventLogEntry;
-import org.activiti.engine.impl.cmd.CancelJobCmd;
 import org.activiti.engine.impl.cmd.CustomSqlExecution;
 import org.activiti.engine.impl.cmd.DeleteEventLogEntry;
 import org.activiti.engine.impl.cmd.ExecuteCustomSqlCmd;
-import org.activiti.engine.impl.cmd.ExecuteJobsCmd;
 import org.activiti.engine.impl.cmd.GetEventLogEntriesCmd;
-import org.activiti.engine.impl.cmd.GetJobExceptionStacktraceCmd;
 import org.activiti.engine.impl.cmd.GetPropertiesCmd;
 import org.activiti.engine.impl.cmd.GetTableCountCmd;
 import org.activiti.engine.impl.cmd.GetTableMetaDataCmd;
 import org.activiti.engine.impl.cmd.GetTableNameCmd;
-import org.activiti.engine.impl.cmd.SetJobRetriesCmd;
 import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.DbSqlSessionFactory;
 import org.activiti.engine.impl.interceptor.Command;
@@ -38,7 +34,6 @@ import org.activiti.engine.impl.interceptor.CommandConfig;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.management.TableMetaData;
 import org.activiti.engine.management.TablePageQuery;
-import org.activiti.engine.runtime.JobQuery;
 
 
 /**
@@ -62,27 +57,27 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
   }
 
   public void executeJob(String jobId) {
-    commandExecutor.execute(new ExecuteJobsCmd(jobId));
+    throw new UnsupportedOperationException("Job execution is not supported");
   }
-  
+
   public void deleteJob(String jobId) {
-    commandExecutor.execute(new CancelJobCmd(jobId));
+    throw new UnsupportedOperationException("Job execution is not supported");
   }
 
   public void setJobRetries(String jobId, int retries) {
-    commandExecutor.execute(new SetJobRetriesCmd(jobId, retries));
+    throw new UnsupportedOperationException("Job execution is not supported");
   }
 
   public TablePageQuery createTablePageQuery() {
     return new TablePageQueryImpl(commandExecutor);
   }
   
-  public JobQuery createJobQuery() {
-    return new JobQueryImpl(commandExecutor);
+  public Object createJobQuery() {
+    throw new UnsupportedOperationException("Job execution is not supported");
   }
 
   public String getJobExceptionStacktrace(String jobId) {
-    return commandExecutor.execute(new GetJobExceptionStacktraceCmd(jobId));
+    throw new UnsupportedOperationException("Job execution is not supported");
   }
 
   public Map<String, String> getProperties() {

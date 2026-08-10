@@ -6,9 +6,9 @@ import org.openoa.base.entity.DictData;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BaseNumIdStruVo;
-import org.openoa.base.vo.BpmProcessDeptVo;
+import org.openoa.base.vo.ProcessConfVo;
 import org.openoa.engine.bpmnconf.service.interf.DicDataService;
-import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessDeptBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +27,10 @@ import java.util.stream.Collectors;
 public class BpmProcessControlController {
 
     @Autowired
-    private BpmProcessDeptBizService processDeptBizService;
-    @Autowired
     private DicDataService dicDataService;
+    @Autowired
+    private BpmnConfBizService bpmnConfBizService;
+
     /**
      * 流程图标下面弄一个配置选项,保存流程权限(目前尚未实现),流程通知类型
      *
@@ -37,10 +38,11 @@ public class BpmProcessControlController {
      * @return
      */
     @PostMapping("/taskMgmt")
-    public Result saveProcessNotices(@RequestBody BpmProcessDeptVo vo) {
-        processDeptBizService.editProcessConf(vo);
+    public Result saveProcessNotices(@RequestBody ProcessConfVo vo) {
+        bpmnConfBizService.saveProcessNotices(vo);
         return Result.success();
     }
+
     @GetMapping("/getFormRelatedOptions")
     public Result<List<BaseNumIdStruVo>> getFormRelatedOptions(){
         List<BaseNumIdStruVo> list=new ArrayList<>();
@@ -52,6 +54,20 @@ public class BpmProcessControlController {
     @GetMapping("/getUDROptions")
     public Result<List<BaseIdTranStruVo>> getudrOptions(){
         List<DictData> dictData = dicDataService.queryDicDataByCategory(AFSpecialDictCategoryEnum.USER_DEFINED_RULE_FOR_ASSIGNEE.getDesc());
+        List<BaseIdTranStruVo> baseIdTranStruVoList = dictData.stream()
+                .map(a -> BaseIdTranStruVo.builder().id(a.getValue()).name(a.getLabel()).build())
+                .collect(Collectors.toList());
+        return Result.newSuccessResult(baseIdTranStruVoList);
+    }
+
+    /**
+     * 通用字典数据查询接口
+     * @param dictType 字典类型
+     * @return 字典项列表（id=value, name=label）
+     */
+    @GetMapping("/getDictDataByType")
+    public Result<List<BaseIdTranStruVo>> getDictDataByType(@RequestParam("dictType") String dictType){
+        List<DictData> dictData = dicDataService.queryDicDataByCategory(dictType);
         List<BaseIdTranStruVo> baseIdTranStruVoList = dictData.stream()
                 .map(a -> BaseIdTranStruVo.builder().id(a.getValue()).name(a.getLabel()).build())
                 .collect(Collectors.toList());

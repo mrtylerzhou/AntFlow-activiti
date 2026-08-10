@@ -78,10 +78,17 @@ public class BpmnNodePropertysVo implements Serializable{
      */
     private List<BaseIdTranStruVo> emplList;
 
+    private List<BaseIdTranStruVo> contextEmplList;
     /**
-     * sign type 1 for all sign 2 for or sign
+     * sign type 1 for all sign 2 for or sign 3 for sign in order 4 for arbitration
+     * @see org.openoa.base.constant.enums.SignTypeEnum
      */
     private Integer signType;
+
+    /**
+     * arbitration sign pass ratio(1-100), only used when signType=4
+     */
+    private Integer arbitrationRatio;
 
     /**
      * condition conf vo

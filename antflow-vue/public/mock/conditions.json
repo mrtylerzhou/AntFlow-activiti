@@ -21,7 +21,7 @@
       "showName": "请假时长",
       "columnName": "leaveHour",
       "columnType": "Double",
-      "fieldTypeName": "input-number",
+      "fieldTypeName": "number",
       "multiple": false,
       "multipleLimit": 0,
       "fixedDownBoxValue": ""
@@ -33,7 +33,7 @@
       "showName": "采购费用",
       "columnName": "planProcurementTotalMoney",
       "columnType": "Double",
-      "fieldTypeName": "input-number",
+      "fieldTypeName": "number",
       "multiple": false,
       "multipleLimit": 0,
       "fixedDownBoxValue": ""
@@ -45,7 +45,7 @@
       "showName": "支出费用",
       "columnName": "outTotalMoney",
       "columnType": "Double",
-      "fieldTypeName": "input-number",
+      "fieldTypeName": "number",
       "multiple": false,
       "multipleLimit": 0,
       "fixedDownBoxValue": ""

@@ -58,10 +58,6 @@ public class HistoricProcessInstanceEntityManager extends AbstractManager {
       HistoricProcessInstanceEntity historicProcessInstance = findHistoricProcessInstance(historicProcessInstanceId);
       
       commandContext
-        .getHistoricDetailEntityManager()
-        .deleteHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
-
-      commandContext
         .getHistoricVariableInstanceEntityManager()
         .deleteHistoricVariableInstanceByProcessInstanceId(historicProcessInstanceId);
       
@@ -72,19 +68,7 @@ public class HistoricProcessInstanceEntityManager extends AbstractManager {
       commandContext
         .getHistoricTaskInstanceEntityManager()
         .deleteHistoricTaskInstancesByProcessInstanceId(historicProcessInstanceId);
-      
-      commandContext
-      	.getHistoricIdentityLinkEntityManager()
-        .deleteHistoricIdentityLinksByProcInstance(historicProcessInstanceId);
-      
-      commandContext
-        .getCommentEntityManager()
-        .deleteCommentsByProcessInstanceId(historicProcessInstanceId);
-      
-      commandContext
-      .getAttachmentEntityManager()
-      .deleteAttachmentsByProcessInstanceId(historicProcessInstanceId);
-      
+
       boolean deleted = getDbSqlSession().delete(historicProcessInstance);
       
       if (deleted && commandContext.getEventDispatcher().isEnabled()) {

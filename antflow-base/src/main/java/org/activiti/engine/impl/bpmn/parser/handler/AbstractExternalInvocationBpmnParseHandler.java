@@ -18,10 +18,9 @@ import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.impl.bpmn.data.AbstractDataAssociation;
 import org.activiti.engine.impl.bpmn.data.Assignment;
 import org.activiti.engine.impl.bpmn.data.SimpleDataInputAssociation;
+import org.activiti.engine.impl.bpmn.data.SimpleDataOutputAssociation;
 import org.activiti.engine.impl.bpmn.data.TransformationDataOutputAssociation;
 import org.activiti.engine.impl.bpmn.parser.BpmnParse;
-import org.activiti.engine.impl.bpmn.webservice.MessageImplicitDataInputAssociation;
-import org.activiti.engine.impl.bpmn.webservice.MessageImplicitDataOutputAssociation;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -32,7 +31,7 @@ public abstract class AbstractExternalInvocationBpmnParseHandler<T extends FlowN
   
   public AbstractDataAssociation createDataInputAssociation(BpmnParse bpmnParse, DataAssociation dataAssociationElement) {
     if (dataAssociationElement.getAssignments().isEmpty()) {
-      return new MessageImplicitDataInputAssociation(dataAssociationElement.getSourceRef(), dataAssociationElement.getTargetRef());
+      return new SimpleDataInputAssociation(dataAssociationElement.getSourceRef(), dataAssociationElement.getTargetRef());
     } else {
       SimpleDataInputAssociation dataAssociation = new SimpleDataInputAssociation(
           dataAssociationElement.getSourceRef(), dataAssociationElement.getTargetRef());
@@ -48,10 +47,10 @@ public abstract class AbstractExternalInvocationBpmnParseHandler<T extends FlowN
       return dataAssociation;
     }
   }
-  
+
   public AbstractDataAssociation createDataOutputAssociation(BpmnParse bpmnParse, DataAssociation dataAssociationElement) {
     if (StringUtils.isNotEmpty(dataAssociationElement.getSourceRef())) {
-      return new MessageImplicitDataOutputAssociation(dataAssociationElement.getTargetRef(), dataAssociationElement.getSourceRef());
+      return new SimpleDataOutputAssociation(dataAssociationElement.getTargetRef(), dataAssociationElement.getSourceRef());
     } else {
       Expression transformation = bpmnParse.getExpressionManager().createExpression(dataAssociationElement.getTransformation());
       AbstractDataAssociation dataOutputAssociation = new TransformationDataOutputAssociation(null, dataAssociationElement.getTargetRef(), transformation);

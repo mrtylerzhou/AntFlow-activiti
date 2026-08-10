@@ -13,22 +13,12 @@
 
 package org.activiti.engine.impl.bpmn.helper;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.activiti.engine.impl.context.Context;
-import org.activiti.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
-import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.PvmProcessDefinition;
 import org.activiti.engine.impl.pvm.PvmScope;
 import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.activiti.engine.impl.pvm.runtime.InterpretableExecution;
 
 
 /**
@@ -113,88 +103,6 @@ public class ScopeUtil {
       activity = activity.getParentActivity();      
     }    
     return null;
-  }
-
-  /**
-   * we create a separate execution for each compensation handler invocation. 
-   */
-  public static void throwCompensationEvent(List<CompensateEventSubscriptionEntity> eventSubscriptions, ActivityExecution execution, boolean async) {
-
-    // first spawn the compensating executions
-    for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-      ExecutionEntity compensatingExecution = null;
-      // check whether compensating execution is already created 
-      // (which is the case when compensating an embedded subprocess, 
-      // where the compensating execution is created when leaving the subprocess 
-      // and holds snapshot data).
-      if(eventSubscription.getConfiguration() !=null) {
-        compensatingExecution = Context.getCommandContext()
-          .getExecutionEntityManager()
-          .findExecutionById(eventSubscription.getConfiguration());
-        // move the compensating execution under this execution:
-        compensatingExecution.setParent((InterpretableExecution) execution);        
-        compensatingExecution.setEventScope(false);
-      } else {
-        compensatingExecution = (ExecutionEntity) execution.createExecution();
-        eventSubscription.setConfiguration(compensatingExecution.getId());
-      }
-      compensatingExecution.setConcurrent(true);   
-    }
-    
-    // signal compensation events in reverse order of their 'created' timestamp
-    Collections.sort(eventSubscriptions, new Comparator<EventSubscriptionEntity>() {
-      public int compare(EventSubscriptionEntity o1, EventSubscriptionEntity o2) {
-        return o2.getCreated().compareTo(o1.getCreated());
-      }
-    });
-    
-    for (CompensateEventSubscriptionEntity compensateEventSubscriptionEntity : eventSubscriptions) {
-      compensateEventSubscriptionEntity.eventReceived(null, async);      
-    }
-  }
-  
-  /**
-   * creates an event scope for the given execution:
-   * 
-   * create a new event scope execution under the parent of the given 
-   * execution and move all event subscriptions to that execution.
-   * 
-   * this allows us to "remember" the event subscriptions after finishing a 
-   * scope
-   */
-  public static void createEventScopeExecution(ExecutionEntity execution) {
-
-    ExecutionEntity eventScope = ScopeUtil.findScopeExecutionForScope(execution, execution.getActivity().getParent());
-    
-    List<CompensateEventSubscriptionEntity> eventSubscriptions = execution.getCompensateEventSubscriptions();
-    
-    if(!eventSubscriptions.isEmpty()) {
-      
-      ExecutionEntity eventScopeExecution = eventScope.createExecution();
-      eventScopeExecution.setActive(false);      
-      eventScopeExecution.setConcurrent(false);
-      eventScopeExecution.setEventScope(true);      
-      eventScopeExecution.setActivity((ActivityImpl) execution.getActivity());
-      
-      execution.setConcurrent(false);
-      
-      // copy local variables to eventScopeExecution by value. This way, 
-      // the eventScopeExecution references a 'snapshot' of the local variables      
-      Map<String, Object> variables = execution.getVariablesLocal();
-      for (Entry<String, Object> variable : variables.entrySet()) {
-        eventScopeExecution.setVariableLocal(variable.getKey(), variable.getValue());        
-      }
-      
-      // set event subscriptions to the event scope execution:
-      for (CompensateEventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-        eventSubscriptionEntity = eventSubscriptionEntity.moveUnder(eventScopeExecution);        
-      }
-            
-      CompensateEventSubscriptionEntity eventSubscription = CompensateEventSubscriptionEntity.createAndInsert(eventScope);
-      eventSubscription.setActivity(execution.getActivity());
-      eventSubscription.setConfiguration(eventScopeExecution.getId());
-      
-    }
   }
 
 }

@@ -36,13 +36,13 @@ import org.activiti.engine.impl.db.DbSqlSession;
 import org.activiti.engine.impl.db.HasRevision;
 import org.activiti.engine.impl.db.PersistentObject;
 import org.activiti.engine.impl.delegate.TaskListenerInvocation;
+import org.activiti.engine.impl.bpmn.parser.handler.UserTaskParseHandler;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.task.DelegationState;
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.service.BpmVariableService;
@@ -80,10 +80,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   protected Date dueDate;
   protected int suspensionState = SuspensionState.ACTIVE.getStateCode();
   protected String category;
-  
-  protected boolean isIdentityLinksInitialized = false;
-  protected List<IdentityLinkEntity> taskIdentityLinkEntities = new ArrayList<IdentityLinkEntity>(); 
-  
+
   protected String executionId;
   protected ExecutionEntity execution;
   
@@ -95,6 +92,9 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   protected TaskDefinition taskDefinition;
   protected String taskDefinitionKey;
   protected String formKey;
+
+  /** antflow extension: design-time node id, parsed from the bpmn element extension attribute */
+  protected String nodeId;
   
   protected boolean isDeleted;
   
@@ -124,6 +124,16 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public void insert(ExecutionEntity execution) {
     CommandContext commandContext = Context.getCommandContext();
     DbSqlSession dbSqlSession = commandContext.getDbSqlSession();
+
+    // antflow extension: inherit the design-time node id from the activity property
+    // (parsed from the user task extension attribute, see UserTaskParseHandler)
+    if (execution != null && execution.getActivity() != null) {
+      Object nodeIdProperty = execution.getActivity().getProperty(UserTaskParseHandler.PROPERTY_NODE_ID);
+      if (nodeIdProperty != null) {
+        this.nodeId = nodeIdProperty.toString();
+      }
+    }
+
     dbSqlSession.insert(this);
     
     // Inherit tenant id (if applicable)
@@ -173,7 +183,6 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
    * But this task still will have to be persisted. See {@link #insert(ExecutionEntity))}. */
   public static TaskEntity create(Date createTime) {
     TaskEntity task = new TaskEntity();
-    task.isIdentityLinksInitialized = true;
     task.createTime = createTime;
     return task;
   }
@@ -187,10 +196,6 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   	
     fireEvent(TaskListener.EVENTNAME_COMPLETE);
 
-    if (Authentication.getAuthenticatedUserId() != null && processInstanceId != null) {
-      getProcessInstance().involveUser(Authentication.getAuthenticatedUserId(), IdentityLinkType.PARTICIPANT);
-    }
-    
     if(Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
     	Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
     	    ActivitiEventBuilder.createEntityWithVariablesEvent(ActivitiEventType.TASK_COMPLETED, this, variablesMap, localScope));
@@ -244,6 +249,9 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
     }
     if (parentTaskId != null) {
       persistentState.put("parentTaskId", this.parentTaskId);
+    }
+    if (nodeId != null) {
+      persistentState.put("nodeId", this.nodeId);
     }
     if (delegationState != null) {
       persistentState.put("delegationState", this.delegationState);
@@ -346,127 +354,6 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       this.processDefinitionId = null;
     }
   }
-    
-  // task assignment //////////////////////////////////////////////////////////
-  
-  public IdentityLinkEntity addIdentityLink(String userId, String groupId, String type) {
-    IdentityLinkEntity identityLinkEntity = new IdentityLinkEntity();
-    getIdentityLinks().add(identityLinkEntity);
-    identityLinkEntity.setTask(this);
-    identityLinkEntity.setUserId(userId);
-    identityLinkEntity.setGroupId(groupId);
-    identityLinkEntity.setType(type);
-    identityLinkEntity.insert();
-    if (userId != null && processInstanceId != null) {
-      getProcessInstance().involveUser(userId, IdentityLinkType.PARTICIPANT);
-    }
-    return identityLinkEntity;
-  }
-  
-  public void deleteIdentityLink(String userId, String groupId, String type) {
-    List<IdentityLinkEntity> identityLinks = Context
-      .getCommandContext()
-      .getIdentityLinkEntityManager()
-      .findIdentityLinkByTaskUserGroupAndType(id, userId, groupId, type);
-    
-    List<String> identityLinkIds = new ArrayList<String>();
-    for (IdentityLinkEntity identityLink: identityLinks) {
-      Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .deleteIdentityLink(identityLink, true);
-      identityLinkIds.add(identityLink.getId());
-    }
-    
-    // fix deleteCandidate() in create TaskListener
-    List<IdentityLinkEntity> removedIdentityLinkEntities = new ArrayList<IdentityLinkEntity>();
-    for (IdentityLinkEntity identityLinkEntity : this.getIdentityLinks()) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLinkEntity.getType()) && 
-          identityLinkIds.contains(identityLinkEntity.getId()) == false) {
-        
-        if ((userId != null && userId.equals(identityLinkEntity.getUserId()))
-          || (groupId != null && groupId.equals(identityLinkEntity.getGroupId()))) {
-          
-          Context
-            .getCommandContext()
-            .getIdentityLinkEntityManager()
-            .deleteIdentityLink(identityLinkEntity, true);
-          removedIdentityLinkEntities.add(identityLinkEntity);
-        }
-      }
-    }
-    getIdentityLinks().removeAll(removedIdentityLinkEntities);
-  }
-  
-  public Set<IdentityLink> getCandidates() {
-    Set<IdentityLink> potentialOwners = new HashSet<IdentityLink>();
-    for (IdentityLinkEntity identityLinkEntity : getIdentityLinks()) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLinkEntity.getType())) {
-        potentialOwners.add(identityLinkEntity);
-      }
-    }
-    return potentialOwners;
-  }
-  
-  public void addCandidateUser(String userId) {
-    addIdentityLink(userId, null, IdentityLinkType.CANDIDATE);
-  }
-  
-  public void addCandidateUsers(Collection<String> candidateUsers) {
-    for (String candidateUser : candidateUsers) {
-      addCandidateUser(candidateUser);
-    }
-  }
-  
-  public void addCandidateGroup(String groupId) {
-    addIdentityLink(null, groupId, IdentityLinkType.CANDIDATE);
-  }
-  
-  public void addCandidateGroups(Collection<String> candidateGroups) {
-    for (String candidateGroup : candidateGroups) {
-      addCandidateGroup(candidateGroup);
-    }
-  }
-  
-  public void addGroupIdentityLink(String groupId, String identityLinkType) {
-    addIdentityLink(null, groupId, identityLinkType);
-  }
-
-  public void addUserIdentityLink(String userId, String identityLinkType) {
-    addIdentityLink(userId, null, identityLinkType);
-  }
-
-  public void deleteCandidateGroup(String groupId) {
-    deleteGroupIdentityLink(groupId, IdentityLinkType.CANDIDATE);
-  }
-
-  public void deleteCandidateUser(String userId) {
-    deleteUserIdentityLink(userId, IdentityLinkType.CANDIDATE);
-  }
-
-  public void deleteGroupIdentityLink(String groupId, String identityLinkType) {
-    if (groupId!=null) {
-      deleteIdentityLink(null, groupId, identityLinkType);
-    }
-  }
-
-  public void deleteUserIdentityLink(String userId, String identityLinkType) {
-    if (userId!=null) {
-      deleteIdentityLink(userId, null, identityLinkType);
-    }
-  }
-
-  public List<IdentityLinkEntity> getIdentityLinks() {
-    if (!isIdentityLinksInitialized) {
-      taskIdentityLinkEntities = Context
-        .getCommandContext()
-        .getIdentityLinkEntityManager()
-        .findIdentityLinksByTaskId(id);
-      isIdentityLinksInitialized = true;
-    }
-    
-    return taskIdentityLinkEntities;
-  }
 
   @SuppressWarnings("unchecked")
   public Map<String, Object> getActivityInstanceVariables() {
@@ -554,11 +441,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       commandContext
         .getHistoryManager()
         .recordTaskAssigneeChange(id, assignee);
-      
-      if (assignee != null && processInstanceId != null) {
-        getProcessInstance().involveUser(assignee, IdentityLinkType.PARTICIPANT);
-      }
-      
+
       if(!StringUtils.equals(initialAssignee, assignee)) {
       	fireEvent(TaskListener.EVENTNAME_ASSIGNMENT);
       	initialAssignee = assignee;
@@ -604,11 +487,7 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
       commandContext
         .getHistoryManager()
         .recordTaskOwnerChange(id, owner);
-      
-      if (owner != null && processInstanceId != null) {
-        getProcessInstance().involveUser(owner, IdentityLinkType.PARTICIPANT);
-      }
-      
+
       if(dispatchUpdateEvent && commandContext.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
       	if(dispatchUpdateEvent) {
       		commandContext.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
@@ -870,6 +749,14 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   public String getTaskDefinitionKey() {
     return taskDefinitionKey;
   }
+
+  public String getNodeId() {
+    return nodeId;
+  }
+
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
+  }
   
   public void setTaskDefinitionKey(String taskDefinitionKey) {
     this.taskDefinitionKey = taskDefinitionKey;
@@ -984,6 +871,53 @@ public class TaskEntity extends VariableScopeImpl implements Task, DelegateTask,
   
   public void setQueryVariables(List<VariableInstanceEntity> queryVariables) {
     this.queryVariables = queryVariables;
+  }
+
+  // Identity link methods (no-op after removal of IdentityLinkEntity)
+
+  public void addCandidateUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addCandidateUsers(Collection<String> candidateUsers) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addCandidateGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addCandidateGroups(Collection<String> candidateGroups) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addUserIdentityLink(String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void addGroupIdentityLink(String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteCandidateUser(String userId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteCandidateGroup(String groupId) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteUserIdentityLink(String userId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public void deleteGroupIdentityLink(String groupId, String identityLinkType) {
+    // no-op: IdentityLinkEntity has been removed
+  }
+
+  public List<IdentityLink> getCandidates() {
+    // no-op: IdentityLinkEntity has been removed
+    return java.util.Collections.emptyList();
   }
 
 }

@@ -11,8 +11,9 @@
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in worlflowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
                             <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
+                                <el-avatar v-if="item.title" size="large" :style="{ backgroundColor: item.iconColor }">
+                                    <span style="font-size: 18px; font-weight: 700;">{{ item.title.substring(0, 1)
+                                    }}</span>
                                 </el-avatar>
                             </div>
                             <div class="card-title">
@@ -53,8 +54,9 @@
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in lfFlowList">
                         <el-card shadow="always" class="card-col" @click="handleStart(item)">
                             <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
+                                <el-avatar v-if="item.title" size="large" :style="{ backgroundColor: item.iconColor }">
+                                    <span style="font-size: 18px; font-weight: 700;">{{ item.title.substring(0, 1)
+                                        }}</span>
                                 </el-avatar>
                             </div>
                             <div class="card-title">
@@ -92,8 +94,9 @@
                     <el-col :lg="8" :md="12" :sm="12" :xs="24" v-for="(item, index) in outsideFlowList">
                         <el-card shadow="always" class="card-col" @click="handleOutSide(item)">
                             <div class="card-icon">
-                                <el-avatar size="large">
-                                    <img :src="item.IconUrl" />
+                                <el-avatar v-if="item.title" size="large" :style="{ backgroundColor: item.iconColor }">
+                                    <span style="font-size: 18px; font-weight: 700;">{{ item.title.substring(0, 1)
+                                    }}</span>
                                 </el-avatar>
                             </div>
                             <div class="card-title">
@@ -143,15 +146,6 @@ const data = reactive({
 });
 const { lfPageDto, lfVO, outsidePage, outsideVO } = toRefs(data);
 
-let statusColor = {
-    "LEAVE_WMA": 'leave',
-    "DSFZH_WMA": 'hire',
-    "PURCHASE_WMA": 'bought',
-    "UCARREFUEl_WMA": 'trip',
-    "LFTEST_WMA": 'zhushou',
-    "BXSP_WMA": 'seal',
-};
-
 onMounted(async () => {
     proxy.$modal.loading();
     await getDIYFormCodeList();
@@ -165,14 +159,14 @@ onMounted(async () => {
 async function getDIYFormCodeList() {
     await getDIYFromCodeData().then((res) => {
         if (res.code == 200) {
-            const totalData = res.data.map(c => {
+            const totalData = res.data.map((c, index) => {
                 return {
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
                     hasChooseApprove: c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
-                    IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
+                    iconColor: getRandomColor(index)
                 }
             });
             worlflowList.value = totalData;
@@ -185,14 +179,14 @@ async function getDIYFormCodeList() {
 async function getLFFormCodePageList() {
     await getLFActiveFormCodePageList(lfPageDto.value, lfVO.value).then((res) => {
         if (res.code == 200) {
-            const totalData = res.data.map(c => {
+            const totalData = res.data.map((c, index) => {
                 return {
                     formCode: c.key,
                     title: c.value,
                     formType: c.type,
                     hasChooseApprove: c.hasStarUserChooseModule,
                     description: c.value + '流程办理',
-                    IconUrl: getAssetsFile(statusColor[c.key] || 'FF8BA7')
+                    iconColor: getRandomColor(index)
                 }
             });
             lfFlowList.value = totalData;
@@ -207,7 +201,7 @@ async function getLFFormCodePageList() {
 async function getOutSideFormCodeList() {
     await getOutSideFormCodePageList(outsidePage.value, outsideVO.value).then((res) => {
         if (res.code == 200) {
-            const totalData = res.data.map(c => {
+            const totalData = res.data.map((c, index) => {
                 return {
                     formCode: c.formCode,
                     title: c.bpmnName,
@@ -215,7 +209,7 @@ async function getOutSideFormCodeList() {
                     applicationId: c.applicationId,
                     hasChooseApprove: false,
                     description: c.bpmnName + c.remark + '流程办理',
-                    IconUrl: getAssetsFile("jiejing")
+                    iconColor: getRandomColor(index)
                 }
             });
             outsideFlowList.value = totalData;
@@ -244,12 +238,17 @@ function handleOutSide(row) {
     const obj = { path: '/startOutside/index', query: params };
     proxy.$tab.openPage(obj);
 }
-function getAssetsFile(pathUrl) {
-    return new URL(`../../assets/images/work/${pathUrl}.png`, import.meta.url).href;
+/**
+ * 根据索引获取随机颜色
+ * @param index 
+ */
+function getRandomColor(index = 0) {
+    const metaColor = ['#ff4d4f', '#bae637', '#73d13d', '#36cfc9', '#40a9ff', '#597ef7', '#9254de', '#f759ab', '#ff7a45', '#ffa940', '#ffc53d', '#ffec3d'];
+    const idx = Number.isFinite(index) ? Math.floor(index) : 0;
+    const safeIndex = ((idx % metaColor.length) + metaColor.length) % metaColor.length;
+    return metaColor[safeIndex];
 }
-function handleFlow(row) {
-    proxy.$modal.msgSuccess("演示环境努力开发中！");
-}
+
 </script>
 
 <style lang="scss" scoped>

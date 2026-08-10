@@ -52,7 +52,7 @@ public class BpmnConfNodePropertyConverter {
 
         int index=0;
         for (List<BpmnNodeConditionsConfVueVo> newModels : groupedNewModels) {
-            Map<String,Object> wrapperResult=new HashMap<>();
+            Map<String,Object> wrapperResult=new LinkedHashMap<>();
             index++;
             List<Integer> currentGroupConditionTypes=new ArrayList<>();
             for (BpmnNodeConditionsConfVueVo newModel : newModels) {

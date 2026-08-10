@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,10 +22,10 @@ public class BpmnViewPageButtonBaseVo {
     /**
      * view page start user
      */
-    private List<Integer> viewPageStart;
+    private List<Integer> viewPageStart= new ArrayList<>();
 
     /**
      * 查view page other
      */
-    private List<Integer> viewPageOther;
+    private List<Integer> viewPageOther=new ArrayList<>();
 }

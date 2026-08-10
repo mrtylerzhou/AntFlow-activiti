@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LFStringConditionJudge extends AbstractLFConditionJudge {
     @Override
-    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group) {
-        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,(a,b,c)->a.toString().equalsIgnoreCase(b.toString()), group);
+    public boolean judge(String nodeId, BpmnNodeConditionsConfBaseVo conditionsConf, BpmnStartConditionsVo bpmnStartConditionsVo, int group,int index) {
+        return super.lfCommonJudge(conditionsConf,bpmnStartConditionsVo,(a,b,c)->a.toString().equalsIgnoreCase(b.toString()), group,index);
     }
 }

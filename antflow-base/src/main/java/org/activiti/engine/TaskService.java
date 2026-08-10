@@ -12,7 +12,6 @@
  */
 package org.activiti.engine;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +20,8 @@ import java.util.Set;
 
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.query.NativeQuery;
-import org.activiti.engine.task.Attachment;
-import org.activiti.engine.task.Comment;
-import org.activiti.engine.task.Event;
+
 import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.NativeTaskQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
@@ -221,83 +217,6 @@ public interface TaskService {
   void setOwner(String taskId, String userId);
   
   /**
-   * Retrieves the {@link IdentityLink}s associated with the given task.
-   * Such an {@link IdentityLink} informs how a certain identity (eg. group or user)
-   * is associated with a certain task (eg. as candidate, assignee, etc.)
-   */
-  List<IdentityLink> getIdentityLinksForTask(String taskId);
-  
-  /**
-   * Convenience shorthand for {@link #addUserIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param taskId id of the task, cannot be null.
-   * @param userId id of the user to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void addCandidateUser(String taskId, String userId);
-  
-  /**
-   * Convenience shorthand for {@link #addGroupIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param taskId id of the task, cannot be null.
-   * @param groupId id of the group to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void addCandidateGroup(String taskId, String groupId);
-  
-  /**
-   * Involves a user with a task. The type of identity link is defined by the
-   * given identityLinkType.
-   * @param taskId id of the task, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @param identityLinkType type of identityLink, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void addUserIdentityLink(String taskId, String userId, String identityLinkType);
-  
-  /**
-   * Involves a group with a task. The type of identityLink is defined by the
-   * given identityLink.
-   * @param taskId id of the task, cannot be null.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void addGroupIdentityLink(String taskId, String groupId, String identityLinkType);
-  
-  /**
-   * Convenience shorthand for {@link #deleteUserIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param taskId id of the task, cannot be null.
-   * @param userId id of the user to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void deleteCandidateUser(String taskId, String userId);
-  
-  /**
-   * Convenience shorthand for {@link #deleteGroupIdentityLink(String, String, String)}; with type {@link IdentityLinkType#CANDIDATE}
-   * @param taskId id of the task, cannot be null.
-   * @param groupId id of the group to use as candidate, cannot be null.
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void deleteCandidateGroup(String taskId, String groupId);
-  
-  /**
-   * Removes the association between a user and a task for the given identityLinkType.
-   * @param taskId id of the task, cannot be null.
-   * @param userId id of the user involve, cannot be null.
-   * @param identityLinkType type of identityLink, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or user doesn't exist.
-   */
-  void deleteUserIdentityLink(String taskId, String userId, String identityLinkType);
-  
-  /**
-   * Removes the association between a group and a task for the given identityLinkType.
-   * @param taskId id of the task, cannot be null.
-   * @param groupId id of the group to involve, cannot be null.
-   * @param identityLinkType type of identity, cannot be null (@see {@link IdentityLinkType}).
-   * @throws ActivitiObjectNotFoundException when the task or group doesn't exist.
-   */
-  void deleteGroupIdentityLink(String taskId, String groupId, String identityLinkType);
-  
-  /**
    * Changes the priority of the task.
    * 
    * Authorization: actual owner / business admin
@@ -406,71 +325,33 @@ public interface TaskService {
    */
   void removeVariablesLocal(String taskId, Collection<String> variableNames);
 
-  /** Add a comment to a task and/or process instance. */
-  Comment addComment(String taskId, String processInstanceId, String message);
-  
-  /** Add a comment to a task and/or process instance with a custom type. */
-  Comment addComment(String taskId, String processInstanceId, String type, String message);
-  
-  /** 
-   * Returns an individual comment with the given id. Returns null if no comment exists with the given id.
-   */
-  Comment getComment(String commentId);
-  
-  /** Removes all comments from the provided task and/or process instance*/
-  void deleteComments(String taskId, String processInstanceId);
-  
-  /** 
-   * Removes an individual comment with the given id.
-   * @throws ActivitiObjectNotFoundException when no comment exists with the given id. 
-   */
-  void deleteComment(String commentId);
-
-  /** The comments related to the given task. */
-  List<Comment> getTaskComments(String taskId);
-  
-  /** The comments related to the given task of the given type. */
-  List<Comment> getTaskComments(String taskId, String type);
-  
-  /** All comments of a given type. */
-  List<Comment> getCommentsByType(String type);
-
-  /** The all events related to the given task. */
-  List<Event> getTaskEvents(String taskId);
-  
-  /** Returns an individual event with the given id. Returns null if no event exists with the given id. */
-  Event getEvent(String eventId);
-
-  /** The comments related to the given process instance. */
-  List<Comment> getProcessInstanceComments(String processInstanceId);
-
-  /** The comments related to the given process instance. */
-  List<Comment> getProcessInstanceComments(String processInstanceId, String type);
-
-  /** Add a new attachment to a task and/or a process instance and use an input stream to provide the content */
-  Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, InputStream content);
-
-  /** Add a new attachment to a task and/or a process instance and use an url as the content */
-  Attachment createAttachment(String attachmentType, String taskId, String processInstanceId, String attachmentName, String attachmentDescription, String url);
-  
-  /** Update the name and decription of an attachment */
-  void saveAttachment(Attachment attachment);
-  
-  /** Retrieve a particular attachment */
-  Attachment getAttachment(String attachmentId);
-  
-  /** Retrieve stream content of a particular attachment */
-  InputStream getAttachmentContent(String attachmentId);
-  
-  /** The list of attachments associated to a task */
-  List<Attachment> getTaskAttachments(String taskId);
-
-  /** The list of attachments associated to a process instance */
-  List<Attachment> getProcessInstanceAttachments(String processInstanceId);
-
-  /** Delete an attachment */
-  void deleteAttachment(String attachmentId);
-
   /** The list of subtasks for this parent task */
   List<Task> getSubTasks(String parentTaskId);
+
+  /** Adds a candidate user to the task. */
+  void addCandidateUser(String taskId, String userId);
+
+  /** Adds a candidate group to the task. */
+  void addCandidateGroup(String taskId, String groupId);
+
+  /** Adds a user identity link to the task. */
+  void addUserIdentityLink(String taskId, String userId, String identityLinkType);
+
+  /** Adds a group identity link to the task. */
+  void addGroupIdentityLink(String taskId, String groupId, String identityLinkType);
+
+  /** Removes a candidate user from the task. */
+  void deleteCandidateUser(String taskId, String userId);
+
+  /** Removes a candidate group from the task. */
+  void deleteCandidateGroup(String taskId, String groupId);
+
+  /** Removes a user identity link from the task. */
+  void deleteUserIdentityLink(String taskId, String userId, String identityLinkType);
+
+  /** Removes a group identity link from the task. */
+  void deleteGroupIdentityLink(String taskId, String groupId, String identityLinkType);
+
+  /** Retrieves the identity links associated with the given task. */
+  List<IdentityLink> getIdentityLinksForTask(String taskId);
 }

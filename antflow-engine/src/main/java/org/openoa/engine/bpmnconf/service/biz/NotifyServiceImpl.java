@@ -1,6 +1,5 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
@@ -8,7 +7,6 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.enums.ProcessEnum;
 import org.openoa.base.entity.BpmBusinessProcess;
-import org.openoa.base.entity.BpmManualNotify;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.service.AfUserService;
 import org.openoa.base.util.SecurityUtils;
@@ -29,9 +27,6 @@ import java.util.*;
 @Transactional
 public class NotifyServiceImpl {
 
-
-    @Autowired
-    private BpmManualNotifyMapper bpmManualNotifyMapper;
 
     @Autowired
     private TaskMgmtMapper taskMgmtMapper;
@@ -56,8 +51,6 @@ public class NotifyServiceImpl {
     private BpmBusinessProcessMapper bpmBusinessProcessMapper;
     @Autowired
     private BpmTaskconfigService bpmTaskconfigService;
-    //remind manually
-    private static final long ALLOWED = 2 * 60 * 60;
     //todo list detail page
     private static final String PROC_TO_DO = "/main/tab?tabKey=examine&menuCode=approval&subMenuCode=pending";
 
@@ -140,93 +133,6 @@ public class NotifyServiceImpl {
             }
         } catch (Exception e) {
             log.error("撤销通知出错", e);
-        }
-    }
-
-    /**
-     * notify manually
-     *
-     * @param code       CGSQ
-     * @param businessId 18
-     */
-    public String notifyByHand(String code, Long businessId) {
-        String rst = "提醒成功";
-        BpmManualNotify bpmManualNotify = BpmManualNotify.builder()
-                .code(code)
-                .businessId(businessId)
-                .build();
-        List<BpmManualNotify> list = bpmManualNotifyMapper.selectList(new QueryWrapper<BpmManualNotify>()
-                .eq("code", code)
-                .eq("business_id", businessId));
-        String entryId = taskMgmtMapper.getEntryId(code, businessId);
-
-        if (ObjectUtils.isEmpty(list)) {
-            //无提醒记录
-            this.manualNotifyHelper(entryId);
-            bpmManualNotifyMapper.insert(bpmManualNotify);
-        } else {
-            BpmManualNotify existedNotify = list.get(0);
-            Date lastTime = existedNotify.getLastTime();
-            Date now = new Date();
-            long offset = (now.getTime() - lastTime.getTime()) / 1000;
-            if (offset < ALLOWED) {
-                //未到时间
-                long deviation = ALLOWED - offset;
-                long hour = deviation % (24 * 3600) / 3600;
-                long minute = deviation % 3600 / 60;
-                rst = "请于" + hour + "小时" + minute + "分钟后再提醒!";
-                throw new AFBizException(OperationResp.FAILURE.getCode(), rst);
-            }
-
-            // time is overdue
-            this.manualNotifyHelper(entryId);
-            //update notice last time
-            existedNotify.setLastTime(new Date());
-            bpmManualNotifyMapper.updateById(existedNotify);
-        }
-        return rst;
-    }
-
-    /**
-     * manually notice helper
-     *
-     * @param entryId
-     */
-    public void manualNotifyHelper(String entryId) {
-        try {
-            String startUser = SecurityUtils.getLogInEmpNameSafe();
-
-            BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessMapper.findBpmBusinessProcess(BpmBusinessProcess.builder().entryId(entryId).build());
-
-            //process Number
-            String processNumber = bpmBusinessProcess.getBusinessNumber();
-            //process Name
-            String procDefId = bpmBusinessProcess.getProcessinessKey();
-            String processName = taskMgmtMapper.getProcessName(procDefId);
-            //{发起人}提醒您尽快处理{流程名称}{流程编号}
-            String title = startUser + "提醒您尽快处理" + processName + processNumber + "。";
-            //String content=startUser+"提醒您尽快处理"+processName+processNumber+bpmBusinessProcess.getDescription()+"。";
-            //current approvers list
-            List<TaskMgmtVO> currentAssignees = taskMgmtMapper.getCurrentAssignee(entryId);
-            if (ObjectUtils.isEmpty(currentAssignees)) {
-                throw new AFBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
-            }
-            currentAssignees.forEach(o -> {
-                if (Strings.isNullOrEmpty(o.getOriginalName()) || o.getOriginalName().equals(ProcessEnum.PROC_MAN.getDesc())) {
-                    throw new AFBizException(OperationResp.FAILURE.getCode(), "当前流程节点无处理人！");
-                }
-                SendParam sendParam = SendParam.builder()
-                        .userId(o.getOriginalName())
-                        .title(title)
-                        .appUrl(PROC_TO_DO)
-                        .content(title)
-                        .params("myTask")
-                        .urlParams(new UrlParams())
-                        .build();
-                MessageUtils.sendMessage(sendParam);
-            });
-        } catch (Exception e) {
-            log.error("manual notice error", e);
         }
     }
 

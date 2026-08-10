@@ -7,8 +7,8 @@ import "element-plus/dist/index.css";
 import "element-plus/theme-chalk/dark/css-vars.css";
 import locale from "element-plus/es/locale/lang/zh-cn";
 
-import VForm3 from "@/./lib/vForm/designer.umd.js";
-import "./lib/vForm/designer.style.css";
+import VForm3 from "@/./lib/vform/designer.umd.js";
+import "./lib/vform/designer.style.css";
 
 import "@/assets/styles/index.scss"; // global css
 
@@ -31,7 +31,7 @@ import elementIcons from "@/components/SvgIcon/svgicon";
 import "./permission"; // permission control
 
 //import { useDict } from "@/utils/dict";
-import { getConfigKey } from "@/api/system/config";
+//import { getConfigKey } from "@/api/system/config";
 import {
   parseTime,
   resetForm,
@@ -73,7 +73,7 @@ app.config.globalProperties.parseTime = parseTime;
 app.config.globalProperties.resetForm = resetForm;
 app.config.globalProperties.handleTree = handleTree;
 app.config.globalProperties.addDateRange = addDateRange;
-app.config.globalProperties.getConfigKey = getConfigKey;
+//app.config.globalProperties.getConfigKey = getConfigKey;
 app.config.globalProperties.selectDictLabel = selectDictLabel;
 app.config.globalProperties.selectDictLabels = selectDictLabels;
 app.config.globalProperties.isEmpty = isEmpty;

@@ -44,6 +44,8 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   protected String assigneeName;
   protected String taskDefinitionKey;
   protected String formKey;
+  /** antflow extension: design-time node id */
+  protected String nodeId;
   protected int priority;
   protected Date dueDate;
   protected Date claimTime;
@@ -73,6 +75,7 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
     this.assignee = task.getAssignee();
     this.startTime = Context.getProcessEngineConfiguration().getClock().getCurrentTime();
     this.taskDefinitionKey = task.getTaskDefinitionKey();
+    this.nodeId = task.getNodeId();
     
     this.setPriority(task.getPriority());
     this.setDueDate(task.getDueDate());
@@ -162,6 +165,12 @@ public class HistoricTaskInstanceEntity extends HistoricScopeInstanceEntity impl
   }
   public void setTaskDefinitionKey(String taskDefinitionKey) {
     this.taskDefinitionKey = taskDefinitionKey;
+  }
+  public String getNodeId() {
+    return nodeId;
+  }
+  public void setNodeId(String nodeId) {
+    this.nodeId = nodeId;
   }
   @Override
   public Date getCreateTime() {

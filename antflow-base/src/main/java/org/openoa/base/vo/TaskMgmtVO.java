@@ -161,7 +161,7 @@ public class TaskMgmtVO implements Serializable {
     /**
      * process version
      */
-    private Integer version;
+    private String version;
 
     /**
      * apptime
@@ -202,9 +202,9 @@ public class TaskMgmtVO implements Serializable {
     @Builder.Default
     public String title = "同意";
     /**
-     * can be submitted in batch
+     * can be approved in batch
      */
-    public Boolean isBatchSubmit;
+    public Boolean isBatchAgree;
     /**
      * app process key list
      */

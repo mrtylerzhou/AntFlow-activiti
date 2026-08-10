@@ -21,6 +21,12 @@
                             <p>抄送人</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item notifier-v2" @click="addType(8)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="copy-user" class="iconfont" />
+                            <p>抄送人V2</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="add-node-popover-body">
                     <a class="add-node-popover-item condition" @click="addType(4)">
@@ -41,6 +47,46 @@
                             <p>条件并行</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item auto-node" @click="addType(9)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="auto-approve" class="iconfont" />
+                            <p>自动节点</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item process-node" @click="addType(10)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="handle-task" class="iconfont" />
+                            <p>办理节点</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item auto-process-node" @click="addType(11)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="auto-task" class="iconfont" />
+                            <p>自动办理</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item cloner-node" @click="openCloneDialog()">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="approver-clone" class="iconfont" />
+                            <p>克隆器</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item condition-approver-node" @click="addType(12)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="condition-approve" class="iconfont" />
+                            <p>条件审批</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="add-node-popover-body align-left">
+                    <a class="add-node-popover-item condition-copy-node" @click="addType(13)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="condition-copy" class="iconfont" />
+                            <p>条件抄送</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -50,9 +96,33 @@
             </el-popover>
         </div>
     </div>
+    <!-- 克隆器弹窗 -->
+    <el-dialog v-model="cloneDialogVisible" title="克隆节点" width="420px" append-to-body>
+        <div v-if="cloneableNodes.length === 0" style="text-align: center; padding: 20px 0; color: #999;">
+            当前流程没有可克隆的审批人/抄送人V2节点
+        </div>
+        <div v-else>
+            <el-form label-width="80px">
+                <el-form-item label="选择节点">
+                    <el-select v-model="selectedCloneNodeId" placeholder="请选择要克隆的节点" style="width: 100%;">
+                        <el-option
+                            v-for="item in cloneableNodes"
+                            :key="item.nodeId"
+                            :label="item.nodeName + (item.nodeType === 4 ? '（审批人）' : '（抄送人V2）')"
+                            :value="item.nodeId"
+                        />
+                    </el-select>
+                </el-form-item>
+            </el-form>
+        </div>
+        <template #footer>
+            <el-button @click="cloneDialogVisible = false">取 消</el-button>
+            <el-button type="primary" :disabled="!selectedCloneNodeId" @click="confirmClone">确 定</el-button>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 let props = defineProps({
     childNodeP: {
@@ -62,6 +132,11 @@ let props = defineProps({
 })
 let emits = defineEmits(['update:childNodeP'])
 let visible = ref(false)
+const rootNode = inject('rootNode', null)
+// 克隆器状态
+let cloneDialogVisible = ref(false)
+let selectedCloneNodeId = ref(null)
+let cloneableNodes = ref([])
 /**创建审批人节点 */
 const createApproveNode = (childNode) => {
     return NodeUtils.createApproveNode(childNode);
@@ -69,6 +144,30 @@ const createApproveNode = (childNode) => {
 /**创建抄送人节点 */
 const createCopyNode = (childNode) => {
     return NodeUtils.createCopyNode(childNode);
+}
+
+const createCopyNodeV2 = (childNode) => {
+    return NodeUtils.createCopyNodeV2(childNode);
+}
+/**创建自动节点 */
+const createAutoNode = (childNode) => {
+    return NodeUtils.createAutoNode(childNode);
+}
+/**创建条件审批节点 */
+const createConditionApproveNode = (childNode) => {
+    return NodeUtils.createConditionApproveNode(childNode);
+}
+/**创建条件抄送节点 */
+const createConditionCopyNode = (childNode) => {
+    return NodeUtils.createConditionCopyNode(childNode);
+}
+/**创建办理节点（一次性生成两个审批人节点） */
+const createProcessNode = (childNode) => {
+    return NodeUtils.createProcessNode(childNode);
+}
+/**创建自动办理节点（自动节点 + 发起人确认审批人节点） */
+const createAutoProcessNode = (childNode) => {
+    return NodeUtils.createAutoProcessNode(childNode);
 }
 /**创建并行审批人节点 */
 const createParallelWayNode = (childNode) => {
@@ -93,14 +192,39 @@ const createNodeMap = new Map([
     [3, createParallelWayNode],
     [4, createGatewayNode],
     [5, createDynamicConditionWayNode],
-    [6, createParallelConditionWayNode]
+    [6, createParallelConditionWayNode],
+    [8, createCopyNodeV2],
+    [9, createAutoNode],
+    [10, createProcessNode],
+    [11, createAutoProcessNode],
+    [12, createConditionApproveNode],
+    [13, createConditionCopyNode],
 ]);
 const addType = (type) => {
     visible.value = false;
     const handleCreateNodeFunc = createNodeMap.get(type);
     const newNodeInfo = handleCreateNodeFunc(props.childNodeP);
     emits("update:childNodeP", newNodeInfo)
-} 
+}
+/**打开克隆器弹窗：收集整棵树中 nodeType=4 和 nodeType=8 的节点 */
+const openCloneDialog = () => {
+    visible.value = false;
+    selectedCloneNodeId.value = null;
+    if (rootNode && rootNode.value) {
+        cloneableNodes.value = NodeUtils.collectNodesByType(rootNode.value, [4, 8]);
+    } else {
+        cloneableNodes.value = [];
+    }
+    cloneDialogVisible.value = true;
+}
+/**确认克隆：深拷贝源节点并插入当前位置 */
+const confirmClone = () => {
+    const sourceNode = cloneableNodes.value.find(n => n.nodeId === selectedCloneNodeId.value);
+    if (!sourceNode) return;
+    const clonedNode = NodeUtils.cloneNode(sourceNode, props.childNodeP);
+    emits("update:childNodeP", clonedNode);
+    cloneDialogVisible.value = false;
+}
 </script>
 <style scoped lang="scss">
 @use "@/assets/styles/antflow/workflow.scss";
@@ -176,6 +300,12 @@ const addType = (type) => {
 .add-node-popover-body {
     display: flex;
 
+    &.align-left {
+        .add-node-popover-item {
+            flex: 0 0 auto;
+        }
+    }
+
     .add-node-popover-item {
         margin-right: 10px;
         cursor: pointer;
@@ -217,6 +347,48 @@ const addType = (type) => {
         &.notifier {
             .item-wrapper {
                 color: #3296fa
+            }
+        }
+
+        &.notifier-v2 {
+            .item-wrapper {
+                color: #0460bb
+            }
+        }
+
+        &.auto-node {
+            .item-wrapper {
+                color: #9b59b6
+            }
+        }
+
+        &.condition-approver-node {
+            .item-wrapper {
+                color: #2ea7a7
+            }
+        }
+
+        &.condition-copy-node {
+            .item-wrapper {
+                color: #4682b4
+            }
+        }
+
+        &.process-node {
+            .item-wrapper {
+                color: #15bc83
+            }
+        }
+
+        &.auto-process-node {
+            .item-wrapper {
+                color: #9b59b6
+            }
+        }
+
+        &.cloner-node {
+            .item-wrapper {
+                color: #e67e22
             }
         }
 

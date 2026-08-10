@@ -121,6 +121,7 @@ public class BpmnCreateBpmnAndStartImpl implements BpmnCreateBpmnAndStart {
                     .builder()
                     .id(bpmBusinessProcess.getId())
                     .procInstId(processInstance.getId())
+                    .businessId(bpmnStartConditions.getBusinessId())
                     .build());
 
             String procInstId=processInstance.getId();
