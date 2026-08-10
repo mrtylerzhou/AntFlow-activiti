@@ -30,6 +30,14 @@ public class BpmProcessAudit {
     @TableField("field_name")
     private String fieldName;
 
+    /**
+     * 字段 label(展示给业务用户).
+     * 低代码流程从 t_bpmn_conf_lf_formdata_field.fieldName 读取;
+     * DIY 流程无 label 概念, 保持 null, 前端 fallback 用 fieldName 展示.
+     */
+    @TableField("field_label")
+    private String fieldLabel;
+
     /** 旧值 */
     @TableField("old_value")
     private String oldValue;
@@ -53,6 +61,13 @@ public class BpmProcessAudit {
     /** 创建人 */
     @TableField("create_user")
     private String createUser;
+
+    /**
+     * 变更人姓名(审批时快照, 用于审计溯源).
+     * createUser 是 empId, 这里存当时的登录人姓名, 避免后续员工改名/查询联表.
+     */
+    @TableField("create_user_name")
+    private String createUserName;
 
     /** 创建时间 */
     @TableField("create_time")

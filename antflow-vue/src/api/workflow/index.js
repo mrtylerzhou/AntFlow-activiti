@@ -248,6 +248,17 @@ export function getApproveNodeProperties() {
 }
 
 /**
+ * 按 processNumber 查询流程表单字段变更审计记录 (后端 t_bpm_process_audit 表).
+ * 返回按 taskDefKey + createTime 升序的列表, 字段: id / processNumber / formCode /
+ * fieldName / oldValue / newValue / taskName / taskDefKey / createUser / createTime.
+ * @param {string} processNumber
+ * @returns
+ */
+export function getProcessAudits(processNumber) {
+  return http.get(`${baseUrl}/bpmnAudit/list?processNumber=${processNumber}`, { headers });
+}
+
+/**
  * 获取委托列表
  * @param {*} pageDto
  * @param {*} taskMgmtVO

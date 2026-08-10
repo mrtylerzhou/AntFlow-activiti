@@ -432,16 +432,19 @@ create table t_bpm_process_audit
         primary key,
     process_number varchar(64)                         null comment '流程编号',
     form_code      varchar(50)                         null,
-    field_name     varchar(64)                         null,
+    field_name     varchar(64)                         null comment '字段名(fieldId, 低代码为 inputId, DIY 为 vo 属性名)',
+    field_label    varchar(128)                        null comment '字段 label(展示给业务用户; 低代码从 lfFormdataField.fieldName 读, DIY 为空)',
     old_value      varchar(256)                        null,
     new_value      varchar(256)                        null,
     tenant_id      varchar(255)                        null,
     task_name      varchar(64)                         null,
     task_def_key   varchar(64)                         null,
-    create_user    varchar(50)                         null,
+    create_user    varchar(50)                         null comment '变更人(登录empId)',
+    create_user_name varchar(50)                       null comment '变更人姓名(审批时快照, 用于审计溯源)',
     create_time    timestamp default CURRENT_TIMESTAMP not null
 )
     comment '流程审计表';
+
 
 create index t_bpm_process_audit_idx1
     on t_bpm_process_audit (process_number);

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,7 @@ import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessNodeSubmitBizServ
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmnConfBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.ProcessAuditBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.factory.FormFactory;
@@ -52,6 +54,7 @@ import static org.openoa.base.constant.enums.ProcessSubmitStateEnum.PROCESS_SIGN
  * @return
  * @Version 1.0
  */
+@Slf4j
 @Component
 public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     @Autowired
@@ -78,6 +81,8 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     private BpmnNodeService bpmnNodeService;
     @Autowired
     private BpmnConfService bpmnConfService;
+    @Autowired
+    private ProcessAuditBizService processAuditBizService;
 
     private static final LoadingCache<Long, BpmnConfVo> cache = CacheBuilder.newBuilder()
             .maximumSize(1000) // 最大缓存数量
@@ -228,6 +233,16 @@ public class ResubmitProcessImpl implements ProcessOperationAdaptor {
     private void executeTaskCompletion(BusinessDataVo vo, Task task, BpmBusinessProcess bpmBusinessProcess) {
         vo.setTaskId(task.getId());
 //        BusinessDataVo businessDataVo = formFactory.getFormAdaptor(vo).consentData(vo);
+
+        // 表单字段变更审计: 在 consentData 写入新值之前捕获旧值, 记录到 t_bpm_process_audit.
+        // 覆盖 ResubmitProcessImpl 处理的所有按钮: RESUBMIT / AGREE / JP, 以及 Assist 委托过来的 ASSIST.
+        if (!vo.getIsOutSideAccessProc() && vo.getTaskId() != null) {
+            try {
+                processAuditBizService.saveChanges(vo, vo.getClass());
+            } catch (Exception e) {
+                log.warn("saveChanges failed, processNumber:{}", vo.getProcessNumber(), e);
+            }
+        }
 
         if (!vo.getIsOutSideAccessProc()) {
             formFactory.getFormAdaptor(vo).consentData(vo);
