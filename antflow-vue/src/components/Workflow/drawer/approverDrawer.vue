@@ -82,7 +82,7 @@
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
                 <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
-                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" />
+                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
                 <div class="disagree-back-conf" style="margin-top: 12px;">
                     <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">
@@ -195,7 +195,7 @@
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
                 <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
-                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" />
+                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" :hide-no-header-action="true" />
                 <div class="disagree-back-conf" style="margin-top: 12px;">
                     <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">

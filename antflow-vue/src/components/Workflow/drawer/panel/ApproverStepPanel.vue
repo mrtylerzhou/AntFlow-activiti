@@ -184,7 +184,7 @@
                 <span>%</span>
             </div>
         </div>
-        <div class="approver_block">
+        <div class="approver_block" v-if="!hideNoHeaderAction">
             <p>✍审批人为空时</p>
             <el-radio-group v-model="node.noHeaderAction" class="clear">
                 <el-radio :value="0">不允许发起</el-radio>
@@ -232,6 +232,11 @@ const props = defineProps({
     },
     /** 隐藏「多人审批时采用的审批方式」块(加批场景由外部 signUpType 控制) */
     hideSignType: {
+        type: Boolean,
+        default: false
+    },
+    /** 隐藏「审批人为空时」处理策略块(嵌入场景未实现该语义时使用, 如条件自动加批) */
+    hideNoHeaderAction: {
         type: Boolean,
         default: false
     }
