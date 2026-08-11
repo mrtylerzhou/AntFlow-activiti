@@ -3,7 +3,7 @@
         <div class="approver_content">
             <div>
                 <el-radio-group v-model="displaySetType" class="clear" @change="changeType">
-                    <el-radio v-for="({ value, label }) in setTypes" :value="value">{{ label }}</el-radio>
+                    <el-radio v-for="({ value, label }) in visibleSetTypes" :value="value">{{ label }}</el-radio>
                 </el-radio-group>
             </div>
             <div v-show="node.setType == 5 && displaySetType != 19 && displaySetType != 20">
@@ -167,7 +167,7 @@
                 </template>
             </div>
         </div>
-        <div class="approver_block" v-if="node.setType != 2">
+        <div class="approver_block" v-if="node.setType != 2 && !hideSignType">
             <p>✍多人审批时采用的审批方式</p>
             <el-radio-group v-model="node.signType" class="clear">
                 <el-radio :value="1">会签（需所有审批人同意，不限顺序）</el-radio>
@@ -224,8 +224,21 @@ const props = defineProps({
     directorMaxLevel: {
         type: Number,
         default: 0
+    },
+    /** 隐藏的审批人类型列表(嵌入场景裁剪用, 如条件自动加批不支持交互型/无解析实现的类型) */
+    excludeSetTypes: {
+        type: Array,
+        default: () => []
+    },
+    /** 隐藏「多人审批时采用的审批方式」块(加批场景由外部 signUpType 控制) */
+    hideSignType: {
+        type: Boolean,
+        default: false
     }
 });
+
+/** 可见的审批人类型(排除 excludeSetTypes) */
+const visibleSetTypes = computed(() => setTypes.filter(t => !props.excludeSetTypes.includes(t.value)));
 
 /** 节点对象别名（computed 包装 props，模板与脚本统一通过 node 访问） */
 const node = computed(() => props.approverConfig);

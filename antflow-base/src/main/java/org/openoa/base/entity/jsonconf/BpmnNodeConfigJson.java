@@ -90,4 +90,10 @@ public class BpmnNodeConfigJson implements Serializable {
      * 满足条件时由 processConditionAutoSignUpNode 写入 signUp 子元素.
      */
     private java.util.List<BaseIdTranStruVo> autoSignUpUsers;
+
+    /**
+     * 条件自动加批节点的加批规则子配置(增强版, 支持多种审批人规则).
+     * 运行期由 AutoSignUpAssigneeResolver 解析为具体用户; 为空时回退 autoSignUpUsers.
+     */
+    private Object autoSignUpConf;
 }

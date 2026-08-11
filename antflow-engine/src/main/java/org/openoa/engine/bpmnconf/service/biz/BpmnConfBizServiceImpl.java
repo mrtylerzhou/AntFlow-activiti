@@ -359,14 +359,17 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 }
             }
 
-            // 条件自动加批节点: autoSignUpUsers 持久化到 node config JSON, 发布校验非空
+            // 条件自动加批节点: autoSignUpConf(增强规则)/autoSignUpUsers(旧数据) 持久化到 node config JSON
             if (Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAutoSignUpNode())) {
-                java.util.List<org.openoa.base.vo.BaseIdTranStruVo> autoSignUpUsers = bpmnNodeVo.getAutoSignUpUsers();
-                if (autoSignUpUsers == null || autoSignUpUsers.isEmpty()) {
-                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为条件自动加批节点,必须配置至少一个加批人!");
-                }
                 BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
-                nodeCfgJson.setAutoSignUpUsers(autoSignUpUsers);
+                if (bpmnNodeVo.getAutoSignUpConf() != null) {
+                    nodeCfgJson.setAutoSignUpConf(bpmnNodeVo.getAutoSignUpConf());
+                } else if (bpmnNodeVo.getAutoSignUpUsers() == null || bpmnNodeVo.getAutoSignUpUsers().isEmpty()) {
+                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为条件自动加批节点,必须配置加批人!");
+                }
+                if (bpmnNodeVo.getAutoSignUpUsers() != null && !bpmnNodeVo.getAutoSignUpUsers().isEmpty()) {
+                    nodeCfgJson.setAutoSignUpUsers(bpmnNodeVo.getAutoSignUpUsers());
+                }
             }
 
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
@@ -2179,6 +2182,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         // set auto sign-up users from node config JSON (for display)
         if (nodeConfig.getAutoSignUpUsers() != null && !nodeConfig.getAutoSignUpUsers().isEmpty()) {
             bpmnNodeVo.setAutoSignUpUsers(nodeConfig.getAutoSignUpUsers());
+        }
+
+        // set auto sign-up conf (enhanced rules) from node config JSON (for display)
+        if (nodeConfig.getAutoSignUpConf() != null) {
+            bpmnNodeVo.setAutoSignUpConf(nodeConfig.getAutoSignUpConf());
         }
 
         return bpmnNodeVo;

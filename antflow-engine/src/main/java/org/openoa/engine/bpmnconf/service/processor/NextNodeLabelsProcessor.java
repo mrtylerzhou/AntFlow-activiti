@@ -14,6 +14,7 @@ import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.dto.BpmNextTaskDto;
 import org.openoa.base.entity.BpmFlowrunEntrust;
+import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVerifyInfo;
@@ -22,6 +23,7 @@ import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.FormOperationAdaptor;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.util.AFWrappers;
 import org.openoa.base.util.FilterUtil;
 import org.openoa.base.util.SecurityUtils;
@@ -34,6 +36,7 @@ import org.openoa.engine.bpmnconf.adp.processoperation.ForwardToNodeImpl;
 import org.openoa.engine.bpmnconf.adp.processoperation.BackToModifyImpl;
 import org.openoa.engine.bpmnconf.adp.processoperation.EndProcessImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
+import org.openoa.engine.bpmnconf.service.biz.AutoSignUpAssigneeResolver;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
@@ -73,6 +76,10 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     private TaskService taskService;
     @Autowired
     private BpmVariableSignUpPersonnelBizService bpmVariableSignUpPersonnelBizService;
+    @Autowired
+    private AutoSignUpAssigneeResolver autoSignUpAssigneeResolver;
+    @Autowired
+    private BpmBusinessProcessService bpmBusinessProcessService;
     @Autowired
     private BpmnNodeService bpmnNodeService;
 
@@ -798,7 +805,23 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 return;
             }
             BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
-            List<BaseIdTranStruVo> autoSignUpUsers = configJson == null ? null : configJson.getAutoSignUpUsers();
+            List<BaseIdTranStruVo> autoSignUpUsers = null;
+            if (configJson != null && configJson.getAutoSignUpConf() != null) {
+                // 增强规则: 运行期实时解析(角色/领导链/HRBP 等, 基准人为发起人)
+                String startUserId = null;
+                BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+                if (bpmBusinessProcess != null) {
+                    startUserId = bpmBusinessProcess.getCreateUser();
+                }
+                autoSignUpUsers = autoSignUpAssigneeResolver.resolve(configJson.getAutoSignUpConf(), startUserId, businessDataVo);
+                if (autoSignUpUsers != null && autoSignUpUsers.isEmpty()) {
+                    log.info("条件自动加批规则解析结果为空, 视为条件不满足, 留给审批人, processNumber={}, elementId={}", processNumber, elementId);
+                    return;
+                }
+            } else if (configJson != null) {
+                // 旧数据回退: 直接人员列表
+                autoSignUpUsers = configJson.getAutoSignUpUsers();
+            }
             if (CollectionUtils.isEmpty(autoSignUpUsers)) {
                 log.error("条件自动加批节点未配置加批人, 跳过, processNumber={}, elementId={}", processNumber, elementId);
                 return;

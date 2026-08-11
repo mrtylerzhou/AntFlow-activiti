@@ -81,6 +81,12 @@ public class BpmnNodeVo  implements Serializable {
      */
     private java.util.List<BaseIdTranStruVo> autoSignUpUsers;
     /**
+     * 条件自动加批节点的加批规则子配置(增强版: 支持指定人员/角色/直属领导/层级/HRBP/发起人自己/自定义).
+     * 结构: {setType, nodeApproveList, directorLevel, property, nodeProperty, resolvedProperty}
+     * 存 nodeConfigJson.autoSignUpConf; 运行期由 AutoSignUpAssigneeResolver 解析为具体用户.
+     */
+    private Object autoSignUpConf;
+    /**
      * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
      * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
      */

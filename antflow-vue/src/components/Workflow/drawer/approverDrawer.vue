@@ -81,17 +81,10 @@
                 </ConditionGroupEditor>
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
-                <div class="disagree-back-conf">
-                    <p class="setting-group-title">加批人（条件满足时自动加批，必填）</p>
-                    <el-button type="primary" size="small" @click="autoSignUpUserVisible = true">选择加批人</el-button>
-                    <div style="margin: 8px 0 12px;">
-                        <el-tag v-for="u in (approverConfig.autoSignUpUsers || [])" :key="u.id" closable
-                            style="margin: 0 6px 6px 0;" @close="removeAutoSignUpUser(u)">{{ u.name }}</el-tag>
-                        <p v-if="!(approverConfig.autoSignUpUsers || []).length" style="color: #f56c6c; font-size: 12px;">
-                            未选择加批人，保存/发布将被阻止
-                        </p>
-                    </div>
-                    <p class="setting-group-title">多人审批方式</p>
+                <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
+                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" />
+                <div class="disagree-back-conf" style="margin-top: 12px;">
+                    <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">
                         <el-radio :value="1">顺序会签</el-radio>
                         <el-radio :value="2">会签</el-radio>
@@ -101,7 +94,6 @@
                         <el-checkbox v-model="autoSignUpBackToApprover">加批后回到审批人</el-checkbox>
                     </div>
                 </div>
-                <select-user-dialog v-model:visible="autoSignUpUserVisible" :data="approverConfig.autoSignUpUsers || []" @change="confirmAutoSignUpUsers" />
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
                 <ButtonStepPanel ref="buttonStepRef" :approverConfig="approverConfig" :rootNode="rootNode"
@@ -202,17 +194,10 @@
                 </ConditionGroupEditor>
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.isConditionAutoSignUpNode" lazy label="加批设置" name="autoSignUpStep">
-                <div class="disagree-back-conf">
-                    <p class="setting-group-title">加批人（条件满足时自动加批，必填）</p>
-                    <el-button type="primary" size="small" @click="autoSignUpUserVisible = true">选择加批人</el-button>
-                    <div style="margin: 8px 0 12px;">
-                        <el-tag v-for="u in (approverConfig.autoSignUpUsers || [])" :key="u.id" closable
-                            style="margin: 0 6px 6px 0;" @close="removeAutoSignUpUser(u)">{{ u.name }}</el-tag>
-                        <p v-if="!(approverConfig.autoSignUpUsers || []).length" style="color: #f56c6c; font-size: 12px;">
-                            未选择加批人，保存/发布将被阻止
-                        </p>
-                    </div>
-                    <p class="setting-group-title">多人审批方式</p>
+                <ApproverStepPanel :approver-config="autoSignUpConf" :director-max-level="directorMaxLevel"
+                    :exclude-set-types="[7, 18, 19, 20, 2, 16]" :hide-sign-type="true" />
+                <div class="disagree-back-conf" style="margin-top: 12px;">
+                    <p class="setting-group-title">多人审批方式（加批人审批时采用）</p>
                     <el-radio-group v-model="autoSignUpType">
                         <el-radio :value="1">顺序会签</el-radio>
                         <el-radio :value="2">会签</el-radio>
@@ -222,7 +207,6 @@
                         <el-checkbox v-model="autoSignUpBackToApprover">加批后回到审批人</el-checkbox>
                     </div>
                 </div>
-                <select-user-dialog v-model:visible="autoSignUpUserVisible" :data="approverConfig.autoSignUpUsers || []" @change="confirmAutoSignUpUsers" />
             </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
                 <ButtonStepPanel ref="buttonStepRef" :approverConfig="approverConfig" :rootNode="rootNode"
@@ -251,7 +235,6 @@ import $func from '@/utils/antflow/index';
 import { useStore } from '@/store/modules/workflow';
 import { useNodeForwardBack } from './useNodeForwardBack';
 import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
-import selectUserDialog from "../dialog/selectUserDialog.vue";
 import ApproverStepPanel from "./panel/ApproverStepPanel.vue";
 import ButtonStepPanel from "./panel/ButtonStepPanel.vue";
 import FormStepPanel from "./panel/FormStepPanel.vue";
@@ -294,7 +277,39 @@ let drawerTitle = computed(() => {
     return "审批人";
 });
 // ========== 条件自动加批: 加批设置 tab 状态 ==========
-let autoSignUpUserVisible = ref(false);
+/**加批规则子配置(懒初始化, 绑定嵌入的 ApproverStepPanel) */
+const autoSignUpConf = computed(() => {
+    if (!approverConfig.value.autoSignUpConf || !approverConfig.value.autoSignUpConf.setType) {
+        approverConfig.value.autoSignUpConf = { setType: 5, nodeApproveList: [], property: {} };
+    }
+    return approverConfig.value.autoSignUpConf;
+});
+/**加批规则校验: 按类型检查必要数据 */
+const validateAutoSignUpConf = (conf) => {
+    const list = conf.nodeApproveList || [];
+    if (conf.setType == 5 || conf.setType == 4 || conf.setType == 6) return list.length > 0;
+    if (conf.setType == 3) return !!conf.directorLevel;
+    if (conf.setType == 17) return !!(conf.property && conf.property.udrAssigneeProperty);
+    return true; // 12 发起人自己 / 13 直属领导 无需额外数据
+};
+/**镜像 formatcommit_data 的映射, 构建运行期解析所需的 resolvedProperty */
+const buildAutoSignUpResolvedProperty = (conf) => {
+    const p = { emplIds: [], emplList: [], roleIds: [], roleList: [] };
+    const list = conf.nodeApproveList || [];
+    if (conf.setType == 4) {
+        list.forEach(a => { p.roleIds.push(a.targetId); p.roleList.push({ id: a.targetId, name: a.name }); });
+    } else if (conf.setType == 5) {
+        list.forEach(a => { p.emplIds.push(a.targetId); p.emplList.push({ id: a.targetId, name: a.name }); });
+    } else if (conf.setType == 6) {
+        p.hrbpConfType = list.length ? list[0].targetId : 0;
+    } else if (conf.setType == 3) {
+        p.assignLevelGrade = conf.directorLevel;
+    } else if (conf.setType == 17) {
+        p.udrAssigneeProperty = (conf.property && conf.property.udrAssigneeProperty) || null;
+        p.udrValueJson = (conf.property && conf.property.udrValueJson) || null;
+    }
+    return p;
+};
 /**多人审批方式(1顺序会签/2会签/3或签), 复用 property.signUpType */
 const autoSignUpType = computed({
     get: () => (approverConfig.value.property && approverConfig.value.property.signUpType) || 1,
@@ -305,12 +320,6 @@ const autoSignUpBackToApprover = computed({
     get: () => ((approverConfig.value.property && approverConfig.value.property.afterSignUpWay) ?? 1) === 1,
     set: (v) => { if (!approverConfig.value.property) approverConfig.value.property = {}; approverConfig.value.property.afterSignUpWay = v ? 1 : 2; }
 });
-const confirmAutoSignUpUsers = (list) => {
-    approverConfig.value.autoSignUpUsers = (list || []).map(i => ({ id: i.targetId, name: i.name }));
-};
-const removeAutoSignUpUser = (u) => {
-    approverConfig.value.autoSignUpUsers = (approverConfig.value.autoSignUpUsers || []).filter(x => x.id != u.id);
-};
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
@@ -390,10 +399,20 @@ const handleTabClick = (tab, event) => {
 
 /**条件抽屉的确认 */
 const saveApprover = () => {
-    // 条件自动加批: 加批人必填校验
-    if (approverConfig.value.isConditionAutoSignUpNode && !(approverConfig.value.autoSignUpUsers || []).length) {
-        proxy.$modal.msgError('请选择加批人');
-        return;
+    // 条件自动加批: 加批规则必填校验 + 构建运行期解析所需的 resolvedProperty
+    if (approverConfig.value.isConditionAutoSignUpNode) {
+        const conf = approverConfig.value.autoSignUpConf;
+        if (conf && conf.setType) {
+            if (!validateAutoSignUpConf(conf)) {
+                proxy.$modal.msgError('请完善加批设置的审批人规则');
+                return;
+            }
+            conf.nodeProperty = conf.setType;
+            conf.resolvedProperty = buildAutoSignUpResolvedProperty(conf);
+        } else if (!(approverConfig.value.autoSignUpUsers || []).length) {
+            proxy.$modal.msgError('请选择加批人');
+            return;
+        }
     }
     // 仲裁签通过比例校验
     if (approverConfig.value.signType == 4) {
@@ -405,9 +424,10 @@ const saveApprover = () => {
     }
     approverConfig.value.nodeDisplayName = $func.setApproverStr(approverConfig.value);
     approverConfig.value.error = !$func.setApproverStr(approverConfig.value);
-    // 条件自动加批: 加批人为空同样置 error 阻发布
+    // 条件自动加批: 加批规则为空同样置 error 阻发布
     if (approverConfig.value.isConditionAutoSignUpNode) {
-        approverConfig.value.error = approverConfig.value.error || !(approverConfig.value.autoSignUpUsers || []).length;
+        const hasConf = !!(approverConfig.value.autoSignUpConf && approverConfig.value.autoSignUpConf.setType);
+        approverConfig.value.error = approverConfig.value.error || (!hasConf && !(approverConfig.value.autoSignUpUsers || []).length);
     }
     console.log('保存审批人配置==', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({
