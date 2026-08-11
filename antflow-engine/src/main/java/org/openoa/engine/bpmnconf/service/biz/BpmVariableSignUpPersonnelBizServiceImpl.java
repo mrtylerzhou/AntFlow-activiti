@@ -34,6 +34,14 @@ public class BpmVariableSignUpPersonnelBizServiceImpl implements BpmVariableSign
      */
     @Override
     public void insertSignUpPersonnel(TaskService taskService, String taskId, String processNumber, String nodeId, String assignee, List<BaseIdTranStruVo> signUpUsers) {
+        insertSignUpPersonnel(taskService, taskId, processNumber, nodeId, assignee, SecurityUtils.getLogInEmpName(), signUpUsers);
+    }
+
+    /**
+     * 自动加批场景重载: 回路 personnel 名称用传入的 assigneeName(自动场景无登录用户).
+     */
+    @Override
+    public void insertSignUpPersonnel(TaskService taskService, String taskId, String processNumber, String nodeId, String assignee, String assigneeName, List<BaseIdTranStruVo> signUpUsers) {
 
         if (ObjectUtils.isEmpty(signUpUsers)) {
             return;
@@ -110,12 +118,37 @@ public class BpmVariableSignUpPersonnelBizServiceImpl implements BpmVariableSign
             signUp.getPersonnelByElement().put(backSignUpElement.getElementId(),
                     Arrays.asList(PersonnelItem.builder()
                             .assignee(assignee)
-                            .assigneeName(SecurityUtils.getLogInEmpName())
+                            .assigneeName(assigneeName)
                             .build()));
         }
 
         // serialize and write back
         bpmVariable.setVariableConfigJson(JSON.toJSONString(config));
         bpmVariableService.getBaseMapper().updateById(bpmVariable);
+    }
+
+    /**
+     * 幂等检查: 该节点(elementId)的 signUp personnel 是否已非空(已加批过).
+     */
+    @Override
+    public boolean hasSignUpPersonnel(String processNumber, String elementId) {
+        BpmVariable bpmVariable = bpmVariableService.getBaseMapper().selectOne(new QueryWrapper<BpmVariable>()
+                .eq("process_num", processNumber)
+                .eq("is_del", 0));
+        if (ObjectUtils.isEmpty(bpmVariable) || ObjectUtils.isEmpty(bpmVariable.getVariableConfigJson())) {
+            return false;
+        }
+        VariableConfigJson config = JSON.parseObject(bpmVariable.getVariableConfigJson(), VariableConfigJson.class);
+        if (config == null || ObjectUtils.isEmpty(config.getSignUps())) {
+            return false;
+        }
+        VariableConfigJson.SignUpItem signUp = config.getSignUps().stream()
+                .filter(s -> elementId.equals(s.getElementId()))
+                .findFirst()
+                .orElse(null);
+        if (signUp == null || ObjectUtils.isEmpty(signUp.getPersonnelByElement())) {
+            return false;
+        }
+        return signUp.getPersonnelByElement().values().stream().anyMatch(list -> !ObjectUtils.isEmpty(list));
     }
 }

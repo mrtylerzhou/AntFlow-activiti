@@ -333,7 +333,7 @@ import { useStore } from '@/store/modules/workflow'
 import $func from '@/utils/antflow/index'
 import { layoutFlowTree, isGateway } from './layout.js'
 import { bgColors, PICK_CONDITION_COLOR, FINISH_APPROVE_COLOR, FORWARD_APPROVE_COLOR,
-  AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, BACK_APPROVE_COLOR, setTypes } from '@/utils/antflow/const'
+  AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, CONDITION_DISAGREE_COLOR, CONDITION_AUTO_SIGNUP_COLOR, BACK_APPROVE_COLOR, setTypes } from '@/utils/antflow/const'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 import { getBadgeList } from '@/utils/antflow/nodeBadges'
 import noticeImg from '@/assets/images/antflow/notice-fill.png'
@@ -1275,6 +1275,8 @@ function nodeIcon(node) {
   if (node.nodeType === 4 && has('af_syslabel_disagree_back')) return 'drive-back'
   if (node.nodeType === 12 && has('condition_finish_node')) return 'condition-finish-process'
   if (node.nodeType === 12 && has('condition_advance_node')) return 'conditional-drive-ahead'
+  if (node.nodeType === 12 && has('condition_disagree_node')) return 'conditional-auto-disagree'
+  if (node.nodeType === 12 && has('condition_auto_sign_up_node')) return 'condition-auto-add-sign'
   if (node.nodeType === 3) {
     // 条件分支节点: 按所属网关类型显示图标(与竖版条件分支一致)
     const info = nodeMap.get(node.nodeId)
@@ -1362,6 +1364,8 @@ function titleColor(n) {
   if (n.nodeType === 18 && has('auto_complete_node')) return `rgb(${norm(AUTO_COMPLETE_COLOR)})`
   if (n.nodeType === 12 && has('condition_finish_node')) return `rgb(${norm(CONDITION_FINISH_COLOR)})`
   if (n.nodeType === 12 && has('condition_advance_node')) return `rgb(${norm(CONDITION_ADVANCE_COLOR)})`
+  if (n.nodeType === 12 && has('condition_disagree_node')) return `rgb(${norm(CONDITION_DISAGREE_COLOR)})`
+  if (n.nodeType === 12 && has('condition_auto_sign_up_node')) return `rgb(${norm(CONDITION_AUTO_SIGNUP_COLOR)})`
   if (n.nodeType === 4 && has('af_syslabel_disagree_back')) return `rgb(${norm(BACK_APPROVE_COLOR)})`
   if ([19, 20, 21].includes(n.nodeType)) return `rgb(${norm(BACK_APPROVE_COLOR)})`
   return `rgb(${norm(bgColors[n.nodeType] || '192,192,192')})`

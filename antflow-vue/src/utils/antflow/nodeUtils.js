@@ -833,6 +833,103 @@ export class NodeUtils {
     return conditionFinishNode;
   }
   /**
+   * 创建条件拒绝节点对象
+   * 本质是条件审批家族节点(nodeType=12) + 条件配置 + condition_disagree_node 标签
+   * 与条件审批的差异: 满足条件时自动拒绝(固定终止流程, 忽略不同意退回配置), 而非自动同意
+   * 运行期: 满足条件 → 后端终止流程(状态=6 审批拒绝, 虚拟人-3 记录); 不满足 → 留给真实审批人
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件拒绝节点
+   */
+  static createConditionDisagreeNode(child) {
+    let conditionDisagreeNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件拒绝",
+      nodeDisplayName: "条件拒绝",
+      nodeType: 12, //节点类型 12、条件审批家族(条件拒绝为其子类型)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员 (可由用户改为其他类型)
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人(同条件审批)
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: [
+          { buttonType: 3 }, //同意
+          { buttonType: 4 }, //不同意
+        ],
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置(不塞虚拟人)
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_disagree_node", labelName: "条件拒绝节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件审批相同结构
+      groupRelation: false, //条件组关系 false:且 true:或
+      isConditionDisagreeNode: true, //条件拒绝标记(前端用, 提交时后端据此贴 condition_disagree_node 标签)
+    };
+    return conditionDisagreeNode;
+  }
+  /**
+   * 创建条件自动加批节点对象
+   * 本质是条件审批家族节点(nodeType=12) + 条件配置 + condition_auto_sign_up_node 标签
+   * 满足条件时自动加批(把 autoSignUpUsers 写入 signUp 子元素并 complete), 不满足留给审批人(加批按钮屏蔽)
+   * 加批后走向由 property.afterSignUpWay 控制(1=回到审批人, 2=不回到), 多人方式由 property.signUpType 控制(1顺序会签/2会签/3或签)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件自动加批节点
+   */
+  static createConditionAutoSignUpNode(child) {
+    let conditionAutoSignUpNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件自动加批",
+      nodeDisplayName: "条件自动加批",
+      nodeType: 12, //节点类型 12、条件审批家族(条件自动加批为其子类型)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1, //加批能力(部署 signUp 子元素必需)
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人+加批人
+      property: {
+        afterSignUpWay: 1, //默认加批后回到审批人
+        signUpType: 1, //默认顺序会签
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: [
+          { buttonType: 3 }, //同意
+          { buttonType: 4 }, //不同意 (不含加批19: 自动加批屏蔽人工加批)
+        ],
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_auto_sign_up_node", labelName: "条件自动加批节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件审批相同结构
+      groupRelation: false,
+      isConditionAutoSignUpNode: true, //条件自动加批标记(前端用, 提交时后端据此贴标签)
+      autoSignUpUsers: [], //自动加批的加批人(必填, [{id,name}])
+    };
+    return conditionAutoSignUpNode;
+  }
+  /**
    * 创建条件抄送节点对象
    * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理

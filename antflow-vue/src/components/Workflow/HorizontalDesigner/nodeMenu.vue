@@ -87,6 +87,8 @@ const items = [
   { type: 27, name: '自动退回发起人', icon: 'auto-drive-to-starter', cls: 'auto-return-starter-node' },
   { type: 28, name: '条件退回', icon: 'conditional-drive-back', cls: 'condition-return-node' },
   { type: 29, name: '条件退回发起人', icon: 'conditional-drive-to-starter', cls: 'condition-return-starter-node' },
+  { type: 30, name: '条件拒绝', icon: 'conditional-auto-disagree', cls: 'condition-disagree-node' },
+  { type: 31, name: '条件自动加批', icon: 'condition-auto-add-sign', cls: 'condition-auto-signup-node' },
 ]
 
 const createNodeMap = new Map([
@@ -125,6 +127,8 @@ const createNodeMap = new Map([
   }],
   [28, (c) => NodeUtils.createConditionReturnNode(c)],
   [29, (c) => NodeUtils.createConditionReturnStarterNode(c, rootNode ? rootNode.value : null)],
+  [30, (c) => NodeUtils.createConditionDisagreeNode(c)],
+  [31, (c) => NodeUtils.createConditionAutoSignUpNode(c)],
 ])
 
 const pick = (type) => {
@@ -243,4 +247,6 @@ const close = () => emit('close')
 .auto-return-starter-node .hd-menu-icon,
 .condition-return-node .hd-menu-icon,
 .condition-return-starter-node .hd-menu-icon { color: #e53935; }
+.condition-disagree-node .hd-menu-icon { color: #ab1a3b; }
+.condition-auto-signup-node .hd-menu-icon { color: #673ab7; }
 </style>

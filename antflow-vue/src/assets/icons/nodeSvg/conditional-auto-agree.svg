@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="64"
+    height="64"
+    viewBox="0 0 64 64">
+
+    <defs>
+        <style>
+            .main { fill: #FF850A; }
+            .white { fill: #FFFFFF; }
+            /* 隔离遮罩层样式 */
+            .mask-bg { fill: #FFFFFF; }
+            /* 对勾线条样式 */
+            .check-style { 
+                fill: none; 
+                stroke: #FF850A; 
+                stroke-width: 2.2; 
+                stroke-linecap: round; 
+                stroke-linejoin: round; 
+            }
+        </style>
+    </defs>
+
+    <!-- 1. 审批人主体部分 (居中放置) -->
+    <g id="approver">
+        <circle class="main" cx="32" cy="16" r="10"/>
+        <path class="main" d="
+            M14 47
+            C14 35 22 28 32 28
+            C42 28 50 35 50 47
+            L50 50
+            C50 52.5 48 54 45.5 54
+            L18.5 54
+            C16 54 14 52.5 14 50
+            Z"/>
+    </g>
+
+    <!-- 2. 左下角：条件同意标识 (漏斗+对勾) -->
+    <g transform="translate(14, 48)">
+        <!-- 核心隔离层 -->
+        <circle class="mask-bg" cx="0" cy="0" r="15" />
+        <!-- 橙色底座圆 -->
+        <circle class="main" cx="0" cy="0" r="12" />
+        
+        <!-- 白色漏斗主体 -->
+        <path class="white" d="
+            M -6, -6 
+            H 6 
+            L 2, 0 
+            V 5 
+            L -2, 6 
+            V 0 
+            Z" />
+            
+        <!-- 漏斗内的对勾：代表条件判定通过 -->
+        <path class="check-style" d="M-3.5 0 L-1 2.5 L4.5 -3" />
+    </g>
+
+    <!-- 3. 右下角：自动化标识 (四叶风扇) -->
+    <g transform="translate(50, 48)">
+        <!-- 核心隔离层 -->
+        <circle class="mask-bg" cx="0" cy="0" r="15" />
+        <!-- 橙色底座圆 -->
+        <circle class="main" cx="0" cy="0" r="12" />
+        <!-- 白色反白风扇 -->
+        <g transform="rotate(45)">
+            <path class="white" d="M0,0 L-2.5,-4 A2.5,2.5 0 0,1 2.5,-4 Z" transform="rotate(0)"/>
+            <path class="white" d="M0,0 L-2.5,-4 A2.5,2.5 0 0,1 2.5,-4 Z" transform="rotate(90)"/>
+            <path class="white" d="M0,0 L-2.5,-4 A2.5,2.5 0 0,1 2.5,-4 Z" transform="rotate(180)"/>
+            <path class="white" d="M0,0 L-2.5,-4 A2.5,2.5 0 0,1 2.5,-4 Z" transform="rotate(270)"/>
+        </g>
+    </g>
+
+</svg>

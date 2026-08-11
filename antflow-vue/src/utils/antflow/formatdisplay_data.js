@@ -296,6 +296,38 @@ export class FormatDisplayUtils {
         }
       }
 
+      // 条件自动加批节点反显: nodeType=4 或 12 (后端可能已转) + condition_auto_sign_up_node 标签
+      // 条件审批(nodeType=12)子类型, 满足条件自动加批, 不满足留给审批人(加批按钮屏蔽)
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_auto_sign_up_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件自动加批";
+        node.nodeDisplayName = node.nodeDisplayName || "条件自动加批";
+        node.isConditionAutoSignUpNode = true;
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
+      // 条件拒绝节点反显: nodeType=4 或 12 (后端可能已转) + condition_disagree_node 标签
+      // 条件审批(nodeType=12)子类型, 满足条件自动拒绝终止流程, 不满足留给审批人
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_disagree_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件拒绝";
+        node.nodeDisplayName = node.nodeDisplayName || "条件拒绝";
+        node.isConditionDisagreeNode = true;
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
       // 条件审批节点反显: nodeType=4 或 12 (后端可能已转) + condition_approve_node标签
       // 与 auto node 类似, 但保留真实审批人 (不替换为虚拟人)
       if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_approve_node")) {

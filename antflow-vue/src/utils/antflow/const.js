@@ -47,6 +47,14 @@ export const CONDITION_ADVANCE_NODE = "condition_advance_node";
 export const CONDITION_FINISH_COLOR = "150, 40, 110"; // 深紫红(与条件推进琥珀橙 230,162,60 有明显色相差, 与完成审批同色系)
 // 条件完成节点标签(条件审批 nodeType=12 子类型, 目标设计时自动算最后一个审批人, 不可编辑, 运行时复用条件推进处理器)
 export const CONDITION_FINISH_NODE = "condition_finish_node";
+// 条件拒绝节点专属颜色(nodeType=12 + condition_disagree_node 标签, 满足条件自动拒绝终止流程, 与退回族亮红同语义色系但明显更深)
+export const CONDITION_DISAGREE_COLOR = "171, 26, 59"; // 深酒红(与退回族亮红 229,57,53 有明显明度差)
+// 条件拒绝节点标签(条件审批 nodeType=12 子类型, 满足条件自动拒绝终止流程, 不满足留给审批人)
+export const CONDITION_DISAGREE_NODE = "condition_disagree_node";
+// 条件自动加批节点专属颜色(nodeType=12 + condition_auto_sign_up_node 标签, 满足条件自动加批用户配置的加批人)
+export const CONDITION_AUTO_SIGNUP_COLOR = "103, 58, 183"; // 深紫(与现有所有节点色有明显色相差)
+// 条件自动加批节点标签(条件审批 nodeType=12 子类型, 满足条件自动加批, 不满足留给审批人且加批按钮屏蔽)
+export const CONDITION_AUTO_SIGN_UP_NODE = "condition_auto_sign_up_node";
 // 退回审批/退回指定节点专属颜色(审批人 nodeType=4 + af_syslabel_disagree_back 标签, 不同意行为=退回指定节点)
 // 任何配置了不同意退回指定节点的审批人节点(含退回审批节点)都显示此色
 export const BACK_APPROVE_COLOR = "229, 57, 53"; // 亮红(与完成审批深紫红 150,40,110、普通审批人默认色有明显区分)

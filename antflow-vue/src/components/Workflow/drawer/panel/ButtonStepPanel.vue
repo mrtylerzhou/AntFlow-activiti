@@ -3,7 +3,7 @@
         <p>【审批页面】按钮权限显示控制</p>
         <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
             <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
-                <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (node.nodeType === 17 && opt.value === 41) || (opt.value === approvalButtonConf.forwardToNode && approveForwardBehavior === 2)"
+                <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (node.nodeType === 17 && opt.value === 41) || (opt.value === approvalButtonConf.forwardToNode && approveForwardBehavior === 2) || (node.isConditionAutoSignUpNode && opt.value === approvalButtonConf.addApproval)"
                     @change="handleCheckedButtonsChange(opt.value)">
                     【{{ opt.label }}】
                 </el-checkbox>
@@ -20,7 +20,7 @@
             </div>
         </el-checkbox-group>
 
-        <div v-if="afterSignUpWayVisible">
+        <div v-if="afterSignUpWayVisible && !node.isConditionAutoSignUpNode">
             <el-radio-group v-model="approvalBtnSubOption"
                 @change="handleApprovalBtnSubOption(approvalBtnSubOption)" class="clear">
                 <el-radio :value="1" class="auth-btn" border>
@@ -512,7 +512,8 @@ const loadApprovalPageButtons = (approvalPageList) => {
     });
     buttonCustomNames.value = names;
     //同步isSignUp状态:加批按钮(19)未勾选时确保isSignUp=0,防止选项区异常显示
-    if (node.value && !checkApprovalPageBtns.value.includes(approvalButtonConf.addApproval)) {
+    //条件自动加批节点例外: 屏蔽人工加批按钮但仍需 isSignUp=1 部署 signUp 子元素(自动加批用)
+    if (node.value && !node.value.isConditionAutoSignUpNode && !checkApprovalPageBtns.value.includes(approvalButtonConf.addApproval)) {
         node.value.isSignUp = 0;
     }
     syncApprovalPageButtons();

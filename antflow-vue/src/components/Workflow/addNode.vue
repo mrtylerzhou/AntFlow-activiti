@@ -191,6 +191,18 @@
                             <p>条件退回发起人</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item condition-disagree-node" @click="addType(30)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="conditional-auto-disagree" class="iconfont" />
+                            <p>条件拒绝</p>
+                        </div>
+                    </a>
+                    <a class="add-node-popover-item condition-auto-signup-node" @click="addType(31)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="condition-auto-add-sign" class="iconfont" />
+                            <p>条件自动加批</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -330,6 +342,14 @@ const createConditionReturnNode = (childNode) => {
 const createConditionReturnStarterNode = (childNode) => {
     return NodeUtils.createConditionReturnStarterNode(childNode, rootNode ? rootNode.value : null);
 }
+/**创建条件拒绝节点 */
+const createConditionDisagreeNode = (childNode) => {
+    return NodeUtils.createConditionDisagreeNode(childNode);
+}
+/**创建条件自动加批节点 */
+const createConditionAutoSignUpNode = (childNode) => {
+    return NodeUtils.createConditionAutoSignUpNode(childNode);
+}
 /**创建推进审批节点 */
 const createForwardApproveNode = (childNode) => {
     return NodeUtils.createForwardApproveNode(childNode);
@@ -388,6 +408,8 @@ const createNodeMap = new Map([
     [27, createAutoReturnStarterNode],
     [28, createConditionReturnNode],
     [29, createConditionReturnStarterNode],
+    [30, createConditionDisagreeNode],
+    [31, createConditionAutoSignUpNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -560,6 +582,18 @@ const confirmClone = () => {
         &.condition-return-starter-node {
             .item-wrapper {
                 color: #e53935
+            }
+        }
+
+        &.condition-disagree-node {
+            .item-wrapper {
+                color: #ab1a3b
+            }
+        }
+
+        &.condition-auto-signup-node {
+            .item-wrapper {
+                color: #673ab7
             }
         }
 

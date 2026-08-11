@@ -4,18 +4,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.AFSpecialAssigneeEnum;
 import org.openoa.base.constant.enums.ProcessSubmitStateEnum;
+import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.dto.BpmNextTaskDto;
 import org.openoa.base.entity.BpmFlowrunEntrust;
 import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.FormOperationAdaptor;
@@ -29,10 +32,12 @@ import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.UDLFApplyVo;
 import org.openoa.engine.bpmnconf.adp.processoperation.ForwardToNodeImpl;
 import org.openoa.engine.bpmnconf.adp.processoperation.BackToModifyImpl;
+import org.openoa.engine.bpmnconf.adp.processoperation.EndProcessImpl;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.service.impl.BpmFlowrunEntrustServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmProcessForwardServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
+import org.openoa.engine.bpmnconf.service.interf.biz.BpmVariableSignUpPersonnelBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +68,12 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
     @Autowired
     private BackToModifyImpl backToModifyImpl;
     @Autowired
+    private EndProcessImpl endProcessImpl;
+    @Autowired
+    private TaskService taskService;
+    @Autowired
+    private BpmVariableSignUpPersonnelBizService bpmVariableSignUpPersonnelBizService;
+    @Autowired
     private BpmnNodeService bpmnNodeService;
 
     @Override
@@ -91,6 +102,8 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processAutoSkipNode(nodeLabelVO, assignee, procInstId, assigneeName, processNumber, delegateTask);
             processConditionApproveNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
             processConditionAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
+            processConditionDisagreeNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
+            processConditionAutoSignUpNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
             processConditionCopyNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processPrevNodeAppointed(nodeLabelVO, businessDataVo, delegateTask, formCode, processNumber);
         }
@@ -682,6 +695,145 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                     .processCode(processNumber)
                     .build();
             bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+        }
+        //conditionResult == false 或 null: 不 complete, 留给真实审批人
+    }
+
+    /**
+     * 条件拒绝节点处理:
+     * - 复用 auto node 的条件评估逻辑 (formAdaptor.automaticCondition)
+     * - 与条件审批的关键差异: 满足条件时自动拒绝(固定终止流程, 忽略不同意退回配置),
+     *   写虚拟人-3 拒绝记录(verifyStatus=6) + endProcessWithoutVerify(状态=6 + 删实例 + cancellationData 回调)
+     * - 不复用 EndProcessImpl.doProcessButton: 其依赖 SecurityUtils 登录用户查任务/写记录, 自动场景不可用
+     * - conditionResult==false 或 null 时不 complete, 留给真实审批人人工处理
+     */
+    private void processConditionDisagreeNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_DISAGREE_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if(formAdaptor==null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        }
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        } catch (Exception e) {
+            log.error("条件拒绝节点条件判断异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        }
+
+        //仅当条件满足时才自动拒绝(固定终止流程); 否则留给真实审批人
+        if (Boolean.TRUE.equals(conditionResult)) {
+            String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                    .builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessStateEnum.REJECT_STATE.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_CONDITION_DISAGREE_AUTO_REJECT_COMMENT, conditionResult))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            //固定终止流程: 更新状态=6 + 删除流程实例 + cancellationData 业务回调 (不走不同意退回分叉)
+            businessDataVo.setFlag(false);
+            endProcessImpl.endProcessWithoutVerify(businessDataVo);
+        }
+        //conditionResult == false 或 null: 不 complete, 留给真实审批人
+    }
+
+    /**
+     * 条件自动加批节点处理:
+     * - 复用 auto node 的条件评估逻辑 (formAdaptor.automaticCondition)
+     * - 满足条件: 幂等检查(已加批则跳过) → 读 configJson.autoSignUpUsers → insertSignUpPersonnel 写入 signUp 子元素
+     *   → 写虚拟人-3 加批记录(verifyStatus=9) → complete 当前任务(流程进入加批子节点)
+     * - 不满足: 不 complete, 留给真实审批人(加批按钮已屏蔽)
+     */
+    private void processConditionAutoSignUpNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_AUTO_SIGN_UP_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if(formAdaptor==null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        }
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        } catch (Exception e) {
+            log.error("条件自动加批节点条件判断异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        }
+
+        //仅当条件满足时才自动加批; 否则留给真实审批人
+        if (Boolean.TRUE.equals(conditionResult)) {
+            //幂等检查: 已加批过则跳过(防止加批后回到审批人时重复触发)
+            if (bpmVariableSignUpPersonnelBizService.hasSignUpPersonnel(processNumber, elementId)) {
+                log.info("条件自动加批节点已加批过, 跳过重复触发, processNumber={}, elementId={}", processNumber, elementId);
+                return;
+            }
+            BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
+            List<BaseIdTranStruVo> autoSignUpUsers = configJson == null ? null : configJson.getAutoSignUpUsers();
+            if (CollectionUtils.isEmpty(autoSignUpUsers)) {
+                log.error("条件自动加批节点未配置加批人, 跳过, processNumber={}, elementId={}", processNumber, elementId);
+                return;
+            }
+            //解析真实 assignee 名称(回路 personnel 名称用, 从节点配置 personnelConf.employees 匹配)
+            String assigneeId = delegateTask.getAssignee();
+            String assigneeName = "";
+            if (configJson != null && configJson.getApproverConf() != null
+                    && configJson.getApproverConf().getPersonnelConf() != null
+                    && !CollectionUtils.isEmpty(configJson.getApproverConf().getPersonnelConf().getEmployees())) {
+                assigneeName = configJson.getApproverConf().getPersonnelConf().getEmployees().stream()
+                        .filter(o -> o.getEmplId() != null && o.getEmplId().equals(assigneeId))
+                        .map(BpmnNodeApproverConfJson.EmployeeInfo::getEmplName)
+                        .findFirst().orElse("");
+            }
+            bpmVariableSignUpPersonnelBizService.insertSignUpPersonnel(taskService, delegateTask.getId(), processNumber, elementId, assigneeId, assigneeName, autoSignUpUsers);
+
+            String assigneeSkipName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+            Map<String,Object> varMap=new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeSkipName);
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
+                    .builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
+                    .verifyUserName(assigneeSkipName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_SIGN_UP.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_CONDITION_AUTO_SIGNUP_COMMENT, conditionResult))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            ((TaskEntity) delegateTask).complete(varMap, false);
         }
         //conditionResult == false 或 null: 不 complete, 留给真实审批人
     }

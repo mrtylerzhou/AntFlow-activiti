@@ -56,6 +56,10 @@ public class StringConstants {
     public static final String CONDITION_ADVANCE_NODE="condition_advance_node";
     /**条件完成节点: 条件推进(nodeType=12)子类型, 目标设计时自动算最后一个审批人节点, 不可编辑. 运行时复用条件推进处理器(processConditionAdvanceNode). 强制 forwardType=2.*/
     public static final String CONDITION_FINISH_NODE="condition_finish_node";
+    /**条件拒绝节点: 条件审批(nodeType=12)子类型. 满足条件自动拒绝终止流程(忽略不同意退回配置), 不满足留给真实审批人.*/
+    public static final String CONDITION_DISAGREE_NODE="condition_disagree_node";
+    /**条件自动加批节点: 条件审批(nodeType=12)子类型. 满足条件自动加批(autoSignUpUsers), 不满足留给真实审批人(加批按钮屏蔽).*/
+    public static final String CONDITION_AUTO_SIGN_UP_NODE="condition_auto_sign_up_node";
     public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String ASSIST_NODE="assist_node";
     /**自动推进节点标签: 运行期由 NextNodeLabelsProcessor.processAutoAdvanceNode 处理*/
@@ -96,6 +100,8 @@ public class StringConstants {
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
     public static final String AF_AUTO_EVALUATE_SKIP_COMMENT ="自动节点自动跳过,条件评估结果:%s";
     public static final String AF_CONDITION_APPROVE_AUTO_PASS_COMMENT ="条件审批自动通过,条件评估结果:%s";
+    public static final String AF_CONDITION_DISAGREE_AUTO_REJECT_COMMENT ="条件拒绝自动拒绝,条件评估结果:%s";
+    public static final String AF_CONDITION_AUTO_SIGNUP_COMMENT ="条件自动加批,条件评估结果:%s";
     public static final String AF_CONDITION_COPY_SKIP_COMMENT ="条件抄送跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";

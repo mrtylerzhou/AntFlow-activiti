@@ -67,6 +67,20 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Boolean isConditionFinishNode;
     /**
+     * 条件拒绝节点标记: 条件审批(nodeType=12)子类型
+     * 满足条件时自动拒绝(固定终止流程, 忽略不同意退回配置), 不满足时留给真实审批人
+     */
+    private Boolean isConditionDisagreeNode;
+    /**
+     * 条件自动加批节点标记: 条件审批(nodeType=12)子类型
+     * 满足条件时自动加批(autoSignUpUsers), 不满足时留给真实审批人(加批按钮屏蔽)
+     */
+    private Boolean isConditionAutoSignUpNode;
+    /**
+     * 条件自动加批节点的加批人列表(必填), 存 nodeConfigJson.autoSignUpUsers
+     */
+    private java.util.List<BaseIdTranStruVo> autoSignUpUsers;
+    /**
      * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
      * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
      */

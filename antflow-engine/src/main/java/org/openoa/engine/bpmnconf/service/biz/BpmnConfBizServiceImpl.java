@@ -208,6 +208,14 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     //条件推进节点:条件审批(nodeType=12)子类型,自动勾选推进按钮(42,别名同意),满足条件自动推进到固定目标
                     //必须先于 isConditionApproveNode 判断(条件推进节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批
                     nodeLabelVO=NodeLabelConstants.conditionAdvanceNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionDisagreeNode())){
+                    //条件拒绝节点:条件审批(nodeType=12)子类型,满足条件自动拒绝终止流程,不满足留给审批人
+                    //必须先于 isConditionApproveNode 判断(条件拒绝节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批
+                    nodeLabelVO=NodeLabelConstants.conditionDisagreeNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAutoSignUpNode())){
+                    //条件自动加批节点:条件审批(nodeType=12)子类型,满足条件自动加批,不满足留给审批人(加批按钮屏蔽)
+                    //必须先于 isConditionApproveNode 判断(条件自动加批节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批
+                    nodeLabelVO=NodeLabelConstants.conditionAutoSignUpNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionApproveNode())){
                     nodeLabelVO=NodeLabelConstants.conditionApproveNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionCopyNode())){
@@ -349,6 +357,16 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     }
                     nodeCfgJson.setForwardNodeIds(forwardNodeIds);
                 }
+            }
+
+            // 条件自动加批节点: autoSignUpUsers 持久化到 node config JSON, 发布校验非空
+            if (Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAutoSignUpNode())) {
+                java.util.List<org.openoa.base.vo.BaseIdTranStruVo> autoSignUpUsers = bpmnNodeVo.getAutoSignUpUsers();
+                if (autoSignUpUsers == null || autoSignUpUsers.isEmpty()) {
+                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为条件自动加批节点,必须配置至少一个加批人!");
+                }
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                nodeCfgJson.setAutoSignUpUsers(autoSignUpUsers);
             }
 
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
@@ -2156,6 +2174,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         if (nodeConfig.getForwardType() != null) {
             bpmnNodeVo.setForwardType(nodeConfig.getForwardType());
             bpmnNodeVo.setForwardNodeIds(nodeConfig.getForwardNodeIds());
+        }
+
+        // set auto sign-up users from node config JSON (for display)
+        if (nodeConfig.getAutoSignUpUsers() != null && !nodeConfig.getAutoSignUpUsers().isEmpty()) {
+            bpmnNodeVo.setAutoSignUpUsers(nodeConfig.getAutoSignUpUsers());
         }
 
         return bpmnNodeVo;

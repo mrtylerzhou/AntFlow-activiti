@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.openoa.base.vo.BaseIdTranStruVo;
 
 import java.io.Serializable;
 
@@ -83,4 +84,10 @@ public class BpmnNodeConfigJson implements Serializable {
      * Only used when forwardType is 1 or 2.
      */
     private java.util.List<String> forwardNodeIds;
+
+    /**
+     * 条件自动加批节点的加批人列表(必填).
+     * 满足条件时由 processConditionAutoSignUpNode 写入 signUp 子元素.
+     */
+    private java.util.List<BaseIdTranStruVo> autoSignUpUsers;
 }
