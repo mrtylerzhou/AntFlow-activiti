@@ -95,6 +95,35 @@
                     </div>
                 </div>
             </el-tab-pane>
+            <el-tab-pane v-if="approverConfig.isConditionAutoTransferNode" lazy label="转办设置" name="autoTransferStep">
+                <div class="disagree-back-conf">
+                    <p class="setting-group-title">转办类型</p>
+                    <el-radio-group v-model="autoTransferType">
+                        <el-radio :value="1">节点任务全部转给指定人</el-radio>
+                        <el-radio :value="2">指定转办关系</el-radio>
+                    </el-radio-group>
+                    <div v-if="autoTransferType === 1" style="margin-top: 12px;">
+                        <el-button type="primary" size="small" @click="openTransferSingleDialog">选择指定人</el-button>
+                        <el-tag v-if="autoTransferConf.transferToUser" closable style="margin-left: 8px;"
+                            @close="autoTransferConf.transferToUser = null">{{ autoTransferConf.transferToUser.name }}</el-tag>
+                        <p v-else style="color: #f56c6c; font-size: 12px;">请选择一个人（当前节点任务全部转给该人）</p>
+                    </div>
+                    <div v-else style="margin-top: 12px;">
+                        <div v-for="(pair, idx) in autoTransferConf.transferPairs" :key="idx"
+                            style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <el-tag v-if="pair.from" closable @close="pair.from = null">{{ pair.from.name }}</el-tag>
+                            <el-button v-else size="small" @click="openTransferPairDialog(idx, 'from')">原审批人</el-button>
+                            <span>→</span>
+                            <el-tag v-if="pair.to" closable @close="pair.to = null">{{ pair.to.name }}</el-tag>
+                            <el-button v-else size="small" @click="openTransferPairDialog(idx, 'to')">转办人</el-button>
+                            <el-button link type="danger" @click="autoTransferConf.transferPairs.splice(idx, 1)">删除</el-button>
+                        </div>
+                        <el-button size="small" @click="autoTransferConf.transferPairs.push({ from: null, to: null })">添加转办关系</el-button>
+                        <p style="color: #909399; font-size: 12px; margin-top: 4px;">运行时审批人为「原审批人」时转给对应「转办人」，不在关系中则保留原审批人</p>
+                    </div>
+                </div>
+                <select-user-dialog v-model:visible="transferUserVisible" :data="transferDialogData" @change="onTransferUserChange" />
+            </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
                 <ButtonStepPanel ref="buttonStepRef" :approverConfig="approverConfig" :rootNode="rootNode"
                     v-model:forwardFixedNodeId="forwardFixedNodeId"
@@ -208,6 +237,35 @@
                     </div>
                 </div>
             </el-tab-pane>
+            <el-tab-pane v-if="approverConfig.isConditionAutoTransferNode" lazy label="转办设置" name="autoTransferStep">
+                <div class="disagree-back-conf">
+                    <p class="setting-group-title">转办类型</p>
+                    <el-radio-group v-model="autoTransferType">
+                        <el-radio :value="1">节点任务全部转给指定人</el-radio>
+                        <el-radio :value="2">指定转办关系</el-radio>
+                    </el-radio-group>
+                    <div v-if="autoTransferType === 1" style="margin-top: 12px;">
+                        <el-button type="primary" size="small" @click="openTransferSingleDialog">选择指定人</el-button>
+                        <el-tag v-if="autoTransferConf.transferToUser" closable style="margin-left: 8px;"
+                            @close="autoTransferConf.transferToUser = null">{{ autoTransferConf.transferToUser.name }}</el-tag>
+                        <p v-else style="color: #f56c6c; font-size: 12px;">请选择一个人（当前节点任务全部转给该人）</p>
+                    </div>
+                    <div v-else style="margin-top: 12px;">
+                        <div v-for="(pair, idx) in autoTransferConf.transferPairs" :key="idx"
+                            style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <el-tag v-if="pair.from" closable @close="pair.from = null">{{ pair.from.name }}</el-tag>
+                            <el-button v-else size="small" @click="openTransferPairDialog(idx, 'from')">原审批人</el-button>
+                            <span>→</span>
+                            <el-tag v-if="pair.to" closable @close="pair.to = null">{{ pair.to.name }}</el-tag>
+                            <el-button v-else size="small" @click="openTransferPairDialog(idx, 'to')">转办人</el-button>
+                            <el-button link type="danger" @click="autoTransferConf.transferPairs.splice(idx, 1)">删除</el-button>
+                        </div>
+                        <el-button size="small" @click="autoTransferConf.transferPairs.push({ from: null, to: null })">添加转办关系</el-button>
+                        <p style="color: #909399; font-size: 12px; margin-top: 4px;">运行时审批人为「原审批人」时转给对应「转办人」，不在关系中则保留原审批人</p>
+                    </div>
+                </div>
+                <select-user-dialog v-model:visible="transferUserVisible" :data="transferDialogData" @change="onTransferUserChange" />
+            </el-tab-pane>
             <el-tab-pane v-if="approverConfig.nodeType !== 18 && approverConfig.nodeType !== 19" lazy label="按钮权限设置" name="buttonStep">
                 <ButtonStepPanel ref="buttonStepRef" :approverConfig="approverConfig" :rootNode="rootNode"
                     v-model:forwardFixedNodeId="forwardFixedNodeId"
@@ -235,6 +293,7 @@ import $func from '@/utils/antflow/index';
 import { useStore } from '@/store/modules/workflow';
 import { useNodeForwardBack } from './useNodeForwardBack';
 import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
+import selectUserDialog from "../dialog/selectUserDialog.vue";
 import ApproverStepPanel from "./panel/ApproverStepPanel.vue";
 import ButtonStepPanel from "./panel/ButtonStepPanel.vue";
 import FormStepPanel from "./panel/FormStepPanel.vue";
@@ -274,6 +333,7 @@ let drawerTitle = computed(() => {
     if (approverConfig.value?.isConditionFinishNode) return "条件完成";
     if (approverConfig.value?.isConditionDisagreeNode) return "条件拒绝";
     if (approverConfig.value?.isConditionAutoSignUpNode) return "条件自动加批";
+    if (approverConfig.value?.isConditionAutoTransferNode) return "条件自动转办";
     return "审批人";
 });
 // ========== 条件自动加批: 加批设置 tab 状态 ==========
@@ -320,6 +380,53 @@ const autoSignUpBackToApprover = computed({
     get: () => ((approverConfig.value.property && approverConfig.value.property.afterSignUpWay) ?? 1) === 1,
     set: (v) => { if (!approverConfig.value.property) approverConfig.value.property = {}; approverConfig.value.property.afterSignUpWay = v ? 1 : 2; }
 });
+// ========== 条件自动转办: 转办设置 tab 状态 ==========
+/**转办配置子配置(懒初始化) */
+const autoTransferConf = computed(() => {
+    if (!approverConfig.value.autoTransferConf || !approverConfig.value.autoTransferConf.transferType) {
+        approverConfig.value.autoTransferConf = { transferType: 1, transferToUser: null, transferPairs: [] };
+    }
+    return approverConfig.value.autoTransferConf;
+});
+const autoTransferType = computed({
+    get: () => autoTransferConf.value.transferType || 1,
+    set: (v) => { autoTransferConf.value.transferType = v; }
+});
+let transferUserVisible = ref(false);
+let transferDialogTarget = ref(null); // {kind:'single'} | {kind:'pair', idx, field}
+const transferDialogData = computed(() => {
+    const t = transferDialogTarget.value;
+    if (!t) return [];
+    if (t.kind === 'single') return autoTransferConf.value.transferToUser ? [autoTransferConf.value.transferToUser] : [];
+    const pair = autoTransferConf.value.transferPairs[t.idx];
+    const val = pair ? pair[t.field] : null;
+    return val ? [val] : [];
+});
+const openTransferSingleDialog = () => { transferDialogTarget.value = { kind: 'single' }; transferUserVisible.value = true; };
+const openTransferPairDialog = (idx, field) => { transferDialogTarget.value = { kind: 'pair', idx, field }; transferUserVisible.value = true; };
+const onTransferUserChange = (list) => {
+    const first = (list || [])[0];
+    const user = first ? { id: first.targetId, name: first.name } : null;
+    const t = transferDialogTarget.value;
+    if (!t || !user) return;
+    if (t.kind === 'single') autoTransferConf.value.transferToUser = user;
+    else autoTransferConf.value.transferPairs[t.idx][t.field] = user;
+    transferUserVisible.value = false;
+};
+/**转办配置校验: 类型1 恰好1人; 类型2 ≥1对且 from/to 完整、from 不重复 */
+const validateAutoTransferConf = (conf) => {
+    if (!conf || !conf.transferType) return false;
+    if (conf.transferType === 1) return !!conf.transferToUser;
+    const pairs = conf.transferPairs || [];
+    if (!pairs.length) return false;
+    const froms = new Set();
+    for (const p of pairs) {
+        if (!p.from || !p.to) return false;
+        if (froms.has(p.from.id)) return false;
+        froms.add(p.from.id);
+    }
+    return true;
+};
 let activeName = ref('approverStep');
 let approverStepShow = ref(true);
 let formStepShow = ref(false);
@@ -414,6 +521,13 @@ const saveApprover = () => {
             return;
         }
     }
+    // 条件自动转办: 转办配置必填校验
+    if (approverConfig.value.isConditionAutoTransferNode) {
+        if (!validateAutoTransferConf(approverConfig.value.autoTransferConf)) {
+            proxy.$modal.msgError('请完善转办设置（类型1需选择指定人，类型2需完整且不重复的转办关系）');
+            return;
+        }
+    }
     // 仲裁签通过比例校验
     if (approverConfig.value.signType == 4) {
         const r = approverConfig.value.property?.arbitrationRatio;
@@ -428,6 +542,10 @@ const saveApprover = () => {
     if (approverConfig.value.isConditionAutoSignUpNode) {
         const hasConf = !!(approverConfig.value.autoSignUpConf && approverConfig.value.autoSignUpConf.setType);
         approverConfig.value.error = approverConfig.value.error || (!hasConf && !(approverConfig.value.autoSignUpUsers || []).length);
+    }
+    // 条件自动转办: 转办配置为空同样置 error 阻发布
+    if (approverConfig.value.isConditionAutoTransferNode) {
+        approverConfig.value.error = approverConfig.value.error || !validateAutoTransferConf(approverConfig.value.autoTransferConf);
     }
     console.log('保存审批人配置==', JSON.stringify(approverConfig1.value));
     store.setApproverConfig({

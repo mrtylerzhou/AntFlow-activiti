@@ -89,6 +89,7 @@ const items = [
   { type: 29, name: '条件退回发起人', icon: 'conditional-drive-to-starter', cls: 'condition-return-starter-node' },
   { type: 30, name: '条件拒绝', icon: 'conditional-auto-disagree', cls: 'condition-disagree-node' },
   { type: 31, name: '条件自动加批', icon: 'condition-auto-add-sign', cls: 'condition-auto-signup-node' },
+  { type: 32, name: '条件自动转办', icon: 'conditional-transfer-assignee', cls: 'condition-auto-transfer-node' },
 ]
 
 const createNodeMap = new Map([
@@ -129,6 +130,7 @@ const createNodeMap = new Map([
   [29, (c) => NodeUtils.createConditionReturnStarterNode(c, rootNode ? rootNode.value : null)],
   [30, (c) => NodeUtils.createConditionDisagreeNode(c)],
   [31, (c) => NodeUtils.createConditionAutoSignUpNode(c)],
+  [32, (c) => NodeUtils.createConditionAutoTransferNode(c)],
 ])
 
 const pick = (type) => {
@@ -249,4 +251,5 @@ const close = () => emit('close')
 .condition-return-starter-node .hd-menu-icon { color: #e53935; }
 .condition-disagree-node .hd-menu-icon { color: #ab1a3b; }
 .condition-auto-signup-node .hd-menu-icon { color: #673ab7; }
+.condition-auto-transfer-node .hd-menu-icon { color: #ea580c; }
 </style>

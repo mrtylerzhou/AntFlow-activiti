@@ -216,6 +216,10 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                     //条件自动加批节点:条件审批(nodeType=12)子类型,满足条件自动加批,不满足留给审批人(加批按钮屏蔽)
                     //必须先于 isConditionApproveNode 判断(条件自动加批节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批
                     nodeLabelVO=NodeLabelConstants.conditionAutoSignUpNode;
+                }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAutoTransferNode())){
+                    //条件自动转办节点:条件审批(nodeType=12)子类型,满足条件逐任务自动转办,不满足留给审批人(转办按钮屏蔽)
+                    //必须先于 isConditionApproveNode 判断(条件自动转办节点两者都为 true),否则会误贴 condition_approve_node 标签导致运行时走条件审批
+                    nodeLabelVO=NodeLabelConstants.conditionAutoTransferNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionApproveNode())){
                     nodeLabelVO=NodeLabelConstants.conditionApproveNode;
                 }else if(Boolean.TRUE.equals(bpmnNodeVo.getIsConditionCopyNode())){
@@ -370,6 +374,26 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 if (bpmnNodeVo.getAutoSignUpUsers() != null && !bpmnNodeVo.getAutoSignUpUsers().isEmpty()) {
                     nodeCfgJson.setAutoSignUpUsers(bpmnNodeVo.getAutoSignUpUsers());
                 }
+            }
+
+            // 条件自动转办节点: autoTransferConf 持久化到 node config JSON, 发布校验配置完整
+            if (Boolean.TRUE.equals(bpmnNodeVo.getIsConditionAutoTransferNode())) {
+                Object autoTransferConf = bpmnNodeVo.getAutoTransferConf();
+                com.alibaba.fastjson2.JSONObject confJson = autoTransferConf == null ? null : com.alibaba.fastjson2.JSON.parseObject(com.alibaba.fastjson2.JSON.toJSONString(autoTransferConf));
+                boolean valid = confJson != null && confJson.getInteger("transferType") != null;
+                if (valid && confJson.getInteger("transferType") == 1) {
+                    valid = confJson.getJSONObject("transferToUser") != null;
+                } else if (valid && confJson.getInteger("transferType") == 2) {
+                    com.alibaba.fastjson2.JSONArray pairs = confJson.getJSONArray("transferPairs");
+                    valid = pairs != null && !pairs.isEmpty();
+                } else {
+                    valid = false;
+                }
+                if (!valid) {
+                    throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]为条件自动转办节点,必须配置完整的转办设置!");
+                }
+                BpmnNodeConfigJson nodeCfgJson = bpmnNodeVo.getOrCreateNodeConfigJson();
+                nodeCfgJson.setAutoTransferConf(autoTransferConf);
             }
 
             BpmnNodeAdpConfEnum bpmnNodeAdpConfEnum = NodeAdditionalInfoServiceImpl.getBpmnNodeAdpConfEnum(bpmnNodeVo);
@@ -2187,6 +2211,11 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         // set auto sign-up conf (enhanced rules) from node config JSON (for display)
         if (nodeConfig.getAutoSignUpConf() != null) {
             bpmnNodeVo.setAutoSignUpConf(nodeConfig.getAutoSignUpConf());
+        }
+
+        // set auto transfer conf from node config JSON (for display)
+        if (nodeConfig.getAutoTransferConf() != null) {
+            bpmnNodeVo.setAutoTransferConf(nodeConfig.getAutoTransferConf());
         }
 
         return bpmnNodeVo;

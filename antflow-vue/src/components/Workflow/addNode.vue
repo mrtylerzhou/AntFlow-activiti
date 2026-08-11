@@ -203,6 +203,12 @@
                             <p>条件自动加批</p>
                         </div>
                     </a>
+                    <a class="add-node-popover-item condition-auto-transfer-node" @click="addType(32)">
+                        <div class="item-wrapper">
+                            <svg-icon icon-class="conditional-transfer-assignee" class="iconfont" />
+                            <p>条件自动转办</p>
+                        </div>
+                    </a>
                 </div>
                 <template #reference>
                     <button class="btn" type="button">
@@ -350,6 +356,10 @@ const createConditionDisagreeNode = (childNode) => {
 const createConditionAutoSignUpNode = (childNode) => {
     return NodeUtils.createConditionAutoSignUpNode(childNode);
 }
+/**创建条件自动转办节点 */
+const createConditionAutoTransferNode = (childNode) => {
+    return NodeUtils.createConditionAutoTransferNode(childNode);
+}
 /**创建推进审批节点 */
 const createForwardApproveNode = (childNode) => {
     return NodeUtils.createForwardApproveNode(childNode);
@@ -410,6 +420,7 @@ const createNodeMap = new Map([
     [29, createConditionReturnStarterNode],
     [30, createConditionDisagreeNode],
     [31, createConditionAutoSignUpNode],
+    [32, createConditionAutoTransferNode],
 ]);
 const addType = (type) => {
     visible.value = false;
@@ -594,6 +605,12 @@ const confirmClone = () => {
         &.condition-auto-signup-node {
             .item-wrapper {
                 color: #673ab7
+            }
+        }
+
+        &.condition-auto-transfer-node {
+            .item-wrapper {
+                color: #ea580c
             }
         }
 

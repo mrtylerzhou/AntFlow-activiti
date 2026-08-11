@@ -87,6 +87,16 @@ public class BpmnNodeVo  implements Serializable {
      */
     private Object autoSignUpConf;
     /**
+     * 条件自动转办节点标记: 条件审批(nodeType=12)子类型
+     * 满足条件时逐任务自动转办(委托语义), 不满足时留给真实审批人(转办按钮屏蔽)
+     */
+    private Boolean isConditionAutoTransferNode;
+    /**
+     * 条件自动转办节点的转办配置: {transferType:1|2, transferToUser:{id,name}, transferPairs:[{from,to}]}
+     * 存 nodeConfigJson.autoTransferConf.
+     */
+    private Object autoTransferConf;
+    /**
      * 条件抄送节点标记: 设计期 nodeType=13, nodeSpecialProcess 转为 4 后置 true
      * 运行期与 copyNodeV2 类似, 总是 complete; 仅条件满足时写抄送记录
      */

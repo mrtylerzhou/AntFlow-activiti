@@ -3,7 +3,7 @@
         <p>【审批页面】按钮权限显示控制</p>
         <el-checkbox-group class="clear" v-model="checkApprovalPageBtns">
             <div class="btn-row" v-for="opt in approvalPageButtons" :key="opt.value">
-                <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (node.nodeType === 17 && opt.value === 41) || (opt.value === approvalButtonConf.forwardToNode && approveForwardBehavior === 2) || (node.isConditionAutoSignUpNode && opt.value === approvalButtonConf.addApproval)"
+                <el-checkbox :value="opt.value" :disabled="opt.type === 'default' || (node.nodeType === 17 && opt.value === 41) || (opt.value === approvalButtonConf.forwardToNode && approveForwardBehavior === 2) || (node.isConditionAutoSignUpNode && opt.value === approvalButtonConf.addApproval) || (node.isConditionAutoTransferNode && opt.value === approvalButtonConf.transfer)"
                     @change="handleCheckedButtonsChange(opt.value)">
                     【{{ opt.label }}】
                 </el-checkbox>

@@ -930,6 +930,54 @@ export class NodeUtils {
     return conditionAutoSignUpNode;
   }
   /**
+   * 创建条件自动转办节点对象
+   * 本质是条件审批家族节点(nodeType=12) + 条件配置 + condition_auto_transfer_node 标签
+   * 满足条件时逐任务自动转办(委托语义): 类型1全部转给指定人 / 类型2按映射转办; 不满足留给审批人(转办按钮屏蔽)
+   * @param {Object} child - 子节点信息
+   * @returns {Object} 条件自动转办节点
+   */
+  static createConditionAutoTransferNode(child) {
+    let conditionAutoTransferNode = {
+      nodeId: this.idGenerator(),
+      nodeName: "条件自动转办",
+      nodeDisplayName: "条件自动转办",
+      nodeType: 12, //节点类型 12、条件审批家族(条件自动转办为其子类型)
+      nodeFrom: "",
+      nodeTo: [],
+      setType: 5, //审批人类型 5、指定人员
+      signType: 1, //审批方式 1:会签
+      isSignUp: 1,
+      directorLevel: 1,
+      noHeaderAction: 0,
+      childNode: child,
+      error: true, //必须选审批人+转办配置
+      property: {
+        afterSignUpWay: 1,
+        signUpType: 1,
+        additionalSignInfoList: [],
+      },
+      lfFieldControlVOs: [],
+      buttons: {
+        startPage: btns(1),
+        approvalPage: [
+          { buttonType: 3 }, //同意
+          { buttonType: 4 }, //不同意 (不含转办21: 自动转办屏蔽人工转办)
+        ],
+        viewPage: btns(0),
+      },
+      nodeApproveList: [], //真实审批人,由用户配置
+      templateVos: [],
+      labelList: [
+        { labelValue: "condition_auto_transfer_node", labelName: "条件自动转办节点" },
+      ],
+      conditionList: [[]], //条件关系,与条件审批相同结构
+      groupRelation: false,
+      isConditionAutoTransferNode: true, //条件自动转办标记(前端用, 提交时后端据此贴标签)
+      autoTransferConf: { transferType: 1, transferToUser: null, transferPairs: [] }, //转办配置
+    };
+    return conditionAutoTransferNode;
+  }
+  /**
    * 创建条件抄送节点对象
    * 本质是抄送V2节点(nodeType=8) + 条件配置 + condition_copy_node 标签
    * 运行期由后端 NodeUtil.nodeSpecialProcess 转为 nodeType=4, 由 processConditionCopyNode 处理

@@ -296,6 +296,22 @@ export class FormatDisplayUtils {
         }
       }
 
+      // 条件自动转办节点反显: nodeType=4 或 12 (后端可能已转) + condition_auto_transfer_node 标签
+      // 条件审批(nodeType=12)子类型, 满足条件逐任务自动转办, 不满足留给审批人(转办按钮屏蔽)
+      if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_auto_transfer_node")) {
+        node.nodeType = 12;
+        node.nodeName = node.nodeName || "条件自动转办";
+        node.nodeDisplayName = node.nodeDisplayName || "条件自动转办";
+        node.isConditionAutoTransferNode = true;
+        // 从 autoNodeConf 中恢复条件数据
+        node.conditionList = [[]];
+        node.groupRelation = false;
+        if (node.autoNodeConf) {
+          node.conditionList = node.autoNodeConf.conditionList || [[]];
+          node.groupRelation = node.autoNodeConf.groupRelation || false;
+        }
+      }
+
       // 条件自动加批节点反显: nodeType=4 或 12 (后端可能已转) + condition_auto_sign_up_node 标签
       // 条件审批(nodeType=12)子类型, 满足条件自动加批, 不满足留给审批人(加批按钮屏蔽)
       if ((node.nodeType == 4 || node.nodeType == 12) && node.labelList && node.labelList.some(l => l.labelValue === "condition_auto_sign_up_node")) {

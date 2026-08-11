@@ -111,6 +111,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             processConditionAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processConditionDisagreeNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
             processConditionAutoSignUpNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
+            processConditionAutoTransferNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, delegateTask);
             processConditionCopyNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processPrevNodeAppointed(nodeLabelVO, businessDataVo, delegateTask, formCode, processNumber);
         }
@@ -822,6 +823,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 // 旧数据回退: 直接人员列表
                 autoSignUpUsers = configJson.getAutoSignUpUsers();
             }
+
             if (CollectionUtils.isEmpty(autoSignUpUsers)) {
                 log.error("条件自动加批节点未配置加批人, 跳过, processNumber={}, elementId={}", processNumber, elementId);
                 return;
@@ -859,6 +861,89 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             ((TaskEntity) delegateTask).complete(varMap, false);
         }
         //conditionResult == false 或 null: 不 complete, 留给真实审批人
+    }
+
+    /**
+     * 条件自动转办节点处理:
+     * - 复用条件评估逻辑 (formAdaptor.automaticCondition)
+     * - 满足条件: 读 autoTransferConf → 类型1 target=transferToUser; 类型2 按 assignee 查映射
+     *   target 非空且 ≠ 当前 assignee → setAssignee + 写 BpmFlowrunEntrust 委托记录(original→actual)
+     * - 不在映射/不满足: 不操作, 任务保留原审批人; 不 complete(任务继续, 仅换人)
+     */
+    private void processConditionAutoTransferNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, DelegateTask delegateTask) {
+
+        if (!StringConstants.CONDITION_AUTO_TRANSFER_NODE.equals(nodeLabelVO.getLabelValue())){
+            return;
+        }
+
+        businessDataVo.setProcessNumber(processNumber);
+        businessDataVo.setTaskDefKey(elementId);
+        businessDataVo.setFormCode(formCode);
+        businessDataVo.setIsOutSideAccessProc(isOutSide);
+        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
+        if(formAdaptor==null){
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        }
+        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
+            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
+            vo.setLfConditions(vo.getLfFields());
+        }
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+        } catch (Exception e) {
+            log.error("条件自动转办节点条件判断异常, processNumber={}, elementId={}", processNumber, elementId, e);
+        }
+
+        //仅当条件满足时才自动转办; 否则留给真实审批人
+        if (Boolean.TRUE.equals(conditionResult)) {
+            BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
+            Object autoTransferConf = configJson == null ? null : configJson.getAutoTransferConf();
+            if (autoTransferConf == null) {
+                log.error("条件自动转办节点未配置转办设置, 跳过, processNumber={}, elementId={}", processNumber, elementId);
+                return;
+            }
+            com.alibaba.fastjson2.JSONObject confJson = com.alibaba.fastjson2.JSON.parseObject(com.alibaba.fastjson2.JSON.toJSONString(autoTransferConf));
+            Integer transferType = confJson.getInteger("transferType");
+            String oldUserId = delegateTask.getAssignee();
+            String oldUserName = delegateTask instanceof TaskEntity ? ((TaskEntity) delegateTask).getAssigneeName() : "";
+            BaseIdTranStruVo target = null;
+            if (transferType != null && transferType == 1) {
+                target = confJson.getObject("transferToUser", BaseIdTranStruVo.class);
+            } else if (transferType != null && transferType == 2) {
+                com.alibaba.fastjson2.JSONArray pairs = confJson.getJSONArray("transferPairs");
+                if (pairs != null) {
+                    for (int i = 0; i < pairs.size(); i++) {
+                        com.alibaba.fastjson2.JSONObject pair = pairs.getJSONObject(i);
+                        BaseIdTranStruVo from = pair.getObject("from", BaseIdTranStruVo.class);
+                        if (from != null && from.getId() != null && from.getId().equals(oldUserId)) {
+                            target = pair.getObject("to", BaseIdTranStruVo.class);
+                            break;
+                        }
+                    }
+                }
+            }
+            if (target != null && target.getId() != null && !target.getId().equals(oldUserId)) {
+                delegateTask.setAssignee(target.getId());
+                if (delegateTask instanceof TaskEntity) {
+                    ((TaskEntity) delegateTask).setAssigneeName(target.getName());
+                }
+                BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
+                entrust.setType(1);
+                entrust.setRuntaskid(delegateTask.getId());
+                entrust.setActual(target.getId());
+                entrust.setActualName(target.getName());
+                entrust.setOriginal(oldUserId);
+                entrust.setOriginalName(oldUserName);
+                entrust.setIsRead(2);
+                entrust.setProcDefId(formCode);
+                entrust.setRuninfoid(delegateTask.getProcessInstanceId());
+                bpmFlowrunEntrustService.addFlowrunEntrust(entrust);
+                log.info("条件自动转办生效, 转办前: {}, 转办后: {}, processNumber={}, elementId={}", oldUserId, target.getId(), processNumber, elementId);
+            }
+        }
+        //conditionResult == false 或 null: 不转办, 留给真实审批人
     }
 
     /**

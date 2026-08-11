@@ -60,6 +60,8 @@ public class StringConstants {
     public static final String CONDITION_DISAGREE_NODE="condition_disagree_node";
     /**条件自动加批节点: 条件审批(nodeType=12)子类型. 满足条件自动加批(autoSignUpUsers), 不满足留给真实审批人(加批按钮屏蔽).*/
     public static final String CONDITION_AUTO_SIGN_UP_NODE="condition_auto_sign_up_node";
+    /**条件自动转办节点: 条件审批(nodeType=12)子类型. 满足条件逐任务自动转办(委托语义), 不满足留给真实审批人(转办按钮屏蔽).*/
+    public static final String CONDITION_AUTO_TRANSFER_NODE="condition_auto_transfer_node";
     public static final String CONDITION_COPY_NODE="condition_copy_node";
     public static final String ASSIST_NODE="assist_node";
     /**自动推进节点标签: 运行期由 NextNodeLabelsProcessor.processAutoAdvanceNode 处理*/
@@ -102,6 +104,7 @@ public class StringConstants {
     public static final String AF_CONDITION_APPROVE_AUTO_PASS_COMMENT ="条件审批自动通过,条件评估结果:%s";
     public static final String AF_CONDITION_DISAGREE_AUTO_REJECT_COMMENT ="条件拒绝自动拒绝,条件评估结果:%s";
     public static final String AF_CONDITION_AUTO_SIGNUP_COMMENT ="条件自动加批,条件评估结果:%s";
+    public static final String AF_CONDITION_AUTO_TRANSFER_COMMENT ="条件自动转办,条件评估结果:%s";
     public static final String AF_CONDITION_COPY_SKIP_COMMENT ="条件抄送跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";

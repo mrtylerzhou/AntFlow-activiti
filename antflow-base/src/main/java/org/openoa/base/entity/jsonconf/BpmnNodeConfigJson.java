@@ -96,4 +96,10 @@ public class BpmnNodeConfigJson implements Serializable {
      * 运行期由 AutoSignUpAssigneeResolver 解析为具体用户; 为空时回退 autoSignUpUsers.
      */
     private Object autoSignUpConf;
+
+    /**
+     * 条件自动转办节点的转办配置: {transferType:1|2, transferToUser, transferPairs}.
+     * 运行期由 processConditionAutoTransferNode 读取执行逐任务转办.
+     */
+    private Object autoTransferConf;
 }

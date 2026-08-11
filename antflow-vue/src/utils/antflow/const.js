@@ -55,6 +55,10 @@ export const CONDITION_DISAGREE_NODE = "condition_disagree_node";
 export const CONDITION_AUTO_SIGNUP_COLOR = "103, 58, 183"; // 深紫(与现有所有节点色有明显色相差)
 // 条件自动加批节点标签(条件审批 nodeType=12 子类型, 满足条件自动加批, 不满足留给审批人且加批按钮屏蔽)
 export const CONDITION_AUTO_SIGN_UP_NODE = "condition_auto_sign_up_node";
+// 条件自动转办节点专属颜色(nodeType=12 + condition_auto_transfer_node 标签, 满足条件逐任务自动转办)
+export const CONDITION_AUTO_TRANSFER_COLOR = "234, 88, 12"; // 橙红(与条件推进琥珀橙 230,162,60 明度/色相有差)
+// 条件自动转办节点标签(条件审批 nodeType=12 子类型, 满足条件自动转办, 不满足留给审批人且转办按钮屏蔽)
+export const CONDITION_AUTO_TRANSFER_NODE = "condition_auto_transfer_node";
 // 退回审批/退回指定节点专属颜色(审批人 nodeType=4 + af_syslabel_disagree_back 标签, 不同意行为=退回指定节点)
 // 任何配置了不同意退回指定节点的审批人节点(含退回审批节点)都显示此色
 export const BACK_APPROVE_COLOR = "229, 57, 53"; // 亮红(与完成审批深紫红 150,40,110、普通审批人默认色有明显区分)

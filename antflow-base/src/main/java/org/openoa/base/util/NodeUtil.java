@@ -381,6 +381,11 @@ public class NodeUtil {
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
                bpmnNodeVo.setIsConditionAutoSignUpNode(true);
             }
+            if(NodeLabelConstants.conditionAutoTransferNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
+               //条件自动转办节点: 条件审批(nodeType=12)子类型, 满足条件逐任务自动转办. 还原 nodeType=12 并置标记位
+               bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_APPROVE.getCode());
+               bpmnNodeVo.setIsConditionAutoTransferNode(true);
+            }
             if(NodeLabelConstants.conditionCopyNode.getLabelValue().equals(nodeLabelVO.getLabelValue())){
                bpmnNodeVo.setNodeType(NodeTypeEnum.NODE_TYPE_CONDITION_COPY.getCode());
             }

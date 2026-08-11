@@ -20,6 +20,8 @@ public interface NodeLabelConstants {
     BpmnNodeLabelVO conditionDisagreeNode=new BpmnNodeLabelVO(StringConstants.CONDITION_DISAGREE_NODE,"条件拒绝节点");
     /**条件自动加批节点: 条件审批(nodeType=12)子类型, 满足条件自动加批(autoSignUpUsers), 不满足留给真实审批人(加批按钮屏蔽). 不加入 NONE_OPERATIONAL_NODES.*/
     BpmnNodeLabelVO conditionAutoSignUpNode=new BpmnNodeLabelVO(StringConstants.CONDITION_AUTO_SIGN_UP_NODE,"条件自动加批节点");
+    /**条件自动转办节点: 条件审批(nodeType=12)子类型, 满足条件逐任务自动转办(委托语义), 不满足留给真实审批人(转办按钮屏蔽). 不加入 NONE_OPERATIONAL_NODES.*/
+    BpmnNodeLabelVO conditionAutoTransferNode=new BpmnNodeLabelVO(StringConstants.CONDITION_AUTO_TRANSFER_NODE,"条件自动转办节点");
     BpmnNodeLabelVO conditionCopyNode=new BpmnNodeLabelVO(StringConstants.CONDITION_COPY_NODE,"条件抄送节点");
     BpmnNodeLabelVO assistNode=new BpmnNodeLabelVO(StringConstants.ASSIST_NODE,"协助节点");
     /**自动推进节点: 满足条件时推进到指定目标节点, 不满足时和自动节点一样 complete*/

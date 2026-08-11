@@ -29,6 +29,7 @@
                     <svg-icon icon-class="conditional-drive-ahead" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_advance_node')" />
                     <svg-icon icon-class="conditional-auto-disagree" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_disagree_node')" />
                     <svg-icon icon-class="condition-auto-add-sign" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_auto_sign_up_node')" />
+                    <svg-icon icon-class="conditional-transfer-assignee" class="iconfont" v-else-if="nodeConfig.nodeType == 12 && Array.isArray(nodeConfig.labelList) && nodeConfig.labelList.some(l => l.labelValue === 'condition_auto_transfer_node')" />
                     <svg-icon icon-class="approve" class="iconfont" v-else />
                     <input v-if="isInput" type="text" class="fd-input editable-title-input" @blur="blurEvent()"
                         @focus="$event.currentTarget.select()" v-focus v-model="nodeConfig.nodeName"
@@ -170,7 +171,7 @@
 import { onMounted, ref, watch, getCurrentInstance, computed, inject } from "vue";
 import $func from "@/utils/antflow/index";
 import { useStore } from '@/store/modules/workflow'
-import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, CONDITION_DISAGREE_COLOR, CONDITION_AUTO_SIGNUP_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
+import { bgColors, placeholderList, PICK_CONDITION_COLOR, FORWARD_APPROVE_COLOR, FINISH_APPROVE_COLOR, AUTO_COMPLETE_COLOR, CONDITION_ADVANCE_COLOR, CONDITION_FINISH_COLOR, CONDITION_DISAGREE_COLOR, CONDITION_AUTO_SIGNUP_COLOR, CONDITION_AUTO_TRANSFER_COLOR, BACK_APPROVE_COLOR } from '@/utils/antflow/const'
 import { getBadgeList as getNodeBadges, hasButtonType } from '@/utils/antflow/nodeBadges'
 import { NodeUtils } from '@/utils/antflow/nodeUtils'
 const { proxy } = getCurrentInstance();
@@ -279,6 +280,12 @@ let titleBgColor = computed(() => {
         && Array.isArray(props.nodeConfig.labelList)
         && props.nodeConfig.labelList.some(l => l.labelValue === 'condition_auto_sign_up_node')) {
         return CONDITION_AUTO_SIGNUP_COLOR;
+    }
+    // 条件自动转办节点着色: nodeType=12 + condition_auto_transfer_node 标签 (橙红)
+    if (props.nodeConfig.nodeType == 12
+        && Array.isArray(props.nodeConfig.labelList)
+        && props.nodeConfig.labelList.some(l => l.labelValue === 'condition_auto_transfer_node')) {
+        return CONDITION_AUTO_TRANSFER_COLOR;
     }
     // 退回审批/退回指定节点着色: nodeType=4 + af_syslabel_disagree_back 标签 (亮红, 不同意行为=退回指定节点)
     // 任何配置了不同意退回指定节点的审批人节点(含退回审批节点)都显示此色

@@ -11,11 +11,11 @@
             .white { fill: #FFFFFF; }
             /* 隔离遮罩层样式 */
             .mask-bg { fill: #FFFFFF; }
-            /* 加号线条样式：加粗以提升视觉分量 */
+            /* 转办箭头线条样式 */
             .stroke-white { 
                 fill: none; 
                 stroke: #FFFFFF; 
-                stroke-width: 3.5; 
+                stroke-width: 3.2; 
                 stroke-linecap: round; 
                 stroke-linejoin: round;
             }
@@ -38,13 +38,13 @@
             Z"/>
     </g>
 
-    <!-- 2. 左下角角标：条件过滤 (漏斗) -->
+    <!-- 2. 左下角角标：条件过滤 (单纯的漏斗) -->
     <g transform="translate(14, 48)">
-        <!-- 核心隔离层：超大半径，深度切开身体左侧 -->
+        <!-- 核心隔离层：半径 16，确保切开身体左侧 -->
         <circle class="mask-bg" cx="0" cy="0" r="16" />
         <!-- 橙色底座圆 -->
         <circle class="main" cx="0" cy="0" r="13" />
-        <!-- 白色漏斗 (去嵌套，极致清晰) -->
+        <!-- 白色漏斗 -->
         <path class="white" d="
             M -6, -6 
             H 6 
@@ -55,14 +55,17 @@
             Z" />
     </g>
 
-    <!-- 3. 右下角角标：加批/加签 (加号) -->
+    <!-- 3. 右下角角标：任务转办 (单纯的转向箭头) -->
     <g transform="translate(50, 48)">
-        <!-- 核心隔离层：超大半径，深度切开身体右侧 -->
+        <!-- 核心隔离层：半径 16，确保切开身体右侧 -->
         <circle class="mask-bg" cx="0" cy="0" r="16" />
         <!-- 橙色底座圆 -->
         <circle class="main" cx="0" cy="0" r="13" />
-        <!-- 白色加号 (粗壮清爽) -->
-        <path class="stroke-white" d="M -5,0 H 5 M 0,-5 V 5" />
+        <!-- 白色转向箭头 -->
+        <g transform="translate(-1, -1)">
+            <path class="stroke-white" d="M -2,0 Q -2,4 4,4" />
+            <path class="stroke-white" d="M 1,1 L 4,4 L 1,7" />
+        </g>
     </g>
 
 </svg>
