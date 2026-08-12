@@ -115,6 +115,8 @@ public class StringConstants {
     public static final String AF_VERIFYSTATUS_TO_BE_PROCESS="\uD83D\uDD53";
     public static final String AF_VERIFYSTATUS_REJECT="⛔";
     public static final String AF_DEFAULT_NODE_NAME ="审核人";
+    public static final String BUSINESS_DATA_VO="businessDataVo";
+    public static final String LFFIELDS="lfFields";
 
     public static final String HIDDEN_FIELD_PERMISSION="H";
     public static final String READ_ONLY_FIELD_PERMISSION="R";

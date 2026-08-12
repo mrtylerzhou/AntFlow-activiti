@@ -57,7 +57,7 @@ public class NodeUtil {
             List<String> noneOperationalLables = NodeLabelConstants.NONE_OPERATIONAL_NODES.stream().map(BpmnNodeLabelVO::getLabelValue).collect(Collectors.toList());
             return CollectionUtils.containsAny(collect, noneOperationalLables);
         }
-       return true;
+       return false;
     }
     /**
      * 判断指定节点是否包含给定的标签值

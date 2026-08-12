@@ -1,7 +1,9 @@
 package org.openoa.engine.bpmnconf.service.biz;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -1146,6 +1148,18 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
         object.put("formCode", detail.getFormCode());
 
         BusinessDataVo vo = formFactory.dataFormConversion(JSON.toJSONString(object),null);
+        if(!CollectionUtils.isEmpty(vo.getLfFields())){
+            Object o = vo.getLfFields().get(StringConstants.BUSINESS_DATA_VO);
+            if(o instanceof JSONObject){
+                JSONObject jsonObject = (JSONObject) o;
+                JSONObject jsonFieldObject = jsonObject.getJSONObject(StringConstants.LFFIELDS);
+                if(jsonFieldObject!=null){
+                    HashMap<String, Object> stringObjectHashMap = jsonFieldObject.to(new TypeReference<HashMap<String, Object>>() {
+                    });
+                    vo.setLfFields(stringObjectHashMap);
+                }
+            }
+        }
         vo.setIsOutSideAccessProc(Objects.equals(1,detail.getIsOutSideProcess()));
         vo.setIsLowCodeFlow(detail.getIsLowCodeFlow());
         vo.setBpmnConfVo(detail);
