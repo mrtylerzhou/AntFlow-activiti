@@ -1,7 +1,7 @@
 <template>
     <el-container class="layout-setup" style="height: calc(100vh - 84px);">
         <!-- 左侧列表区域 -->
-        <el-aside class="layout-aside" :style="{ width: batchMode ? '100%' : '300px' }">
+        <el-aside class="layout-aside" :style="{ width: batchMode ? '100%' : '320px' }">
             <el-container>
                 <el-header>
                     <div class="toolbar">
@@ -402,7 +402,8 @@ window.onload = function () {
     color: var(--el-text-color-primary);
     background: #cccccc59;
     transition: width 0.3s;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto ;
 }
 
 .layout-aside .el-header {
@@ -426,6 +427,7 @@ window.onload = function () {
     height: 100%;
     right: 20px;
     margin: 0 5px;
+    white-space: nowrap;
 }
 
 .layout-middle {
