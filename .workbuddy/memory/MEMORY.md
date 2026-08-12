@@ -31,6 +31,8 @@
 - 前端 `pinia` store `store.modules.workflow.instanceViewConfig1` 集中保存当前查看/审批的流程配置(processNumber/formCode/isLowCodeFlow 等).
 - 菜单路由是后端动态配置, 前端从 `public/mock/menu.json` 加载. 待办任务菜单 `path: pendding` 对应 `component: workflow/flowTask/pendding/approveV2`(**不是** approve.vue). 新加"全场景生效"特性优先放在各场景共用的子组件(如 `approveForm.vue`)里.
 - 低代码字段定义: `BpmnConfLfFormdataField` 表, `qryFormDataFieldMap(confId)` 拿内联模式 fieldId -> label; `qryFieldMapByFormdataId(formdataId)` 拿外部表单模式 fieldId -> label. 低代码 vo 有 bpmnConfVo 拿 confId; 拿不到时用 processNumber 查 bpm_business_process.VERSION(bpmn_code) 再查 bpmn_conf(form_code + bpmn_code) 唯一确定.
+- 审批人非办公状态自动转办: `BpmnConfFlagsEnum.AUTO_DELEGATE_OFF_DUTY(512)`. 门禁在 `NextNodeForwardProcessor`(优先级低于全局委托), 调 `AfUserService.checkEmployeeEffective`(骨架接口, 返回 UserAvailableVo: available/unavailableBeginTime/unavailableEndTime/delegateUser, 默认空实现恒可用)做四象限时间判断, 命中且 delegateUser 非空则转办并写 bpm_flowrun_entrust. 前端开关在 `AdvancedSetting/index.vue`, lf/diy 保存链路需对 extraFlags 做 OR 合并(高级设置只控制自己的位).
+- Maven 编译: mvnw 与本机 Git Bash 下 mvn 均不可用, 用 PowerShell 调 `C:\greensoft\apache-maven-3.6.3\bin\mvn.cmd`; antflow-base 增量编译会报 lombok 假错(OperationResp 等), 需 clean 后全量编译.
 
 ## Vue 3 响应式陷阱
 

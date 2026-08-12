@@ -242,8 +242,14 @@ const publish = () => {
                 return Promise.reject();
             }
             Object.assign(basicData, { nodes: nodes });
-            // 高级设置覆盖 deduplicationType 和 viewPageButtons
-            Object.assign(basicData, res[3].formData);
+            // 高级设置覆盖 deduplicationType 和 viewPageButtons;
+            // extraFlags 与 basicData 已设位做 OR 合并(高级设置只控制自己的位),避免覆盖 BasicSetting 的位
+            const advancedFormData = res[3].formData;
+            if (advancedFormData.extraFlags !== undefined && advancedFormData.extraFlags !== null) {
+                basicData.extraFlags = Number(basicData.extraFlags || 0) | Number(advancedFormData.extraFlags || 0);
+                delete advancedFormData.extraFlags;
+            }
+            Object.assign(basicData, advancedFormData);
             // page-added DIY: 路由带 auxForm 时, 在 extraFlags 置 USE_AUXILIARY_FORM 位(0b10000000=128),
             // 标记"LF 后端 + 自定义 Vue 渲染"。运行期前端按 bizFormMaps.has 渲染自定义组件,后端按 is_lowcode_flow=1 走 LowFlowApprovalService。
             if (route.query.auxForm === '1') {
@@ -290,7 +296,13 @@ const handleBackToDopeSheet = () => {
         Object.assign(basicData, { lfFormData: JSON.stringify(lowcodeformData) });
         // 保留 nodeConfig 树结构（不序列化）供 Dope Sheet 使用
         basicData.nodeConfig = res[2].formData;
-        Object.assign(basicData, res[3].formData);
+        // 高级设置的 extraFlags 与 basicData 已设位做 OR 合并,避免覆盖 BasicSetting 的位
+        const advancedFormData = res[3].formData;
+        if (advancedFormData.extraFlags !== undefined && advancedFormData.extraFlags !== null) {
+            basicData.extraFlags = Number(basicData.extraFlags || 0) | Number(advancedFormData.extraFlags || 0);
+            delete advancedFormData.extraFlags;
+        }
+        Object.assign(basicData, advancedFormData);
         // 保留额外字段 (extraFlags 以 basicSetting 序列化后的为准, 避免覆盖丢失新勾选)
         basicData.formCode = processConfig.value.formCode;
         basicData.bpmnCode = processConfig.value.bpmnCode;

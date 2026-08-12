@@ -189,8 +189,14 @@ const publish = () => {
                 return Promise.reject();
             }
             Object.assign(basicData, { nodes: nodes });
-            // 高级设置覆盖 deduplicationType 和 viewPageButtons
-            Object.assign(basicData, res[3].formData);
+            // 高级设置覆盖 deduplicationType 和 viewPageButtons;
+            // extraFlags 与 basicData 已设位做 OR 合并(高级设置只控制自己的位),避免覆盖 BasicSetting 的位
+            const advancedFormData = res[3].formData;
+            if (advancedFormData.extraFlags !== undefined && advancedFormData.extraFlags !== null) {
+                basicData.extraFlags = Number(basicData.extraFlags || 0) | Number(advancedFormData.extraFlags || 0);
+                delete advancedFormData.extraFlags;
+            }
+            Object.assign(basicData, advancedFormData);
             console.log("New===Json==========", JSON.stringify(basicData));
             return basicData;
         })
@@ -232,11 +238,17 @@ const handleBackToDopeSheet = () => {
         Object.assign(basicData, { lfFormData: lfFormData });
         // 保留 nodeConfig 树结构（不序列化）供 Dope Sheet 使用
         basicData.nodeConfig = res[2].formData;
-        Object.assign(basicData, res[3].formData);
+        // 高级设置的 extraFlags 与 basicData 已设位做 OR 合并,避免覆盖 BasicSetting 的位
+        const advancedFormData = res[3].formData;
+        if (advancedFormData.extraFlags !== undefined && advancedFormData.extraFlags !== null) {
+            basicData.extraFlags = Number(basicData.extraFlags || 0) | Number(advancedFormData.extraFlags || 0);
+            delete advancedFormData.extraFlags;
+        }
+        Object.assign(basicData, advancedFormData);
         // 保留额外字段
         basicData.formCode = processConfig.value.formCode;
         basicData.bpmnCode = processConfig.value.bpmnCode;
-        basicData.extraFlags = processConfig.value.extraFlags;
+        basicData.extraFlags = Number(basicData.extraFlags || 0) | Number(processConfig.value.extraFlags || 0);
         basicData.templateVos = processConfig.value.templateVos;
         dopeSheetStore.setProcessConfig(basicData);
         dopeSheetStore.markDirty();

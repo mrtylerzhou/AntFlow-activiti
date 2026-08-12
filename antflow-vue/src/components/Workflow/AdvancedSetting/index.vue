@@ -59,6 +59,20 @@
                     <p class="setting-card-desc">开启后，所有流程相关人员可在查看页将流程转发（抄送）给其他人。被转发人可在【抄送我的】列表中查看该流程详情。</p>
                 </div>
             </div>
+
+            <!-- 审批人非办公状态自动转办 -->
+            <div class="setting-card">
+                <div class="setting-card-header">
+                    <div class="setting-card-title">
+                        <el-icon><Timer /></el-icon>
+                        审批人非办公状态自动转办
+                    </div>
+                    <el-switch v-model="form.autoDelegateOffDuty" />
+                </div>
+                <div class="setting-card-body">
+                    <p class="setting-card-desc">开启后，流程中审批人不在办公状态（不可用）时，将其审批任务自动转办给指定的人（由 AfUserService 返回转办目标人，可对接考勤/工作日历等数据源）。</p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -91,22 +105,30 @@ const duplicateOptions = [{
 const BUTTON_DRAW_BACK = 29;
 const BUTTON_ABANDONED = 7;
 const BUTTON_FORWARD = 15;
+// 审批人非办公状态自动转办: BpmnConfFlagsEnum.AUTO_DELEGATE_OFF_DUTY = 0b1000000000 = 512
+const AUTO_DELEGATE_OFF_DUTY_FLAG = 512;
 
 const form = reactive({
     deduplicationType: 1,
     allowDrawBack: false,
     allowAbandoned: false,
     allowForward: false,
+    autoDelegateOffDuty: false,
     // 保留原始数据，提交时需要
     viewPageButtons: {
         viewPageStart: [],
         viewPageOther: [],
-    }
+    },
+    // extraFlags 快照(挂载时从 basicData 读取,getData 时叠/清 512 位后返回完整值)
+    extraFlags: 0,
 })
 
 onMounted(() => {
     if (!proxy.isEmpty(props.basicData)) {
         form.deduplicationType = props.basicData.deduplicationType || 1;
+        const flags = Number(props.basicData.extraFlags || 0);
+        form.extraFlags = flags;
+        form.autoDelegateOffDuty = (flags & AUTO_DELEGATE_OFF_DUTY_FLAG) === AUTO_DELEGATE_OFF_DUTY_FLAG;
         if (props.basicData.viewPageButtons) {
             form.viewPageButtons = JSON.parse(JSON.stringify(props.basicData.viewPageButtons));
             form.allowDrawBack = (form.viewPageButtons.viewPageStart || []).includes(BUTTON_DRAW_BACK);
@@ -136,10 +158,18 @@ const buildViewPageButtons = () => {
 const getData = () => {
     return new Promise((resolve, reject) => {
         const viewPageButtons = buildViewPageButtons();
+        // 基于 extraFlags 快照叠/清 512 位,返回完整 extraFlags(其他位保持不变)
+        let flags = Number(form.extraFlags || 0);
+        if (form.autoDelegateOffDuty) {
+            flags = flags | AUTO_DELEGATE_OFF_DUTY_FLAG;
+        } else {
+            flags = flags & ~AUTO_DELEGATE_OFF_DUTY_FLAG;
+        }
         resolve({
             formData: {
                 deduplicationType: form.deduplicationType,
                 viewPageButtons: viewPageButtons,
+                extraFlags: flags,
             }
         });
     })

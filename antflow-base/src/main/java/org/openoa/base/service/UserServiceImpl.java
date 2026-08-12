@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.openoa.base.entity.DetailedUser;
 import org.openoa.base.mapper.UserMapper;
 import org.openoa.base.vo.BaseIdTranStruVo;
+import org.openoa.base.vo.UserAvailableVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -112,12 +113,18 @@ public class UserServiceImpl implements AfUserService{
 
     /**
      * 返回的是数数量,0代表无有效用户
-     * @param id
-     * @return
+     * 查询员工可用性(办公状态)骨架空实现:不查询任何表,默认恒返回"可用"。
+     * 真实场景由使用方自行实现(可联合查询员工表、工作日历表等,甚至调用三方接口),
+     * 只需保证返回结构符合 UserAvailableVo 契约即可。
+     *
+     * @param id 用户id
      */
     @Override
-    public long checkEmployeeEffective(String id){
-        return userMapper.checkEmployeeEffective(id);
+    public UserAvailableVo checkEmployeeEffective(String id){
+        // 骨架空实现:默认可用,不涉及转办。使用方按需覆盖此方法
+        UserAvailableVo vo = new UserAvailableVo();
+        vo.setAvailable(Boolean.TRUE);
+        return vo;
     }
 
     @Override

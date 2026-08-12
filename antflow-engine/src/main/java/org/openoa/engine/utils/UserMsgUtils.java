@@ -401,9 +401,10 @@ public class UserMsgUtils {
 
         AfUserService bean = SpringBeanUtils.getBean(AfUserService.class);
 
-        long count = bean.checkEmployeeEffective(userId);
+        UserAvailableVo availableVo = bean.checkEmployeeEffective(userId);
 
-        if (count == 0) {
+        //改造后:仅依据"是否可用"判断员工是否有效(不涉及转办),真实逻辑由使用方实现的 AfUserService 提供
+        if (availableVo == null || !Boolean.TRUE.equals(availableVo.getAvailable())) {
             return false;
         }
 
