@@ -63,6 +63,9 @@ public class StringConstants {
     public static final String AF_AUTO_SKIP_COMMENT ="相同审批人自动跳过";
     public static final String AF_AUTO_EVALUATE_SKIP_COMMENT ="自动节点自动跳过,条件评估结果:%s";
     public static final String AF_CONDITION_APPROVE_AUTO_PASS_COMMENT ="条件审批自动通过,条件评估结果:%s";
+    public static final String AF_AUTO_APPROVE_PREFIX ="【自动审批】";
+    public static final String AF_AUTO_APPROVE_COMMENT ="自动审批代为完成,条件评估结果:%s";
+    public static final String AF_AUTO_APPROVE_UNCONDITIONAL_COMMENT ="无条件自动审批代为完成";
     public static final String AF_CONDITION_COPY_SKIP_COMMENT ="条件抄送跳过,条件评估结果:%s";
     public static final String AF_COPY_V2_NODE_SUFFIX ="\uD83D\uDCE2";
     public static final String AF_SKIP_ASSIGNEE_NODE_SUFFIX ="⬇\uFE0F";

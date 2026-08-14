@@ -77,7 +77,7 @@ public class PageUtils {
         List<PageSortVo> pageSortVos = new ArrayList<>();
         if (!ObjectUtils.isEmpty(orderFieldMap)) {
             for (Map.Entry<String, SortTypeEnum> entry : orderFieldMap.entrySet()) {
-                if (Strings.isNullOrEmpty(pageDto.getOrderColumn()) && pageDto.getOrderColumn().equals(entry.getKey())) {
+                if (Strings.isNullOrEmpty(pageDto.getOrderColumn()) || pageDto.getOrderColumn().equals(entry.getKey())) {
                     continue;
                 }
                 pageSortVos.add(PageSortVo.builder().orderField(entry.getKey()).sortTypeEnum(entry.getValue()).build());

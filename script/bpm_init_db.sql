@@ -683,6 +683,30 @@ CREATE TABLE if not exists `t_user_entrust`
   COMMENT ='user entrust info';
 
 
+DROP TABLE IF EXISTS `bpm_user_auto_approve`;
+CREATE TABLE if not exists `bpm_user_auto_approve`
+(
+    `id`               int          NOT NULL AUTO_INCREMENT,
+    `owner_user_id`    varchar(64)  NOT NULL COMMENT '归属人id',
+    `owner_user_name`  varchar(100) DEFAULT NULL COMMENT '归属人姓名',
+    `form_code`        varchar(100) NOT NULL COMMENT '流程formCode',
+    `bpmn_code`        varchar(50)  NOT NULL COMMENT '配置时活跃版本bpmnCode',
+    `node_scope_json`  text         NULL COMMENT '节点范围JSON [{elementId,nodeName}], 空=整个流程',
+    `condition_json`   text         NULL COMMENT '条件JSON {conditionList,groupRelation}, 仅LF',
+    `default_comment`  varchar(500) DEFAULT NULL COMMENT '默认审批意见',
+    `enabled`          int          DEFAULT '1' COMMENT '启用 1是 0否',
+    `is_del`           int          DEFAULT '0',
+    `tenant_id`        varchar(255) NOT NULL DEFAULT '' COMMENT 'tenantId',
+    `create_user`      varchar(50)  DEFAULT '',
+    `create_time`      datetime     DEFAULT CURRENT_TIMESTAMP,
+    `update_user`      varchar(50)  DEFAULT '',
+    `update_time`      datetime     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_owner_form` (`owner_user_id`, `form_code`) USING BTREE
+) ENGINE = InnoDB
+  COMMENT ='用户自动审批设置';
+
+
 
 DROP TABLE IF EXISTS `t_user_message_status`;
 CREATE TABLE if not exists `t_user_message_status`
