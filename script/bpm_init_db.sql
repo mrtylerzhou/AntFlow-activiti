@@ -452,6 +452,29 @@ create index t_bpm_process_audit_idx1
 create index t_bpm_process_audit_idx2
     on t_bpm_process_audit (task_def_key);
 
+create table t_bpm_process_comment
+(
+    id               bigint auto_increment
+        primary key,
+    process_number   varchar(64)  null comment '流程实例编号(会话锚点)',
+    parent_id        bigint       null comment '回复哪条消息(根消息为 null)',
+    root_id          bigint       null comment '所属根消息 id(根=自身; 回复归到根, 二级分组用)',
+    content          varchar(3000)         null comment '消息正文',
+    attachment       text         null comment '图片/附件 url JSON 数组(仅预留)',
+    mentions         text         null comment '@提及 JSON [{userId,userName}]',
+    reply_to_user    varchar(64)  null comment '回复目标人 userId',
+    reply_to_user_name varchar(64) null comment '回复目标人姓名快照',
+    create_user      varchar(64)  null comment '发起人 empId',
+    create_user_name varchar(64)  null comment '发起人姓名快照',
+    create_time      timestamp default CURRENT_TIMESTAMP not null,
+    tenant_id        varchar(255) null,
+    is_deleted       tinyint      default 0 null comment '0 正常 1 已撤回'
+)
+    comment '流程沟通表';
+
+create index t_bpm_process_comment_idx1
+    on t_bpm_process_comment (process_number);
+
 DROP TABLE IF EXISTS `bpm_flowrun_entrust`;
 CREATE TABLE if not exists `bpm_flowrun_entrust`
 (

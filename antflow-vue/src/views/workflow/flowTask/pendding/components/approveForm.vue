@@ -97,20 +97,13 @@
         </el-dialog>
         <ToBackStateImg v-if="hasResubmit" />
 
-        <!-- 右侧贴边: 表单字段变更审计入口 -->
-        <div v-if="processNumber" class="audit-fab" @click="openAuditDrawer">
-            <el-tooltip content="查看表单字段变更记录" placement="left">
-                <el-button type="primary" circle :icon="Clock" size="large" />
-            </el-tooltip>
-        </div>
-
-        <auditDrawer v-model="auditDrawerVisible" :processNumber="processNumber" />
+        <!-- 右侧贴边: 悬浮菜单(表单字段变更记录 + 流程沟通) -->
+        <ProcessFloatMenu v-if="processNumber" :processNumber="processNumber" />
     </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { Clock } from '@element-plus/icons-vue';
 import { useWindowSize } from '@vueuse/core'
 import Cookies from "js-cookie";
 import transferDialog from './transferDialog.vue';
@@ -119,7 +112,7 @@ import repulseDialog from './repulseDialog.vue';
 import ReviewWarp from './chooseFlowNode/reviewWarp.vue';
 import TagFlowNodeSelect from './TagFlowNodeSelect/index.vue';
 import ToBackStateImg from '@/views/workflow/components/ToBackStateImg.vue'
-import auditDrawer from '@/views/workflow/components/auditDrawer.vue'
+import ProcessFloatMenu from '@/views/workflow/components/ProcessFloatMenu.vue'
 import { approveButtonColor, approvalButtonConf } from '@/utils/antflow/const';
 import { getViewBusinessProcess, processOperation } from '@/api/workflow/index';
 import { loadDIYComponent, loadLFComponent, loadLFMultiFormComponent } from '@/views/workflow/components/componentload.js';
@@ -194,12 +187,8 @@ let props = defineProps({
     }
 });
 const emits = defineEmits(["handleRefreshList"]);
-// 当前流程编号 (用于审计抽屉查询)
+// 当前流程编号 (用于悬浮菜单/审计抽屉/沟通抽屉查询)
 const processNumber = computed(() => approveSubData.value?.processNumber || props.approveFormData?.processNumber || '');
-let auditDrawerVisible = ref(false);
-function openAuditDrawer() {
-    auditDrawerVisible.value = true;
-}
 watch(handleClickType, (val) => {
     dialogTitle.value = `设置${approvalButtonConf.buttonsObj[val]}人员`;
     isMultiple.value = val == approvalButtonConf.addApproval ? true : false;
@@ -714,23 +703,5 @@ function uniqueByMap(arr) {
 
 .el-timeline-item__wrapper {
     top: 0px !important;
-}
-
-.audit-fab {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
-    transition: right 0.25s ease;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 6px 0 0 6px;
-    background: #fff;
-    padding: 6px 6px 6px 4px;
-    cursor: pointer;
-
-    &:hover {
-        right: 4px;
-    }
 }
 </style>

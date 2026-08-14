@@ -32,14 +32,8 @@
       </div>
       <label class="page-close-box" @click="closeDrawer()"><img src="@/assets/images/antflow/back-close.png"></label>
 
-      <!-- 右侧贴边: 表单字段变更审计入口 -->
-      <div v-if="processNumber" class="audit-fab" @click="openAuditDrawer">
-        <el-tooltip content="查看表单字段变更记录" placement="left">
-          <el-button type="primary" circle :icon="Clock" size="large" />
-        </el-tooltip>
-      </div>
-
-      <auditDrawer v-model="auditDrawerVisible" :processNumber="processNumber" />
+      <!-- 右侧贴边: 悬浮菜单(表单字段变更记录 + 流程沟通) -->
+      <ProcessFloatMenu v-if="processNumber" :processNumber="processNumber" :fixed="false" />
     </el-drawer>
 
   </div>
@@ -48,14 +42,13 @@
 
 <script setup>
 import { ref, computed, getCurrentInstance } from 'vue'
-import { Clock } from '@element-plus/icons-vue'
 import { useStore } from '@/store/modules/workflow'
 import FlowStepTable from "@/components/Workflow/Preview/flowStepTable.vue"
 import ReviewWarp from "@/components/Workflow/Preview/reviewWarp.vue"
 import previewComponent from "@/views/workflow/components/previewComponent.vue"
 import ProcessStateImg from './ProcessStateImg.vue'
 import Process from "@/components/Workflow/Process/index.vue"
-import auditDrawer from "@/views/workflow/components/auditDrawer.vue"
+import ProcessFloatMenu from "@/views/workflow/components/ProcessFloatMenu.vue"
 import { getApiWorkFlowData } from "@/api/workflow/index"
 import { FormatDisplayUtils } from '@/utils/antflow/formatdisplay_data'
 
@@ -77,7 +70,6 @@ let templateLoadFail = ref(false);
 let previewConf = ref(null);
 let reviewKey = ref(0);
 const previewCompRef = ref(null);
-let auditDrawerVisible = ref(false);
 let visible = computed({
   get() {
     return previewDrawer.value
@@ -86,9 +78,6 @@ let visible = computed({
     closeDrawer()
   }
 })
-function openAuditDrawer() {
-  auditDrawerVisible.value = true;
-}
 const handleTabClick = async (tab, event) => {
   activeName.value = tab.paneName;
   if (tab.paneName == 'baseTab') {
@@ -181,23 +170,5 @@ handleTabClick({ paneName: "baseTab" })
 <style lang="scss" scoped>
 .tabs-header-wrap {
   position: relative;
-}
-
-.audit-fab {
-    position: absolute;
-    right: -16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    transition: right 0.25s ease;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 6px 0 0 6px;
-    background: #fff;
-    padding: 6px 6px 6px 4px;
-    cursor: pointer;
-
-    &:hover {
-        right: -12px;
-    }
 }
 </style>

@@ -259,6 +259,36 @@ export function getProcessAudits(processNumber) {
 }
 
 /**
+ * 按 processNumber 查询流程沟通消息 (后端 t_bpm_process_comment 表).
+ * 返回按 createTime + id 升序的未删除消息, 字段: id / processNumber / parentId / rootId /
+ * content / attachment / mentions / replyToUser / replyToUserName / createUser / createUserName /
+ * createTime / isDeleted.
+ * @param {string} processNumber
+ * @returns
+ */
+export function getProcessComments(processNumber) {
+  return http.get(`${baseUrl}/bpmnComment/list?processNumber=${processNumber}`, { headers });
+}
+
+/**
+ * 发送流程沟通消息(根消息或回复).
+ * @param {{processNumber:string, parentId:number|null, content:string, attachment:string|null, mentions:Array<{userId:string,userName:string}>}} data
+ * @returns
+ */
+export function saveProcessComment(data) {
+  return http.post(`${baseUrl}/bpmnComment/save`, data, { headers });
+}
+
+/**
+ * 撤回自己发送的流程沟通消息(软删除).
+ * @param {number} id
+ * @returns
+ */
+export function withdrawProcessComment(id) {
+  return http.post(`${baseUrl}/bpmnComment/withdraw?id=${id}`, {}, { headers });
+}
+
+/**
  * 获取委托列表
  * @param {*} pageDto
  * @param {*} taskMgmtVO

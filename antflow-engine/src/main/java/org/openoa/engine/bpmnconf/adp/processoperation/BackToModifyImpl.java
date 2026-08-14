@@ -1,17 +1,23 @@
 package org.openoa.engine.bpmnconf.adp.processoperation;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.pvm.PvmActivity;
+import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.impl.cmd.ProcessNodeJump;
 import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.*;
-import org.openoa.base.entity.ActHiTaskinst;
+import org.openoa.base.entity.*;
+import org.openoa.base.entity.jsonconf.BpmnNodeButtonSignConfJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.JsonConfUtil;
 import org.openoa.base.exception.BusinessErrorEnum;
 import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
@@ -23,20 +29,18 @@ import org.openoa.common.service.BpmVariableMultiplayerServiceImpl;
 import org.openoa.engine.bpmnconf.common.ActivitiAdditionalInfoServiceImpl;
 import org.openoa.engine.bpmnconf.common.ProcessConstants;
 import org.openoa.engine.bpmnconf.common.TaskMgmtServiceImpl;
-import org.openoa.base.entity.BpmProcessNodeSubmit;
-import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.engine.bpmnconf.mapper.BpmVariableMapper;
 import org.openoa.engine.bpmnconf.mapper.TaskMgmtMapper;
 import org.openoa.engine.bpmnconf.service.flowcontrol.DefaultTaskFlowControlServiceFactory;
 import org.openoa.engine.bpmnconf.service.flowcontrol.TaskFlowControlService;
 import org.openoa.base.exception.AFBizException;
-import org.openoa.base.entity.BpmBusinessProcess;
 
 import org.openoa.base.vo.BusinessDataVo;
 import org.openoa.base.vo.TaskMgmtVO;
 import org.openoa.base.util.ProcessDefinitionUtils;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmVerifyInfoBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessNodeSubmitService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnNodeService;
 import org.openoa.engine.factory.FormFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -99,6 +103,8 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
     private BpmVariableMultiplayerPersonnelServiceImpl bpmVariableMultiplayerPersonnelService;
     @Autowired
     private RuntimeService runtimeService;
+    @Autowired
+    private BpmnNodeService bpmnNodeService;
 
 
     @Override
@@ -209,6 +215,20 @@ public class BackToModifyImpl implements ProcessOperationAdaptor {
                 }
                 backToNodeKey = elementId;
                 PvmActivity nextElement = additionalInfoService.getNextElement(elementId, bpmBusinessProcess.getProcInstId());
+                Expression taskDefinition = ((TaskDefinition) nextElement.getProperty("taskDefinition")).getAssigneeExpression();
+                boolean signUpUser = taskDefinition.getExpressionText().contains("signUpUser");
+                if(signUpUser){
+                    BpmnNode bpmnNode = bpmnNodeService.getOne(new LambdaQueryWrapper<BpmnNode>().eq(BpmnNode::getId, backToNodeId));
+                    String nodeConfigJson = bpmnNode.getNodeConfigJson();
+                    BpmnNodeConfigJson nodeConfig = JsonConfUtil.parseNodeConfig(nodeConfigJson);
+                    BpmnNodeButtonSignConfJson.SignUpConf signUpConf = nodeConfig.getButtonSignConf().getSignUpConf();
+                    Integer afterSignUpWay = signUpConf.getAfterSignUpWay();
+                    nextElement = additionalInfoService.getNextElement(nextElement.getId(), bpmBusinessProcess.getProcInstId());
+                    if(1==afterSignUpWay){
+                      nextElement=additionalInfoService.getNextElement(nextElement.getId(), bpmBusinessProcess.getProcInstId());
+                    }
+
+                }
 
                 String type = (String) nextElement.getProperty("type");
                 if ("parallelGateway".equals(type)) {
