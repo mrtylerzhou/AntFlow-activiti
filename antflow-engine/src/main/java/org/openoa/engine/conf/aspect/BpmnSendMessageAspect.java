@@ -10,8 +10,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.ProcessNodeEnum;
 import org.openoa.base.constant.enums.ProcessOperationEnum;
+import org.openoa.base.entity.BpmBusinessProcess;
 import org.openoa.base.entity.jsonconf.BpmnConfConfigJson;
 import org.openoa.base.exception.AFBizException;
+import org.openoa.base.interf.BpmBusinessProcessService;
 import org.openoa.base.interf.ProcessOperationAdaptor;
 import org.openoa.base.util.ThreadLocalContainer;
 import org.openoa.base.vo.BpmnConfVo;
@@ -57,6 +59,8 @@ public class BpmnSendMessageAspect {
     private OutSideBpmCallbackUrlConfServiceImpl outSideBpmCallbackUrlConfService;
     @Autowired
     private IAdaptorFactory adaptorFactory;
+    @Autowired
+    private BpmBusinessProcessService bpmBusinessProcessService;
     
     @Around("execution(* org.openoa.base.interf.ProcessOperationAdaptor.doProcessButton(..))")
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -71,7 +75,12 @@ public class BpmnSendMessageAspect {
 
 
         //get bpmn conf by form code and cache in ThreadLocal for downstream reuse
-        BpmnConf bpmnConf = bpmnConfCommonService.getBpmnConfByFormCode(businessDataVo.getFormCode());
+        BpmnConf bpmnConf = null;
+        if(!StringUtils.isEmpty(businessDataVo.getProcessNumber())){
+            bpmnConf=bpmnConfCommonService.getMapper().getConfByProcessNumber(businessDataVo.getProcessNumber());
+        }else{
+            bpmnConf=bpmnConfCommonService.getBpmnConfByFormCode(businessDataVo.getFormCode());
+        }
 
         //check whether form code is valid
         if (ObjectUtils.isEmpty(bpmnConf) || ObjectUtils.isEmpty(bpmnConf.getId())) {
