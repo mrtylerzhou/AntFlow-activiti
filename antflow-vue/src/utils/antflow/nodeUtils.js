@@ -300,6 +300,13 @@ export class NodeUtils {
       labelList: [
         { labelValue: "auto_node", labelName: "自动节点" },
       ],
+      satisfiedAction: 0, //满足条件时动作: 0默认complete / 1跳转固定节点 / 2加批 / 3转办 / 4抄送
+      unsatisfiedAction: 0, //不满足条件时动作: 0默认complete / 1结束流程 / 2退回指定节点(重新开始)
+      forwardNodeIds: null, //满足=跳转时的目标节点(单选)
+      backToNodeId: null, //不满足=退回时的目标节点(单选)
+      autoSignUpConf: null, //满足=加批时的加批规则配置
+      transferToUser: null, //满足=转办时的目标人
+      autoCopyConf: null, //满足=抄送时的抄送规则配置
       conditionList: [[]], //条件关系,与条件节点相同的多条件组结构
       groupRelation: false, //条件组关系 false:且 true:或
     };

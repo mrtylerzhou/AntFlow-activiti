@@ -261,6 +261,14 @@ export class FormatDisplayUtils {
         if (node.autoNodeConf) {
           node.conditionList = node.autoNodeConf.conditionList || [[]];
           node.groupRelation = node.autoNodeConf.groupRelation || false;
+          // 恢复动作配置(满足/不满足分支)
+          node.satisfiedAction = node.autoNodeConf.satisfiedAction || 0;
+          node.unsatisfiedAction = node.autoNodeConf.unsatisfiedAction || 0;
+          node.forwardNodeIds = node.autoNodeConf.forwardNodeIds || null;
+          node.backToNodeId = node.autoNodeConf.backToNodeId || null;
+          node.autoSignUpConf = node.autoNodeConf.autoSignUpConf || null;
+          node.transferToUser = node.autoNodeConf.transferToUser || null;
+          node.autoCopyConf = node.autoNodeConf.autoCopyConf || null;
         }
       }
 

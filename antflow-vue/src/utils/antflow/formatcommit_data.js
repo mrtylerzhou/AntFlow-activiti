@@ -397,10 +397,24 @@ export class FormatCommitUtils {
         node.autoNodeConf = {
           conditionList: node.conditionList || [[]],
           groupRelation: node.groupRelation || false,
+          satisfiedAction: node.satisfiedAction || 0,
+          unsatisfiedAction: node.unsatisfiedAction || 0,
+          forwardNodeIds: node.satisfiedAction === 1 ? (node.forwardNodeIds || null) : null,
+          backToNodeId: node.unsatisfiedAction === 2 ? (node.backToNodeId || null) : null,
+          autoSignUpConf: node.satisfiedAction === 2 ? (node.autoSignUpConf || null) : null,
+          transferToUser: node.satisfiedAction === 3 ? (node.transferToUser || null) : null,
+          autoCopyConf: node.satisfiedAction === 4 ? (node.autoCopyConf || null) : null,
         };
         delete node.conditionList;
         delete node.groupRelation;
         delete node.nodeApproveList;
+        delete node.satisfiedAction;
+        delete node.unsatisfiedAction;
+        delete node.forwardNodeIds;
+        delete node.backToNodeId;
+        delete node.autoSignUpConf;
+        delete node.transferToUser;
+        delete node.autoCopyConf;
       }
 
       // 条件审批节点: 与 auto node 类似, 把 conditionList 塞进 autoNodeConf

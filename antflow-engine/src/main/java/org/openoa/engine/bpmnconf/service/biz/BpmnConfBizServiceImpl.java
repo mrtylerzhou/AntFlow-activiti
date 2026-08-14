@@ -307,6 +307,40 @@ public class BpmnConfBizServiceImpl implements BpmnConfBizService {
                 String autoNodeConfJson = JSON.toJSONString(bpmnNodeVo.getAutoNodeConf());
                 BpmnNodeAutoNodeConfJson autoConf = JSON.parseObject(autoNodeConfJson, BpmnNodeAutoNodeConfJson.class);
                 nodeCfgJson.setAutoNodeConf(autoConf);
+                // 自动节点(nodeType=9)动作配置发布校验: 选了动作但子配置缺失则拒绝发布
+                if (NodeTypeEnum.NODE_TYPE_AUTO_NODE.getCode().equals(bpmnNodeVo.getNodeType())) {
+                    Integer satisfiedAction = autoConf.getSatisfiedAction();
+                    Integer unsatisfiedAction = autoConf.getUnsatisfiedAction();
+                    if (Integer.valueOf(1).equals(satisfiedAction) && CollectionUtils.isEmpty(autoConf.getForwardNodeIds())) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]满足动作配置了跳转至固定节点但未选择目标节点!");
+                    }
+                    if (Integer.valueOf(2).equals(satisfiedAction)) {
+                        if (autoConf.getAutoSignUpConf() == null) {
+                            throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]满足动作配置了加批但未配置加批人!");
+                        }
+                        // 自动节点加批强制不回到审批人(回到虚拟人-3会死锁)
+                        BpmnNodePropertysVo prop = bpmnNodeVo.getProperty();
+                        if (prop == null) {
+                            prop = new BpmnNodePropertysVo();
+                            bpmnNodeVo.setProperty(prop);
+                        }
+                        prop.setAfterSignUpWay(2);
+                    }
+                    if (Integer.valueOf(3).equals(satisfiedAction)) {
+                        com.alibaba.fastjson2.JSONObject to = autoConf.getTransferToUser() == null ? null
+                                : com.alibaba.fastjson2.JSON.parseObject(com.alibaba.fastjson2.JSON.toJSONString(autoConf.getTransferToUser()));
+                        if (to == null || org.apache.commons.lang3.StringUtils.isEmpty(to.getString("id"))) {
+                            throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]满足动作配置了转办但未选择转办目标!");
+                        }
+                    }
+                    if (Integer.valueOf(4).equals(satisfiedAction) && autoConf.getAutoCopyConf() == null) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]满足动作配置了抄送但未配置抄送人!");
+                    }
+                    if (Integer.valueOf(2).equals(unsatisfiedAction)
+                            && org.apache.commons.lang3.StringUtils.isEmpty(autoConf.getBackToNodeId())) {
+                        throw new AFBizException("节点[" + bpmnNodeVo.getNodeName() + "]不满足动作配置了退回但未选择退回目标节点!");
+                    }
+                }
             }
 
             // Transfer disagree-back config from VO to node config JSON

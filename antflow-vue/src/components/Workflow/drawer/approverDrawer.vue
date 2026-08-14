@@ -292,6 +292,7 @@ import { ref, watch, computed, inject } from 'vue';
 import $func from '@/utils/antflow/index';
 import { useStore } from '@/store/modules/workflow';
 import { useNodeForwardBack } from './useNodeForwardBack';
+import { validateAutoSignUpConf, buildAutoSignUpResolvedProperty } from '@/utils/antflow/autoSignUpConfUtils';
 import ConditionGroupEditor from "./condition/ConditionGroupEditor.vue";
 import selectUserDialog from "../dialog/selectUserDialog.vue";
 import ApproverStepPanel from "./panel/ApproverStepPanel.vue";
@@ -344,32 +345,7 @@ const autoSignUpConf = computed(() => {
     }
     return approverConfig.value.autoSignUpConf;
 });
-/**加批规则校验: 按类型检查必要数据 */
-const validateAutoSignUpConf = (conf) => {
-    const list = conf.nodeApproveList || [];
-    if (conf.setType == 5 || conf.setType == 4 || conf.setType == 6) return list.length > 0;
-    if (conf.setType == 3) return !!conf.directorLevel;
-    if (conf.setType == 17) return !!(conf.property && conf.property.udrAssigneeProperty);
-    return true; // 12 发起人自己 / 13 直属领导 无需额外数据
-};
-/**镜像 formatcommit_data 的映射, 构建运行期解析所需的 resolvedProperty */
-const buildAutoSignUpResolvedProperty = (conf) => {
-    const p = { emplIds: [], emplList: [], roleIds: [], roleList: [] };
-    const list = conf.nodeApproveList || [];
-    if (conf.setType == 4) {
-        list.forEach(a => { p.roleIds.push(a.targetId); p.roleList.push({ id: a.targetId, name: a.name }); });
-    } else if (conf.setType == 5) {
-        list.forEach(a => { p.emplIds.push(a.targetId); p.emplList.push({ id: a.targetId, name: a.name }); });
-    } else if (conf.setType == 6) {
-        p.hrbpConfType = list.length ? list[0].targetId : 0;
-    } else if (conf.setType == 3) {
-        p.assignLevelGrade = conf.directorLevel;
-    } else if (conf.setType == 17) {
-        p.udrAssigneeProperty = (conf.property && conf.property.udrAssigneeProperty) || null;
-        p.udrValueJson = (conf.property && conf.property.udrValueJson) || null;
-    }
-    return p;
-};
+/**加批规则校验与 resolvedProperty 构建已抽至 autoSignUpConfUtils 公共工具 */
 /**多人审批方式(1顺序会签/2会签/3或签), 复用 property.signUpType */
 const autoSignUpType = computed({
     get: () => (approverConfig.value.property && approverConfig.value.property.signUpType) || 1,

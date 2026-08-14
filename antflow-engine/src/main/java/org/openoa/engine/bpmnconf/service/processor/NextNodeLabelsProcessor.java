@@ -19,6 +19,7 @@ import org.openoa.base.entity.BpmnNode;
 import org.openoa.base.entity.BpmProcessForward;
 import org.openoa.base.entity.BpmVerifyInfo;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
+import org.openoa.base.entity.jsonconf.BpmnNodeAutoNodeConfJson;
 import org.openoa.base.entity.jsonconf.BpmnNodeApproverConfJson;
 import org.openoa.base.exception.AFBizException;
 import org.openoa.base.exception.BusinessErrorEnum;
@@ -102,7 +103,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         for (BpmnNodeLabelVO nodeLabelVO : nodeLabelVOS) {
             processCopy(elementId, processNumber, procInstId,nodeLabelVO);
             processCopyV2(nodeLabelVO, procInstId, assignee, assigneeName, processNumber,delegateTask);
-            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide,delegateTask);
+            processAutomaticNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processAutoAdvanceNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processAutoReturnNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
             processConditionReturnNode(nodeLabelVO, processNumber, elementId, formCode, businessDataVo, isOutSide, procInstId, delegateTask);
@@ -171,47 +172,301 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         businessDataVo.setNextNodeApprovers(null);
     }
 
-    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide,DelegateTask delegateTask) {
+    /**
+     * 自动节点处理(增强版):
+     * - 条件评估 (formAdaptor.automaticCondition) + automaticAction 自定义钩子
+     * - 异常兜底: conditionResult=null → 默认 complete (保持现状)
+     * - true  → 按 autoNodeConf.satisfiedAction 分发: 0默认complete / 1跳转固定节点 / 2加批 / 3转办 / 4抄送
+     * - false → 按 autoNodeConf.unsatisfiedAction 分发: 0默认complete / 1结束流程 / 2退回指定节点(重新开始)
+     * - 旧数据新字段为空 → 两分支均默认 complete, 零迁移
+     */
+    private void processAutomaticNode(BpmnNodeLabelVO nodeLabelVO, String processNumber, String elementId, String formCode, BusinessDataVo businessDataVo, Boolean isOutSide, String procInstId, DelegateTask delegateTask) {
 
         if (!StringConstants.AUTOMATIC_NODE.equals(nodeLabelVO.getLabelValue())){
             return;
         }
+        log.info("自动节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
 
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
+
+        Boolean conditionResult = null;
+        try {
+            conditionResult = formAdaptor.automaticCondition(businessDataVo);
+            log.info("自动节点条件评估结果, processNumber={}, elementId={}, conditionResult={}", processNumber, elementId, conditionResult);
+            formAdaptor.automaticAction(businessDataVo, conditionResult);
+        } catch (Exception e) {
+            log.error("自动节点条件判断或动作执行异常, 回退默认complete, processNumber={}, elementId={}", processNumber, elementId, e);
+            conditionResult = null;
+        }
+
+        BpmnNodeConfigJson configJson = formAdaptor.loadNodeConfigJson(businessDataVo);
+        BpmnNodeAutoNodeConfJson autoConf = configJson == null ? null : configJson.getAutoNodeConf();
+
+        if (Boolean.TRUE.equals(conditionResult)) {
+            executeAutoNodeSatisfiedAction(autoConf, businessDataVo, processNumber, elementId, formCode, procInstId, delegateTask);
+        } else if (Boolean.FALSE.equals(conditionResult)) {
+            executeAutoNodeUnsatisfiedAction(autoConf, businessDataVo, processNumber, elementId, procInstId, delegateTask);
+        } else {
+            // 异常兜底: 默认 complete (保持现状)
+            completeAsAutoSkip(delegateTask, processNumber, String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult));
+        }
+    }
+
+    /**
+     * 自动节点满足分支动作分发: 0/null默认complete / 1跳转固定节点 / 2加批 / 3转办 / 4抄送
+     */
+    private void executeAutoNodeSatisfiedAction(BpmnNodeAutoNodeConfJson autoConf, BusinessDataVo businessDataVo,
+                                                String processNumber, String elementId, String formCode,
+                                                String procInstId, DelegateTask delegateTask) {
+        Integer action = autoConf == null ? null : autoConf.getSatisfiedAction();
+        String assigneeId = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId();
+        String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+        String skipComment = String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, true);
+        if (action == null || action == 0) {
+            completeAsAutoSkip(delegateTask, processNumber, skipComment);
+            return;
+        }
+        if (action == 1) {
+            // 跳转至固定节点 (同自动推进)
+            List<String> forwardNodeIds = autoConf.getForwardNodeIds();
+            if (CollectionUtils.isEmpty(forwardNodeIds)) {
+                throw new AFBizException("自动节点配置异常: 未配置跳转目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, forwardNodeIds.get(0), "自动节点跳转");
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, "自动节点跳转");
+            log.info("自动节点: 条件满足, 跳转固定节点, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                    processNumber, elementId, targetElementId, targetNode.getNodeName());
+            forwardToNodeImpl.advanceToTargetNode(delegateTask, procInstId,
+                    delegateTask.getTaskDefinitionKey(), targetElementId, targetNode.getNodeName(),
+                    assigneeId, assigneeName);
+            return;
+        }
+        if (action == 2) {
+            // 加批 (同条件自动加批, 发布期已强制 afterSignUpWay=2 不回到审批人)
+            if (bpmVariableSignUpPersonnelBizService.hasSignUpPersonnel(processNumber, elementId)) {
+                log.info("自动节点已加批过, 跳过重复触发, processNumber={}, elementId={}", processNumber, elementId);
+                completeAsAutoSkip(delegateTask, processNumber, skipComment);
+                return;
+            }
+            List<BaseIdTranStruVo> signUpUsers = resolveAssigneeRule(autoConf.getAutoSignUpConf(), businessDataVo, processNumber, elementId, "自动节点加批");
+            if (CollectionUtils.isEmpty(signUpUsers)) {
+                log.error("自动节点加批规则解析结果为空, 回退默认complete, processNumber={}, elementId={}", processNumber, elementId);
+                completeAsAutoSkip(delegateTask, processNumber, skipComment);
+                return;
+            }
+            bpmVariableSignUpPersonnelBizService.insertSignUpPersonnel(taskService, delegateTask.getId(), processNumber, elementId,
+                    delegateTask.getAssignee(), assigneeName, signUpUsers);
+            Map<String, Object> varMap = new HashMap<>();
+            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(assigneeId)
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_SIGN_UP.getCode())
+                    .verifyDesc(String.format(StringConstants.AF_CONDITION_AUTO_SIGNUP_COMMENT, true))
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            ((TaskEntity) delegateTask).complete(varMap, false);
+            return;
+        }
+        if (action == 3) {
+            // 转办 (同条件自动转办类型1: 转给指定人), 不 complete, 任务转人工
+            BaseIdTranStruVo target = autoConf.getTransferToUser() == null ? null
+                    : com.alibaba.fastjson2.JSON.parseObject(com.alibaba.fastjson2.JSON.toJSONString(autoConf.getTransferToUser()), BaseIdTranStruVo.class);
+            if (target == null || org.apache.commons.lang3.StringUtils.isEmpty(target.getId())) {
+                log.error("自动节点未配置转办目标, 回退默认complete, processNumber={}, elementId={}", processNumber, elementId);
+                completeAsAutoSkip(delegateTask, processNumber, skipComment);
+                return;
+            }
+            String oldUserId = delegateTask.getAssignee();
+            if (!target.getId().equals(oldUserId)) {
+                delegateTask.setAssignee(target.getId());
+                if (delegateTask instanceof TaskEntity) {
+                    ((TaskEntity) delegateTask).setAssigneeName(target.getName());
+                }
+                BpmFlowrunEntrust entrust = new BpmFlowrunEntrust();
+                entrust.setType(1);
+                entrust.setRuntaskid(delegateTask.getId());
+                entrust.setActual(target.getId());
+                entrust.setActualName(target.getName());
+                entrust.setOriginal(oldUserId);
+                entrust.setOriginalName(assigneeName);
+                entrust.setIsRead(2);
+                entrust.setProcDefId(formCode);
+                entrust.setRuninfoid(delegateTask.getProcessInstanceId());
+                bpmFlowrunEntrustService.addFlowrunEntrust(entrust);
+                log.info("自动节点: 条件满足, 转办生效, 转办前: {}, 转办后: {}, processNumber={}, elementId={}", oldUserId, target.getId(), processNumber, elementId);
+            }
+            // 不 complete, 不写审批记录 (转办人处理时自然产生)
+            return;
+        }
+        if (action == 4) {
+            // 抄送: 解析抄送人逐人写 BpmProcessForward + complete
+            List<BaseIdTranStruVo> copyUsers = resolveAssigneeRule(autoConf.getAutoCopyConf(), businessDataVo, processNumber, elementId, "自动节点抄送");
+            if (CollectionUtils.isEmpty(copyUsers)) {
+                log.error("自动节点抄送规则解析结果为空, 回退默认complete, processNumber={}, elementId={}", processNumber, elementId);
+                completeAsAutoSkip(delegateTask, processNumber, skipComment);
+                return;
+            }
+            for (BaseIdTranStruVo copyUser : copyUsers) {
+                List<BpmProcessForward> exists = bpmProcessForwardService.list(AFWrappers.<BpmProcessForward>lambdaTenantQuery()
+                        .eq(BpmProcessForward::getProcessInstanceId, procInstId)
+                        .eq(BpmProcessForward::getForwardUserId, copyUser.getId()));
+                if (CollectionUtils.isEmpty(exists)) {
+                    bpmProcessForwardService.addProcessForward(BpmProcessForward.builder()
+                            .createTime(new Date())
+                            .createUserId(assigneeId)
+                            .forwardUserId(copyUser.getId())
+                            .ForwardUserName(copyUser.getName())
+                            .processInstanceId(procInstId)
+                            .processNumber(processNumber)
+                            .build());
+                }
+            }
+            String copyNames = copyUsers.stream().map(BaseIdTranStruVo::getName).collect(Collectors.joining(","));
+            completeAsAutoSkip(delegateTask, processNumber, "(抄送给" + copyNames + ")自动通过");
+        }
+    }
+
+    /**
+     * 自动节点不满足分支动作分发: 0/null默认complete / 1结束流程 / 2退回指定节点(重新开始)
+     */
+    private void executeAutoNodeUnsatisfiedAction(BpmnNodeAutoNodeConfJson autoConf, BusinessDataVo businessDataVo,
+                                                  String processNumber, String elementId, String procInstId, DelegateTask delegateTask) {
+        Integer action = autoConf == null ? null : autoConf.getUnsatisfiedAction();
+        String assigneeId = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId();
+        String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
+        if (action == null || action == 0) {
+            completeAsAutoSkip(delegateTask, processNumber, String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, false));
+            return;
+        }
+        if (action == 1) {
+            // 结束流程 (同条件拒绝: 拒绝记录 + endProcessWithoutVerify)
+            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
+                    .verifyDate(new Date())
+                    .taskName(delegateTask.getName())
+                    .taskId(delegateTask.getId())
+                    .runInfoId(delegateTask.getProcessInstanceId())
+                    .verifyUserId(assigneeId)
+                    .verifyUserName(assigneeName)
+                    .taskDefKey(delegateTask.getTaskDefinitionKey())
+                    .verifyStatus(ProcessStateEnum.REJECT_STATE.getCode())
+                    .verifyDesc("自动节点条件不满足, 结束流程")
+                    .processCode(processNumber)
+                    .build();
+            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            businessDataVo.setFlag(false);
+            endProcessImpl.endProcessWithoutVerify(businessDataVo);
+            return;
+        }
+        if (action == 2) {
+            // 退回指定节点 (重新开始, backType=4)
+            if (org.apache.commons.lang3.StringUtils.isEmpty(autoConf.getBackToNodeId())) {
+                throw new AFBizException("自动节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
+            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, autoConf.getBackToNodeId(), "自动节点退回");
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, "自动节点退回");
+            log.info("自动节点: 条件不满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
+                    processNumber, elementId, targetElementId, targetNode.getNodeName());
+            backToModifyImpl.returnToTargetNode(delegateTask, procInstId, processNumber,
+                    delegateTask.getTaskDefinitionKey(), targetElementId, targetNode.getNodeName(),
+                    assigneeId, "自动节点条件不满足自动退回", businessDataVo, 4);
+        }
+    }
+
+    /**
+     * 公共前置: 填充 businessDataVo + 获取 formAdaptor + 低码流程补充 lfConditions
+     */
+    private FormOperationAdaptor prepareFormAdaptor(String processNumber, String elementId, String formCode,
+                                                    BusinessDataVo businessDataVo, Boolean isOutSide) {
         businessDataVo.setProcessNumber(processNumber);
         businessDataVo.setTaskDefKey(elementId);
         businessDataVo.setFormCode(formCode);
         businessDataVo.setIsOutSideAccessProc(isOutSide);
         FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
+        if (formAdaptor == null) {
+            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
         }
-        businessDataVo.setLfConditions(businessDataVo.getLfFields());
+        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
+            businessDataVo.setLfConditions(businessDataVo.getLfFields());
+        }
+        return formAdaptor;
+    }
+
+    /**
+     * 公共: 设计态 UUID → BpmnNode (confId 限定当前流程)
+     */
+    private BpmnNode resolveTargetNode(BusinessDataVo businessDataVo, String processNumber, String targetNodeUuid, String logPrefix) {
+        BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
+        if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
+            throw new AFBizException(logPrefix + ": businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber);
+        }
+        Long confId = bpmnConfVo.getId();
+        BpmnNode targetNode = bpmnNodeService.getOne(
+                Wrappers.<BpmnNode>lambdaQuery()
+                        .eq(BpmnNode::getConfId, confId)
+                        .eq(BpmnNode::getNodeId, targetNodeUuid)
+                        .eq(BpmnNode::getIsDel, 0),
+                false
+        );
+        if (targetNode == null) {
+            throw new AFBizException(logPrefix + "目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
+        }
+        return targetNode;
+    }
+
+    /**
+     * 公共: BpmnNode → 运行期 elementId(taskDefKey)
+     */
+    private String resolveElementIdByNode(String processNumber, BpmnNode targetNode, String logPrefix) {
+        List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, String.valueOf(targetNode.getId()));
+        if (CollectionUtils.isEmpty(targetElementIds)) {
+            throw new AFBizException(String.format("%s: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", logPrefix, processNumber, targetNode.getId()));
+        }
+        return targetElementIds.get(0);
+    }
+
+    /**
+     * 公共: 自动节点式 complete + 虚拟人-3 审批记录
+     */
+    private void completeAsAutoSkip(DelegateTask delegateTask, String processNumber, String comment) {
         String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
-        Boolean conditionResult = null;
-        try {
-            conditionResult = formAdaptor.automaticCondition(businessDataVo);
-            formAdaptor.automaticAction(businessDataVo, conditionResult);
-        } catch (Exception e) {
-            log.error("自动节点条件判断或动作执行异常, processNumber={}, elementId={}", processNumber, elementId, e);
-        } finally {
-            Map<String,Object> varMap=new HashMap<>();
-            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
-            ((TaskEntity) delegateTask).complete(varMap,false);
-            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
-                    .builder()
-                    .verifyDate(new Date())
-                    .taskName(delegateTask.getName())
-                    .taskId(delegateTask.getId())
-                    .runInfoId(delegateTask.getProcessInstanceId())
-                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
-                    .verifyUserName(assigneeName)
-                    .taskDefKey(delegateTask.getTaskDefinitionKey())
-                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT,conditionResult))
-                    .processCode(processNumber)
-                    .build();
-            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+        Map<String, Object> varMap = new HashMap<>();
+        varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
+        ((TaskEntity) delegateTask).complete(varMap, false);
+        BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
+                .verifyDate(new Date())
+                .taskName(delegateTask.getName())
+                .taskId(delegateTask.getId())
+                .runInfoId(delegateTask.getProcessInstanceId())
+                .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
+                .verifyUserName(assigneeName)
+                .taskDefKey(delegateTask.getTaskDefinitionKey())
+                .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
+                .verifyDesc(comment)
+                .processCode(processNumber)
+                .build();
+        bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+    }
+
+    /**
+     * 公共: 加批/抄送规则配置解析为具体用户 (基准人为发起人, 同条件自动加批)
+     */
+    private List<BaseIdTranStruVo> resolveAssigneeRule(Object conf, BusinessDataVo businessDataVo, String processNumber, String elementId, String logPrefix) {
+        if (conf == null) {
+            return null;
         }
+        String startUserId = null;
+        BpmBusinessProcess bpmBusinessProcess = bpmBusinessProcessService.getBpmBusinessProcess(processNumber);
+        if (bpmBusinessProcess != null) {
+            startUserId = bpmBusinessProcess.getCreateUser();
+        }
+        return autoSignUpAssigneeResolver.resolve(conf, startUserId, businessDataVo);
     }
 
     /**
@@ -234,17 +489,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         log.info("自动推进节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
 
         // === 条件评估 (复用 auto node 逻辑) ===
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if (formAdaptor == null) {
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
-        }
-        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
-            businessDataVo.setLfConditions(businessDataVo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -272,34 +517,9 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 throw new AFBizException("自动推进节点配置异常: 未配置固定目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
             String targetNodeUuid = forwardNodeIds.get(0);
-
-            // UUID → 主键 (t_bpmn_node.node_id → t_bpmn_node.id)
-            // 同一 node_id 在不同流程模板(复制)中可能重复, 必须用 confId 限定到当前流程
-            // 同一流程内 node_id 唯一, 不使用 LIMIT 1 以兼容多数据库
-            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
-            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
-                throw new AFBizException("自动推进: businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber + ", elementId=" + elementId);
-            }
-            Long confId = bpmnConfVo.getId();
-            BpmnNode targetNode = bpmnNodeService.getOne(
-                    Wrappers.<BpmnNode>lambdaQuery()
-                            .eq(BpmnNode::getConfId, confId)
-                            .eq(BpmnNode::getNodeId, targetNodeUuid)
-                            .eq(BpmnNode::getIsDel, 0),
-                    false
-            );
-            if (targetNode == null) {
-                throw new AFBizException("自动推进目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
-            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, targetNodeUuid, "自动推进");
             String targetNodeName = targetNode.getNodeName();
-            String targetPrimaryKey = String.valueOf(targetNode.getId());
-
-            // 主键 → elementId (taskDefKey)
-            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
-            if (CollectionUtils.isEmpty(targetElementIds)) {
-                throw new AFBizException(String.format("自动推进: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
-            }
-            String targetElementId = targetElementIds.get(0);
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, "自动推进");
 
             log.info("自动推进: 条件满足, 开始推进, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
                     processNumber, elementId, targetElementId, targetNodeName);
@@ -316,22 +536,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         } else {
             // === 跳过路径: 和自动节点一样 complete (不跳跃) ===
             log.info("自动推进: 条件不满足, 执行自动跳过, processNumber={}, elementId={}", processNumber, elementId);
-            Map<String, Object> varMap = new HashMap<>();
-            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
-            ((TaskEntity) delegateTask).complete(varMap, false);
-            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
-                    .verifyDate(new Date())
-                    .taskName(delegateTask.getName())
-                    .taskId(delegateTask.getId())
-                    .runInfoId(delegateTask.getProcessInstanceId())
-                    .verifyUserId(assigneeId)
-                    .verifyUserName(assigneeName)
-                    .taskDefKey(delegateTask.getTaskDefinitionKey())
-                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult))
-                    .processCode(processNumber)
-                    .build();
-            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            completeAsAutoSkip(delegateTask, processNumber, String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult));
         }
     }
 
@@ -351,17 +556,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         log.info("自动退回节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
 
         // === 条件评估 (复用 auto node 逻辑) ===
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if (formAdaptor == null) {
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
-        }
-        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
-            businessDataVo.setLfConditions(businessDataVo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -388,32 +583,9 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 throw new AFBizException("自动退回节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
             String targetNodeUuid = drawBackNodeIds.get(0);
-
-            // UUID → 主键 (t_bpmn_node.node_id → t_bpmn_node.id)
-            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
-            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
-                throw new AFBizException("自动退回: businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber + ", elementId=" + elementId);
-            }
-            Long confId = bpmnConfVo.getId();
-            BpmnNode targetNode = bpmnNodeService.getOne(
-                    Wrappers.<BpmnNode>lambdaQuery()
-                            .eq(BpmnNode::getConfId, confId)
-                            .eq(BpmnNode::getNodeId, targetNodeUuid)
-                            .eq(BpmnNode::getIsDel, 0),
-                    false
-            );
-            if (targetNode == null) {
-                throw new AFBizException("自动退回目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
-            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, targetNodeUuid, "自动退回");
             String targetNodeName = targetNode.getNodeName();
-            String targetPrimaryKey = String.valueOf(targetNode.getId());
-
-            // 主键 → elementId (taskDefKey)
-            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
-            if (CollectionUtils.isEmpty(targetElementIds)) {
-                throw new AFBizException(String.format("自动退回: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
-            }
-            String targetElementId = targetElementIds.get(0);
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, "自动退回");
 
             log.info("自动退回: 条件满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
                     processNumber, elementId, targetElementId, targetNodeName);
@@ -430,22 +602,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         } else {
             // === 跳过路径: 和自动节点一样 complete (不跳跃) ===
             log.info("自动退回: 条件不满足, 执行自动跳过, processNumber={}, elementId={}", processNumber, elementId);
-            Map<String, Object> varMap = new HashMap<>();
-            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
-            ((TaskEntity) delegateTask).complete(varMap, false);
-            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo.builder()
-                    .verifyDate(new Date())
-                    .taskName(delegateTask.getName())
-                    .taskId(delegateTask.getId())
-                    .runInfoId(delegateTask.getProcessInstanceId())
-                    .verifyUserId(assigneeId)
-                    .verifyUserName(assigneeName)
-                    .taskDefKey(delegateTask.getTaskDefinitionKey())
-                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                    .verifyDesc(String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult))
-                    .processCode(processNumber)
-                    .build();
-            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            completeAsAutoSkip(delegateTask, processNumber, String.format(StringConstants.AF_AUTO_EVALUATE_SKIP_COMMENT, conditionResult));
         }
     }
 
@@ -468,17 +625,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         log.info("{}节点处理开始, processNumber={}, elementId={}", logPrefix, processNumber, elementId);
 
         // === 条件评估 ===
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if (formAdaptor == null) {
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
-        }
-        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
-            businessDataVo.setLfConditions(businessDataVo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -512,31 +659,9 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 throw new AFBizException(logPrefix + "节点配置异常: 未配置退回目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
 
-            // UUID → 主键 (t_bpmn_node.node_id → t_bpmn_node.id)
-            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
-            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
-                throw new AFBizException("条件退回: businessDataVo.bpmnConfVo 未填充, processNumber=" + processNumber + ", elementId=" + elementId);
-            }
-            Long confId = bpmnConfVo.getId();
-            BpmnNode targetNode = bpmnNodeService.getOne(
-                    Wrappers.<BpmnNode>lambdaQuery()
-                            .eq(BpmnNode::getConfId, confId)
-                            .eq(BpmnNode::getNodeId, targetNodeUuid)
-                            .eq(BpmnNode::getIsDel, 0),
-                    false
-            );
-            if (targetNode == null) {
-                throw new AFBizException(logPrefix + "目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
-            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, targetNodeUuid, logPrefix);
             String targetNodeName = targetNode.getNodeName();
-            String targetPrimaryKey = String.valueOf(targetNode.getId());
-
-            // 主键 → elementId (taskDefKey)
-            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
-            if (CollectionUtils.isEmpty(targetElementIds)) {
-                throw new AFBizException(String.format("%s: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", logPrefix, processNumber, targetPrimaryKey));
-            }
-            String targetElementId = targetElementIds.get(0);
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, logPrefix);
 
             log.info("{}: 条件满足, 开始退回, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}, backType={}",
                     logPrefix, processNumber, elementId, targetElementId, targetNodeName, backType);
@@ -579,18 +704,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         log.info("条件推进/条件完成节点处理开始, processNumber={}, elementId={}", processNumber, elementId);
 
         // === 条件评估 (复用条件审批/自动推进逻辑) ===
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if (formAdaptor == null) {
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR, "未能根据流程formcode找到流程适配器信息!");
-        }
-        if (CollectionUtils.isEmpty(businessDataVo.getLfConditions()) && Objects.equals(businessDataVo.getIsLowCodeFlow(), 1)) {
-            UDLFApplyVo vo = (UDLFApplyVo) businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -616,30 +730,9 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
                 throw new AFBizException("条件推进节点配置异常: 未配置固定目标节点, processNumber=" + processNumber + ", elementId=" + elementId);
             }
             String targetNodeUuid = forwardNodeIds.get(0);
-
-            BpmnConfVo bpmnConfVo = businessDataVo.getBpmnConfVo();
-            if (bpmnConfVo == null || bpmnConfVo.getId() == null) {
-                throw new AFBizException("条件推进: businessDataVo.bpmnConfVo 未填充, 无法定位流程配置, processNumber=" + processNumber + ", elementId=" + elementId);
-            }
-            Long confId = bpmnConfVo.getId();
-            BpmnNode targetNode = bpmnNodeService.getOne(
-                    Wrappers.<BpmnNode>lambdaQuery()
-                            .eq(BpmnNode::getConfId, confId)
-                            .eq(BpmnNode::getNodeId, targetNodeUuid)
-                            .eq(BpmnNode::getIsDel, 0),
-                    false
-            );
-            if (targetNode == null) {
-                throw new AFBizException("条件推进目标节点不存在, processNumber=" + processNumber + ", confId=" + confId + ", nodeUuid=" + targetNodeUuid);
-            }
+            BpmnNode targetNode = resolveTargetNode(businessDataVo, processNumber, targetNodeUuid, "条件推进");
             String targetNodeName = targetNode.getNodeName();
-            String targetPrimaryKey = String.valueOf(targetNode.getId());
-
-            List<String> targetElementIds = bpmVariableMapper.getElementIdsdByNodeId(processNumber, targetPrimaryKey);
-            if (CollectionUtils.isEmpty(targetElementIds)) {
-                throw new AFBizException(String.format("条件推进: 未能根据nodeId获取目标节点taskDefKey, processNumber=%s, targetNodeId=%s", processNumber, targetPrimaryKey));
-            }
-            String targetElementId = targetElementIds.get(0);
+            String targetElementId = resolveElementIdByNode(processNumber, targetNode, "条件推进");
 
             log.info("条件推进: 条件满足, 开始推进, processNumber={}, elementId={}, targetElementId={}, targetNodeName={}",
                     processNumber, elementId, targetElementId, targetNodeName);
@@ -663,18 +756,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             return;
         }
 
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
-        }
-        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -685,24 +767,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
 
         //仅当条件满足时才自动 complete; 否则留给真实审批人
         if (Boolean.TRUE.equals(conditionResult)) {
-            String assigneeName = AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getDesc();
-            Map<String,Object> varMap=new HashMap<>();
-            varMap.put(StringConstants.TASK_ASSIGNEE_NAME, assigneeName);
-            ((TaskEntity) delegateTask).complete(varMap,false);
-            BpmVerifyInfo bpmVerifyInfo = BpmVerifyInfo
-                    .builder()
-                    .verifyDate(new Date())
-                    .taskName(delegateTask.getName())
-                    .taskId(delegateTask.getId())
-                    .runInfoId(delegateTask.getProcessInstanceId())
-                    .verifyUserId(AFSpecialAssigneeEnum.AUTO_NODE_SKIP.getId())
-                    .verifyUserName(assigneeName)
-                    .taskDefKey(delegateTask.getTaskDefinitionKey())
-                    .verifyStatus(ProcessSubmitStateEnum.PROCESS_AGRESS_TYPE.getCode())
-                    .verifyDesc(String.format(StringConstants.AF_CONDITION_APPROVE_AUTO_PASS_COMMENT, conditionResult))
-                    .processCode(processNumber)
-                    .build();
-            bpmVerifyInfoBizService.addVerifyInfo(bpmVerifyInfo);
+            completeAsAutoSkip(delegateTask, processNumber, String.format(StringConstants.AF_CONDITION_APPROVE_AUTO_PASS_COMMENT, conditionResult));
         }
         //conditionResult == false 或 null: 不 complete, 留给真实审批人
     }
@@ -721,18 +786,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             return;
         }
 
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
-        }
-        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -778,18 +832,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             return;
         }
 
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
-        }
-        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -876,18 +919,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
             return;
         }
 
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
-        }
-        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            UDLFApplyVo vo=(UDLFApplyVo)businessDataVo;
-            vo.setLfConditions(vo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {
@@ -960,17 +992,7 @@ public class NextNodeLabelsProcessor implements AntFlowNextNodeBeforeWriteProces
         }
 
         // === 条件评估 (复用 auto node 的逻辑) ===
-        businessDataVo.setProcessNumber(processNumber);
-        businessDataVo.setTaskDefKey(elementId);
-        businessDataVo.setFormCode(formCode);
-        businessDataVo.setIsOutSideAccessProc(isOutSide);
-        FormOperationAdaptor formAdaptor = formFactory.getFormAdaptor(businessDataVo);
-        if(formAdaptor==null){
-            throw new AFBizException(BusinessErrorEnum.STATUS_ERROR,"未能根据流程formcode找到流程适配器信息!");
-        }
-        if(CollectionUtils.isEmpty(businessDataVo.getLfConditions())&&Objects.equals(businessDataVo.getIsLowCodeFlow(),1)){
-            businessDataVo.setLfConditions(businessDataVo.getLfFields());
-        }
+        FormOperationAdaptor formAdaptor = prepareFormAdaptor(processNumber, elementId, formCode, businessDataVo, isOutSide);
 
         Boolean conditionResult = null;
         try {

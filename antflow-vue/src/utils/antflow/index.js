@@ -297,7 +297,22 @@ All.prototype = {
         str = str + (groupRelation == false ? " 且 " : " 或 ");
       }
     }
-    return str;
+    return str + this.autoNodeActionStr(nodeConfig);
+  },
+
+  /**自动节点动作摘要: 满足/不满足分支非默认时追加展示 */
+  autoNodeActionStr(nodeConfig) {
+    if (!nodeConfig) return "";
+    const satMap = { 1: "跳转至固定节点", 2: "加批", 3: "转办", 4: "抄送" };
+    const unsatMap = { 1: "结束流程", 2: "退回指定节点" };
+    const parts = [];
+    if (nodeConfig.satisfiedAction && satMap[nodeConfig.satisfiedAction]) {
+      parts.push("满足→" + satMap[nodeConfig.satisfiedAction]);
+    }
+    if (nodeConfig.unsatisfiedAction && unsatMap[nodeConfig.unsatisfiedAction]) {
+      parts.push("不满足→" + unsatMap[nodeConfig.unsatisfiedAction]);
+    }
+    return parts.length ? "  " + parts.join("; ") : "";
   },
 
   getConditionStr(conditionArray) {
