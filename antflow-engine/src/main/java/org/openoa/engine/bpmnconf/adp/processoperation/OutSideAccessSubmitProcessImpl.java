@@ -22,7 +22,7 @@ import org.openoa.base.entity.OutSideBpmAccessBusiness;
 import org.openoa.base.entity.OutSideBpmConditionsTemplate;
 import org.openoa.engine.bpmnconf.service.biz.BpmBusinessProcessServiceImpl;
 import org.openoa.engine.bpmnconf.service.biz.BpmnConfBizServiceImpl;
-import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
+import org.openoa.base.service.AfDepartmentService;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmAccessBusinessServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.OutSideBpmConditionsTemplateServiceImpl;
 import org.openoa.engine.factory.FormFactory;
@@ -49,7 +49,7 @@ public class OutSideAccessSubmitProcessImpl implements ProcessOperationAdaptor {
     private AfUserService employeeService;
 
     @Autowired
-    private DepartmentServiceImpl departmentService;
+    private AfDepartmentService departmentService;
 
     @Autowired
     private OutSideBpmAccessBusinessServiceImpl outSideBpmAccessBusinessService;

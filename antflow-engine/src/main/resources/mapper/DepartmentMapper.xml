@@ -18,4 +18,71 @@
             </if>
         </where>
     </select>
+
+    <select id="getDepartmentById" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        where id = #{id}
+    </select>
+
+    <select id="getByIds" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        <where>
+            id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="queryByNameFuzzy" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getDepartmentsByParentId" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        <where>
+            <if test="parentId != null">
+                parent_id = #{parentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDepartmentByCompanyId" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        <where>
+            <if test="companyId != null and companyId != ''">
+                company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDepartmentPageList" resultType="org.openoa.base.entity.Department">
+        select id,name,name_scn,parent_id,level,sort,is_del,is_hide,create_user,create_time,update_time,update_user
+        from t_department
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="getDepartmentPageListCount" resultType="java.lang.Long">
+        select count(1) from t_department
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.openoa.base.constant.enums.ProcessJurisdictionEnum;
 import org.openoa.base.entity.BpmProcessPermissions;
 import org.openoa.base.entity.Department;
+import org.openoa.base.service.AfDepartmentService;
 import org.openoa.base.util.SecurityUtils;
-import org.openoa.engine.bpmnconf.service.impl.DepartmentServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessPermissionsBizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class BpmProcessPermissionsBizServiceImpl implements BpmProcessPermissionsBizService {
     @Autowired
-    private DepartmentServiceImpl departmentService;
+    private AfDepartmentService departmentService;
 
     /**
      * get a list of specified user's permissions

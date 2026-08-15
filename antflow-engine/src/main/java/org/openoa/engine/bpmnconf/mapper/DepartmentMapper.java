@@ -16,4 +16,18 @@ public interface DepartmentMapper  {
     List<Department> ListSubDepartmentByEmployeeId(@Param("employeeId") String employeeId);
 
     Department getDepartmentByEmployeeId(@Param("employeeId") String employeeId);
+
+    Department getDepartmentById(@Param("id") Integer id);
+
+    List<Department> getByIds(@Param("ids") List<Integer> ids);
+
+    List<Department> queryByNameFuzzy(@Param("name") String name);
+
+    List<Department> getDepartmentsByParentId(@Param("parentId") Integer parentId);
+
+    List<Department> getDepartmentByCompanyId(@Param("companyId") String companyId);
+
+    List<Department> getDepartmentPageList(@Param("name") String name);
+
+    Long getDepartmentPageListCount(@Param("name") String name);
 }
