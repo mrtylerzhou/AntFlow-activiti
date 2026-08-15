@@ -313,6 +313,34 @@
           }
         }
       ]
+    },
+    {
+      "name": "demoData",
+      "path": "/demoData",
+      "hidden": false,
+      "redirect": "noRedirect",
+      "component": "Layout",
+      "alwaysShow": true,
+      "meta": {
+        "title": "演示数据",
+        "icon": "table",
+        "noCache": false,
+        "link": null
+      },
+      "children": [
+        {
+          "name": "businessData",
+          "path": "businessData",
+          "hidden": false,
+          "component": "workflow/demoData/businessData/index",
+          "meta": {
+            "title": "业务数据",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        }
+      ]
     }
   ]
 }

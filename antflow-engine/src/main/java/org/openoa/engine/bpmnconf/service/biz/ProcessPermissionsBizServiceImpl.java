@@ -252,9 +252,10 @@ public class ProcessPermissionsBizServiceImpl {
         if (objectType != 1 && objectType != 2 && objectType != 3) {
             throw new AFBizException("400008", "授权对象类型不合法");
         }
-        //部门权限禁止监控
-        if (objectType == 2 && vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())) {
-            throw new AFBizException("400003", "部门权限不支持选择监控权限");
+        //部门权限禁止监控/模板编辑
+        if (objectType == 2 && (vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.CONTROL_TYPE.getCode())
+                || vo.getPermissionsTypes().contains(ProcessJurisdictionEnum.TEMPLATE_EDIT_TYPE.getCode()))) {
+            throw new AFBizException("400003", "部门权限不支持选择监控/模板编辑权限");
         }
         if (CollectionUtils.isEmpty(vo.getObjectIds())) {
             String msg = objectType == 1 ? "请选择人员" : (objectType == 2 ? "请选择部门" : "请选择角色");

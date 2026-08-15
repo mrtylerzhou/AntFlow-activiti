@@ -54,9 +54,7 @@
         inner join t_bpmn_conf as b
         on a.dict_value = b.form_code  and b.is_lowcode_flow =1
         where a.dict_type ='lowcodeflow'
-        <if test="vo.processState != null and vo.processState > 0">
-             and  b.effective_status = #{vo.processState}
-        </if>
+        and  b.effective_status = 1
         <if test="vo.description !=null and vo.description !=''">
             and (
             a.dict_label like CONCAT("%",#{vo.description},"%")

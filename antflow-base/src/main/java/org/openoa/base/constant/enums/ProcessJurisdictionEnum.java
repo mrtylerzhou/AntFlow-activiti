@@ -7,6 +7,7 @@ public enum ProcessJurisdictionEnum implements AfEnumBase{
     VIEW_TYPE(1,"查看"),
     CREATE_TYPE(2,"创建"),
     CONTROL_TYPE(3,"监控"),
+    TEMPLATE_EDIT_TYPE(4,"模板编辑"),
     ;
 
     @Getter

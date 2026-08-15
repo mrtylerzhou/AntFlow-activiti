@@ -137,11 +137,11 @@
                 <el-form-item label="权限类型" prop="permissionsTypes">
                     <el-checkbox-group v-model="form.permissionsTypes">
                         <el-checkbox v-for="item in permissionsTypeOptions" :key="item.value" :value="item.value"
-                            :disabled="form.objectType === 2 && item.value === 3">
+                            :disabled="form.objectType === 2 && (item.value === 3 || item.value === 4)">
                             {{ item.label }}
                         </el-checkbox>
                     </el-checkbox-group>
-                    <div class="el-form-item__tip" v-if="form.objectType === 2">部门权限不支持选择监控权限</div>
+                    <div class="el-form-item__tip" v-if="form.objectType === 2">部门权限不支持选择监控/模板编辑权限</div>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -176,6 +176,7 @@ const permissionsTypeOptions = [
     { value: 1, label: "查看权限" },
     { value: 2, label: "创建权限" },
     { value: 3, label: "监控权限" },
+    { value: 4, label: "模板编辑权限" },
 ];
 
 const permissionsTypeLabel = (type) =>
@@ -184,6 +185,7 @@ const permissionsTypeTagType = (type) => {
     if (type === 1) return "info";
     if (type === 2) return "success";
     if (type === 3) return "warning";
+    if (type === 4) return "danger";
     return "info";
 };
 
@@ -340,7 +342,7 @@ function handleObjectTypeChange() {
     deptSelectedList.value = [];
     roleSelectedList.value = [];
     if (form.value.objectType === 2) {
-        form.value.permissionsTypes = form.value.permissionsTypes.filter(t => t !== 3);
+        form.value.permissionsTypes = form.value.permissionsTypes.filter(t => t !== 3 && t !== 4);
     }
 }
 

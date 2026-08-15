@@ -58,11 +58,13 @@ public class UserAutoApproveBizServiceImpl {
 
     // ==================== 列表 ====================
 
-    public ResultAndPage<UserAutoApproveVo> listPage(PageDto pageDto, String ownerUserName, String formCode) {
+    public ResultAndPage<UserAutoApproveVo> listPage(PageDto pageDto, String ownerUserName, String ownerUserId, String formCode) {
         Page<BpmUserAutoApprove> page = PageUtils.getPageByPageDto(pageDto);
         LambdaQueryWrapper<BpmUserAutoApprove> qw = AFWrappers.<BpmUserAutoApprove>lambdaTenantQuery()
                 .eq(BpmUserAutoApprove::getIsDel, 0)
-                .like(StringUtils.hasText(ownerUserName), BpmUserAutoApprove::getOwnerUserName, ownerUserName)
+                //下拉搜索选中归属人: 精确匹配 id(优先于姓名模糊)
+                .eq(StringUtils.hasText(ownerUserId), BpmUserAutoApprove::getOwnerUserId, ownerUserId)
+                .like(!StringUtils.hasText(ownerUserId) && StringUtils.hasText(ownerUserName), BpmUserAutoApprove::getOwnerUserName, ownerUserName)
                 .like(StringUtils.hasText(formCode), BpmUserAutoApprove::getFormCode, formCode);
         Page<BpmUserAutoApprove> result = autoApproveMapper.selectPage(page, qw);
 
