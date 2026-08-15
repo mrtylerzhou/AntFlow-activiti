@@ -10,6 +10,7 @@ import org.openoa.base.constant.enums.VersionIsForceEnums;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.BpmProcessAppApplication;
 import org.openoa.base.entity.BpmProcessAppData;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.QuickEntry;
 import org.openoa.base.entity.SysVersion;
 import org.openoa.base.exception.AFBizException;
@@ -20,6 +21,7 @@ import org.openoa.engine.bpmnconf.mapper.SysVersionMapper;
 import org.openoa.engine.bpmnconf.service.interf.biz.BpmProcessAppDataBizService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppDataSaveVo;
@@ -57,6 +59,9 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
 
     @Autowired
     private QuickEntryService quickEntryService;
+
+    @Autowired
+    private BpmnConfService bpmnConfService;
 
     @Value("${app.ios.skip_force_version:}")
     private String iosSkipForceVersion;
@@ -429,9 +434,10 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             throw new AFBizException(PARAM_ERROR.getCode(), PARAM_ERROR.getDesc());
         }
         boolean isQuickEntry = AppApplicationType.APP_QUICK_ENTRY.getCode().equals(vo.getType());
+        boolean isAppData = AppApplicationType.APP_DATA.getCode().equals(vo.getType());
         if (!isQuickEntry
-                && !AppApplicationType.APP.getCode().equals(vo.getType())
-                && !AppApplicationType.APP_DATA.getCode().equals(vo.getType())) {
+                && !isAppData
+                && !AppApplicationType.APP.getCode().equals(vo.getType())) {
             throw new AFBizException("关联数据类型错误");
         }
         SysVersion current = this.getById(vo.getVersionId());
@@ -452,33 +458,45 @@ public class SysVersionServiceImpl extends ServiceImpl<SysVersionMapper, SysVers
             if (item==null || ObjectUtils.isEmpty(item.getId())) {
                 continue;
             }
-            Long objectId;
-            try {
-                objectId = Long.parseLong(item.getId());
-            } catch (NumberFormatException e) {
-                continue;
-            }
             BpmProcessAppData.BpmProcessAppDataBuilder builder = BpmProcessAppData.builder()
                     .versionId(vo.getVersionId())
                     .type(vo.getType())
-                    .applicationId(objectId.toString())
+                    .applicationId(item.getId())
                     .state(0)
                     .sort(item.getSort()!=null ? item.getSort() : order);
-            if (isQuickEntry) {
-                QuickEntry quickEntry = quickEntryService.getById(objectId);
-                if (quickEntry==null || Integer.valueOf(1).equals(quickEntry.getIsDel())) {
+            if (isAppData) {
+                //上线流程: 候选来自 bpmn_conf(effective_status=1), application_id/process_key 均存 formCode
+                BpmnConf conf = bpmnConfService.getOne(new QueryWrapper<BpmnConf>()
+                        .eq("form_code", item.getId())
+                        .eq("effective_status", 1));
+                if (conf==null) {
                     continue;
                 }
-                builder.processName(quickEntry.getTitle());
+                builder.processName(conf.getBpmnName());
+                builder.processKey(conf.getFormCode());
             } else {
-                BpmProcessAppApplication application = bpmProcessAppApplicationService.getById(objectId.intValue());
-                if (application==null || Integer.valueOf(1).equals(application.getIsDel())) {
+                Long objectId;
+                try {
+                    objectId = Long.parseLong(item.getId());
+                } catch (NumberFormatException e) {
                     continue;
                 }
-                builder.processName(application.getTitle());
-                builder.processKey(StringUtils.isEmpty(application.getBusinessCode())
-                        ? application.getProcessKey()
-                        : StringUtils.join(application.getBusinessCode(), "_", application.getProcessKey()));
+                if (isQuickEntry) {
+                    QuickEntry quickEntry = quickEntryService.getById(objectId);
+                    if (quickEntry==null || Integer.valueOf(1).equals(quickEntry.getIsDel())) {
+                        continue;
+                    }
+                    builder.processName(quickEntry.getTitle());
+                } else {
+                    BpmProcessAppApplication application = bpmProcessAppApplicationService.getById(objectId.intValue());
+                    if (application==null || Integer.valueOf(1).equals(application.getIsDel())) {
+                        continue;
+                    }
+                    builder.processName(application.getTitle());
+                    builder.processKey(StringUtils.isEmpty(application.getBusinessCode())
+                            ? application.getProcessKey()
+                            : StringUtils.join(application.getBusinessCode(), "_", application.getProcessKey()));
+                }
             }
             rows.add(builder.build());
             order++;

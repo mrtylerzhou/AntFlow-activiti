@@ -1,6 +1,9 @@
 package org.openoa.engine.bpmnconf.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.commons.lang3.StringUtils;
 import org.openoa.base.entity.CommonError;
+import org.openoa.base.entity.BpmnConf;
 import org.openoa.base.entity.Result;
 import org.openoa.base.constant.enums.AppApplicationType;
 import org.openoa.base.exception.AFBizException;
@@ -10,6 +13,7 @@ import org.openoa.base.vo.OperationResp;
 import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppApplicationService;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmProcessAppDataService;
+import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfService;
 import org.openoa.engine.bpmnconf.service.interf.repository.QuickEntryService;
 import org.openoa.engine.bpmnconf.service.interf.repository.SysVersionService;
 import org.openoa.engine.vo.AppDataSaveVo;
@@ -37,6 +41,8 @@ public class SysVersionController {
     private BpmProcessAppApplicationService bpmProcessAppApplicationService;
     @Autowired
     private QuickEntryService quickEntryService;
+    @Autowired
+    private BpmnConfService bpmnConfService;
 
     @GetMapping("/appVersion")
     public Result appVersion(@RequestParam("application") String application, @RequestParam("appVersion") String appVersion){
@@ -114,6 +120,24 @@ public class SysVersionController {
                             .name(o.getTitle())
                             .build())
                     .collect(Collectors.toList()));
+        }
+        if (AppApplicationType.APP_DATA.getCode().equals(type)) {
+            //上线流程候选: 全部有效流程配置(bpmn_conf effective_status=1), id=formCode
+            List<BpmnConf> confs = bpmnConfService.list(new QueryWrapper<BpmnConf>().eq("effective_status", 1));
+            if (confs == null) {
+                confs = java.util.Collections.emptyList();
+            }
+            List<BaseIdTranStruVo> result = confs.stream()
+                    .filter(c -> StringUtils.isEmpty(search)
+                            || (c.getBpmnName() != null && c.getBpmnName().contains(search))
+                            || (c.getFormCode() != null && c.getFormCode().contains(search)))
+                    .limit(limitSize)
+                    .map(c -> BaseIdTranStruVo.builder()
+                            .id(c.getFormCode())
+                            .name(c.getBpmnName())
+                            .build())
+                    .collect(Collectors.toList());
+            return Result.newSuccessResult(result);
         }
         return Result.newSuccessResult(bpmProcessAppApplicationService.listProcessAppApplication(search, limitSize));
     }

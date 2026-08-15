@@ -261,7 +261,11 @@ async function loadList(selectId) {
     listLoading.value = true;
     try {
         const res = await getVersionListPage({ page: 1, pageSize: 200 }, {});
-        versionList.value = res.data ?? [];
+        //兼容两种返回: 直接数组(ResultAndPage直出) 或 Result包裹ResultAndPage(真实列表在data.data)
+        const payload = res?.data;
+        versionList.value = Array.isArray(payload)
+            ? payload
+            : (Array.isArray(payload?.data) ? payload.data : []);
         const target = selectId ?? currentId.value ?? versionList.value[0]?.id;
         if (target && versionList.value.some(v => v.id === target)) {
             await selectVersion(target, true);
@@ -288,6 +292,11 @@ async function loadQrCode() {
     } catch (e) {
         qrCode.value = "";
     }
+}
+
+/** 左侧版本列表点击 */
+function handleSelect(item) {
+    selectVersion(item.id);
 }
 
 /** 选中版本 */
