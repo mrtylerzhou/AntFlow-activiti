@@ -339,6 +339,42 @@
             "noCache": false,
             "link": null
           }
+        },
+        {
+          "name": "demoDataUser",
+          "path": "user",
+          "hidden": false,
+          "component": "workflow/demoData/user/index",
+          "meta": {
+            "title": "人员管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "demoDataDepartment",
+          "path": "department",
+          "hidden": false,
+          "component": "workflow/demoData/department/index",
+          "meta": {
+            "title": "部门管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
+        },
+        {
+          "name": "demoDataRole",
+          "path": "role",
+          "hidden": false,
+          "component": "workflow/demoData/role/index",
+          "meta": {
+            "title": "角色管理",
+            "icon": "",
+            "noCache": false,
+            "link": null
+          }
         }
       ]
     }

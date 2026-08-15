@@ -1,9 +1,15 @@
 package org.openoa.engine.bpmnconf.controller;
 
 import org.openoa.base.dto.BusinessDataListPageReq;
+import org.openoa.base.dto.DemoDataMgmtPageReq;
 import org.openoa.base.entity.Result;
 import org.openoa.base.vo.BusinessDataListVo;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.engine.bpmnconf.service.biz.DemoDataBusinessDataBizServiceImpl;
+import org.openoa.engine.vo.DemoDataDepartmentVo;
+import org.openoa.engine.vo.DemoDataRoleUserVo;
+import org.openoa.engine.vo.DemoDataRoleVo;
+import org.openoa.engine.vo.DemoDataUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,5 +45,37 @@ public class DemoDataBusinessDataController {
     @PostMapping("/checkPermission")
     public Result<Boolean> checkPermission(@RequestParam String processNumber) {
         return Result.newSuccessResult(demoDataBusinessDataBizService.checkPermission(processNumber));
+    }
+
+    /**
+     * 人员管理分页列表(姓名/手机号模糊搜索)
+     */
+    @PostMapping("/userListPage")
+    public ResultAndPage<DemoDataUserVo> userListPage(@RequestBody DemoDataMgmtPageReq req) {
+        return demoDataBusinessDataBizService.userListPage(req);
+    }
+
+    /**
+     * 部门管理分页列表(名称模糊搜索)
+     */
+    @PostMapping("/departmentListPage")
+    public ResultAndPage<DemoDataDepartmentVo> departmentListPage(@RequestBody DemoDataMgmtPageReq req) {
+        return demoDataBusinessDataBizService.departmentListPage(req);
+    }
+
+    /**
+     * 角色管理分页列表(名称模糊搜索,含关联人数)
+     */
+    @PostMapping("/roleListPage")
+    public ResultAndPage<DemoDataRoleVo> roleListPage(@RequestBody DemoDataMgmtPageReq req) {
+        return demoDataBusinessDataBizService.roleListPage(req);
+    }
+
+    /**
+     * 角色详情:角色下人员分页列表
+     */
+    @PostMapping("/roleUsers")
+    public ResultAndPage<DemoDataRoleUserVo> roleUsers(@RequestBody DemoDataMgmtPageReq req) {
+        return demoDataBusinessDataBizService.roleUsers(req);
     }
 }

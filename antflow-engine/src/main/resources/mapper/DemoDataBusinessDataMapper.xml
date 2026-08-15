@@ -31,4 +31,93 @@
         </foreach>
         order by main_id, sort
     </select>
+
+    <!--
+        人员管理分页列表: 关联部门名称、直属领导姓名、HRBP姓名
+        is_del 不过滤, 全部展示(列中已含是否删除字段)
+    -->
+    <select id="selectUserPage" resultType="org.openoa.engine.vo.DemoDataUserVo">
+        select
+            u.id,
+            u.user_name as userName,
+            u.mobile,
+            u.email,
+            u.department_id as departmentId,
+            d.name as departmentName,
+            u.leader_id as leaderId,
+            lu.user_name as leaderName,
+            u.hrbp_id as hrbpId,
+            hu.user_name as hrbpName,
+            u.is_del as isDel
+        from t_user u
+        left join t_department d on u.department_id = d.id
+        left join t_user lu on u.leader_id = lu.id
+        left join t_user hu on u.hrbp_id = hu.id
+        <where>
+            <if test="userName != null and userName != ''">
+                and u.user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="mobile != null and mobile != ''">
+                and u.mobile like concat('%', #{mobile}, '%')
+            </if>
+        </where>
+        order by u.id
+    </select>
+
+    <!--
+        部门管理分页列表: 关联上级部门名称、负责人姓名
+        注意: t_department 实际列名为 short_name
+    -->
+    <select id="selectDepartmentPage" resultType="org.openoa.engine.vo.DemoDataDepartmentVo">
+        select
+            d.id,
+            d.name,
+            d.short_name as shortName,
+            d.parent_id as parentId,
+            pd.name as parentName,
+            d.leader_id as leaderId,
+            lu.user_name as leaderName,
+            d.level,
+            d.sort,
+            d.is_del as isDel
+        from t_department d
+        left join t_department pd on d.parent_id = pd.id
+        left join t_user lu on d.leader_id = lu.id
+        <where>
+            <if test="deptName != null and deptName != ''">
+                and d.name like concat('%', #{deptName}, '%')
+            </if>
+        </where>
+        order by d.id
+    </select>
+
+    <!-- 角色管理分页列表: 关联角色下人员数量 -->
+    <select id="selectRolePage" resultType="org.openoa.engine.vo.DemoDataRoleVo">
+        select
+            r.id,
+            r.role_name as roleName,
+            (select count(*) from t_user_role tur where tur.role_id = r.id) as userCount
+        from t_role r
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and r.role_name like concat('%', #{roleName}, '%')
+            </if>
+        </where>
+        order by r.id
+    </select>
+
+    <!-- 角色详情: 角色下人员分页列表 -->
+    <select id="selectRoleUsers" resultType="org.openoa.engine.vo.DemoDataRoleUserVo">
+        select
+            u.id,
+            u.user_name as userName,
+            u.mobile,
+            u.email,
+            d.name as departmentName
+        from t_user_role tur
+        join t_user u on tur.user_id = u.id
+        left join t_department d on u.department_id = d.id
+        where tur.role_id = #{roleId}
+        order by u.id
+    </select>
 </mapper>

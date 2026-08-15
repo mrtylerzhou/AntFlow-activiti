@@ -10,6 +10,7 @@ import org.openoa.base.constant.StringConstants;
 import org.openoa.base.constant.enums.LFFieldTypeEnum;
 import org.openoa.base.constant.enums.ProcessStateEnum;
 import org.openoa.base.dto.BusinessDataListPageReq;
+import org.openoa.base.dto.DemoDataMgmtPageReq;
 import org.openoa.base.dto.PageDto;
 import org.openoa.base.entity.*;
 import org.openoa.base.entity.jsonconf.BpmnNodeConfigJson;
@@ -23,6 +24,7 @@ import org.openoa.base.util.PageUtils;
 import org.openoa.base.util.SecurityUtils;
 import org.openoa.base.vo.BaseIdTranStruVo;
 import org.openoa.base.vo.BusinessDataListVo;
+import org.openoa.base.vo.ResultAndPage;
 import org.openoa.common.entity.BpmVariableMultiplayer;
 import org.openoa.common.entity.BpmVariableMultiplayerPersonnel;
 import org.openoa.common.mapper.BpmVariableMultiplayerMapper;
@@ -35,6 +37,10 @@ import org.openoa.engine.bpmnconf.service.impl.BpmnConfServiceImpl;
 import org.openoa.engine.bpmnconf.service.impl.BpmnNodeServiceImpl;
 import org.openoa.engine.bpmnconf.service.interf.repository.BpmnConfLfFormdataFieldService;
 import org.openoa.engine.lowflow.entity.LFMainField;
+import org.openoa.engine.vo.DemoDataDepartmentVo;
+import org.openoa.engine.vo.DemoDataRoleUserVo;
+import org.openoa.engine.vo.DemoDataRoleVo;
+import org.openoa.engine.vo.DemoDataUserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +211,53 @@ public class DemoDataBusinessDataBizServiceImpl {
                 .rows(rows)
                 .total(bpmPage.getTotal())
                 .build();
+    }
+
+    /**
+     * 人员管理分页列表(姓名/手机号模糊搜索)
+     */
+    public ResultAndPage<DemoDataUserVo> userListPage(DemoDataMgmtPageReq req) {
+        Page<DemoDataUserVo> page = PageUtils.getPageByPageDto(pageDtoOf(req));
+        String userName = StringUtils.isBlank(req.getUserName()) ? null : req.getUserName().trim();
+        String mobile = StringUtils.isBlank(req.getMobile()) ? null : req.getMobile().trim();
+        demoDataBusinessDataMapper.selectUserPage(page, userName, mobile);
+        return PageUtils.getResultAndPage(page);
+    }
+
+    /**
+     * 部门管理分页列表(名称模糊搜索)
+     */
+    public ResultAndPage<DemoDataDepartmentVo> departmentListPage(DemoDataMgmtPageReq req) {
+        Page<DemoDataDepartmentVo> page = PageUtils.getPageByPageDto(pageDtoOf(req));
+        String deptName = StringUtils.isBlank(req.getDeptName()) ? null : req.getDeptName().trim();
+        demoDataBusinessDataMapper.selectDepartmentPage(page, deptName);
+        return PageUtils.getResultAndPage(page);
+    }
+
+    /**
+     * 角色管理分页列表(名称模糊搜索,含关联人数)
+     */
+    public ResultAndPage<DemoDataRoleVo> roleListPage(DemoDataMgmtPageReq req) {
+        Page<DemoDataRoleVo> page = PageUtils.getPageByPageDto(pageDtoOf(req));
+        String roleName = StringUtils.isBlank(req.getRoleName()) ? null : req.getRoleName().trim();
+        demoDataBusinessDataMapper.selectRolePage(page, roleName);
+        return PageUtils.getResultAndPage(page);
+    }
+
+    /**
+     * 角色详情:角色下人员分页列表
+     */
+    public ResultAndPage<DemoDataRoleUserVo> roleUsers(DemoDataMgmtPageReq req) {
+        if (req == null || req.getRoleId() == null) {
+            throw new AFBizException("请选择角色");
+        }
+        Page<DemoDataRoleUserVo> page = PageUtils.getPageByPageDto(pageDtoOf(req));
+        demoDataBusinessDataMapper.selectRoleUsers(page, req.getRoleId());
+        return PageUtils.getResultAndPage(page);
+    }
+
+    private PageDto pageDtoOf(DemoDataMgmtPageReq req) {
+        return req == null || req.getPageDto() == null ? PageDto.first() : req.getPageDto();
     }
 
     /**
